@@ -1,0 +1,3 @@
+.codex-remote-attachments/
+*.log
+node_modules/
