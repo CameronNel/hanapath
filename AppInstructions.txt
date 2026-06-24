@@ -1,0 +1,1464 @@
+The core move: the app should not be a streak toy with Korean sprinkled on top. It should be a fluency operating system: curriculum spine, memory engine, listening lab, speaking lab, graded reading, and human/AI feedback all feeding one learner model.
+Korean Fluency App Blueprint 🇰🇷📱
+Evidence-based, mobile-first, built phase by phase
+
+The app should be built around one brutal truth: Korean fluency is not achieved by cute daily taps alone. The app needs to behave less like a game and more like a tiny Seoul language institute living in your phone, with a calendar, a memory engine, a speech coach, and a slightly judgmental but helpful owl-free conscience.
+
+The goal: take English speakers from zero to independent Korean use in 24 months, aiming for roughly CEFR B2 / TOPIK 4-ish functional fluency, with strong reading and listening, and practical speaking. CEFR B2 is the level where a learner can interact with enough fluency and spontaneity that regular interaction with native speakers becomes possible without strain.
+1. Core product thesis
+The app should not be “Duolingo for Korean”
+
+It should be:
+
+    A Korean fluency operating system for English speakers.
+
+That means it must combine:
+System	Purpose
+Structured curriculum	Prevents random studying and “I know 900 words but cannot order soup” disease.
+SRS memory engine	Keeps vocabulary, grammar, spelling, particles, and sound rules alive.
+Listening lab	Trains real Korean speed, sound changes, intonation, and transcript use.
+Speaking lab	Forces active output from day one.
+Pronunciation engine	Fixes English-speaker Korean sound problems early.
+Graded reader library	Bridges textbook Korean to real Korean.
+Human/AI correction layer	Converts passive knowledge into usable Korean.
+Assessment dashboard	Shows CEFR/TOPIK-style readiness, not just XP confetti.
+
+The evidence supports this multi-system design. Yonsei’s regular Korean program uses 200 hours per semester across levels 1 to 6, and SNU describes Level 6 as requiring about 1,000 hours or equivalent proficiency to use Korean fluently in social activities.
+2. Product positioning
+App name concept
+
+Working name: HanaPath
+Meaning: “one path,” from 하나, one.
+
+Alternative names:
+Name	Vibe
+HanaPath	Clean, structured, serious but friendly.
+SeoulFlow	Fluency and rhythm focused.
+K-Bridge	English-speaker to Korean bridge.
+Mallo	From 말, speech/language, cute app-store energy.
+FluentHan	More premium, less playful.
+
+My preferred direction: HanaPath. It sounds focused and app-like without screaming “K-pop sticker pack.”
+3. Target learner
+Primary persona
+
+English-speaking adult beginner who wants Korean for:
+Motivation	App response
+K-dramas / K-pop	Native listening pathway, subtitle fading, pop-culture vocabulary packs.
+Korean partner/friends	Conversation scripts, politeness, texting, relationship language.
+Travel	Survival speaking, signs, ordering, transport.
+TOPIK / study	TOPIK-style reading/listening drills, formal grammar, writing.
+Work / relocation	Business Korean, honorifics, formal email, job conversation.
+Key English-speaker pain points
+
+The app must explicitly address:
+
+    Hangul is easy at the alphabet level but hard at real speed.
+
+    Korean word order feels backwards at first.
+
+    Particles feel tiny but cause nuclear-level confusion.
+
+    Honorifics and speech levels are socially loaded.
+
+    Korean sound changes make words look different from how they sound.
+
+    Listening is much harder than reading.
+
+    Speaking lags unless forced early.
+
+    Grammar knowledge does not automatically become speech.
+
+4. Evidence-to-feature mapping
+Evidence / benchmark	Product implication
+CEFR B2 requires spontaneous interaction and understanding complex concrete/abstract topics.	App must include long-form conversation, opinions, summaries, and authentic content, not only sentence taps.
+Yonsei uses 200-hour intensive levels and 6 levels designed around TOPIK levels.	App should have clear level bands, hour targets, and TOPIK-style checkpoints.
+SNU Level 6 expects about 1,000 hours or equivalent proficiency, with real-life broadcasts, discussions, presentations, and social fluency.	Later app phases must include broadcasts, topic discussion, presentations, and formal speech, not just beginner dialogues.
+Integrated Korean uses performance-based principles and integrates speaking, listening, reading, writing, grammar, culture, and authentic materials.	App curriculum should be task-based and multi-skill from the beginning.
+King Sejong’s online ecosystem includes textbooks, vocabulary dictionary, video/audio clips, grammar quiz, speaking practice, writing practice, and level tests.	The app should combine content, practice, and testing in one system.
+Anki now supports SM-2 and FSRS, with FSRS learning memory patterns and scheduling reviews more efficiently.	Build an adaptive review system with target retention, not a fixed flashcard timer.
+HelloTalk’s value is native-speaker interaction, corrections, voice/video, and voice rooms.	The app should include guided community or tutor interaction, but structured, not random chat chaos soup.
+5. North Star metric
+
+The app should not optimize for streaks alone.
+Main metric
+
+    Weekly Korean Performance Minutes
+
+This means minutes spent doing things that produce actual Korean ability:
+Counts	Does not count
+Speaking Korean aloud	Staring at grammar notes
+Listening without translation	Clicking multiple choice only
+Reading Korean text	Browsing lesson list
+Writing Korean sentences	Collecting badges
+SRS recall	Watching app animations
+Tutor or AI conversation	Passive scrolling
+Supporting metrics
+Metric	Why it matters
+Active vocabulary count	Words the learner can produce, not just recognize.
+Receptive vocabulary count	Words recognized in reading/listening.
+Listening accuracy	Dictation, comprehension, transcript gap-fill.
+Speaking length	Seconds/minutes spoken without English rescue.
+Repair ability	Can ask “What does that mean?” and recover.
+Reading speed	Hangul decoding fluency and sentence processing.
+Grammar activation	Can use grammar in speech, not just identify it.
+Can-do completion	CEFR/ACTFL-style functional outcomes.
+6. The app’s main structure
+Bottom navigation
+Tab	Purpose
+Today	Daily plan, review queue, next lesson, speaking task.
+Path	Structured course map from zero to B2-ish.
+Review	SRS vocabulary, grammar, listening, pronunciation.
+Speak	AI speaking, pronunciation drills, tutor/community tasks.
+Library	Graded readers, dialogues, podcasts, native clips.
+Progress	TOPIK/CEFR dashboard, weaknesses, hours, skill balance.
+7. The learner path
+
+The app should have 7 Korean levels, not because learners love levels, but because their brains need visible scaffolding.
+App Level	Real-world target	Time estimate at 15 to 25 hrs/week
+K0: Hangul & Sound	Read Hangul, pronounce basics, hear key contrasts	2 to 4 weeks
+K1: Survival Korean	Greetings, ordering, self-intro, basic questions	Months 1 to 3
+K2: Everyday Korean	Routines, family, hobbies, shopping, plans	Months 4 to 6
+K3: Connected Korean	Narration, past/future, longer sentences	Months 7 to 12
+K4: Independent Korean	Opinions, explanations, native-lite listening	Months 13 to 18
+K5: Fluency Bridge	News, podcasts, discussion, formal/informal control	Months 19 to 24
+K6: Post-fluency Growth	Domain fluency: work, study, relationships, media	After 24 months
+8. Phase-by-phase app plan
+Phase 0: Onboarding and diagnostic
+Goal
+
+Create an honest, personalized 24-month path.
+User experience
+
+The user opens the app and answers:
+Question	Purpose
+Do you know Hangul?	Places user at K0 or above.
+Why Korean?	Travel, media, partner, TOPIK, work, culture.
+Weekly hours?	Creates realistic fluency forecast.
+Speaking anxiety level?	Adjusts speaking progression.
+Current skills?	Reading, listening, speaking, vocabulary.
+Target date?	Builds roadmap.
+Placement tests
+Test	Format
+Hangul recognition	Match syllables to sounds.
+Listening discrimination	ㄱ/ㅋ/ㄲ, ㄷ/ㅌ/ㄸ, ㅂ/ㅍ/ㅃ.
+Basic vocabulary	Korean to English and English to Korean.
+Speaking baseline	Record self-introduction or read a sentence.
+Reading speed	Read syllables and simple words aloud.
+Output
+
+The app gives the user:
+
+    Fluency forecast
+
+    Weekly study budget
+
+    Daily plan
+
+    First 30-day calendar
+
+    Weakness map
+
+    Target path, for example: “K0 to K5 in 24 months”
+
+Honest fluency forecast
+Weekly hours	Forecast
+5 hrs/week	Tourist plus hobbyist level.
+10 hrs/week	A2 to B1 likely.
+15 hrs/week	B1+ to low B2 possible with tutors.
+25 hrs/week	B2-ish fluency target becomes realistic.
+Phase complete when
+
+The user has:
+
+    A skill baseline
+
+    A weekly plan
+
+    A first lesson queue
+
+    A first speaking recording
+
+    A first SRS deck initialized
+
+Phase 1: K0, Hangul and sound system
+Goal
+
+Teach Hangul fast, but not stupid-fast. The alphabet is not the whole mountain, it is the trailhead.
+Duration
+
+2 to 4 weeks
+Core modules
+Module	Content
+Vowels	ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, ㅣ, compound vowels
+Consonants	ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅅ, ㅇ, ㅈ, ㅎ
+Aspirated consonants	ㅋ, ㅌ, ㅍ, ㅊ
+Tense consonants	ㄲ, ㄸ, ㅃ, ㅆ, ㅉ
+Syllable blocks	CV, CVC, vertical/horizontal layout
+Batchim	Final consonants and unreleased sounds
+Sound changes	Basic liaison, nasalization, ㄹ changes
+Reading speed	Timed syllable and word decoding
+Pronunciation	Record and compare
+Lesson loop
+
+Each Hangul lesson should follow:
+
+    See
+
+        Letter animation
+
+        Mouth/tongue diagram
+
+        English approximation warning
+
+    Hear
+
+        Native audio from multiple voices
+
+        Minimal pair contrast
+
+    Recognize
+
+        Tap what you hear
+
+        Choose correct syllable
+
+    Produce
+
+        Read aloud
+
+        Record
+
+        AI feedback
+
+    Use
+
+        Real word
+
+        Tiny sentence
+
+        Micro-dialogue
+
+    Review
+
+        SRS card for letter, sound, word, sentence
+
+Special English-speaker traps
+
+The app should explicitly warn:
+Korean issue	English-speaker problem
+ㄱ is not exactly “g” or “k”	Learners over-map English sounds.
+ㅓ and ㅗ	Often confused.
+ㅡ	No clean English equivalent.
+ㄹ	Not English R or L.
+Final consonants	English speakers release them too strongly.
+Double consonants	Usually undertrained.
+K0 screens
+Screen	Function
+Hangul Builder	Drag consonant and vowel into syllable block.
+Sound Arena	Hear two sounds, identify difference.
+Mouth Coach	Shows articulation diagram.
+Reading Sprint	Timed reading practice.
+Record Mirror	Record, compare waveform/audio.
+Batchim Lab	Final consonant drills.
+Phase complete when
+
+User can:
+
+    Read 100 common syllables at speed
+
+    Read 50 basic Korean words aloud
+
+    Identify core consonant contrasts
+
+    Correctly read simple sentences
+
+    Understand that spelling and pronunciation can diverge
+
+Phase 2: K1, Survival Korean
+Goal
+
+Make the learner functional in basic situations while building the first 800 to 1,000 words.
+Duration
+
+Months 1 to 3
+Curriculum themes
+Unit	Situation
+1	Greetings and names
+2	Nationality and language
+3	This/that/that over there
+4	Food and ordering
+5	Numbers, prices, counters
+6	Time and schedules
+7	Places and directions
+8	Daily routine
+9	Likes and dislikes
+10	Basic texting
+11	Transport
+12	Review mission
+Grammar spine
+Grammar	Use
+입니다 / 입니까	Formal identity
+은/는	Topic marking
+이/가	Subject marking
+을/를	Object marking
+있어요 / 없어요	Existence, possession
+주세요	Requests
+-아요/어요	Polite present
+-았/었어요	Past
+-고 싶어요	Want to
+안 / 못	Negation
+에 / 에서	Location and action location
+하고 / 그리고	And
+Lesson types
+Type	Example
+Dialogue	Ordering coffee
+Grammar card	은/는 vs 이/가
+Vocabulary cluster	Food and drinks
+Listening drill	“What did they order?”
+Speaking drill	“Order two items politely”
+Micro-writing	Type a self-introduction
+Culture note	Politeness and names
+Daily K1 session
+Block	Time	Example
+Review	10 min	SRS vocabulary and particles
+Input	15 min	Dialogue with audio
+Drill	10 min	Grammar transformation
+Speak	5 min	Record answer
+Listen	5 min	Dictation or gap-fill
+Reflection	2 min	Can-do check
+K1 app features
+Feature	Description
+Sentence Builder	Arrange Korean sentence order.
+Particle Coach	Explains why 은/는, 이/가, 을/를 was used.
+Politeness Meter	Shows speech level and social context.
+Survival Roleplay	Restaurant, café, shop, station.
+Audio Flashcards	Hear Korean first, answer meaning.
+“Say it faster” mode	Repeat sentence at increasing speed.
+K1 assessment
+
+At the end of K1, user must complete:
+
+    2-minute self-introduction
+
+    Restaurant roleplay
+
+    Basic listening quiz
+
+    Read a beginner dialogue aloud
+
+    Write 5 sentences about daily life
+
+Phase complete when
+
+User can:
+
+    Introduce themselves
+
+    Order food
+
+    Ask price/time/location
+
+    Understand slow learner audio
+
+    Read short beginner dialogues
+
+    Produce simple polite sentences
+
+Phase 3: K2, Everyday Korean
+Goal
+
+Move from phrase survival to everyday conversation.
+Duration
+
+Months 4 to 6
+Curriculum themes
+Unit	Situation
+Family	Describing people
+Work/study	Daily obligations
+Hobbies	Likes, frequency
+Weather	Plans and small talk
+Shopping	Size, color, comparison
+Health	Symptoms and pharmacy
+Weekends	Past and future plans
+Home	Rooms, objects, chores
+Invitations	Accepting and declining
+Travel	Booking, asking, problems
+Korean texting	Short informal messages
+Review project	“My week in Korean”
+Grammar spine
+Grammar	Function
+-고	Linking actions
+-지만	Contrast
+-아서/어서	Reason/result
+-러 가다	Go to do
+-부터/-까지	From/to
+-보다	Comparison
+-고 있어요	Progressive
+-(으)ㄹ 거예요	Future
+-(으)세요	Polite command
+-(으)ㄹ 수 있어요	Ability
+때문에	Because of
+하고 / 와/과	And/with
+K2 app features
+Feature	Description
+Routine Builder	User builds daily routine in Korean.
+Time Machine	Convert present to past/future.
+Korean Texting Mode	Informal chat bubbles with corrections.
+Listening Ladder	Same dialogue at 0.75x, 1.0x, 1.15x.
+Shadowing Coach	Repeat sentence, compare rhythm.
+Story Cards	Short illustrated stories with audio.
+Weekly Monologue	User records 2 to 5 minutes.
+Major unlock: Guided speaking
+
+The app should now require active speaking every week.
+
+Speaking tasks:
+Task	Example
+Description	“Describe your room.”
+Routine	“Explain your weekday.”
+Opinion-lite	“Do you prefer coffee or tea?”
+Past event	“What did you do last weekend?”
+Plan	“What will you do tomorrow?”
+Problem-solving	“You lost your wallet. Ask for help.”
+K2 assessment
+
+At the end of K2:
+
+    5-minute tutor or AI conversation
+
+    20-question listening quiz
+
+    500-character reading passage
+
+    10-sentence writing task
+
+    100-word active vocabulary test
+
+    Pronunciation re-test against K0 baseline
+
+Phase complete when
+
+User can:
+
+    Talk about daily life
+
+    Explain simple reasons
+
+    Ask follow-up questions
+
+    Understand slow to normal learner audio
+
+    Read beginner graded stories
+
+    Write short diary entries
+
+Phase 4: K3, Connected Korean
+Goal
+
+Build connected speech and intermediate comprehension.
+Duration
+
+Months 7 to 12
+
+This is where most learners get emotionally folded like laundry. The app must prevent plateau by shifting from sentence drills to connected language.
+Curriculum themes
+Theme	Output
+Moving house	Explain problems and requests
+Travel story	Narrate past events
+Appointments	Reschedule and explain
+Food culture	Compare cultures
+Work/study stress	Describe causes
+Relationships	Talk about people and feelings
+Korean media	Summarize a clip
+News-lite	Explain a simple article
+Opinions	Give reasons and examples
+Problems	Complain politely
+Plans	Future intentions and conditions
+Year-one project	10-minute “My Korean story”
+Grammar spine
+Grammar	Function
+-(으)니까	Reason
+-는데	Background/contrast
+-기 때문에	Formal reason
+-(으)면	Conditional
+-아/어도	Even if
+-아/어야 하다	Must
+-지 말다	Don’t
+-아/어 보다	Try doing
+-(으)려고 하다	Intend to
+-게 되다	Come to
+-는 것	Nominalization
+-다고 하다	Reported speech intro
+K3 app features
+Feature	Description
+Retell Engine	User listens to a story and retells it.
+Connector Trainer	Practices -고, -지만, -아서, -는데, -(으)니까.
+Sentence Expansion	Turns short sentences into longer Korean.
+Dictation Studio	Sentence-by-sentence listening transcription.
+Graded Reader Shelf	Level A2 to B1 stories with synced audio.
+Conversation Missions	Structured speaking tasks with AI/tutor.
+Mistake Bank	Learner’s recurring errors become review items.
+Listening lab upgrade
+
+Listening flow should be:
+
+    Pre-teach 5 key words
+
+    First listen without transcript
+
+    Answer gist question
+
+    Second listen with Korean transcript
+
+    Tap unknown words
+
+    Sentence loop
+
+    Dictation
+
+    Shadowing
+
+    Oral summary
+
+Reading lab upgrade
+
+Reading flow:
+
+    Preview title and keywords
+
+    Read without translation
+
+    Tap unknown words
+
+    Answer comprehension questions
+
+    Re-read with audio
+
+    Summarize in Korean
+
+    Add words to SRS
+
+    Use 3 words in own sentences
+
+K3 assessment
+
+End of year-one exam:
+Skill	Test
+Reading	Beginner/intermediate graded text
+Listening	3 dialogues, 1 monologue
+Speaking	8-minute conversation
+Writing	Diary and opinion paragraph
+Pronunciation	Shadowing and free speech
+Grammar	Use in context, not isolated quiz
+Phase complete when
+
+User can:
+
+    Sustain 8 to 10 minutes of Korean conversation
+
+    Retell past events
+
+    Explain reasons
+
+    Understand learner podcasts
+
+    Read graded texts with limited dictionary use
+
+    Begin simple native content with scaffolding
+
+Phase 5: K4, Independent Korean
+Goal
+
+Move from “I can study Korean” to “I can use Korean to learn, explain, and discuss.”
+Duration
+
+Months 13 to 18
+Curriculum themes
+Theme	Output
+Health	Explain symptoms and advice
+Technology	Discuss phone/app habits
+Work/study	Describe tasks and deadlines
+Society	Talk about trends
+Money	Basic financial discussion
+Culture	Compare norms
+Relationships	Explain conflicts and feelings
+News	Summarize simple news
+Opinions	Present pros and cons
+Formality	Switch between casual/polite/formal
+Media	Watch clips with partial support
+Project	5-minute presentation
+Grammar spine
+Grammar	Function
+-(으)ㄴ/는 편이다	Tend to
+-게 하다	Make/let
+-도록	So that
+-기 위해서	In order to
+-아/어 보이다	Seems
+-(으)ㄹ 것 같다	Seems/will probably
+-던	Recalling past
+-았/었던	Past recollection
+-다 보면	If one keeps doing
+-기는 하지만	It is true, but
+-에 비해	Compared to
+-뿐만 아니라	Not only but also
+K4 app features
+Feature	Description
+Topic Packs	Health, tech, work, relationships, travel.
+Opinion Builder	Claim, reason, example, contrast.
+Formality Switcher	Rewrites speech by politeness level.
+Native Clip Trainer	Short native clips with subtitle fading.
+Presentation Mode	Script, record, compare, improve.
+Debate-lite	Choose a side, defend it in Korean.
+Tutor Handoff	AI generates lesson plan for human tutor.
+Crucial feature: Output from input
+
+Every content item must produce output.
+Input	Required output
+Article	Oral summary
+Dialogue	Roleplay
+Podcast	5-sentence recap
+Grammar lesson	Personal example
+Vocabulary set	Mini-story
+Native clip	Shadow + opinion
+
+This is the “no passive swamp” rule. 🪷
+K4 assessment
+
+At the end of K4:
+
+    15-minute Korean-only conversation
+
+    5-minute presentation
+
+    Read a short article and summarize
+
+    Listen to a native-lite clip and explain main points
+
+    Write a 200 to 300 word Korean essay
+
+    TOPIK II-style listening/reading practice
+
+Phase complete when
+
+User can:
+
+    Explain opinions with reasons
+
+    Understand supported native audio
+
+    Read short articles on familiar topics
+
+    Maintain 15-minute conversations
+
+    Use formality more appropriately
+
+    Produce organized spoken paragraphs
+
+Phase 6: K5, Fluency Bridge
+Goal
+
+Reach independent Korean use in real topics.
+Duration
+
+Months 19 to 24
+Curriculum themes
+Theme	Output
+Korean news	Summarize and discuss
+Work culture	Explain professional situations
+Social issues	Give pros and cons
+Personal history	Tell longer stories
+Media analysis	Discuss drama/video scenes
+Korean-only day	App session with no English
+Interviews	Answer spontaneous questions
+Problem solving	Negotiate, complain, clarify
+Formal speech	Present ideas logically
+Long listening	Podcasts, interviews, broadcasts
+Reading	Blogs, essays, news
+Final project	30-minute Korean portfolio exam
+K5 app features
+Feature	Description
+Native Media Gym	Podcasts, interviews, news clips, licensed or original.
+Subtitle Fader	English off, Korean on, Korean partial, no subtitles.
+Long Conversation AI	20 to 30 minute guided conversation.
+Weakness Compressor	Finds repeated grammar, vocab, pronunciation errors.
+TOPIK Simulator	Reading/listening timed practice.
+Fluency Portfolio	Recordings, essays, presentations, scores.
+Domain Builder	Choose focus: work, travel, romance, TOPIK, media.
+K5 weekly routine
+Day	Main focus
+Monday	Grammar activation and SRS
+Tuesday	Listening lab and dictation
+Wednesday	Speaking task and correction
+Thursday	Reading and vocabulary mining
+Friday	Native clip shadowing
+Saturday	Tutor or long AI conversation
+Sunday	Weekly review and portfolio update
+Final 24-month test
+
+The app should run a serious final evaluation:
+Skill	Final test
+Reading	Read and summarize native article
+Listening	Understand podcast/news excerpt
+Speaking	30-minute conversation
+Presentation	5 to 8 minutes with Q&A
+Writing	400 to 600 word essay
+Pronunciation	Native-rated intelligibility
+Vocabulary	Active and receptive check
+Grammar	Error profile from free output
+Phase complete when
+
+User can:
+
+    Have 30-minute Korean conversations
+
+    Understand main ideas from native content in familiar domains
+
+    Read mainstream Korean content with support
+
+    Explain opinions and experiences
+
+    Repair misunderstandings
+
+    Function independently, though not natively
+
+9. The app’s core systems
+9.1 Curriculum engine
+
+The curriculum engine decides what the learner sees next.
+Inputs
+Input	Example
+Current level	K2
+Skill balance	Reading high, speaking low
+Review burden	120 due cards
+Goal	TOPIK or conversation
+Weekly hours	15
+Weaknesses	Particles, ㄹ pronunciation, listening speed
+Recent performance	Low recall on verbs
+Outputs
+Output	Example
+Today plan	10 min review, 20 min lesson, 10 min speaking
+Weekly plan	3 lessons, 2 speaking tasks, 1 reader
+Remediation	Particle mini-bootcamp
+Progression lock	Cannot unlock K3 until speaking task passed
+Challenge	Native-lite listening unlocked
+9.2 SRS memory engine
+
+This is one of the most important systems.
+
+Anki’s FSRS model aims to learn a learner’s memory patterns and schedule reviews more efficiently than older SM-2 style systems. Your app should borrow that philosophy: model each learner’s recall probability, difficulty, and stability per item.
+Card types
+Card type	Example
+Recognition	한국어 → Korean language
+Production	“Korean language” → 한국어
+Audio recognition	Hear 한국어, choose meaning
+Dictation	Hear sentence, type Korean
+Grammar use	Choose correct particle
+Cloze	저는 커피__ 좋아해요
+Sentence production	“I want to eat” → 먹고 싶어요
+Pronunciation	Say word, compare
+Minimal pair	불 / 풀 / 뿔
+Honorific context	Choose polite/casual/formal
+SRS should not only be vocabulary
+
+It should schedule:
+
+    Words
+
+    Phrases
+
+    Grammar forms
+
+    Particles
+
+    Sound rules
+
+    Pronunciation contrasts
+
+    Listening snippets
+
+    Personal mistakes
+
+    Tutor corrections
+
+    User-generated sentences
+
+Review modes
+Mode	Best for
+Quick review	Daily maintenance
+Audio-only	Listening fluency
+Production-only	Speaking/writing activation
+Weakness mode	Painful but effective
+Sentence mode	Contextual review
+Exam mode	TOPIK prep
+Native-speed mode	Listening transition
+9.3 Speaking system
+
+Speaking is where most language apps wear a tiny fake mustache and pretend.
+
+Your app needs three layers:
+Layer 1: Controlled speaking
+Task	Example
+Repeat	안녕하세요
+Transform	저는 학생이에요 → past/formal/etc.
+Read aloud	Short sentence
+Shadow	Repeat after native speaker
+Minimal pair	달 / 딸 / 탈
+Layer 2: Semi-controlled speaking
+Task	Example
+Answer question	오늘 뭐 했어요?
+Describe image	방에 뭐가 있어요?
+Roleplay	Café order
+Retell	Summarize a dialogue
+Guided monologue	Talk for 60 seconds
+Layer 3: Free speaking
+Task	Example
+AI conversation	Discuss weekend plans
+Tutor assignment	Prepare topic beforehand
+Debate-lite	Is remote work good?
+Presentation	Explain your hobby
+Interview	Random follow-up questions
+Speaking feedback categories
+Category	Feedback
+Pronunciation	Sound, intonation, batchim
+Grammar	Particles, endings, tense
+Vocabulary	Wrong word, unnatural word
+Fluency	Pauses, repetition, filler
+Pragmatics	Too casual/formal
+Content	Did user answer the question?
+9.4 Listening system
+
+Listening must be built like a gym, not a quiz.
+Listening item design
+
+Each item should have:
+Asset	Required?
+Native audio	Yes
+Slow audio	Beginner only
+Korean transcript	Yes
+English translation	Yes, hidden by default after K2
+Word list	Yes
+Grammar notes	Yes
+Dictation chunks	Yes
+Shadowing mode	Yes
+Comprehension questions	Yes
+Re-listening schedule	Yes
+Listening modes
+Mode	Purpose
+Gist listen	Main idea
+Detail listen	Specific info
+Dictation	Sound-to-text accuracy
+Loop mode	Hard sentence repetition
+Shadowing	Rhythm and production
+Subtitle fade	Transition to native
+Speed ramp	0.75x to 1.25x
+Noise mode	Real-world listening
+9.5 Reading system
+
+Reading must become a vocabulary acquisition engine.
+Reader levels
+Reader level	Text type
+R0	Syllables and signs
+R1	3 to 5 sentence dialogues
+R2	Beginner stories
+R3	Diary/blog-style texts
+R4	Learner news
+R5	Simplified native articles
+R6	Native articles/blogs
+Reader features
+Feature	Purpose
+Tap dictionary	Low-friction comprehension
+Known-word highlight	Shows coverage
+Unknown-word mining	Adds to SRS
+Audio sync	Connects reading/listening
+Grammar underlines	Shows forms in context
+Sentence breakdown	Helps Korean syntax
+Re-read tracking	Measures fluency
+Oral summary	Converts reading to speech
+9.6 Grammar system
+
+Grammar should be learned in this order:
+
+    Meet it in context
+
+    Understand it
+
+    Manipulate it
+
+    Recognize it in listening
+
+    Use it in speech
+
+    Use it in writing
+
+    Recycle it later
+
+Grammar page format
+Section	Example
+Meaning	-(으)니까 = because, so
+Usage	Gives reason, often before suggestion/command
+Form	Verb stem + 으니까/니까
+Examples	바쁘니까 내일 만나요
+English trap	Not always same as “because”
+Politeness	Works across styles
+Common mistakes	Using 아서/어서 where 니까 fits better
+Speaking task	Explain why you are tired
+SRS cards	Form, meaning, sentence, production
+10. Product development roadmap
+
+Now the build plan. This is the actual “make the app” phase map.
+Development Phase A: Prototype
+Goal
+
+Validate that users like the core loop.
+Build
+Feature	Scope
+Onboarding	Goal, hours, Hangul knowledge
+Today screen	Static daily plan
+Hangul lessons	10 lessons
+Basic SRS	Manual intervals
+Audio playback	Native audio
+Recording	User can record and replay
+Progress	Simple XP and lesson completion
+Do not build yet
+
+    AI tutor
+
+    Marketplace
+
+    Native clip licensing
+
+    Complex analytics
+
+    Community
+
+    TOPIK simulator
+
+Success criteria
+Metric	Target
+Day 1 completion	70%+ complete first lesson
+Day 7 retention	25%+ return
+Lesson satisfaction	4/5
+Recording usage	40%+ use speaking feature
+Development Phase B: MVP
+Goal
+
+Build K0 and K1 fully.
+Build
+Module	MVP scope
+K0 Hangul	Full alphabet, batchim basics, sound drills
+K1 Survival	12 units
+SRS	Vocabulary, audio, grammar cards
+Speaking	Record and compare
+Listening	Dialogue, transcript, questions
+Reader	Simple beginner texts
+Progress	Skill dashboard
+Streaks	Gentle habit loop
+Subscription	Free + premium content
+MVP content target
+Content	Amount
+Lessons	80 to 120
+Words	800 to 1,000
+Dialogues	60
+Grammar points	40
+Audio clips	1,000+
+Speaking prompts	150
+Reading texts	30
+SRS cards	3,000+ generated variants
+MVP complete when
+
+A zero learner can:
+
+    Learn Hangul
+
+    Finish survival Korean
+
+    Build 800+ receptive words
+
+    Speak short phrases
+
+    Read beginner text
+
+    Use app daily for 3 months
+
+Development Phase C: Version 1.0
+Goal
+
+Complete K2 and make the app useful beyond novelty.
+Build
+Module	Scope
+K2 Everyday Korean	Full 3-month beginner-plus curriculum
+SRS v2	Adaptive difficulty and weak-item queues
+Speaking v2	Guided monologues
+Listening v2	Speed ramp and dictation
+Reader v2	Graded stories
+Mistake bank	Stores user errors
+AI helper	Explains grammar and rewrites sentences
+Weekly review	Personalized recap
+V1 content target
+Content	Amount cumulative
+Lessons	220
+Words	1,800
+Grammar points	80
+Dialogues	150
+Readers	80
+Listening clips	250
+Speaking prompts	500
+Assessment tasks	50
+V1 complete when
+
+User can study for 6 months without needing another beginner app.
+Development Phase D: Version 1.5
+Goal
+
+Complete K3 and bridge to intermediate Korean.
+Build
+Module	Scope
+K3 Connected Korean	Months 7 to 12 curriculum
+Retell engine	Listen/read then summarize
+Long-form speaking	2 to 10 min recordings
+Dictation studio	Sentence and paragraph dictation
+Tutor handoff	Export weak points to tutor lesson
+AI conversation	Structured roleplays
+Reader library	A2/B1 graded content
+TOPIK I simulator	Full beginner test prep
+V1.5 content target
+Content	Amount cumulative
+Words	3,000
+Grammar points	120
+Readers	150
+Dialogues	250
+Listening items	450
+Speaking prompts	1,000
+Roleplays	100
+TOPIK-style questions	500
+V1.5 complete when
+
+User can:
+
+    Finish a full year of study
+
+    Speak for 8 to 10 minutes
+
+    Read graded Korean
+
+    Use Korean connectors naturally
+
+    Attempt TOPIK I comfortably
+
+Development Phase E: Version 2.0
+Goal
+
+Complete K4 and turn the app into a real fluency bridge.
+Build
+Module	Scope
+K4 Independent Korean	Months 13 to 18 curriculum
+Native-lite library	Original/licensed semi-authentic content
+Presentation mode	Script, record, feedback
+Formality engine	Polite/casual/formal conversion
+AI conversation v2	Follow-up questions, error memory
+Tutor marketplace beta	Book tutors or submit recordings
+Writing correction	Paragraph-level feedback
+Skill forecast	CEFR/TOPIK readiness
+V2.0 content target
+Content	Amount cumulative
+Words	4,500
+Grammar points	180
+Readers	250
+Listening items	700
+Native-lite clips	150
+Speaking prompts	1,800
+Writing prompts	300
+Topic packs	20
+V2 complete when
+
+User can bridge into native content with support.
+Development Phase F: Version 3.0
+Goal
+
+Complete K5 and support the full two-year fluency goal.
+Build
+Module	Scope
+K5 Fluency Bridge	Months 19 to 24 curriculum
+Native media gym	Licensed/original podcasts, interviews, news
+TOPIK II simulator	Timed reading/listening
+Long conversation AI	20 to 30 min sessions
+Portfolio exam	Final fluency assessment
+Domain tracks	Work, travel, relationships, TOPIK, media
+Community rooms	Structured speaking clubs
+Human correction	Paid teacher feedback
+Advanced analytics	Error trends and fluency score
+V3 content target
+Content	Amount cumulative
+Words	7,000 receptive
+Active vocabulary prompts	3,000+
+Grammar points	250+
+Listening items	1,200
+Native/semi-native items	400
+Readers/articles	400
+Speaking prompts	3,000
+Writing prompts	600
+Mock tests	20
+Final portfolio tasks	30
+V3 complete when
+
+A serious user can spend 24 months inside the app and emerge with independent Korean ability.
+11. “Today” screen design
+
+The Today screen is the command center.
+Example for K2 user
+
+Today’s Korean Plan, 47 minutes
+Block	Task
+Review	28 due cards
+Listen	Dialogue: “At the pharmacy”
+Learn	Grammar: -(으)세요
+Speak	Explain your symptoms
+Read	Short text: 감기에 걸렸어요
+Reflect	“Can I ask for medicine?”
+Today screen components
+
+    Daily goal
+
+    Skill balance bar
+
+    Review queue
+
+    Main lesson
+
+    Speaking task
+
+    Listening task
+
+    Weakness reminder
+
+    Streak, but small
+
+    Weekly progress
+
+    Next tutor/AI conversation
+
+12. Skill balance system
+
+A learner should not be allowed to become a “silent grammar wizard.” Tiny wizard hat, zero conversation. Tragic.
+Skill balance display
+Skill	Score
+Vocabulary	72
+Grammar	68
+Reading	75
+Listening	48
+Speaking	31
+Pronunciation	55
+Writing	40
+
+If speaking falls too far behind, the app should say:
+
+    “Your Korean is becoming library-shaped. Today we speak.”
+
+Then it schedules speaking before new grammar.
+13. Content design standards
+Each lesson must include
+Component	Required
+Dialogue or real task	Yes
+Audio	Yes
+Vocabulary	Yes
+Grammar	Yes
+Listening check	Yes
+Speaking task	Yes
+Reading or sentence practice	Yes
+Review cards	Yes
+Culture/pragmatics note	Often
+Assessment item	Yes
+Lesson length
+Lesson type	Ideal time
+Micro lesson	5 min
+Standard lesson	15 to 20 min
+Deep lesson	30 to 45 min
+Review session	5 to 15 min
+Speaking mission	5 to 20 min
+Reader	10 to 30 min
+14. AI features
+
+AI should not hallucinate Korean education like a raccoon with a whiteboard. It needs guardrails.
+Safe AI uses
+Feature	AI role
+Grammar explanation	Explain approved curriculum points.
+Sentence correction	Correct learner output.
+Conversation practice	Roleplay within known level.
+Feedback summary	Tag recurring errors.
+Personalization	Suggest review tasks.
+Tutor handoff	Generate report for human tutor.
+Writing assistant	Give corrections and alternatives.
+Dangerous AI uses
+Risk	Control
+Wrong grammar explanations	Use curriculum database and retrieval.
+Too advanced Korean	Level-lock output.
+Over-correction	Prioritize top 3 mistakes.
+Fake native nuance	Escalate to human/native review.
+Learner dependence	Require unaided production first.
+15. Human feedback layer
+
+The app should eventually include three correction options:
+Tier	Feature
+Free	AI correction
+Premium	Native speaker community corrections
+Pro	Certified tutor correction
+Tutor integration
+
+Tutor receives:
+
+    User level
+
+    Current unit
+
+    Weak grammar
+
+    Mispronounced sounds
+
+    Recent speaking recordings
+
+    Suggested lesson plan
+
+    Vocabulary learned
+
+    Speaking goals
+
+This turns tutoring from “so… what do you want to talk about?” into actual guided progress.
+16. Community design
+
+Community can help or become a social swamp. Structure it tightly.
+Community features
+Feature	Rule
+Voice rooms	Level-matched topics only
+Corrections	Sentence-level corrections, no harassment
+Partner matching	Based on goals and schedule
+Speaking clubs	30-minute guided sessions
+Challenges	“Order coffee in Korean,” “Describe your day”
+Native Q&A	Culture/pragmatics questions
+Avoid
+
+    Random DMs by default
+
+    Dating-app vibes
+
+    Unmoderated correction dogpiles
+
+    Learner shame
+
+    Native-speaker worship weirdness
+
+    Infinite chat with no learning objective
+
+17. Assessment system
+Weekly assessment
+Skill	Test
+Vocabulary	SRS retention
+Listening	Dictation
+Speaking	60-second recording
+Reading	Timed passage
+Grammar	Contextual use
+Pronunciation	Minimal pairs
+Monthly assessment
+Task	Output
+Monologue	2 to 8 minutes depending level
+Reading	Short graded text
+Listening	Dialogue or monologue
+Writing	Diary/opinion paragraph
+Review	Weakness plan
+Quarterly assessment
+Assessment	Purpose
+TOPIK-style reading/listening	Formal benchmark
+CEFR can-do self-check	Functional progress
+Speaking interview	Real ability
+Portfolio review	Evidence of growth
+18. Monetization
+Best model
+
+Freemium + subscription + tutoring add-ons
+Tier	Includes
+Free	K0, limited K1, daily review cap
+Plus	Full curriculum, SRS, readers, listening lab
+Pro	AI speaking, writing correction, analytics
+Tutor	Human correction, live sessions, portfolio review
+Institutional	Schools, universities, corporate Korean programs
+Suggested pricing
+Plan	Price idea
+Monthly Plus	€9.99 to €14.99
+Annual Plus	€79 to €119
+Pro AI	€19.99 to €29.99/month
+Tutor credits	Marketplace commission
+Institutional	Per-seat licensing
+What should stay free
+
+    Hangul basics
+
+    First survival units
+
+    Limited SRS
+
+    Some listening
+
+    Basic progress tracking
+
+This creates trust and lets the app prove itself before asking for money.
+19. Content licensing strategy
+
+Do not scrape K-drama subtitles, TTMIK material, textbook audio, or app content. Copyright generally protects original written work, sound recordings, film, broadcasts, software, web content, and databases, and prevents copying, distribution, adaptation, and online use without permission.
+Safer content sources
+Content type	Strategy
+Dialogues	Write original scripts
+Audio	Hire native speakers
+Graded readers	Commission or license
+Culture articles	Write in-house
+Native clips	License or use original content
+Open content	Use Creative Commons correctly
+Public domain	Verify status carefully
+
+Creative Commons BY 4.0 allows sharing and adaptation, even commercially, but requires attribution and compliance with license terms.
+20. Data model
+Main objects
+Object	Fields
+User	native language, goals, weekly hours, level
+SkillProfile	reading, listening, speaking, grammar, vocab
+Lesson	level, unit, objectives, content items
+ContentItem	dialogue, audio, text, grammar, quiz
+VocabularyItem	lemma, pronunciation, meaning, examples
+GrammarPoint	form, usage, examples, level
+SRSItem	item type, due date, stability, difficulty
+Recording	audio, transcript, feedback, score
+Mistake	category, correction, linked lesson
+Assessment	score, date, skill, level
+CanDo	descriptor, completed, evidence
+TutorSession	goals, notes, recordings, corrections
+21. Recommended tech architecture
+Mobile
+Layer	Recommendation
+App	React Native or Flutter
+Audio	Native audio engine with waveform support
+Offline	Download lessons and SRS
+Notifications	Review reminders and study plan
+Recording	Local capture + cloud analysis
+Payments	App Store / Play Store subscriptions
+Backend
+Layer	Function
+API	User, content, progress
+CMS	Lessons, audio, grammar, readers
+SRS service	Scheduling and review logic
+Speech service	Transcription, pronunciation scoring
+AI service	Explanations, chat, correction
+Analytics	Retention, completion, skill growth
+Tutor service	Booking, correction, reports
+Rights registry	Track licenses for all media
+22. Minimum lovable product
+
+The smallest version that is genuinely worth building:
+MVP scope
+Feature	Include?
+Hangul course	Yes
+K1 survival Korean	Yes
+Audio	Yes
+SRS	Yes
+Record/replay	Yes
+Basic pronunciation	Yes
+Beginner listening	Yes
+Beginner reading	Yes
+Progress dashboard	Yes
+AI chat	No, later
+Tutor marketplace	No, later
+Community	No, later
+Native media	No, later
+MVP promise
+
+    “In 90 days, you will read Hangul, understand beginner Korean, speak in basic situations, and know exactly what to study next.”
+
+That is believable. “Fluent in 90 days” belongs in the bin with detox teas and LinkedIn hustle haikus.
+23. Full app completion checklist
+Learning completeness
+Area	Complete when
+Hangul	User can read and pronounce accurately
+Vocabulary	7,000 receptive items, 3,000 active prompts
+Grammar	Beginner to upper-intermediate grammar activated
+Reading	Graded to native-lite library
+Listening	Slow learner audio to native-speed content
+Speaking	Repetition to 30-minute conversations
+Writing	Sentences to essays
+Pronunciation	Contrast, rhythm, batchim, intonation
+Culture	Politeness, social norms, texting, honorifics
+Assessment	TOPIK/CEFR-style progress tracking
+Product completeness
+Area	Complete when
+Curriculum	K0 to K5 fully built
+SRS	Adaptive, multi-item, mistake-aware
+Audio	Every lesson has native audio
+Speech	Recording, scoring, correction
+Reader	Levelled library with audio
+AI	Safe, level-locked, correction-focused
+Tutor	Optional human correction
+Analytics	Skill profile and forecasts
+Monetization	Free, Plus, Pro, Tutor
+Licensing	All assets original/licensed/verified
+24. Best build order
+
+Build in this order:
+
+    Curriculum map
+
+    Content schema
+
+    Hangul prototype
+
+    Audio pipeline
+
+    SRS engine
+
+    K1 lessons
+
+    Recording system
+
+    Progress dashboard
+
+    Reader system
+
+    Listening lab
+
+    Speaking lab
+
+    Mistake bank
+
+    AI correction
+
+    K2/K3 expansion
+
+    Tutor handoff
+
+    Native-lite library
+
+    K4/K5
+
+    TOPIK/CEFR assessment
+
+    Community
+
+    Marketplace
+
+25. The final product vision
+
+The finished app should feel like this:
+
+    Every day, the learner opens the app and knows exactly what to do.
+    They review what they are about to forget.
+    They hear Korean.
+    They read Korean.
+    They speak Korean.
+    They get corrected.
+    Their mistakes return as future practice.
+    Their study plan adapts.
+    Their Korean becomes less decorative and more alive.
+
+That is the app.
+
+Not a streak machine.
+Not a phrasebook with confetti.
+A proper Korean fluency engine with wheels, teeth, lungs, and a tiny polite bow. 🫰
+
+

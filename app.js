@@ -1,0 +1,7008 @@
+const INITIALS = [
+  "ㄱ",
+  "ㄲ",
+  "ㄴ",
+  "ㄷ",
+  "ㄸ",
+  "ㄹ",
+  "ㅁ",
+  "ㅂ",
+  "ㅃ",
+  "ㅅ",
+  "ㅆ",
+  "ㅇ",
+  "ㅈ",
+  "ㅉ",
+  "ㅊ",
+  "ㅋ",
+  "ㅌ",
+  "ㅍ",
+  "ㅎ",
+];
+
+const MEDIALS = [
+  "ㅏ",
+  "ㅐ",
+  "ㅑ",
+  "ㅒ",
+  "ㅓ",
+  "ㅔ",
+  "ㅕ",
+  "ㅖ",
+  "ㅗ",
+  "ㅘ",
+  "ㅙ",
+  "ㅚ",
+  "ㅛ",
+  "ㅜ",
+  "ㅝ",
+  "ㅞ",
+  "ㅟ",
+  "ㅠ",
+  "ㅡ",
+  "ㅢ",
+  "ㅣ",
+];
+
+const FINALS = [
+  "",
+  "ㄱ",
+  "ㄲ",
+  "ㄳ",
+  "ㄴ",
+  "ㄵ",
+  "ㄶ",
+  "ㄷ",
+  "ㄹ",
+  "ㄺ",
+  "ㄻ",
+  "ㄼ",
+  "ㄽ",
+  "ㄾ",
+  "ㄿ",
+  "ㅀ",
+  "ㅁ",
+  "ㅂ",
+  "ㅄ",
+  "ㅅ",
+  "ㅆ",
+  "ㅇ",
+  "ㅈ",
+  "ㅊ",
+  "ㅋ",
+  "ㅌ",
+  "ㅍ",
+  "ㅎ",
+];
+
+const SIMPLE_INITIALS = ["ㄱ", "ㄴ", "ㄷ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅎ"];
+const SIMPLE_MEDIALS = ["ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅡ", "ㅣ"];
+const SIMPLE_FINALS = ["", "ㄱ", "ㄴ", "ㅁ", "ㅇ"];
+const LAB_PRESETS = [
+  "가",
+  "나",
+  "너",
+  "고",
+  "구",
+  "그",
+  "마",
+  "바",
+  "사",
+  "아",
+  "야",
+  "여",
+  "요",
+  "유",
+  "자",
+  "차",
+  "카",
+  "타",
+  "파",
+  "하",
+  "한",
+  "글",
+  "문",
+  "밥",
+  "산",
+  "밤",
+  "공",
+  "집",
+];
+
+const TENSE_PAIRS = {
+  ㄱ: "ㄲ",
+  ㄷ: "ㄸ",
+  ㅂ: "ㅃ",
+  ㅅ: "ㅆ",
+  ㅈ: "ㅉ",
+};
+
+const TENSE_REVERSE = Object.fromEntries(
+  Object.entries(TENSE_PAIRS).map(([plain, tense]) => [tense, plain]),
+);
+
+const VOWEL_FAMILIES = {
+  vertical: new Set(["ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅐ", "ㅒ", "ㅔ", "ㅖ", "ㅣ"]),
+  horizontal: new Set(["ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ"]),
+  compound: new Set(["ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ", "ㅟ", "ㅢ"]),
+};
+
+const SOUND_FAMILIES = ["plain", "aspirated", "tense", "support"];
+const ONSET_TYPES = ["silent onset", "plain onset", "aspirated onset", "tense onset"];
+
+const BATCHIM_GROUPS = [
+  { group: "k", letters: ["ㄱ", "ㄲ", "ㄳ", "ㅋ", "ㄺ"] },
+  { group: "n", letters: ["ㄴ", "ㄵ", "ㄶ"] },
+  { group: "t", letters: ["ㄷ", "ㅅ", "ㅆ", "ㅈ", "ㅊ", "ㅌ", "ㅎ"] },
+  { group: "l", letters: ["ㄹ", "ㄼ", "ㄽ", "ㄾ", "ㅀ"] },
+  { group: "m", letters: ["ㅁ", "ㄻ"] },
+  { group: "p", letters: ["ㅂ", "ㅍ", "ㅄ", "ㄿ"] },
+  { group: "ng", letters: ["ㅇ"] },
+];
+
+const consonantAtlas = [
+  { char: "ㄱ", tag: "plain", name: "g / k", note: "Soft at the start, stronger at the end.", example: "가" },
+  { char: "ㄲ", tag: "tense", name: "kk", note: "Tense twin of ㄱ.", example: "까" },
+  { char: "ㄴ", tag: "plain", name: "n", note: "A clean nasal sound.", example: "나" },
+  { char: "ㄷ", tag: "plain", name: "d / t", note: "Pairs with a sharper tense version.", example: "다" },
+  { char: "ㄸ", tag: "tense", name: "tt", note: "Tense twin of ㄷ.", example: "따" },
+  { char: "ㄹ", tag: "plain", name: "r / l", note: "Flaps between r and l depending on position.", example: "라" },
+  { char: "ㅁ", tag: "plain", name: "m", note: "A steady closed-mouth sound.", example: "마" },
+  { char: "ㅂ", tag: "plain", name: "b / p", note: "Soft in front, firmer at the end.", example: "바" },
+  { char: "ㅃ", tag: "tense", name: "pp", note: "Tense twin of ㅂ.", example: "빠" },
+  { char: "ㅅ", tag: "plain", name: "s", note: "Starts with s; closes in the t group as batchim.", example: "사" },
+  { char: "ㅆ", tag: "tense", name: "ss", note: "Tense twin of ㅅ.", example: "싸" },
+  { char: "ㅇ", tag: "support", name: "silent / ng", note: "Silent at the start, nasal at the end.", example: "아" },
+  { char: "ㅈ", tag: "plain", name: "j", note: "Soft affricate with a neat tongue release.", example: "자" },
+  { char: "ㅉ", tag: "tense", name: "jj", note: "Tense twin of ㅈ.", example: "짜" },
+  { char: "ㅊ", tag: "aspirated", name: "ch", note: "Breathier than ㅈ.", example: "차" },
+  { char: "ㅋ", tag: "aspirated", name: "k", note: "Breathier than ㄱ.", example: "카" },
+  { char: "ㅌ", tag: "aspirated", name: "t", note: "Breathier than ㄷ.", example: "타" },
+  { char: "ㅍ", tag: "aspirated", name: "p", note: "Breathier than ㅂ.", example: "파" },
+  { char: "ㅎ", tag: "aspirated", name: "h", note: "A soft airy stop.", example: "하" },
+];
+
+const CONSONANT_NAMES = {
+  "ㄱ": "기역",
+  "ㄲ": "쌍기역",
+  "ㄴ": "니은",
+  "ㄷ": "디귿",
+  "ㄸ": "쌍디귿",
+  "ㄹ": "리을",
+  "ㅁ": "미음",
+  "ㅂ": "비읍",
+  "ㅃ": "쌍비읍",
+  "ㅅ": "시옷",
+  "ㅆ": "쌍시옷",
+  "ㅇ": "이응",
+  "ㅈ": "지읒",
+  "ㅉ": "쌍지읒",
+  "ㅊ": "치읓",
+  "ㅋ": "키읔",
+  "ㅌ": "티읕",
+  "ㅍ": "피읖",
+  "ㅎ": "히읗",
+};
+
+const vowelAtlas = [
+  { char: "ㅏ", family: "vertical", name: "a", note: "Open and bright.", example: "가" },
+  { char: "ㅐ", family: "vertical", name: "ae", note: "Close to the mouth shape for ㅏ.", example: "개" },
+  { char: "ㅑ", family: "vertical", name: "ya", note: "The y-version of ㅏ.", example: "갸" },
+  { char: "ㅒ", family: "vertical", name: "yae", note: "The y-version of ㅐ.", example: "걔" },
+  { char: "ㅓ", family: "vertical", name: "eo", note: "Open in a lower, rounder place.", example: "거" },
+  { char: "ㅔ", family: "vertical", name: "e", note: "A tidy, front vowel.", example: "게" },
+  { char: "ㅕ", family: "vertical", name: "yeo", note: "The y-version of ㅓ.", example: "겨" },
+  { char: "ㅖ", family: "vertical", name: "ye", note: "The y-version of ㅔ.", example: "계" },
+  { char: "ㅗ", family: "horizontal", name: "o", note: "A rounded top vowel.", example: "고" },
+  { char: "ㅛ", family: "horizontal", name: "yo", note: "The y-version of ㅗ.", example: "교" },
+  { char: "ㅜ", family: "horizontal", name: "u", note: "A rounded bottom vowel.", example: "구" },
+  { char: "ㅠ", family: "horizontal", name: "yu", note: "The y-version of ㅜ.", example: "규" },
+  { char: "ㅡ", family: "horizontal", name: "eu", note: "A flat, compressed vowel.", example: "그" },
+  { char: "ㅣ", family: "vertical", name: "i", note: "A tall, simple vowel.", example: "기" },
+  { char: "ㅘ", family: "compound", name: "wa", note: "ㅗ + ㅏ in one block.", example: "과" },
+  { char: "ㅙ", family: "compound", name: "wae", note: "ㅗ + ㅐ in one block.", example: "괘" },
+  { char: "ㅚ", family: "compound", name: "oe", note: "A rounded front compound vowel.", example: "괴" },
+  { char: "ㅝ", family: "compound", name: "wo", note: "ㅜ + ㅓ in one block.", example: "궈" },
+  { char: "ㅞ", family: "compound", name: "we", note: "ㅜ + ㅔ in one block.", example: "궤" },
+  { char: "ㅟ", family: "compound", name: "wi", note: "ㅜ + ㅣ in one block.", example: "귀" },
+  { char: "ㅢ", family: "compound", name: "ui", note: "A special compound vowel.", example: "긔" },
+];
+
+const phaseOneLessons = [
+  {
+    id: "anchor-vowels",
+    title: "Six anchor vowels",
+    shortTitle: "Anchor vowels",
+    duration: "5 min",
+    goal: "Own ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ before adding anything fancy.",
+    concepts: [
+      {
+        kicker: "The engine",
+        title: "Vowels carry every Korean syllable",
+        visual: "아 · 어 · 오 · 우",
+        body: "Every Hangul block contains one vowel sound. When a syllable begins with a vowel, silent ㅇ holds the first seat so the vowel can form a complete block.",
+        cue: "Read 아 as the vowel ㅏ. The ㅇ is only a frame at the start.",
+        voiceText: "아, 어, 오, 우",
+      },
+      {
+        kicker: "Left and right",
+        title: "ㅏ opens right; ㅓ opens left",
+        visual: "ㅏ  ↔  ㅓ",
+        body: "Use the short stroke as your compass. Right gives ㅏ, the open 'a' in 아. Left gives ㅓ, the Korean vowel in 어.",
+        cue: "Shape first: right = ㅏ, left = ㅓ.",
+        voiceText: "아, 어",
+      },
+      {
+        kicker: "Up and down",
+        title: "ㅗ points up; ㅜ points down",
+        visual: "ㅗ  ↕  ㅜ",
+        body: "These vowels lie flat, so they sit under an initial consonant. The short stroke points up for ㅗ and down for ㅜ.",
+        cue: "고 stacks vertically. 구 does too.",
+        voiceText: "오, 우, 고, 구",
+      },
+      {
+        kicker: "The clean lines",
+        title: "ㅡ is flat; ㅣ stands tall",
+        visual: "ㅡ  +  ㅣ",
+        body: "ㅡ is a compressed vowel made with unrounded lips. ㅣ is the clear 'ee' sound. Their simple shapes become pieces of several compound vowels later.",
+        cue: "그 uses ㅡ. 기 uses ㅣ.",
+        voiceText: "으, 이, 그, 기",
+      },
+    ],
+    questions: [
+      {
+        prompt: "Which vowel has its short stroke pointing right?",
+        detail: "Use direction, not romanization.",
+        visual: "right →",
+        options: ["ㅏ", "ㅓ", "ㅗ", "ㅜ"],
+        answer: "ㅏ",
+        explanation: "ㅏ points right and makes the vowel in 아.",
+        voiceText: "아",
+      },
+      {
+        prompt: "Which block contains ㅗ?",
+        detail: "Remember: the short stroke points up.",
+        visual: "ㅗ",
+        options: ["오", "우", "어", "이"],
+        answer: "오",
+        explanation: "Silent ㅇ plus ㅗ builds 오.",
+        voiceText: "오",
+      },
+      {
+        prompt: "Which pair uses horizontal vowel shapes?",
+        detail: "Horizontal vowels sit below the first consonant.",
+        visual: "flat shapes",
+        options: ["ㅗ · ㅜ", "ㅏ · ㅓ", "ㅏ · ㅣ", "ㅓ · ㅣ"],
+        answer: "ㅗ · ㅜ",
+        explanation: "ㅗ and ㅜ lie horizontally, so a consonant stacks above them.",
+        voiceText: "오, 우",
+      },
+      {
+        prompt: "What sound does initial ㅇ add in 아?",
+        detail: "Initial position changes its job.",
+        visual: "ㅇ + ㅏ = 아",
+        options: ["No sound", "n", "ng", "h"],
+        answer: "No sound",
+        explanation: "At the start, ㅇ is silent and simply holds the vowel.",
+        voiceText: "아",
+      },
+    ],
+  },
+  {
+    id: "base-consonants",
+    title: "Fourteen base consonants",
+    shortTitle: "Base consonants",
+    duration: "7 min",
+    goal: "Recognize the 14 base consonants by shape and their most useful starting sound.",
+    concepts: [
+      {
+        kicker: "Shape memory",
+        title: "Start with five unmistakable shapes",
+        visual: "ㄱ ㄴ ㅁ ㅅ ㅇ",
+        body: "Meet ㄱ g/k, ㄴ n, ㅁ m, ㅅ s, and ㅇ silent/ng. Korean letter design reflects how speech is formed, which makes these shapes easier to remember as a family.",
+        cue: "가 · 나 · 마 · 사 · 아",
+        voiceText: "가, 나, 마, 사, 아",
+      },
+      {
+        kicker: "Build the middle",
+        title: "Add ㄷ, ㄹ, ㅂ, and ㅈ",
+        visual: "ㄷ ㄹ ㅂ ㅈ",
+        body: "ㄷ begins near d/t, ㄹ is a light r/l flap, ㅂ begins near b/p, and ㅈ begins near j. Treat the English letters as temporary signposts, not exact copies.",
+        cue: "다 · 라 · 바 · 자",
+        voiceText: "다, 라, 바, 자",
+      },
+      {
+        kicker: "Breath added",
+        title: "See the extra strokes in ㅋ, ㅌ, ㅍ, ㅊ",
+        visual: "ㄱ→ㅋ  ㄷ→ㅌ  ㅂ→ㅍ  ㅈ→ㅊ",
+        body: "An added stroke often signals a stronger puff of air. Pairing each aspirated shape with its base shape makes both easier to recall.",
+        cue: "카 · 타 · 파 · 차",
+        voiceText: "카, 타, 파, 차",
+      },
+      {
+        kicker: "The breath line",
+        title: "ㅎ brings the h sound",
+        visual: "ㅎ + ㅏ = 하",
+        body: "ㅎ completes the 14 base consonants. Keep your attention on the Hangul shape and use 하 as the sound anchor.",
+        cue: "하 is one square and one beat.",
+        voiceText: "하",
+      },
+    ],
+    questions: [
+      {
+        prompt: "Which consonant starts 나?",
+        detail: "Split the block into its first shape and vowel.",
+        visual: "나",
+        options: ["ㄴ", "ㄱ", "ㅁ", "ㄷ"],
+        answer: "ㄴ",
+        explanation: "나 breaks into ㄴ + ㅏ.",
+        voiceText: "나",
+      },
+      {
+        prompt: "Which consonant is the m sound in 마?",
+        detail: "Look for the square mouth shape.",
+        visual: "마",
+        options: ["ㅁ", "ㅂ", "ㅇ", "ㄹ"],
+        answer: "ㅁ",
+        explanation: "ㅁ begins 마 with the m sound.",
+        voiceText: "마",
+      },
+      {
+        prompt: "Which pair is a base shape and its breathier partner?",
+        detail: "The aspirated partner has an added stroke.",
+        visual: "base → more air",
+        options: ["ㄱ · ㅋ", "ㄴ · ㄹ", "ㅁ · ㅇ", "ㅅ · ㅎ"],
+        answer: "ㄱ · ㅋ",
+        explanation: "ㅋ is the aspirated partner of ㄱ.",
+        voiceText: "가, 카",
+      },
+      {
+        prompt: "Which block begins with ㅎ?",
+        detail: "Find ㅎ in the first seat.",
+        visual: "ㅎ",
+        options: ["하", "자", "차", "아"],
+        answer: "하",
+        explanation: "ㅎ + ㅏ builds 하.",
+        voiceText: "하",
+      },
+    ],
+  },
+  {
+    id: "block-geometry",
+    title: "Syllable block geometry",
+    shortTitle: "Block geometry",
+    duration: "6 min",
+    goal: "Build and split Hangul blocks without reading separate letters in a row.",
+    concepts: [
+      {
+        kicker: "Vertical vowels",
+        title: "Tall vowels take the right-hand seat",
+        visual: "ㄴ + ㅏ = 나",
+        body: "With a vertical vowel such as ㅏ, ㅓ, or ㅣ, the initial consonant sits left and the vowel sits right. Read the finished square as one beat.",
+        cue: "left + right → one block",
+        voiceText: "나, 너, 니",
+      },
+      {
+        kicker: "Horizontal vowels",
+        title: "Flat vowels take the lower seat",
+        visual: "ㄱ + ㅗ = 고",
+        body: "With ㅗ, ㅜ, or ㅡ, the initial consonant moves above the vowel. The ingredients are the same; only the block geometry changes.",
+        cue: "top + bottom → one block",
+        voiceText: "고, 구, 그",
+      },
+      {
+        kicker: "Empty onset",
+        title: "A vowel still needs a complete frame",
+        visual: "ㅇ + ㅣ = 이",
+        body: "Hangul blocks cannot visually begin with a bare vowel, so silent ㅇ fills the first seat. It adds no sound in 이, 아, or 우.",
+        cue: "ㅇ is visible but silent at the start.",
+        voiceText: "이, 아, 우",
+      },
+      {
+        kicker: "The third seat",
+        title: "A final consonant sits on the floor",
+        visual: "ㅎ + ㅏ + ㄴ = 한",
+        body: "Some blocks close with a consonant called batchim. Build the initial and vowel first, then place the final consonant underneath the whole pair.",
+        cue: "한 is still one square and one syllable.",
+        voiceText: "한",
+      },
+    ],
+    questions: [
+      {
+        prompt: "What block does ㄴ + ㅏ make?",
+        detail: "ㅏ is vertical, so it sits to the right.",
+        visual: "ㄴ + ㅏ",
+        options: ["나", "너", "노", "누"],
+        answer: "나",
+        explanation: "ㄴ sits left of vertical ㅏ to form 나.",
+        voiceText: "나",
+      },
+      {
+        prompt: "What block does ㄱ + ㅗ make?",
+        detail: "ㅗ is horizontal, so it sits below.",
+        visual: "ㄱ + ㅗ",
+        options: ["고", "구", "거", "가"],
+        answer: "고",
+        explanation: "ㄱ stacks over ㅗ to form 고.",
+        voiceText: "고",
+      },
+      {
+        prompt: "Which vowel is inside 무?",
+        detail: "Split the block into ㅁ plus its lower vowel.",
+        visual: "무",
+        options: ["ㅜ", "ㅗ", "ㅡ", "ㅣ"],
+        answer: "ㅜ",
+        explanation: "무 breaks into ㅁ + ㅜ.",
+        voiceText: "무",
+      },
+      {
+        prompt: "Which onset begins 아?",
+        detail: "The syllable begins with a vowel sound.",
+        visual: "아",
+        options: ["ㅇ", "ㅎ", "ㅁ", "No letter"],
+        answer: "ㅇ",
+        explanation: "Silent ㅇ fills the onset seat before ㅏ.",
+        voiceText: "아",
+      },
+    ],
+  },
+  {
+    id: "complete-vowels",
+    title: "Complete the vowel set",
+    shortTitle: "All vowels",
+    duration: "8 min",
+    goal: "Expand six anchors into all 21 modern vowels by spotting reusable pieces.",
+    concepts: [
+      {
+        kicker: "Add a y",
+        title: "A second short stroke creates y-vowels",
+        visual: "ㅏ→ㅑ  ㅓ→ㅕ  ㅗ→ㅛ  ㅜ→ㅠ",
+        body: "Double the short stroke and the sound gains a y-glide: ya, yeo, yo, and yu. Learn the transformation instead of four unrelated symbols.",
+        cue: "아→야 · 어→여 · 오→요 · 우→유",
+        voiceText: "아, 야, 어, 여, 오, 요, 우, 유",
+      },
+      {
+        kicker: "The e zone",
+        title: "Meet ㅐ, ㅔ, ㅒ, and ㅖ",
+        visual: "ㅐ ㅔ ㅒ ㅖ",
+        body: "ㅐ and ㅔ are spelled differently but sound very similar for many modern speakers. Their doubled-stroke partners ㅒ and ㅖ add the y-glide.",
+        cue: "Keep the spelling distinction even when the sounds feel close.",
+        voiceText: "애, 에, 얘, 예",
+      },
+      {
+        kicker: "Compound vowels",
+        title: "Combine familiar shapes",
+        visual: "ㅘ ㅙ ㅚ · ㅝ ㅞ ㅟ",
+        body: "ㅗ combines with ㅏ, ㅐ, or ㅣ to make ㅘ, ㅙ, ㅚ. ㅜ combines with ㅓ, ㅔ, or ㅣ to make ㅝ, ㅞ, ㅟ.",
+        cue: "ㅗ + ㅏ = ㅘ · ㅜ + ㅓ = ㅝ",
+        voiceText: "와, 왜, 외, 워, 웨, 위",
+      },
+      {
+        kicker: "The final compound",
+        title: "ㅡ + ㅣ becomes ㅢ",
+        visual: "ㅡ + ㅣ = ㅢ",
+        body: "ㅢ completes the 21-vowel set. Its pronunciation can shift by context later; for now, recognize its construction and read the careful sound in 의.",
+        cue: "You now know every modern vowel shape.",
+        voiceText: "의",
+      },
+    ],
+    questions: [
+      {
+        prompt: "Which vowel is the y-version of ㅏ?",
+        detail: "Look for the doubled short stroke.",
+        visual: "ㅏ → ?",
+        options: ["ㅑ", "ㅕ", "ㅛ", "ㅠ"],
+        answer: "ㅑ",
+        explanation: "Adding a second short stroke turns ㅏ into ㅑ.",
+        voiceText: "아, 야",
+      },
+      {
+        prompt: "Which compound is built from ㅗ + ㅏ?",
+        detail: "Combine the two familiar shapes.",
+        visual: "ㅗ + ㅏ",
+        options: ["ㅘ", "ㅝ", "ㅚ", "ㅟ"],
+        answer: "ㅘ",
+        explanation: "ㅗ + ㅏ combines into ㅘ, as in 와.",
+        voiceText: "와",
+      },
+      {
+        prompt: "Which vowel is inside 위?",
+        detail: "This compound starts with ㅜ and ends with ㅣ.",
+        visual: "위",
+        options: ["ㅟ", "ㅚ", "ㅢ", "ㅞ"],
+        answer: "ㅟ",
+        explanation: "ㅇ + ㅟ builds 위.",
+        voiceText: "위",
+      },
+      {
+        prompt: "Which pair is often very close in modern pronunciation?",
+        detail: "The spelling distinction still matters.",
+        visual: "similar sound, different spelling",
+        options: ["ㅐ · ㅔ", "ㅏ · ㅓ", "ㅗ · ㅜ", "ㅡ · ㅣ"],
+        answer: "ㅐ · ㅔ",
+        explanation: "Many speakers pronounce ㅐ and ㅔ similarly, though they remain different letters.",
+        voiceText: "애, 에",
+      },
+    ],
+  },
+  {
+    id: "strong-consonants",
+    title: "Plain, aspirated, and tense",
+    shortTitle: "Strong consonants",
+    duration: "7 min",
+    goal: "Recognize all 19 initial consonant shapes and their five contrast families.",
+    concepts: [
+      {
+        kicker: "The five rows",
+        title: "Learn consonants as contrast families",
+        visual: "ㄱ ㅋ ㄲ · ㄷ ㅌ ㄸ · ㅂ ㅍ ㅃ",
+        body: "Plain consonants are the base. Aspirated partners add a puff of air. Tense partners double the shape and begin with a tight, compact release.",
+        cue: "Base · breath · tension",
+        voiceText: "가, 카, 까, 다, 타, 따, 바, 파, 빠",
+      },
+      {
+        kicker: "The j row",
+        title: "ㅈ, ㅊ, and ㅉ follow the same pattern",
+        visual: "ㅈ → ㅊ → ㅉ",
+        body: "ㅈ is plain, ㅊ is aspirated, and ㅉ is tense. Seeing the three shapes together is more useful than memorizing them separately.",
+        cue: "자 · 차 · 짜",
+        voiceText: "자, 차, 짜",
+      },
+      {
+        kicker: "The s pair",
+        title: "ㅅ has a tense twin but no matching aspirated letter",
+        visual: "ㅅ ↔ ㅆ",
+        body: "ㅅ is the plain s shape and ㅆ is its tense double. Korean consonant families are highly regular, but not every row has all three members.",
+        cue: "사 · 싸",
+        voiceText: "사, 싸",
+      },
+      {
+        kicker: "Recognition now, finesse later",
+        title: "Your Phase 1 job is to see the difference",
+        visual: "가 ≠ 카 ≠ 까",
+        body: "Do not force these sounds into exact English boxes. Recognize the spelling contrast now; Phase 2 will train the breath, tension, and listening distinction.",
+        cue: "Different Hangul means a meaningful sound contrast.",
+        voiceText: "가, 카, 까",
+      },
+    ],
+    questions: [
+      {
+        prompt: "Which letter is the aspirated partner of ㄱ?",
+        detail: "Look for the added stroke, not a doubled shape.",
+        visual: "ㄱ → more air",
+        options: ["ㅋ", "ㄲ", "ㄷ", "ㅊ"],
+        answer: "ㅋ",
+        explanation: "ㅋ is the aspirated partner; ㄲ is tense.",
+        voiceText: "가, 카",
+      },
+      {
+        prompt: "Which letter is the tense partner of ㅂ?",
+        detail: "Tense consonants double the base shape.",
+        visual: "ㅂ → tension",
+        options: ["ㅃ", "ㅍ", "ㅆ", "ㄸ"],
+        answer: "ㅃ",
+        explanation: "Doubling ㅂ creates tense ㅃ.",
+        voiceText: "바, 빠",
+      },
+      {
+        prompt: "Which row is ordered plain, aspirated, tense?",
+        detail: "Read the shape relationship.",
+        visual: "plain → breath → tension",
+        options: ["ㅈ · ㅊ · ㅉ", "ㅈ · ㅉ · ㅊ", "ㅊ · ㅈ · ㅉ", "ㅉ · ㅊ · ㅈ"],
+        answer: "ㅈ · ㅊ · ㅉ",
+        explanation: "ㅈ is plain, ㅊ is aspirated, and ㅉ is tense.",
+        voiceText: "자, 차, 짜",
+      },
+      {
+        prompt: "Which block begins with a tense consonant?",
+        detail: "Look for a doubled initial shape.",
+        visual: "tense onset",
+        options: ["까", "카", "가", "하"],
+        answer: "까",
+        explanation: "까 begins with doubled, tense ㄲ.",
+        voiceText: "까",
+      },
+    ],
+  },
+  {
+    id: "batchim-basics",
+    title: "Batchim: the bottom seat",
+    shortTitle: "Batchim",
+    duration: "8 min",
+    goal: "Spot a final consonant and close a syllable with one of seven basic end sounds.",
+    concepts: [
+      {
+        kicker: "Block anatomy",
+        title: "Batchim sits under the vowel pair",
+        visual: "가 → 각 · 간 · 감",
+        body: "A syllable without batchim stays open. Add ㄱ, ㄴ, or ㅁ to the floor and the same 가 frame closes as 각, 간, or 감.",
+        cue: "Read the main pair, then close the final sound.",
+        voiceText: "가, 각, 간, 감",
+      },
+      {
+        kicker: "Seven destinations",
+        title: "Many spellings collapse to seven final sounds",
+        visual: "k · n · t · l · m · p · ng",
+        body: "At the end of an isolated block, Korean funnels final consonants toward seven sound groups. This is why batchim is easier to hear than its 27 written possibilities suggest.",
+        cue: "ㄱ ㄴ ㄷ ㄹ ㅁ ㅂ ㅇ are the seven anchor endings.",
+        voiceText: "악, 안, 앋, 알, 암, 압, 앙",
+      },
+      {
+        kicker: "The ㅇ switch",
+        title: "ㅇ changes jobs at the bottom",
+        visual: "아 ↔ 앙",
+        body: "Initial ㅇ is silent, but final ㅇ is the 'ng' sound. Position is part of the letter's meaning inside a block.",
+        cue: "아 starts silently. 앙 ends with ng.",
+        voiceText: "아, 앙",
+      },
+      {
+        kicker: "Complex finals",
+        title: "Some batchim spell two consonants",
+        visual: "ㄳ ㄵ ㄶ ㄺ ㄻ ㄼ ㄽ ㄾ ㄿ ㅀ ㅄ",
+        body: "These double finals are real parts of the alphabet, but their sound depends on what follows. Recognize that they occupy one bottom seat; Phase 2 will teach their behavior.",
+        cue: "For now: identify the coda. Later: master the sound flow.",
+        voiceText: "값, 닭",
+      },
+    ],
+    questions: [
+      {
+        prompt: "Which consonant is the batchim in 간?",
+        detail: "Look at the shape on the floor.",
+        visual: "간",
+        options: ["ㄴ", "ㄱ", "ㅏ", "ㅇ"],
+        answer: "ㄴ",
+        explanation: "간 breaks into ㄱ + ㅏ + ㄴ.",
+        voiceText: "간",
+      },
+      {
+        prompt: "What sound does final ㅇ make?",
+        detail: "Its job is different from initial ㅇ.",
+        visual: "공",
+        options: ["ng", "silent", "n", "m"],
+        answer: "ng",
+        explanation: "At the bottom, ㅇ closes the syllable with ng.",
+        voiceText: "공",
+      },
+      {
+        prompt: "Which block has no batchim?",
+        detail: "Choose the open syllable with no bottom consonant.",
+        visual: "open vs closed",
+        options: ["가", "각", "간", "감"],
+        answer: "가",
+        explanation: "가 contains only onset ㄱ and vowel ㅏ.",
+        voiceText: "가",
+      },
+      {
+        prompt: "What block does ㅎ + ㅏ + ㄴ make?",
+        detail: "Place ㄴ under the initial-vowel pair.",
+        visual: "ㅎ + ㅏ + ㄴ",
+        options: ["한", "하", "항", "함"],
+        answer: "한",
+        explanation: "ㅎ + ㅏ forms 하, then final ㄴ closes it as 한.",
+        voiceText: "한",
+      },
+    ],
+  },
+  {
+    id: "reading-graduation",
+    title: "Reading graduation",
+    shortTitle: "Read real words",
+    duration: "8 min",
+    goal: "Prove that you can decode short Korean words directly from their blocks.",
+    concepts: [
+      {
+        kicker: "Block by block",
+        title: "Read one square, then move forward",
+        visual: "나 · 무 → 나무",
+        body: "Do not scan Korean as a row of loose jamo. Decode the first block, say its beat, then move to the next. 나 plus 무 becomes 나무.",
+        cue: "나무 has two blocks and two spoken beats.",
+        voiceText: "나무",
+      },
+      {
+        kicker: "Trust the script",
+        title: "Let romanization leave the stage",
+        visual: "바 · 다 → 바다",
+        body: "Sound labels helped introduce the alphabet, but fluent decoding comes from seeing ㅂ + ㅏ as 바 immediately. Keep your eyes on Hangul.",
+        cue: "바다 means sea. The meaning is a bonus; decoding is the skill.",
+        voiceText: "바다",
+      },
+      {
+        kicker: "Open and closed",
+        title: "Mix blocks with and without batchim",
+        visual: "한 · 글 → 한글",
+        body: "한 closes with ㄴ. 글 closes with ㄹ. Read each square as one syllable, then connect them without losing the final consonants.",
+        cue: "한글 is the Korean alphabet you just learned.",
+        voiceText: "한글",
+      },
+      {
+        kicker: "Graduation set",
+        title: "These words are now readable",
+        visual: "아기 · 우유 · 모자 · 나무 · 바다 · 한글",
+        body: "You do not need to know every meaning to decode these shapes. Read slowly, use the audio only after your own attempt, and let accuracy become speed.",
+        cue: "First decode. Then hear. Then repeat.",
+        voiceText: "아기, 우유, 모자, 나무, 바다, 한글",
+      },
+    ],
+    questions: [
+      {
+        prompt: "How many syllable blocks are in 나무?",
+        detail: "Count squares, not individual jamo.",
+        visual: "나무",
+        options: ["2", "1", "3", "4"],
+        answer: "2",
+        explanation: "나무 splits into 나 · 무: two blocks and two beats.",
+        voiceText: "나무",
+      },
+      {
+        prompt: "Which jamo sequence builds 바다?",
+        detail: "Decode each block separately.",
+        visual: "바다",
+        options: ["ㅂ+ㅏ / ㄷ+ㅏ", "ㅂ+ㅓ / ㄷ+ㅓ", "ㅍ+ㅏ / ㅌ+ㅏ", "ㅁ+ㅏ / ㄴ+ㅏ"],
+        answer: "ㅂ+ㅏ / ㄷ+ㅏ",
+        explanation: "바 is ㅂ + ㅏ, and 다 is ㄷ + ㅏ.",
+        voiceText: "바다",
+      },
+      {
+        prompt: "Which word has final ㄴ in its first block?",
+        detail: "Look for a consonant on the floor of block one.",
+        visual: "batchim scan",
+        options: ["한글", "나무", "우유", "모자"],
+        answer: "한글",
+        explanation: "한 breaks into ㅎ + ㅏ + final ㄴ.",
+        voiceText: "한글",
+      },
+      {
+        prompt: "Which word is built from ㅇ+ㅜ / ㅇ+ㅠ?",
+        detail: "Both blocks begin with silent ㅇ.",
+        visual: "ㅇ+ㅜ / ㅇ+ㅠ",
+        options: ["우유", "오이", "아이", "여우"],
+        answer: "우유",
+        explanation: "ㅇ + ㅜ is 우, and ㅇ + ㅠ is 유.",
+        voiceText: "우유",
+      },
+      {
+        prompt: "How does 한글 split into jamo?",
+        detail: "Keep each batchim in its own block.",
+        visual: "한글",
+        options: ["ㅎ+ㅏ+ㄴ / ㄱ+ㅡ+ㄹ", "ㅎ+ㅏ / ㄴ+ㄱ+ㅡ+ㄹ", "ㅎ+ㅓ+ㄴ / ㄱ+ㅜ+ㄹ", "ㅇ+ㅏ+ㄴ / ㅋ+ㅡ+ㄹ"],
+        answer: "ㅎ+ㅏ+ㄴ / ㄱ+ㅡ+ㄹ",
+        explanation: "한 is ㅎ + ㅏ + ㄴ, and 글 is ㄱ + ㅡ + ㄹ.",
+        voiceText: "한글",
+      },
+    ],
+  },
+];
+
+const curriculum = [
+  {
+    title: "Hangul boot camp",
+    summary: "Get from symbols to readable syllables without leaning on romanization.",
+    goal: "Complete seven gated stages and graduate by decoding short Korean words directly from Hangul.",
+    lessons: [
+      {
+        title: "Six anchor vowels",
+        focus: "Use direction and shape to own ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ.",
+        practice: ["Compare opposite shapes.", "Hear each vowel in a full block.", "Use silent ㅇ as the vowel holder."],
+        payoff: "The learner has a small, reliable vowel system to build on.",
+      },
+      {
+        title: "Fourteen base consonants",
+        focus: "Recognize base shapes through sound anchors and related aspirated pairs.",
+        practice: ["Read consonants inside 가-style blocks.", "Pair base and breathier shapes.", "Recall the onset from a block."],
+        payoff: "Every base consonant shape becomes recognizable.",
+      },
+      {
+        title: "Syllable block geometry",
+        focus: "Place vertical vowels right, horizontal vowels below, and batchim on the floor.",
+        practice: ["Build a vertical block.", "Build a horizontal block.", "Split a complete square into seats."],
+        payoff: "The learner reads squares as syllables instead of loose letters.",
+      },
+      {
+        title: "Complete the vowel set",
+        focus: "Generate y-vowels and compounds from familiar anchor shapes.",
+        practice: ["Add the y-glide.", "Combine ㅗ and ㅜ with vertical vowels.", "Separate close spellings like ㅐ and ㅔ."],
+        payoff: "All 21 modern vowels fit into one connected map.",
+      },
+      {
+        title: "Plain, aspirated, and tense",
+        focus: "Complete the 19 initial consonants through five contrast families.",
+        practice: ["Compare base, breath, and tension.", "Spot doubled tense shapes.", "Read contrast blocks aloud."],
+        payoff: "Every modern initial consonant is visible and distinct.",
+      },
+      {
+        title: "Batchim: the bottom seat",
+        focus: "Recognize final consonants and the seven basic closing sound groups.",
+        practice: ["Find the floor consonant.", "Compare open and closed blocks.", "Build 한 from three jamo."],
+        payoff: "The learner can decode closed syllables and real word shapes.",
+      },
+      {
+        title: "Reading graduation",
+        focus: "Decode short words block by block without leaning on romanization.",
+        practice: ["Count syllable squares.", "Split words into jamo.", "Read 한글 and other transparent words aloud."],
+        payoff: "Phase 1 ends with a real reading skill, not a recognition badge.",
+      },
+    ],
+  },
+  {
+    title: "Sound engineering",
+    summary: "Teach the learner how Korean consonants change when they are spoken inside real words.",
+    goal: "The learner should hear why spelling and pronunciation are related but not identical.",
+    lessons: [
+      {
+        title: "Plain, aspirated, and tense",
+        focus: "Compare breathy sounds, tense sounds, and the regular base consonants.",
+        practice: ["Pair similar letters side by side.", "Shadow the same syllable in three versions.", "Find the mouth tension difference."],
+        payoff: "Close-looking consonants stop blending together.",
+      },
+      {
+        title: "The silent ㅇ and linking",
+        focus: "See how blocks connect across word boundaries and how ㅇ holds a vowel slot.",
+        practice: ["Read blocks that begin with ㅇ.", "Listen for linking between syllables.", "Compare written shape and spoken flow."],
+        payoff: "The learner starts to hear how Korean really flows.",
+      },
+      {
+        title: "Borrowed sounds and speed",
+        focus: "Handle loanwords, fast speech, and obvious sound shortcuts.",
+        practice: ["Read a few familiar loanwords.", "Notice which English sounds get adapted.", "Shadow simple fast phrases."],
+        payoff: "The learner keeps the alphabet skills even when speech gets faster.",
+      },
+      {
+        title: "Reading at block speed",
+        focus: "Move from reading isolated blocks to reading short strings without pausing on every syllable.",
+        practice: ["Chunk a word into blocks.", "Read a line of text aloud.", "Repeat a short sentence until it feels smooth."],
+        payoff: "Korean stops feeling letter-by-letter and starts feeling readable.",
+      },
+    ],
+  },
+  {
+    title: "Survival Korean",
+    summary: "Use the alphabet in the real world: greetings, food, directions, and time.",
+    goal: "The learner should be able to survive simple interactions before grammar gets dense.",
+    lessons: [
+      {
+        title: "Greetings and self-intros",
+        focus: "Learn the politest high-frequency phrases first.",
+        practice: ["Introduce yourself.", "Say hello and goodbye.", "Respond with yes, no, and thank you."],
+        payoff: "The learner can start and end a conversation politely.",
+      },
+      {
+        title: "Food, coffee, and ordering",
+        focus: "Practice the phrases people need in cafes and restaurants.",
+        practice: ["Order a drink.", "Ask for the bill.", "Spot common menu words."],
+        payoff: "Everyday vocabulary starts becoming useful immediately.",
+      },
+      {
+        title: "Directions and places",
+        focus: "Learn common location words and how to ask where something is.",
+        practice: ["Ask for a place.", "Follow a simple direction phrase.", "Read signs that point around a space."],
+        payoff: "The learner can ask basic wayfinding questions with confidence.",
+      },
+      {
+        title: "Time, dates, and numbers",
+        focus: "Get comfortable with the numbers and expressions that appear constantly.",
+        practice: ["Say the time.", "Read dates and schedules.", "Recognize counters in short phrases."],
+        payoff: "Scheduling and daily life stop feeling blocked by the script.",
+      },
+    ],
+  },
+  {
+    title: "Sentence building",
+    summary: "Introduce the particles and sentence patterns that shape Korean word order.",
+    goal: "The learner should be able to identify the topic, subject, and object of a simple sentence.",
+    lessons: [
+      {
+        title: "Topic markers",
+        focus: "Use 는 / 은 to set the topic of a sentence.",
+        practice: ["Swap between noun pairs.", "Spot what the sentence is about.", "Read a topic sentence aloud."],
+        payoff: "The learner can hear the frame of the sentence more clearly.",
+      },
+      {
+        title: "Subject and object markers",
+        focus: "Introduce 이 / 가 and 을 / 를 in short example sentences.",
+        practice: ["Match the marker to the role.", "Build a simple sentence from a noun and verb.", "Compare topic and subject usage."],
+        payoff: "Sentence roles start making sense instead of feeling random.",
+      },
+      {
+        title: "Descriptive verbs",
+        focus: "Learn how Korean describes states and characteristics.",
+        practice: ["Read 'is' style examples.", "Say a short descriptive phrase.", "Notice the difference from English linking verbs."],
+        payoff: "The learner can talk about what something is like.",
+      },
+      {
+        title: "Negation and questions",
+        focus: "Ask yes/no questions and negate simple statements.",
+        practice: ["Turn a statement into a question.", "Make a sentence negative.", "Answer a simple yes/no prompt."],
+        payoff: "The learner can produce and understand the most common sentence shapes.",
+      },
+    ],
+  },
+  {
+    title: "Verb system",
+    summary: "Add tense, politeness, honorifics, and the most useful connector patterns.",
+    goal: "The learner should understand how Korean verbs change as the social situation changes.",
+    lessons: [
+      {
+        title: "Present, past, future",
+        focus: "Practice the most common verb time frames first.",
+        practice: ["Conjugate a familiar verb.", "Compare present and past side by side.", "Use a simple future promise form."],
+        payoff: "Verb timing becomes visible and predictable.",
+      },
+      {
+        title: "Polite endings",
+        focus: "Use the everyday polite forms that appear in normal conversation.",
+        practice: ["Say one phrase in polite form.", "Compare formal and casual versions.", "Read a polite sentence without romanization."],
+        payoff: "The learner can speak at the right level for daily life.",
+      },
+      {
+        title: "Honorifics",
+        focus: "Introduce respect markers and the social layer of Korean.",
+        practice: ["Spot an honorific ending.", "Learn when honorific language is needed.", "Use a respectful response in context."],
+        payoff: "The learner can avoid sounding too blunt or too informal.",
+      },
+      {
+        title: "Irregular verbs and connectors",
+        focus: "Handle the irregulars that matter most and connect short ideas together.",
+        practice: ["Study one irregular pattern at a time.", "Link two clauses.", "Read a short two-clause sentence."],
+        payoff: "The learner can handle slightly longer statements without freezing.",
+      },
+    ],
+  },
+  {
+    title: "Listening and speaking",
+    summary: "Move from reading to responding with short, repeated, low-pressure conversation loops.",
+    goal: "The learner should be able to hear small phrases and answer with confidence.",
+    lessons: [
+      {
+        title: "Micro-dialogue shadowing",
+        focus: "Repeat tiny dialogues until the rhythm feels natural.",
+        practice: ["Shadow one line at a time.", "Repeat the same response three ways.", "Notice where pauses happen."],
+        payoff: "The learner starts to trust their mouth, not just their eyes.",
+      },
+      {
+        title: "Ask to repeat or slow down",
+        focus: "Learn the repair phrases that keep conversations alive.",
+        practice: ["Ask for repetition.", "Ask someone to speak more slowly.", "Confirm that you understood correctly."],
+        payoff: "A missed word no longer ends the conversation.",
+      },
+      {
+        title: "Listening for meaning",
+        focus: "Train the ear to catch the core meaning, not every single word.",
+        practice: ["Listen for the topic word.", "Identify the verb ending.", "Answer with the gist of the line."],
+        payoff: "The learner can survive imperfect listening.",
+      },
+      {
+        title: "Speaking from prompts",
+        focus: "Respond to short prompts using the forms already learned.",
+        practice: ["Answer one question aloud.", "Record and replay your own answer.", "Try a slightly longer reply."],
+        payoff: "Speaking becomes a repeatable habit instead of a sudden test.",
+      },
+    ],
+  },
+  {
+    title: "Reading and writing",
+    summary: "Use Hangul in the places where it shows up every day: menus, signs, chat, and short stories.",
+    goal: "The learner should read useful real-world text without needing every word translated.",
+    lessons: [
+      {
+        title: "Signs and menus",
+        focus: "Read public signs and common food words with confidence.",
+        practice: ["Scan a menu line.", "Read a sign for direction or service.", "Spot shared vocabulary across different contexts."],
+        payoff: "Everyday text feels practical instead of academic.",
+      },
+      {
+        title: "Text messages and chat",
+        focus: "Handle the shorter, looser writing style people use casually.",
+        practice: ["Read a short text exchange.", "Notice missing subjects.", "Compare casual chat and polite writing."],
+        payoff: "The learner can cope with real digital Korean.",
+      },
+      {
+        title: "Short stories",
+        focus: "Move from fragments into a few linked sentences.",
+        practice: ["Read one paragraph slowly.", "Highlight familiar verbs and particles.", "Retell the story in simple Korean or English."],
+        payoff: "Reading starts to feel like meaning, not just decoding.",
+      },
+      {
+        title: "Typing and handwriting",
+        focus: "Add the practical skill of producing Korean text on a keyboard or by hand.",
+        practice: ["Type a short phrase.", "Trace a block by hand.", "Compare your writing with the model."],
+        payoff: "The learner can produce the alphabet, not just read it.",
+      },
+    ],
+  },
+  {
+    title: "Intermediate bridges",
+    summary: "Build the bridge from usable Korean to flexible Korean with nuance and consistent review.",
+    goal: "The learner should understand that fluency is a loop of reading, listening, speaking, and revisiting.",
+    lessons: [
+      {
+        title: "Nuance and connectives",
+        focus: "Use connective endings to make sentences feel more natural and connected.",
+        practice: ["Join two ideas.", "Compare 'and', 'but', and 'because' structures.", "Notice the tone shift."],
+        payoff: "The learner can say more without resorting to separate short sentences.",
+      },
+      {
+        title: "Passive and causative forms",
+        focus: "Recognize more advanced verb patterns when they appear.",
+        practice: ["Identify the pattern in a short example.", "Translate a simple passive sentence.", "Notice the relationship to the base verb."],
+        payoff: "Grammar feels bigger, but still learnable in layers.",
+      },
+      {
+        title: "Politeness and register",
+        focus: "Adjust language for social context without overthinking every line.",
+        practice: ["Compare two ways to say the same thing.", "Choose a register for a scenario.", "Read a sentence and decide how formal it feels."],
+        payoff: "The learner can choose language that fits the moment.",
+      },
+      {
+        title: "Immersion routine",
+        focus: "Turn the app into a repeatable review cycle.",
+        practice: ["Review old alphabet items.", "Return to one listening clip.", "Reuse one phrase in a new sentence."],
+        payoff: "The learner keeps improving without needing a one-time finish line.",
+      },
+    ],
+  },
+];
+
+const startOrder = [
+  "Learn the consonants",
+  "Learn the vowels",
+  "Build syllable blocks",
+  "Add batchim and silent ㅇ",
+  "Tackle sound changes",
+  "Practice survival phrases",
+  "Learn the grammar core",
+  "Master verb endings",
+  "Train listening and speaking",
+  "Keep drilling forever",
+];
+
+const soundDeck = [
+  "sound-family",
+  "sound-family",
+  "onset",
+  "onset",
+  "vowel-shape",
+  "batchim",
+  "listen",
+  "tense",
+];
+
+const survivalDeck = [
+  "meaning",
+  "meaning",
+  "situation",
+  "situation",
+  "cloze",
+  "cloze",
+  "phrase",
+  "phrase",
+];
+
+const survivalPhrases = [
+  {
+    phrase: "안녕하세요",
+    meaning: "Hello / Hi",
+    situation: "Use this to greet someone politely.",
+    voiceText: "안녕하세요",
+  },
+  {
+    phrase: "감사합니다",
+    meaning: "Thank you",
+    situation: "Use this after someone helps you or gives you something.",
+    voiceText: "감사합니다",
+  },
+  {
+    phrase: "죄송합니다",
+    meaning: "I'm sorry",
+    situation: "Use this when you need to apologize.",
+    voiceText: "죄송합니다",
+  },
+  {
+    phrase: "실례합니다",
+    meaning: "Excuse me",
+    situation: "Use this to get someone's attention politely.",
+    voiceText: "실례합니다",
+  },
+  {
+    phrase: "물 주세요",
+    meaning: "Water, please",
+    situation: "Use this when ordering water.",
+    voiceText: "물 주세요",
+  },
+  {
+    phrase: "커피 주세요",
+    meaning: "Coffee, please",
+    situation: "Use this when ordering coffee.",
+    voiceText: "커피 주세요",
+  },
+  {
+    phrase: "이거 주세요",
+    meaning: "This one, please",
+    situation: "Use this when pointing to something you want.",
+    voiceText: "이거 주세요",
+  },
+  {
+    phrase: "얼마예요?",
+    meaning: "How much is it?",
+    situation: "Use this when asking the price.",
+    voiceText: "얼마예요?",
+  },
+  {
+    phrase: "화장실 어디예요?",
+    meaning: "Where is the bathroom?",
+    situation: "Use this when asking for the restroom.",
+    voiceText: "화장실 어디예요?",
+  },
+  {
+    phrase: "도와주세요",
+    meaning: "Please help me",
+    situation: "Use this when you need help.",
+    voiceText: "도와주세요",
+  },
+  {
+    phrase: "영어 할 수 있어요?",
+    meaning: "Can you speak English?",
+    situation: "Use this when you need English help.",
+    voiceText: "영어 할 수 있어요?",
+  },
+  {
+    phrase: "한국어 조금 해요",
+    meaning: "I speak a little Korean",
+    situation: "Use this when explaining your level.",
+    voiceText: "한국어 조금 해요",
+  },
+  {
+    phrase: "괜찮아요",
+    meaning: "It's okay / I'm fine",
+    situation: "Use this to reassure someone or say you're okay.",
+    voiceText: "괜찮아요",
+  },
+  {
+    phrase: "네",
+    meaning: "Yes",
+    situation: "Use this to answer yes.",
+    voiceText: "네",
+  },
+  {
+    phrase: "아니요",
+    meaning: "No",
+    situation: "Use this to answer no.",
+    voiceText: "아니요",
+  },
+];
+
+const survivalCloze = [
+  {
+    prompt: "물 ___",
+    answer: "주세요",
+    options: ["주세요", "감사합니다", "괜찮아요", "있어요"],
+    explanation: "This politely asks for water.",
+    voiceText: "물 주세요",
+  },
+  {
+    prompt: "___ 어디예요?",
+    answer: "화장실",
+    options: ["화장실", "커피", "메뉴", "물"],
+    explanation: "This asks where the bathroom is.",
+    voiceText: "화장실 어디예요?",
+  },
+  {
+    prompt: "영어 할 수 ___?",
+    answer: "있어요",
+    options: ["있어요", "해요", "주세요", "예요"],
+    explanation: "This asks whether someone can speak English.",
+    voiceText: "영어 할 수 있어요?",
+  },
+  {
+    prompt: "한국어 조금 ___",
+    answer: "해요",
+    options: ["해요", "있어요", "예요", "주세요"],
+    explanation: "This says you speak a little Korean.",
+    voiceText: "한국어 조금 해요",
+  },
+  {
+    prompt: "얼마 ___?",
+    answer: "예요",
+    options: ["예요", "해요", "있어요", "주세요"],
+    explanation: "This asks how much it is.",
+    voiceText: "얼마예요?",
+  },
+  {
+    prompt: "이거 ___",
+    answer: "주세요",
+    options: ["주세요", "있어요", "예요", "해요"],
+    explanation: "This means this one, please.",
+    voiceText: "이거 주세요",
+  },
+];
+
+const grammarDeck = [
+  "cloze",
+  "cloze",
+  "role",
+  "meaning",
+  "order",
+  "listen",
+  "cloze",
+  "role",
+  "meaning",
+  "listen",
+];
+
+const grammarClozeBank = [
+  {
+    prompt: "저 __ 학생이에요.",
+    answer: "는",
+    options: ["는", "은", "가", "를"],
+    explanation: "저 ends in a vowel, so 는 marks the topic.",
+    voiceText: "저는 학생이에요.",
+  },
+  {
+    prompt: "친구 __ 와요.",
+    answer: "가",
+    options: ["가", "이", "를", "은"],
+    explanation: "친구 ends in a vowel, so 가 marks the subject.",
+    voiceText: "친구가 와요.",
+  },
+  {
+    prompt: "책 __ 읽어요.",
+    answer: "을",
+    options: ["을", "를", "이", "는"],
+    explanation: "책 has batchim, so 을 marks the object.",
+    voiceText: "책을 읽어요.",
+  },
+  {
+    prompt: "사과 __ 먹어요.",
+    answer: "를",
+    options: ["를", "을", "은", "가"],
+    explanation: "사과 ends in a vowel, so 를 marks the object.",
+    voiceText: "사과를 먹어요.",
+  },
+  {
+    prompt: "시간 __ 있어요.",
+    answer: "이",
+    options: ["이", "가", "을", "는"],
+    explanation: "시간 has batchim, so 이 marks the subject.",
+    voiceText: "시간이 있어요.",
+  },
+  {
+    prompt: "오늘 __ 날씨가 좋아요.",
+    answer: "은",
+    options: ["은", "는", "가", "를"],
+    explanation: "오늘 has batchim, so 은 marks the topic.",
+    voiceText: "오늘은 날씨가 좋아요.",
+  },
+  {
+    prompt: "저는 학생__.",
+    answer: "이에요",
+    options: ["이에요", "예요", "아니에요", "해요"],
+    explanation: "학생 has batchim, so 이에요 follows.",
+    voiceText: "저는 학생이에요.",
+  },
+  {
+    prompt: "저는 의사__.",
+    answer: "예요",
+    options: ["예요", "이에요", "아니에요", "해요"],
+    explanation: "의사 ends in a vowel, so 예요 follows.",
+    voiceText: "저는 의사예요.",
+  },
+  {
+    prompt: "저는 학생이 __.",
+    answer: "아니에요",
+    options: ["아니에요", "예요", "이에요", "해요"],
+    explanation: "This negates the copula.",
+    voiceText: "저는 학생이 아니에요.",
+  },
+  {
+    prompt: "저는 커피를 __ 마셔요.",
+    answer: "안",
+    options: ["안", "못", "잘", "또"],
+    explanation: "안 comes before the verb to make a simple negative.",
+    voiceText: "저는 커피를 안 마셔요.",
+  },
+];
+
+const grammarRoleBank = [
+  {
+    sentence: "저는 학생이에요.",
+    marker: "는",
+    answer: "topic marker",
+    options: ["topic marker", "subject marker", "object marker", "copula ending"],
+    explanation: "는 marks the topic because 저 ends in a vowel.",
+    voiceText: "저는 학생이에요.",
+  },
+  {
+    sentence: "친구가 와요.",
+    marker: "가",
+    answer: "subject marker",
+    options: ["subject marker", "topic marker", "object marker", "copula ending"],
+    explanation: "가 marks the subject because 친구 ends in a vowel.",
+    voiceText: "친구가 와요.",
+  },
+  {
+    sentence: "책을 읽어요.",
+    marker: "을",
+    answer: "object marker",
+    options: ["object marker", "subject marker", "topic marker", "copula ending"],
+    explanation: "을 marks the object because 책 has batchim.",
+    voiceText: "책을 읽어요.",
+  },
+  {
+    sentence: "저는 학생이에요.",
+    marker: "이에요",
+    answer: "copula ending",
+    options: ["copula ending", "question ending", "past ending", "negative ending"],
+    explanation: "이에요 links a noun to 'to be.'",
+    voiceText: "저는 학생이에요.",
+  },
+  {
+    sentence: "저는 학생이 아니에요.",
+    marker: "아니에요",
+    answer: "negative copula",
+    options: ["negative copula", "object marker", "topic marker", "subject marker"],
+    explanation: "아니에요 negates the noun phrase.",
+    voiceText: "저는 학생이 아니에요.",
+  },
+];
+
+const grammarSentenceBank = [
+  {
+    korean: "저는 학생이에요.",
+    meaning: "I am a student.",
+    explanation: "Topic + noun + copula.",
+    voiceText: "저는 학생이에요.",
+  },
+  {
+    korean: "친구가 와요.",
+    meaning: "A friend is coming.",
+    explanation: "Subject + verb.",
+    voiceText: "친구가 와요.",
+  },
+  {
+    korean: "저는 커피를 마셔요.",
+    meaning: "I drink coffee.",
+    explanation: "Topic + object + verb.",
+    voiceText: "저는 커피를 마셔요.",
+  },
+  {
+    korean: "책을 읽어요.",
+    meaning: "I read a book.",
+    explanation: "Object + verb.",
+    voiceText: "책을 읽어요.",
+  },
+  {
+    korean: "오늘은 날씨가 좋아요.",
+    meaning: "The weather is good today.",
+    explanation: "Topic + subject + descriptive verb.",
+    voiceText: "오늘은 날씨가 좋아요.",
+  },
+  {
+    korean: "사과를 먹어요.",
+    meaning: "I eat an apple.",
+    explanation: "Object + verb.",
+    voiceText: "사과를 먹어요.",
+  },
+  {
+    korean: "저는 한국어를 공부해요.",
+    meaning: "I study Korean.",
+    explanation: "Topic + object + verb.",
+    voiceText: "저는 한국어를 공부해요.",
+  },
+  {
+    korean: "버스를 타요.",
+    meaning: "I take the bus.",
+    explanation: "Object + verb.",
+    voiceText: "버스를 타요.",
+  },
+  {
+    korean: "저는 학생이 아니에요.",
+    meaning: "I am not a student.",
+    explanation: "Negative copula.",
+    voiceText: "저는 학생이 아니에요.",
+  },
+  {
+    korean: "우리 집은 가까워요.",
+    meaning: "Our house is close.",
+    explanation: "Topic + descriptive verb.",
+    voiceText: "우리 집은 가까워요.",
+  },
+  {
+    korean: "물이 있어요.",
+    meaning: "There is water.",
+    explanation: "Subject + 있다.",
+    voiceText: "물이 있어요.",
+  },
+  {
+    korean: "이것은 책이에요.",
+    meaning: "This is a book.",
+    explanation: "Topic + noun + copula.",
+    voiceText: "이것은 책이에요.",
+  },
+  {
+    korean: "저는 시간이 있어요.",
+    meaning: "I have time.",
+    explanation: "Topic + subject + 있다.",
+    voiceText: "저는 시간이 있어요.",
+  },
+  {
+    korean: "한국어가 재미있어요.",
+    meaning: "Korean is fun.",
+    explanation: "Subject + descriptive verb.",
+    voiceText: "한국어가 재미있어요.",
+  },
+];
+
+const verbDeck = [
+  "conjugate",
+  "conjugate",
+  "tense",
+  "honorific",
+  "pattern",
+  "meaning",
+  "order",
+  "listen",
+];
+
+const verbBank = [
+  {
+    base: "가다",
+    meaning: "to go",
+    present: "가요",
+    past: "갔어요",
+    future: "갈 거예요",
+    pattern: "regular",
+  },
+  {
+    base: "오다",
+    meaning: "to come",
+    present: "와요",
+    past: "왔어요",
+    future: "올 거예요",
+    pattern: "regular",
+  },
+  {
+    base: "하다",
+    meaning: "to do",
+    present: "해요",
+    past: "했어요",
+    future: "할 거예요",
+    pattern: "하다 irregular",
+  },
+  {
+    base: "먹다",
+    meaning: "to eat",
+    present: "먹어요",
+    past: "먹었어요",
+    future: "먹을 거예요",
+    pattern: "regular",
+  },
+  {
+    base: "마시다",
+    meaning: "to drink",
+    present: "마셔요",
+    past: "마셨어요",
+    future: "마실 거예요",
+    pattern: "regular",
+  },
+  {
+    base: "읽다",
+    meaning: "to read",
+    present: "읽어요",
+    past: "읽었어요",
+    future: "읽을 거예요",
+    pattern: "regular",
+  },
+  {
+    base: "듣다",
+    meaning: "to listen",
+    present: "들어요",
+    past: "들었어요",
+    future: "들을 거예요",
+    pattern: "ㄷ irregular",
+  },
+  {
+    base: "걷다",
+    meaning: "to walk",
+    present: "걸어요",
+    past: "걸었어요",
+    future: "걸을 거예요",
+    pattern: "ㄷ irregular",
+  },
+  {
+    base: "돕다",
+    meaning: "to help",
+    present: "도와요",
+    past: "도왔어요",
+    future: "도울 거예요",
+    pattern: "ㅂ irregular",
+  },
+  {
+    base: "모르다",
+    meaning: "to not know",
+    present: "몰라요",
+    past: "몰랐어요",
+    future: "모를 거예요",
+    pattern: "르 irregular",
+  },
+  {
+    base: "짓다",
+    meaning: "to build / make",
+    present: "지어요",
+    past: "지었어요",
+    future: "지을 거예요",
+    pattern: "ㅅ irregular",
+  },
+  {
+    base: "살다",
+    meaning: "to live",
+    present: "살아요",
+    past: "살았어요",
+    future: "살 거예요",
+    pattern: "regular",
+  },
+  {
+    base: "쓰다",
+    meaning: "to write / use",
+    present: "써요",
+    past: "썼어요",
+    future: "쓸 거예요",
+    pattern: "regular",
+  },
+  {
+    base: "보다",
+    meaning: "to see / watch",
+    present: "봐요",
+    past: "봤어요",
+    future: "볼 거예요",
+    pattern: "regular",
+  },
+  {
+    base: "배우다",
+    meaning: "to learn",
+    present: "배워요",
+    past: "배웠어요",
+    future: "배울 거예요",
+    pattern: "regular",
+  },
+];
+
+const verbSentenceBank = [
+  {
+    korean: "저는 학교에 가요.",
+    meaning: "I go to school.",
+    tense: "present",
+    voiceText: "저는 학교에 가요.",
+  },
+  {
+    korean: "어제 책을 읽었어요.",
+    meaning: "I read a book yesterday.",
+    tense: "past",
+    voiceText: "어제 책을 읽었어요.",
+  },
+  {
+    korean: "내일 친구를 만날 거예요.",
+    meaning: "I will meet a friend tomorrow.",
+    tense: "future",
+    voiceText: "내일 친구를 만날 거예요.",
+  },
+  {
+    korean: "지금 커피를 마셔요.",
+    meaning: "I am drinking coffee now.",
+    tense: "present",
+    voiceText: "지금 커피를 마셔요.",
+  },
+  {
+    korean: "저는 한국어를 배워요.",
+    meaning: "I learn Korean.",
+    tense: "present",
+    voiceText: "저는 한국어를 배워요.",
+  },
+  {
+    korean: "친구가 와요.",
+    meaning: "A friend is coming.",
+    tense: "present",
+    voiceText: "친구가 와요.",
+  },
+  {
+    korean: "저는 집에 갈 거예요.",
+    meaning: "I will go home.",
+    tense: "future",
+    voiceText: "저는 집에 갈 거예요.",
+  },
+  {
+    korean: "저는 어제 운동했어요.",
+    meaning: "I exercised yesterday.",
+    tense: "past",
+    voiceText: "저는 어제 운동했어요.",
+  },
+  {
+    korean: "할머니가 오세요.",
+    meaning: "Grandmother is coming.",
+    tense: "honorific",
+    voiceText: "할머니가 오세요.",
+  },
+  {
+    korean: "선생님이 계세요.",
+    meaning: "The teacher is here.",
+    tense: "honorific",
+    voiceText: "선생님이 계세요.",
+  },
+  {
+    korean: "저는 친구를 도와요.",
+    meaning: "I help a friend.",
+    tense: "present",
+    voiceText: "저는 친구를 도와요.",
+  },
+  {
+    korean: "우리는 영화를 봐요.",
+    meaning: "We watch a movie.",
+    tense: "present",
+    voiceText: "우리는 영화를 봐요.",
+  },
+  {
+    korean: "저는 매일 일해요.",
+    meaning: "I work every day.",
+    tense: "present",
+    voiceText: "저는 매일 일해요.",
+  },
+  {
+    korean: "오늘은 쉬어요.",
+    meaning: "I rest today.",
+    tense: "present",
+    voiceText: "오늘은 쉬어요.",
+  },
+];
+
+const verbHonorificBank = [
+  {
+    plain: "선생님이 와요.",
+    honorific: "선생님이 오세요.",
+    meaning: "The teacher is coming.",
+    cue: "Respectful speech for coming.",
+  },
+  {
+    plain: "할머니가 자요.",
+    honorific: "할머니가 주무세요.",
+    meaning: "Grandmother is sleeping.",
+    cue: "Respectful speech for sleeping.",
+  },
+  {
+    plain: "사장님이 있어요.",
+    honorific: "사장님이 계세요.",
+    meaning: "The boss is here.",
+    cue: "Honorific 있다 -> 계시다.",
+  },
+  {
+    plain: "교수님이 말해요.",
+    honorific: "교수님이 말씀하세요.",
+    meaning: "The professor speaks.",
+    cue: "Respectful speech for speaking.",
+  },
+  {
+    plain: "어머니가 먹어요.",
+    honorific: "어머니가 드세요.",
+    meaning: "Mother eats.",
+    cue: "Respectful speech for eating.",
+  },
+];
+
+const conversationDeck = [
+  "meaning",
+  "meaning",
+  "reply",
+  "repair",
+  "dialogue",
+  "listen",
+  "shadow",
+  "reply",
+  "listen",
+  "repair",
+];
+
+const vocabDeck = [
+  "roman-to-hangul",
+  "roman-to-hangul",
+  "hangul-to-roman",
+  "listen",
+  "roman-to-hangul",
+  "hangul-to-roman",
+  "listen",
+];
+
+const sentenceDeck = [
+  "build",
+  "build",
+  "build",
+  "type",
+  "build",
+  "type",
+  "build",
+  "build",
+  "type",
+];
+
+const listenDeck = [
+  "sentence-choice",
+  "sentence-choice",
+  "dictation",
+  "vocab-listen",
+  "phrase-listen",
+  "conversation-listen",
+  "sentence-choice",
+  "dictation",
+  "sentence-choice",
+];
+
+function getVocabDeckForLevel(level = getTrackLevel("vocabulary")) {
+  const band = getLevelBand(level);
+  if (band <= 1) return ["roman-to-hangul", "roman-to-hangul", "listen", "roman-to-hangul"];
+  if (band === 2) return ["roman-to-hangul", "hangul-to-roman", "listen", "roman-to-hangul"];
+  if (band === 3) return ["roman-to-hangul", "hangul-to-roman", "listen", "hangul-to-roman"];
+  if (band === 4) return ["hangul-to-roman", "roman-to-hangul", "listen", "hangul-to-roman"];
+  return [...vocabDeck, "listen", "hangul-to-roman", "roman-to-hangul"];
+}
+
+function getSentenceDeckForLevel(level = getTrackLevel("sentences")) {
+  const band = getLevelBand(level);
+  if (band <= 1) return ["build", "build", "build", "type"];
+  if (band === 2) return ["build", "build", "type", "build"];
+  if (band === 3) return ["build", "type", "type", "build"];
+  if (band === 4) return ["type", "build", "type", "build"];
+  return ["type", "build", "type", "build", "type"];
+}
+
+function getListenDeckForLevel(level = getTrackLevel("listening")) {
+  const band = getLevelBand(level);
+  if (band <= 1) return ["sentence-choice", "vocab-listen", "sentence-choice", "vocab-listen"];
+  if (band === 2) return ["sentence-choice", "phrase-listen", "sentence-choice", "vocab-listen"];
+  if (band === 3) return ["phrase-listen", "sentence-choice", "dictation", "sentence-choice"];
+  if (band === 4) return ["dictation", "sentence-choice", "conversation-listen", "phrase-listen"];
+  return [...listenDeck];
+}
+
+const conversationLineBank = [
+  {
+    korean: "안녕하세요.",
+    meaning: "Hello.",
+    cue: "Use this to open a conversation politely.",
+    voiceText: "안녕하세요.",
+  },
+  {
+    korean: "처음 뵙겠습니다.",
+    meaning: "Nice to meet you.",
+    cue: "Use this when you meet someone for the first time.",
+    voiceText: "처음 뵙겠습니다.",
+  },
+  {
+    korean: "감사합니다.",
+    meaning: "Thank you.",
+    cue: "Use this after someone helps you or gives you something.",
+    voiceText: "감사합니다.",
+  },
+  {
+    korean: "괜찮아요.",
+    meaning: "It's okay.",
+    cue: "Use this to reassure someone or say you are fine.",
+    voiceText: "괜찮아요.",
+  },
+  {
+    korean: "네.",
+    meaning: "Yes.",
+    cue: "Use this to answer yes.",
+    voiceText: "네.",
+  },
+  {
+    korean: "아니요.",
+    meaning: "No.",
+    cue: "Use this to answer no.",
+    voiceText: "아니요.",
+  },
+  {
+    korean: "물 주세요.",
+    meaning: "Water, please.",
+    cue: "Use this when ordering water.",
+    voiceText: "물 주세요.",
+  },
+  {
+    korean: "이거 주세요.",
+    meaning: "This one, please.",
+    cue: "Use this when pointing to the item you want.",
+    voiceText: "이거 주세요.",
+  },
+  {
+    korean: "화장실이 어디예요?",
+    meaning: "Where is the bathroom?",
+    cue: "Use this when asking for the restroom.",
+    voiceText: "화장실이 어디예요?",
+  },
+  {
+    korean: "잠시만요.",
+    meaning: "One moment, please.",
+    cue: "Use this to buy a little time.",
+    voiceText: "잠시만요.",
+  },
+  {
+    korean: "잘 모르겠어요.",
+    meaning: "I don't understand.",
+    cue: "Use this when you missed the meaning.",
+    voiceText: "잘 모르겠어요.",
+  },
+  {
+    korean: "도와주세요.",
+    meaning: "Please help me.",
+    cue: "Use this when you need help.",
+    voiceText: "도와주세요.",
+  },
+  {
+    korean: "다시 말씀해 주세요.",
+    meaning: "Please say it again.",
+    cue: "Use this when you did not catch the sentence.",
+    voiceText: "다시 말씀해 주세요.",
+  },
+  {
+    korean: "천천히 말씀해 주세요.",
+    meaning: "Please speak slowly.",
+    cue: "Use this when the speech is too fast.",
+    voiceText: "천천히 말씀해 주세요.",
+  },
+  {
+    korean: "무슨 뜻이에요?",
+    meaning: "What does it mean?",
+    cue: "Use this when a word is unfamiliar.",
+    voiceText: "무슨 뜻이에요?",
+  },
+  {
+    korean: "한국어 조금 해요.",
+    meaning: "I speak a little Korean.",
+    cue: "Use this when explaining your level.",
+    voiceText: "한국어 조금 해요.",
+  },
+  {
+    korean: "네, 다시 말씀드릴게요.",
+    meaning: "Yes, I will say it again.",
+    cue: "Use this when someone asks you to repeat yourself.",
+    voiceText: "네, 다시 말씀드릴게요.",
+  },
+  {
+    korean: "네, 천천히 말할게요.",
+    meaning: "Yes, I will speak slowly.",
+    cue: "Use this when someone asks you to slow down.",
+    voiceText: "네, 천천히 말할게요.",
+  },
+  {
+    korean: "저쪽이에요.",
+    meaning: "It's over there.",
+    cue: "Use this when giving a simple direction.",
+    voiceText: "저쪽이에요.",
+  },
+  {
+    korean: "네, 여기요.",
+    meaning: "Yes, here you go.",
+    cue: "Use this when handing something over.",
+    voiceText: "네, 여기요.",
+  },
+  {
+    korean: "알겠습니다.",
+    meaning: "Understood.",
+    cue: "Use this to confirm you understood.",
+    voiceText: "알겠습니다.",
+  },
+];
+
+const conversationRepairBank = [
+  {
+    phrase: "다시 말씀해 주세요.",
+    meaning: "Please say it again.",
+    cue: "Use this when you missed the sentence.",
+    voiceText: "다시 말씀해 주세요.",
+  },
+  {
+    phrase: "천천히 말씀해 주세요.",
+    meaning: "Please speak slowly.",
+    cue: "Use this when the speech is too fast.",
+    voiceText: "천천히 말씀해 주세요.",
+  },
+  {
+    phrase: "무슨 뜻이에요?",
+    meaning: "What does it mean?",
+    cue: "Use this when a word is unfamiliar.",
+    voiceText: "무슨 뜻이에요?",
+  },
+  {
+    phrase: "잘 모르겠어요.",
+    meaning: "I don't understand.",
+    cue: "Use this when you need to admit confusion.",
+    voiceText: "잘 모르겠어요.",
+  },
+  {
+    phrase: "잠시만요.",
+    meaning: "One moment, please.",
+    cue: "Use this to buy a little time.",
+    voiceText: "잠시만요.",
+  },
+  {
+    phrase: "알겠습니다.",
+    meaning: "Understood.",
+    cue: "Use this to confirm you heard the repair phrase.",
+    voiceText: "알겠습니다.",
+  },
+];
+
+const conversationScenarioBank = [
+  {
+    cue: "You want to greet someone politely.",
+    answer: "안녕하세요.",
+    explanation: "A polite greeting is the safest opening.",
+    voiceText: "안녕하세요.",
+  },
+  {
+    cue: "You want to thank someone.",
+    answer: "감사합니다.",
+    explanation: "Thanking people is a useful speaking habit.",
+    voiceText: "감사합니다.",
+  },
+  {
+    cue: "You need the bathroom.",
+    answer: "화장실이 어디예요?",
+    explanation: "This asks for the restroom in a polite way.",
+    voiceText: "화장실이 어디예요?",
+  },
+  {
+    cue: "You want water.",
+    answer: "물 주세요.",
+    explanation: "A simple order phrase gets the message across.",
+    voiceText: "물 주세요.",
+  },
+  {
+    cue: "You want this item.",
+    answer: "이거 주세요.",
+    explanation: "This is the natural phrase when pointing at something.",
+    voiceText: "이거 주세요.",
+  },
+  {
+    cue: "You need help.",
+    answer: "도와주세요.",
+    explanation: "This is the clearest way to ask for help.",
+    voiceText: "도와주세요.",
+  },
+  {
+    cue: "The speaker is too fast.",
+    answer: "천천히 말씀해 주세요.",
+    explanation: "This asks for slower speech politely.",
+    voiceText: "천천히 말씀해 주세요.",
+  },
+  {
+    cue: "You missed what was said.",
+    answer: "다시 말씀해 주세요.",
+    explanation: "This asks the speaker to repeat the line.",
+    voiceText: "다시 말씀해 주세요.",
+  },
+  {
+    cue: "You do not understand the meaning.",
+    answer: "무슨 뜻이에요?",
+    explanation: "This is the direct question to ask for meaning.",
+    voiceText: "무슨 뜻이에요?",
+  },
+  {
+    cue: "You want a moment.",
+    answer: "잠시만요.",
+    explanation: "This buys you a little speaking time.",
+    voiceText: "잠시만요.",
+  },
+  {
+    cue: "You only speak a little Korean.",
+    answer: "한국어 조금 해요.",
+    explanation: "This explains your level clearly and politely.",
+    voiceText: "한국어 조금 해요.",
+  },
+  {
+    cue: "You want to say yes.",
+    answer: "네.",
+    explanation: "A simple yes keeps the exchange moving.",
+    voiceText: "네.",
+  },
+  {
+    cue: "You want to say no.",
+    answer: "아니요.",
+    explanation: "A simple no is enough in many short exchanges.",
+    voiceText: "아니요.",
+  },
+  {
+    cue: "You understood the speaker.",
+    answer: "알겠습니다.",
+    explanation: "This polite acknowledgement shows you followed along.",
+    voiceText: "알겠습니다.",
+  },
+  {
+    cue: "You want to say you will repeat it.",
+    answer: "네, 다시 말씀드릴게요.",
+    explanation: "This is a natural confirmation after a repair request.",
+    voiceText: "네, 다시 말씀드릴게요.",
+  },
+  {
+    cue: "You want to say you will slow down.",
+    answer: "네, 천천히 말할게요.",
+    explanation: "This acknowledges the request to slow down.",
+    voiceText: "네, 천천히 말할게요.",
+  },
+  {
+    cue: "You want to reassure someone.",
+    answer: "괜찮아요.",
+    explanation: "This keeps the interaction relaxed and kind.",
+    voiceText: "괜찮아요.",
+  },
+];
+
+const sentenceStudyBankCache = {
+  items: null,
+  tokens: null,
+  tokenSourceKey: "",
+};
+
+function normalizeStudyText(value) {
+  return String(value || "")
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[\s.,!?;:"'`~(){}\[\]<>\\/·-]+/g, "");
+}
+
+function tokenizeSentence(value) {
+  return String(value || "")
+    .trim()
+    .split(/\s+/)
+    .map((token) => token.replace(/[.,!?;:"'`~(){}\[\]<>\\/·-]+$/g, "").trim())
+    .filter(Boolean);
+}
+
+function pushSentenceStudyItem(items, seen, candidate) {
+  const sentence = String(
+    candidate.korean ||
+      candidate.sentence ||
+      candidate.phrase ||
+      candidate.answer ||
+      candidate.reply ||
+      candidate.honorific ||
+      candidate.plain ||
+      ""
+  ).trim();
+
+  if (!sentence) {
+    return;
+  }
+
+  const key = normalizeStudyText(sentence);
+  if (!key || seen.has(key)) {
+    return;
+  }
+
+  seen.add(key);
+  items.push({
+    korean: sentence,
+    meaning: String(candidate.meaning || candidate.explanation || candidate.cue || candidate.prompt || "").trim(),
+    voiceText: String(candidate.voiceText || sentence).trim(),
+    source: String(candidate.source || candidate.label || "").trim(),
+    tokenCount: tokenizeSentence(sentence).length,
+  });
+}
+
+function getSentenceStudyBank() {
+  if (sentenceStudyBankCache.items) {
+    return sentenceStudyBankCache.items;
+  }
+
+  const items = [];
+  const seen = new Set();
+
+  grammarSentenceBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.korean,
+      meaning: item.meaning,
+      voiceText: item.voiceText,
+      source: "Grammar",
+    });
+  });
+
+  grammarClozeBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.voiceText || item.answer || "",
+      meaning: item.explanation || item.prompt,
+      voiceText: item.voiceText || item.answer || "",
+      source: "Grammar cloze",
+    });
+  });
+
+  grammarRoleBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.sentence,
+      meaning: item.answer,
+      voiceText: item.voiceText || item.sentence || "",
+      source: "Grammar role",
+    });
+  });
+
+  survivalPhrases.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.phrase,
+      meaning: item.meaning,
+      voiceText: item.voiceText,
+      source: "Survival",
+    });
+  });
+
+  survivalCloze.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.voiceText || item.prompt || "",
+      meaning: item.explanation || item.prompt,
+      voiceText: item.voiceText || item.prompt || "",
+      source: "Survival cloze",
+    });
+  });
+
+  verbSentenceBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.korean,
+      meaning: item.meaning,
+      voiceText: item.voiceText,
+      source: "Verb",
+    });
+  });
+
+  verbHonorificBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.honorific,
+      meaning: item.meaning,
+      voiceText: item.honorific,
+      source: "Honorific",
+    });
+  });
+
+  conversationLineBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.korean,
+      meaning: item.meaning,
+      voiceText: item.voiceText,
+      source: "Conversation",
+    });
+  });
+
+  conversationRepairBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.phrase,
+      meaning: item.meaning,
+      voiceText: item.voiceText,
+      source: "Repair",
+    });
+  });
+
+  conversationDialogueBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.starter,
+      meaning: item.cue,
+      voiceText: item.starter,
+      source: "Dialogue starter",
+    });
+    pushSentenceStudyItem(items, seen, {
+      korean: item.reply,
+      meaning: item.explanation || item.cue,
+      voiceText: item.reply,
+      source: "Dialogue reply",
+    });
+  });
+
+  conversationScenarioBank.forEach((item) => {
+    pushSentenceStudyItem(items, seen, {
+      korean: item.answer,
+      meaning: item.cue,
+      voiceText: item.voiceText,
+      source: "Scenario",
+    });
+  });
+
+  sentenceStudyBankCache.items = items;
+  return items;
+}
+
+function getSentenceTokenBank() {
+  const sourceKey = `${vocabBankReady ? "ready" : "pending"}:${vocabBank.length}:${vocabBankError}`;
+  if (sentenceStudyBankCache.tokens && sentenceStudyBankCache.tokenSourceKey === sourceKey) {
+    return sentenceStudyBankCache.tokens;
+  }
+
+  const tokens = new Set();
+
+  getSentenceStudyBank().forEach((item) => {
+    tokenizeSentence(item.korean).forEach((token) => tokens.add(token));
+  });
+
+  vocabBank.forEach((entry) => {
+    if (entry.korean) {
+      tokens.add(entry.korean);
+    }
+  });
+
+  sentenceStudyBankCache.tokens = [...tokens].filter(Boolean);
+  sentenceStudyBankCache.tokenSourceKey = sourceKey;
+  return sentenceStudyBankCache.tokens;
+}
+
+function makeSentenceTokenPool(answerTokens, extraTokens = 8) {
+  const answerSet = new Set(answerTokens.map((token) => normalizeStudyText(token)));
+  const distractors = getSentenceTokenBank()
+    .filter((token) => !answerSet.has(normalizeStudyText(token)))
+    .filter((token, index, list) => list.indexOf(token) === index);
+
+  const pool = answerTokens.map((text, index) => ({
+    id: `answer-${index}-${Math.random().toString(36).slice(2, 8)}`,
+    text,
+    source: "answer",
+  }));
+
+  shuffle(distractors)
+    .slice(0, extraTokens)
+    .forEach((text, index) => {
+      pool.push({
+        id: `distractor-${index}-${Math.random().toString(36).slice(2, 8)}`,
+        text,
+        source: "distractor",
+      });
+    });
+
+  return shuffle(pool);
+}
+
+function getBuildableSentenceBank(level = getTrackLevel("sentences")) {
+  const bank = getSentenceStudyBank()
+    .filter((item) => item.tokenCount >= 2)
+    .sort((a, b) => a.tokenCount - b.tokenCount);
+  return getRepeatBandSlice(bank, level);
+}
+
+function getDictationSentenceBank(level = getTrackLevel("sentences")) {
+  const bank = getSentenceStudyBank()
+    .filter((item) => item.tokenCount >= 2)
+    .sort((a, b) => a.tokenCount - b.tokenCount);
+  return getRepeatBandSlice(bank, level);
+}
+
+function createSentenceChoiceOptions(item, bank, answerField = "korean") {
+  const answers = bank
+    .map((entry) => String(entry[answerField] || entry.korean || entry.meaning || "").trim())
+    .filter(Boolean);
+  const answer = String(item[answerField] || item.korean || item.meaning || "").trim();
+  return makeTextChoices(answer, answers, 4);
+}
+
+function makeSentenceBuildQuestion(level = getTrackLevel("sentences")) {
+  const bank = getBuildableSentenceBank(level);
+  if (!bank.length) {
+    return {
+      kind: "Sentence build",
+      mode: "Sentence studio",
+      prompt: "The sentence bank is not ready yet.",
+      detail: "Try again in a moment.",
+      visual: `<div class="big-glyph">?</div>`,
+      interaction: "build",
+      options: [],
+      answer: "",
+      answerTokens: [],
+      tokenPool: [],
+      explanation: "Sentence practice will appear once the content bank is available.",
+      voiceText: "",
+      helper: "",
+    };
+  }
+
+  const item = randomItem(bank);
+  const answerTokens = tokenizeSentence(item.korean);
+  const tokenPool = makeSentenceTokenPool(answerTokens, Math.max(6, answerTokens.length + 2));
+
+  return {
+    kind: "Sentence build",
+    mode: "Order the words",
+    prompt: "Drag the words into the right order.",
+    detail: `${item.source || "Sentence"} • ${item.tokenCount} words`,
+    visual: `<div class="sentence-clue">${escapeHtml(item.meaning || item.korean)}</div><div class="fs-xs text-muted-2">Tap or drag words into the slots</div>`,
+    interaction: "build",
+    options: [],
+    answer: item.korean,
+    answerTokens,
+    tokenPool,
+    explanation: item.meaning ? `${item.korean} means ${item.meaning}.` : `${item.korean}.`,
+    voiceText: item.voiceText || item.korean,
+    helper: "Tap a word to place it. Tap a filled slot to clear it.",
+  };
+}
+
+function makeSentenceTypingQuestion(level = getTrackLevel("sentences")) {
+  const bank = getDictationSentenceBank(level);
+  if (!bank.length) {
+    return {
+      kind: "Dictation",
+      mode: "Listen and type",
+      prompt: "The dictation bank is not ready yet.",
+      detail: "Try again in a moment.",
+      visual: `<div class="big-glyph">♪</div>`,
+      interaction: "type",
+      options: [],
+      answer: "",
+      answerTokens: [],
+      tokenPool: [],
+      explanation: "Sentence typing will appear once the content bank is available.",
+      voiceText: "",
+      helper: "",
+      placeholder: "Type the sentence here",
+    };
+  }
+
+  const item = randomItem(bank);
+
+  return {
+    kind: "Dictation",
+    mode: "Listen and type",
+    prompt: "Listen, then type the Korean sentence.",
+    detail: `${item.source || "Sentence"} • ${item.tokenCount} words`,
+    visual: `<div class="sentence-clue">${escapeHtml(item.meaning || "Dictation")}</div><div class="fs-xs text-muted-2">Use the play button if you want a replay</div>`,
+    interaction: "type",
+    options: [],
+    answer: item.korean,
+    answerTokens: tokenizeSentence(item.korean),
+    tokenPool: [],
+    explanation: item.meaning ? `${item.korean} means ${item.meaning}.` : `${item.korean}.`,
+    voiceText: item.voiceText || item.korean,
+    autoSpeak: true,
+    helper: "Type the sentence in Korean, then press Check.",
+    placeholder: "Type the Korean sentence here",
+  };
+}
+
+function makeSentenceListenQuestion(level = getTrackLevel("listening")) {
+  const bank = getBuildableSentenceBank(level);
+  if (!bank.length) {
+    return {
+      kind: "Listen",
+      mode: "Sentence match",
+      prompt: "The listening bank is not ready yet.",
+      detail: "Try again in a moment.",
+      visual: `<div class="big-glyph">♪</div>`,
+      interaction: "choice",
+      options: ["Reload", "Try again", "Open Library", "Study words"],
+      answer: "Reload",
+      explanation: "Sentence listening will appear once the content bank is available.",
+      voiceText: "",
+      helper: "",
+      autoSpeak: false,
+    };
+  }
+
+  const item = randomItem(bank);
+  const options = createSentenceChoiceOptions(item, bank, "korean");
+
+  return {
+    kind: "Listen",
+    mode: "Sentence match",
+    prompt: "Listen, then choose the sentence you heard.",
+    detail: `${item.source || "Sentence"} • ${item.tokenCount} words`,
+    visual: `<div class="big-glyph">♪</div><div class="fs-xs text-muted-2">${escapeHtml(item.meaning || "Sentence listening")}</div>`,
+    interaction: "choice",
+    options,
+    answer: item.korean,
+    explanation: item.meaning ? `${item.korean} means ${item.meaning}.` : `${item.korean}.`,
+    voiceText: item.voiceText || item.korean,
+    autoSpeak: true,
+    helper: "Hear the sentence and choose the exact Korean wording.",
+  };
+}
+
+function makeMeaningListenQuestion(items, modeLabel, prompt, detail, level = getTrackLevel("listening")) {
+  const bank = getRepeatBandSlice(items.filter((item) => String(item.meaning || "").trim()), level);
+  if (!bank.length) {
+    return {
+      kind: "Listen",
+      mode: modeLabel,
+      prompt,
+      detail,
+      visual: `<div class="big-glyph">♪</div>`,
+      interaction: "choice",
+      options: ["Reload", "Try again", "Open Library", "Study words"],
+      answer: "Reload",
+      explanation: "The listening bank is not ready yet.",
+      voiceText: "",
+      helper: "",
+      autoSpeak: false,
+    };
+  }
+
+  const item = randomItem(bank);
+  const options = createSentenceChoiceOptions(item, bank, "meaning");
+
+  return {
+    kind: "Listen",
+    mode: modeLabel,
+    prompt,
+    detail,
+    visual: `<div class="big-glyph">♪</div><div class="fs-xs text-muted-2">${escapeHtml(item.korean || item.phrase || item.answer || "")}</div>`,
+    interaction: "choice",
+    options,
+    answer: item.meaning,
+    explanation: `${item.korean || item.phrase || item.answer} means ${item.meaning}.`,
+    voiceText: item.voiceText || item.korean || item.phrase || item.answer || "",
+    autoSpeak: true,
+    helper: "Listen closely and pick the meaning that matches the audio.",
+  };
+}
+
+function makeListenStudioQuestion(type, level = getTrackLevel("listening")) {
+  if (type === "dictation") {
+    return makeSentenceTypingQuestion(level);
+  }
+
+  if (type === "vocab-listen") {
+    return generateVocabQuestion("listen");
+  }
+
+  if (type === "phrase-listen") {
+    return makeMeaningListenQuestion(
+      survivalPhrases,
+      "Phrase listening",
+      "Listen, then choose the meaning.",
+      "Survival phrases",
+      level,
+    );
+  }
+
+  if (type === "conversation-listen") {
+    return makeMeaningListenQuestion(
+      conversationLineBank,
+      "Conversation listening",
+      "Listen, then choose the meaning.",
+      "Conversation lines",
+      level,
+    );
+  }
+
+  return makeSentenceListenQuestion(level);
+}
+
+const conversationDialogueBank = [
+  {
+    starter: "안녕하세요.",
+    reply: "안녕하세요.",
+    cue: "A polite greeting usually gets the same greeting back.",
+    explanation: "Mirroring the greeting keeps the exchange natural.",
+    voiceText: "안녕하세요.",
+  },
+  {
+    starter: "감사합니다.",
+    reply: "괜찮아요.",
+    cue: "A natural response to thanks.",
+    explanation: "괜찮아요 is a friendly reply to thanks.",
+    voiceText: "괜찮아요.",
+  },
+  {
+    starter: "다시 말씀해 주세요.",
+    reply: "네, 다시 말씀드릴게요.",
+    cue: "If someone asks for a repeat, confirm that you will repeat it.",
+    explanation: "This keeps the conversation moving.",
+    voiceText: "네, 다시 말씀드릴게요.",
+  },
+  {
+    starter: "천천히 말씀해 주세요.",
+    reply: "네, 천천히 말할게요.",
+    cue: "If someone asks you to slow down, acknowledge it politely.",
+    explanation: "This is a calm and polite confirmation.",
+    voiceText: "네, 천천히 말할게요.",
+  },
+  {
+    starter: "화장실이 어디예요?",
+    reply: "저쪽이에요.",
+    cue: "A direction question gets a short directional reply.",
+    explanation: "Simple directions are often enough in real conversation.",
+    voiceText: "저쪽이에요.",
+  },
+  {
+    starter: "도와주세요.",
+    reply: "네, 여기요.",
+    cue: "When someone asks for help, an immediate acknowledgement helps.",
+    explanation: "This reply sounds direct and helpful.",
+    voiceText: "네, 여기요.",
+  },
+];
+
+const STORAGE_KEY = "hanapath-v1";
+
+// Populated by rehydrate functions after each screen renders
+let els = {};
+
+let currentQuestion = null;
+let currentAnswered = false;
+let phaseOneResetArmed = false;
+let phaseOneResetTimer = 0;
+let phaseOneView = { lessonIndex: 0, mode: "learn", slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
+let currentQuizScope = "alphabet";
+
+const MAIN_TABS = ["alphabet", "vocabulary", "sentences", "listening"];
+const TAB_SCREEN_IDS = {
+  alphabet: "today",
+  vocabulary: "review",
+  sentences: "speak",
+  listening: "library",
+};
+const TAB_ALIASES = {
+  today: "alphabet",
+  path: "alphabet",
+  review: "vocabulary",
+  speak: "sentences",
+  library: "listening",
+  progress: "listening",
+};
+
+function clampLevel(value, min = 1, max = 10) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return min;
+  return Math.min(max, Math.max(min, Math.round(number)));
+}
+
+function normalizeMainTab(value) {
+  const raw = String(value || "").toLowerCase();
+  const alias = TAB_ALIASES[raw] || raw;
+  return MAIN_TABS.includes(alias) ? alias : "alphabet";
+}
+
+function getLegacyTabStartLevel(tab) {
+  const legacyLevel = Number(String(state.level || "K0").replace(/\D+/g, "")) || 0;
+  const base = Math.min(10, Math.max(1, legacyLevel * 2 + 1));
+  if (tab === "alphabet") {
+    const done = Array.isArray(state.phaseOneCompleted) ? state.phaseOneCompleted.length : 0;
+    if (!done) return 1;
+    return clampLevel(Math.ceil((done / Math.max(1, phaseOneLessons.length)) * 10));
+  }
+  if (tab === "vocabulary") {
+    const known = Array.isArray(state.vocabKnownRanks) ? state.vocabKnownRanks.length : 0;
+    return clampLevel(Math.ceil(Math.max(base, 1 + known / 40)));
+  }
+  if (tab === "sentences") {
+    const corrected = Number(state.correct) || 0;
+    return clampLevel(Math.ceil(Math.max(base, 1 + corrected / 20)));
+  }
+  if (tab === "listening") {
+    const minutes = Number(state.totalMinutes) || 0;
+    return clampLevel(Math.ceil(Math.max(base, 1 + minutes / 90)));
+  }
+  return 1;
+}
+
+function normalizeTabLevels(source) {
+  const fallback = {
+    alphabet: getLegacyTabStartLevel("alphabet"),
+    vocabulary: getLegacyTabStartLevel("vocabulary"),
+    sentences: getLegacyTabStartLevel("sentences"),
+    listening: getLegacyTabStartLevel("listening"),
+  };
+  const next = { ...fallback };
+  if (source && typeof source === "object") {
+    for (const tab of MAIN_TABS) {
+      next[tab] = clampLevel(source[tab] ?? fallback[tab]);
+    }
+  }
+  return next;
+}
+
+function getTrackLevel(tab) {
+  const safeTab = normalizeMainTab(tab);
+  return clampLevel(state.tabLevels?.[safeTab] ?? getLegacyTabStartLevel(safeTab));
+}
+
+function setTrackLevel(tab, level) {
+  const safeTab = normalizeMainTab(tab);
+  state.tabLevels = normalizeTabLevels(state.tabLevels);
+  state.tabLevels[safeTab] = clampLevel(level);
+  saveState();
+}
+
+function getCurrentQuizScope() {
+  return normalizeMainTab(currentQuizScope || activeTab || state.mainTab || "alphabet");
+}
+
+function getQuizIds(scope = getCurrentQuizScope()) {
+  const safeScope = normalizeMainTab(scope);
+  return {
+    type: `${safeScope}QuizType`,
+    mode: `${safeScope}QuizMode`,
+    visual: `${safeScope}QuizVisual`,
+    prompt: `${safeScope}QuizPrompt`,
+    detail: `${safeScope}QuizDetail`,
+    options: `${safeScope}QuizOptions`,
+    feedback: `${safeScope}QuizFeedback`,
+    speak: `${safeScope}SpeakBtn`,
+    next: `${safeScope}NextBtn`,
+    round: `${safeScope}Round`,
+    streak: `${safeScope}Streak`,
+    best: `${safeScope}Best`,
+    accuracy: `${safeScope}Accuracy`,
+  };
+}
+
+function getLevelBand(level, bands = 5) {
+  return Math.min(bands, Math.max(1, Math.ceil(clampLevel(level) / (10 / bands))));
+}
+
+function getCurrentBandSlice(items, level, bands = 5) {
+  const ordered = [...items];
+  const band = getLevelBand(level, bands);
+  const chunk = Math.max(1, Math.ceil(ordered.length / bands));
+  const start = Math.max(0, (band - 1) * chunk);
+  return ordered.slice(start, Math.min(ordered.length, start + chunk));
+}
+
+function getRepeatBandSlice(items, level, bands = 5) {
+  const ordered = [...items];
+  const band = getLevelBand(level, bands);
+  const chunk = Math.max(1, Math.ceil(ordered.length / bands));
+  return ordered.slice(0, Math.min(ordered.length, band * chunk));
+}
+
+function getMainTabLabel(tab) {
+  const safe = normalizeMainTab(tab);
+  return safe.charAt(0).toUpperCase() + safe.slice(1);
+}
+
+const ALPHABET_VIEWS = [
+  { id: "basics", label: "Basics" },
+  { id: "hear", label: "Hear" },
+  { id: "build", label: "Build" },
+  { id: "test", label: "Test" },
+  { id: "review", label: "Review" },
+];
+
+function normalizeAlphabetView(value) {
+  const raw = String(value || "").toLowerCase();
+  return ALPHABET_VIEWS.some((view) => view.id === raw) ? raw : "basics";
+}
+
+function renderAlphabetTabs(activeView) {
+  return `
+    <div class="lib-tabs" aria-label="Alphabet lesson tabs">
+      ${ALPHABET_VIEWS.map((view) => `
+        <button class="lib-tab ${view.id === activeView ? "active" : ""}" type="button" data-alpha-view="${escapeHtml(view.id)}">${escapeHtml(view.label)}</button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
+  const concepts = lesson.concepts || [];
+  const lead = concepts[0] || { title: lesson.title, body: lesson.goal, cue: lesson.goal, voiceText: lesson.goal, visual: "" };
+  const support = concepts[1] || lead;
+  const extra = concepts[2] || support;
+  const sampleRows = concepts.slice(0, 3).map((concept) => `
+    <div class="study-row">
+      <div>
+        <div class="study-row-ko">${escapeHtml(concept.kicker || concept.title || lesson.shortTitle)}</div>
+        <div class="study-row-sub">${escapeHtml(concept.cue || concept.body || lesson.goal)}</div>
+      </div>
+      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(concept.voiceText || concept.cue || lesson.goal)}">▶</button>
+    </div>
+  `).join("");
+  const repeatRows = repeatLessons.slice(-3).map((lessonItem, index) => `
+    <div class="study-row">
+      <div>
+        <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lessonItem.shortTitle)}</div>
+        <div class="study-row-sub">${escapeHtml(lessonItem.goal)}</div>
+      </div>
+      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lessonItem.goal)}">▶</button>
+    </div>
+  `).join("");
+
+  if (view === "hear") {
+    return `
+      <div class="card">
+        <div class="flex-between mb-12">
+          <div>
+            <div class="eyebrow">Hear</div>
+            <div class="screen-sub" style="margin-bottom:0;">Train the sound before you chase the word.</div>
+          </div>
+          <span class="pill accent">${concepts.length} sounds</span>
+        </div>
+        <div class="study-list">
+          ${sampleRows || `<div class="screen-sub" style="margin-bottom:0;">No sound cards for this stage yet.</div>`}
+        </div>
+      </div>
+    `;
+  }
+
+  if (view === "build") {
+    return `
+      <div class="card">
+        <div class="flex-between mb-12">
+          <div>
+            <div class="eyebrow">Build</div>
+            <div class="screen-sub" style="margin-bottom:0;">Put the letters together one block at a time.</div>
+          </div>
+          <span class="pill accent">K0</span>
+        </div>
+        <div class="big-glyph" lang="ko">${escapeHtml(lead.visual || lead.voiceText || lesson.shortTitle)}</div>
+        <div class="study-list">
+          <div class="study-row active">
+            <div>
+              <div class="study-row-ko">${escapeHtml(lead.title || lesson.title)}</div>
+              <div class="study-row-sub">${escapeHtml(lead.body || lesson.goal)}</div>
+            </div>
+            <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lead.voiceText || lesson.goal)}">▶</button>
+          </div>
+          <div class="study-row">
+            <div>
+              <div class="study-row-ko">${escapeHtml(support.title || lesson.shortTitle)}</div>
+              <div class="study-row-sub">${escapeHtml(support.cue || support.body || lesson.goal)}</div>
+            </div>
+            <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(support.voiceText || lesson.goal)}">▶</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (view === "test") {
+    return renderQuizCard("alphabet");
+  }
+
+  if (view === "review") {
+    return `
+      <div class="card">
+        <div class="flex-between mb-12">
+          <div>
+            <div class="eyebrow">Review</div>
+            <div class="screen-sub" style="margin-bottom:0;">Earlier Hangul lessons stay in the loop.</div>
+          </div>
+          <span class="pill muted">${repeatLessons.length} earlier</span>
+        </div>
+        <div class="study-list">
+          ${repeatRows || `<div class="screen-sub" style="margin-bottom:0;">Finish a few basics and your review stack will fill up here.</div>`}
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Basics</div>
+          <div class="screen-sub" style="margin-bottom:0;">Start with the current rule and only the current rule.</div>
+        </div>
+        <span class="pill accent">${escapeHtml(lesson.duration)}</span>
+      </div>
+      <div class="study-list">
+        <div class="study-row active">
+          <div>
+            <div class="study-row-ko">${escapeHtml(lesson.title)}</div>
+            <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
+            <div class="fs-xs text-muted-2 mt-4">${escapeHtml(lead.body || lead.cue || lesson.goal)}</div>
+          </div>
+          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lead.voiceText || lesson.goal)}">▶</button>
+        </div>
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">${escapeHtml(support.kicker || "Shape")}</div>
+            <div class="study-row-sub">${escapeHtml(support.title || support.cue || lesson.goal)}</div>
+          </div>
+          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(support.voiceText || lesson.goal)}">▶</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+const state = loadState();
+state.mainTab = normalizeMainTab(state.mainTab || "alphabet");
+state.tabLevels = normalizeTabLevels(state.tabLevels);
+state.alphabetView = normalizeAlphabetView(state.alphabetView || "basics");
+state.phaseOneCompleted = Array.isArray(state.phaseOneCompleted)
+  ? state.phaseOneCompleted.filter((id) => phaseOneLessons.some((lesson) => lesson.id === id))
+  : [];
+state.phaseOneActive = Number.isInteger(state.phaseOneActive)
+  ? Math.min(Math.max(state.phaseOneActive, 0), phaseOneLessons.length - 1)
+  : 0;
+phaseOneView.lessonIndex = state.phaseOneActive;
+state.vocabQuery = typeof state.vocabQuery === "string" ? state.vocabQuery : "";
+state.vocabBand = typeof state.vocabBand === "string" ? state.vocabBand : "all";
+state.vocabPage = Number.isInteger(state.vocabPage) ? Math.max(0, state.vocabPage) : 0;
+state.vocabActiveRank = Number.isInteger(state.vocabActiveRank) ? Math.max(1, state.vocabActiveRank) : 1;
+state.vocabKnownRanks = Array.isArray(state.vocabKnownRanks)
+  ? [...new Set(state.vocabKnownRanks.map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0))]
+  : [];
+state.vocabHardRanks = Array.isArray(state.vocabHardRanks)
+  ? [...new Set(state.vocabHardRanks.map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0))]
+  : [];
+
+// (quick-nav removed in HanaPath)
+
+function loadState() {
+  const defaults = {
+    onboarded: false,
+    goal: "media",
+    weeklyHours: 10,
+    speakingAnxiety: "medium",
+    knowsHangul: false,
+    level: "K0",
+    mainTab: "alphabet",
+    alphabetView: "basics",
+    tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
+    skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
+    round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
+    studio: "alphabet",
+    phaseOneCompleted: [],
+    phaseOneActive: 0,
+    todayDate: "",
+    todayDone: [],
+    totalMinutes: 0,
+    studyDays: 0,
+    lastDate: "",
+    libTab: "phrases",
+    vocabQuery: "",
+    vocabBand: "all",
+    vocabPage: 0,
+    vocabActiveRank: 1,
+    vocabKnownRanks: [],
+    vocabHardRanks: [],
+    speakDone: false,
+    resetArmed: false,
+  };
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaults;
+    const parsed = JSON.parse(raw);
+    return { ...defaults, ...parsed, skills: { ...defaults.skills, ...(parsed.skills || {}) } };
+  } catch {
+    return defaults;
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Ignore storage errors; the app still works without persistence.
+  }
+}
+
+function getBackupPayload() {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    state: JSON.parse(JSON.stringify(state)),
+  };
+}
+
+function getBackupFilename() {
+  return `hanapath-backup-${new Date().toISOString().slice(0, 10)}.json`;
+}
+
+function downloadBackupFile() {
+  const payload = getBackupPayload();
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = getBackupFilename();
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function parseBackupState(text) {
+  const parsed = JSON.parse(String(text || ""));
+  if (parsed && typeof parsed === "object" && parsed.state && typeof parsed.state === "object") {
+    return parsed.state;
+  }
+  if (parsed && typeof parsed === "object") {
+    return parsed;
+  }
+  throw new Error("Backup file does not contain state data.");
+}
+
+const LEVEL_ORDER = ["K0", "K1", "K2", "K3", "K4", "K5"];
+
+if (!LEVEL_ORDER.includes(state.level)) {
+  state.level = "K0";
+}
+
+function getLevelIndex(level) {
+  const index = LEVEL_ORDER.indexOf(level);
+  return index >= 0 ? index : 0;
+}
+
+function getUnlockedLevelFromProgress() {
+  let unlockedIndex = 0;
+
+  if (phaseOneLessons.every((lesson) => state.phaseOneCompleted.includes(lesson.id))) {
+    unlockedIndex = 1;
+  }
+
+  if (unlockedIndex >= 1 && state.correct >= 20) {
+    unlockedIndex = Math.max(unlockedIndex, 2);
+  }
+
+  if (unlockedIndex >= 2 && state.correct >= 50 && state.vocabKnownRanks.length >= 20) {
+    unlockedIndex = Math.max(unlockedIndex, 3);
+  }
+
+  if (unlockedIndex >= 3 && state.correct >= 100 && state.studyDays >= 3) {
+    unlockedIndex = Math.max(unlockedIndex, 4);
+  }
+
+  if (unlockedIndex >= 4 && state.correct >= 180 && state.vocabKnownRanks.length >= 100) {
+    unlockedIndex = Math.max(unlockedIndex, 5);
+  }
+
+  return LEVEL_ORDER[unlockedIndex];
+}
+
+function syncLevelProgress() {
+  const unlockedLevel = getUnlockedLevelFromProgress();
+  if (getLevelIndex(unlockedLevel) > getLevelIndex(state.level)) {
+    state.level = unlockedLevel;
+    return true;
+  }
+  return false;
+}
+
+function getUnlockedStudioIds(level = state.level) {
+  void level;
+  return new Set([
+    "alphabet",
+    "vocabulary",
+    "sentences",
+    "listening",
+    "sound",
+    "survival",
+    "grammar",
+    "verb",
+    "conversation",
+    "vocab",
+    "listen",
+  ]);
+}
+
+function isStudioUnlocked(id, level = state.level) {
+  return getUnlockedStudioIds(level).has(id);
+}
+
+function getDefaultStudioForLevel(level = state.level) {
+  const index = getLevelIndex(level);
+  if (index <= 0) return "alphabet";
+  if (index === 1) return "vocabulary";
+  if (index === 2) return "sentences";
+  return "listening";
+}
+
+function normalizeStudioSelection() {
+  const safeStudio = String(state.studio || "").toLowerCase();
+  if (!getUnlockedStudioIds(state.level).has(safeStudio)) {
+    state.studio = state.mainTab || getDefaultStudioForLevel();
+    return true;
+  }
+  return false;
+}
+
+function refreshProgressionState() {
+  const leveledUp = syncLevelProgress();
+  const studioChanged = normalizeStudioSelection();
+  if (leveledUp || studioChanged) {
+    saveState();
+  }
+  return leveledUp || studioChanged;
+}
+
+function getLevelUnlockText(level) {
+  if (level === "K0") return "Starts here";
+  if (level === "K1") return "Finish all K0 stages";
+  if (level === "K2") return "20 correct answers and 20 known words";
+  if (level === "K3") return "50 correct answers and 20 known words";
+  if (level === "K4") return "100 correct answers and 3 study days";
+  if (level === "K5") return "180 correct answers and 100 known words";
+  return "Keep going";
+}
+
+function isFreshProfile() {
+  return (
+    state.asked === 0 &&
+    state.correct === 0 &&
+    state.studyDays === 0 &&
+    state.totalMinutes === 0 &&
+    state.phaseOneCompleted.length === 0 &&
+    state.vocabKnownRanks.length === 0 &&
+    state.vocabHardRanks.length === 0
+  );
+}
+
+const VOCAB_CSV_URL = "./korean_5000_claude_ready.csv";
+const VOCAB_PAGE_SIZE = 40;
+const VOCAB_BANDS = ["1-1000", "1001-2000", "2001-3000", "3001-4000", "4001-5000"];
+
+if (!["all", ...VOCAB_BANDS].includes(state.vocabBand)) {
+  state.vocabBand = "all";
+}
+
+let vocabBank = [];
+let vocabBankReady = false;
+let vocabBankLoading = null;
+let vocabBankError = "";
+let vocabByRank = new Map();
+let vocabKoreanChoices = [];
+let vocabRomanizationChoices = [];
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+
+    if (quoted) {
+      if (char === "\"") {
+        if (text[index + 1] === "\"") {
+          cell += "\"";
+          index += 1;
+        } else {
+          quoted = false;
+        }
+      } else {
+        cell += char;
+      }
+      continue;
+    }
+
+    if (char === "\"") {
+      quoted = true;
+      continue;
+    }
+
+    if (char === ",") {
+      row.push(cell);
+      cell = "";
+      continue;
+    }
+
+    if (char === "\n") {
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+      continue;
+    }
+
+    if (char !== "\r") {
+      cell += char;
+    }
+  }
+
+  if (cell.length || row.length) {
+    row.push(cell);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+function normalizeVocabEntry(row) {
+  const rank = Number(row.rank);
+  const korean = String(row.korean_spelling || "").trim();
+  const romanization = String(row.english_spelling_romanization || "").trim();
+  const frequencyBand = String(row.frequency_band || "").trim() || "1-1000";
+  const syllables = Number(row.syllables);
+  const tokenNote = String(row.token_note || "").trim();
+  const sourceUrl = String(row.source_url || "").trim();
+
+  if (!Number.isInteger(rank) || rank <= 0 || !korean) {
+    return null;
+  }
+
+  return {
+    rank,
+    korean,
+    romanization: romanization || korean,
+    frequencyBand,
+    syllables: Number.isInteger(syllables) && syllables > 0 ? syllables : 1,
+    tokenNote,
+    sourceUrl,
+  };
+}
+
+function dedupeStrings(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+async function loadVocabBank() {
+  if (vocabBankLoading) {
+    return vocabBankLoading;
+  }
+
+  vocabBankLoading = (async () => {
+    try {
+      const response = await fetch(VOCAB_CSV_URL, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Failed to load vocab CSV (${response.status})`);
+      }
+
+      const parsed = parseCSV(await response.text());
+      const [header, ...rows] = parsed;
+      if (!header || header.length < 4) {
+        throw new Error("Vocab CSV header is missing");
+      }
+
+      const normalizedRows = rows
+        .map((row) => {
+          const record = {};
+          header.forEach((key, index) => {
+            record[key] = row[index] || "";
+          });
+          return normalizeVocabEntry(record);
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.rank - b.rank);
+
+      vocabBank = normalizedRows;
+      vocabByRank = new Map(normalizedRows.map((entry) => [entry.rank, entry]));
+      vocabKoreanChoices = dedupeStrings(normalizedRows.map((entry) => entry.korean));
+      vocabRomanizationChoices = dedupeStrings(normalizedRows.map((entry) => entry.romanization));
+      vocabBankError = "";
+      vocabBankReady = true;
+      updateVocabSkill();
+      return vocabBank;
+    } catch (error) {
+      vocabBank = [];
+      vocabByRank = new Map();
+      vocabKoreanChoices = [];
+      vocabRomanizationChoices = [];
+      vocabBankError = error instanceof Error ? error.message : "Unable to load vocabulary bank.";
+      vocabBankReady = true;
+      return vocabBank;
+    }
+  })();
+
+  return vocabBankLoading;
+}
+
+function getVocabKnownSet() {
+  return new Set(state.vocabKnownRanks || []);
+}
+
+function getVocabHardSet() {
+  return new Set(state.vocabHardRanks || []);
+}
+
+function updateVocabSkill() {
+  if (!state.skills) {
+    return;
+  }
+
+  const knownCount = state.vocabKnownRanks.length;
+  const bonus = Math.min(100, Math.max(0, 8 + Math.floor(knownCount / 8)));
+  state.skills.vocab = bonus;
+}
+
+function setVocabStatus(rank, status) {
+  const safeRank = Number(rank);
+  if (!Number.isInteger(safeRank) || safeRank <= 0) {
+    return;
+  }
+
+  const known = new Set(state.vocabKnownRanks || []);
+  const hard = new Set(state.vocabHardRanks || []);
+
+  if (status === "known") {
+    known.add(safeRank);
+    hard.delete(safeRank);
+  } else if (status === "hard") {
+    hard.add(safeRank);
+    known.delete(safeRank);
+  } else {
+    known.delete(safeRank);
+    hard.delete(safeRank);
+  }
+
+  state.vocabKnownRanks = [...known].sort((a, b) => a - b);
+  state.vocabHardRanks = [...hard].sort((a, b) => a - b);
+  updateVocabSkill();
+  saveState();
+}
+
+function getVocabStudyBands() {
+  const level = getTrackLevel("vocabulary");
+  return VOCAB_BANDS.slice(0, getLevelBand(level, VOCAB_BANDS.length));
+}
+
+function getVocabStudyPool() {
+  const bands = new Set(getVocabStudyBands());
+  const pool = vocabBank.filter((entry) => bands.has(entry.frequencyBand));
+  return pool.length ? pool : vocabBank;
+}
+
+function getVocabStudyEntry(rank) {
+  return vocabByRank.get(Number(rank)) || null;
+}
+
+function findVocabMatches(query, band) {
+  const trimmed = String(query || "").trim().toLowerCase();
+  const activeBand = band || "all";
+  return vocabBank.filter((entry) => {
+    if (activeBand !== "all" && entry.frequencyBand !== activeBand) {
+      return false;
+    }
+
+    if (!trimmed) {
+      return true;
+    }
+
+    return [
+      String(entry.rank),
+      entry.korean,
+      entry.romanization,
+      entry.frequencyBand,
+      String(entry.syllables),
+      entry.tokenNote,
+    ].some((value) => value.toLowerCase().includes(trimmed));
+  });
+}
+
+function toggleVocabKnown(rank) {
+  const safeRank = Number(rank);
+  if (!Number.isInteger(safeRank) || safeRank <= 0) {
+    return;
+  }
+
+  if (getVocabKnownSet().has(safeRank)) {
+    setVocabStatus(safeRank, "clear");
+  } else {
+    setVocabStatus(safeRank, "known");
+  }
+}
+
+function toggleVocabHard(rank) {
+  const safeRank = Number(rank);
+  if (!Number.isInteger(safeRank) || safeRank <= 0) {
+    return;
+  }
+
+  if (getVocabHardSet().has(safeRank)) {
+    setVocabStatus(safeRank, "clear");
+  } else {
+    setVocabStatus(safeRank, "hard");
+  }
+}
+
+function buildVocabLibraryView() {
+  if (!vocabBankReady) {
+    return {
+      html: `
+        <div class="card vocab-loading">
+          <div class="eyebrow mb-12">5,000-word bank</div>
+          <div class="screen-sub" style="margin-bottom:0;">Loading the vocabulary file...</div>
+        </div>
+      `,
+      filtered: [],
+      page: 0,
+      pageCount: 1,
+      pageItems: [],
+      active: null,
+      knownCount: getVocabKnownSet().size,
+      hardCount: getVocabHardSet().size,
+      total: 0,
+    };
+  }
+
+  const knownSet = getVocabKnownSet();
+  const hardSet = getVocabHardSet();
+  const filtered = findVocabMatches(state.vocabQuery, state.vocabBand);
+  const total = vocabBank.length;
+  const knownCount = knownSet.size;
+  const hardCount = hardSet.size;
+  const pageCount = Math.max(1, Math.ceil(filtered.length / VOCAB_PAGE_SIZE));
+  const page = Math.min(Math.max(state.vocabPage || 0, 0), pageCount - 1);
+  const start = page * VOCAB_PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + VOCAB_PAGE_SIZE);
+  const active = filtered.find((entry) => entry.rank === state.vocabActiveRank) || filtered[0] || null;
+  const activeRank = active ? active.rank : state.vocabActiveRank;
+  const progressPct = total ? Math.round((knownCount / total) * 100) : 0;
+  const activeKnown = active ? knownSet.has(active.rank) : false;
+  const activeHard = active ? hardSet.has(active.rank) : false;
+
+  const bandButtons = ["all", ...VOCAB_BANDS]
+    .map((band) => {
+      const label = band === "all" ? "All bands" : band;
+      return `<button class="filter-chip ${state.vocabBand === band ? "active" : ""}" type="button" data-vocab-band="${band}">${label}</button>`;
+    })
+    .join("");
+
+  const heroActions = active
+    ? `
+      <div class="vocab-actions">
+        <button class="button secondary compact" id="vocabHearBtn" type="button" data-vocab-hear="${escapeHtml(active.korean)}">Hear</button>
+        <button class="button success compact" id="vocabKnownBtn" type="button" data-vocab-toggle-known="${active.rank}">${activeKnown ? "Known ✓" : "Mark known"}</button>
+        <button class="button secondary compact" id="vocabHardBtn" type="button" data-vocab-toggle-hard="${active.rank}">${activeHard ? "Hard ✓" : "Mark hard"}</button>
+        <button class="button primary compact" id="vocabRandomBtn" type="button">Random word</button>
+      </div>
+    `
+    : "";
+
+  const heroMeta = active
+    ? `
+      <div class="vocab-meta-grid">
+        <div class="vocab-meta-box"><span>Korean spelling</span><strong lang="ko">${escapeHtml(active.korean)}</strong></div>
+        <div class="vocab-meta-box"><span>English spelling</span><strong>${escapeHtml(active.romanization)}</strong></div>
+        <div class="vocab-meta-box"><span>Pronunciation</span><strong>${escapeHtml(active.romanization)}</strong></div>
+        <div class="vocab-meta-box"><span>Band</span><strong>${escapeHtml(active.frequencyBand)}</strong></div>
+        <div class="vocab-meta-box"><span>Syllables</span><strong>${active.syllables}</strong></div>
+        <div class="vocab-meta-box"><span>Status</span><strong>${activeKnown ? "Known" : activeHard ? "Hard" : "Fresh"}</strong></div>
+      </div>
+      ${active.tokenNote ? `<div class="vocab-note">${escapeHtml(active.tokenNote)}</div>` : ""}
+    `
+    : `<div class="screen-sub" style="margin-bottom:0;">No vocabulary entry matched the current filters.</div>`;
+
+  return {
+    html: `
+      <div class="card vocab-hero">
+        <div class="vocab-hero-top">
+          <div>
+            <div class="eyebrow">5,000-word bank</div>
+            <div class="vocab-hero-count">${knownCount} known • ${hardCount} hard • ${total} total</div>
+          </div>
+          <span class="pill accent">${progressPct}% known</span>
+        </div>
+        ${active
+          ? `
+            <div class="vocab-current">
+              <div class="vocab-rank">#${active.rank}</div>
+              <div class="vocab-word" lang="ko">${escapeHtml(active.korean)}</div>
+              <div class="vocab-rom">${escapeHtml(active.romanization)}</div>
+              <div class="vocab-detail">${escapeHtml(active.frequencyBand)} • ${active.syllables} syllable${active.syllables === 1 ? "" : "s"}</div>
+            </div>
+            ${heroMeta}
+            ${heroActions}
+          `
+          : ""}
+      </div>
+
+      <div class="card vocab-panel">
+        <input class="vocab-search" id="vocabSearch" type="search" placeholder="Search Korean, romanization, rank, or note" value="${escapeHtml(state.vocabQuery)}" />
+        <div class="vocab-filters">${bandButtons}</div>
+        <div class="vocab-summary">${filtered.length} of ${total} words shown</div>
+        <div class="vocab-pagebar">
+          <button class="button secondary compact" id="vocabPrevPage" type="button" ${page <= 0 ? "disabled" : ""}>Prev</button>
+          <span class="vocab-pageinfo">Page ${page + 1} of ${pageCount}</span>
+          <button class="button secondary compact" id="vocabNextPage" type="button" ${page >= pageCount - 1 ? "disabled" : ""}>Next</button>
+        </div>
+        <div class="vocab-list">
+          ${pageItems
+            .map((entry) => {
+              const rowKnown = knownSet.has(entry.rank);
+              const rowHard = hardSet.has(entry.rank);
+              const rowActive = activeRank === entry.rank;
+              return `
+                <div class="vocab-row ${rowActive ? "active" : ""} ${rowKnown ? "known" : ""} ${rowHard ? "hard" : ""}" role="button" tabindex="0" data-vocab-rank="${entry.rank}">
+                  <div class="vocab-row-rank">#${entry.rank}</div>
+                  <div class="vocab-row-main">
+                    <div class="vocab-row-ko" lang="ko">${escapeHtml(entry.korean)}</div>
+                    <div class="vocab-row-rom">${escapeHtml(entry.romanization)}</div>
+                    <div class="vocab-row-meta">${escapeHtml(entry.frequencyBand)} • ${entry.syllables} syllable${entry.syllables === 1 ? "" : "s"}</div>
+                    <div class="vocab-row-tags">
+                      ${rowKnown ? `<span class="vocab-status known">Known</span>` : ""}
+                      ${rowHard ? `<span class="vocab-status hard">Hard</span>` : ""}
+                    </div>
+                  </div>
+                  <button class="lib-hear-btn" type="button" data-vocab-hear="${escapeHtml(entry.korean)}">▶</button>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      </div>
+    `,
+    filtered,
+    page,
+    pageCount,
+    pageItems,
+    active,
+    activeRank,
+    knownCount,
+    hardCount,
+    total,
+  };
+}
+
+function getStudio() {
+  const studio = String(state.studio || "").toLowerCase();
+  if (studio === "vocabulary" || studio === "vocab") return "vocab";
+  if (studio === "sentences") return "sentences";
+  if (studio === "listening" || studio === "listen") return "listen";
+  if (studio === "sound" || studio === "survival" || studio === "grammar" || studio === "verb" || studio === "conversation") {
+    return studio;
+  }
+  return "alphabet";
+}
+
+function getStudioLabel() {
+  if (getStudio() === "vocab") return "Vocabulary";
+  if (getStudio() === "sentences") return "Sentences";
+  if (getStudio() === "listen") return "Listening";
+  if (getStudio() === "sound") return "Alphabet sound";
+  if (getStudio() === "survival") return "Survival";
+  if (getStudio() === "grammar") return "Grammar";
+  if (getStudio() === "verb") return "Verb";
+  if (getStudio() === "conversation") return "Conversation";
+  return "Alphabet";
+}
+
+function getStudioHint() {
+  if (getStudio() === "vocab") return "Vocabulary mode is active: English spelling, Hangul, and pronunciation are tested together.";
+  if (getStudio() === "sentences") return "Sentence mode is active: build Korean, type it, and hear it back.";
+  if (getStudio() === "listen") return "Listening mode is active: hear a line, choose it, or type it out.";
+  if (getStudio() === "sound") return "Hangul sound mode is active: consonants, vowels, batchim, and sound flow.";
+  if (getStudio() === "survival") return "Survival mode is active: quick phrases for real life.";
+  if (getStudio() === "grammar") return "Grammar mode is active: particles and sentence order.";
+  if (getStudio() === "verb") return "Verb mode is active: endings, tense, and honorifics.";
+  if (getStudio() === "conversation") return "Conversation mode is active: quick replies and shadowing.";
+  return "Alphabet mode is active: start with Hangul, then move up one level at a time.";
+}
+
+function syncStudioButton() {
+  if (els.enterPhaseTwoButton) {
+    els.enterPhaseTwoButton.textContent = getStudio() === "sound" ? "Back to alphabet mode" : "Enter sound mode";
+  }
+
+  if (els.enterPhaseThreeButton) {
+    els.enterPhaseThreeButton.textContent =
+      getStudio() === "survival" ? "Back to alphabet mode" : "Enter survival mode";
+  }
+
+  if (els.enterPhaseFourButton) {
+    els.enterPhaseFourButton.textContent =
+      getStudio() === "grammar" ? "Back to alphabet mode" : "Enter sentence mode";
+  }
+
+  if (els.enterPhaseFiveButton) {
+    els.enterPhaseFiveButton.textContent = getStudio() === "verb" ? "Back to alphabet mode" : "Enter verb mode";
+  }
+
+  if (els.enterPhaseSixButton) {
+    els.enterPhaseSixButton.textContent =
+      getStudio() === "conversation" ? "Back to alphabet mode" : "Enter conversation mode";
+  }
+}
+
+function toggleStudio(target) {
+  setStudio(getStudio() === target ? "alphabet" : target);
+  window.location.hash = "#practice";
+}
+
+function setStudio(studio) {
+  refreshProgressionState();
+  const normalized = normalizeMainTab(studio);
+  const requestedStudio = normalized === "alphabet" && !MAIN_TABS.includes(String(studio).toLowerCase())
+    ? String(studio).toLowerCase()
+    : normalized;
+  state.studio = isStudioUnlocked(requestedStudio) ? requestedStudio : (state.mainTab || getDefaultStudioForLevel());
+  updateStats();
+  syncStudioButton();
+  saveState();
+  renderQuestion(generateQuestion(), { scope: getCurrentQuizScope() });
+}
+
+function renderLevelRail(tab) {
+  const level = getTrackLevel(tab);
+  return `
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Levels</div>
+          <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(getMainTabLabel(tab))} stages and repetition.</div>
+        </div>
+        <span class="pill accent">${level}/10</span>
+      </div>
+      <div class="level-rail" aria-label="${escapeHtml(getMainTabLabel(tab))} levels">
+        ${Array.from({ length: 10 }, (_, index) => {
+          const n = index + 1;
+          const stateClass = n === level ? "active" : n < level ? "done" : "future";
+          return `<button class="level-chip ${stateClass}" type="button" data-level-tab="${escapeHtml(tab)}" data-level="${n}">${n}</button>`;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function bindLevelRail(el, tab, rerender) {
+  el.querySelectorAll(`[data-level-tab="${tab}"]`).forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const level = Number(btn.dataset.level);
+      if (!Number.isInteger(level)) return;
+      setTrackLevel(tab, level);
+      rerender();
+    });
+  });
+}
+
+function renderQuizCard(scope) {
+  const ids = getQuizIds(scope);
+  return `
+    <div class="card">
+      <div class="review-stats">
+        <div class="rev-stat"><span class="sv" id="${ids.round}">${state.round}</span><span class="sl">Round</span></div>
+        <div class="rev-stat"><span class="sv" id="${ids.streak}">${state.streak}</span><span class="sl">Streak</span></div>
+        <div class="rev-stat"><span class="sv" id="${ids.best}">${state.bestStreak}</span><span class="sl">Best</span></div>
+        <div class="rev-stat"><span class="sv" id="${ids.accuracy}">${state.asked === 0 ? "0%" : Math.round(state.correct / state.asked * 100) + "%"}</span><span class="sl">Accuracy</span></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-meta">
+          <span class="pill accent" id="${ids.type}">—</span>
+          <span class="pill muted" id="${ids.mode}">—</span>
+        </div>
+        <div class="quiz-visual" id="${ids.visual}"></div>
+        <div class="quiz-prompt" id="${ids.prompt}">Loading…</div>
+        <div class="quiz-detail" id="${ids.detail}"></div>
+        <div class="quiz-options" id="${ids.options}"></div>
+        <div class="quiz-feedback" id="${ids.feedback}"></div>
+      </div>
+
+      <div class="review-actions">
+        <button class="button secondary" id="${ids.speak}" type="button">▶ Hear it</button>
+        <button class="button primary" id="${ids.next}" type="button">Next →</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderWordPills(items, limit = 4) {
+  return items.slice(0, limit).map((item) => `
+    <div class="study-pill">
+      <div class="study-pill-ko" lang="ko">${escapeHtml(item.korean)}</div>
+      <div class="study-pill-sub">${escapeHtml(item.romanization || item.meaning || "")}</div>
+    </div>
+  `).join("");
+}
+
+function renderSentenceRows(items, limit = 4) {
+  return items.slice(0, limit).map((item) => `
+    <div class="study-row">
+      <div>
+        <div class="study-row-ko" lang="ko">${escapeHtml(item.korean)}</div>
+        <div class="study-row-sub">${escapeHtml(item.meaning || item.source || "")}</div>
+      </div>
+      <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(item.voiceText || item.korean)}">▶</button>
+    </div>
+  `).join("");
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function randomItem(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function shuffle(list) {
+  const copy = [...list];
+  for (let index = copy.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[swap]] = [copy[swap], copy[index]];
+  }
+  return copy;
+}
+
+function composeHangul(initial, medial, final = "") {
+  const initialIndex = INITIALS.indexOf(initial);
+  const medialIndex = MEDIALS.indexOf(medial);
+  const finalIndex = FINALS.indexOf(final);
+
+  if (initialIndex < 0 || medialIndex < 0 || finalIndex < 0) {
+    return "";
+  }
+
+  const code = 0xac00 + (initialIndex * 21 + medialIndex) * 28 + finalIndex;
+  return String.fromCharCode(code);
+}
+
+function decomposeHangul(syllable) {
+  const code = syllable.charCodeAt(0) - 0xac00;
+  if (code < 0 || code > 11171) {
+    return null;
+  }
+
+  const initial = INITIALS[Math.floor(code / 588)];
+  const medial = MEDIALS[Math.floor((code % 588) / 28)];
+  const final = FINALS[code % 28];
+  return { initial, medial, final };
+}
+
+function normalizeFinal(value) {
+  return value === "" ? "없음" : value;
+}
+
+function getVowelFamily(vowel) {
+  for (const [family, set] of Object.entries(VOWEL_FAMILIES)) {
+    if (set.has(vowel)) {
+      return family;
+    }
+  }
+
+  return "unknown";
+}
+
+function getConsonantFamily(consonant) {
+  if (consonant === "ㅇ") {
+    return "support";
+  }
+
+  if (Object.values(TENSE_PAIRS).includes(consonant)) {
+    return "tense";
+  }
+
+  if (["ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"].includes(consonant)) {
+    return "aspirated";
+  }
+
+  return "plain";
+}
+
+function getOnsetType(consonant) {
+  if (consonant === "ㅇ") {
+    return "silent onset";
+  }
+
+  if (Object.values(TENSE_PAIRS).includes(consonant)) {
+    return "tense onset";
+  }
+
+  if (["ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"].includes(consonant)) {
+    return "aspirated onset";
+  }
+
+  return "plain onset";
+}
+
+function sampleSyllableForVowel(vowel, finals = SIMPLE_FINALS) {
+  return composeHangul(randomItem(SIMPLE_INITIALS), vowel, randomItem(finals));
+}
+
+function makeSyllableChoices(answer, count = 4, pools = getPools()) {
+  const choices = new Set([answer]);
+
+  while (choices.size < count) {
+    const candidate = composeHangul(
+      randomItem(pools.initials),
+      randomItem(pools.medials),
+      randomItem(pools.finals),
+    );
+
+    if (candidate && candidate !== answer) {
+      choices.add(candidate);
+    }
+  }
+
+  return shuffle([...choices]);
+}
+
+function makeTextChoices(answer, pool, count = 4) {
+  const choices = new Set([answer]);
+
+  while (choices.size < count) {
+    const candidate = randomItem(pool);
+    if (candidate !== answer) {
+      choices.add(candidate);
+    }
+  }
+
+  return shuffle([...choices]);
+}
+
+function getPools() {
+  const mastery = getTrackLevel("alphabet");
+
+  if (mastery <= 2) {
+    return {
+      initials: SIMPLE_INITIALS,
+      medials: SIMPLE_MEDIALS,
+      finals: SIMPLE_FINALS,
+      deck: ["compose", "compose", "compose", "decompose", "decompose", "family"],
+      label: "Starter",
+    };
+  }
+
+  if (mastery <= 4) {
+    return {
+      initials: SIMPLE_INITIALS,
+      medials: SIMPLE_MEDIALS,
+      finals: ["", "ㄱ", "ㄴ", "ㅁ", "ㅇ", "ㄷ"],
+      deck: ["compose", "compose", "decompose", "decompose", "family", "family", "tense"],
+      label: "Builder",
+    };
+  }
+
+  if (mastery <= 6) {
+    return {
+      initials: INITIALS,
+      medials: MEDIALS,
+      finals: ["", "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅇ", "ㅅ", "ㅆ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"],
+      deck: ["compose", "compose", "decompose", "family", "family", "tense", "batchim"],
+      label: "Reader",
+    };
+  }
+
+  return {
+    initials: INITIALS,
+    medials: MEDIALS,
+    finals: FINALS,
+    deck: ["compose", "decompose", "family", "tense", "batchim", "listen"],
+    label: "Endless",
+  };
+}
+
+function getMasteryLabel(correct) {
+  if (correct < 4) return "Starter";
+  if (correct < 8) return "Builder";
+  if (correct < 12) return "Reader";
+  if (correct < 20) return "Sound-shift tracker";
+  return "Endless drill runner";
+}
+
+function updateStats() {
+  const accuracy = state.asked === 0 ? 0 : Math.round((state.correct / state.asked) * 100);
+  const ids = getQuizIds(getCurrentQuizScope());
+  const rnd = document.getElementById(ids.round);
+  const str = document.getElementById(ids.streak);
+  const bst = document.getElementById(ids.best);
+  const acc = document.getElementById(ids.accuracy);
+  const qmd = document.getElementById(ids.mode);
+  if (rnd) rnd.textContent = String(state.round);
+  if (str) str.textContent = String(state.streak);
+  if (bst) bst.textContent = String(state.bestStreak);
+  if (acc) acc.textContent = `${accuracy}%`;
+  if (qmd) qmd.textContent = `${getStudioLabel()} · ${getMasteryLabel(state.correct)}`;
+}
+
+function renderStartOrder() { /* no-op */ }
+
+function renderCurriculum() { /* no-op */
+  if (false) {
+  const lessonTotal = curriculum.reduce((total, phase) => total + phase.lessons.length, 0);
+  void lessonTotal;
+
+  els.curriculum.innerHTML = curriculum
+    .map(
+      (phase, index) => `
+        <details class="phase" open>
+          <summary>
+            <span class="phase-mark">Phase ${String(index + 1).padStart(2, "0")}</span>
+            <div class="phase-copy">
+              <h3>${escapeHtml(phase.title)}</h3>
+              <p>${escapeHtml(phase.summary)}</p>
+            </div>
+            <span class="phase-meta">${phase.lessons.length} lessons</span>
+          </summary>
+          <div class="phase-body">
+            <p class="phase-goal">${escapeHtml(phase.goal)}</p>
+            <div class="lesson-grid">
+              ${phase.lessons
+                .map(
+                  (lesson, lessonIndex) => `
+                    <article class="lesson">
+                      <div class="lesson-header">
+                        <h4>${escapeHtml(lesson.title)}</h4>
+                        <span class="lesson-index">${String(lessonIndex + 1).padStart(2, "0")}</span>
+                      </div>
+                      <p>${escapeHtml(lesson.focus)}</p>
+                      <ul>
+                        ${lesson.practice.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                      </ul>
+                      <p><strong>Payoff:</strong> ${escapeHtml(lesson.payoff)}</p>
+                    </article>
+                  `,
+                )
+                .join("")}
+            </div>
+          </div>
+        </details>
+      `,
+    )
+    .join("");
+  } // end if(false)
+}
+
+function validatePhaseOneLessons() {
+  const ids = new Set();
+
+  phaseOneLessons.forEach((lesson) => {
+    if (ids.has(lesson.id) || lesson.concepts.length < 1 || lesson.questions.length < 4) {
+      throw new Error("Invalid Phase 1 lesson: " + lesson.id);
+    }
+
+    ids.add(lesson.id);
+    lesson.questions.forEach((question) => {
+      const uniqueOptions = new Set(question.options);
+      if (uniqueOptions.size !== question.options.length || !uniqueOptions.has(question.answer)) {
+        throw new Error("Invalid checkpoint question in lesson: " + lesson.id);
+      }
+    });
+  });
+}
+
+function getFirstIncompletePhaseOneIndex() {
+  const index = phaseOneLessons.findIndex((lesson) => !state.phaseOneCompleted.includes(lesson.id));
+  return index === -1 ? phaseOneLessons.length : index;
+}
+
+function isPhaseOneLessonUnlocked(index) {
+  const lesson = phaseOneLessons[index];
+  return Boolean(lesson) && (state.phaseOneCompleted.includes(lesson.id) || index <= getFirstIncompletePhaseOneIndex());
+}
+
+function resetPhaseOneView(index, mode = "learn") {
+  phaseOneView = {
+    lessonIndex: index,
+    mode,
+    slideIndex: 0,
+    questionIndex: 0,
+    results: [],
+    hadMistake: false,
+    answered: false,
+    passed: false,
+  };
+}
+
+function openPhaseOneLesson(index, shouldScroll = false) {
+  if (!isPhaseOneLessonUnlocked(index)) {
+    return;
+  }
+
+  state.phaseOneActive = index;
+  resetPhaseOneView(index);
+  saveState();
+  renderPhaseOneCourse();
+
+  if (shouldScroll && els.phaseOnePlayer) {
+    els.phaseOnePlayer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function renderPhaseOneOverview() {
+  const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
+  const percent = Math.round((completedCount / phaseOneLessons.length) * 100);
+  const nextIndex = getFirstIncompletePhaseOneIndex();
+  const nextLesson = phaseOneLessons[nextIndex];
+
+  els.phaseOneProgressText.textContent = completedCount + " of " + phaseOneLessons.length + " stages";
+  els.phaseOneProgressPercent.textContent = percent + "%";
+  els.phaseOneProgressBar.setAttribute("aria-valuenow", String(percent));
+  els.phaseOneProgressBar.querySelector("span").style.width = percent + "%";
+  els.phaseOneNextUp.textContent = nextLesson
+    ? "Next up: " + nextLesson.title + ". " + nextLesson.goal
+    : "Phase 01 cleared. Keep decoding until the blocks feel immediate.";
+  els.continuePhaseOneButton.textContent =
+    completedCount === 0 ? "Start Phase 01" : nextLesson ? "Continue with stage " + String(nextIndex + 1).padStart(2, "0") : "Review Phase 01";
+  els.phaseOneFinale.hidden = completedCount !== phaseOneLessons.length;
+}
+
+function renderPhaseOneTrack() {
+  els.phaseOneTrack.innerHTML = phaseOneLessons
+    .map((lesson, index) => {
+      const complete = state.phaseOneCompleted.includes(lesson.id);
+      const locked = !isPhaseOneLessonUnlocked(index);
+      const active = index === phaseOneView.lessonIndex;
+      const classes = ["track-lesson"];
+
+      if (complete) classes.push("complete");
+      if (active) classes.push("active");
+      if (locked) classes.push("locked");
+
+      const status = complete ? "✓" : locked ? "Lock" : String(index + 1).padStart(2, "0");
+      const stateLabel = complete ? "Complete" : locked ? "Locked" : active ? "In progress" : "Ready";
+
+      return (
+        '<button class="' +
+        classes.join(" ") +
+        '" type="button" data-lesson-index="' +
+        index +
+        '"' +
+        (locked ? " disabled" : "") +
+        ' aria-label="Stage ' +
+        (index + 1) +
+        ": " +
+        escapeHtml(lesson.title) +
+        ", " +
+        stateLabel +
+        '">' +
+        '<span class="track-number">' +
+        status +
+        "</span>" +
+        '<span class="track-copy"><strong>' +
+        escapeHtml(lesson.shortTitle) +
+        "</strong><small>" +
+        stateLabel +
+        "</small></span>" +
+        "</button>"
+      );
+    })
+    .join("");
+}
+
+function getPhaseOneVoiceText() {
+  const lesson = phaseOneLessons[phaseOneView.lessonIndex];
+  if (!lesson) {
+    return "";
+  }
+
+  if (phaseOneView.mode === "learn") {
+    return lesson.concepts[phaseOneView.slideIndex]?.voiceText || "";
+  }
+
+  if (phaseOneView.mode === "check") {
+    return lesson.questions[phaseOneView.questionIndex]?.voiceText || "";
+  }
+
+  return "";
+}
+
+function renderPhaseOneConcept(lesson) {
+  const concept = lesson.concepts[phaseOneView.slideIndex];
+  const dots = lesson.concepts
+    .map(
+      (_, index) =>
+        '<span class="' +
+        (index === phaseOneView.slideIndex ? "active" : index < phaseOneView.slideIndex ? "done" : "") +
+        '"></span>',
+    )
+    .join("");
+
+  els.phaseOneStage.innerHTML =
+    '<div class="lesson-step-row">' +
+    "<span>Learn " +
+    (phaseOneView.slideIndex + 1) +
+    " / " +
+    lesson.concepts.length +
+    "</span>" +
+    '<div class="lesson-dots" aria-hidden="true">' +
+    dots +
+    "</div>" +
+    "</div>" +
+    '<div class="concept-card">' +
+    '<div class="concept-visual" lang="ko">' +
+    escapeHtml(concept.visual) +
+    "</div>" +
+    '<div class="concept-copy">' +
+    '<p class="concept-kicker">' +
+    escapeHtml(concept.kicker) +
+    "</p>" +
+    "<h4>" +
+    escapeHtml(concept.title) +
+    "</h4>" +
+    "<p>" +
+    escapeHtml(concept.body) +
+    "</p>" +
+    '<div class="concept-cue">' +
+    escapeHtml(concept.cue) +
+    "</div>" +
+    "</div>" +
+    "</div>";
+
+  els.phaseOneBackButton.disabled = phaseOneView.slideIndex === 0;
+  els.phaseOneBackButton.textContent = "Back";
+  els.phaseOneActionButton.disabled = false;
+  els.phaseOneActionButton.textContent =
+    phaseOneView.slideIndex === lesson.concepts.length - 1 ? "Start checkpoint" : "Next card";
+}
+
+function renderPhaseOneQuestion(lesson) {
+  const question = lesson.questions[phaseOneView.questionIndex];
+  const cleanCount = phaseOneView.results.filter(Boolean).length;
+
+  els.phaseOneStage.innerHTML =
+    '<div class="lesson-step-row">' +
+    "<span>Checkpoint " +
+    (phaseOneView.questionIndex + 1) +
+    " / " +
+    lesson.questions.length +
+    "</span>" +
+    "<strong>" +
+    cleanCount +
+    " clean</strong>" +
+    "</div>" +
+    '<div class="checkpoint-card">' +
+    '<div class="checkpoint-visual" lang="ko">' +
+    escapeHtml(question.visual) +
+    "</div>" +
+    "<h4>" +
+    escapeHtml(question.prompt) +
+    "</h4>" +
+    "<p>" +
+    escapeHtml(question.detail) +
+    "</p>" +
+    '<div class="lesson-options">' +
+    question.options
+      .map(
+        (option) =>
+          '<button class="lesson-option" type="button" data-option="' +
+          escapeHtml(option) +
+          '">' +
+          escapeHtml(option) +
+          "</button>",
+      )
+      .join("") +
+    "</div>" +
+    '<div class="lesson-feedback" id="phaseOneFeedback" aria-live="polite"></div>' +
+    "</div>";
+
+  els.phaseOneBackButton.disabled = false;
+  els.phaseOneBackButton.textContent = "Review cards";
+  els.phaseOneActionButton.disabled = true;
+  els.phaseOneActionButton.textContent =
+    phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
+}
+
+function renderPhaseOneResult(lesson) {
+  const cleanCount = phaseOneView.results.filter(Boolean).length;
+  const total = lesson.questions.length;
+  const percent = Math.round((cleanCount / total) * 100);
+  const requiredPercent = lesson.id === "reading-graduation" ? 80 : 75;
+  const passed = percent >= requiredPercent;
+  phaseOneView.passed = passed;
+
+  if (passed && !state.phaseOneCompleted.includes(lesson.id)) {
+    state.phaseOneCompleted.push(lesson.id);
+    saveState();
+    refreshProgressionState();
+  }
+
+  els.phaseOneStage.innerHTML =
+    '<div class="result-card ' +
+    (passed ? "passed" : "retry") +
+    '">' +
+    '<span class="result-score">' +
+    cleanCount +
+    "/" +
+    total +
+    "</span>" +
+    "<div>" +
+    '<p class="concept-kicker">' +
+    (passed ? "Stage cleared" : "One more clean run") +
+    "</p>" +
+    "<h4>" +
+    (passed ? escapeHtml(lesson.shortTitle) + " is locked in" : "Review, then hit the checkpoint again") +
+    "</h4>" +
+    "<p>" +
+    (passed
+      ? "You answered " + percent + "% correctly on the first try. The next stage is now open."
+      : "You scored " + percent + "% clean. Reach " + requiredPercent + "% to unlock the next stage.") +
+    "</p>" +
+    "</div>" +
+    "</div>";
+
+  els.phaseOneBackButton.disabled = false;
+  els.phaseOneBackButton.textContent = "Review lesson";
+  els.phaseOneActionButton.disabled = false;
+  els.phaseOneActionButton.textContent = passed
+    ? phaseOneView.lessonIndex === phaseOneLessons.length - 1
+      ? "Open mastery drill"
+      : "Start next stage"
+    : "Retry checkpoint";
+
+  renderPhaseOneOverview();
+  renderPhaseOneTrack();
+}
+
+function renderPhaseOnePlayer() {
+  const lesson = phaseOneLessons[phaseOneView.lessonIndex];
+  if (!lesson) {
+    return;
+  }
+
+  els.phaseOneStageNumber.textContent = "Stage " + String(phaseOneView.lessonIndex + 1).padStart(2, "0");
+  els.phaseOneStageDuration.textContent = lesson.duration;
+  els.phaseOneStageTitle.textContent = lesson.title;
+  els.phaseOneStageGoal.textContent = lesson.goal;
+
+  if (phaseOneView.mode === "learn") {
+    renderPhaseOneConcept(lesson);
+  } else if (phaseOneView.mode === "check") {
+    renderPhaseOneQuestion(lesson);
+  } else {
+    renderPhaseOneResult(lesson);
+  }
+
+  els.phaseOneHearButton.disabled = !getPhaseOneVoiceText();
+}
+
+function renderPhaseOneCourse() {
+  const firstIncomplete = getFirstIncompletePhaseOneIndex();
+  if (
+    !state.phaseOneCompleted.includes(phaseOneLessons[phaseOneView.lessonIndex]?.id) &&
+    phaseOneView.lessonIndex > firstIncomplete
+  ) {
+    const safeIndex = Math.min(firstIncomplete, phaseOneLessons.length - 1);
+    state.phaseOneActive = safeIndex;
+    resetPhaseOneView(safeIndex);
+  }
+
+  renderPhaseOneOverview();
+  renderPhaseOneTrack();
+  renderPhaseOnePlayer();
+}
+
+function answerPhaseOneQuestion(choice, button) {
+  if (phaseOneView.mode !== "check" || phaseOneView.answered) {
+    return;
+  }
+
+  const lesson = phaseOneLessons[phaseOneView.lessonIndex];
+  const question = lesson.questions[phaseOneView.questionIndex];
+  const feedback = document.getElementById("phaseOneFeedback");
+  const buttons = [...els.phaseOneStage.querySelectorAll(".lesson-option")];
+
+  if (choice !== question.answer) {
+    phaseOneView.hadMistake = true;
+    button.classList.add("wrong");
+    button.disabled = true;
+    feedback.innerHTML = "<strong>Not yet.</strong> Use the shape clue and try another answer.";
+    return;
+  }
+
+  phaseOneView.answered = true;
+  phaseOneView.results.push(!phaseOneView.hadMistake);
+  buttons.forEach((optionButton) => {
+    optionButton.disabled = true;
+    if ((optionButton.dataset.option || "") === question.answer) {
+      optionButton.classList.add("correct");
+    }
+  });
+  feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation);
+  els.phaseOneActionButton.disabled = false;
+}
+
+function advancePhaseOne() {
+  const lesson = phaseOneLessons[phaseOneView.lessonIndex];
+
+  if (phaseOneView.mode === "learn") {
+    if (phaseOneView.slideIndex < lesson.concepts.length - 1) {
+      phaseOneView.slideIndex += 1;
+    } else {
+      phaseOneView.mode = "check";
+      phaseOneView.questionIndex = 0;
+      phaseOneView.results = [];
+      phaseOneView.hadMistake = false;
+      phaseOneView.answered = false;
+    }
+    renderPhaseOnePlayer();
+    return;
+  }
+
+  if (phaseOneView.mode === "check") {
+    if (!phaseOneView.answered) {
+      return;
+    }
+
+    if (phaseOneView.questionIndex < lesson.questions.length - 1) {
+      phaseOneView.questionIndex += 1;
+      phaseOneView.hadMistake = false;
+      phaseOneView.answered = false;
+      renderPhaseOnePlayer();
+    } else {
+      phaseOneView.mode = "result";
+      renderPhaseOnePlayer();
+    }
+    return;
+  }
+
+  if (!phaseOneView.passed) {
+    phaseOneView.mode = "check";
+    phaseOneView.questionIndex = 0;
+    phaseOneView.results = [];
+    phaseOneView.hadMistake = false;
+    phaseOneView.answered = false;
+    renderPhaseOnePlayer();
+    return;
+  }
+
+  if (phaseOneView.lessonIndex < phaseOneLessons.length - 1) {
+    openPhaseOneLesson(phaseOneView.lessonIndex + 1, true);
+    return;
+  }
+
+  refreshProgressionState();
+  setStudio(getDefaultStudioForLevel());
+  window.location.hash = "#drill";
+}
+
+function goBackPhaseOne() {
+  if (phaseOneView.mode === "learn") {
+    if (phaseOneView.slideIndex > 0) {
+      phaseOneView.slideIndex -= 1;
+      renderPhaseOnePlayer();
+    }
+    return;
+  }
+
+  phaseOneView.mode = "learn";
+  phaseOneView.slideIndex = phaseOneLessons[phaseOneView.lessonIndex].concepts.length - 1;
+  phaseOneView.questionIndex = 0;
+  phaseOneView.results = [];
+  phaseOneView.hadMistake = false;
+  phaseOneView.answered = false;
+  renderPhaseOnePlayer();
+}
+
+function renderAtlas() {
+  els.jamoCount.textContent = String(INITIALS.length + MEDIALS.length);
+
+  els.consonants.innerHTML = consonantAtlas
+    .map(
+      (item) => `
+        <button class="glyph-card" type="button" data-speak="${escapeHtml(item.example)}" aria-label="Hear ${escapeHtml(item.example)}">
+          <div class="glyph-top">
+            <span class="glyph">${escapeHtml(item.char)}</span>
+            <span class="glyph-meta">${escapeHtml(item.tag)}</span>
+          </div>
+          <div>
+            <strong>${escapeHtml(CONSONANT_NAMES[item.char])} · ${escapeHtml(item.name)}</strong>
+            <p>${escapeHtml(item.note)}</p>
+            <p><strong>Example:</strong> ${escapeHtml(item.example)}</p>
+          </div>
+        </button>
+      `,
+    )
+    .join("");
+
+  els.vowels.innerHTML = vowelAtlas
+    .map(
+      (item) => `
+        <button class="glyph-card" type="button" data-speak="${escapeHtml(item.example)}" aria-label="Hear ${escapeHtml(item.example)}">
+          <div class="glyph-top">
+            <span class="glyph">${escapeHtml(item.char)}</span>
+            <span class="glyph-meta">${escapeHtml(item.family)}</span>
+          </div>
+          <div>
+            <strong>${escapeHtml(item.name)}</strong>
+            <p>${escapeHtml(item.note)}</p>
+            <p><strong>Example:</strong> ${escapeHtml(item.example)}</p>
+          </div>
+        </button>
+      `,
+    )
+    .join("");
+
+  document.querySelectorAll(".glyph-card[data-speak]").forEach((card) => {
+    card.addEventListener("click", () => speak(card.dataset.speak || ""));
+  });
+}
+
+function populateSyllableLab() {
+  els.labInitial.innerHTML = INITIALS.map((item) => `<option value="${item}">${item}</option>`).join("");
+  els.labVowel.innerHTML = MEDIALS.map((item) => `<option value="${item}">${item}</option>`).join("");
+  els.labFinal.innerHTML = FINALS.map((item) => {
+    const label = item === "" ? "없음" : item;
+    return `<option value="${item}">${label}</option>`;
+  }).join("");
+
+  els.labInitial.value = "ㄱ";
+  els.labVowel.value = "ㅏ";
+  els.labFinal.value = "";
+
+  const update = () => {
+    const initial = els.labInitial.value;
+    const medial = els.labVowel.value;
+    const final = els.labFinal.value;
+    const syllable = composeHangul(initial, medial, final);
+    els.labSyllable.textContent = syllable;
+    els.labEquation.textContent = `${initial} + ${medial} + ${normalizeFinal(final)} = ${syllable}`;
+    els.labOnsetValue.textContent = initial;
+    els.labVowelValue.textContent = medial;
+    els.labCodaValue.textContent = final || "—";
+  };
+
+  els.labInitial.addEventListener("change", update);
+  els.labVowel.addEventListener("change", update);
+  els.labFinal.addEventListener("change", update);
+  els.labHearButton.addEventListener("click", () => speak(els.labSyllable.textContent || ""));
+  els.labShuffleButton.addEventListener("click", () => {
+    const parts = decomposeHangul(randomItem(LAB_PRESETS));
+    els.labInitial.value = parts.initial;
+    els.labVowel.value = parts.medial;
+    els.labFinal.value = parts.final;
+    update();
+  });
+  update();
+}
+
+function getQuestionVisual(question) {
+  if (question.visual) {
+    return question.visual;
+  }
+
+  return `<div class="big-glyph">${escapeHtml(question.answer)}</div>`;
+}
+
+function generateComposeQuestion(pools) {
+  const initial = randomItem(pools.initials);
+  const medial = randomItem(pools.medials);
+  const final = randomItem(pools.finals);
+  const answer = composeHangul(initial, medial, final);
+  const options = makeSyllableChoices(answer, 4, pools);
+
+  return {
+    kind: "Build it",
+    mode: "Syllable composition",
+    prompt: "What syllable do these jamo make?",
+    detail: `${initial} + ${medial} + ${normalizeFinal(final)}`,
+    visual: `<div class="syllable-stack"><span>${escapeHtml(initial)}</span><span>+</span><span>${escapeHtml(medial)}</span><span>+</span><span>${escapeHtml(normalizeFinal(final))}</span></div>`,
+    options,
+    answer,
+    explanation: `${initial} + ${medial}${final ? ` + ${final}` : ""} = ${answer}. This is the core Hangul block pattern.`,
+    voiceText: answer,
+  };
+}
+
+function generateDecomposeQuestion(pools) {
+  const target = randomItem(["initial", "medial", "final"]);
+  let initial;
+  let medial;
+  let final;
+  let syllable;
+
+  do {
+    initial = randomItem(pools.initials);
+    medial = randomItem(pools.medials);
+    final = target === "final" ? randomItem(pools.finals.filter((item) => item !== "")) : randomItem(pools.finals);
+    syllable = composeHangul(initial, medial, final);
+  } while (!syllable || (target === "final" && final === ""));
+
+  const answerMap = {
+    initial,
+    medial,
+    final: normalizeFinal(final),
+  };
+
+  const answer = answerMap[target];
+  const choicePool =
+    target === "initial"
+      ? pools.initials
+      : target === "medial"
+        ? pools.medials
+        : ["없음", ...pools.finals.filter((item) => item !== "")].map(normalizeFinal);
+
+  const options = makeTextChoices(answer, choicePool, 4);
+
+  return {
+    kind: "Split it",
+    mode: "Syllable breakdown",
+    prompt:
+      target === "initial"
+        ? "Which consonant starts this syllable?"
+        : target === "medial"
+          ? "Which vowel sits in the middle?"
+          : "Which final consonant closes this syllable?",
+    detail: syllable,
+    visual: `<div class="big-glyph">${escapeHtml(syllable)}</div>`,
+    options,
+    answer,
+    explanation: `The block ${syllable} breaks into ${initial} + ${medial} + ${normalizeFinal(final)}.`,
+    voiceText: syllable,
+  };
+}
+
+function generateFamilyQuestion(pools) {
+  const vowel = randomItem(pools.medials);
+  const family = getVowelFamily(vowel);
+  const options = makeTextChoices(family, ["vertical", "horizontal", "compound"], 3);
+  const syllable = sampleSyllableForVowel(vowel, pools.finals);
+
+  return {
+    kind: "Feel the shape",
+    mode: "Vowel family",
+    prompt: `Which family does ${vowel} belong to?`,
+    detail: "Use the shape to remember how the vowel sits inside the block.",
+    visual: `<div class="big-glyph">${escapeHtml(vowel)}</div>`,
+    options,
+    answer: family,
+    explanation: `${vowel} is part of the ${family} family. You can use that shape cue while building blocks.`,
+    voiceText: syllable,
+  };
+}
+
+function generateConsonantFamilyQuestion() {
+  const item = randomItem(consonantAtlas);
+  const answer = item.tag;
+  const options = makeTextChoices(answer, SOUND_FAMILIES, 4);
+
+  return {
+    kind: "Sound family",
+    mode: "Consonant identity",
+    prompt: `Which family does ${item.char} belong to?`,
+    detail: item.note,
+    visual: `<div class="big-glyph">${escapeHtml(item.char)}</div>`,
+    options,
+    answer,
+    explanation: `${item.char} belongs to the ${answer} family. That distinction matters in real speech.`,
+    voiceText: item.example,
+  };
+}
+
+function generateOnsetQuestion() {
+  const onset = randomItem(INITIALS);
+  const syllable = composeHangul(onset, randomItem(MEDIALS), randomItem(FINALS));
+  const answer = getOnsetType(onset);
+  const options = makeTextChoices(answer, ONSET_TYPES, 4);
+
+  return {
+    kind: "Onset type",
+    mode: "Sound flow",
+    prompt: `What kind of onset starts ${syllable}?`,
+    detail: "Use the first position in the block to spot whether the onset is silent, plain, aspirated, or tense.",
+    visual: `<div class="syllable-stack"><span>${escapeHtml(syllable)}</span></div>`,
+    options,
+    answer,
+    explanation: `${syllable} starts with a ${answer}. The onset is what your ear hears first.`,
+    voiceText: syllable,
+  };
+}
+
+function generateVowelFamilyQuestion(pools) {
+  const vowel = randomItem(pools.medials);
+  const family = getVowelFamily(vowel);
+  const options = makeTextChoices(family, ["vertical", "horizontal", "compound"], 3);
+  const syllable = sampleSyllableForVowel(vowel, pools.finals);
+
+  return {
+    kind: "Vowel shape",
+    mode: "Vowel geometry",
+    prompt: `Which family does ${vowel} belong to?`,
+    detail: "Vowel shapes help predict how the block is built.",
+    visual: `<div class="big-glyph">${escapeHtml(vowel)}</div>`,
+    options,
+    answer: family,
+    explanation: `${vowel} is part of the ${family} family. Shape is a fast memory hook.`,
+    voiceText: syllable,
+  };
+}
+
+function generateSurvivalMeaningQuestion() {
+  const item = randomItem(survivalPhrases);
+  const options = makeTextChoices(item.meaning, survivalPhrases.map((entry) => entry.meaning), 4);
+
+  return {
+    kind: "Phrase meaning",
+    mode: "Everyday Korean",
+    prompt: `What does ${item.phrase} mean?`,
+    detail: item.situation,
+    visual: `<div class="big-glyph">${escapeHtml(item.phrase)}</div>`,
+    options,
+    answer: item.meaning,
+    explanation: `${item.phrase} means ${item.meaning}.`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateSurvivalSituationQuestion() {
+  const item = randomItem(survivalPhrases);
+  const options = makeTextChoices(item.phrase, survivalPhrases.map((entry) => entry.phrase), 4);
+
+  return {
+    kind: "Best phrase",
+    mode: "Situation fit",
+    prompt: item.situation,
+    detail: "Choose the Korean phrase that fits best.",
+    visual: `<div class="big-glyph">${escapeHtml(item.meaning)}</div>`,
+    options,
+    answer: item.phrase,
+    explanation: `${item.phrase} fits that situation naturally.`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateSurvivalClozeQuestion() {
+  const item = randomItem(survivalCloze);
+  const options = shuffle([...item.options]);
+
+  return {
+    kind: "Fill the blank",
+    mode: "Phrase build",
+    prompt: `Complete the phrase: ${item.prompt}`,
+    detail: "Use the word that makes the phrase natural and polite.",
+    visual: `<div class="syllable-stack"><span>${escapeHtml(item.prompt)}</span></div>`,
+    options,
+    answer: item.answer,
+    explanation: item.explanation,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateSurvivalAudioQuestion() {
+  const item = randomItem(survivalPhrases);
+  const options = makeTextChoices(item.meaning, survivalPhrases.map((entry) => entry.meaning), 4);
+
+  return {
+    kind: "Listen",
+    mode: "Phrase audio",
+    prompt: "Listen to the phrase, then choose the meaning.",
+    detail: "Use the audio button if you want to hear it again.",
+    visual: `<div class="big-glyph">◉</div>`,
+    options,
+    answer: item.meaning,
+    explanation: `${item.phrase} means ${item.meaning}.`,
+    voiceText: item.voiceText,
+    autoSpeak: true,
+  };
+}
+
+function generateGrammarClozeQuestion() {
+  const item = randomItem(grammarClozeBank);
+
+  return {
+    kind: "Fill the blank",
+    mode: "Sentence building",
+    prompt: `Complete the sentence: ${item.prompt}`,
+    detail: "Use the ending or particle that makes the sentence natural.",
+    visual: `<div class="syllable-stack"><span>${escapeHtml(item.prompt)}</span></div>`,
+    options: shuffle([...item.options]),
+    answer: item.answer,
+    explanation: item.explanation,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateGrammarRoleQuestion() {
+  const item = randomItem(grammarRoleBank);
+
+  return {
+    kind: "Grammar role",
+    mode: "Sentence building",
+    prompt: `In "${item.sentence}", what does ${item.marker} do?`,
+    detail: "Focus on the grammar job the marker performs.",
+    visual: `<div class="big-glyph">${escapeHtml(item.marker)}</div>`,
+    options: shuffle([...item.options]),
+    answer: item.answer,
+    explanation: item.explanation,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateGrammarMeaningQuestion() {
+  const item = randomItem(grammarSentenceBank);
+  const options = makeTextChoices(item.meaning, grammarSentenceBank.map((entry) => entry.meaning), 4);
+
+  return {
+    kind: "Sentence meaning",
+    mode: "Sentence building",
+    prompt: `What does this sentence mean? ${item.korean}`,
+    detail: item.explanation,
+    visual: `<div class="big-glyph">${escapeHtml(item.korean)}</div>`,
+    options,
+    answer: item.meaning,
+    explanation: `${item.korean} means ${item.meaning}.`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateGrammarOrderQuestion() {
+  const item = randomItem(grammarSentenceBank);
+  const options = makeTextChoices(item.korean, grammarSentenceBank.map((entry) => entry.korean), 4);
+
+  return {
+    kind: "Sentence order",
+    mode: "Sentence building",
+    prompt: `Which Korean sentence matches: "${item.meaning}"?`,
+    detail: "Korean often keeps the verb at the end of the sentence.",
+    visual: `<div class="syllable-stack"><span>${escapeHtml(item.meaning)}</span></div>`,
+    options,
+    answer: item.korean,
+    explanation: `${item.korean} matches the meaning "${item.meaning}".`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateGrammarListenQuestion() {
+  const item = randomItem(grammarSentenceBank);
+  const options = makeTextChoices(item.meaning, grammarSentenceBank.map((entry) => entry.meaning), 4);
+
+  return {
+    kind: "Listen",
+    mode: "Sentence audio",
+    prompt: "Listen to the sentence, then choose the meaning.",
+    detail: "Use the audio button if you want to hear it again.",
+    visual: `<div class="big-glyph">◉</div>`,
+    options,
+    answer: item.meaning,
+    explanation: `${item.korean} means ${item.meaning}.`,
+    voiceText: item.voiceText,
+    autoSpeak: true,
+  };
+}
+
+function generateVerbConjugationQuestion() {
+  const item = randomItem(verbBank);
+  const tense = randomItem(["present", "past", "future"]);
+  const tenseLabel =
+    tense === "present" ? "present polite" : tense === "past" ? "past polite" : "future polite";
+  const answer = item[tense];
+  const options = makeTextChoices(answer, verbBank.map((entry) => entry[tense]), 4);
+
+  return {
+    kind: "Conjugate it",
+    mode: "Verb system",
+    prompt: `What is the ${tenseLabel} form of ${item.base}?`,
+    detail: item.meaning,
+    visual: `<div class="big-glyph">${escapeHtml(item.base)}</div>`,
+    options,
+    answer,
+    explanation: `${item.base} becomes ${answer} in the ${tenseLabel} form.`,
+    voiceText: answer,
+  };
+}
+
+function generateVerbTenseQuestion() {
+  const item = randomItem(verbSentenceBank);
+  const options = makeTextChoices(item.tense, ["present", "past", "future", "honorific"], 4);
+
+  return {
+    kind: "Tense check",
+    mode: "Verb system",
+    prompt: `What kind of form is used in "${item.korean}"?`,
+    detail: "Look at the ending and decide whether it is present, past, future, or honorific.",
+    visual: `<div class="big-glyph">${escapeHtml(item.korean)}</div>`,
+    options,
+    answer: item.tense,
+    explanation: `${item.korean} uses a ${item.tense} form.`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateVerbPatternQuestion() {
+  const item = randomItem(verbBank);
+  const patterns = [...new Set(verbBank.map((entry) => entry.pattern))];
+  const options = makeTextChoices(item.pattern, patterns, 4);
+
+  return {
+    kind: "Pattern check",
+    mode: "Verb system",
+    prompt: `Which pattern does ${item.base} follow?`,
+    detail: "Irregular verbs change the stem before the ending is attached.",
+    visual: `<div class="big-glyph">${escapeHtml(item.base)}</div>`,
+    options,
+    answer: item.pattern,
+    explanation: `${item.base} follows the ${item.pattern} pattern.`,
+    voiceText: item.base,
+  };
+}
+
+function generateVerbMeaningQuestion() {
+  const item = randomItem(verbSentenceBank);
+  const options = makeTextChoices(item.meaning, verbSentenceBank.map((entry) => entry.meaning), 4);
+
+  return {
+    kind: "Sentence meaning",
+    mode: "Verb system",
+    prompt: `What does this sentence mean? ${item.korean}`,
+    detail: item.explanation,
+    visual: `<div class="big-glyph">${escapeHtml(item.korean)}</div>`,
+    options,
+    answer: item.meaning,
+    explanation: `${item.korean} means ${item.meaning}.`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateVerbOrderQuestion() {
+  const item = randomItem(verbSentenceBank);
+  const options = makeTextChoices(item.korean, verbSentenceBank.map((entry) => entry.korean), 4);
+
+  return {
+    kind: "Sentence order",
+    mode: "Verb system",
+    prompt: `Which Korean sentence matches: "${item.meaning}"?`,
+    detail: "Keep the verb close to the end and match the ending to the situation.",
+    visual: `<div class="syllable-stack"><span>${escapeHtml(item.meaning)}</span></div>`,
+    options,
+    answer: item.korean,
+    explanation: `${item.korean} matches "${item.meaning}".`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateVerbListenQuestion() {
+  const item = randomItem(verbSentenceBank);
+  const options = makeTextChoices(item.meaning, verbSentenceBank.map((entry) => entry.meaning), 4);
+
+  return {
+    kind: "Listen",
+    mode: "Verb system",
+    prompt: "Listen to the sentence, then choose the meaning.",
+    detail: "Use the audio button if you want to hear it again.",
+    visual: `<div class="big-glyph">◉</div>`,
+    options,
+    answer: item.meaning,
+    explanation: `${item.korean} means ${item.meaning}.`,
+    voiceText: item.voiceText,
+    autoSpeak: true,
+  };
+}
+
+function generateVerbHonorificQuestion() {
+  const item = randomItem(verbHonorificBank);
+  const options = makeTextChoices(item.honorific, verbHonorificBank.map((entry) => entry.honorific), 4);
+
+  return {
+    kind: "Honorific form",
+    mode: "Verb system",
+    prompt: `Which sentence is the respectful version of "${item.plain}"?`,
+    detail: item.cue,
+    visual: `<div class="syllable-stack"><span>${escapeHtml(item.plain)}</span><span>→</span><span>${escapeHtml(item.honorific)}</span></div>`,
+    options,
+    answer: item.honorific,
+    explanation: `${item.plain} becomes ${item.honorific} in respectful speech.`,
+    voiceText: item.honorific,
+  };
+}
+
+function generateConversationMeaningQuestion() {
+  const item = randomItem(conversationLineBank);
+  const options = makeTextChoices(item.meaning, conversationLineBank.map((entry) => entry.meaning), 4);
+
+  return {
+    kind: "Phrase meaning",
+    mode: "Conversation studio",
+    prompt: `What does ${item.korean} mean?`,
+    detail: item.cue,
+    visual: `<div class="big-glyph">${escapeHtml(item.korean)}</div>`,
+    options,
+    answer: item.meaning,
+    explanation: `${item.korean} means ${item.meaning}.`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateConversationRepairQuestion() {
+  const item = randomItem(conversationRepairBank);
+  const options = makeTextChoices(item.phrase, conversationRepairBank.map((entry) => entry.phrase), 4);
+
+  return {
+    kind: "Repair phrase",
+    mode: "Conversation studio",
+    prompt: item.cue,
+    detail: "Choose the phrase that keeps the conversation going.",
+    visual: `<div class="big-glyph">↻</div>`,
+    options,
+    answer: item.phrase,
+    explanation: `${item.phrase} is the best repair phrase here.`,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateConversationReplyQuestion() {
+  const item = randomItem(conversationScenarioBank);
+  const options = makeTextChoices(item.answer, conversationScenarioBank.map((entry) => entry.answer), 4);
+
+  return {
+    kind: "Speak it",
+    mode: "Conversation studio",
+    prompt: item.cue,
+    detail: "Pick the phrase you would say out loud.",
+    visual: `<div class="big-glyph">💬</div>`,
+    options,
+    answer: item.answer,
+    explanation: item.explanation,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateConversationDialogueQuestion() {
+  const item = randomItem(conversationDialogueBank);
+  const options = makeTextChoices(item.reply, conversationDialogueBank.map((entry) => entry.reply), 4);
+
+  return {
+    kind: "Dialogue turn",
+    mode: "Conversation studio",
+    prompt: `A: ${item.starter}\nB: ?`,
+    detail: item.cue,
+    visual: `<div class="syllable-stack"><span>${escapeHtml(item.starter)}</span><span>→</span><span>${escapeHtml(item.reply)}</span></div>`,
+    options,
+    answer: item.reply,
+    explanation: item.explanation,
+    voiceText: item.voiceText,
+  };
+}
+
+function generateConversationListenQuestion() {
+  const item = randomItem(conversationLineBank);
+  const options = makeTextChoices(item.meaning, conversationLineBank.map((entry) => entry.meaning), 4);
+
+  return {
+    kind: "Listen",
+    mode: "Conversation studio",
+    prompt: "Listen to the line, then choose the meaning.",
+    detail: "Use the audio button if you want to hear it again.",
+    visual: `<div class="big-glyph">◉</div>`,
+    options,
+    answer: item.meaning,
+    explanation: `${item.korean} means ${item.meaning}.`,
+    voiceText: item.voiceText,
+    autoSpeak: true,
+  };
+}
+
+function generateConversationShadowQuestion() {
+  const item = randomItem(conversationLineBank);
+  const options = makeTextChoices(item.korean, conversationLineBank.map((entry) => entry.korean), 4);
+
+  return {
+    kind: "Shadow it",
+    mode: "Conversation studio",
+    prompt: "Listen to the line, then choose the phrase to repeat.",
+    detail: "Shadow the exact Korean line out loud after you hear it.",
+    visual: `<div class="big-glyph">◌</div>`,
+    options,
+    answer: item.korean,
+    explanation: `The line to shadow is ${item.korean}. Repeat it once or twice out loud.`,
+    voiceText: item.voiceText,
+    autoSpeak: true,
+  };
+}
+
+function generateTenseQuestion(pools) {
+  const askFromPlain = Math.random() < 0.5;
+  const letters = askFromPlain ? Object.keys(TENSE_PAIRS) : Object.keys(TENSE_REVERSE);
+  const source = randomItem(letters);
+  const answer = askFromPlain ? TENSE_PAIRS[source] : TENSE_REVERSE[source];
+  const pool = askFromPlain ? Object.values(TENSE_PAIRS) : Object.keys(TENSE_PAIRS);
+  const options = makeTextChoices(answer, pool, 4);
+  const sample = composeHangul(answer, "ㅏ", randomItem(pools.finals));
+
+  return {
+    kind: "Tense pair",
+    mode: "Consonant tension",
+    prompt: askFromPlain
+      ? `What is the tense partner of ${source}?`
+      : `Which plain consonant turns into ${source}?`,
+    detail: "Tense consonants are written as doubled shapes and need more mouth tension.",
+    visual: `<div class="big-glyph">${escapeHtml(source)}</div>`,
+    options,
+    answer,
+    explanation: askFromPlain
+      ? `${source} tightens into ${answer}. Tense consonants are a key Hangul pattern.`
+      : `${source} relaxes back to ${answer}. The pair is useful to memorize together.`,
+    voiceText: sample,
+  };
+}
+
+function generateBatchimQuestion(pools) {
+  const group = randomItem(BATCHIM_GROUPS);
+  const letter = randomItem(group.letters);
+  const answer = group.group;
+  const options = makeTextChoices(answer, BATCHIM_GROUPS.map((item) => item.group), 4);
+  const sample = composeHangul(randomItem(pools.initials), "ㅏ", letter);
+
+  return {
+    kind: "Batchim sound",
+    mode: "Final consonant groups",
+    prompt: `Which closing sound group does ${letter} usually fall into?`,
+    detail: "Batchim often compresses into a smaller set of end sounds.",
+    visual: `<div class="syllable-stack"><span>${escapeHtml(letter)}</span><span>→</span><span>${escapeHtml(answer)}</span></div>`,
+    options,
+    answer,
+    explanation: `${letter} usually closes as ${answer}. Batchim practice makes real Korean reading much easier.`,
+    voiceText: sample,
+  };
+}
+
+function generateListenQuestion(pools) {
+  const initial = randomItem(pools.initials);
+  const medial = randomItem(pools.medials);
+  const final = randomItem(pools.finals);
+  const answer = composeHangul(initial, medial, final);
+  const options = makeSyllableChoices(answer, 4, pools);
+
+  return {
+    kind: "Listen",
+    mode: "Audio match",
+    prompt: "Listen, then choose the syllable.",
+    detail: "Use the play button to hear a fresh Hangul block.",
+    visual: `<div class="big-glyph">◉</div>`,
+    options,
+    answer,
+    explanation: `You just heard ${answer}. Listening practice keeps the alphabet tied to sound, not just sight.`,
+    voiceText: answer,
+    autoSpeak: true,
+  };
+}
+
+function generateVocabQuestion(forcedType) {
+  const pool = getVocabStudyPool();
+  if (!pool.length) {
+    return {
+      kind: "Words",
+      mode: "Vocabulary bank",
+      prompt: "The 5,000-word bank is still loading.",
+      detail: vocabBankError || "Try the Library tab again in a moment.",
+      visual: `<div class="big-glyph">5,000</div>`,
+      options: ["Reload", "Open Library", "Try again", "Study phrases"],
+      answer: "Reload",
+      explanation: vocabBankError || "The vocabulary CSV is not ready yet.",
+      voiceText: "",
+    };
+  }
+
+  const knownSet = getVocabKnownSet();
+  const hardSet = getVocabHardSet();
+  const hardPool = pool.filter((entry) => hardSet.has(entry.rank));
+  const freshPool = pool.filter((entry) => !knownSet.has(entry.rank) && !hardSet.has(entry.rank));
+  const sourcePool = hardPool.length ? [...hardPool, ...hardPool, ...freshPool] : freshPool.length ? freshPool : pool;
+  const item = randomItem(sourcePool);
+  const type = forcedType || randomItem(vocabDeck);
+  const noteSuffix = item.tokenNote ? ` ${item.tokenNote}` : "";
+  const statusLabel = knownSet.has(item.rank) ? "Known" : hardSet.has(item.rank) ? "Hard" : "Fresh";
+  const detail = `${item.frequencyBand} • ${item.syllables} syllable${item.syllables === 1 ? "" : "s"} • ${statusLabel}`;
+
+  if (type === "hangul-to-roman") {
+    const options = makeTextChoices(item.romanization, vocabRomanizationChoices, 4);
+
+    return {
+      kind: "Words",
+      mode: "Korean → English spelling",
+      prompt: "Which romanization matches this Korean word?",
+      detail,
+      visual: `<div class="big-glyph" lang="ko">${escapeHtml(item.korean)}</div><div class="fs-xs text-muted-2">Korean spelling</div>`,
+      options,
+      answer: item.romanization,
+      explanation: `${item.korean} is commonly written ${item.romanization}.${noteSuffix}`,
+      voiceText: item.korean,
+    };
+  }
+
+  if (type === "listen") {
+    const options = makeTextChoices(item.korean, vocabKoreanChoices, 4);
+
+    return {
+      kind: "Words",
+      mode: "Listen and match",
+      prompt: "Listen, then choose the Hangul spelling.",
+      detail,
+      visual: `<div class="big-glyph">♪</div><div class="fs-xs text-muted-2">${escapeHtml(item.romanization)}</div>`,
+      options,
+      answer: item.korean,
+      explanation: `You heard ${item.korean}. The romanization is ${item.romanization}.${noteSuffix}`,
+      voiceText: item.korean,
+      autoSpeak: true,
+    };
+  }
+
+  const options = makeTextChoices(item.korean, vocabKoreanChoices, 4);
+
+  return {
+    kind: "Words",
+    mode: "English spelling → Hangul",
+    prompt: "Which Hangul spelling matches this romanization?",
+    detail,
+    visual: `<div class="big-glyph">${escapeHtml(item.romanization)}</div><div class="fs-xs text-muted-2">Pronunciation</div>`,
+    options,
+    answer: item.korean,
+    explanation: `${item.romanization} is written ${item.korean}.${noteSuffix}`,
+    voiceText: item.korean,
+  };
+}
+
+function generateQuestion() {
+  const pools = getPools();
+  const studio = getStudio();
+  const vocabularyLevel = getTrackLevel("vocabulary");
+  const sentenceLevel = getTrackLevel("sentences");
+  const listeningLevel = getTrackLevel("listening");
+  const deck =
+    studio === "sound"
+      ? soundDeck
+      : studio === "sentences"
+        ? getSentenceDeckForLevel(sentenceLevel)
+        : studio === "listen"
+          ? getListenDeckForLevel(listeningLevel)
+          : studio === "survival"
+            ? survivalDeck
+          : studio === "grammar"
+            ? grammarDeck
+          : studio === "verb"
+            ? verbDeck
+          : studio === "conversation"
+            ? conversationDeck
+          : studio === "vocab"
+                    ? getVocabDeckForLevel(vocabularyLevel)
+                    : pools.deck;
+  const type = randomItem(deck);
+
+  if (studio === "sound") {
+    if (type === "sound-family") {
+      return generateConsonantFamilyQuestion();
+    }
+
+    if (type === "onset") {
+      return generateOnsetQuestion();
+    }
+
+    if (type === "vowel-shape") {
+      return generateVowelFamilyQuestion(pools);
+    }
+
+    if (type === "batchim") {
+      return generateBatchimQuestion(pools);
+    }
+
+    if (type === "tense") {
+      return generateTenseQuestion(pools);
+    }
+
+    return generateListenQuestion(pools);
+  }
+
+  if (studio === "survival") {
+    if (type === "meaning") {
+      return generateSurvivalMeaningQuestion();
+    }
+
+    if (type === "situation") {
+      return generateSurvivalSituationQuestion();
+    }
+
+    if (type === "cloze") {
+      return generateSurvivalClozeQuestion();
+    }
+
+    return generateSurvivalAudioQuestion();
+  }
+
+  if (studio === "grammar") {
+    if (type === "cloze") {
+      return generateGrammarClozeQuestion();
+    }
+
+    if (type === "role") {
+      return generateGrammarRoleQuestion();
+    }
+
+    if (type === "meaning") {
+      return generateGrammarMeaningQuestion();
+    }
+
+    if (type === "order") {
+      return generateGrammarOrderQuestion();
+    }
+
+    return generateGrammarListenQuestion();
+  }
+
+  if (studio === "verb") {
+    if (type === "conjugate") {
+      return generateVerbConjugationQuestion();
+    }
+
+    if (type === "tense") {
+      return generateVerbTenseQuestion();
+    }
+
+    if (type === "pattern") {
+      return generateVerbPatternQuestion();
+    }
+
+    if (type === "meaning") {
+      return generateVerbMeaningQuestion();
+    }
+
+    if (type === "order") {
+      return generateVerbOrderQuestion();
+    }
+
+    if (type === "listen") {
+      return generateVerbListenQuestion();
+    }
+
+    return generateVerbHonorificQuestion();
+  }
+
+  if (studio === "conversation") {
+    if (type === "meaning") {
+      return generateConversationMeaningQuestion();
+    }
+
+    if (type === "repair") {
+      return generateConversationRepairQuestion();
+    }
+
+    if (type === "reply") {
+      return generateConversationReplyQuestion();
+    }
+
+    if (type === "dialogue") {
+      return generateConversationDialogueQuestion();
+    }
+
+    if (type === "listen") {
+      return generateConversationListenQuestion();
+    }
+
+    if (type === "shadow") {
+      return generateConversationShadowQuestion();
+    }
+
+    return generateConversationListenQuestion();
+  }
+
+  if (studio === "vocab") {
+    return generateVocabQuestion(type);
+  }
+
+  if (studio === "sentences") {
+    if (type === "type") {
+      return makeSentenceTypingQuestion(sentenceLevel);
+    }
+
+    return makeSentenceBuildQuestion(sentenceLevel);
+  }
+
+  if (studio === "listen") {
+    return makeListenStudioQuestion(type, listeningLevel);
+  }
+
+  if (type === "compose") {
+    return generateComposeQuestion(pools);
+  }
+
+  if (type === "decompose") {
+    return generateDecomposeQuestion(pools);
+  }
+
+  if (type === "family") {
+    return generateFamilyQuestion(pools);
+  }
+
+  if (type === "tense") {
+    return generateTenseQuestion(pools);
+  }
+
+  if (type === "batchim") {
+    return generateBatchimQuestion(pools);
+  }
+
+  return generateListenQuestion(pools);
+}
+
+function createQuestionResponse(question) {
+  if (question.interaction === "build") {
+    return {
+      slots: Array.from({ length: Array.isArray(question.answerTokens) ? question.answerTokens.length : 0 }, () => null),
+      value: "",
+      choice: "",
+      noticeHtml: "",
+      feedbackHtml: "",
+      userAnswer: "",
+    };
+  }
+
+  if (question.interaction === "type") {
+    return {
+      slots: [],
+      value: "",
+      choice: "",
+      noticeHtml: "",
+      feedbackHtml: "",
+      userAnswer: "",
+    };
+  }
+
+  return {
+    slots: [],
+    value: "",
+    choice: "",
+    noticeHtml: "",
+    feedbackHtml: "",
+    userAnswer: "",
+  };
+}
+
+function syncReviewActionButton(question) {
+  const nextBtn = document.getElementById(getQuizIds(getCurrentQuizScope()).next);
+  if (!nextBtn) return;
+  const needsCheck = !currentAnswered && (question.interaction === "build" || question.interaction === "type");
+  nextBtn.textContent = needsCheck ? "Check →" : "Next →";
+}
+
+function getTokenById(question, tokenId) {
+  return (question.tokenPool || []).find((token) => token.id === tokenId) || null;
+}
+
+function renderChoiceQuestion(question, quizOptions) {
+  const response = question.response || createQuestionResponse(question);
+  quizOptions.innerHTML = (Array.isArray(question.options) ? question.options : [])
+    .map((option) => {
+      const classes = ["option"];
+      if (currentAnswered) {
+        if (option === question.answer) {
+          classes.push("correct");
+        }
+        if (response.choice === option && option !== question.answer) {
+          classes.push("wrong");
+        }
+      }
+      return `<button class="${classes.join(" ")}" type="button" data-option="${escapeHtml(option)}" ${currentAnswered ? "disabled" : ""}>${escapeHtml(option)}</button>`;
+    })
+    .join("");
+
+  if (currentAnswered) return;
+
+  quizOptions.querySelectorAll(".option").forEach((button) => {
+    button.addEventListener("click", () => chooseAnswer(button.dataset.option || ""));
+  });
+}
+
+function placeBuildToken(question, tokenId, slotIndex = null) {
+  if (!question?.response || currentAnswered) return;
+
+  const response = question.response;
+  const slots = response.slots || [];
+  const currentIndex = slots.indexOf(tokenId);
+  if (currentIndex >= 0) {
+    slots[currentIndex] = null;
+  }
+
+  if (Number.isInteger(slotIndex) && slotIndex >= 0 && slotIndex < slots.length) {
+    slots[slotIndex] = tokenId;
+  } else {
+    const emptyIndex = slots.findIndex((value) => !value);
+    if (emptyIndex >= 0) {
+      slots[emptyIndex] = tokenId;
+    }
+  }
+
+  response.noticeHtml = "";
+  renderQuestion(question, { preserveState: true, scope: getCurrentQuizScope() });
+}
+
+function clearBuildSlot(question, slotIndex) {
+  if (!question?.response || currentAnswered) return;
+
+  const response = question.response;
+  if (!Array.isArray(response.slots) || !Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex >= response.slots.length) {
+    return;
+  }
+
+  response.slots[slotIndex] = null;
+  response.noticeHtml = "";
+  renderQuestion(question, { preserveState: true, scope: getCurrentQuizScope() });
+}
+
+function renderBuildQuestion(question, quizOptions) {
+  const response = question.response || createQuestionResponse(question);
+  const answerTokens = Array.isArray(question.answerTokens) && question.answerTokens.length ? question.answerTokens : tokenizeSentence(question.answer);
+  const slots = Array.isArray(response.slots) ? response.slots : [];
+  const tokenMap = new Map((question.tokenPool || []).map((token) => [token.id, token]));
+  const occupied = new Set(slots.filter(Boolean));
+  const poolTokens = (question.tokenPool || []).filter((token) => !occupied.has(token.id));
+
+  const slotHtml = answerTokens
+    .map((expected, index) => {
+      const tokenId = slots[index];
+      const token = tokenId ? tokenMap.get(tokenId) : null;
+      const filled = Boolean(token);
+      const correct = currentAnswered && token ? normalizeStudyText(token.text) === normalizeStudyText(expected) : false;
+      const slotClasses = ["sentence-slot"];
+      if (filled) slotClasses.push("filled");
+      if (currentAnswered) slotClasses.push(correct ? "correct" : "wrong");
+      return `
+        <button class="${slotClasses.join(" ")}" type="button" data-slot-index="${index}" ${currentAnswered ? "disabled" : ""} aria-label="Slot ${index + 1}">
+          <span class="sentence-slot-index">${index + 1}</span>
+          <span class="sentence-slot-text">${filled ? escapeHtml(token.text) : '<span class="sentence-slot-placeholder">Tap a word</span>'}</span>
+        </button>`;
+    })
+    .join("");
+
+  const poolHtml = poolTokens
+    .map((token) => `<button class="sentence-token" type="button" draggable="${currentAnswered ? "false" : "true"}" data-token-id="${token.id}" ${currentAnswered ? "disabled" : ""} lang="ko">${escapeHtml(token.text)}</button>`)
+    .join("");
+
+  quizOptions.innerHTML = `
+    <div class="sentence-builder">
+      <div class="sentence-build-slots">${slotHtml}</div>
+      <div class="sentence-build-pool">${poolHtml}</div>
+      <div class="sentence-build-actions">
+        <button class="button secondary compact" type="button" id="sentenceBuildClearBtn" ${currentAnswered ? "disabled" : ""}>Clear all</button>
+      </div>
+    </div>
+  `;
+
+  if (currentAnswered) return;
+
+  const clearBtn = document.getElementById("sentenceBuildClearBtn");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      response.slots = response.slots.map(() => null);
+      response.noticeHtml = "";
+      renderQuestion(question, { preserveState: true });
+    });
+  }
+
+  quizOptions.querySelectorAll("[data-token-id]").forEach((button) => {
+    button.addEventListener("click", () => placeBuildToken(question, button.dataset.tokenId || ""));
+    button.addEventListener("dragstart", (event) => {
+      event.dataTransfer?.setData("text/plain", button.dataset.tokenId || "");
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+    });
+  });
+
+  quizOptions.querySelectorAll("[data-slot-index]").forEach((button) => {
+    button.addEventListener("click", () => clearBuildSlot(question, Number(button.dataset.slotIndex)));
+    button.addEventListener("dragover", (event) => {
+      event.preventDefault();
+    });
+    button.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const tokenId = event.dataTransfer?.getData("text/plain") || "";
+      if (tokenId) {
+        placeBuildToken(question, tokenId, Number(button.dataset.slotIndex));
+      }
+    });
+  });
+}
+
+function renderTypeQuestion(question, quizOptions) {
+  const response = question.response || createQuestionResponse(question);
+  const value = String(response.value || "");
+  const ids = getQuizIds(getCurrentQuizScope());
+
+  quizOptions.innerHTML = `
+    <div class="sentence-type">
+      <label class="sentence-type-label" for="${ids.options}Input">Your answer</label>
+      <input
+        class="sentence-input"
+        id="${ids.options}Input"
+        type="text"
+        inputmode="text"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        placeholder="${escapeHtml(question.placeholder || "Type the sentence here")}"
+        value="${escapeHtml(value)}"
+        ${currentAnswered ? "disabled" : ""}
+      />
+      <div class="sentence-type-actions">
+        <button class="button secondary compact" type="button" id="${ids.options}Clear" ${currentAnswered ? "disabled" : ""}>Clear</button>
+      </div>
+    </div>
+  `;
+
+  if (currentAnswered) return;
+
+  const input = document.getElementById(`${ids.options}Input`);
+  const clearBtn = document.getElementById(`${ids.options}Clear`);
+
+  if (input) {
+    input.focus({ preventScroll: true });
+    input.setSelectionRange(input.value.length, input.value.length);
+    input.addEventListener("input", () => {
+      response.value = input.value;
+      response.noticeHtml = "";
+      const quizFeedback = document.getElementById(ids.feedback);
+      if (quizFeedback) {
+        quizFeedback.innerHTML = question.helper ? `<span>${escapeHtml(question.helper)}</span>` : "";
+      }
+      saveState();
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        nextQuestion();
+      }
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      response.value = "";
+      response.noticeHtml = "";
+      if (input) {
+        input.value = "";
+        input.focus({ preventScroll: true });
+      }
+      const quizFeedback = document.getElementById(ids.feedback);
+      if (quizFeedback) {
+        quizFeedback.innerHTML = question.helper ? `<span>${escapeHtml(question.helper)}</span>` : "";
+      }
+      saveState();
+    });
+  }
+}
+
+function renderQuestion(question, options = {}) {
+  const { preserveState = false } = options;
+  currentQuizScope = normalizeMainTab(options.scope || currentQuizScope || state.mainTab || activeTab || "alphabet");
+  currentQuestion = question;
+  question.scope = currentQuizScope;
+  if (!preserveState) {
+    currentAnswered = false;
+    question.response = createQuestionResponse(question);
+  } else if (!question.response) {
+    question.response = createQuestionResponse(question);
+  }
+
+  const ids = getQuizIds(currentQuizScope);
+  const quizType = document.getElementById(ids.type);
+  const quizVisual = document.getElementById(ids.visual);
+  const quizPrompt = document.getElementById(ids.prompt);
+  const quizDetail = document.getElementById(ids.detail);
+  const quizFeedback = document.getElementById(ids.feedback);
+  const quizOptions = document.getElementById(ids.options);
+  const speakBtn = document.getElementById(ids.speak);
+
+  if (!quizOptions) return;
+
+  quizOptions.className = "quiz-options";
+  if (question.interaction === "build") {
+    quizOptions.classList.add("build-mode");
+  } else if (question.interaction === "type") {
+    quizOptions.classList.add("type-mode");
+  }
+
+  if (quizType) quizType.textContent = question.kind || "—";
+  if (quizVisual) quizVisual.innerHTML = getQuestionVisual(question);
+  if (quizPrompt) quizPrompt.textContent = question.prompt || "";
+  if (quizDetail) quizDetail.textContent = question.detail || "";
+
+  const response = question.response || createQuestionResponse(question);
+  if (quizFeedback) {
+    const feedbackHtml = currentAnswered
+      ? response.feedbackHtml || ""
+      : response.noticeHtml || (question.helper ? `<span>${escapeHtml(question.helper)}</span>` : "");
+    quizFeedback.innerHTML = feedbackHtml;
+  }
+
+  if (question.interaction === "build") {
+    renderBuildQuestion(question, quizOptions);
+  } else if (question.interaction === "type") {
+    renderTypeQuestion(question, quizOptions);
+  } else {
+    renderChoiceQuestion(question, quizOptions);
+  }
+
+  if (speakBtn) speakBtn.disabled = !question.voiceText;
+  syncReviewActionButton(question);
+  if (question.autoSpeak && !preserveState && question.voiceText) window.setTimeout(() => speak(question.voiceText), 160);
+
+  updateStats();
+  saveState();
+}
+
+function speak(text) {
+  if (!text || !("speechSynthesis" in window)) return;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ko-KR";
+  utterance.rate = 0.88;
+  utterance.pitch = 1;
+  const koreanVoice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("ko"));
+  if (koreanVoice) utterance.voice = koreanVoice;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
+function finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml) {
+  if (!currentQuestion || currentAnswered) return;
+
+  const response = currentQuestion.response || createQuestionResponse(currentQuestion);
+  response.userAnswer = userAnswer;
+  response.feedbackHtml = feedbackHtml;
+  response.noticeHtml = "";
+  if (currentQuestion.interaction === "choice") {
+    response.choice = userAnswer;
+  } else if (currentQuestion.interaction === "type") {
+    response.value = userAnswer;
+  }
+
+  state.asked += 1;
+  if (isCorrect) {
+    state.correct += 1;
+    state.streak += 1;
+    state.bestStreak = Math.max(state.bestStreak, state.streak);
+  } else {
+    state.streak = 0;
+  }
+
+  currentAnswered = true;
+  updateStats();
+  refreshProgressionState();
+  saveState();
+  renderQuestion(currentQuestion, { preserveState: true, scope: getCurrentQuizScope() });
+}
+
+function chooseAnswer(choice) {
+  if (currentAnswered || !currentQuestion) return;
+
+  const isCorrect = choice === currentQuestion.answer;
+  const feedbackHtml = isCorrect
+    ? `<strong>Correct.</strong> ${escapeHtml(currentQuestion.explanation)}`
+    : `<strong>Not quite.</strong> The answer was <strong>${escapeHtml(currentQuestion.answer)}</strong>. ${escapeHtml(currentQuestion.explanation)}`;
+
+  finalizeQuestionAttempt(choice, isCorrect, feedbackHtml);
+}
+
+function submitCurrentQuestion() {
+  if (!currentQuestion || currentAnswered) return;
+
+  if (currentQuestion.interaction === "build") {
+    const response = currentQuestion.response || createQuestionResponse(currentQuestion);
+    const slots = Array.isArray(response.slots) ? response.slots : [];
+    if (!slots.length || slots.some((slot) => !slot)) {
+      response.noticeHtml = "<strong>Fill every slot first.</strong> Use all of the words before checking.";
+      renderQuestion(currentQuestion, { preserveState: true, scope: getCurrentQuizScope() });
+      return;
+    }
+
+    const tokenMap = new Map((currentQuestion.tokenPool || []).map((token) => [token.id, token]));
+    const userAnswer = slots.map((id) => tokenMap.get(id)?.text || "").join(" ").trim();
+    const isCorrect = normalizeStudyText(userAnswer) === normalizeStudyText(currentQuestion.answer);
+    const feedbackHtml = isCorrect
+      ? `<strong>Correct.</strong> ${escapeHtml(currentQuestion.explanation)}`
+      : `<strong>Not quite.</strong> You built <strong>${escapeHtml(userAnswer || "nothing")}</strong>. Correct answer: <strong>${escapeHtml(currentQuestion.answer)}</strong>. ${escapeHtml(currentQuestion.explanation)}`;
+
+    finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml);
+    return;
+  }
+
+  if (currentQuestion.interaction === "type") {
+    const response = currentQuestion.response || createQuestionResponse(currentQuestion);
+    const userAnswer = String(response.value || "").trim();
+    if (!userAnswer) {
+      response.noticeHtml = "<strong>Type the sentence first.</strong> Then press Check.";
+      renderQuestion(currentQuestion, { preserveState: true, scope: getCurrentQuizScope() });
+      return;
+    }
+
+    const isCorrect = normalizeStudyText(userAnswer) === normalizeStudyText(currentQuestion.answer);
+    const feedbackHtml = isCorrect
+      ? `<strong>Correct.</strong> ${escapeHtml(currentQuestion.explanation)}`
+      : `<strong>Not quite.</strong> You typed <strong>${escapeHtml(userAnswer)}</strong>. Correct answer: <strong>${escapeHtml(currentQuestion.answer)}</strong>. ${escapeHtml(currentQuestion.explanation)}`;
+
+    finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml);
+  }
+}
+
+function nextQuestion() {
+  if (!currentQuestion) return;
+
+  if (!currentAnswered && (currentQuestion.interaction === "build" || currentQuestion.interaction === "type")) {
+    submitCurrentQuestion();
+    return;
+  }
+
+  state.round += 1;
+  renderQuestion(generateQuestion(), { scope: getCurrentQuizScope() });
+}
+
+function bindKeyboardShortcuts() {
+  document.addEventListener("keydown", (event) => {
+    const target = event.target;
+    const typing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || (target instanceof HTMLElement && target.isContentEditable);
+    if (typing) return;
+    if (activeTab !== getCurrentQuizScope()) return;
+    const ids = getQuizIds(getCurrentQuizScope());
+    const quizOptions = document.getElementById(ids.options);
+    const currentScreenId = TAB_SCREEN_IDS[activeTab] ? `screen-${TAB_SCREEN_IDS[activeTab]}` : "";
+    const currentScreen = currentScreenId ? document.getElementById(currentScreenId) : null;
+    if (!quizOptions || !currentScreen || currentScreen.hidden) return;
+
+    if (event.key >= "1" && event.key <= "4") {
+      const index = Number(event.key) - 1;
+      const opts = [...quizOptions.querySelectorAll(".option")];
+      const button = opts[index];
+      if (button && !button.disabled) button.click();
+      return;
+    }
+    if (event.key === "Enter") {
+      const nextBtn = document.getElementById(ids.next);
+      if (nextBtn) nextBtn.click();
+      return;
+    }
+    if (event.key.toLowerCase() === "h") {
+      speak(currentQuestion?.voiceText || currentQuestion?.answer || "");
+    }
+  });
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+
+let activeTab = state.mainTab || "alphabet";
+
+function showTab(name) {
+  refreshProgressionState();
+  const normalized = normalizeMainTab(name);
+  activeTab = normalized;
+  state.mainTab = normalized;
+  currentQuizScope = normalized;
+  state.studio = normalized === "vocabulary"
+    ? "vocab"
+    : normalized === "sentences"
+      ? "sentences"
+      : normalized === "listening"
+        ? "listen"
+        : "alphabet";
+  saveState();
+  document.querySelectorAll(".screen").forEach((s) => { s.hidden = true; });
+  const screenId = TAB_SCREEN_IDS[normalized] || TAB_SCREEN_IDS.alphabet;
+  const screen = document.getElementById("screen-" + screenId);
+  if (screen) screen.hidden = false;
+  document.querySelectorAll(".nav-btn").forEach((b) => {
+    b.classList.toggle("active", normalizeMainTab(b.dataset.tab) === normalized);
+  });
+  // Render the screen
+  if (normalized === "alphabet")    renderToday();
+  if (normalized === "vocabulary")   renderReview();
+  if (normalized === "sentences")    renderSpeak();
+  if (normalized === "listening")    renderLibrary();
+}
+
+// ─── ONBOARDING ──────────────────────────────────────────────────────────────
+
+let obStep = 0;
+const obAnswers = { knowsHangul: false, goal: "media", weeklyHours: 10, speakingAnxiety: "medium" };
+
+function renderOnboarding() {
+  const shell = document.getElementById("onboarding");
+  if (!shell) return;
+  shell.hidden = false;
+
+  const steps = [
+    {
+      q: "Do you already know Hangul (the Korean alphabet)?",
+      opts: [
+        { val: false, icon: "🔤", label: "No — start from zero", sub: "I'll learn the alphabet first." },
+        { val: true,  icon: "✓",  label: "Yes — I can read it",  sub: "Skip straight to survival phrases." },
+      ],
+      key: "knowsHangul",
+    },
+    {
+      q: "Why are you learning Korean?",
+      opts: [
+        { val: "media",   icon: "🎵", label: "K-dramas & K-pop",    sub: "Culture, music, subtitles." },
+        { val: "travel",  icon: "✈️", label: "Travel to Korea",      sub: "Survival speaking & signs." },
+        { val: "partner", icon: "💬", label: "Korean partner/friends",sub: "Conversation & texting." },
+        { val: "topik",   icon: "📝", label: "TOPIK / study",        sub: "Formal exam preparation." },
+      ],
+      key: "goal",
+    },
+    {
+      q: "How many hours per week can you study?",
+      opts: [
+        { val: 5,  icon: "⏱", label: "~5 hrs / week",  sub: "Tourist level in ~18 months." },
+        { val: 10, icon: "⏱", label: "~10 hrs / week", sub: "A2–B1 possible in 12 months." },
+        { val: 15, icon: "⏱", label: "~15 hrs / week", sub: "B1+ in ~10 months with tutors." },
+        { val: 25, icon: "⏱", label: "~25 hrs / week", sub: "B2 fluency target realistic." },
+      ],
+      key: "weeklyHours",
+    },
+    {
+      q: "How do you feel about speaking Korean aloud?",
+      opts: [
+        { val: "low",    icon: "😊", label: "Comfortable",    sub: "I like speaking from day one." },
+        { val: "medium", icon: "😅", label: "A bit nervous",  sub: "I'll try with some prompting." },
+        { val: "high",   icon: "😬", label: "Very anxious",   sub: "I prefer to listen first." },
+      ],
+      key: "speakingAnxiety",
+    },
+  ];
+
+  if (obStep < steps.length) {
+    const step = steps[obStep];
+    shell.innerHTML = `
+      <div class="ob-card">
+        <div class="ob-logo">하나Path</div>
+        <div class="ob-tagline">One path to Korean fluency.</div>
+        <div class="ob-step-bar">
+          ${steps.map((_, i) => `<div class="ob-step-dot ${i < obStep ? "done" : i === obStep ? "active" : ""}"></div>`).join("")}
+        </div>
+        <div class="ob-question">${escapeHtml(step.q)}</div>
+        <div class="ob-options">
+          ${step.opts.map((o) => `
+            <button class="ob-opt" type="button" data-val="${escapeHtml(String(o.val))}">
+              <span class="ob-opt-icon">${o.icon}</span>
+              <span class="ob-opt-text">
+                <strong>${escapeHtml(o.label)}</strong>
+                <small>${escapeHtml(o.sub)}</small>
+              </span>
+            </button>
+          `).join("")}
+        </div>
+      </div>`;
+    shell.querySelectorAll(".ob-opt").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const raw = btn.dataset.val;
+        let val = raw === "true" ? true : raw === "false" ? false : isNaN(Number(raw)) ? raw : Number(raw);
+        obAnswers[step.key] = val;
+        obStep++;
+        renderOnboarding();
+      });
+    });
+    return;
+  }
+
+  // Final step: forecast
+  const hrs = obAnswers.weeklyHours;
+  const forecast = hrs >= 25 ? "B2-ish fluency in ~24 months" : hrs >= 15 ? "B1+ in ~18 months" : hrs >= 10 ? "A2–B1 in ~14 months" : "Tourist level in ~20 months";
+  const startLevel = "K0";
+  const startNote = obAnswers.knowsHangul
+    ? "You can move faster through the first stage if you already know Hangul."
+    : "We will build from the alphabet upward.";
+
+  shell.innerHTML = `
+    <div class="ob-card">
+      <div class="ob-logo">하나Path</div>
+      <div class="ob-tagline">Your personal Korean plan is ready.</div>
+      <div class="ob-step-bar">${steps.map(() => `<div class="ob-step-dot done"></div>`).join("")}</div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:.8rem;color:var(--muted-2);margin-bottom:4px;">YOUR FORECAST</div>
+        <div style="font-size:1.1rem;font-weight:700;margin-bottom:4px;">${escapeHtml(forecast)}</div>
+        <div style="font-size:.82rem;color:var(--muted);">Starting at level ${startLevel} · ${hrs} hrs/week</div>
+        <div style="font-size:.78rem;color:var(--muted-2);margin-top:6px;">${escapeHtml(startNote)}</div>
+      </div>
+      <div class="ob-note">
+        This is realistic — not a marketing promise. Fluency takes hundreds of hours.
+        HanaPath will track every minute and adjust your plan as you go.
+      </div>
+      <button class="button primary full" id="obStartBtn" type="button" style="margin-top:8px;">Start HanaPath →</button>
+    </div>`;
+
+  document.getElementById("obStartBtn").addEventListener("click", () => {
+    Object.assign(state, {
+      onboarded: true,
+      goal: obAnswers.goal,
+      weeklyHours: obAnswers.weeklyHours,
+      speakingAnxiety: obAnswers.speakingAnxiety,
+      knowsHangul: obAnswers.knowsHangul,
+      level: startLevel,
+    });
+    saveState();
+    shell.hidden = true;
+    const app = document.getElementById("app");
+    if (app) app.hidden = false;
+    showTab("alphabet");
+    bindKeyboardShortcuts();
+  });
+}
+
+// ─── TODAY SCREEN ─────────────────────────────────────────────────────────────
+
+function renderToday() {
+  const el = document.getElementById("screen-today");
+  if (!el) return;
+  refreshProgressionState();
+  {
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+
+  const level = getTrackLevel("alphabet");
+  const levelIndex = Math.min(level - 1, phaseOneLessons.length - 1);
+  const currentLesson = phaseOneLessons[levelIndex] || phaseOneLessons[0];
+  const repeatLessons = phaseOneLessons.slice(0, levelIndex);
+  const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
+  const progressPct = Math.round((completedCount / Math.max(1, phaseOneLessons.length)) * 100);
+  const alphabetView = normalizeAlphabetView(state.alphabetView || "basics");
+  state.alphabetView = alphabetView;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Alphabet</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Hangul first</h2>
+      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(level <= phaseOneLessons.length ? currentLesson.shortTitle : "Mixed review")} · ${progressPct}% of K0 done</div>
+      <div class="skill-track" style="margin-top:14px;"><div class="skill-fill" style="width:${progressPct}%"></div></div>
+    </div>
+
+    ${renderLevelRail("alphabet")}
+    ${renderAlphabetTabs(alphabetView)}
+    ${renderAlphabetPanel(alphabetView, currentLesson, levelIndex, repeatLessons)}
+  `;
+
+  bindLevelRail(el, "alphabet", renderToday);
+  el.querySelectorAll("[data-alpha-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.alphabetView = normalizeAlphabetView(btn.dataset.alphaView);
+      saveState();
+      renderToday();
+    });
+  });
+  el.querySelectorAll("[data-alpha-speak]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.alphaSpeak || ""));
+  });
+  if (alphabetView === "test") {
+    renderQuestion(generateQuestion(), { scope: "alphabet" });
+  }
+  return;
+  }
+
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+
+  const level = getTrackLevel("alphabet");
+  const levelIndex = Math.min(level - 1, phaseOneLessons.length - 1);
+  const currentLesson = phaseOneLessons[levelIndex] || phaseOneLessons[0];
+  const repeatLessons = phaseOneLessons.slice(0, levelIndex);
+  const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
+  const progressPct = Math.round((completedCount / Math.max(1, phaseOneLessons.length)) * 100);
+  const conceptRows = (currentLesson?.concepts || []).slice(0, 3).map((concept, index) => `
+    <div class="study-row">
+      <div>
+        <div class="study-row-ko">${escapeHtml(concept.kicker || `Concept ${index + 1}`)}</div>
+        <div class="study-row-sub">${escapeHtml(concept.title || "")}</div>
+        <div class="fs-xs text-muted-2 mt-4">${escapeHtml(concept.body || concept.cue || "")}</div>
+      </div>
+      <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(concept.voiceText || concept.cue || concept.title || "")}">▶</button>
+    </div>
+  `).join("");
+
+  const repeatRows = repeatLessons.length
+    ? repeatLessons.map((lesson, index) => `
+      <div class="study-row">
+        <div>
+          <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lesson.shortTitle)}</div>
+          <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
+        </div>
+        <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(lesson.goal)}">▶</button>
+      </div>
+    `).join("")
+    : `<div class="screen-sub" style="margin-bottom:0;">This is where we start from zero. The review stack fills as you work through K0.</div>`;
+
+  const mapRows = phaseOneLessons.map((lesson, index) => {
+    const done = state.phaseOneCompleted.includes(lesson.id);
+    const active = index === levelIndex;
+    return `
+      <div class="study-row ${active ? "active" : ""}">
+        <div>
+          <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lesson.shortTitle)}</div>
+          <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
+        </div>
+        <span class="pill ${done ? "success" : active ? "accent" : "muted"}">${done ? "Done" : active ? "Now" : "Next"}</span>
+      </div>
+    `;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Alphabet</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Hangul first</h2>
+      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(level <= phaseOneLessons.length ? currentLesson.shortTitle : "Mixed review")} · ${progressPct}% of K0 done</div>
+      <div class="skill-track" style="margin-top:14px;"><div class="skill-fill" style="width:${progressPct}%"></div></div>
+    </div>
+
+    ${renderLevelRail("alphabet")}
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Learn</div>
+          <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(currentLesson.title)}</div>
+        </div>
+        <span class="pill accent">${escapeHtml(currentLesson.duration)}</span>
+      </div>
+      <div class="text-muted-2 fs-sm mb-12">${escapeHtml(currentLesson.goal)}</div>
+      <div class="study-list">${conceptRows}</div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Repeat</div>
+          <div class="screen-sub" style="margin-bottom:0;">Previous Hangul lessons stay in the loop.</div>
+        </div>
+        <span class="pill muted">${repeatLessons.length} earlier</span>
+      </div>
+      <div class="study-list">${repeatRows}</div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Map</div>
+          <div class="screen-sub" style="margin-bottom:0;">Every K0 stage, in order.</div>
+        </div>
+        <span class="pill accent">${completedCount}/${phaseOneLessons.length}</span>
+      </div>
+      <div class="study-list">${mapRows}</div>
+    </div>
+
+    ${renderQuizCard("alphabet")}
+  `;
+
+  bindLevelRail(el, "alphabet", renderToday);
+  el.querySelectorAll("[data-speak]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
+  });
+  renderQuestion(generateQuestion(), { scope: "alphabet" });
+  return;
+
+  const today = new Date();
+  const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
+  const dateStr = today.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const skills = state.skills;
+  const freshProfile = isFreshProfile();
+  const dueCards = freshProfile ? 0 : Math.max(0, 20 - (state.asked % 20));
+
+  const nextLesson = (() => {
+    if (state.level === "K0") {
+      const idx = state.phaseOneCompleted.length;
+      const lesson = phaseOneLessons[Math.min(idx, phaseOneLessons.length - 1)];
+      return lesson ? `K0 Stage ${Math.min(idx + 1, 7)}: ${lesson.shortTitle}` : "K0 complete!";
+    }
+    if (state.level === "K1") return "K1: Greetings, names, and survival phrases";
+    if (state.level === "K2") return "K2: Sentence building and everyday grammar";
+    if (state.level === "K3") return "K3: Verbs and connected speech";
+    if (state.level === "K4") return "K4: Listening and conversation";
+    return "K5: Fluency bridge and review";
+  })();
+
+  const speakLow = !freshProfile && skills.speaking < 30;
+  const listenLow = skills.listening < 25;
+  const topBanner = freshProfile
+    ? "Welcome to HanaPath. Start with Hangul and build from K0."
+    : speakLow
+      ? "Your Korean is becoming library-shaped. Today we speak."
+      : "";
+
+  const skillRows = Object.entries({ Vocab: skills.vocab, Grammar: skills.grammar, Reading: skills.reading, Listening: skills.listening, Speaking: skills.speaking, Pronunciation: skills.pronunciation, Writing: skills.writing })
+    .map(([name, val]) => {
+      const warn = (name === "Speaking" || name === "Listening") && val < 30;
+      return `<div class="skill-row">
+        <span class="skill-name ${warn ? "skill-warn" : ""}">${name}</span>
+        <div class="skill-track"><div class="skill-fill" style="width:${val}%"></div></div>
+        <span class="skill-val">${val}</span>
+      </div>`;
+    }).join("");
+
+  const blocks = [
+    { key: "review", icon: "⟳", iconClass: "purple", label: "Review", desc: `${dueCards} cards due`, meta: "~10 min", tab: "review" },
+    { key: "learn",  icon: "◎", iconClass: "blue",   label: "Learn",  desc: nextLesson,               meta: "~15 min", tab: "path" },
+    { key: "speak",  icon: "◉", iconClass: "green",  label: "Speak",  desc: "Daily speaking task",    meta: "~5 min",  tab: "speak" },
+    { key: "listen", icon: "♪", iconClass: "pink",   label: "Words",   desc: "5,000-word bank",       meta: "~5 min",  tab: "library" },
+    { key: "reflect",icon: "✓", iconClass: "orange", label: "Reflect","desc": "Can-do check",         meta: "~2 min",  tab: "progress" },
+  ];
+
+  if (freshProfile) {
+    blocks[0] = {
+      ...blocks[0],
+      desc: "Start K0 to unlock review cards",
+      meta: "~5 min",
+    };
+    blocks[1] = {
+      ...blocks[1],
+      label: "Alphabet",
+      desc: "K0: Hangul, vowels, consonants, and first reading drills",
+    };
+  }
+
+  const totalMin = blocks.reduce((s) => s + 10, 0) - 10 + 37;
+
+  el.innerHTML = `
+    <div class="today-header">
+      <div>
+        <div class="today-greeting">${escapeHtml(dayName)}, ${escapeHtml(dateStr)}</div>
+        <div class="today-title">Today's Plan</div>
+      </div>
+      <div class="today-badge">🇰🇷</div>
+    </div>
+
+    ${topBanner ? `<div class="warning-banner">${escapeHtml(topBanner)}</div>` : ""}
+
+    <div class="card">
+      <div class="eyebrow">Skill balance</div>
+      <div class="skill-bars">${skillRows}</div>
+    </div>
+
+    <div class="card" style="padding:14px 16px 6px;">
+      <div class="flex-between mb-8">
+        <span class="eyebrow">Daily blocks</span>
+        <span class="fs-xs text-muted-2">${totalMin} min total</span>
+      </div>
+      <div class="plan-blocks">
+        ${blocks.map((b) => `
+          <div class="plan-block ${state.todayDone.includes(b.key) ? "done" : ""}">
+            <div class="plan-icon ${b.iconClass}">${b.icon}</div>
+            <div class="plan-copy">
+              <div class="plan-label">${escapeHtml(b.label)}</div>
+              <div class="plan-desc">${escapeHtml(b.desc)}</div>
+              <div class="plan-meta">${escapeHtml(b.meta)}</div>
+            </div>
+            <button class="plan-go" type="button" data-tab="${escapeHtml(b.tab)}" data-key="${escapeHtml(b.key)}">Start →</button>
+          </div>`).join("")}
+      </div>
+    </div>
+  `;
+
+  el.querySelectorAll(".plan-go").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.key;
+      if (!state.todayDone.includes(key)) {
+        state.todayDone.push(key);
+        saveState();
+      }
+      showTab(btn.dataset.tab);
+    });
+  });
+}
+
+// ─── PATH SCREEN ──────────────────────────────────────────────────────────────
+
+const K1_UNITS = ["Greetings & names", "Nationality & language", "This / that / over there", "Food & ordering", "Numbers, prices, counters", "Time & schedules", "Places & directions", "Daily routine", "Likes & dislikes", "Basic texting", "Transport", "Review mission"];
+const K2_UNITS = ["Family", "Work / study", "Hobbies", "Weather", "Shopping", "Health", "Weekends", "Home", "Invitations", "Travel", "Korean texting", "Review project"];
+
+function renderPath() {
+  const el = document.getElementById("screen-path");
+  if (!el) return;
+  refreshProgressionState();
+
+  const levels = [
+    { id: "K0", name: "Hangul & Sound",       time: "2–4 weeks",   units: phaseOneLessons.map((l) => l.title), isK0: true },
+    { id: "K1", name: "Survival Korean",       time: "Months 1–3",  units: K1_UNITS },
+    { id: "K2", name: "Everyday Korean",       time: "Months 4–6",  units: K2_UNITS },
+    { id: "K3", name: "Connected Korean",      time: "Months 7–12", units: [] },
+    { id: "K4", name: "Independent Korean",    time: "Months 13–18",units: [] },
+    { id: "K5", name: "Fluency Bridge",        time: "Months 19–24",units: [] },
+  ];
+
+  const completedK0 = state.phaseOneCompleted.length;
+  const k0Pct = Math.round((completedK0 / phaseOneLessons.length) * 100);
+  const unlockedIndex = getLevelIndex(state.level);
+
+  function statusFor(id) {
+    const levelIndex = getLevelIndex(id);
+    if (levelIndex < unlockedIndex) return "complete";
+    if (levelIndex === unlockedIndex) return "active";
+    return "locked";
+  }
+
+  el.innerHTML = `
+    <div class="eyebrow">Alphabet learning</div>
+    <h2 class="screen-title" style="margin-bottom:16px;">K0 → K5</h2>
+    <div class="text-muted-2 fs-xs mb-12">Start in K0 for Hangul, then move up only after you clear each level.</div>
+    <div class="level-map">
+      ${levels.map((lv) => {
+        const status = statusFor(lv.id);
+        const badgeClass = status === "complete" ? "complete" : status === "active" ? "active" : "locked";
+        const locked = status === "locked";
+        const isActive = status === "active" || status === "complete";
+
+        if (lv.units.length === 0) {
+          return `<div class="level-card">
+            <div class="level-head">
+              <div class="level-badge ${badgeClass}">${lv.id}</div>
+              <div class="level-info"><div class="level-name">${escapeHtml(lv.name)}</div><div class="level-sub">${escapeHtml(lv.time)}</div></div>
+              <span class="level-status ${badgeClass === "complete" ? "text-good" : badgeClass === "active" ? "text-accent" : "text-muted-2"}">${escapeHtml(badgeClass === "locked" ? `Unlock: ${getLevelUnlockText(lv.id)}` : badgeClass === "active" ? "Unlocked" : "Done")}</span>
+            </div></div>`;
+        }
+
+        const unitsHtml = lv.units.map((u, i) => {
+          const done = lv.isK0 ? state.phaseOneCompleted.includes(phaseOneLessons[i]?.id) : false;
+          const isCurr = lv.isK0 ? (i === completedK0 && completedK0 < phaseOneLessons.length) : false;
+          const isLocked = locked || (lv.isK0 ? i > completedK0 : false);
+          const dotClass = done ? "done" : isCurr ? "curr" : isLocked ? "lock" : "next";
+          const dotLabel = done ? "✓" : isCurr ? "▶" : isLocked ? "🔒" : String(i + 1);
+          const rowClass = ["unit-row", done ? "complete" : "", isCurr ? "active" : "", isLocked ? "locked" : ""].join(" ");
+          return `<div class="${rowClass}" data-k0-index="${lv.isK0 ? i : -1}" role="${lv.isK0 ? "button" : "listitem"}" tabindex="${lv.isK0 && !isLocked ? 0 : -1}">
+            <div class="unit-dot ${dotClass}">${dotLabel}</div>
+            <span class="unit-name">${escapeHtml(u)}</span>
+            ${lv.isK0 ? `<span class="unit-dur">${phaseOneLessons[i]?.duration || ""}</span>` : ""}
+          </div>`;
+        }).join("");
+
+        const progressBar = lv.isK0 ? `<div style="height:4px;background:rgba(255,255,255,.08);border-radius:99px;margin:0 0 10px;overflow:hidden"><div style="height:100%;width:${k0Pct}%;background:var(--accent-2);border-radius:99px;"></div></div>` : "";
+        const statusText = status === "complete" ? "✓ Done" : status === "active" ? (lv.isK0 ? `${k0Pct}%` : "Unlocked") : `Unlock: ${getLevelUnlockText(lv.id)}`;
+
+        return `<div class="level-card" data-level="${lv.id}">
+          <div class="level-head">
+            <div class="level-badge ${badgeClass}">${lv.id}</div>
+            <div class="level-info">
+              <div class="level-name">${escapeHtml(lv.name)}</div>
+              <div class="level-sub">${escapeHtml(lv.time)}</div>
+            </div>
+            <span class="level-status ${badgeClass === "complete" ? "text-good" : badgeClass === "active" ? "text-accent" : "text-muted-2"}">
+              ${escapeHtml(statusText)}
+            </span>
+          </div>
+          ${isActive ? `<div class="level-units">${progressBar}${unitsHtml}</div>` : ""}
+        </div>`;
+      }).join("")}
+    </div>
+    <div id="pathLessonArea"></div>
+  `;
+
+  // K0 unit click → open lesson
+  el.querySelectorAll(".unit-row[data-k0-index]").forEach((row) => {
+    const idx = Number(row.dataset.k0Index);
+    if (idx < 0 || row.classList.contains("locked")) return;
+    row.addEventListener("click", () => openPathLesson(idx));
+    row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") openPathLesson(idx); });
+  });
+}
+
+function openPathLesson(index) {
+  if (!phaseOneLessons[index]) return;
+  if (index > state.phaseOneCompleted.length) return; // locked
+
+  state.phaseOneActive = index;
+  resetPhaseOneView(index);
+  saveState();
+
+  const area = document.getElementById("pathLessonArea");
+  if (!area) return;
+
+  area.innerHTML = `
+    <div class="lesson-player-wrap" id="lessonPlayerWrap">
+      <div class="player-head">
+        <div>
+          <div class="eyebrow">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
+          <div class="player-title" id="hpStageTitle"></div>
+          <div class="player-goal text-muted fs-sm mt-4" id="hpStageGoal"></div>
+        </div>
+        <button class="hear-btn" id="hpHearBtn" type="button">▶ Hear</button>
+      </div>
+      <div id="hpStage"></div>
+      <div class="player-actions">
+        <button class="button secondary compact" id="hpBackBtn" type="button">Back</button>
+        <button class="button primary compact" id="hpActionBtn" type="button">Next card</button>
+      </div>
+    </div>
+  `;
+
+  // Hydrate els
+  els.phaseOneStageNumber  = { textContent: "" }; // not shown separately
+  els.phaseOneStageDuration= { textContent: "" };
+  els.phaseOneStageTitle   = document.getElementById("hpStageTitle");
+  els.phaseOneStageGoal    = document.getElementById("hpStageGoal");
+  els.phaseOneHearButton   = document.getElementById("hpHearBtn");
+  els.phaseOneStage        = document.getElementById("hpStage");
+  els.phaseOneBackButton   = document.getElementById("hpBackBtn");
+  els.phaseOneActionButton = document.getElementById("hpActionBtn");
+  // Unused but referenced
+  els.phaseOneProgressText   = { textContent: "" };
+  els.phaseOneProgressPercent= { textContent: "" };
+  els.phaseOneProgressBar    = { setAttribute: () => {}, querySelector: () => ({ style: {} }) };
+  els.phaseOneNextUp         = { textContent: "" };
+  els.continuePhaseOneButton = { textContent: "" };
+  els.phaseOneFinale         = { hidden: true };
+  els.phaseOneDrillButton    = null;
+  els.resetPhaseOneButton    = { textContent: "" };
+  els.phaseOneTrack          = { innerHTML: "" };
+  els.phaseOnePlayer         = document.getElementById("lessonPlayerWrap");
+
+  renderPhaseOnePlayer();
+  area.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  els.phaseOneHearButton.addEventListener("click", () => speak(getPhaseOneVoiceText()));
+  els.phaseOneBackButton.addEventListener("click", goBackPhaseOne);
+  els.phaseOneActionButton.addEventListener("click", () => {
+    advancePhaseOne();
+    // After advance, if we moved to next lesson re-render path
+    if (phaseOneView.mode === "result" && phaseOneView.passed) {
+      renderPath();
+    }
+  });
+  document.getElementById("hpStage").addEventListener("click", (e) => {
+    const btn = e.target.closest(".lesson-option");
+    if (btn instanceof HTMLButtonElement && !btn.disabled) answerPhaseOneQuestion(btn.dataset.option || "", btn);
+  });
+}
+
+// ─── REVIEW SCREEN ────────────────────────────────────────────────────────────
+
+const STUDIOS = [
+  { id: "alphabet",     label: "Alphabet" },
+  { id: "sound",        label: "Sound" },
+  { id: "survival",     label: "Phrases" },
+  { id: "grammar",      label: "Grammar" },
+  { id: "verb",         label: "Verbs" },
+  { id: "conversation", label: "Conversation" },
+  { id: "vocab",        label: "Words" },
+  { id: "sentences",    label: "Sentences" },
+  { id: "listen",       label: "Listen" },
+];
+
+function renderReview() {
+  const el = document.getElementById("screen-review");
+  if (!el) return;
+  refreshProgressionState();
+
+  currentQuizScope = "vocabulary";
+  state.studio = "vocab";
+
+  const level = getTrackLevel("vocabulary");
+  const bandIndex = getLevelBand(level, VOCAB_BANDS.length);
+  const bandLabel = VOCAB_BANDS[bandIndex - 1] || VOCAB_BANDS[0];
+  const knownCount = getVocabKnownSet().size;
+  const hardCount = getVocabHardSet().size;
+  const currentBandItems = vocabBankReady ? getCurrentBandSlice(vocabBank, level, VOCAB_BANDS.length) : [];
+  const repeatBandItems = vocabBankReady ? getRepeatBandSlice(vocabBank, level, VOCAB_BANDS.length) : [];
+  const active = currentBandItems[0] || vocabBank[0] || null;
+
+  const wordRows = (items, limit = 6) => items.slice(0, limit).map((entry) => `
+    <div class="study-row">
+      <div>
+        <div class="study-row-ko" lang="ko">${escapeHtml(entry.korean)}</div>
+        <div class="study-row-sub">${escapeHtml(entry.romanization)}</div>
+        <div class="fs-xs text-muted-2 mt-4">Pronunciation: ${escapeHtml(entry.romanization)} · ${escapeHtml(entry.frequencyBand)}</div>
+      </div>
+      <button class="lib-hear-btn" type="button" data-vocab-hear="${escapeHtml(entry.korean)}">▶</button>
+    </div>
+  `).join("");
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Vocabulary</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">English vs Korean</h2>
+      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · ${knownCount} known · ${hardCount} hard</div>
+      ${active ? `<div class="vocab-hero-count mt-12">${escapeHtml(active.korean)} · ${escapeHtml(active.romanization)}</div>` : ""}
+    </div>
+
+    ${renderLevelRail("vocabulary")}
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Learn</div>
+          <div class="screen-sub" style="margin-bottom:0;">Current band: ${escapeHtml(bandLabel)}</div>
+        </div>
+        <span class="pill accent">${currentBandItems.length} words</span>
+      </div>
+      ${vocabBankReady
+        ? `<div class="study-list">${wordRows(currentBandItems, 6) || `<div class="screen-sub" style="margin-bottom:0;">No words matched this band yet.</div>`}</div>`
+        : `<div class="screen-sub" style="margin-bottom:0;">Loading the vocabulary file…</div>`}
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Repeat</div>
+          <div class="screen-sub" style="margin-bottom:0;">Earlier bands stay in the loop.</div>
+        </div>
+        <span class="pill muted">${repeatBandItems.length} review words</span>
+      </div>
+      ${vocabBankReady
+        ? `<div class="study-list">${wordRows(repeatBandItems.slice(-6), 6) || `<div class="screen-sub" style="margin-bottom:0;">Keep going to unlock review words.</div>`}</div>`
+        : `<div class="screen-sub" style="margin-bottom:0;">Load the word bank to see repeat words here.</div>`}
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">More</div>
+          <div class="screen-sub" style="margin-bottom:0;">Tap any word to hear it and keep the file moving.</div>
+        </div>
+        <span class="pill muted">5,000 words</span>
+      </div>
+      <div class="study-list">
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">Korean spelling</div>
+            <div class="study-row-sub">What the word looks like in Hangul.</div>
+          </div>
+        </div>
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">English spelling</div>
+            <div class="study-row-sub">Romanization / English reading.</div>
+          </div>
+        </div>
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">Pronunciation</div>
+            <div class="study-row-sub">What you should say out loud.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    ${renderQuizCard("vocabulary")}
+  `;
+
+  bindLevelRail(el, "vocabulary", renderReview);
+  el.querySelectorAll("[data-vocab-hear]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.vocabHear || ""));
+  });
+  renderQuestion(generateQuestion(), { scope: "vocabulary" });
+  return;
+
+  const studioNote = state.level === "K0"
+    ? "K0 starts with alphabet and sound. Finish those stages to unlock the next studios."
+    : `Unlocked through ${state.level}. Keep going to open the next layer.`;
+  const studioButtons = STUDIOS.map((s) => {
+    const unlocked = isStudioUnlocked(s.id);
+    const isActive = state.studio === s.id;
+    return `<button class="studio-btn ${isActive ? "active" : ""} ${unlocked ? "" : "locked"}" type="button" data-studio="${s.id}" ${unlocked ? "" : "disabled aria-disabled=\"true\"" }>${escapeHtml(s.label)}</button>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="eyebrow">SRS Review</div>
+    <h2 class="screen-title" style="margin-bottom:4px;">Drill queue</h2>
+    <div class="text-muted fs-sm mb-12">Cards due refresh every session.</div>
+    <div class="text-muted-2 fs-xs mb-12">${escapeHtml(studioNote)}</div>
+
+    <div class="studio-switcher">
+      ${studioButtons}
+    </div>
+
+    <div class="review-stats">
+      <div class="rev-stat"><span class="sv" id="revRound">${state.round}</span><span class="sl">Round</span></div>
+      <div class="rev-stat"><span class="sv" id="revStreak">${state.streak}</span><span class="sl">Streak</span></div>
+      <div class="rev-stat"><span class="sv" id="revBest">${state.bestStreak}</span><span class="sl">Best</span></div>
+      <div class="rev-stat"><span class="sv" id="revAccuracy">${state.asked === 0 ? "0%" : Math.round(state.correct / state.asked * 100) + "%"}</span><span class="sl">Accuracy</span></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-meta">
+        <span class="pill accent" id="revQuizType">—</span>
+        <span class="pill muted" id="revQuizMode">—</span>
+      </div>
+      <div class="quiz-visual" id="revQuizVisual"></div>
+      <div class="quiz-prompt" id="revQuizPrompt">Loading…</div>
+      <div class="quiz-detail" id="revQuizDetail"></div>
+      <div class="quiz-options" id="revQuizOptions"></div>
+      <div class="quiz-feedback" id="revQuizFeedback"></div>
+    </div>
+
+    <div class="review-actions">
+      <button class="button secondary" id="revSpeakBtn" type="button">▶ Hear it</button>
+      <button class="button primary" id="revNextBtn" type="button">Next →</button>
+    </div>
+  `;
+
+  el.querySelectorAll(".studio-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setStudio(btn.dataset.studio);
+      btn.parentElement.querySelectorAll(".studio-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    });
+  });
+
+  document.getElementById("revSpeakBtn").addEventListener("click", () => speak(currentQuestion?.voiceText || currentQuestion?.answer || ""));
+  document.getElementById("revNextBtn").addEventListener("click", nextQuestion);
+
+  renderQuestion(generateQuestion());
+}
+
+// ─── SPEAK SCREEN ─────────────────────────────────────────────────────────────
+
+function renderSpeak() {
+  const el = document.getElementById("screen-speak");
+  if (!el) return;
+  refreshProgressionState();
+
+  currentQuizScope = "sentences";
+  state.studio = "sentences";
+
+  const level = getTrackLevel("sentences");
+  const sentenceBank = getSentenceStudyBank()
+    .filter((item) => item.tokenCount >= 2)
+    .sort((a, b) => a.tokenCount - b.tokenCount);
+  const currentSlice = getCurrentBandSlice(sentenceBank, level, 5);
+  const repeatSlice = getRepeatBandSlice(sentenceBank, level, 5);
+  const bandLabel = level <= 2
+    ? "Basic sentence frames"
+    : level <= 4
+      ? "Simple sentence order"
+      : level <= 6
+        ? "Type and build"
+        : level <= 8
+          ? "Longer sentences"
+          : "Mixed review";
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Sentences</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Order the words</h2>
+      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · drag, tap, and type</div>
+    </div>
+
+    ${renderLevelRail("sentences")}
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Learn</div>
+          <div class="screen-sub" style="margin-bottom:0;">Current sentence band</div>
+        </div>
+        <span class="pill accent">${currentSlice.length} items</span>
+      </div>
+      ${currentSlice.length
+        ? `<div class="study-list">${renderSentenceRows(currentSlice, 5)}</div>`
+        : `<div class="screen-sub" style="margin-bottom:0;">Sentence items will appear once the bank is ready.</div>`}
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Repeat</div>
+          <div class="screen-sub" style="margin-bottom:0;">Everything up to this level stays active.</div>
+        </div>
+        <span class="pill muted">${repeatSlice.length} review items</span>
+      </div>
+      ${repeatSlice.length
+        ? `<div class="study-list">${renderSentenceRows(repeatSlice.slice(-5), 5)}</div>`
+        : `<div class="screen-sub" style="margin-bottom:0;">Your repeat stack will fill as you move forward.</div>`}
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">More</div>
+          <div class="screen-sub" style="margin-bottom:0;">Drag words into order or type the whole sentence from audio.</div>
+        </div>
+        <span class="pill muted">Build + type</span>
+      </div>
+      <div class="study-list">
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">Drag-and-drop</div>
+            <div class="study-row-sub">Put the Korean words into the right order.</div>
+          </div>
+        </div>
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">Dictation</div>
+            <div class="study-row-sub">Hear a sentence and type it out.</div>
+          </div>
+        </div>
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">Replay</div>
+            <div class="study-row-sub">Hit Hear again whenever you need it.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    ${renderQuizCard("sentences")}
+  `;
+
+  bindLevelRail(el, "sentences", renderSpeak);
+  el.querySelectorAll("[data-speak]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
+  });
+  renderQuestion(generateQuestion(), { scope: "sentences" });
+  return;
+
+  const isK0 = state.level === "K0";
+  const dailyTask = isK0
+    ? { title: "Read these syllables aloud", cue: "Say each syllable clearly. Focus on getting the vowel right before worrying about speed.", example: "가 · 나 · 다 · 라 · 마 · 바 · 사 · 아", hear: "가, 나, 다, 라, 마, 바, 사, 아" }
+    : { title: "Introduce yourself in Korean", cue: "Say your name, where you're from, and why you're learning Korean. Aim for 3–5 sentences.", example: "안녕하세요. 저는 ____이에요. 저는 한국어를 공부해요.", hear: "안녕하세요. 저는 학생이에요. 저는 한국어를 공부해요." };
+
+  const prompts = isK0
+    ? [
+        { q: "Say: 'Hello'", hint: "안녕하세요" },
+        { q: "Read this word aloud", hint: "한글" },
+        { q: "Say: 'Thank you'", hint: "감사합니다" },
+        { q: "Read: 나무 (tree)", hint: "나무" },
+        { q: "Read: 바다 (sea)", hint: "바다" },
+        { q: "Say: 'Yes' and 'No'", hint: "네 / 아니요" },
+        { q: "Read: 우유 (milk)", hint: "우유" },
+        { q: "Say: 'Water, please'", hint: "물 주세요" },
+      ]
+    : conversationScenarioBank.slice(0, 8).map((s) => ({ q: s.cue, hint: s.answer }));
+
+  el.innerHTML = `
+    <div class="eyebrow">Speaking lab</div>
+    <h2 class="screen-title" style="margin-bottom:14px;">Speak Korean</h2>
+
+    <div class="speak-task">
+      <div class="speak-task-label">Today's task</div>
+      <div class="speak-task-title">${escapeHtml(dailyTask.title)}</div>
+      <div class="speak-task-cue">${escapeHtml(dailyTask.cue)}</div>
+      <div class="speak-example" lang="ko">${escapeHtml(dailyTask.example)}</div>
+      <div class="speak-actions">
+        <button class="button secondary compact" type="button" id="speakHearTask">▶ Hear example</button>
+        <button class="button success compact" type="button" id="speakDoneTask">I said it ✓</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Practice prompts</div>
+      <div class="speak-list">
+        ${prompts.map((p, i) => `
+          <div class="speak-item">
+            <div class="speak-item-num">${i + 1}</div>
+            <div class="speak-item-body">
+              <div class="speak-item-q">${escapeHtml(p.q)}</div>
+              <div class="speak-item-hint text-muted-2 fs-xs" lang="ko">${escapeHtml(p.hint)}</div>
+            </div>
+            <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(p.hint)}">▶</button>
+          </div>`).join("")}
+      </div>
+    </div>
+  `;
+
+  document.getElementById("speakHearTask").addEventListener("click", () => speak(dailyTask.hear));
+  document.getElementById("speakDoneTask").addEventListener("click", () => {
+    if (state.skills.speaking < 100) {
+      state.skills.speaking = Math.min(100, state.skills.speaking + 2);
+      saveState();
+    }
+    if (!state.todayDone.includes("speak")) {
+      state.todayDone.push("speak");
+      saveState();
+    }
+    document.getElementById("speakDoneTask").textContent = "Done! ✓";
+    document.getElementById("speakDoneTask").disabled = true;
+  });
+  el.querySelectorAll("[data-speak]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.speak));
+  });
+}
+
+// ─── LIBRARY SCREEN ───────────────────────────────────────────────────────────
+
+function renderLibrary() {
+  const el = document.getElementById("screen-library");
+  if (!el) return;
+  refreshProgressionState();
+
+  currentQuizScope = "listening";
+  state.studio = "listen";
+
+  const level = getTrackLevel("listening");
+  const listenBank = getSentenceStudyBank()
+    .filter((item) => item.tokenCount >= 2)
+    .sort((a, b) => a.tokenCount - b.tokenCount);
+  const currentSlice = getCurrentBandSlice(listenBank, level, 5);
+  const repeatSlice = getRepeatBandSlice(listenBank, level, 5);
+  const bandLabel = level <= 2
+    ? "Short sounds"
+    : level <= 4
+      ? "Short phrases"
+      : level <= 6
+        ? "Sentence meaning"
+        : level <= 8
+          ? "Dictation"
+          : "Mixed listening";
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Listening</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Hear the sentence</h2>
+      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · choose, type, and replay</div>
+    </div>
+
+    ${renderLevelRail("listening")}
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Learn</div>
+          <div class="screen-sub" style="margin-bottom:0;">Current listening band</div>
+        </div>
+        <span class="pill accent">${currentSlice.length} items</span>
+      </div>
+      ${currentSlice.length
+        ? `<div class="study-list">${renderSentenceRows(currentSlice, 5)}</div>`
+        : `<div class="screen-sub" style="margin-bottom:0;">Audio items will appear once the bank is ready.</div>`}
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Repeat</div>
+          <div class="screen-sub" style="margin-bottom:0;">Everything up to this level keeps coming back.</div>
+        </div>
+        <span class="pill muted">${repeatSlice.length} review items</span>
+      </div>
+      ${repeatSlice.length
+        ? `<div class="study-list">${renderSentenceRows(repeatSlice.slice(-5), 5)}</div>`
+        : `<div class="screen-sub" style="margin-bottom:0;">Your listening review stack will fill as you move forward.</div>`}
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">More</div>
+          <div class="screen-sub" style="margin-bottom:0;">Pick a mode: hear a line, match the meaning, or type it out.</div>
+        </div>
+        <span class="pill muted">Audio first</span>
+      </div>
+      <div class="study-list">
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">Sentence choice</div>
+            <div class="study-row-sub">Listen and choose the sentence you heard.</div>
+          </div>
+        </div>
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">Dictation</div>
+            <div class="study-row-sub">Hear it and type the Korean sentence.</div>
+          </div>
+        </div>
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">Replay</div>
+            <div class="study-row-sub">Tap hear again whenever you need another pass.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    ${renderQuizCard("listening")}
+  `;
+
+  bindLevelRail(el, "listening", renderLibrary);
+  el.querySelectorAll("[data-speak]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
+  });
+  renderQuestion(generateQuestion(), { scope: "listening" });
+  return;
+
+  const tabs = [
+    { id: "phrases",   label: "Phrases" },
+    { id: "dialogues", label: "Dialogues" },
+    { id: "grammar",   label: "Grammar" },
+    { id: "vocab",     label: "Words" },
+  ];
+
+  const activeLibTab = state.libTab || "phrases";
+  let vocabView = null;
+
+  let content = "";
+  if (activeLibTab === "phrases") {
+    content = `<div class="lib-list">${survivalPhrases.map((p) => `
+      <div class="lib-item">
+        <div style="flex:1"><div class="lib-kr" lang="ko">${escapeHtml(p.phrase)}</div><div class="lib-en">${escapeHtml(p.meaning)}</div><div class="fs-xs text-muted-2 mt-4">${escapeHtml(p.situation)}</div></div>
+        <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(p.voiceText)}">▶</button>
+      </div>`).join("")}</div>`;
+  } else if (activeLibTab === "dialogues") {
+    content = conversationDialogueBank.map((d) => `
+      <div class="dialogue-card">
+        <div class="dialogue-line"><div class="dl-speaker">A</div><div><div class="dl-kr" lang="ko">${escapeHtml(d.starter)}</div><div class="dl-en">${escapeHtml(d.cue)}</div></div></div>
+        <div class="dialogue-line"><div class="dl-speaker">B</div><div><div class="dl-kr" lang="ko">${escapeHtml(d.reply)}</div><div class="dl-en">${escapeHtml(d.explanation)}</div></div></div>
+        <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(d.starter + " " + d.reply)}" style="margin-top:8px;">▶ Hear</button>
+      </div>`).join("");
+  } else if (activeLibTab === "grammar") {
+    content = `<div class="lib-list">${grammarSentenceBank.map((s) => `
+      <div class="lib-item">
+        <div style="flex:1"><div class="lib-kr" lang="ko">${escapeHtml(s.korean)}</div><div class="lib-en">${escapeHtml(s.meaning)}</div><div class="fs-xs text-muted-2 mt-4">${escapeHtml(s.explanation)}</div></div>
+        <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(s.voiceText)}">▶</button>
+      </div>`).join("")}</div>`;
+  } else {
+    vocabView = buildVocabLibraryView();
+    content = vocabView.html;
+  }
+
+  el.innerHTML = `
+    <div class="eyebrow">Library</div>
+    <h2 class="screen-title" style="margin-bottom:14px;">Content</h2>
+    <div class="lib-tabs">
+      ${tabs.map((t) => `<button class="lib-tab ${t.id === activeLibTab ? "active" : ""}" type="button" data-libtab="${t.id}">${t.label}</button>`).join("")}
+    </div>
+    ${content}
+  `;
+
+  el.querySelectorAll(".lib-tab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.libTab = btn.dataset.libtab;
+      saveState();
+      renderLibrary();
+    });
+  });
+
+  if (activeLibTab === "vocab") {
+    const search = document.getElementById("vocabSearch");
+    if (search) {
+      search.addEventListener("input", () => {
+        state.vocabQuery = search.value;
+        state.vocabPage = 0;
+        saveState();
+        renderLibrary();
+      });
+    }
+
+    document.querySelectorAll("[data-vocab-band]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.vocabBand = btn.dataset.vocabBand || "all";
+        state.vocabPage = 0;
+        saveState();
+        renderLibrary();
+      });
+    });
+
+    const prevPage = document.getElementById("vocabPrevPage");
+    const nextPage = document.getElementById("vocabNextPage");
+    const randomBtn = document.getElementById("vocabRandomBtn");
+    const knownBtn = document.getElementById("vocabKnownBtn");
+    const hardBtn = document.getElementById("vocabHardBtn");
+
+    if (prevPage) {
+      prevPage.addEventListener("click", () => {
+        state.vocabPage = Math.max(0, (state.vocabPage || 0) - 1);
+        saveState();
+        renderLibrary();
+      });
+    }
+
+    if (nextPage && vocabView) {
+      nextPage.addEventListener("click", () => {
+        state.vocabPage = Math.min(vocabView.pageCount - 1, (state.vocabPage || 0) + 1);
+        saveState();
+        renderLibrary();
+      });
+    }
+
+    if (randomBtn && vocabView && vocabView.filtered.length) {
+      randomBtn.addEventListener("click", () => {
+        const item = randomItem(vocabView.filtered);
+        state.vocabActiveRank = item.rank;
+        const index = vocabView.filtered.findIndex((entry) => entry.rank === item.rank);
+        state.vocabPage = index >= 0 ? Math.floor(index / VOCAB_PAGE_SIZE) : 0;
+        saveState();
+        renderLibrary();
+      });
+    }
+
+    if (knownBtn && vocabView && vocabView.active) {
+      knownBtn.addEventListener("click", () => {
+        toggleVocabKnown(vocabView.active.rank);
+        renderLibrary();
+      });
+    }
+
+    if (hardBtn && vocabView && vocabView.active) {
+      hardBtn.addEventListener("click", () => {
+        toggleVocabHard(vocabView.active.rank);
+        renderLibrary();
+      });
+    }
+
+    document.querySelectorAll("[data-vocab-rank]").forEach((row) => {
+      const rank = Number(row.dataset.vocabRank);
+      const entry = getVocabStudyEntry(rank);
+      if (!entry) {
+        return;
+      }
+
+      const selectRow = () => {
+        state.vocabActiveRank = entry.rank;
+        const filtered = findVocabMatches(state.vocabQuery, state.vocabBand);
+        const index = filtered.findIndex((item) => item.rank === entry.rank);
+        if (index >= 0) {
+          state.vocabPage = Math.floor(index / VOCAB_PAGE_SIZE);
+        }
+        saveState();
+        renderLibrary();
+      };
+
+      row.addEventListener("click", selectRow);
+      row.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectRow();
+        }
+      });
+    });
+
+    document.querySelectorAll("[data-vocab-hear]").forEach((btn) => {
+      btn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        speak(btn.dataset.vocabHear || "");
+      });
+    });
+  }
+
+  el.querySelectorAll("[data-speak]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.speak));
+  });
+}
+
+// ─── PROGRESS SCREEN ──────────────────────────────────────────────────────────
+
+function renderProgress() {
+  const el = document.getElementById("screen-progress");
+  if (!el) return;
+  refreshProgressionState();
+
+  const skills = state.skills;
+  const skillRows = Object.entries({ Vocab: skills.vocab, Grammar: skills.grammar, Reading: skills.reading, Listening: skills.listening, Speaking: skills.speaking, Pronunciation: skills.pronunciation, Writing: skills.writing })
+    .map(([name, val]) => {
+      const warn = (name === "Speaking" || name === "Listening") && val < 30;
+      return `<div class="skill-row"><span class="skill-name ${warn ? "skill-warn" : ""}">${name}</span><div class="skill-track"><div class="skill-fill" style="width:${val}%"></div></div><span class="skill-val">${val}</span></div>`;
+    }).join("");
+
+  const forecasts = [
+    { hrs: 5,  pct: 18, label: "Tourist level",   you: state.weeklyHours === 5 },
+    { hrs: 10, pct: 38, label: "A2–B1 possible",  you: state.weeklyHours === 10 },
+    { hrs: 15, pct: 62, label: "B1+ with tutors", you: state.weeklyHours === 15 },
+    { hrs: 25, pct: 95, label: "B2-ish realistic", you: state.weeklyHours === 25 },
+  ];
+
+  const levelNames = { K0: "Hangul & Sound", K1: "Survival Korean", K2: "Everyday Korean", K3: "Connected Korean", K4: "Independent Korean", K5: "Fluency Bridge" };
+
+  const k0Pct = Math.round(state.phaseOneCompleted.length / phaseOneLessons.length * 100);
+
+  const cando = state.level === "K0"
+    ? ["Read basic Hangul syllables", "Recognize vowels ㅏ ㅓ ㅗ ㅜ ㅡ ㅣ", "Understand silent ㅇ", "Identify plain vs aspirated consonants", "Decode short Korean words"]
+    : ["Greet someone politely", "Order food and drinks", "Ask for the bathroom", "Say you speak a little Korean", "Use 주세요 to request items"];
+
+  el.innerHTML = `
+    <div class="eyebrow">Your progress</div>
+    <h2 class="screen-title" style="margin-bottom:14px;">Dashboard</h2>
+
+    <div class="progress-hero">
+      <div class="progress-level">${escapeHtml(state.level)}</div>
+      <div class="progress-level-name">${escapeHtml(levelNames[state.level] || state.level)}</div>
+      <div class="progress-level-sub">${state.level === "K0" ? `${k0Pct}% of Hangul stages complete` : `Unlocked through ${escapeHtml(state.level)}`}</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box"><span class="sv">${state.totalMinutes + state.asked}</span><span class="sl">Minutes studied</span></div>
+      <div class="stat-box"><span class="sv">${state.studyDays}</span><span class="sl">Days studied</span></div>
+      <div class="stat-box"><span class="sv">${state.correct}</span><span class="sl">Cards correct</span></div>
+      <div class="stat-box"><span class="sv">${state.bestStreak}</span><span class="sl">Best streak</span></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Skill balance</div>
+      <div class="skill-bars">${skillRows}</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Vocabulary bank</div>
+      <div class="vocab-progress-row">
+        <span>${state.vocabKnownRanks.length} known</span>
+        <span>${vocabBank.length || 5000} total</span>
+      </div>
+      <div class="forecast-track" style="margin-top:8px;">
+        <div class="forecast-fill" style="width:${vocabBank.length ? Math.round((state.vocabKnownRanks.length / vocabBank.length) * 100) : 0}%"></div>
+      </div>
+      <div class="fs-xs text-muted-2 mt-8">Use the Words tab to search, hear, and mark entries as known or hard.</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Fluency forecast at ${state.weeklyHours} hrs/week</div>
+      <div class="forecast-bar">
+        ${forecasts.map((f) => `
+          <div class="forecast-row ${f.you ? "you" : ""}">
+            <span class="forecast-hours">${f.hrs} hrs/wk</span>
+            <div class="forecast-track"><div class="forecast-fill" style="width:${f.pct}%"></div></div>
+            <span class="forecast-label">${escapeHtml(f.label)}${f.you ? " ← you" : ""}</span>
+          </div>`).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Can-do checklist (${state.level})</div>
+      <div class="cando-list">
+        ${cando.map((item, i) => {
+          const done = i < state.phaseOneCompleted.length;
+          return `<div class="cando-item"><div class="cando-check ${done ? "done" : "todo"}">${done ? "✓" : ""}</div><span>${escapeHtml(item)}</span></div>`;
+        }).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Backup & restore</div>
+      <div class="fs-sm text-muted">Download a file to move your progress to another device, then import it there.</div>
+      <div class="backup-actions">
+        <button class="button secondary compact" id="backupExportBtn" type="button">Export backup</button>
+        <button class="button secondary compact" id="backupImportBtn" type="button">Import backup</button>
+        <input id="backupImportInput" type="file" accept="application/json,.json" hidden />
+      </div>
+      <div class="fs-xs text-muted-2 mt-8" id="backupNote"></div>
+    </div>
+
+    <div class="card" style="text-align:center;padding:16px;">
+      <button class="button secondary compact" id="resetAllBtn" type="button">Reset all progress</button>
+      <div class="fs-xs text-muted-2 mt-8" id="resetNote"></div>
+    </div>
+  `;
+
+  let resetArmed = false;
+  const backupNote = document.getElementById("backupNote");
+  const backupExportBtn = document.getElementById("backupExportBtn");
+  const backupImportBtn = document.getElementById("backupImportBtn");
+  const backupImportInput = document.getElementById("backupImportInput");
+
+  if (backupExportBtn) {
+    backupExportBtn.addEventListener("click", () => {
+      downloadBackupFile();
+      if (backupNote) backupNote.textContent = `Downloaded ${getBackupFilename()}.`;
+    });
+  }
+
+  if (backupImportBtn && backupImportInput) {
+    backupImportBtn.addEventListener("click", () => backupImportInput.click());
+    backupImportInput.addEventListener("change", async () => {
+      const file = backupImportInput.files && backupImportInput.files[0];
+      if (!file) return;
+
+      const confirmRestore = window.confirm("Restore this backup and replace the current progress?");
+      if (!confirmRestore) {
+        backupImportInput.value = "";
+        return;
+      }
+
+      try {
+        const text = await file.text();
+        const importedState = parseBackupState(text);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(importedState));
+        if (backupNote) backupNote.textContent = "Backup restored. Reloading now...";
+        window.location.reload();
+      } catch (error) {
+        console.error("Failed to import backup:", error);
+        if (backupNote) backupNote.textContent = "That backup file could not be read.";
+        backupImportInput.value = "";
+      }
+    });
+  }
+
+  document.getElementById("resetAllBtn").addEventListener("click", () => {
+    if (!resetArmed) {
+      resetArmed = true;
+      document.getElementById("resetNote").textContent = "Tap again to confirm reset";
+      setTimeout(() => { resetArmed = false; document.getElementById("resetNote").textContent = ""; }, 4000);
+      return;
+    }
+    localStorage.removeItem(STORAGE_KEY);
+    window.location.reload();
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+async function init() {
+  validatePhaseOneLessons();
+
+  // Track daily streak
+  const todayStr = new Date().toISOString().slice(0, 10);
+  if (state.lastDate !== todayStr) {
+    if (state.todayDone.length > 0) state.studyDays += 1;
+    state.todayDate = todayStr;
+    state.todayDone = [];
+    state.lastDate = todayStr;
+    state.speakDone = false;
+    saveState();
+  }
+
+  await loadVocabBank();
+  updateVocabSkill();
+  refreshProgressionState();
+  saveState();
+
+  const onbDiv = document.getElementById("onboarding");
+  const appDiv = document.getElementById("app");
+
+  if (!state.onboarded) {
+    if (appDiv) appDiv.hidden = true;
+    renderOnboarding();
+  } else {
+    if (onbDiv) onbDiv.hidden = true;
+    if (appDiv) appDiv.hidden = false;
+    document.querySelectorAll(".nav-btn").forEach((btn) => {
+      btn.addEventListener("click", () => showTab(btn.dataset.tab));
+    });
+    bindKeyboardShortcuts();
+    showTab("alphabet");
+  }
+}
+
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator) || !window.isSecureContext) {
+    return;
+  }
+
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch((error) => {
+      console.warn("Service worker registration failed:", error);
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  registerServiceWorker();
+  init().catch((error) => {
+    console.error("HanaPath init failed:", error);
+  });
+});
