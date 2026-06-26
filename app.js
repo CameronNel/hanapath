@@ -2646,9 +2646,9 @@ function getMainTabLabel(tab) {
 }
 
 const ALPHABET_VIEWS = [
-  { id: "basics", label: "Basics" },
-  { id: "hear", label: "Hear" },
-  { id: "build", label: "Build" },
+  { id: "basics", label: "Learn" },
+  { id: "hear", label: "Examples" },
+  { id: "build", label: "Practice" },
   { id: "test", label: "Test" },
   { id: "review", label: "Review" },
 ];
@@ -2697,11 +2697,12 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
       <div class="card">
         <div class="flex-between mb-12">
           <div>
-            <div class="eyebrow">Hear</div>
-            <div class="screen-sub" style="margin-bottom:0;">Train the sound before you chase the word.</div>
+            <div class="eyebrow">Examples</div>
+            <div class="screen-sub" style="margin-bottom:0;">See the sound inside real syllables and words.</div>
           </div>
-          <span class="pill accent">${concepts.length} sounds</span>
+          <span class="pill accent">${concepts.length} examples</span>
         </div>
+        <div class="big-glyph" lang="ko">${escapeHtml(lead.visual || lead.voiceText || lesson.shortTitle)}</div>
         <div class="study-list">
           ${sampleRows || `<div class="screen-sub" style="margin-bottom:0;">No sound cards for this stage yet.</div>`}
         </div>
@@ -2714,8 +2715,8 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
       <div class="card">
         <div class="flex-between mb-12">
           <div>
-            <div class="eyebrow">Build</div>
-            <div class="screen-sub" style="margin-bottom:0;">Put the letters together one block at a time.</div>
+            <div class="eyebrow">Practice</div>
+            <div class="screen-sub" style="margin-bottom:0;">Build the block step by step.</div>
           </div>
           <span class="pill accent">K0</span>
         </div>
@@ -2741,7 +2742,13 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
   }
 
   if (view === "test") {
-    return renderQuizCard("alphabet");
+    return `
+      <div class="card">
+        <div class="eyebrow">Test</div>
+        <div class="screen-sub" style="margin-bottom:0;">Try the block first, then use the quiz to check what stuck. If you miss it, tap Hear and try again.</div>
+      </div>
+      ${renderQuizCard("alphabet")}
+    `;
   }
 
   if (view === "review") {
@@ -2765,8 +2772,8 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
     <div class="card">
       <div class="flex-between mb-12">
         <div>
-          <div class="eyebrow">Basics</div>
-          <div class="screen-sub" style="margin-bottom:0;">Start with the current rule and only the current rule.</div>
+          <div class="eyebrow">Learn</div>
+          <div class="screen-sub" style="margin-bottom:0;">Start with one rule, one sound, one block.</div>
         </div>
         <span class="pill accent">${escapeHtml(lesson.duration)}</span>
       </div>
@@ -5943,8 +5950,9 @@ function renderToday() {
 
   el.innerHTML = `
     <div class="card">
-      <div class="eyebrow">Alphabet</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">Hangul first</h2>
+      <div class="eyebrow">Step 1</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Alphabet</h2>
+      <div class="screen-sub" style="margin-bottom:8px;">Start here. Learn Hangul, hear examples, build syllables, then test yourself.</div>
       <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(level <= phaseOneLessons.length ? currentLesson.shortTitle : "Mixed review")} · ${progressPct}% of K0 done</div>
       <div class="skill-track" style="margin-top:14px;"><div class="skill-fill" style="width:${progressPct}%"></div></div>
     </div>
