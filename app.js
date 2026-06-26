@@ -2748,23 +2748,27 @@ function getAlphabetStageProgress(value = state.alphabetView) {
 function renderAlphabetTabs(activeView) {
   const activeStage = getAlphabetStageDefinition(activeView);
   return `
-    <div class="alphabet-stage-picker card" aria-label="Alphabet stages">
-      <div class="alphabet-stage-picker-row">
-        <div>
+    <details class="alphabet-stage-picker card">
+      <summary class="alphabet-stage-summary">
+        <div class="alphabet-stage-summary-copy">
           <div class="eyebrow">Choose stage</div>
+          <div class="alphabet-stage-summary-title">${escapeHtml(activeStage.label)}: ${escapeHtml(activeStage.title)}</div>
           <div class="alphabet-stage-note">${escapeHtml(activeStage.summary)}</div>
         </div>
-        <span class="pill accent">${escapeHtml(activeStage.label)}</span>
+        <span class="pill accent">Open</span>
+      </summary>
+      <div class="alphabet-stage-menu" role="listbox" aria-label="Alphabet stages">
+        ${ALPHABET_STAGE_DEFS.map((view) => `
+          <button class="alphabet-stage-option ${view.id === activeView ? "active" : ""}" type="button" data-alpha-view="${escapeHtml(view.id)}" aria-pressed="${view.id === activeView}">
+            <span class="alphabet-stage-option-main">
+              <span class="alphabet-stage-option-label">${escapeHtml(view.label)}</span>
+              <span class="alphabet-stage-option-title">${escapeHtml(view.title)}</span>
+            </span>
+            <span class="alphabet-stage-option-summary">${escapeHtml(view.summary)}</span>
+          </button>
+        `).join("")}
       </div>
-      <label class="alphabet-stage-select-wrap" for="alphabetStageSelect">
-        <span class="sr-only">Choose alphabet stage</span>
-        <select id="alphabetStageSelect" class="alphabet-stage-select" aria-label="Choose alphabet stage">
-          ${ALPHABET_STAGE_DEFS.map((view) => `
-            <option value="${escapeHtml(view.id)}" ${view.id === activeView ? "selected" : ""}>${escapeHtml(view.label)}: ${escapeHtml(view.title)}</option>
-          `).join("")}
-        </select>
-      </label>
-    </div>
+    </details>
   `;
 }
 
@@ -6202,14 +6206,13 @@ function renderToday() {
     ${renderAlphabetPanelV2(alphabetView)}
   `;
 
-  const alphabetStageSelect = el.querySelector("#alphabetStageSelect");
-  if (alphabetStageSelect) {
-    alphabetStageSelect.addEventListener("change", () => {
-      state.alphabetView = normalizeAlphabetView(alphabetStageSelect.value);
+  el.querySelectorAll("[data-alpha-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.alphabetView = normalizeAlphabetView(btn.dataset.alphaView);
       saveState();
       renderToday();
     });
-  }
+  });
   el.querySelectorAll("[data-alpha-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.alphaSpeak || ""));
   });

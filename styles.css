@@ -1074,6 +1074,99 @@ input, textarea { cursor: text; }
     min-height: 48px;
   }
 }
+.alphabet-stage-picker {
+  display: block;
+  overflow: hidden;
+  padding: 0;
+}
+.alphabet-stage-picker > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 16px;
+}
+.alphabet-stage-picker > summary::-webkit-details-marker {
+  display: none;
+}
+.alphabet-stage-summary-copy {
+  min-width: 0;
+  flex: 1;
+}
+.alphabet-stage-summary-title {
+  margin-top: 4px;
+  font-size: 1rem;
+  line-height: 1.35;
+  font-weight: 800;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.alphabet-stage-menu {
+  display: grid;
+  gap: 10px;
+  padding: 0 18px 18px;
+}
+.alphabet-stage-option {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  padding: 14px 14px 13px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-align: left;
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.alphabet-stage-option:hover {
+  border-color: var(--line-strong);
+}
+.alphabet-stage-option:active {
+  transform: translateY(1px);
+}
+.alphabet-stage-option.active {
+  border-color: var(--accent);
+  background: rgba(167,139,250,.12);
+}
+.alphabet-stage-option-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.alphabet-stage-option-label {
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.alphabet-stage-option-title {
+  font-size: .96rem;
+  line-height: 1.38;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.alphabet-stage-option-summary {
+  font-size: .84rem;
+  line-height: 1.48;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+@media (max-width: 540px) {
+  .alphabet-stage-picker > summary {
+    align-items: flex-start;
+    padding: 16px 16px 14px;
+  }
+  .alphabet-stage-menu {
+    padding: 0 16px 16px;
+  }
+}
 .lib-tabs {
   display: flex;
   gap: 6px;
