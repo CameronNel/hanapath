@@ -6183,14 +6183,10 @@ function renderToday() {
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
 
-  const level = getTrackLevel("alphabet");
-  const levelIndex = Math.min(level - 1, phaseOneLessons.length - 1);
-  const currentLesson = phaseOneLessons[levelIndex] || phaseOneLessons[0];
-  const repeatLessons = phaseOneLessons.slice(0, levelIndex);
-  const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
-  const nextLesson = phaseOneLessons[completedCount] || phaseOneLessons[phaseOneLessons.length - 1] || null;
-  const progressPct = Math.round((completedCount / Math.max(1, phaseOneLessons.length)) * 100);
   const alphabetView = normalizeAlphabetView(state.alphabetView || getDefaultAlphabetView());
+  const alphabetStage = getAlphabetStageDefinition(alphabetView);
+  const stageProgress = getAlphabetStageProgress(alphabetView);
+  const progressPct = Math.round((stageProgress.completedCount / Math.max(1, stageProgress.total)) * 100);
   state.alphabetView = alphabetView;
 
   el.innerHTML = `
@@ -6198,7 +6194,7 @@ function renderToday() {
       <div class="eyebrow">Step 1</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Alphabet</h2>
       <div class="screen-sub" style="margin-bottom:8px;">Start here. Learn vowels, consonants, block logic, and reading in a simple order.</div>
-      <div class="text-muted-2 fs-sm">${completedCount}/${phaseOneLessons.length} lesson blocks complete | ${escapeHtml(nextLesson ? nextLesson.shortTitle : "All early Hangul stages complete")}</div>
+      <div class="text-muted-2 fs-sm">${stageProgress.completedCount}/${stageProgress.total} lesson blocks complete | ${escapeHtml(stageProgress.nextLesson ? stageProgress.nextLesson.shortTitle : alphabetStage.label)}</div>
       <div class="skill-track" style="margin-top:14px;"><div class="skill-fill" style="width:${progressPct}%"></div></div>
     </div>
 
