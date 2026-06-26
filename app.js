@@ -2746,11 +2746,24 @@ function getAlphabetStageProgress(value = state.alphabetView) {
 }
 
 function renderAlphabetTabs(activeView) {
+  const activeStage = getAlphabetStageDefinition(activeView);
   return `
-    <div class="lib-tabs" aria-label="Alphabet stages">
-      ${ALPHABET_VIEWS.map((view) => `
-        <button class="lib-tab ${view.id === activeView ? "active" : ""}" type="button" data-alpha-view="${escapeHtml(view.id)}">${escapeHtml(view.label)}</button>
-      `).join("")}
+    <div class="alphabet-stage-picker card" aria-label="Alphabet stages">
+      <div class="alphabet-stage-picker-row">
+        <div>
+          <div class="eyebrow">Choose stage</div>
+          <div class="alphabet-stage-note">${escapeHtml(activeStage.summary)}</div>
+        </div>
+        <span class="pill accent">${escapeHtml(activeStage.label)}</span>
+      </div>
+      <label class="alphabet-stage-select-wrap" for="alphabetStageSelect">
+        <span class="sr-only">Choose alphabet stage</span>
+        <select id="alphabetStageSelect" class="alphabet-stage-select" aria-label="Choose alphabet stage">
+          ${ALPHABET_STAGE_DEFS.map((view) => `
+            <option value="${escapeHtml(view.id)}" ${view.id === activeView ? "selected" : ""}>${escapeHtml(view.label)}: ${escapeHtml(view.title)}</option>
+          `).join("")}
+        </select>
+      </label>
     </div>
   `;
 }
@@ -6193,13 +6206,14 @@ function renderToday() {
     ${renderAlphabetPanelV2(alphabetView)}
   `;
 
-  el.querySelectorAll("[data-alpha-view]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.alphabetView = normalizeAlphabetView(btn.dataset.alphaView);
+  const alphabetStageSelect = el.querySelector("#alphabetStageSelect");
+  if (alphabetStageSelect) {
+    alphabetStageSelect.addEventListener("change", () => {
+      state.alphabetView = normalizeAlphabetView(alphabetStageSelect.value);
       saveState();
       renderToday();
     });
-  });
+  }
   el.querySelectorAll("[data-alpha-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.alphaSpeak || ""));
   });
