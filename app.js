@@ -2748,15 +2748,15 @@ function getAlphabetStageProgress(value = state.alphabetView) {
 function renderAlphabetTabs(activeView) {
   const activeStage = getAlphabetStageDefinition(activeView);
   return `
-    <details class="alphabet-stage-picker card">
-      <summary class="alphabet-stage-summary">
+    <div class="alphabet-stage-picker card" aria-label="Alphabet stages">
+      <div class="alphabet-stage-picker-head">
         <div class="alphabet-stage-summary-copy">
           <div class="eyebrow">Choose stage</div>
           <div class="alphabet-stage-summary-title">${escapeHtml(activeStage.label)}: ${escapeHtml(activeStage.title)}</div>
           <div class="alphabet-stage-note">${escapeHtml(activeStage.summary)}</div>
         </div>
-        <span class="pill accent">Open</span>
-      </summary>
+        <span class="pill accent">In app</span>
+      </div>
       <div class="alphabet-stage-menu" role="listbox" aria-label="Alphabet stages">
         ${ALPHABET_STAGE_DEFS.map((view) => `
           <button class="alphabet-stage-option ${view.id === activeView ? "active" : ""}" type="button" data-alpha-view="${escapeHtml(view.id)}" aria-pressed="${view.id === activeView}">
@@ -2768,7 +2768,7 @@ function renderAlphabetTabs(activeView) {
           </button>
         `).join("")}
       </div>
-    </details>
+    </div>
   `;
 }
 
@@ -6179,10 +6179,13 @@ function renderOnboarding() {
 
 // ─── TODAY SCREEN ─────────────────────────────────────────────────────────────
 
-function renderToday() {
+function renderToday(options = {}) {
+  const { preserveScroll = false } = options;
   const el = document.getElementById("screen-today");
   if (!el) return;
   refreshProgressionState();
+  const scrollTop = preserveScroll ? el.scrollTop : 0;
+  const scrollLeft = preserveScroll ? el.scrollLeft : 0;
   {
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
@@ -6210,13 +6213,19 @@ function renderToday() {
     btn.addEventListener("click", () => {
       state.alphabetView = normalizeAlphabetView(btn.dataset.alphaView);
       saveState();
-      renderToday();
+      renderToday({ preserveScroll: true });
     });
   });
   el.querySelectorAll("[data-alpha-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.alphaSpeak || ""));
   });
   renderQuestion(generateQuestion(), { scope: "alphabet" });
+  if (preserveScroll) {
+    window.requestAnimationFrame(() => {
+      el.scrollTop = scrollTop;
+      el.scrollLeft = scrollLeft;
+    });
+  }
   return;
   }
 
