@@ -3243,7 +3243,7 @@ function getVocabStudyEntry(rank) {
 
 function normalizeVocabView(value) {
   const raw = String(value || "").toLowerCase();
-  return VOCAB_VIEWS.some((view) => view.id === raw) ? raw : "learn";
+  return ["learn", "browse", "test", "review"].includes(raw) ? raw : "learn";
 }
 
 function renderVocabStudyRows(items, limit = 6) {
