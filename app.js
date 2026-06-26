@@ -2645,22 +2645,109 @@ function getMainTabLabel(tab) {
   return safe.charAt(0).toUpperCase() + safe.slice(1);
 }
 
-const ALPHABET_VIEWS = [
-  { id: "basics", label: "Learn" },
-  { id: "hear", label: "Examples" },
-  { id: "build", label: "Practice" },
-  { id: "test", label: "Test" },
-  { id: "review", label: "Review" },
+const ALPHABET_STAGE_DEFS = [
+  {
+    id: "vowels",
+    label: "Vowels",
+    eyebrow: "Foundational vowels",
+    title: "Horizontal and vertical basics",
+    summary: "Start with the six anchor vowels before anything fancy.",
+    interaction: "Visual mapping",
+    preview: "ㅏ ㅓ ㅗ ㅜ ㅡ ㅣ",
+    lessonIndexes: [0],
+  },
+  {
+    id: "consonants",
+    label: "Consonants",
+    eyebrow: "Foundational consonants",
+    title: "Primary shapes and mnemonic hooks",
+    summary: "Learn the base consonants as shape families, not as a wall of symbols.",
+    interaction: "Mnemonic hooks",
+    preview: "ㄱ ㄴ ㅁ ㅅ ㅇ ㅎ",
+    lessonIndexes: [1],
+  },
+  {
+    id: "blocks",
+    label: "Blocks",
+    eyebrow: "Syllable box logic",
+    title: 'Build one Hangul block at a time',
+    summary: "Stack consonants and vowels into one square instead of reading a loose row of letters.",
+    interaction: "Grid alignment",
+    preview: "ㄴ + ㅏ = 나",
+    lessonIndexes: [2],
+  },
+  {
+    id: "advanced",
+    label: "Advanced",
+    eyebrow: "Advanced sets",
+    title: "Tense consonants, compound vowels, batchim",
+    summary: "Expand the set without losing the base shapes.",
+    interaction: "Speed drills",
+    preview: "ㅑ ㅕ ㅛ ㅠ · ㄲ ㅃ ㅆ",
+    lessonIndexes: [3, 4, 5],
+  },
+  {
+    id: "reading",
+    label: "Reading",
+    eyebrow: "Application",
+    title: "Read real Korean words",
+    summary: "Hear a line, read the block, and move toward real text.",
+    interaction: "Audio matching",
+    preview: "한글",
+    lessonIndexes: [6],
+  },
 ];
+
+const ALPHABET_VIEWS = ALPHABET_STAGE_DEFS;
 
 function normalizeAlphabetView(value) {
   const raw = String(value || "").toLowerCase();
-  return ALPHABET_VIEWS.some((view) => view.id === raw) ? raw : "basics";
+  return ALPHABET_STAGE_DEFS.some((view) => view.id === raw) ? raw : getDefaultAlphabetView();
+}
+
+function getDefaultAlphabetView() {
+  const nextIndex = getFirstIncompletePhaseOneIndex();
+  if (nextIndex <= 0) return "vowels";
+  if (nextIndex === 1) return "consonants";
+  if (nextIndex === 2) return "blocks";
+  if (nextIndex <= 5) return "advanced";
+  return "reading";
+}
+
+function getAlphabetStageDefinition(value = state.alphabetView) {
+  const normalized = normalizeAlphabetView(value);
+  return ALPHABET_STAGE_DEFS.find((stage) => stage.id === normalized) || ALPHABET_STAGE_DEFS[0];
+}
+
+function getAlphabetStageLessons(value = state.alphabetView) {
+  const lessonIndexes = {
+    vowels: [0],
+    consonants: [1],
+    blocks: [2],
+    advanced: [3, 4, 5],
+    reading: [6],
+  }[normalizeAlphabetView(value)] || [0];
+
+  return lessonIndexes.map((index) => phaseOneLessons[index]).filter(Boolean);
+}
+
+function getAlphabetStageProgress(value = state.alphabetView) {
+  const lessons = getAlphabetStageLessons(value);
+  const completedLessons = lessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id));
+  const nextLesson = lessons.find((lesson) => !state.phaseOneCompleted.includes(lesson.id)) || null;
+
+  return {
+    lessons,
+    completedLessons,
+    completedCount: completedLessons.length,
+    total: lessons.length,
+    nextLesson,
+  };
 }
 
 function renderAlphabetTabs(activeView) {
   return `
-    <div class="lib-tabs" aria-label="Alphabet lesson tabs">
+    <div class="lib-tabs" aria-label="Alphabet stages">
       ${ALPHABET_VIEWS.map((view) => `
         <button class="lib-tab ${view.id === activeView ? "active" : ""}" type="button" data-alpha-view="${escapeHtml(view.id)}">${escapeHtml(view.label)}</button>
       `).join("")}
@@ -2798,10 +2885,132 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
   `;
 }
 
+function renderAlphabetPanelV2(view) {
+  const stage = getAlphabetStageDefinition(view);
+  const progress = getAlphabetStageProgress(view);
+  const stageLessons = progress.lessons;
+  const firstLessonIndex = stage.lessonIndexes[0] || 0;
+  const repeatLessons = phaseOneLessons.slice(0, firstLessonIndex);
+
+  const learnRows = stageLessons.length === 1
+    ? (stageLessons[0].concepts || []).slice(0, 3).map((concept, index) => `
+      <div class="study-row">
+        <div>
+          <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(concept.kicker || concept.title || stageLessons[0].shortTitle)}</div>
+          <div class="study-row-sub">${escapeHtml(concept.cue || concept.body || stageLessons[0].goal)}</div>
+          <div class="fs-xs text-muted-2 mt-4">${escapeHtml(concept.body || stageLessons[0].goal)}</div>
+        </div>
+        <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(concept.voiceText || concept.cue || stageLessons[0].goal)}">▶</button>
+      </div>
+    `).join("")
+    : stageLessons.map((lesson, index) => `
+      <div class="study-row">
+        <div>
+          <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lesson.shortTitle)}</div>
+          <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
+          <div class="fs-xs text-muted-2 mt-4">${escapeHtml(lesson.duration)}</div>
+        </div>
+        <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lesson.goal)}">▶</button>
+      </div>
+    `).join("");
+
+  const reviewRows = repeatLessons.slice(-3).map((lesson, index) => `
+    <div class="study-row">
+      <div>
+        <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lesson.shortTitle)}</div>
+        <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
+      </div>
+      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lesson.goal)}">▶</button>
+    </div>
+  `).join("");
+
+  return `
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">${escapeHtml(stage.eyebrow)}</div>
+          <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(stage.summary)}</div>
+        </div>
+        <span class="pill accent">${escapeHtml(stage.interaction)}</span>
+      </div>
+      <div class="big-glyph" lang="ko">${escapeHtml(stage.preview)}</div>
+      <div class="screen-sub" style="margin-bottom:0; margin-top:8px;">${escapeHtml(stage.title)}</div>
+      <div class="text-muted-2 fs-sm">${progress.total > 1 ? `${progress.completedCount}/${progress.total} lesson blocks done` : `${progress.completedCount}/${progress.total} lesson block done`}</div>
+      <div class="screen-sub" style="margin-bottom:0; margin-top:10px;">${progress.nextLesson ? `Next up: ${escapeHtml(progress.nextLesson.shortTitle)}` : "This stage is locked in. Move on when it feels automatic."}</div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Learn</div>
+          <div class="screen-sub" style="margin-bottom:0;">Keep the focus narrow and the feedback immediate.</div>
+        </div>
+        <span class="pill muted">${progress.total} lesson${progress.total === 1 ? "" : "s"}</span>
+      </div>
+      <div class="study-list">
+        ${learnRows || `<div class="screen-sub" style="margin-bottom:0;">The lesson cards will appear here once the stage content loads.</div>`}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Repeat</div>
+          <div class="screen-sub" style="margin-bottom:0;">Earlier stages stay active so the alphabet does not fall out of your head.</div>
+        </div>
+        <span class="pill muted">${repeatLessons.length} earlier</span>
+      </div>
+      <div class="study-list">
+        ${reviewRows || `<div class="screen-sub" style="margin-bottom:0;">This is the first stage, so there is nothing to repeat yet.</div>`}
+      </div>
+    </div>
+
+    ${renderQuizCard("alphabet")}
+  `;
+}
+
+const ALPHABET_QUIZ_POOLS = {
+  vowels: {
+    initials: SIMPLE_INITIALS,
+    medials: SIMPLE_MEDIALS,
+    finals: [""],
+    deck: ["vowel-shape", "compose", "decompose", "listen", "listen"],
+  },
+  consonants: {
+    initials: SIMPLE_INITIALS,
+    medials: SIMPLE_MEDIALS,
+    finals: [""],
+    deck: ["sound-family", "onset", "compose", "decompose", "listen"],
+  },
+  blocks: {
+    initials: SIMPLE_INITIALS,
+    medials: SIMPLE_MEDIALS,
+    finals: SIMPLE_FINALS,
+    deck: ["compose", "decompose", "batchim", "listen", "compose"],
+  },
+  advanced: {
+    initials: INITIALS,
+    medials: MEDIALS,
+    finals: FINALS,
+    deck: ["vowel-shape", "sound-family", "tense", "batchim", "compose", "decompose", "listen"],
+  },
+  reading: {
+    initials: INITIALS,
+    medials: MEDIALS,
+    finals: FINALS,
+    deck: ["listen", "listen", "compose", "decompose", "batchim"],
+  },
+};
+
+function getAlphabetQuizPools() {
+  const stage = getAlphabetStageDefinition();
+  return ALPHABET_QUIZ_POOLS[stage.id] || ALPHABET_QUIZ_POOLS.vowels;
+}
+
 const state = loadState();
 state.mainTab = normalizeMainTab(state.mainTab || "alphabet");
 state.tabLevels = normalizeTabLevels(state.tabLevels);
-state.alphabetView = normalizeAlphabetView(state.alphabetView || "basics");
+state.alphabetView = normalizeAlphabetView(state.alphabetView || getDefaultAlphabetView());
 state.phaseOneCompleted = Array.isArray(state.phaseOneCompleted)
   ? state.phaseOneCompleted.filter((id) => phaseOneLessons.some((lesson) => lesson.id === id))
   : [];
@@ -2832,7 +3041,7 @@ function loadState() {
     knowsHangul: false,
     level: "K0",
     mainTab: "alphabet",
-    alphabetView: "basics",
+    alphabetView: "vowels",
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
@@ -3597,7 +3806,7 @@ function getStudioHint() {
   if (getStudio() === "grammar") return "Grammar mode is active: particles and sentence order.";
   if (getStudio() === "verb") return "Verb mode is active: endings, tense, and honorifics.";
   if (getStudio() === "conversation") return "Conversation mode is active: quick replies and shadowing.";
-  return "Alphabet mode is active: start with Hangul, then move up one level at a time.";
+  return "Alphabet mode is active: start with vowels, then consonants, blocks, advanced sets, and reading.";
 }
 
 function syncStudioButton() {
@@ -3857,6 +4066,10 @@ function makeTextChoices(answer, pool, count = 4) {
 }
 
 function getPools() {
+  if (getStudio() === "alphabet") {
+    return getAlphabetQuizPools();
+  }
+
   const mastery = getTrackLevel("alphabet");
 
   if (mastery <= 2) {
@@ -4501,7 +4714,12 @@ function generateComposeQuestion(pools) {
 }
 
 function generateDecomposeQuestion(pools) {
-  const target = randomItem(["initial", "medial", "final"]);
+  const targetChoices = ["initial", "medial"];
+  if (Array.isArray(pools?.finals) && pools.finals.some((item) => item)) {
+    targetChoices.push("final");
+  }
+
+  const target = randomItem(targetChoices);
   let initial;
   let medial;
   let final;
@@ -5012,7 +5230,8 @@ function generateTenseQuestion(pools) {
   const answer = askFromPlain ? TENSE_PAIRS[source] : TENSE_REVERSE[source];
   const pool = askFromPlain ? Object.values(TENSE_PAIRS) : Object.keys(TENSE_PAIRS);
   const options = makeTextChoices(answer, pool, 4);
-  const sample = composeHangul(answer, "ㅏ", randomItem(pools.finals));
+  const sampleFinal = Array.isArray(pools?.finals) ? randomItem(pools.finals.filter((item) => item)) || "" : "";
+  const sample = composeHangul(answer, "ㅏ", sampleFinal);
 
   return {
     kind: "Tense pair",
@@ -5307,24 +5526,36 @@ function generateQuestion() {
     return makeListenStudioQuestion(type, listeningLevel);
   }
 
-  if (type === "compose") {
-    return generateComposeQuestion(pools);
-  }
+  if (studio === "alphabet") {
+    if (type === "vowel-shape") {
+      return generateVowelFamilyQuestion(pools);
+    }
 
-  if (type === "decompose") {
-    return generateDecomposeQuestion(pools);
-  }
+    if (type === "sound-family") {
+      return generateConsonantFamilyQuestion();
+    }
 
-  if (type === "family") {
-    return generateFamilyQuestion(pools);
-  }
+    if (type === "onset") {
+      return generateOnsetQuestion();
+    }
 
-  if (type === "tense") {
-    return generateTenseQuestion(pools);
-  }
+    if (type === "compose") {
+      return generateComposeQuestion(pools);
+    }
 
-  if (type === "batchim") {
-    return generateBatchimQuestion(pools);
+    if (type === "decompose") {
+      return generateDecomposeQuestion(pools);
+    }
+
+    if (type === "tense") {
+      return generateTenseQuestion(pools);
+    }
+
+    if (type === "batchim") {
+      return generateBatchimQuestion(pools);
+    }
+
+    return generateListenQuestion(pools);
   }
 
   return generateListenQuestion(pools);
@@ -5944,25 +6175,24 @@ function renderToday() {
   const currentLesson = phaseOneLessons[levelIndex] || phaseOneLessons[0];
   const repeatLessons = phaseOneLessons.slice(0, levelIndex);
   const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
+  const nextLesson = phaseOneLessons[completedCount] || phaseOneLessons[phaseOneLessons.length - 1] || null;
   const progressPct = Math.round((completedCount / Math.max(1, phaseOneLessons.length)) * 100);
-  const alphabetView = normalizeAlphabetView(state.alphabetView || "basics");
+  const alphabetView = normalizeAlphabetView(state.alphabetView || getDefaultAlphabetView());
   state.alphabetView = alphabetView;
 
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Step 1</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Alphabet</h2>
-      <div class="screen-sub" style="margin-bottom:8px;">Start here. Learn Hangul, hear examples, build syllables, then test yourself.</div>
-      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(level <= phaseOneLessons.length ? currentLesson.shortTitle : "Mixed review")} · ${progressPct}% of K0 done</div>
+      <div class="screen-sub" style="margin-bottom:8px;">Start here. Learn vowels, consonants, block logic, and reading in a simple order.</div>
+      <div class="text-muted-2 fs-sm">${completedCount}/${phaseOneLessons.length} lesson blocks complete | ${escapeHtml(nextLesson ? nextLesson.shortTitle : "All early Hangul stages complete")}</div>
       <div class="skill-track" style="margin-top:14px;"><div class="skill-fill" style="width:${progressPct}%"></div></div>
     </div>
 
-    ${renderLevelRail("alphabet")}
     ${renderAlphabetTabs(alphabetView)}
-    ${renderAlphabetPanel(alphabetView, currentLesson, levelIndex, repeatLessons)}
+    ${renderAlphabetPanelV2(alphabetView)}
   `;
 
-  bindLevelRail(el, "alphabet", renderToday);
   el.querySelectorAll("[data-alpha-view]").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.alphabetView = normalizeAlphabetView(btn.dataset.alphaView);
@@ -5973,9 +6203,7 @@ function renderToday() {
   el.querySelectorAll("[data-alpha-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.alphaSpeak || ""));
   });
-  if (alphabetView === "test") {
-    renderQuestion(generateQuestion(), { scope: "alphabet" });
-  }
+  renderQuestion(generateQuestion(), { scope: "alphabet" });
   return;
   }
 
@@ -6786,7 +7014,7 @@ function renderVocabulary() {
     <div class="card">
       <div class="eyebrow">Vocabulary</div>
       <h2 class="screen-title" style="margin-bottom:8px;">5,000-word bank</h2>
-      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · ${knownCount} known · ${hardCount} hard</div>
+      <div class="text-muted-2 fs-sm">${completedCount}/${phaseOneLessons.length} lesson blocks complete | ${escapeHtml(nextLesson ? nextLesson.shortTitle : "All early Hangul stages complete")}</div>
       ${active ? `<div class="vocab-hero-count mt-12" lang="ko">${escapeHtml(active.korean)} · ${escapeHtml(currentEnglish)} · ${escapeHtml(currentPronunciation)}</div>` : ""}
       <div class="vocab-filters mt-12">${viewButtons}</div>
     </div>
