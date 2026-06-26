@@ -6973,19 +6973,27 @@ async function init() {
 
   const onbDiv = document.getElementById("onboarding");
   const appDiv = document.getElementById("app");
+  const onboardingRequested = new URLSearchParams(window.location.search).has("onboarding");
 
-  if (!state.onboarded) {
+  // Public visitors land in the app; onboarding is opt-in via ?onboarding=1.
+  if (onboardingRequested) {
     if (appDiv) appDiv.hidden = true;
     renderOnboarding();
-  } else {
-    if (onbDiv) onbDiv.hidden = true;
-    if (appDiv) appDiv.hidden = false;
-    document.querySelectorAll(".nav-btn").forEach((btn) => {
-      btn.addEventListener("click", () => showTab(btn.dataset.tab));
-    });
-    bindKeyboardShortcuts();
-    showTab("alphabet");
+    return;
   }
+
+  if (!state.onboarded) {
+    state.onboarded = true;
+    saveState();
+  }
+
+  if (onbDiv) onbDiv.hidden = true;
+  if (appDiv) appDiv.hidden = false;
+  document.querySelectorAll(".nav-btn").forEach((btn) => {
+    btn.addEventListener("click", () => showTab(btn.dataset.tab));
+  });
+  bindKeyboardShortcuts();
+  showTab("alphabet");
 }
 
 function registerServiceWorker() {
