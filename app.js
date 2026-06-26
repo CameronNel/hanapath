@@ -2518,6 +2518,7 @@ let phaseOneResetArmed = false;
 let phaseOneResetTimer = 0;
 let phaseOneView = { lessonIndex: 0, mode: "learn", slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
 let currentQuizScope = "alphabet";
+let alphabetStageMenuOpen = false;
 
 const MAIN_TABS = ["alphabet", "vocabulary", "sentences", "listening"];
 const TAB_SCREEN_IDS = {
@@ -2745,7 +2746,7 @@ function getAlphabetStageProgress(value = state.alphabetView) {
   };
 }
 
-function renderAlphabetTabs(activeView) {
+function renderAlphabetTabs(activeView, menuOpen = alphabetStageMenuOpen) {
   const activeStage = getAlphabetStageDefinition(activeView);
   return `
     <div class="alphabet-stage-picker card" aria-label="Alphabet stages">
@@ -2755,19 +2756,23 @@ function renderAlphabetTabs(activeView) {
           <div class="alphabet-stage-summary-title">${escapeHtml(activeStage.label)}: ${escapeHtml(activeStage.title)}</div>
           <div class="alphabet-stage-note">${escapeHtml(activeStage.summary)}</div>
         </div>
-        <span class="pill accent">In app</span>
+        <button class="alphabet-stage-toggle" type="button" data-alpha-toggle aria-expanded="${menuOpen ? "true" : "false"}">
+          ${menuOpen ? "Close" : "Change"}
+        </button>
       </div>
-      <div class="alphabet-stage-menu" role="listbox" aria-label="Alphabet stages">
-        ${ALPHABET_STAGE_DEFS.map((view) => `
-          <button class="alphabet-stage-option ${view.id === activeView ? "active" : ""}" type="button" data-alpha-view="${escapeHtml(view.id)}" aria-pressed="${view.id === activeView}">
-            <span class="alphabet-stage-option-main">
-              <span class="alphabet-stage-option-label">${escapeHtml(view.label)}</span>
-              <span class="alphabet-stage-option-title">${escapeHtml(view.title)}</span>
-            </span>
-            <span class="alphabet-stage-option-summary">${escapeHtml(view.summary)}</span>
-          </button>
-        `).join("")}
-      </div>
+      ${menuOpen ? `
+        <div class="alphabet-stage-menu" role="listbox" aria-label="Alphabet stages">
+          ${ALPHABET_STAGE_DEFS.map((view) => `
+            <button class="alphabet-stage-option ${view.id === activeView ? "active" : ""}" type="button" data-alpha-view="${escapeHtml(view.id)}" aria-pressed="${view.id === activeView}">
+              <span class="alphabet-stage-option-main">
+                <span class="alphabet-stage-option-label">${escapeHtml(view.label)}</span>
+                <span class="alphabet-stage-option-title">${escapeHtml(view.title)}</span>
+              </span>
+              <span class="alphabet-stage-option-summary">${escapeHtml(view.summary)}</span>
+            </button>
+          `).join("")}
+        </div>
+      ` : ""}
     </div>
   `;
 }
@@ -6034,6 +6039,9 @@ function showTab(name) {
       : normalized === "listening"
         ? "listen"
         : "alphabet";
+  if (normalized !== "alphabet") {
+    alphabetStageMenuOpen = false;
+  }
   saveState();
   document.querySelectorAll(".screen").forEach((s) => { s.hidden = true; });
   const screenId = TAB_SCREEN_IDS[normalized] || TAB_SCREEN_IDS.alphabet;
@@ -6205,13 +6213,21 @@ function renderToday(options = {}) {
       <div class="skill-track" style="margin-top:14px;"><div class="skill-fill" style="width:${progressPct}%"></div></div>
     </div>
 
-    ${renderAlphabetTabs(alphabetView)}
+    ${renderAlphabetTabs(alphabetView, alphabetStageMenuOpen)}
     ${renderAlphabetPanelV2(alphabetView)}
   `;
 
+  const alphabetStageToggle = el.querySelector("[data-alpha-toggle]");
+  if (alphabetStageToggle) {
+    alphabetStageToggle.addEventListener("click", () => {
+      alphabetStageMenuOpen = !alphabetStageMenuOpen;
+      renderToday({ preserveScroll: true });
+    });
+  }
   el.querySelectorAll("[data-alpha-view]").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.alphabetView = normalizeAlphabetView(btn.dataset.alphaView);
+      alphabetStageMenuOpen = false;
       saveState();
       renderToday({ preserveScroll: true });
     });
