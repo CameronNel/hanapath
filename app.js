@@ -4462,6 +4462,109 @@ function getPhaseOneVoiceText() {
   return "";
 }
 
+function splitVoiceSequence(text) {
+  return String(text || "")
+    .split(/[,\u3001\/·|]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function renderFlashableHangulText(text, className = "concept-token") {
+  const source = String(text || "");
+  const pattern = /[가-힣ㄱ-ㅎㅏ-ㅣ]+/g;
+  let lastIndex = 0;
+  let index = 0;
+  const parts = [];
+
+  for (let match = pattern.exec(source); match; match = pattern.exec(source)) {
+    if (match.index > lastIndex) {
+      parts.push(escapeHtml(source.slice(lastIndex, match.index)));
+    }
+    parts.push(`<span class="${className}" data-flash-index="${index}">${escapeHtml(match[0])}</span>`);
+    index += 1;
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (index === 0) {
+    return { html: escapeHtml(source), count: 0 };
+  }
+
+  if (lastIndex < source.length) {
+    parts.push(escapeHtml(source.slice(lastIndex)));
+  }
+
+  return { html: parts.join(""), count: index };
+}
+
+function getPhaseOneFlashTargets() {
+  if (!els.phaseOneStage) return [];
+  const targets = [...els.phaseOneStage.querySelectorAll(".concept-token, .checkpoint-token")];
+  if (targets.length) return targets;
+  const fallback = els.phaseOneStage.querySelector(".concept-visual, .checkpoint-visual");
+  return fallback ? [fallback] : [];
+}
+
+let phaseOneVoicePlaybackId = 0;
+
+function speak(text) {
+  return new Promise((resolve) => {
+    if (!text || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance !== "function") {
+      resolve();
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ko-KR";
+    utterance.rate = 0.88;
+    utterance.pitch = 1;
+    const koreanVoice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("ko"));
+    if (koreanVoice) utterance.voice = koreanVoice;
+
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+    window.setTimeout(finish, Math.max(1200, String(text).length * 80));
+  });
+}
+
+async function playPhaseOneVoiceSequence() {
+  const voiceText = getPhaseOneVoiceText();
+  const voiceParts = splitVoiceSequence(voiceText);
+  const targets = getPhaseOneFlashTargets();
+  if (!voiceParts.length) {
+    const fallback = targets[0];
+    if (fallback) flashElement(fallback);
+    await speak(voiceText);
+    return;
+  }
+
+  const tokenId = ++phaseOneVoicePlaybackId;
+  const resolvedTargets = targets.length ? targets : [];
+
+  for (let index = 0; index < voiceParts.length; index += 1) {
+    if (tokenId !== phaseOneVoicePlaybackId) return;
+    const target = resolvedTargets.length
+      ? resolvedTargets[index % resolvedTargets.length]
+      : null;
+    if (target) flashElement(target);
+    const minStepMs = Math.max(520, String(voiceParts[index]).length * 140);
+    await Promise.all([
+      speak(voiceParts[index]),
+      new Promise((resolve) => window.setTimeout(resolve, minStepMs)),
+    ]);
+    if (tokenId !== phaseOneVoicePlaybackId) return;
+    await new Promise((resolve) => window.setTimeout(resolve, 90));
+  }
+}
+
 function flashElement(target) {
   if (!target || !target.classList) return;
   target.classList.remove("flash-pulse");
@@ -4471,11 +4574,6 @@ function flashElement(target) {
   window.setTimeout(() => {
     target.classList.remove("flash-pulse");
   }, 720);
-}
-
-function getPhaseOneFlashTarget() {
-  if (!els.phaseOneStage) return null;
-  return els.phaseOneStage.querySelector(".concept-visual, .checkpoint-visual");
 }
 
 function restorePhaseOneActions() {
@@ -4495,6 +4593,7 @@ function placePhaseOneActions() {
 function renderPhaseOneConcept(lesson) {
   restorePhaseOneActions();
   const concept = lesson.concepts[phaseOneView.slideIndex];
+  const conceptVisual = renderFlashableHangulText(concept.visual);
   const dots = lesson.concepts
     .map(
       (_, index) =>
@@ -4517,8 +4616,8 @@ function renderPhaseOneConcept(lesson) {
     "</div>" +
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="concept-card">' +
-    '<div class="concept-visual" lang="ko">' +
-    escapeHtml(concept.visual) +
+    '<div class="concept-visual" lang="ko" data-phase-one-visual>' +
+    conceptVisual.html +
     "</div>" +
     '<div class="concept-copy">' +
     '<p class="concept-kicker">' +
@@ -4548,6 +4647,7 @@ function renderPhaseOneQuestion(lesson) {
   restorePhaseOneActions();
   const question = lesson.questions[phaseOneView.questionIndex];
   const cleanCount = phaseOneView.results.filter(Boolean).length;
+  const questionVisual = renderFlashableHangulText(question.visual, "checkpoint-token");
 
   els.phaseOneStage.innerHTML =
     '<div class="lesson-step-row">' +
@@ -4562,8 +4662,8 @@ function renderPhaseOneQuestion(lesson) {
     "</div>" +
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="checkpoint-card">' +
-    '<div class="checkpoint-visual" lang="ko">' +
-    escapeHtml(question.visual) +
+    '<div class="checkpoint-visual" lang="ko" data-phase-one-visual>' +
+    questionVisual.html +
     "</div>" +
     "<h4>" +
     escapeHtml(question.prompt) +
@@ -6049,7 +6149,7 @@ function renderQuestion(question, options = {}) {
         if (currentQuizScope === "alphabet") {
           flashElement(quizVisual);
         }
-        speak(currentQuestion?.voiceText || currentQuestion?.answer || "");
+        void speak(currentQuestion?.voiceText || currentQuestion?.answer || "");
       });
     }
   }
@@ -6058,22 +6158,10 @@ function renderQuestion(question, options = {}) {
     nextBtn.addEventListener("click", nextQuestion);
   }
   syncReviewActionButton(question);
-  if (question.autoSpeak && !preserveState && question.voiceText) window.setTimeout(() => speak(question.voiceText), 160);
+  if (question.autoSpeak && !preserveState && question.voiceText) window.setTimeout(() => void speak(question.voiceText), 160);
 
   updateStats();
   saveState();
-}
-
-function speak(text) {
-  if (!text || !("speechSynthesis" in window)) return;
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ko-KR";
-  utterance.rate = 0.88;
-  utterance.pitch = 1;
-  const koreanVoice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("ko"));
-  if (koreanVoice) utterance.voice = koreanVoice;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utterance);
 }
 
 function finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml) {
@@ -6459,8 +6547,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   renderPhaseOnePlayer();
 
   els.phaseOneHearButton.addEventListener("click", () => {
-    flashElement(getPhaseOneFlashTarget());
-    speak(getPhaseOneVoiceText());
+    void playPhaseOneVoiceSequence();
   });
   els.phaseOneBackButton.addEventListener("click", goBackPhaseOne);
   els.phaseOneActionButton.addEventListener("click", () => {
