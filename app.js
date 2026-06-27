@@ -236,9 +236,10 @@ const phaseOneLessons = [
         kicker: "Up and down",
         title: "ㅗ points up; ㅜ points down",
         visual: "ㅗ  ↕  ㅜ",
-        body: "These vowels lie flat, so they sit under an initial consonant. The short stroke points up for ㅗ and down for ㅜ.",
-        cue: "고 stacks vertically. 구 does too.",
-        voiceText: "고, 구",
+        body: "These vowels lie flat, so they sit under an initial consonant. The same vowel shape can also sit in a starter block with silent ㅇ. That gives four sounds from two shapes: ㅗ becomes 오 or 고, and ㅜ becomes 우 or 구.",
+        cue: "Same two shapes, two seats: starter block and normal block.",
+        voiceText: "오, 고, 우, 구",
+        voiceFlashTargets: [0, 0, 1, 1],
       },
       {
         kicker: "The clean lines",
@@ -4531,6 +4532,23 @@ function getPhaseOneVoiceText() {
   return "";
 }
 
+function getPhaseOneVoiceFlashTargets() {
+  const lesson = phaseOneLessons[phaseOneView.lessonIndex];
+  if (!lesson) {
+    return [];
+  }
+
+  if (phaseOneView.mode === "learn") {
+    return lesson.concepts[phaseOneView.slideIndex]?.voiceFlashTargets || [];
+  }
+
+  if (phaseOneView.mode === "check") {
+    return lesson.questions[phaseOneView.questionIndex]?.voiceFlashTargets || [];
+  }
+
+  return [];
+}
+
 function splitVoiceSequence(text) {
   return String(text || "")
     .split(/[,\u3001\/·|]+/)
@@ -4606,6 +4624,7 @@ function speak(text) {
 
 async function playPhaseOneVoiceSequence() {
   const voiceText = getPhaseOneVoiceText();
+  const voiceFlashTargets = getPhaseOneVoiceFlashTargets();
   const voiceParts = splitVoiceSequence(voiceText);
   const targets = getPhaseOneFlashTargets();
   if (!voiceParts.length) {
@@ -4620,7 +4639,8 @@ async function playPhaseOneVoiceSequence() {
 
   for (let index = 0; index < voiceParts.length; index += 1) {
     if (tokenId !== phaseOneVoicePlaybackId) return;
-    const target = resolvedTargets[index] || null;
+    const targetIndex = Number.isInteger(voiceFlashTargets[index]) ? voiceFlashTargets[index] : index;
+    const target = resolvedTargets[targetIndex] || null;
     if (target) flashElement(target);
     const minStepMs = Math.max(PHASE_ONE_VOICE_MIN_STEP_MS, String(voiceParts[index]).length * PHASE_ONE_VOICE_CHAR_MS);
     await Promise.all([
