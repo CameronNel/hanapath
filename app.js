@@ -2549,6 +2549,7 @@ let phaseOneResetTimer = 0;
 let phaseOneView = { lessonIndex: 0, mode: "learn", slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
 let currentQuizScope = "alphabet";
 let alphabetStageMenuOpen = false;
+let correctToastState = { hideTimer: 0, removeTimer: 0, listenersBound: false };
 // Which slice of a screen to show: "learn" (study material only),
 // "practice" (quiz only), or "all" (the full legacy screen).
 let currentFocus = "all";
@@ -4105,6 +4106,70 @@ function shuffle(list) {
   return copy;
 }
 
+function getCorrectToastElement() {
+  return document.getElementById("correctToast");
+}
+
+function bindCorrectToastDismissals() {
+  if (correctToastState.listenersBound) return;
+  correctToastState.listenersBound = true;
+  const dismiss = () => hideCorrectToast(true);
+  window.addEventListener("pointerdown", dismiss, true);
+  window.addEventListener("keydown", dismiss, true);
+}
+
+function hideCorrectToast(immediate = false) {
+  const toast = getCorrectToastElement();
+  if (!toast || toast.hidden) return;
+
+  if (correctToastState.hideTimer) {
+    window.clearTimeout(correctToastState.hideTimer);
+    correctToastState.hideTimer = 0;
+  }
+  if (correctToastState.removeTimer) {
+    window.clearTimeout(correctToastState.removeTimer);
+    correctToastState.removeTimer = 0;
+  }
+
+  toast.classList.remove("is-visible");
+
+  if (immediate) {
+    toast.hidden = true;
+    return;
+  }
+
+  correctToastState.removeTimer = window.setTimeout(() => {
+    toast.hidden = true;
+    correctToastState.removeTimer = 0;
+  }, 180);
+}
+
+function showCorrectToast(message = "Correct!") {
+  const toast = getCorrectToastElement();
+  if (!toast) return;
+
+  bindCorrectToastDismissals();
+
+  if (correctToastState.hideTimer) {
+    window.clearTimeout(correctToastState.hideTimer);
+    correctToastState.hideTimer = 0;
+  }
+  if (correctToastState.removeTimer) {
+    window.clearTimeout(correctToastState.removeTimer);
+    correctToastState.removeTimer = 0;
+  }
+
+  toast.textContent = message;
+  toast.hidden = false;
+  toast.classList.remove("is-visible");
+  void toast.offsetWidth;
+  toast.classList.add("is-visible");
+
+  correctToastState.hideTimer = window.setTimeout(() => {
+    hideCorrectToast();
+  }, 1100);
+}
+
 function composeHangul(initial, medial, final = "") {
   const initialIndex = INITIALS.indexOf(initial);
   const medialIndex = MEDIALS.indexOf(medial);
@@ -4811,6 +4876,7 @@ function answerPhaseOneQuestion(choice, button) {
     }
   });
   feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation);
+  showCorrectToast();
   els.phaseOneActionButton.disabled = false;
 }
 
@@ -6190,6 +6256,9 @@ function finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml) {
   updateStats();
   refreshProgressionState();
   saveState();
+  if (isCorrect) {
+    showCorrectToast();
+  }
   renderQuestion(currentQuestion, { preserveState: true, scope: getCurrentQuizScope() });
 }
 
