@@ -3173,7 +3173,8 @@ function loadState() {
     knowsHangul: false,
     level: "K0",
     navTab: "today",
-    route: { hub: "home", item: null },
+    route: { hub: "learn", item: null },
+    learnInProgress: false,
     mainTab: "alphabet",
     alphabetView: "vowels",
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
@@ -6180,7 +6181,7 @@ const HUB_DEFS = {
     title: "What do you want to learn?",
     sub: "Pick a skill to study. No quizzes here — just the material.",
     items: [
-      { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Letters, sounds, and how to read.", custom: "alphabetLearn" },
+      { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Learn to read, one stage at a time.", custom: "alphabetLesson" },
       { id: "vocabulary", icon: "📚", title: "Vocabulary",         sub: "Today's words and the full word list.", target: "library" },
       { id: "sentences",  icon: "💬", title: "Sentences",          sub: "Read and build real sentences.", target: "practice" },
       { id: "listening",  icon: "🎧", title: "Listening",          sub: "Hear sentences and follow along.", target: "listening" },
@@ -6328,8 +6329,13 @@ function openHubItem(hub, itemId) {
   const focus = hub === "practice" ? "practice" : hub === "learn" ? "learn" : "all";
   showDetailBar(hub, item.title);
 
-  if (item.custom === "alphabetLearn") {
-    renderAlphabetLearn();
+  if (item.custom === "alphabetLesson") {
+    const idx = getFirstIncompletePhaseOneIndex();
+    if (idx < phaseOneLessons.length) {
+      openLearnLesson(idx);
+    } else {
+      renderAlphabetLearn(); // Hangul finished — show the letter reference.
+    }
     return;
   }
   if (item.custom === "alphabetPractice") {
@@ -6338,6 +6344,181 @@ function openHubItem(hub, itemId) {
   }
 
   renderLeafContent(item.target, focus);
+}
+
+// Tapping the Learn tab: resume an in-progress lesson, else show the menu.
+function tapLearnTab() {
+  refreshProgressionState();
+  const idx = getFirstIncompletePhaseOneIndex();
+  if (state.learnInProgress && idx < phaseOneLessons.length) {
+    activeHub = "learn";
+    setNavActive("learn");
+    openLearnLesson(idx, { resume: true });
+    return;
+  }
+  goHub("learn");
+}
+
+// Open the next new thing to learn: an alphabet lesson while Hangul is
+// unfinished, otherwise the new-vocabulary screen.
+function startNextLearn(opts = {}) {
+  refreshProgressionState();
+  const idx = getFirstIncompletePhaseOneIndex();
+  if (idx < phaseOneLessons.length) {
+    openLearnLesson(idx, opts);
+    return;
+  }
+  // Hangul done → new vocabulary becomes the next new material.
+  activeHub = "learn";
+  setNavActive("learn");
+  state.learnInProgress = false;
+  state.route = { hub: "learn", item: "vocabulary" };
+  saveState();
+  showDetailBar("learn", "Vocabulary");
+  renderLeafContent("library", "learn");
+}
+
+// Mount the Hangul lesson player inside `area` and wire its controls.
+// onResult(passed) fires once when the lesson reaches its result screen.
+function mountLessonPlayer(area, index, { onResult } = {}) {
+  if (!area) return;
+  area.innerHTML = `
+    <div class="lesson-player-wrap" id="lessonPlayerWrap">
+      <div class="player-head">
+        <div>
+          <div class="eyebrow">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
+          <div class="player-title" id="hpStageTitle"></div>
+          <div class="player-goal text-muted fs-sm mt-4" id="hpStageGoal"></div>
+        </div>
+        <button class="hear-btn" id="hpHearBtn" type="button">▶ Hear</button>
+      </div>
+      <div id="hpStage"></div>
+      <div class="player-actions">
+        <button class="button secondary compact" id="hpBackBtn" type="button">Back</button>
+        <button class="button primary compact" id="hpActionBtn" type="button">Next card</button>
+      </div>
+    </div>
+  `;
+
+  els.phaseOneStageNumber   = { textContent: "" };
+  els.phaseOneStageDuration = { textContent: "" };
+  els.phaseOneStageTitle    = document.getElementById("hpStageTitle");
+  els.phaseOneStageGoal     = document.getElementById("hpStageGoal");
+  els.phaseOneHearButton    = document.getElementById("hpHearBtn");
+  els.phaseOneStage         = document.getElementById("hpStage");
+  els.phaseOneBackButton    = document.getElementById("hpBackBtn");
+  els.phaseOneActionButton  = document.getElementById("hpActionBtn");
+  els.phaseOneProgressText    = { textContent: "" };
+  els.phaseOneProgressPercent = { textContent: "" };
+  els.phaseOneProgressBar     = { setAttribute: () => {}, querySelector: () => ({ style: {} }) };
+  els.phaseOneNextUp          = { textContent: "" };
+  els.continuePhaseOneButton  = { textContent: "" };
+  els.phaseOneFinale          = { hidden: true };
+  els.phaseOneDrillButton     = null;
+  els.resetPhaseOneButton     = { textContent: "" };
+  els.phaseOneTrack           = { innerHTML: "" };
+  els.phaseOnePlayer          = document.getElementById("lessonPlayerWrap");
+
+  renderPhaseOnePlayer();
+
+  els.phaseOneHearButton.addEventListener("click", () => speak(getPhaseOneVoiceText()));
+  els.phaseOneBackButton.addEventListener("click", goBackPhaseOne);
+  els.phaseOneActionButton.addEventListener("click", () => {
+    const wasResult = phaseOneView.mode === "result";
+    advancePhaseOne();
+    if (!wasResult && phaseOneView.mode === "result" && typeof onResult === "function") {
+      onResult(phaseOneView.passed);
+    }
+  });
+  document.getElementById("hpStage").addEventListener("click", (e) => {
+    const btn = e.target.closest(".lesson-option");
+    if (btn instanceof HTMLButtonElement && !btn.disabled) answerPhaseOneQuestion(btn.dataset.option || "", btn);
+  });
+}
+
+// Open a Hangul lesson inside the Learn hub (detail screen).
+function openLearnLesson(index, { resume = false } = {}) {
+  let idx = index;
+  if (!phaseOneLessons[idx]) { startNextLearn(); return; }
+  if (idx > state.phaseOneCompleted.length) {
+    idx = Math.min(getFirstIncompletePhaseOneIndex(), phaseOneLessons.length - 1);
+  }
+  const lesson = phaseOneLessons[idx];
+
+  activeHub = "learn";
+  setNavActive("learn");
+  state.phaseOneActive = idx;
+  const canResume = resume && phaseOneView.lessonIndex === idx && phaseOneView.mode !== "result";
+  if (!canResume) resetPhaseOneView(idx);
+  state.learnInProgress = true;
+  state.route = { hub: "learn", item: "alphabet" };
+  saveState();
+
+  showDetailBar("learn", `Stage ${String(idx + 1).padStart(2, "0")}: ${lesson.shortTitle}`);
+  const el = showScreen("detail");
+  if (!el) return;
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Learn · Alphabet</div>
+      <h2 class="screen-title" style="margin-bottom:0;">${escapeHtml(lesson.title)}</h2>
+    </div>
+    <div id="learnLessonArea"></div>
+  `;
+  mountLessonPlayer(document.getElementById("learnLessonArea"), idx, {
+    onResult: (passed) => {
+      if (passed) {
+        state.learnInProgress = false;
+        saveState();
+        renderLearnComplete(idx);
+      }
+    },
+  });
+}
+
+// "Lesson complete" screen: celebrate, then offer the next new lesson.
+function renderLearnComplete(index) {
+  refreshProgressionState();
+  const lesson = phaseOneLessons[index];
+  const nextIndex = getFirstIncompletePhaseOneIndex();
+  const next = phaseOneLessons[nextIndex];
+  const dueCount = getTodayReviewCount();
+
+  showDetailBar("learn", "Lesson complete");
+  const el = showScreen("detail");
+  if (!el) return;
+  el.innerHTML = `
+    <div class="card complete-card">
+      <div class="complete-badge">✓</div>
+      <h2 class="screen-title" style="margin-bottom:6px;">Lesson complete!</h2>
+      <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(lesson.shortTitle)} is locked in.</div>
+    </div>
+    <div class="card">
+      ${next ? `
+        <div class="eyebrow">Keep going</div>
+        <h3 class="screen-title" style="margin-bottom:8px;">Next: ${escapeHtml(next.shortTitle)}</h3>
+        <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(next.goal)}</div>
+        <button class="button primary compact" type="button" id="learnNextBtn">Start next lesson</button>
+      ` : `
+        <div class="eyebrow">Hangul complete</div>
+        <h3 class="screen-title" style="margin-bottom:8px;">You can read Hangul! 🎉</h3>
+        <div class="screen-sub" style="margin-bottom:12px;">New vocabulary is now your next new material.</div>
+        <button class="button primary compact" type="button" id="learnNextBtn">Start vocabulary</button>
+      `}
+    </div>
+    <div class="card">
+      <div class="flex-between">
+        <div>
+          <div class="eyebrow">Lock it in</div>
+          <div class="screen-sub" style="margin-bottom:0;">Quick review of what's due.</div>
+        </div>
+        <button class="button secondary compact" type="button" id="learnReviewBtn">Review today's cards${dueCount ? ` (${dueCount})` : ""}</button>
+      </div>
+    </div>
+  `;
+  const nextBtn = document.getElementById("learnNextBtn");
+  if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
+  const reviewBtn = document.getElementById("learnReviewBtn");
+  if (reviewBtn) reviewBtn.addEventListener("click", () => showTab("practice"));
 }
 
 function goHub(hub) {
@@ -6644,130 +6825,78 @@ function startPathLesson(index) {
   showTab("path");
 }
 
-function renderTodayView(options = {}) {
-  const { preserveScroll = false } = options;
+// The "Continue" tab: a lean screen that points straight at the next new
+// lesson, with review and streak/progress underneath.
+function renderTodayView() {
   const el = document.getElementById("screen-today");
   if (!el) return;
   refreshProgressionState();
 
-  const scrollTop = preserveScroll ? el.scrollTop : 0;
-  const scrollLeft = preserveScroll ? el.scrollLeft : 0;
-  currentQuizScope = "alphabet";
-  state.studio = "alphabet";
-
-  const today = new Date();
-  const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
-  const dateStr = today.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const nextAction = getNextAction();
+  const nextIndex = getFirstIncompletePhaseOneIndex();
+  const nextLesson = phaseOneLessons[nextIndex] || null;
+  const hangulDone = !nextLesson;
   const hangulPct = Math.round((state.phaseOneCompleted.length / Math.max(1, phaseOneLessons.length)) * 100);
-  const progressLabel = state.level === "K0"
-    ? `${hangulPct}% through Hangul Boot Camp`
-    : `Unlocked through ${escapeHtml(state.level)}`;
-  const speakCopy = state.speakingAnxiety === "high"
-    ? "2-minute shadowing"
-    : "2-minute pronunciation drill";
+
+  const continueTitle = nextLesson
+    ? `Next: ${nextLesson.shortTitle}`
+    : "Today's new words";
+  const continueSub = nextLesson
+    ? nextLesson.goal
+    : "Hangul is done — keep building new vocabulary.";
+  const continueMeta = nextLesson
+    ? `${nextLesson.duration} · Stage ${Math.min(nextIndex + 1, phaseOneLessons.length)} of ${phaseOneLessons.length}`
+    : "New vocabulary";
+
   const dueCount = getTodayReviewCount();
-  const streakLabel = state.studyDays > 0 ? `${state.studyDays}-day streak` : "Build your streak";
+  const streakLabel = state.studyDays > 0 ? `${state.studyDays}-day streak` : "Start your streak today";
+  const progressLabel = hangulDone
+    ? `Unlocked through ${escapeHtml(state.level)}`
+    : `${hangulPct}% through Hangul`;
 
   el.innerHTML = `
-    <div class="today-header">
-      <div>
-        <div class="today-greeting">${escapeHtml(dayName)}, ${escapeHtml(dateStr)}</div>
-        <div class="today-title">Today</div>
+    <div class="eyebrow">Continue</div>
+    <h2 class="screen-title" style="margin-bottom:16px;">Pick up where you left off</h2>
+
+    <div class="card continue-hero">
+      <div class="eyebrow">Continue learning</div>
+      <h3 class="screen-title" style="margin-bottom:8px;">${escapeHtml(continueTitle)}</h3>
+      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(continueSub)}</div>
+      <div class="flex-between" style="gap:12px; align-items:center; flex-wrap:wrap;">
+        <span class="pill accent">${escapeHtml(continueMeta)}</span>
+        <button class="button primary compact" type="button" id="continueBtn">${nextLesson ? "Start lesson" : "Learn words"}</button>
       </div>
-      <div class="today-badge">◎</div>
     </div>
 
     <div class="card">
-      <div class="eyebrow">Next action</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(nextAction.title)}</h2>
-      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(nextAction.subtitle)}</div>
-      <div class="flex-between" style="gap:12px; align-items:center; flex-wrap:wrap;">
-        <span class="pill accent">${escapeHtml(nextAction.meta)}</span>
-        <button class="button primary compact" type="button" id="todayPrimaryBtn">${escapeHtml(nextAction.cta)}</button>
+      <div class="flex-between">
+        <div>
+          <div class="eyebrow">Review due</div>
+          <div class="screen-sub" style="margin-bottom:0;">${dueCount} card${dueCount === 1 ? "" : "s"} waiting to come back.</div>
+        </div>
+        <button class="button secondary compact" type="button" id="continueReviewBtn">Review</button>
       </div>
     </div>
 
-    <div class="card" style="padding:14px 16px 6px;">
-      <div class="flex-between mb-8">
-        <span class="eyebrow">Quick cards</span>
-        <span class="fs-xs text-muted-2">${escapeHtml(progressLabel)}</span>
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div class="eyebrow">Streak &amp; progress</div>
+        <button class="plan-go" type="button" id="continueProgressBtn">Details</button>
       </div>
-      <div class="plan-blocks">
-        <div class="plan-block">
-          <div class="plan-icon purple">↻</div>
-          <div class="plan-copy">
-            <div class="plan-label">Review due</div>
-            <div class="plan-desc">${dueCount} cards waiting</div>
-            <div class="plan-meta">Keep yesterday alive</div>
-          </div>
-          <button class="plan-go" type="button" data-today-action="review">Open</button>
-        </div>
-        <div class="plan-block">
-          <div class="plan-icon green">◌</div>
-          <div class="plan-copy">
-            <div class="plan-label">Speak</div>
-            <div class="plan-desc">${escapeHtml(speakCopy)}</div>
-            <div class="plan-meta">${state.speakingAnxiety === "high" ? "Low-pressure shadowing" : "Daily pronunciation"}</div>
-          </div>
-          <button class="plan-go" type="button" data-today-action="practice">Open</button>
-        </div>
-        <div class="plan-block">
-          <div class="plan-icon blue">↗</div>
-          <div class="plan-copy">
-            <div class="plan-label">Progress</div>
-            <div class="plan-desc">${escapeHtml(streakLabel)}</div>
-            <div class="plan-meta">${escapeHtml(progressLabel)}</div>
-          </div>
-          <button class="plan-go" type="button" data-today-action="progress">Open</button>
-        </div>
+      <div class="stats-grid" style="margin-bottom:0;">
+        <div class="stat-box"><span class="sv">${state.studyDays}</span><span class="sl">Day streak</span></div>
+        <div class="stat-box"><span class="sv">${hangulPct}%</span><span class="sl">Hangul</span></div>
+        <div class="stat-box"><span class="sv">${Array.isArray(state.vocabKnownRanks) ? state.vocabKnownRanks.length : 0}</span><span class="sl">Words known</span></div>
       </div>
+      <div class="fs-xs text-muted-2 mt-12">${escapeHtml(streakLabel)} · ${progressLabel}</div>
     </div>
-
-    ${renderQuizCard("alphabet")}
   `;
 
-  const startBtn = document.getElementById("todayPrimaryBtn");
-  if (startBtn) {
-    startBtn.addEventListener("click", () => {
-      if (Number.isInteger(nextAction.lessonIndex)) {
-        startPathLesson(nextAction.lessonIndex);
-        return;
-      }
-      if (nextAction.view === "review") {
-        state.vocabView = "review";
-        saveState();
-      }
-      showTab(nextAction.tab);
-    });
-  }
-
-  el.querySelectorAll("[data-today-action]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const action = btn.dataset.todayAction;
-      if (action === "review") {
-        state.vocabView = "review";
-        saveState();
-        showTab("library");
-        return;
-      }
-      if (action === "practice") {
-        showTab("practice");
-        return;
-      }
-      if (action === "progress") {
-        showTab("progress");
-      }
-    });
-  });
-
-  renderQuestion(generateQuestion(), { scope: "alphabet" });
-  if (preserveScroll) {
-    window.requestAnimationFrame(() => {
-      el.scrollTop = scrollTop;
-      el.scrollLeft = scrollLeft;
-    });
-  }
+  const continueBtn = document.getElementById("continueBtn");
+  if (continueBtn) continueBtn.addEventListener("click", () => startNextLearn({ resume: true }));
+  const reviewBtn = document.getElementById("continueReviewBtn");
+  if (reviewBtn) reviewBtn.addEventListener("click", () => showTab("practice"));
+  const progressBtn = document.getElementById("continueProgressBtn");
+  if (progressBtn) progressBtn.addEventListener("click", () => openHubItem("progress", "stats"));
 }
 
 function renderPath() {
@@ -6910,61 +7039,10 @@ function openPathLesson(index) {
   const area = document.getElementById("pathLessonArea");
   if (!area) return;
 
-  area.innerHTML = `
-    <div class="lesson-player-wrap" id="lessonPlayerWrap">
-      <div class="player-head">
-        <div>
-          <div class="eyebrow">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
-          <div class="player-title" id="hpStageTitle"></div>
-          <div class="player-goal text-muted fs-sm mt-4" id="hpStageGoal"></div>
-        </div>
-        <button class="hear-btn" id="hpHearBtn" type="button">▶ Hear</button>
-      </div>
-      <div id="hpStage"></div>
-      <div class="player-actions">
-        <button class="button secondary compact" id="hpBackBtn" type="button">Back</button>
-        <button class="button primary compact" id="hpActionBtn" type="button">Next card</button>
-      </div>
-    </div>
-  `;
-
-  // Hydrate els
-  els.phaseOneStageNumber  = { textContent: "" }; // not shown separately
-  els.phaseOneStageDuration= { textContent: "" };
-  els.phaseOneStageTitle   = document.getElementById("hpStageTitle");
-  els.phaseOneStageGoal    = document.getElementById("hpStageGoal");
-  els.phaseOneHearButton   = document.getElementById("hpHearBtn");
-  els.phaseOneStage        = document.getElementById("hpStage");
-  els.phaseOneBackButton   = document.getElementById("hpBackBtn");
-  els.phaseOneActionButton = document.getElementById("hpActionBtn");
-  // Unused but referenced
-  els.phaseOneProgressText   = { textContent: "" };
-  els.phaseOneProgressPercent= { textContent: "" };
-  els.phaseOneProgressBar    = { setAttribute: () => {}, querySelector: () => ({ style: {} }) };
-  els.phaseOneNextUp         = { textContent: "" };
-  els.continuePhaseOneButton = { textContent: "" };
-  els.phaseOneFinale         = { hidden: true };
-  els.phaseOneDrillButton    = null;
-  els.resetPhaseOneButton    = { textContent: "" };
-  els.phaseOneTrack          = { innerHTML: "" };
-  els.phaseOnePlayer         = document.getElementById("lessonPlayerWrap");
-
-  renderPhaseOnePlayer();
+  mountLessonPlayer(area, index, {
+    onResult: (passed) => { if (passed) renderPath(); },
+  });
   area.scrollIntoView({ behavior: "smooth", block: "start" });
-
-  els.phaseOneHearButton.addEventListener("click", () => speak(getPhaseOneVoiceText()));
-  els.phaseOneBackButton.addEventListener("click", goBackPhaseOne);
-  els.phaseOneActionButton.addEventListener("click", () => {
-    advancePhaseOne();
-    // After advance, if we moved to next lesson re-render path
-    if (phaseOneView.mode === "result" && phaseOneView.passed) {
-      renderPath();
-    }
-  });
-  document.getElementById("hpStage").addEventListener("click", (e) => {
-    const btn = e.target.closest(".lesson-option");
-    if (btn instanceof HTMLButtonElement && !btn.disabled) answerPhaseOneQuestion(btn.dataset.option || "", btn);
-  });
 }
 
 // --- PRACTICE / LIBRARY SCREENS ---------------------------------------------
@@ -7494,16 +7572,14 @@ async function init() {
   if (onbDiv) onbDiv.hidden = true;
   if (appDiv) appDiv.hidden = false;
   document.querySelectorAll(".nav-btn").forEach((btn) => {
-    btn.addEventListener("click", () => goHub(btn.dataset.nav));
+    btn.addEventListener("click", () => {
+      if (btn.dataset.nav === "learn") tapLearnTab();
+      else goHub(btn.dataset.nav);
+    });
   });
   bindKeyboardShortcuts();
-  // Restore the last hub/submenu the user was on.
-  const route = state.route && HUBS.includes(state.route.hub) ? state.route : { hub: "home", item: null };
-  if (route.item) {
-    openHubItem(route.hub, route.item);
-  } else {
-    goHub(route.hub);
-  }
+  // Learning-first: open straight into the next new lesson.
+  startNextLearn({ resume: true });
 }
 
 function registerServiceWorker() {
