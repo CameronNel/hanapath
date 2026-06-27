@@ -234,12 +234,11 @@ const phaseOneLessons = [
       },
       {
         kicker: "Up and down",
-        title: "ㅗ points up; ㅜ points down",
-        visual: "ㅗ  ↕  ㅜ",
-        body: "These vowels lie flat, so they sit under an initial consonant. The same vowel shape can also sit in a starter block with silent ㅇ. That gives four sounds from two shapes: ㅗ becomes 오 or 고, and ㅜ becomes 우 or 구.",
-        cue: "Same two shapes, two seats: starter block and normal block.",
+        title: "ㅗ and ㅜ each have two seats",
+        visual: "오 · 고 · 우 · 구",
+        body: "A vowel can sit in a starter block with silent ㅇ, or after a regular consonant. That is why ㅗ becomes 오 or 고, and ㅜ becomes 우 or 구.",
+        cue: "One vowel shape, two block positions.",
         voiceText: "오, 고, 우, 구",
-        voiceFlashTargets: [0, 0, 1, 1],
       },
       {
         kicker: "The clean lines",
