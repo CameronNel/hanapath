@@ -220,8 +220,8 @@ const phaseOneLessons = [
         kicker: "The rule",
         title: "A Korean block needs a starting slot",
         visual: "아 · 어 · 오 · 우",
-        body: "If the sound starts with a vowel, Korean puts ㅇ in that slot.",
-        cue: "Example: ㅇ + ㅏ = 아. Pronunciation: 아 = \"a\", not \"nga\" or \"oa\".",
+        body: "Korean blocks cannot start with a bare vowel. Silent ㅇ fills the empty first seat so the vowel can become a complete block.",
+        cue: "Example: ㅇ + ㅏ = 아. At the start, ㅇ is silent.",
         voiceText: "아, 어, 오, 우",
       },
       {
@@ -4514,38 +4514,65 @@ function renderPhaseOneTrack() {
     .join("");
 }
 
-function getPhaseOneVoiceText() {
+function getPhaseOneVoiceSource() {
   const lesson = phaseOneLessons[phaseOneView.lessonIndex];
   if (!lesson) {
-    return "";
+    return null;
   }
 
   if (phaseOneView.mode === "learn") {
-    return lesson.concepts[phaseOneView.slideIndex]?.voiceText || "";
+    return lesson.concepts[phaseOneView.slideIndex] || null;
   }
 
   if (phaseOneView.mode === "check") {
-    return lesson.questions[phaseOneView.questionIndex]?.voiceText || "";
+    return lesson.questions[phaseOneView.questionIndex] || null;
   }
 
-  return "";
+  return null;
 }
 
-function getPhaseOneVoiceFlashTargets() {
-  const lesson = phaseOneLessons[phaseOneView.lessonIndex];
-  if (!lesson) {
+function getPhaseOneVoiceSegments() {
+  const source = getPhaseOneVoiceSource();
+  if (!source) {
     return [];
   }
 
-  if (phaseOneView.mode === "learn") {
-    return lesson.concepts[phaseOneView.slideIndex]?.voiceFlashTargets || [];
+  const drillSegments = splitVoiceSequence(source.voiceText);
+  if (phaseOneView.mode !== "learn") {
+    return drillSegments;
   }
 
-  if (phaseOneView.mode === "check") {
-    return lesson.questions[phaseOneView.questionIndex]?.voiceFlashTargets || [];
+  const teachingSegments = [source.title, source.body, source.cue]
+    .map((part) => String(part || "").trim())
+    .filter(Boolean);
+
+  return [...teachingSegments, ...drillSegments];
+}
+
+function getPhaseOneVoiceText() {
+  return getPhaseOneVoiceSegments().join(" / ");
+}
+
+function getPhaseOneVoiceFlashTargets() {
+  const source = getPhaseOneVoiceSource();
+  if (!source) {
+    return [];
   }
 
-  return [];
+  const drillSegments = splitVoiceSequence(source.voiceText);
+  const drillFlashTargets = drillSegments.map((_, index) =>
+    Number.isInteger(source.voiceFlashTargets?.[index]) ? source.voiceFlashTargets[index] : index,
+  );
+
+  if (phaseOneView.mode !== "learn") {
+    return drillFlashTargets;
+  }
+
+  const teachingSegments = [source.title, source.body, source.cue]
+    .map((part) => String(part || "").trim())
+    .filter(Boolean);
+
+  return [...teachingSegments.map(() => null), ...drillFlashTargets];
 }
 
 function splitVoiceSequence(text) {
@@ -4623,8 +4650,8 @@ function speak(text) {
 
 async function playPhaseOneVoiceSequence() {
   const voiceText = getPhaseOneVoiceText();
+  const voiceParts = getPhaseOneVoiceSegments();
   const voiceFlashTargets = getPhaseOneVoiceFlashTargets();
-  const voiceParts = splitVoiceSequence(voiceText);
   const targets = getPhaseOneFlashTargets();
   if (!voiceParts.length) {
     const fallback = targets[0];
@@ -4638,9 +4665,11 @@ async function playPhaseOneVoiceSequence() {
 
   for (let index = 0; index < voiceParts.length; index += 1) {
     if (tokenId !== phaseOneVoicePlaybackId) return;
-    const targetIndex = Number.isInteger(voiceFlashTargets[index]) ? voiceFlashTargets[index] : index;
-    const target = resolvedTargets[targetIndex] || null;
-    if (target) flashElement(target);
+    const targetIndex = voiceFlashTargets[index];
+    if (Number.isInteger(targetIndex)) {
+      const target = resolvedTargets[targetIndex] || null;
+      if (target) flashElement(target);
+    }
     const minStepMs = Math.max(PHASE_ONE_VOICE_MIN_STEP_MS, String(voiceParts[index]).length * PHASE_ONE_VOICE_CHAR_MS);
     await Promise.all([
       speak(voiceParts[index]),
@@ -4852,6 +4881,7 @@ function renderPhaseOnePlayer() {
   }
 
   els.phaseOneHearButton.disabled = !getPhaseOneVoiceText();
+  els.phaseOneHearButton.textContent = phaseOneView.mode === "learn" ? "▶ Hear rule" : "▶ Hear answer";
 }
 
 function renderPhaseOneCourse() {
@@ -4884,7 +4914,9 @@ function answerPhaseOneQuestion(choice, button) {
     phaseOneView.hadMistake = true;
     button.classList.add("wrong");
     button.disabled = true;
-    feedback.innerHTML = "<strong>Not yet.</strong> Use the shape clue and try another answer.";
+    feedback.innerHTML =
+      "<strong>Not yet.</strong> " +
+      escapeHtml(question.explanation || "Use the shape clue and try another answer.");
     return;
   }
 
@@ -6605,7 +6637,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
           <div class="player-title" id="hpStageTitle"></div>
           <div class="player-goal text-muted fs-sm mt-4" id="hpStageGoal"></div>
         </div>
-        <button class="hear-btn" id="hpHearBtn" type="button">▶ Hear</button>
+        <button class="hear-btn" id="hpHearBtn" type="button">▶ Hear rule</button>
       </div>
       <div id="hpStage"></div>
       <div class="player-actions" id="hpActions">
