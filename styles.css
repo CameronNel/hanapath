@@ -396,6 +396,15 @@ input, textarea { cursor: text; }
   margin-top: 3px;
   line-height: 1.4;
 }
+.stage-row { width: 100%; text-align: left; }
+.stage-row.complete {
+  background: rgba(45, 212, 191,.08);
+  border-radius: var(--radius-xs);
+  border-bottom-color: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.stage-row.locked { opacity: .45; cursor: default; }
 .study-pill {
   display: flex;
   flex-direction: column;

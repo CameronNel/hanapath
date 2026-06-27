@@ -217,7 +217,7 @@ const phaseOneLessons = [
     goal: "Own ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ before adding anything fancy.",
     concepts: [
       {
-        kicker: "The rule",
+        kicker: "Starting slot",
         title: "A Korean block needs a starting slot",
         visual: "아 · 어 · 오 · 우",
         body: "Korean blocks cannot start with a bare vowel. Silent ㅇ fills the empty first seat so the vowel can become a complete block.",
@@ -3154,6 +3154,7 @@ state.phaseOneCompleted = Array.isArray(state.phaseOneCompleted)
 state.phaseOneActive = Number.isInteger(state.phaseOneActive)
   ? Math.min(Math.max(state.phaseOneActive, 0), phaseOneLessons.length - 1)
   : 0;
+state.route = normalizeRoute(state.route);
 phaseOneView.lessonIndex = state.phaseOneActive;
 state.vocabQuery = typeof state.vocabQuery === "string" ? state.vocabQuery : "";
 state.vocabBand = typeof state.vocabBand === "string" ? state.vocabBand : "all";
@@ -3178,7 +3179,7 @@ function loadState() {
     knowsHangul: false,
     level: "K0",
     navTab: "today",
-    route: { hub: "learn", item: null },
+    route: { hub: "learn", item: null, stage: null },
     learnInProgress: false,
     mainTab: "alphabet",
     alphabetView: "vowels",
@@ -4006,8 +4007,7 @@ function setStudio(studio) {
   renderQuestion(generateQuestion(), { scope: getCurrentQuizScope() });
 }
 
-function renderLevelRail(tab) {
-  const level = getTrackLevel(tab);
+function renderLevelRail(tab, level = getTrackLevel(tab)) {
   return `
     <div class="card flat">
       <div class="flex-between mb-8">
@@ -4031,6 +4031,10 @@ function bindLevelRail(el, tab, rerender) {
       const level = Number(btn.dataset.level);
       if (!Number.isInteger(level)) return;
       setTrackLevel(tab, level);
+      if (state.route?.hub === "learn" && state.route?.item === tab) {
+        state.route = { ...state.route, stage: level };
+        saveState();
+      }
       rerender();
     });
   });
@@ -4455,7 +4459,7 @@ function openPhaseOneLesson(index, shouldScroll = false) {
 
 function openPreviousPhaseOneLesson(index, shouldScroll = false) {
   if (index <= 0) {
-    goHub("learn");
+    openLearnStageMenu("alphabet");
     return;
   }
 
@@ -4470,11 +4474,11 @@ function openPreviousPhaseOneLesson(index, shouldScroll = false) {
   setNavActive("learn");
   state.phaseOneActive = previousIndex;
   state.learnInProgress = true;
-  state.route = { hub: "learn", item: "alphabet" };
+  state.route = { hub: "learn", item: "alphabet", stage: previousIndex + 1 };
   resetPhaseOneView(previousIndex, "learn");
   phaseOneView.slideIndex = Math.max(previousLesson.concepts.length - 1, 0);
   saveState();
-  showDetailBar("learn", `Stage ${String(previousIndex + 1).padStart(2, "0")}: ${previousLesson.shortTitle}`);
+  showDetailBarWithBack("learn", `Stage ${String(previousIndex + 1).padStart(2, "0")}: ${previousLesson.shortTitle}`, () => openLearnStageMenu("alphabet"), "Alphabet");
   renderPhaseOneCourse();
 
   if (shouldScroll && els.phaseOnePlayer) {
@@ -4580,6 +4584,22 @@ function getPhaseOneVoiceSegments() {
 
 function getPhaseOneVoiceText() {
   return getPhaseOneVoiceSegments().join(" / ");
+}
+
+function getPhaseOneButtonLabel(source, mode = phaseOneView.mode) {
+  if (!source) {
+    return mode === "learn" ? "Example" : "Review answer";
+  }
+
+  if (mode === "learn") {
+    const kicker = String(source.kicker || "").trim();
+    if (kicker) return kicker;
+    const title = String(source.title || "").trim();
+    if (title) return title;
+    return "Example";
+  }
+
+  return "Review answer";
 }
 
 function getPhaseOneVoiceFlashTargets() {
@@ -4921,7 +4941,7 @@ function renderPhaseOnePlayer() {
   }
 
   els.phaseOneHearButton.disabled = !getPhaseOneVoiceText();
-  els.phaseOneHearButton.textContent = phaseOneView.mode === "learn" ? "▶ Hear rule" : "▶ Hear answer";
+  els.phaseOneHearButton.textContent = `▶ ${getPhaseOneButtonLabel(getPhaseOneVoiceSource())}`;
 }
 
 function renderPhaseOneCourse() {
@@ -5038,6 +5058,8 @@ function goBackPhaseOne() {
 
     if (phaseOneView.lessonIndex > 0) {
       openPreviousPhaseOneLesson(phaseOneView.lessonIndex, true);
+    } else {
+      openLearnStageMenu("alphabet");
     }
     return;
   }
@@ -6579,6 +6601,164 @@ function hideDetailBar() {
   if (bar) { bar.hidden = true; bar.innerHTML = ""; }
 }
 
+function showDetailBarWithBack(hub, itemTitle, onBack = null, backLabel = null) {
+  const bar = document.getElementById("detail-bar");
+  if (!bar) return;
+  const label = backLabel || (HUB_DEFS[hub] ? HUB_DEFS[hub].label : "Menu");
+  bar.innerHTML = `
+    <button class="back-btn" type="button">â€¹ ${escapeHtml(label)}</button>
+    ${itemTitle ? `<span class="detail-bar-title">${escapeHtml(itemTitle)}</span>` : ""}
+  `;
+  bar.querySelector(".back-btn").addEventListener("click", () => {
+    if (typeof onBack === "function") {
+      onBack();
+      return;
+    }
+    goHub(hub);
+  });
+  bar.hidden = false;
+}
+
+function normalizeRoute(route) {
+  if (!route || typeof route !== "object") {
+    return { hub: "home", item: null, stage: null };
+  }
+
+  const allowedHubs = ["home", "learn", "practice", "progress"];
+  const hub = allowedHubs.includes(route.hub) ? route.hub : "home";
+  const item = typeof route.item === "string" ? route.item : null;
+  const stage = Number.isInteger(route.stage) ? route.stage : null;
+  return { hub, item, stage };
+}
+
+function getLearnItemDefinition(itemId) {
+  return HUB_DEFS.learn?.items.find((item) => item.id === itemId) || null;
+}
+
+function getLearnStageCount(itemId) {
+  if (itemId === "alphabet") return phaseOneLessons.length;
+  if (itemId === "vocabulary" || itemId === "sentences" || itemId === "listening") return 10;
+  return 0;
+}
+
+function getLearnProgress(itemId) {
+  const total = getLearnStageCount(itemId);
+  if (itemId === "alphabet") {
+    const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
+    const currentStage = completedCount >= total ? total : completedCount + 1;
+    return {
+      total,
+      completedCount,
+      currentStage,
+      complete: completedCount >= total,
+    };
+  }
+
+  const currentStage = getTrackLevel(itemId);
+  return {
+    total,
+    completedCount: Math.max(0, currentStage - 1),
+    currentStage,
+    complete: currentStage >= total,
+  };
+}
+
+function getLearnStageStatus(itemId, stageNumber) {
+  const progress = getLearnProgress(itemId);
+  const safeStage = clampLevel(stageNumber, 1, Math.max(1, progress.total));
+
+  if (itemId === "alphabet" && progress.complete) {
+    return "complete";
+  }
+
+  if (safeStage < progress.currentStage) {
+    return "complete";
+  }
+
+  if (safeStage === progress.currentStage) {
+    return progress.complete && itemId === "alphabet" ? "complete" : "current";
+  }
+
+  return "locked";
+}
+
+function getLearnStageInfo(itemId, stageNumber) {
+  const safeStage = clampLevel(stageNumber, 1, Math.max(1, getLearnStageCount(itemId)));
+  const stageText = `Stage ${String(safeStage).padStart(2, "0")}`;
+
+  if (itemId === "alphabet") {
+    const lesson = phaseOneLessons[safeStage - 1];
+    return {
+      stageNumber: safeStage,
+      title: lesson ? `${stageText} · ${lesson.shortTitle}` : stageText,
+      sub: lesson ? lesson.goal : "Alphabet lesson",
+      detail: lesson ? `${stageText}: ${lesson.shortTitle}` : stageText,
+    };
+  }
+
+  if (itemId === "vocabulary") {
+    const bandIndex = getLevelBand(safeStage, VOCAB_BANDS.length);
+    const bandLabel = VOCAB_BANDS[bandIndex - 1] || "Vocabulary";
+    return {
+      stageNumber: safeStage,
+      title: `${stageText} · ${bandLabel}`,
+      sub: `Vocabulary band ${bandIndex} of ${VOCAB_BANDS.length}`,
+      detail: `${stageText}: ${bandLabel}`,
+    };
+  }
+
+  if (itemId === "sentences") {
+    const sentenceBands = [
+      "Basic sentence frames",
+      "Simple sentence order",
+      "Type and build",
+      "Longer sentences",
+      "Mixed review",
+    ];
+    const bandIndex = getLevelBand(safeStage, sentenceBands.length);
+    const bandLabel = sentenceBands[bandIndex - 1] || "Sentence practice";
+    return {
+      stageNumber: safeStage,
+      title: `${stageText} · ${bandLabel}`,
+      sub: `Sentence band ${bandIndex} of ${sentenceBands.length}`,
+      detail: `${stageText}: ${bandLabel}`,
+    };
+  }
+
+  if (itemId === "listening") {
+    const listeningBands = [
+      "Short sounds",
+      "Short phrases",
+      "Sentence meaning",
+      "Dictation",
+      "Mixed listening",
+    ];
+    const bandIndex = getLevelBand(safeStage, listeningBands.length);
+    const bandLabel = listeningBands[bandIndex - 1] || "Listening practice";
+    return {
+      stageNumber: safeStage,
+      title: `${stageText} · ${bandLabel}`,
+      sub: `Listening band ${bandIndex} of ${listeningBands.length}`,
+      detail: `${stageText}: ${bandLabel}`,
+    };
+  }
+
+  return {
+    stageNumber: safeStage,
+    title: stageText,
+    sub: "",
+    detail: stageText,
+  };
+}
+
+function getActiveLearnLevel(itemId) {
+  const route = normalizeRoute(state.route);
+  if (route.hub === "learn" && route.item === itemId && Number.isInteger(route.stage)) {
+    return clampLevel(route.stage, 1, Math.max(1, getLearnStageCount(itemId)));
+  }
+  return getTrackLevel(itemId);
+}
+
 function renderHubMenu(hub) {
   const def = HUB_DEFS[hub];
   const el = showScreen("menu");
@@ -6607,6 +6787,114 @@ function renderHubMenu(hub) {
   });
 }
 
+function renderLearnStageMenu(itemId) {
+  const item = getLearnItemDefinition(itemId);
+  if (!item) return;
+
+  const progress = getLearnProgress(itemId);
+  const el = showScreen("menu");
+  if (!el) return;
+
+  const stageRows = Array.from({ length: progress.total }, (_, index) => {
+    const stageNumber = index + 1;
+    const stageInfo = getLearnStageInfo(itemId, stageNumber);
+    const status = getLearnStageStatus(itemId, stageNumber);
+    const locked = status === "locked";
+    const complete = status === "complete";
+    const current = status === "current";
+    const pillLabel = complete ? "Completed" : current ? "Current" : "Locked";
+    const pillClass = complete ? "green" : "muted";
+    const dotClass = complete ? "done" : current ? "next" : "lock";
+    const dotText = complete ? "✓" : String(stageNumber).padStart(2, "0");
+
+    return `
+      <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}" ${locked ? "disabled" : ""}>
+        <span class="unit-dot ${dotClass}">${escapeHtml(dotText)}</span>
+        <div>
+          <div class="study-row-ko">${escapeHtml(stageInfo.title)}</div>
+          <div class="study-row-sub">${escapeHtml(stageInfo.sub)}</div>
+        </div>
+        <span class="pill ${pillClass}">${pillLabel}</span>
+      </button>
+    `;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Choose a stage</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(item.sub)} Completed stages are highlighted. The current stage stays neutral. Locked stages stay grey.</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="pill green">Completed</span>
+        <span class="pill muted">Current</span>
+        <span class="pill muted">Locked</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Stages</div>
+          <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo(itemId, progress.currentStage).detail)}`}</div>
+        </div>
+        <span class="pill accent">${progress.completedCount}/${progress.total} done</span>
+      </div>
+      <div class="study-list">
+        ${stageRows}
+      </div>
+    </div>
+  `;
+
+  el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
+    btn.addEventListener("click", () => openLearnStage(itemId, Number(btn.dataset.learnStage)));
+  });
+}
+
+function openLearnStageMenu(itemId) {
+  const item = getLearnItemDefinition(itemId);
+  if (!item) return;
+
+  refreshProgressionState();
+  activeHub = "learn";
+  setNavActive("learn");
+  state.route = { hub: "learn", item: itemId, stage: null };
+  saveState();
+  showDetailBarWithBack("learn", item.title, () => goHub("learn"), "Learn");
+  renderLearnStageMenu(itemId);
+}
+
+function openLearnStageContent(itemId, stageNumber) {
+  const item = getLearnItemDefinition(itemId);
+  if (!item) return;
+
+  const stageInfo = getLearnStageInfo(itemId, stageNumber);
+  activeHub = "learn";
+  setNavActive("learn");
+  state.learnInProgress = false;
+  state.route = { hub: "learn", item: itemId, stage: stageInfo.stageNumber };
+  saveState();
+  showDetailBarWithBack("learn", stageInfo.detail, () => openLearnStageMenu(itemId), item.title);
+  renderLeafContent(item.target, "learn");
+}
+
+function openLearnStage(itemId, stageNumber, { resume = false } = {}) {
+  const item = getLearnItemDefinition(itemId);
+  if (!item) return;
+
+  const safeStage = clampLevel(stageNumber, 1, getLearnStageCount(itemId));
+  const status = getLearnStageStatus(itemId, safeStage);
+  if (status === "locked") return;
+
+  if (itemId === "alphabet") {
+    openLearnLesson(safeStage - 1, {
+      resume: (resume || (status === "current" && state.learnInProgress)),
+      trackProgress: status === "current",
+    });
+    return;
+  }
+
+  openLearnStageContent(itemId, safeStage);
+}
+
 function openHubItem(hub, itemId) {
   const def = HUB_DEFS[hub];
   if (!def) return;
@@ -6614,10 +6902,16 @@ function openHubItem(hub, itemId) {
   if (!item) return;
   refreshProgressionState();
   activeHub = hub;
-  state.route = { hub, item: itemId };
+  setNavActive(hub);
+
+  if (hub === "learn") {
+    openLearnStageMenu(itemId);
+    return;
+  }
+
+  state.route = { hub, item: itemId, stage: null };
   if (item.view) { state.vocabView = item.view; }
   saveState();
-  setNavActive(hub);
 
   const focus = hub === "practice" ? "practice" : hub === "learn" ? "learn" : "all";
   showDetailBar(hub, item.title);
@@ -6662,19 +6956,20 @@ function startNextLearn(opts = {}) {
     return;
   }
   // Hangul done → new vocabulary becomes the next new material.
-  activeHub = "learn";
-  setNavActive("learn");
   state.learnInProgress = false;
-  state.route = { hub: "learn", item: "vocabulary" };
-  saveState();
-  showDetailBar("learn", "Vocabulary");
-  renderLeafContent("library", "learn");
+  openLearnStageContent("vocabulary", getTrackLevel("vocabulary"));
 }
 
 // Mount the Hangul lesson player inside `area` and wire its controls.
 // onResult(passed) fires once when the lesson reaches its result screen.
 function mountLessonPlayer(area, index, { onResult } = {}) {
   if (!area) return;
+  const lesson = phaseOneLessons[index];
+  const initialSource =
+    phaseOneView.mode === "learn"
+      ? lesson?.concepts?.[phaseOneView.slideIndex] || lesson?.concepts?.[0] || null
+      : lesson?.questions?.[phaseOneView.questionIndex] || lesson?.questions?.[0] || null;
+  const initialLabel = getPhaseOneButtonLabel(initialSource);
   area.innerHTML = `
     <div class="lesson-player-wrap" id="lessonPlayerWrap">
       <div class="player-head">
@@ -6683,7 +6978,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
           <div class="player-title" id="hpStageTitle"></div>
           <div class="player-goal text-muted fs-sm mt-4" id="hpStageGoal"></div>
         </div>
-        <button class="hear-btn" id="hpHearBtn" type="button">▶ Hear rule</button>
+        <button class="hear-btn" id="hpHearBtn" type="button">▶ ${escapeHtml(initialLabel)}</button>
       </div>
       <div id="hpStage"></div>
       <div class="player-actions" id="hpActions">
@@ -6732,7 +7027,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
 }
 
 // Open a Hangul lesson inside the Learn hub (detail screen).
-function openLearnLesson(index, { resume = false } = {}) {
+function openLearnLesson(index, { resume = false, trackProgress = true } = {}) {
   let idx = index;
   if (!phaseOneLessons[idx]) { startNextLearn(); return; }
   if (idx > state.phaseOneCompleted.length) {
@@ -6742,14 +7037,18 @@ function openLearnLesson(index, { resume = false } = {}) {
 
   activeHub = "learn";
   setNavActive("learn");
-  state.phaseOneActive = idx;
   const canResume = resume && phaseOneView.lessonIndex === idx && phaseOneView.mode !== "result";
   if (!canResume) resetPhaseOneView(idx);
-  state.learnInProgress = true;
-  state.route = { hub: "learn", item: "alphabet" };
+  if (trackProgress) {
+    state.phaseOneActive = idx;
+    state.learnInProgress = true;
+  } else {
+    state.learnInProgress = false;
+  }
+  state.route = { hub: "learn", item: "alphabet", stage: idx + 1 };
   saveState();
 
-  showDetailBar("learn", `Stage ${String(idx + 1).padStart(2, "0")}: ${lesson.shortTitle}`);
+  showDetailBarWithBack("learn", `Stage ${String(idx + 1).padStart(2, "0")}: ${lesson.shortTitle}`, () => openLearnStageMenu("alphabet"), "Alphabet");
   const el = showScreen("detail");
   if (!el) return;
   // The player head already shows the stage, title and goal, and the back bar
@@ -6775,7 +7074,7 @@ function renderCompleteInPlayer(index) {
   const next = phaseOneLessons[nextIndex];
   const dueCount = getTodayReviewCount();
 
-  showDetailBar("learn", `Stage ${String(index + 1).padStart(2, "0")}: ${lesson.shortTitle}`);
+  showDetailBarWithBack("learn", `Stage ${String(index + 1).padStart(2, "0")}: ${lesson.shortTitle}`, () => openLearnStageMenu("alphabet"), "Alphabet");
 
   const dots = lesson.concepts.map(() => '<span class="done"></span>').join("");
 
@@ -6815,8 +7114,8 @@ function renderCompleteInPlayer(index) {
       els.phaseOneBackButton.textContent = "Prev stage";
       els.phaseOneBackButton.onclick = () => openPreviousPhaseOneLesson(index, true);
     } else {
-      els.phaseOneBackButton.textContent = "Back to lessons";
-      els.phaseOneBackButton.onclick = () => goHub("learn");
+      els.phaseOneBackButton.textContent = "Back to stages";
+      els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
     }
   }
 
@@ -6834,7 +7133,7 @@ function renderLearnComplete(index) {
   const next = phaseOneLessons[nextIndex];
   const dueCount = getTodayReviewCount();
 
-  showDetailBar("learn", "Lesson complete");
+  showDetailBarWithBack("learn", "Lesson complete", () => openLearnStageMenu("alphabet"), "Alphabet");
   const el = showScreen("detail");
   if (!el) return;
   el.innerHTML = `
@@ -6879,12 +7178,12 @@ function goHub(hub) {
   setNavActive(hub);
   hideDetailBar();
   if (hub === "home") {
-    state.route = { hub: "home", item: null };
+    state.route = { hub: "home", item: null, stage: null };
     saveState();
     renderLeafContent("today", "all");
     return;
   }
-  state.route = { hub, item: null };
+  state.route = { hub, item: null, stage: null };
   saveState();
   renderHubMenu(hub);
 }
@@ -7409,7 +7708,7 @@ function renderPracticeView() {
   currentQuizScope = "sentences";
   state.studio = "sentences";
 
-  const level = getTrackLevel("sentences");
+  const level = getActiveLearnLevel("sentences");
   const sentenceBank = getSentenceStudyBank()
     .filter((item) => item.tokenCount >= 2)
     .sort((a, b) => a.tokenCount - b.tokenCount);
@@ -7444,6 +7743,7 @@ function renderPracticeView() {
       <div class="eyebrow">${showQuiz && !showStudy ? "Practice · Sentences" : "Learn · Sentences"}</div>
       <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(practiceTitle)}</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(practiceCue)}</div>
+      <div class="text-muted-2 fs-sm" style="margin-bottom:12px;">Stage ${String(level).padStart(2, "0")} of 10 Â· ${escapeHtml(bandLabel)}</div>
       <div class="speak-actions">
         <button class="button secondary compact" type="button" id="practiceHearTask">Hear example</button>
         <button class="button secondary compact" type="button" id="practiceReviewWords">Review words</button>
@@ -7452,7 +7752,7 @@ function renderPracticeView() {
       ${practiceExample ? `<div class="speak-example mt-12" lang="ko">${escapeHtml(practiceExample.korean || practiceExample.meaning || "")}</div>` : ""}
     </div>
 
-    ${renderLevelRail("sentences")}
+    ${renderLevelRail("sentences", level)}
 
     ${showStudy ? `
     <div class="card">
@@ -7546,7 +7846,7 @@ function renderVocabulary() {
   currentQuizScope = "vocabulary";
   state.studio = "vocab";
 
-  const level = getTrackLevel("vocabulary");
+  const level = getActiveLearnLevel("vocabulary");
   const bandIndex = getLevelBand(level, VOCAB_BANDS.length);
   const bandLabel = VOCAB_BANDS[bandIndex - 1] || VOCAB_BANDS[0];
   const knownSet = getVocabKnownSet();
@@ -7639,12 +7939,13 @@ function renderVocabulary() {
     <div class="card">
       <div class="eyebrow">${showQuiz && !showStudy ? "Practice · Vocabulary" : "Learn · Vocabulary"}</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Today&apos;s words</h2>
+      <div class="text-muted-2 fs-sm" style="margin-bottom:12px;">Stage ${String(level).padStart(2, "0")} of 10 · ${escapeHtml(bandLabel)}</div>
       <div class="text-muted-2 fs-sm">Today&apos;s flow: ${dailyWordCount} words · ${escapeHtml(bandLabel)}</div>
       ${active ? `<div class="vocab-hero-count mt-12" lang="ko">${escapeHtml(active.korean)} · ${escapeHtml(currentEnglish)} · ${escapeHtml(currentPronunciation)}</div>` : ""}
       ${viewButtons ? `<div class="vocab-filters mt-12">${viewButtons}</div>` : ""}
     </div>
 
-    ${renderLevelRail("vocabulary")}
+    ${renderLevelRail("vocabulary", level)}
 
     ${content}
 
@@ -7679,7 +7980,7 @@ function renderLibrary() {
   currentQuizScope = "listening";
   state.studio = "listen";
 
-  const level = getTrackLevel("listening");
+  const level = getActiveLearnLevel("listening");
   const listenBank = getSentenceStudyBank()
     .filter((item) => item.tokenCount >= 2)
     .sort((a, b) => a.tokenCount - b.tokenCount);
@@ -7709,7 +8010,7 @@ function renderLibrary() {
       <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · choose, type, and replay</div>
     </div>
 
-    ${renderLevelRail("listening")}
+    ${renderLevelRail("listening", level)}
 
     ${showStudy ? `
     <div class="card">
