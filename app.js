@@ -1042,6 +1042,36 @@ const curriculum = [
   },
 ];
 
+const K1_UNITS = [
+  "Greetings and names",
+  "Nationality and language",
+  "This/that/that over there",
+  "Food and ordering",
+  "Numbers, prices, counters",
+  "Time and schedules",
+  "Places and directions",
+  "Daily routine",
+  "Likes and dislikes",
+  "Basic texting",
+  "Transport",
+  "Review mission",
+];
+
+const K2_UNITS = [
+  "Family",
+  "Work/study",
+  "Hobbies",
+  "Weather",
+  "Shopping",
+  "Health",
+  "Weekends",
+  "Home",
+  "Invitations",
+  "Travel",
+  "Korean texting",
+  "Review project",
+];
+
 const startOrder = [
   "Learn the consonants",
   "Learn the vowels",
@@ -5940,6 +5970,7 @@ function renderQuestion(question, options = {}) {
   const quizFeedback = document.getElementById(ids.feedback);
   const quizOptions = document.getElementById(ids.options);
   const speakBtn = document.getElementById(ids.speak);
+  const nextBtn = document.getElementById(ids.next);
 
   if (!quizOptions) return;
 
@@ -5971,7 +6002,19 @@ function renderQuestion(question, options = {}) {
     renderChoiceQuestion(question, quizOptions);
   }
 
-  if (speakBtn) speakBtn.disabled = !question.voiceText;
+  if (speakBtn) {
+    speakBtn.disabled = !question.voiceText;
+    if (speakBtn.dataset.boundQuizControl !== "true") {
+      speakBtn.dataset.boundQuizControl = "true";
+      speakBtn.addEventListener("click", () => {
+        speak(currentQuestion?.voiceText || currentQuestion?.answer || "");
+      });
+    }
+  }
+  if (nextBtn && nextBtn.dataset.boundQuizControl !== "true") {
+    nextBtn.dataset.boundQuizControl = "true";
+    nextBtn.addEventListener("click", nextQuestion);
+  }
   syncReviewActionButton(question);
   if (question.autoSpeak && !preserveState && question.voiceText) window.setTimeout(() => speak(question.voiceText), 160);
 
@@ -7052,6 +7095,105 @@ function renderLibrary() {
   renderQuestion(generateQuestion(), { scope: "listening" });
   return;
 
+}
+
+function renderProgress() {
+  const el = document.getElementById("screen-progress");
+  if (!el) return;
+  refreshProgressionState();
+
+  const completedK0 = state.phaseOneCompleted.length;
+  const k0Pct = Math.round((completedK0 / Math.max(1, phaseOneLessons.length)) * 100);
+  const levelIndex = getLevelIndex(state.level);
+  const levelNames = {
+    K0: "Hangul & Sound",
+    K1: "Survival Korean",
+    K2: "Everyday Korean",
+    K3: "Connected Korean",
+    K4: "Independent Korean",
+    K5: "Fluency Bridge",
+  };
+  const accuracy = state.asked === 0 ? 0 : Math.round((state.correct / state.asked) * 100);
+  const knownWords = Array.isArray(state.vocabKnownRanks) ? state.vocabKnownRanks.length : 0;
+  const hardWords = Array.isArray(state.vocabHardRanks) ? state.vocabHardRanks.length : 0;
+  const totalMinutes = Number(state.totalMinutes) || 0;
+  const weeklyHours = Math.max(1, Number(state.weeklyHours) || 10);
+  const weeklyPct = Math.min(100, Math.round((totalMinutes / (weeklyHours * 60)) * 100));
+  const nextLevel = LEVEL_ORDER[Math.min(levelIndex + 1, LEVEL_ORDER.length - 1)] || state.level;
+  const canDoItems = [
+    { done: completedK0 > 0, label: "Started Hangul Boot Camp" },
+    { done: completedK0 >= phaseOneLessons.length, label: "Completed all K0 reading stages" },
+    { done: state.correct >= 20, label: "Answered 20 quiz cards correctly" },
+    { done: knownWords >= 20, label: "Marked 20 vocabulary words as known" },
+    { done: state.studyDays >= 3, label: "Built a 3-day study streak" },
+  ];
+
+  el.innerHTML = `
+    <div class="progress-hero">
+      <div class="eyebrow">Progress</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Progress</h2>
+      <div class="progress-level">${escapeHtml(state.level)}</div>
+      <div class="progress-level-name">${escapeHtml(levelNames[state.level] || "Korean path")}</div>
+      <div class="progress-level-sub">Next unlock: ${escapeHtml(nextLevel)} · ${escapeHtml(getLevelUnlockText(nextLevel))}</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box"><span class="sv">${completedK0}/${phaseOneLessons.length}</span><span class="sl">K0 stages</span></div>
+      <div class="stat-box"><span class="sv">${accuracy}%</span><span class="sl">Accuracy</span></div>
+      <div class="stat-box"><span class="sv">${state.studyDays}</span><span class="sl">Study days</span></div>
+      <div class="stat-box"><span class="sv">${knownWords}</span><span class="sl">Known words</span></div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Momentum</div>
+          <div class="screen-sub" style="margin-bottom:0;">Keep the path visible and small enough to finish today.</div>
+        </div>
+        <span class="pill accent">${k0Pct}% K0</span>
+      </div>
+      <div class="forecast-bar">
+        <div class="forecast-row you">
+          <div class="forecast-hours">This week</div>
+          <div class="forecast-track"><div class="forecast-fill" style="width:${weeklyPct}%"></div></div>
+          <div class="forecast-label">${totalMinutes} min</div>
+        </div>
+        <div class="forecast-row">
+          <div class="forecast-hours">K0</div>
+          <div class="forecast-track"><div class="forecast-fill" style="width:${k0Pct}%"></div></div>
+          <div class="forecast-label">${completedK0}/${phaseOneLessons.length}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Review health</div>
+          <div class="screen-sub" style="margin-bottom:0;">Words and cards waiting in the loop.</div>
+        </div>
+        <span class="pill muted">${getTodayReviewCount()} due</span>
+      </div>
+      <div class="stats-grid" style="margin-bottom:0;">
+        <div class="stat-box"><span class="sv">${state.correct}</span><span class="sl">Correct</span></div>
+        <div class="stat-box"><span class="sv">${state.bestStreak}</span><span class="sl">Best streak</span></div>
+        <div class="stat-box"><span class="sv">${hardWords}</span><span class="sl">Hard words</span></div>
+        <div class="stat-box"><span class="sv">${state.round}</span><span class="sl">Round</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Can do</div>
+      <div class="cando-list">
+        ${canDoItems.map((item) => `
+          <div class="cando-item">
+            <span class="cando-check ${item.done ? "done" : "todo"}">${item.done ? "OK" : ""}</span>
+            <span>${escapeHtml(item.label)}</span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
