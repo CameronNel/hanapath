@@ -4004,13 +4004,10 @@ function setStudio(studio) {
 function renderLevelRail(tab) {
   const level = getTrackLevel(tab);
   return `
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Levels</div>
-          <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(getMainTabLabel(tab))} stages and repetition.</div>
-        </div>
-        <span class="pill accent">${level}/10</span>
+    <div class="card flat">
+      <div class="flex-between mb-8">
+        <div class="eyebrow" style="margin:0;">Level ${level} of 10</div>
+        <span class="pill accent">${escapeHtml(getMainTabLabel(tab))}</span>
       </div>
       <div class="level-rail" aria-label="${escapeHtml(getMainTabLabel(tab))} levels">
         ${Array.from({ length: 10 }, (_, index) => {
