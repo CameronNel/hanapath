@@ -1662,7 +1662,7 @@ li { margin-bottom: 4px; }
 .hub-tiles {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 .hub-tile {
   display: flex;
@@ -1673,7 +1673,7 @@ li { margin-bottom: 4px; }
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 18px 18px;
+  padding: 20px 18px;
   backdrop-filter: blur(16px);
   transition: border-color .15s, transform .1s, background .15s;
   cursor: pointer;

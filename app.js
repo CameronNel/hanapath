@@ -6454,13 +6454,10 @@ function openLearnLesson(index, { resume = false } = {}) {
   showDetailBar("learn", `Stage ${String(idx + 1).padStart(2, "0")}: ${lesson.shortTitle}`);
   const el = showScreen("detail");
   if (!el) return;
-  el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Learn · Alphabet</div>
-      <h2 class="screen-title" style="margin-bottom:0;">${escapeHtml(lesson.title)}</h2>
-    </div>
-    <div id="learnLessonArea"></div>
-  `;
+  // The player head already shows the stage, title and goal, and the back bar
+  // shows the stage too — so no separate header card here (avoids the cramped,
+  // triple-titled look).
+  el.innerHTML = `<div id="learnLessonArea"></div>`;
   mountLessonPlayer(document.getElementById("learnLessonArea"), idx, {
     onResult: (passed) => {
       if (passed) {
