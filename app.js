@@ -238,7 +238,7 @@ const phaseOneLessons = [
         visual: "ㅗ  ↕  ㅜ",
         body: "These vowels lie flat, so they sit under an initial consonant. The short stroke points up for ㅗ and down for ㅜ.",
         cue: "고 stacks vertically. 구 does too.",
-        voiceText: "오, 우, 고, 구",
+        voiceText: "고, 구",
       },
       {
         kicker: "The clean lines",
@@ -246,7 +246,7 @@ const phaseOneLessons = [
         visual: "ㅡ  +  ㅣ",
         body: "ㅡ is a compressed vowel made with unrounded lips. ㅣ is the clear 'ee' sound. Their simple shapes become pieces of several compound vowels later.",
         cue: "그 uses ㅡ. 기 uses ㅣ.",
-        voiceText: "으, 이, 그, 기",
+        voiceText: "그, 기",
       },
     ],
     questions: [
@@ -4620,9 +4620,7 @@ async function playPhaseOneVoiceSequence() {
 
   for (let index = 0; index < voiceParts.length; index += 1) {
     if (tokenId !== phaseOneVoicePlaybackId) return;
-    const target = resolvedTargets.length
-      ? resolvedTargets[index % resolvedTargets.length]
-      : null;
+    const target = resolvedTargets[index] || null;
     if (target) flashElement(target);
     const minStepMs = Math.max(PHASE_ONE_VOICE_MIN_STEP_MS, String(voiceParts[index]).length * PHASE_ONE_VOICE_CHAR_MS);
     await Promise.all([
