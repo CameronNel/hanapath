@@ -2553,6 +2553,10 @@ let correctToastState = { hideTimer: 0, removeTimer: 0, listenersBound: false };
 // Which slice of a screen to show: "learn" (study material only),
 // "practice" (quiz only), or "all" (the full legacy screen).
 let currentFocus = "all";
+const SPEAK_RATE = 0.76;
+const PHASE_ONE_VOICE_MIN_STEP_MS = 650;
+const PHASE_ONE_VOICE_CHAR_MS = 170;
+const PHASE_ONE_VOICE_GAP_MS = 120;
 
 const MAIN_TABS = ["alphabet", "vocabulary", "sentences", "listening"];
 const TAB_SCREEN_IDS = {
@@ -4580,7 +4584,7 @@ function speak(text) {
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "ko-KR";
-    utterance.rate = 0.88;
+    utterance.rate = SPEAK_RATE;
     utterance.pitch = 1;
     const koreanVoice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("ko"));
     if (koreanVoice) utterance.voice = koreanVoice;
@@ -4620,13 +4624,13 @@ async function playPhaseOneVoiceSequence() {
       ? resolvedTargets[index % resolvedTargets.length]
       : null;
     if (target) flashElement(target);
-    const minStepMs = Math.max(520, String(voiceParts[index]).length * 140);
+    const minStepMs = Math.max(PHASE_ONE_VOICE_MIN_STEP_MS, String(voiceParts[index]).length * PHASE_ONE_VOICE_CHAR_MS);
     await Promise.all([
       speak(voiceParts[index]),
       new Promise((resolve) => window.setTimeout(resolve, minStepMs)),
     ]);
     if (tokenId !== phaseOneVoicePlaybackId) return;
-    await new Promise((resolve) => window.setTimeout(resolve, 90));
+    await new Promise((resolve) => window.setTimeout(resolve, PHASE_ONE_VOICE_GAP_MS));
   }
 }
 
