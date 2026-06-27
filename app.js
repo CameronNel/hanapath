@@ -6508,6 +6508,8 @@ function renderCompleteInPlayer(index) {
       : ""
     );
 
+  const playerHead = els.phaseOnePlayer && els.phaseOnePlayer.querySelector(".player-head");
+  if (playerHead) playerHead.style.display = "none";
   if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
   if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
   if (els.phaseOneBackButton) {
