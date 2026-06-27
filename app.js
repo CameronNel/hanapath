@@ -6481,11 +6481,6 @@ function renderLearnComplete(index) {
   const el = showScreen("detail");
   if (!el) return;
   el.innerHTML = `
-    <div class="card complete-card">
-      <div class="complete-badge">✓</div>
-      <h2 class="screen-title" style="margin-bottom:6px;">Lesson complete!</h2>
-      <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(lesson.shortTitle)} is locked in.</div>
-    </div>
     <div class="card">
       ${next ? `
         <div class="eyebrow">Keep going</div>
@@ -6498,6 +6493,11 @@ function renderLearnComplete(index) {
         <div class="screen-sub" style="margin-bottom:12px;">New vocabulary is now your next new material.</div>
         <button class="button primary compact" type="button" id="learnNextBtn">Start vocabulary</button>
       `}
+    </div>
+    <div class="card complete-card">
+      <div class="complete-badge">✓</div>
+      <h2 class="screen-title" style="margin-bottom:6px;">Lesson complete!</h2>
+      <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(lesson.shortTitle)} is locked in.</div>
     </div>
     <div class="card">
       <div class="flex-between">
