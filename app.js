@@ -4810,6 +4810,7 @@ function renderPhaseOneConcept(lesson) {
   els.phaseOneActionButton.textContent =
     phaseOneView.slideIndex === lesson.concepts.length - 1 ? "Start checkpoint" : "Next card";
   placePhaseOneActions();
+  animateMotionScope(els.phaseOneStage);
 }
 
 function renderPhaseOneQuestion(lesson) {
@@ -4861,6 +4862,7 @@ function renderPhaseOneQuestion(lesson) {
   els.phaseOneActionButton.textContent =
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
+  animateMotionScope(els.phaseOneStage);
 }
 
 function renderPhaseOneResult(lesson) {
@@ -4913,6 +4915,7 @@ function renderPhaseOneResult(lesson) {
 
   renderPhaseOneOverview();
   renderPhaseOneTrack();
+  animateMotionScope(els.phaseOneStage);
 }
 
 function renderPhaseOnePlayer() {
@@ -6538,6 +6541,60 @@ const LEGACY_ROUTE = {
 
 let activeHub = "home";
 
+const MOTION_SELECTORS = [
+  ".card",
+  ".quiz-card",
+  ".speak-task",
+  ".speak-item",
+  ".hub-tile",
+  ".lib-item",
+  ".study-row",
+  ".stage-row",
+  ".level-chip",
+  ".study-pill",
+  ".rev-stat",
+  ".lesson-player-wrap",
+  ".player-head",
+  ".player-actions",
+  ".lesson-step-row",
+  ".phase-one-action-slot",
+  ".concept-card",
+  ".checkpoint-card",
+  ".result-card",
+  ".review-card",
+].join(", ");
+
+function playMotion(node, className, cleanupMs) {
+  if (!node) return;
+  node.classList.remove(className);
+  void node.offsetWidth;
+  node.classList.add(className);
+  window.setTimeout(() => {
+    node.classList.remove(className);
+  }, cleanupMs);
+}
+
+function animateMotionScope(scope, selectors = MOTION_SELECTORS, stepMs = 42) {
+  if (!scope) return;
+  const items = [...scope.querySelectorAll(selectors)];
+  if (!items.length) return;
+
+  items.forEach((item, index) => {
+    item.classList.remove("motion-enter");
+    item.style.setProperty("--motion-delay", `${Math.min(index, 12) * stepMs}ms`);
+  });
+
+  void scope.offsetWidth;
+
+  items.forEach((item, index) => {
+    item.classList.add("motion-enter");
+    window.setTimeout(() => {
+      item.classList.remove("motion-enter");
+      item.style.removeProperty("--motion-delay");
+    }, 780 + index * stepMs);
+  });
+}
+
 function setNavActive(hub) {
   document.querySelectorAll(".nav-btn").forEach((b) => {
     b.classList.toggle("active", b.dataset.nav === hub);
@@ -6555,7 +6612,12 @@ function showScreen(screenId) {
     if (s.id !== targetId) s.innerHTML = "";
   });
   const screen = document.getElementById(targetId);
-  if (screen) { screen.hidden = false; screen.scrollTop = 0; }
+  if (screen) {
+    screen.hidden = false;
+    screen.scrollTop = 0;
+    playMotion(screen, "screen-enter", 420);
+    window.requestAnimationFrame(() => animateMotionScope(screen));
+  }
   return screen;
 }
 
@@ -6594,6 +6656,7 @@ function showDetailBar(hub, itemTitle) {
   `;
   bar.querySelector(".back-btn").addEventListener("click", () => goHub(hub));
   bar.hidden = false;
+  playMotion(bar, "bar-enter", 320);
 }
 
 function hideDetailBar() {
@@ -6617,6 +6680,7 @@ function showDetailBarWithBack(hub, itemTitle, onBack = null, backLabel = null) 
     goHub(hub);
   });
   bar.hidden = false;
+  playMotion(bar, "bar-enter", 320);
 }
 
 function normalizeRoute(route) {
