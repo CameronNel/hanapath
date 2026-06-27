@@ -2536,6 +2536,82 @@ const TAB_ALIASES = {
   progress: "listening",
 };
 
+const NAV_TABS = ["today", "path", "practice", "library", "listening", "progress"];
+const NAV_VISIBLE_TABS = ["today", "path", "practice", "library"];
+const NAV_TAB_ALIASES = {
+  alphabet: "today",
+  today: "today",
+  path: "path",
+  vocabulary: "library",
+  review: "library",
+  library: "library",
+  sentences: "practice",
+  speak: "practice",
+  practice: "practice",
+  listening: "listening",
+  listen: "listening",
+  progress: "progress",
+};
+const NAV_TAB_SCREEN_IDS = {
+  today: "today",
+  path: "path",
+  practice: "speak",
+  library: "review",
+  listening: "library",
+  progress: "progress",
+};
+const NAV_TAB_MAIN_TABS = {
+  today: "alphabet",
+  path: "alphabet",
+  practice: "sentences",
+  library: "vocabulary",
+  listening: "listening",
+  progress: "alphabet",
+};
+const NAV_TAB_QUIZ_SCOPES = {
+  today: "alphabet",
+  path: "alphabet",
+  practice: "sentences",
+  library: "vocabulary",
+  listening: "listening",
+  progress: "alphabet",
+};
+const NAV_TAB_STUDIOS = {
+  today: "alphabet",
+  path: "alphabet",
+  practice: "sentences",
+  library: "vocab",
+  listening: "listen",
+  progress: "alphabet",
+};
+
+function normalizeNavTab(value) {
+  const raw = String(value || "").toLowerCase();
+  const alias = NAV_TAB_ALIASES[raw] || raw;
+  return NAV_TABS.includes(alias) ? alias : "today";
+}
+
+function getNavTabForMainTab(mainTab) {
+  const safe = normalizeMainTab(mainTab);
+  if (safe === "alphabet") return "today";
+  if (safe === "vocabulary") return "library";
+  if (safe === "sentences") return "practice";
+  if (safe === "listening") return "listening";
+  return "today";
+}
+
+function getMainTabForNavTab(navTab) {
+  return NAV_TAB_MAIN_TABS[normalizeNavTab(navTab)] || "alphabet";
+}
+
+function getQuizScopeForNavTab(navTab) {
+  return NAV_TAB_QUIZ_SCOPES[normalizeNavTab(navTab)] || "alphabet";
+}
+
+function getStudioForNavTab(navTab) {
+  return NAV_TAB_STUDIOS[normalizeNavTab(navTab)] || "alphabet";
+}
+
 function clampLevel(value, min = 1, max = 10) {
   const number = Number(value);
   if (!Number.isFinite(number)) return min;
@@ -2600,7 +2676,7 @@ function setTrackLevel(tab, level) {
 }
 
 function getCurrentQuizScope() {
-  return normalizeMainTab(currentQuizScope || activeTab || state.mainTab || "alphabet");
+  return currentQuizScope || getQuizScopeForNavTab(activeTab) || state.mainTab || "alphabet";
 }
 
 function getQuizIds(scope = getCurrentQuizScope()) {
@@ -3030,7 +3106,8 @@ function getAlphabetQuizPools() {
 }
 
 const state = loadState();
-state.mainTab = normalizeMainTab(state.mainTab || "alphabet");
+state.navTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTab) || "today");
+state.mainTab = normalizeMainTab(state.mainTab || getMainTabForNavTab(state.navTab) || "alphabet");
 state.tabLevels = normalizeTabLevels(state.tabLevels);
 state.alphabetView = normalizeAlphabetView(state.alphabetView || getDefaultAlphabetView());
 state.phaseOneCompleted = Array.isArray(state.phaseOneCompleted)
@@ -3062,6 +3139,7 @@ function loadState() {
     speakingAnxiety: "medium",
     knowsHangul: false,
     level: "K0",
+    navTab: "today",
     mainTab: "alphabet",
     alphabetView: "vowels",
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
@@ -3076,6 +3154,7 @@ function loadState() {
     studyDays: 0,
     lastDate: "",
     libTab: "phrases",
+    pendingPathLesson: null,
     vocabQuery: "",
     vocabBand: "all",
     vocabView: "learn",
@@ -3187,20 +3266,31 @@ function syncLevelProgress() {
 }
 
 function getUnlockedStudioIds(level = state.level) {
-  void level;
-  return new Set([
-    "alphabet",
-    "vocabulary",
-    "sentences",
-    "listening",
-    "sound",
-    "survival",
-    "grammar",
-    "verb",
-    "conversation",
-    "vocab",
-    "listen",
-  ]);
+  const index = getLevelIndex(level);
+  const unlocked = new Set(["alphabet"]);
+
+  if (index >= 1) {
+    unlocked.add("vocab");
+    unlocked.add("vocabulary");
+  }
+  if (index >= 2) {
+    unlocked.add("sentences");
+  }
+  if (index >= 3) {
+    unlocked.add("listen");
+    unlocked.add("listening");
+  }
+  if (index >= 4) {
+    unlocked.add("sound");
+    unlocked.add("survival");
+  }
+  if (index >= 5) {
+    unlocked.add("grammar");
+    unlocked.add("verb");
+    unlocked.add("conversation");
+  }
+
+  return unlocked;
 }
 
 function isStudioUnlocked(id, level = state.level) {
@@ -3210,15 +3300,17 @@ function isStudioUnlocked(id, level = state.level) {
 function getDefaultStudioForLevel(level = state.level) {
   const index = getLevelIndex(level);
   if (index <= 0) return "alphabet";
-  if (index === 1) return "vocabulary";
+  if (index === 1) return "vocab";
   if (index === 2) return "sentences";
-  return "listening";
+  if (index === 3) return "listen";
+  if (index === 4) return "survival";
+  return "grammar";
 }
 
 function normalizeStudioSelection() {
-  const safeStudio = String(state.studio || "").toLowerCase();
+  const safeStudio = getStudio();
   if (!getUnlockedStudioIds(state.level).has(safeStudio)) {
-    state.studio = state.mainTab || getDefaultStudioForLevel();
+    state.studio = getDefaultStudioForLevel();
     return true;
   }
   return false;
@@ -3259,9 +3351,9 @@ const VOCAB_CSV_URL = "./korean_5000_claude_ready.csv";
 const VOCAB_PAGE_SIZE = 40;
 const VOCAB_BANDS = ["1-1000", "1001-2000", "2001-3000", "3001-4000", "4001-5000"];
 const VOCAB_VIEWS = [
-  { id: "learn", label: "Learn" },
+  { id: "learn", label: "Today" },
   { id: "browse", label: "Browse" },
-  { id: "test", label: "Test" },
+  { id: "test", label: "Quiz" },
   { id: "review", label: "Review" },
 ];
 
@@ -5997,12 +6089,13 @@ function bindKeyboardShortcuts() {
     const target = event.target;
     const typing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || (target instanceof HTMLElement && target.isContentEditable);
     if (typing) return;
-    if (activeTab !== getCurrentQuizScope()) return;
     const ids = getQuizIds(getCurrentQuizScope());
     const quizOptions = document.getElementById(ids.options);
-    const currentScreenId = TAB_SCREEN_IDS[activeTab] ? `screen-${TAB_SCREEN_IDS[activeTab]}` : "";
+    const expectedScope = getCurrentQuizScope();
+    const currentScreenId = NAV_TAB_SCREEN_IDS[activeTab] ? `screen-${NAV_TAB_SCREEN_IDS[activeTab]}` : "";
     const currentScreen = currentScreenId ? document.getElementById(currentScreenId) : null;
     if (!quizOptions || !currentScreen || currentScreen.hidden) return;
+    if (currentQuestion && currentQuestion.scope && currentQuestion.scope !== expectedScope) return;
 
     if (event.key >= "1" && event.key <= "4") {
       const index = Number(event.key) - 1;
@@ -6024,37 +6117,34 @@ function bindKeyboardShortcuts() {
 
 // ─── NAVIGATION ──────────────────────────────────────────────────────────────
 
-let activeTab = state.mainTab || "alphabet";
+let activeTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTab) || "today");
 
 function showTab(name) {
   refreshProgressionState();
-  const normalized = normalizeMainTab(name);
+  const normalized = normalizeNavTab(name);
   activeTab = normalized;
-  state.mainTab = normalized;
-  currentQuizScope = normalized;
-  state.studio = normalized === "vocabulary"
-    ? "vocab"
-    : normalized === "sentences"
-      ? "sentences"
-      : normalized === "listening"
-        ? "listen"
-        : "alphabet";
-  if (normalized !== "alphabet") {
+  state.navTab = normalized;
+  state.mainTab = getMainTabForNavTab(normalized);
+  currentQuizScope = getQuizScopeForNavTab(normalized);
+  state.studio = getStudioForNavTab(normalized);
+  if (normalized !== "today" && normalized !== "path") {
     alphabetStageMenuOpen = false;
   }
   saveState();
   document.querySelectorAll(".screen").forEach((s) => { s.hidden = true; });
-  const screenId = TAB_SCREEN_IDS[normalized] || TAB_SCREEN_IDS.alphabet;
+  const screenId = NAV_TAB_SCREEN_IDS[normalized] || NAV_TAB_SCREEN_IDS.today;
   const screen = document.getElementById("screen-" + screenId);
   if (screen) screen.hidden = false;
   document.querySelectorAll(".nav-btn").forEach((b) => {
-    b.classList.toggle("active", normalizeMainTab(b.dataset.tab) === normalized);
+    b.classList.toggle("active", normalizeNavTab(b.dataset.tab) === normalized);
   });
   // Render the screen
-  if (normalized === "alphabet")    renderToday();
-  if (normalized === "vocabulary")   renderVocabulary();
-  if (normalized === "sentences")    renderSpeak();
-  if (normalized === "listening")    renderLibrary();
+  if (normalized === "today")       renderTodayView();
+  if (normalized === "path")        renderPath();
+  if (normalized === "practice")    renderPracticeView();
+  if (normalized === "library")     renderVocabulary();
+  if (normalized === "listening")   renderLibrary();
+  if (normalized === "progress")    renderProgress();
 }
 
 // ─── ONBOARDING ──────────────────────────────────────────────────────────────
@@ -6144,10 +6234,17 @@ function renderOnboarding() {
   // Final step: forecast
   const hrs = obAnswers.weeklyHours;
   const forecast = hrs >= 25 ? "B2-ish fluency in ~24 months" : hrs >= 15 ? "B1+ in ~18 months" : hrs >= 10 ? "A2–B1 in ~14 months" : "Tourist level in ~20 months";
-  const startLevel = "K0";
+  const startLevel = obAnswers.knowsHangul ? "K1" : "K0";
+  const preferredStudio = obAnswers.goal === "travel"
+    ? "survival"
+    : obAnswers.goal === "media"
+      ? "listen"
+      : obAnswers.goal === "partner"
+        ? "conversation"
+        : "grammar";
   const startNote = obAnswers.knowsHangul
-    ? "You can move faster through the first stage if you already know Hangul."
-    : "We will build from the alphabet upward.";
+    ? "We’ll skip the alphabet ramp and keep the path focused on survival phrases, listening, and vocab."
+    : "We’ll build from the alphabet upward.";
 
   shell.innerHTML = `
     <div class="ob-card">
@@ -6175,289 +6272,19 @@ function renderOnboarding() {
       speakingAnxiety: obAnswers.speakingAnxiety,
       knowsHangul: obAnswers.knowsHangul,
       level: startLevel,
+      studio: preferredStudio,
+      phaseOneCompleted: obAnswers.knowsHangul ? phaseOneLessons.map((lesson) => lesson.id) : [],
     });
     saveState();
     shell.hidden = true;
     const app = document.getElementById("app");
     if (app) app.hidden = false;
-    showTab("alphabet");
+    showTab("today");
     bindKeyboardShortcuts();
   });
 }
 
-// ─── TODAY SCREEN ─────────────────────────────────────────────────────────────
-
-function renderToday(options = {}) {
-  const { preserveScroll = false } = options;
-  const el = document.getElementById("screen-today");
-  if (!el) return;
-  refreshProgressionState();
-  const scrollTop = preserveScroll ? el.scrollTop : 0;
-  const scrollLeft = preserveScroll ? el.scrollLeft : 0;
-  {
-  currentQuizScope = "alphabet";
-  state.studio = "alphabet";
-
-  const alphabetView = normalizeAlphabetView(state.alphabetView || getDefaultAlphabetView());
-  const alphabetStage = getAlphabetStageDefinition(alphabetView);
-  const stageProgress = getAlphabetStageProgress(alphabetView);
-  const progressPct = Math.round((stageProgress.completedCount / Math.max(1, stageProgress.total)) * 100);
-  state.alphabetView = alphabetView;
-
-  el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Step 1</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">Alphabet</h2>
-      <div class="screen-sub" style="margin-bottom:8px;">Start here. Learn vowels, consonants, block logic, and reading in a simple order.</div>
-      <div class="text-muted-2 fs-sm">${stageProgress.completedCount}/${stageProgress.total} lesson blocks complete | ${escapeHtml(stageProgress.nextLesson ? stageProgress.nextLesson.shortTitle : alphabetStage.label)}</div>
-      <div class="skill-track" style="margin-top:14px;"><div class="skill-fill" style="width:${progressPct}%"></div></div>
-    </div>
-
-    ${renderAlphabetTabs(alphabetView, alphabetStageMenuOpen)}
-    ${renderAlphabetPanelV2(alphabetView)}
-  `;
-
-  const alphabetStageToggle = el.querySelector("[data-alpha-toggle]");
-  if (alphabetStageToggle) {
-    alphabetStageToggle.addEventListener("click", () => {
-      alphabetStageMenuOpen = !alphabetStageMenuOpen;
-      renderToday({ preserveScroll: true });
-    });
-  }
-  el.querySelectorAll("[data-alpha-view]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.alphabetView = normalizeAlphabetView(btn.dataset.alphaView);
-      alphabetStageMenuOpen = false;
-      saveState();
-      renderToday({ preserveScroll: true });
-    });
-  });
-  el.querySelectorAll("[data-alpha-speak]").forEach((btn) => {
-    btn.addEventListener("click", () => speak(btn.dataset.alphaSpeak || ""));
-  });
-  renderQuestion(generateQuestion(), { scope: "alphabet" });
-  if (preserveScroll) {
-    window.requestAnimationFrame(() => {
-      el.scrollTop = scrollTop;
-      el.scrollLeft = scrollLeft;
-    });
-  }
-  return;
-  }
-
-  currentQuizScope = "alphabet";
-  state.studio = "alphabet";
-
-  const level = getTrackLevel("alphabet");
-  const levelIndex = Math.min(level - 1, phaseOneLessons.length - 1);
-  const currentLesson = phaseOneLessons[levelIndex] || phaseOneLessons[0];
-  const repeatLessons = phaseOneLessons.slice(0, levelIndex);
-  const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
-  const progressPct = Math.round((completedCount / Math.max(1, phaseOneLessons.length)) * 100);
-  const conceptRows = (currentLesson?.concepts || []).slice(0, 3).map((concept, index) => `
-    <div class="study-row">
-      <div>
-        <div class="study-row-ko">${escapeHtml(concept.kicker || `Concept ${index + 1}`)}</div>
-        <div class="study-row-sub">${escapeHtml(concept.title || "")}</div>
-        <div class="fs-xs text-muted-2 mt-4">${escapeHtml(concept.body || concept.cue || "")}</div>
-      </div>
-      <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(concept.voiceText || concept.cue || concept.title || "")}">▶</button>
-    </div>
-  `).join("");
-
-  const repeatRows = repeatLessons.length
-    ? repeatLessons.map((lesson, index) => `
-      <div class="study-row">
-        <div>
-          <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lesson.shortTitle)}</div>
-          <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
-        </div>
-        <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(lesson.goal)}">▶</button>
-      </div>
-    `).join("")
-    : `<div class="screen-sub" style="margin-bottom:0;">This is where we start from zero. The review stack fills as you work through K0.</div>`;
-
-  const mapRows = phaseOneLessons.map((lesson, index) => {
-    const done = state.phaseOneCompleted.includes(lesson.id);
-    const active = index === levelIndex;
-    return `
-      <div class="study-row ${active ? "active" : ""}">
-        <div>
-          <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lesson.shortTitle)}</div>
-          <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
-        </div>
-        <span class="pill ${done ? "success" : active ? "accent" : "muted"}">${done ? "Done" : active ? "Now" : "Next"}</span>
-      </div>
-    `;
-  }).join("");
-
-  el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Alphabet</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">Hangul first</h2>
-      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(level <= phaseOneLessons.length ? currentLesson.shortTitle : "Mixed review")} · ${progressPct}% of K0 done</div>
-      <div class="skill-track" style="margin-top:14px;"><div class="skill-fill" style="width:${progressPct}%"></div></div>
-    </div>
-
-    ${renderLevelRail("alphabet")}
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Learn</div>
-          <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(currentLesson.title)}</div>
-        </div>
-        <span class="pill accent">${escapeHtml(currentLesson.duration)}</span>
-      </div>
-      <div class="text-muted-2 fs-sm mb-12">${escapeHtml(currentLesson.goal)}</div>
-      <div class="study-list">${conceptRows}</div>
-    </div>
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Repeat</div>
-          <div class="screen-sub" style="margin-bottom:0;">Previous Hangul lessons stay in the loop.</div>
-        </div>
-        <span class="pill muted">${repeatLessons.length} earlier</span>
-      </div>
-      <div class="study-list">${repeatRows}</div>
-    </div>
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Map</div>
-          <div class="screen-sub" style="margin-bottom:0;">Every K0 stage, in order.</div>
-        </div>
-        <span class="pill accent">${completedCount}/${phaseOneLessons.length}</span>
-      </div>
-      <div class="study-list">${mapRows}</div>
-    </div>
-
-    ${renderQuizCard("alphabet")}
-  `;
-
-  bindLevelRail(el, "alphabet", renderToday);
-  el.querySelectorAll("[data-speak]").forEach((btn) => {
-    btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
-  });
-  renderQuestion(generateQuestion(), { scope: "alphabet" });
-  return;
-
-  const today = new Date();
-  const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
-  const dateStr = today.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const skills = state.skills;
-  const freshProfile = isFreshProfile();
-  const dueCards = freshProfile ? 0 : Math.max(0, 20 - (state.asked % 20));
-
-  const nextLesson = (() => {
-    if (state.level === "K0") {
-      const idx = state.phaseOneCompleted.length;
-      const lesson = phaseOneLessons[Math.min(idx, phaseOneLessons.length - 1)];
-      return lesson ? `K0 Stage ${Math.min(idx + 1, 7)}: ${lesson.shortTitle}` : "K0 complete!";
-    }
-    if (state.level === "K1") return "K1: Greetings, names, and survival phrases";
-    if (state.level === "K2") return "K2: Sentence building and everyday grammar";
-    if (state.level === "K3") return "K3: Verbs and connected speech";
-    if (state.level === "K4") return "K4: Listening and conversation";
-    return "K5: Fluency bridge and review";
-  })();
-
-  const speakLow = !freshProfile && skills.speaking < 30;
-  const listenLow = skills.listening < 25;
-  const topBanner = freshProfile
-    ? "Welcome to HanaPath. Start with Hangul and build from K0."
-    : speakLow
-      ? "Your Korean is becoming library-shaped. Today we speak."
-      : "";
-
-  const skillRows = Object.entries({ Vocab: skills.vocab, Grammar: skills.grammar, Reading: skills.reading, Listening: skills.listening, Speaking: skills.speaking, Pronunciation: skills.pronunciation, Writing: skills.writing })
-    .map(([name, val]) => {
-      const warn = (name === "Speaking" || name === "Listening") && val < 30;
-      return `<div class="skill-row">
-        <span class="skill-name ${warn ? "skill-warn" : ""}">${name}</span>
-        <div class="skill-track"><div class="skill-fill" style="width:${val}%"></div></div>
-        <span class="skill-val">${val}</span>
-      </div>`;
-    }).join("");
-
-  const blocks = [
-    { key: "review", icon: "⟳", iconClass: "purple", label: "Review", desc: `${dueCards} cards due`, meta: "~10 min", tab: "review" },
-    { key: "learn",  icon: "◎", iconClass: "blue",   label: "Learn",  desc: nextLesson,               meta: "~15 min", tab: "path" },
-    { key: "speak",  icon: "◉", iconClass: "green",  label: "Speak",  desc: "Daily speaking task",    meta: "~5 min",  tab: "speak" },
-    { key: "listen", icon: "♪", iconClass: "pink",   label: "Words",   desc: "5,000-word bank",       meta: "~5 min",  tab: "library" },
-    { key: "reflect",icon: "✓", iconClass: "orange", label: "Reflect","desc": "Can-do check",         meta: "~2 min",  tab: "progress" },
-  ];
-
-  if (freshProfile) {
-    blocks[0] = {
-      ...blocks[0],
-      desc: "Start K0 to unlock review cards",
-      meta: "~5 min",
-    };
-    blocks[1] = {
-      ...blocks[1],
-      label: "Alphabet",
-      desc: "K0: Hangul, vowels, consonants, and first reading drills",
-    };
-  }
-
-  const totalMin = blocks.reduce((s) => s + 10, 0) - 10 + 37;
-
-  el.innerHTML = `
-    <div class="today-header">
-      <div>
-        <div class="today-greeting">${escapeHtml(dayName)}, ${escapeHtml(dateStr)}</div>
-        <div class="today-title">Today's Plan</div>
-      </div>
-      <div class="today-badge">🇰🇷</div>
-    </div>
-
-    ${topBanner ? `<div class="warning-banner">${escapeHtml(topBanner)}</div>` : ""}
-
-    <div class="card">
-      <div class="eyebrow">Skill balance</div>
-      <div class="skill-bars">${skillRows}</div>
-    </div>
-
-    <div class="card" style="padding:14px 16px 6px;">
-      <div class="flex-between mb-8">
-        <span class="eyebrow">Daily blocks</span>
-        <span class="fs-xs text-muted-2">${totalMin} min total</span>
-      </div>
-      <div class="plan-blocks">
-        ${blocks.map((b) => `
-          <div class="plan-block ${state.todayDone.includes(b.key) ? "done" : ""}">
-            <div class="plan-icon ${b.iconClass}">${b.icon}</div>
-            <div class="plan-copy">
-              <div class="plan-label">${escapeHtml(b.label)}</div>
-              <div class="plan-desc">${escapeHtml(b.desc)}</div>
-              <div class="plan-meta">${escapeHtml(b.meta)}</div>
-            </div>
-            <button class="plan-go" type="button" data-tab="${escapeHtml(b.tab)}" data-key="${escapeHtml(b.key)}">Start →</button>
-          </div>`).join("")}
-      </div>
-    </div>
-  `;
-
-  el.querySelectorAll(".plan-go").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const key = btn.dataset.key;
-      if (!state.todayDone.includes(key)) {
-        state.todayDone.push(key);
-        saveState();
-      }
-      showTab(btn.dataset.tab);
-    });
-  });
-}
-
-// ─── PATH SCREEN ──────────────────────────────────────────────────────────────
-
-const K1_UNITS = ["Greetings & names", "Nationality & language", "This / that / over there", "Food & ordering", "Numbers, prices, counters", "Time & schedules", "Places & directions", "Daily routine", "Likes & dislikes", "Basic texting", "Transport", "Review mission"];
-const K2_UNITS = ["Family", "Work / study", "Hobbies", "Weather", "Shopping", "Health", "Weekends", "Home", "Invitations", "Travel", "Korean texting", "Review project"];
+// ??? PATH SCREEN ??????????????????????????????????????????????????????????????
 
 function renderPath() {
   const el = document.getElementById("screen-path");
@@ -6476,6 +6303,15 @@ function renderPath() {
   const completedK0 = state.phaseOneCompleted.length;
   const k0Pct = Math.round((completedK0 / phaseOneLessons.length) * 100);
   const unlockedIndex = getLevelIndex(state.level);
+  const nextIndex = getFirstIncompletePhaseOneIndex();
+  const nextLesson = phaseOneLessons[nextIndex] || null;
+  const pathHeroTitle = nextLesson ? `Continue: ${nextLesson.shortTitle}` : "Hangul complete";
+  const pathHeroSubtitle = nextLesson
+    ? nextLesson.goal
+    : "Move on to survival phrases, vocabulary, and sentence practice.";
+  const pathHeroMeta = nextLesson
+    ? `${nextLesson.duration} · Stage ${Math.min(nextIndex + 1, phaseOneLessons.length)} of ${phaseOneLessons.length}`
+    : "K0 cleared";
 
   function statusFor(id) {
     const levelIndex = getLevelIndex(id);
@@ -6485,9 +6321,18 @@ function renderPath() {
   }
 
   el.innerHTML = `
-    <div class="eyebrow">Alphabet learning</div>
+    <div class="eyebrow">Path</div>
     <h2 class="screen-title" style="margin-bottom:16px;">K0 → K5</h2>
-    <div class="text-muted-2 fs-xs mb-12">Start in K0 for Hangul, then move up only after you clear each level.</div>
+    <div class="text-muted-2 fs-xs mb-12">Use the roadmap to move one step at a time.</div>
+    <div class="card">
+      <div class="eyebrow">Resume</div>
+      <h3 class="screen-title" style="margin-bottom:8px;">${escapeHtml(pathHeroTitle)}</h3>
+      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(pathHeroSubtitle)}</div>
+      <div class="flex-between" style="gap:12px; align-items:center; flex-wrap:wrap;">
+        <span class="pill accent">${escapeHtml(pathHeroMeta)}</span>
+        <button class="button primary compact" type="button" id="pathHeroBtn">${nextLesson ? "Open lesson" : "Open practice"}</button>
+      </div>
+    </div>
     <div class="level-map">
       ${levels.map((lv) => {
         const status = statusFor(lv.id);
@@ -6546,6 +6391,28 @@ function renderPath() {
     row.addEventListener("click", () => openPathLesson(idx));
     row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") openPathLesson(idx); });
   });
+
+  const pathHeroBtn = document.getElementById("pathHeroBtn");
+  if (pathHeroBtn) {
+    pathHeroBtn.addEventListener("click", () => {
+      if (nextLesson) {
+        openPathLesson(nextIndex);
+        return;
+      }
+      showTab("practice");
+    });
+  }
+
+  if (Number.isInteger(state.pendingPathLesson)) {
+    const pendingIndex = state.pendingPathLesson;
+    state.pendingPathLesson = null;
+    saveState();
+    window.requestAnimationFrame(() => {
+      if (phaseOneLessons[pendingIndex]) {
+        openPathLesson(pendingIndex);
+      }
+    });
+  }
 }
 
 function openPathLesson(index) {
@@ -6616,184 +6483,9 @@ function openPathLesson(index) {
   });
 }
 
-// ─── REVIEW SCREEN ────────────────────────────────────────────────────────────
+// --- PRACTICE / LIBRARY SCREENS ---------------------------------------------
 
-const STUDIOS = [
-  { id: "alphabet",     label: "Alphabet" },
-  { id: "sound",        label: "Sound" },
-  { id: "survival",     label: "Phrases" },
-  { id: "grammar",      label: "Grammar" },
-  { id: "verb",         label: "Verbs" },
-  { id: "conversation", label: "Conversation" },
-  { id: "vocab",        label: "Words" },
-  { id: "sentences",    label: "Sentences" },
-  { id: "listen",       label: "Listen" },
-];
-
-function renderReview() {
-  const el = document.getElementById("screen-review");
-  if (!el) return;
-  refreshProgressionState();
-
-  currentQuizScope = "vocabulary";
-  state.studio = "vocab";
-
-  const level = getTrackLevel("vocabulary");
-  const bandIndex = getLevelBand(level, VOCAB_BANDS.length);
-  const bandLabel = VOCAB_BANDS[bandIndex - 1] || VOCAB_BANDS[0];
-  const knownCount = getVocabKnownSet().size;
-  const hardCount = getVocabHardSet().size;
-  const currentBandItems = vocabBankReady ? getCurrentBandSlice(vocabBank, level, VOCAB_BANDS.length) : [];
-  const repeatBandItems = vocabBankReady ? getRepeatBandSlice(vocabBank, level, VOCAB_BANDS.length) : [];
-  const active = currentBandItems[0] || vocabBank[0] || null;
-
-  const wordRows = (items, limit = 6) => items.slice(0, limit).map((entry) => `
-    <div class="study-row">
-      <div>
-        <div class="study-row-ko" lang="ko">${escapeHtml(entry.korean)}</div>
-        <div class="study-row-sub">${escapeHtml(entry.romanization)}</div>
-        <div class="fs-xs text-muted-2 mt-4">Pronunciation: ${escapeHtml(entry.romanization)} · ${escapeHtml(entry.frequencyBand)}</div>
-      </div>
-      <button class="lib-hear-btn" type="button" data-vocab-hear="${escapeHtml(entry.korean)}">▶</button>
-    </div>
-  `).join("");
-
-  el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Vocabulary</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">English vs Korean</h2>
-      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · ${knownCount} known · ${hardCount} hard</div>
-      ${active ? `<div class="vocab-hero-count mt-12">${escapeHtml(active.korean)} · ${escapeHtml(active.romanization)}</div>` : ""}
-    </div>
-
-    ${renderLevelRail("vocabulary")}
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Learn</div>
-          <div class="screen-sub" style="margin-bottom:0;">Current band: ${escapeHtml(bandLabel)}</div>
-        </div>
-        <span class="pill accent">${currentBandItems.length} words</span>
-      </div>
-      ${vocabBankReady
-        ? `<div class="study-list">${wordRows(currentBandItems, 6) || `<div class="screen-sub" style="margin-bottom:0;">No words matched this band yet.</div>`}</div>`
-        : `<div class="screen-sub" style="margin-bottom:0;">Loading the vocabulary file…</div>`}
-    </div>
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Repeat</div>
-          <div class="screen-sub" style="margin-bottom:0;">Earlier bands stay in the loop.</div>
-        </div>
-        <span class="pill muted">${repeatBandItems.length} review words</span>
-      </div>
-      ${vocabBankReady
-        ? `<div class="study-list">${wordRows(repeatBandItems.slice(-6), 6) || `<div class="screen-sub" style="margin-bottom:0;">Keep going to unlock review words.</div>`}</div>`
-        : `<div class="screen-sub" style="margin-bottom:0;">Load the word bank to see repeat words here.</div>`}
-    </div>
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">More</div>
-          <div class="screen-sub" style="margin-bottom:0;">Tap any word to hear it and keep the file moving.</div>
-        </div>
-        <span class="pill muted">5,000 words</span>
-      </div>
-      <div class="study-list">
-        <div class="study-row">
-          <div>
-            <div class="study-row-ko">Korean spelling</div>
-            <div class="study-row-sub">What the word looks like in Hangul.</div>
-          </div>
-        </div>
-        <div class="study-row">
-          <div>
-            <div class="study-row-ko">English spelling</div>
-            <div class="study-row-sub">Romanization / English reading.</div>
-          </div>
-        </div>
-        <div class="study-row">
-          <div>
-            <div class="study-row-ko">Pronunciation</div>
-            <div class="study-row-sub">What you should say out loud.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    ${renderQuizCard("vocabulary")}
-  `;
-
-  bindLevelRail(el, "vocabulary", renderReview);
-  el.querySelectorAll("[data-vocab-hear]").forEach((btn) => {
-    btn.addEventListener("click", () => speak(btn.dataset.vocabHear || ""));
-  });
-  renderQuestion(generateQuestion(), { scope: "vocabulary" });
-  return;
-
-  const studioNote = state.level === "K0"
-    ? "K0 starts with alphabet and sound. Finish those stages to unlock the next studios."
-    : `Unlocked through ${state.level}. Keep going to open the next layer.`;
-  const studioButtons = STUDIOS.map((s) => {
-    const unlocked = isStudioUnlocked(s.id);
-    const isActive = state.studio === s.id;
-    return `<button class="studio-btn ${isActive ? "active" : ""} ${unlocked ? "" : "locked"}" type="button" data-studio="${s.id}" ${unlocked ? "" : "disabled aria-disabled=\"true\"" }>${escapeHtml(s.label)}</button>`;
-  }).join("");
-
-  el.innerHTML = `
-    <div class="eyebrow">SRS Review</div>
-    <h2 class="screen-title" style="margin-bottom:4px;">Drill queue</h2>
-    <div class="text-muted fs-sm mb-12">Cards due refresh every session.</div>
-    <div class="text-muted-2 fs-xs mb-12">${escapeHtml(studioNote)}</div>
-
-    <div class="studio-switcher">
-      ${studioButtons}
-    </div>
-
-    <div class="review-stats">
-      <div class="rev-stat"><span class="sv" id="revRound">${state.round}</span><span class="sl">Round</span></div>
-      <div class="rev-stat"><span class="sv" id="revStreak">${state.streak}</span><span class="sl">Streak</span></div>
-      <div class="rev-stat"><span class="sv" id="revBest">${state.bestStreak}</span><span class="sl">Best</span></div>
-      <div class="rev-stat"><span class="sv" id="revAccuracy">${state.asked === 0 ? "0%" : Math.round(state.correct / state.asked * 100) + "%"}</span><span class="sl">Accuracy</span></div>
-    </div>
-
-    <div class="quiz-card">
-      <div class="quiz-meta">
-        <span class="pill accent" id="revQuizType">—</span>
-        <span class="pill muted" id="revQuizMode">—</span>
-      </div>
-      <div class="quiz-visual" id="revQuizVisual"></div>
-      <div class="quiz-prompt" id="revQuizPrompt">Loading…</div>
-      <div class="quiz-detail" id="revQuizDetail"></div>
-      <div class="quiz-options" id="revQuizOptions"></div>
-      <div class="quiz-feedback" id="revQuizFeedback"></div>
-    </div>
-
-    <div class="review-actions">
-      <button class="button secondary" id="revSpeakBtn" type="button">▶ Hear it</button>
-      <button class="button primary" id="revNextBtn" type="button">Next →</button>
-    </div>
-  `;
-
-  el.querySelectorAll(".studio-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      setStudio(btn.dataset.studio);
-      btn.parentElement.querySelectorAll(".studio-btn").forEach((b) => b.classList.toggle("active", b === btn));
-    });
-  });
-
-  document.getElementById("revSpeakBtn").addEventListener("click", () => speak(currentQuestion?.voiceText || currentQuestion?.answer || ""));
-  document.getElementById("revNextBtn").addEventListener("click", nextQuestion);
-
-  renderQuestion(generateQuestion());
-}
-
-// ─── SPEAK SCREEN ─────────────────────────────────────────────────────────────
-
-function renderSpeak() {
+function renderPracticeView() {
   const el = document.getElementById("screen-speak");
   if (!el) return;
   refreshProgressionState();
@@ -6816,12 +6508,29 @@ function renderSpeak() {
         : level <= 8
           ? "Longer sentences"
           : "Mixed review";
+  const practiceExample = currentSlice[0] || repeatSlice[0] || null;
+  const practiceTitle = state.speakingAnxiety === "high"
+    ? "Shadow first"
+    : state.goal === "travel"
+      ? "Say it in context"
+      : "Build and speak";
+  const practiceCue = state.speakingAnxiety === "high"
+    ? "Listen once, then copy the rhythm."
+    : state.goal === "travel"
+      ? "Use this phrase in a real situation."
+      : "Order the words, then read them aloud.";
 
   el.innerHTML = `
     <div class="card">
-      <div class="eyebrow">Sentences</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">Order the words</h2>
-      <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · drag, tap, and type</div>
+      <div class="eyebrow">Practice</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(practiceTitle)}</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(practiceCue)}</div>
+      <div class="speak-actions">
+        <button class="button secondary compact" type="button" id="practiceHearTask">Hear example</button>
+        <button class="button secondary compact" type="button" id="practiceReviewWords">Review words</button>
+        <button class="button secondary compact" type="button" id="practiceListenBtn">Listen</button>
+      </div>
+      ${practiceExample ? `<div class="speak-example mt-12" lang="ko">${escapeHtml(practiceExample.korean || practiceExample.meaning || "")}</div>` : ""}
     </div>
 
     ${renderLevelRail("sentences")}
@@ -6885,81 +6594,28 @@ function renderSpeak() {
     ${renderQuizCard("sentences")}
   `;
 
-  bindLevelRail(el, "sentences", renderSpeak);
+  bindLevelRail(el, "sentences", renderPracticeView);
+  const practiceHearTask = document.getElementById("practiceHearTask");
+  if (practiceHearTask) {
+    practiceHearTask.addEventListener("click", () => speak(practiceExample?.korean || practiceExample?.voiceText || practiceExample?.meaning || ""));
+  }
+  const practiceReviewWords = document.getElementById("practiceReviewWords");
+  if (practiceReviewWords) {
+    practiceReviewWords.addEventListener("click", () => {
+      state.vocabView = "review";
+      saveState();
+      showTab("library");
+    });
+  }
+  const practiceListenBtn = document.getElementById("practiceListenBtn");
+  if (practiceListenBtn) {
+    practiceListenBtn.addEventListener("click", () => showTab("listening"));
+  }
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
   renderQuestion(generateQuestion(), { scope: "sentences" });
-  return;
-
-  const isK0 = state.level === "K0";
-  const dailyTask = isK0
-    ? { title: "Read these syllables aloud", cue: "Say each syllable clearly. Focus on getting the vowel right before worrying about speed.", example: "가 · 나 · 다 · 라 · 마 · 바 · 사 · 아", hear: "가, 나, 다, 라, 마, 바, 사, 아" }
-    : { title: "Introduce yourself in Korean", cue: "Say your name, where you're from, and why you're learning Korean. Aim for 3–5 sentences.", example: "안녕하세요. 저는 ____이에요. 저는 한국어를 공부해요.", hear: "안녕하세요. 저는 학생이에요. 저는 한국어를 공부해요." };
-
-  const prompts = isK0
-    ? [
-        { q: "Say: 'Hello'", hint: "안녕하세요" },
-        { q: "Read this word aloud", hint: "한글" },
-        { q: "Say: 'Thank you'", hint: "감사합니다" },
-        { q: "Read: 나무 (tree)", hint: "나무" },
-        { q: "Read: 바다 (sea)", hint: "바다" },
-        { q: "Say: 'Yes' and 'No'", hint: "네 / 아니요" },
-        { q: "Read: 우유 (milk)", hint: "우유" },
-        { q: "Say: 'Water, please'", hint: "물 주세요" },
-      ]
-    : conversationScenarioBank.slice(0, 8).map((s) => ({ q: s.cue, hint: s.answer }));
-
-  el.innerHTML = `
-    <div class="eyebrow">Speaking lab</div>
-    <h2 class="screen-title" style="margin-bottom:14px;">Speak Korean</h2>
-
-    <div class="speak-task">
-      <div class="speak-task-label">Today's task</div>
-      <div class="speak-task-title">${escapeHtml(dailyTask.title)}</div>
-      <div class="speak-task-cue">${escapeHtml(dailyTask.cue)}</div>
-      <div class="speak-example" lang="ko">${escapeHtml(dailyTask.example)}</div>
-      <div class="speak-actions">
-        <button class="button secondary compact" type="button" id="speakHearTask">▶ Hear example</button>
-        <button class="button success compact" type="button" id="speakDoneTask">I said it ✓</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Practice prompts</div>
-      <div class="speak-list">
-        ${prompts.map((p, i) => `
-          <div class="speak-item">
-            <div class="speak-item-num">${i + 1}</div>
-            <div class="speak-item-body">
-              <div class="speak-item-q">${escapeHtml(p.q)}</div>
-              <div class="speak-item-hint text-muted-2 fs-xs" lang="ko">${escapeHtml(p.hint)}</div>
-            </div>
-            <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(p.hint)}">▶</button>
-          </div>`).join("")}
-      </div>
-    </div>
-  `;
-
-  document.getElementById("speakHearTask").addEventListener("click", () => speak(dailyTask.hear));
-  document.getElementById("speakDoneTask").addEventListener("click", () => {
-    if (state.skills.speaking < 100) {
-      state.skills.speaking = Math.min(100, state.skills.speaking + 2);
-      saveState();
-    }
-    if (!state.todayDone.includes("speak")) {
-      state.todayDone.push("speak");
-      saveState();
-    }
-    document.getElementById("speakDoneTask").textContent = "Done! ✓";
-    document.getElementById("speakDoneTask").disabled = true;
-  });
-  el.querySelectorAll("[data-speak]").forEach((btn) => {
-    btn.addEventListener("click", () => speak(btn.dataset.speak));
-  });
 }
-
-// ─── LIBRARY SCREEN ───────────────────────────────────────────────────────────
 
 function renderVocabulary() {
   const el = document.getElementById("screen-review");
@@ -6979,6 +6635,8 @@ function renderVocabulary() {
   const currentBandItems = vocabBankReady ? getCurrentBandSlice(vocabBank, level, VOCAB_BANDS.length) : [];
   const repeatBandItems = vocabBankReady ? getRepeatBandSlice(vocabBank, level, VOCAB_BANDS.length) : [];
   const active = currentBandItems[0] || vocabBank[0] || null;
+  const dailyWords = currentBandItems.slice(0, 10);
+  const dailyWordCount = dailyWords.length || currentBandItems.length;
   const activeView = normalizeVocabView(state.vocabView || "learn");
   const currentEnglish = active ? (active.englishSpelling || active.romanization || "") : "";
   const currentPronunciation = active ? (active.pronunciation || currentEnglish) : "";
@@ -6994,13 +6652,13 @@ function renderVocabulary() {
       <div class="card">
         <div class="flex-between mb-12">
           <div>
-            <div class="eyebrow">Learn</div>
-            <div class="screen-sub" style="margin-bottom:0;">Current band: ${escapeHtml(bandLabel)}</div>
+            <div class="eyebrow">Today</div>
+            <div class="screen-sub" style="margin-bottom:0;">10 words from your current band</div>
           </div>
-          <span class="pill accent">${currentBandItems.length} words</span>
+          <span class="pill accent">${dailyWordCount} words</span>
         </div>
         ${vocabBankReady
-          ? `<div class="study-list">${renderVocabStudyRows(currentBandItems, 8) || `<div class="screen-sub" style="margin-bottom:0;">No words matched this band yet.</div>`}</div>`
+          ? `<div class="study-list">${renderVocabStudyRows(dailyWords, 10) || `<div class="screen-sub" style="margin-bottom:0;">No words matched this band yet.</div>`}</div>`
           : `<div class="screen-sub" style="margin-bottom:0;">Loading the vocabulary file...</div>`}
       </div>
 
@@ -7019,7 +6677,7 @@ function renderVocabulary() {
   } else if (activeView === "browse") {
     content = browserView ? browserView.html : `
       <div class="card vocab-loading">
-        <div class="eyebrow mb-12">5,000-word bank</div>
+        <div class="eyebrow mb-12">Browse all words</div>
         <div class="screen-sub" style="margin-bottom:0;">Loading the vocabulary file...</div>
       </div>
     `;
@@ -7027,7 +6685,7 @@ function renderVocabulary() {
     content = `
       <div class="card">
         <div class="eyebrow">Test</div>
-        <h3 class="screen-title" style="margin-bottom:8px;">Rotate the same bank through different tests</h3>
+        <h3 class="screen-title" style="margin-bottom:8px;">Rotate the same bank through different quizzes</h3>
         <div class="screen-sub" style="margin-bottom:0;">This deck alternates between Korean to English spelling, English spelling to Hangul, and listening prompts so the same words keep coming back in different forms.</div>
       </div>
     `;
@@ -7050,9 +6708,9 @@ function renderVocabulary() {
 
   el.innerHTML = `
     <div class="card">
-      <div class="eyebrow">Vocabulary</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">5,000-word bank</h2>
-      <div class="text-muted-2 fs-sm">${completedCount}/${phaseOneLessons.length} lesson blocks complete | ${escapeHtml(nextLesson ? nextLesson.shortTitle : "All early Hangul stages complete")}</div>
+      <div class="eyebrow">Library</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Today&apos;s words</h2>
+      <div class="text-muted-2 fs-sm">Today&apos;s flow: ${dailyWordCount} words · ${escapeHtml(bandLabel)}</div>
       ${active ? `<div class="vocab-hero-count mt-12" lang="ko">${escapeHtml(active.korean)} · ${escapeHtml(currentEnglish)} · ${escapeHtml(currentPronunciation)}</div>` : ""}
       <div class="vocab-filters mt-12">${viewButtons}</div>
     </div>
@@ -7112,6 +6770,10 @@ function renderLibrary() {
     <div class="card">
       <div class="eyebrow">Listening</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Hear the sentence</h2>
+      <div class="speak-actions mt-12">
+        <button class="button secondary compact" type="button" id="listenBackBtn">Back to practice</button>
+        <button class="button secondary compact" type="button" id="listenLibraryBtn">Open library</button>
+      </div>
       <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · choose, type, and replay</div>
     </div>
 
@@ -7177,322 +6839,20 @@ function renderLibrary() {
   `;
 
   bindLevelRail(el, "listening", renderLibrary);
+  const listenBackBtn = document.getElementById("listenBackBtn");
+  if (listenBackBtn) {
+    listenBackBtn.addEventListener("click", () => showTab("practice"));
+  }
+  const listenLibraryBtn = document.getElementById("listenLibraryBtn");
+  if (listenLibraryBtn) {
+    listenLibraryBtn.addEventListener("click", () => showTab("library"));
+  }
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
   renderQuestion(generateQuestion(), { scope: "listening" });
   return;
 
-  const tabs = [
-    { id: "phrases",   label: "Phrases" },
-    { id: "dialogues", label: "Dialogues" },
-    { id: "grammar",   label: "Grammar" },
-    { id: "vocab",     label: "Words" },
-  ];
-
-  const activeLibTab = state.libTab || "phrases";
-  let vocabView = null;
-
-  let content = "";
-  if (activeLibTab === "phrases") {
-    content = `<div class="lib-list">${survivalPhrases.map((p) => `
-      <div class="lib-item">
-        <div style="flex:1"><div class="lib-kr" lang="ko">${escapeHtml(p.phrase)}</div><div class="lib-en">${escapeHtml(p.meaning)}</div><div class="fs-xs text-muted-2 mt-4">${escapeHtml(p.situation)}</div></div>
-        <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(p.voiceText)}">▶</button>
-      </div>`).join("")}</div>`;
-  } else if (activeLibTab === "dialogues") {
-    content = conversationDialogueBank.map((d) => `
-      <div class="dialogue-card">
-        <div class="dialogue-line"><div class="dl-speaker">A</div><div><div class="dl-kr" lang="ko">${escapeHtml(d.starter)}</div><div class="dl-en">${escapeHtml(d.cue)}</div></div></div>
-        <div class="dialogue-line"><div class="dl-speaker">B</div><div><div class="dl-kr" lang="ko">${escapeHtml(d.reply)}</div><div class="dl-en">${escapeHtml(d.explanation)}</div></div></div>
-        <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(d.starter + " " + d.reply)}" style="margin-top:8px;">▶ Hear</button>
-      </div>`).join("");
-  } else if (activeLibTab === "grammar") {
-    content = `<div class="lib-list">${grammarSentenceBank.map((s) => `
-      <div class="lib-item">
-        <div style="flex:1"><div class="lib-kr" lang="ko">${escapeHtml(s.korean)}</div><div class="lib-en">${escapeHtml(s.meaning)}</div><div class="fs-xs text-muted-2 mt-4">${escapeHtml(s.explanation)}</div></div>
-        <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(s.voiceText)}">▶</button>
-      </div>`).join("")}</div>`;
-  } else {
-    vocabView = buildVocabLibraryView();
-    content = vocabView.html;
-  }
-
-  el.innerHTML = `
-    <div class="eyebrow">Library</div>
-    <h2 class="screen-title" style="margin-bottom:14px;">Content</h2>
-    <div class="lib-tabs">
-      ${tabs.map((t) => `<button class="lib-tab ${t.id === activeLibTab ? "active" : ""}" type="button" data-libtab="${t.id}">${t.label}</button>`).join("")}
-    </div>
-    ${content}
-  `;
-
-  el.querySelectorAll(".lib-tab").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.libTab = btn.dataset.libtab;
-      saveState();
-      renderLibrary();
-    });
-  });
-
-  if (activeLibTab === "vocab") {
-    const search = document.getElementById("vocabSearch");
-    if (search) {
-      search.addEventListener("input", () => {
-        state.vocabQuery = search.value;
-        state.vocabPage = 0;
-        saveState();
-        renderLibrary();
-      });
-    }
-
-    document.querySelectorAll("[data-vocab-band]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.vocabBand = btn.dataset.vocabBand || "all";
-        state.vocabPage = 0;
-        saveState();
-        renderLibrary();
-      });
-    });
-
-    const prevPage = document.getElementById("vocabPrevPage");
-    const nextPage = document.getElementById("vocabNextPage");
-    const randomBtn = document.getElementById("vocabRandomBtn");
-    const knownBtn = document.getElementById("vocabKnownBtn");
-    const hardBtn = document.getElementById("vocabHardBtn");
-
-    if (prevPage) {
-      prevPage.addEventListener("click", () => {
-        state.vocabPage = Math.max(0, (state.vocabPage || 0) - 1);
-        saveState();
-        renderLibrary();
-      });
-    }
-
-    if (nextPage && vocabView) {
-      nextPage.addEventListener("click", () => {
-        state.vocabPage = Math.min(vocabView.pageCount - 1, (state.vocabPage || 0) + 1);
-        saveState();
-        renderLibrary();
-      });
-    }
-
-    if (randomBtn && vocabView && vocabView.filtered.length) {
-      randomBtn.addEventListener("click", () => {
-        const item = randomItem(vocabView.filtered);
-        state.vocabActiveRank = item.rank;
-        const index = vocabView.filtered.findIndex((entry) => entry.rank === item.rank);
-        state.vocabPage = index >= 0 ? Math.floor(index / VOCAB_PAGE_SIZE) : 0;
-        saveState();
-        renderLibrary();
-      });
-    }
-
-    if (knownBtn && vocabView && vocabView.active) {
-      knownBtn.addEventListener("click", () => {
-        toggleVocabKnown(vocabView.active.rank);
-        renderLibrary();
-      });
-    }
-
-    if (hardBtn && vocabView && vocabView.active) {
-      hardBtn.addEventListener("click", () => {
-        toggleVocabHard(vocabView.active.rank);
-        renderLibrary();
-      });
-    }
-
-    document.querySelectorAll("[data-vocab-rank]").forEach((row) => {
-      const rank = Number(row.dataset.vocabRank);
-      const entry = getVocabStudyEntry(rank);
-      if (!entry) {
-        return;
-      }
-
-      const selectRow = () => {
-        state.vocabActiveRank = entry.rank;
-        const filtered = findVocabMatches(state.vocabQuery, state.vocabBand);
-        const index = filtered.findIndex((item) => item.rank === entry.rank);
-        if (index >= 0) {
-          state.vocabPage = Math.floor(index / VOCAB_PAGE_SIZE);
-        }
-        saveState();
-        renderLibrary();
-      };
-
-      row.addEventListener("click", selectRow);
-      row.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          selectRow();
-        }
-      });
-    });
-
-    document.querySelectorAll("[data-vocab-hear]").forEach((btn) => {
-      btn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        speak(btn.dataset.vocabHear || "");
-      });
-    });
-  }
-
-  el.querySelectorAll("[data-speak]").forEach((btn) => {
-    btn.addEventListener("click", () => speak(btn.dataset.speak));
-  });
-}
-
-// ─── PROGRESS SCREEN ──────────────────────────────────────────────────────────
-
-function renderProgress() {
-  const el = document.getElementById("screen-progress");
-  if (!el) return;
-  refreshProgressionState();
-
-  const skills = state.skills;
-  const skillRows = Object.entries({ Vocab: skills.vocab, Grammar: skills.grammar, Reading: skills.reading, Listening: skills.listening, Speaking: skills.speaking, Pronunciation: skills.pronunciation, Writing: skills.writing })
-    .map(([name, val]) => {
-      const warn = (name === "Speaking" || name === "Listening") && val < 30;
-      return `<div class="skill-row"><span class="skill-name ${warn ? "skill-warn" : ""}">${name}</span><div class="skill-track"><div class="skill-fill" style="width:${val}%"></div></div><span class="skill-val">${val}</span></div>`;
-    }).join("");
-
-  const forecasts = [
-    { hrs: 5,  pct: 18, label: "Tourist level",   you: state.weeklyHours === 5 },
-    { hrs: 10, pct: 38, label: "A2–B1 possible",  you: state.weeklyHours === 10 },
-    { hrs: 15, pct: 62, label: "B1+ with tutors", you: state.weeklyHours === 15 },
-    { hrs: 25, pct: 95, label: "B2-ish realistic", you: state.weeklyHours === 25 },
-  ];
-
-  const levelNames = { K0: "Hangul & Sound", K1: "Survival Korean", K2: "Everyday Korean", K3: "Connected Korean", K4: "Independent Korean", K5: "Fluency Bridge" };
-
-  const k0Pct = Math.round(state.phaseOneCompleted.length / phaseOneLessons.length * 100);
-
-  const cando = state.level === "K0"
-    ? ["Read basic Hangul syllables", "Recognize vowels ㅏ ㅓ ㅗ ㅜ ㅡ ㅣ", "Understand silent ㅇ", "Identify plain vs aspirated consonants", "Decode short Korean words"]
-    : ["Greet someone politely", "Order food and drinks", "Ask for the bathroom", "Say you speak a little Korean", "Use 주세요 to request items"];
-
-  el.innerHTML = `
-    <div class="eyebrow">Your progress</div>
-    <h2 class="screen-title" style="margin-bottom:14px;">Dashboard</h2>
-
-    <div class="progress-hero">
-      <div class="progress-level">${escapeHtml(state.level)}</div>
-      <div class="progress-level-name">${escapeHtml(levelNames[state.level] || state.level)}</div>
-      <div class="progress-level-sub">${state.level === "K0" ? `${k0Pct}% of Hangul stages complete` : `Unlocked through ${escapeHtml(state.level)}`}</div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-box"><span class="sv">${state.totalMinutes + state.asked}</span><span class="sl">Minutes studied</span></div>
-      <div class="stat-box"><span class="sv">${state.studyDays}</span><span class="sl">Days studied</span></div>
-      <div class="stat-box"><span class="sv">${state.correct}</span><span class="sl">Cards correct</span></div>
-      <div class="stat-box"><span class="sv">${state.bestStreak}</span><span class="sl">Best streak</span></div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Skill balance</div>
-      <div class="skill-bars">${skillRows}</div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Vocabulary bank</div>
-      <div class="vocab-progress-row">
-        <span>${state.vocabKnownRanks.length} known</span>
-        <span>${vocabBank.length || 5000} total</span>
-      </div>
-      <div class="forecast-track" style="margin-top:8px;">
-        <div class="forecast-fill" style="width:${vocabBank.length ? Math.round((state.vocabKnownRanks.length / vocabBank.length) * 100) : 0}%"></div>
-      </div>
-      <div class="fs-xs text-muted-2 mt-8">Use the Words tab to search, hear, and mark entries as known or hard.</div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Fluency forecast at ${state.weeklyHours} hrs/week</div>
-      <div class="forecast-bar">
-        ${forecasts.map((f) => `
-          <div class="forecast-row ${f.you ? "you" : ""}">
-            <span class="forecast-hours">${f.hrs} hrs/wk</span>
-            <div class="forecast-track"><div class="forecast-fill" style="width:${f.pct}%"></div></div>
-            <span class="forecast-label">${escapeHtml(f.label)}${f.you ? " ← you" : ""}</span>
-          </div>`).join("")}
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Can-do checklist (${state.level})</div>
-      <div class="cando-list">
-        ${cando.map((item, i) => {
-          const done = i < state.phaseOneCompleted.length;
-          return `<div class="cando-item"><div class="cando-check ${done ? "done" : "todo"}">${done ? "✓" : ""}</div><span>${escapeHtml(item)}</span></div>`;
-        }).join("")}
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Backup & restore</div>
-      <div class="fs-sm text-muted">Download a file to move your progress to another device, then import it there.</div>
-      <div class="backup-actions">
-        <button class="button secondary compact" id="backupExportBtn" type="button">Export backup</button>
-        <button class="button secondary compact" id="backupImportBtn" type="button">Import backup</button>
-        <input id="backupImportInput" type="file" accept="application/json,.json" hidden />
-      </div>
-      <div class="fs-xs text-muted-2 mt-8" id="backupNote"></div>
-    </div>
-
-    <div class="card" style="text-align:center;padding:16px;">
-      <button class="button secondary compact" id="resetAllBtn" type="button">Reset all progress</button>
-      <div class="fs-xs text-muted-2 mt-8" id="resetNote"></div>
-    </div>
-  `;
-
-  let resetArmed = false;
-  const backupNote = document.getElementById("backupNote");
-  const backupExportBtn = document.getElementById("backupExportBtn");
-  const backupImportBtn = document.getElementById("backupImportBtn");
-  const backupImportInput = document.getElementById("backupImportInput");
-
-  if (backupExportBtn) {
-    backupExportBtn.addEventListener("click", () => {
-      downloadBackupFile();
-      if (backupNote) backupNote.textContent = `Downloaded ${getBackupFilename()}.`;
-    });
-  }
-
-  if (backupImportBtn && backupImportInput) {
-    backupImportBtn.addEventListener("click", () => backupImportInput.click());
-    backupImportInput.addEventListener("change", async () => {
-      const file = backupImportInput.files && backupImportInput.files[0];
-      if (!file) return;
-
-      const confirmRestore = window.confirm("Restore this backup and replace the current progress?");
-      if (!confirmRestore) {
-        backupImportInput.value = "";
-        return;
-      }
-
-      try {
-        const text = await file.text();
-        const importedState = parseBackupState(text);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(importedState));
-        if (backupNote) backupNote.textContent = "Backup restored. Reloading now...";
-        window.location.reload();
-      } catch (error) {
-        console.error("Failed to import backup:", error);
-        if (backupNote) backupNote.textContent = "That backup file could not be read.";
-        backupImportInput.value = "";
-      }
-    });
-  }
-
-  document.getElementById("resetAllBtn").addEventListener("click", () => {
-    if (!resetArmed) {
-      resetArmed = true;
-      document.getElementById("resetNote").textContent = "Tap again to confirm reset";
-      setTimeout(() => { resetArmed = false; document.getElementById("resetNote").textContent = ""; }, 4000);
-      return;
-    }
-    localStorage.removeItem(STORAGE_KEY);
-    window.location.reload();
-  });
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
@@ -7538,7 +6898,7 @@ async function init() {
     btn.addEventListener("click", () => showTab(btn.dataset.tab));
   });
   bindKeyboardShortcuts();
-  showTab("alphabet");
+  showTab(state.navTab || getNavTabForMainTab(state.mainTab) || "today");
 }
 
 function registerServiceWorker() {

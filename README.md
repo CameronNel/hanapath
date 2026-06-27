@@ -1,13 +1,20 @@
 # HanaPath
 
-HanaPath is a mobile-first Korean learning app built around four main tabs:
+HanaPath is a mobile-first Korean learning app built around four learner-first tabs:
 
-- Alphabet
-- Vocabulary
-- Sentences
-- Listening
+- Today
+- Path
+- Practice
+- Library
 
-The app starts from Hangul basics and grows into level-based practice with review loops, quizzes, and the 5k vocabulary file.
+The app opens with a guided daily action, routes learners based on onboarding answers, and grows through level-based practice with review loops, quizzes, and the 5k vocabulary file.
+
+## What each tab does
+
+- `Today` tells you what to do next.
+- `Path` shows the full roadmap through Hangul and beyond.
+- `Practice` handles sentence building, speaking-style drills, and listening work.
+- `Library` keeps vocabulary, phrases, and reference content close at hand.
 
 ## Run locally
 
