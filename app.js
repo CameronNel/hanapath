@@ -217,11 +217,11 @@ const phaseOneLessons = [
     goal: "Own ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ before adding anything fancy.",
     concepts: [
       {
-        kicker: "The engine",
-        title: "Vowels carry every Korean syllable",
+        kicker: "The rule",
+        title: "A Korean block needs a starting slot",
         visual: "아 · 어 · 오 · 우",
-        body: "Every Hangul block contains one vowel sound. When a syllable begins with a vowel, silent ㅇ holds the first seat so the vowel can form a complete block.",
-        cue: "Read 아 as the vowel ㅏ. The ㅇ is only a frame at the start.",
+        body: "If the sound starts with a vowel, Korean puts ㅇ in that slot.",
+        cue: "Example: ㅇ + ㅏ = 아. Pronunciation: 아 = \"a\", not \"nga\" or \"oa\".",
         voiceText: "아, 어, 오, 우",
       },
       {
