@@ -2549,6 +2549,9 @@ let phaseOneResetTimer = 0;
 let phaseOneView = { lessonIndex: 0, mode: "learn", slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
 let currentQuizScope = "alphabet";
 let alphabetStageMenuOpen = false;
+// Which slice of a screen to show: "learn" (study material only),
+// "practice" (quiz only), or "all" (the full legacy screen).
+let currentFocus = "all";
 
 const MAIN_TABS = ["alphabet", "vocabulary", "sentences", "listening"];
 const TAB_SCREEN_IDS = {
@@ -3170,6 +3173,7 @@ function loadState() {
     knowsHangul: false,
     level: "K0",
     navTab: "today",
+    route: { hub: "home", item: null },
     mainTab: "alphabet",
     alphabetView: "vowels",
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
@@ -6135,8 +6139,8 @@ function bindKeyboardShortcuts() {
     const ids = getQuizIds(getCurrentQuizScope());
     const quizOptions = document.getElementById(ids.options);
     const expectedScope = getCurrentQuizScope();
-    const currentScreenId = NAV_TAB_SCREEN_IDS[activeTab] ? `screen-${NAV_TAB_SCREEN_IDS[activeTab]}` : "";
-    const currentScreen = currentScreenId ? document.getElementById(currentScreenId) : null;
+    // The quiz options live inside whichever screen is currently visible.
+    const currentScreen = quizOptions ? quizOptions.closest(".screen") : null;
     if (!quizOptions || !currentScreen || currentScreen.hidden) return;
     if (currentQuestion && currentQuestion.scope && currentQuestion.scope !== expectedScope) return;
 
@@ -6162,32 +6166,270 @@ function bindKeyboardShortcuts() {
 
 let activeTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTab) || "today");
 
-function showTab(name) {
-  refreshProgressionState();
-  const normalized = normalizeNavTab(name);
+// ─── HUB + SUBMENU MODEL ─────────────────────────────────────────────────────
+// The app is organised as four bottom-tab "hubs". Home opens straight to the
+// dashboard; Learn / Practice / Progress each open a submenu of tiles, and a
+// tile opens a focused content screen with a "back to <hub>" bar at the top.
+
+const HUBS = ["home", "learn", "practice", "progress"];
+
+const HUB_DEFS = {
+  learn: {
+    label: "Learn",
+    eyebrow: "Study material",
+    title: "What do you want to learn?",
+    sub: "Pick a skill to study. No quizzes here — just the material.",
+    items: [
+      { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Letters, sounds, and how to read.", custom: "alphabetLearn" },
+      { id: "vocabulary", icon: "📚", title: "Vocabulary",         sub: "Today's words and the full word list.", target: "library" },
+      { id: "sentences",  icon: "💬", title: "Sentences",          sub: "Read and build real sentences.", target: "practice" },
+      { id: "listening",  icon: "🎧", title: "Listening",          sub: "Hear sentences and follow along.", target: "listening" },
+    ],
+  },
+  practice: {
+    label: "Practice",
+    eyebrow: "Exercises",
+    title: "Pick something to practise",
+    sub: "Quick quizzes that bring the material back in different forms.",
+    items: [
+      { id: "alphabet",   icon: "🎯", title: "Alphabet quiz",   sub: "Match letters to their sounds.", custom: "alphabetPractice" },
+      { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
+      { id: "sentences",  icon: "🎯", title: "Sentence quiz",   sub: "Order and type full sentences.", target: "practice" },
+      { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
+    ],
+  },
+  progress: {
+    label: "Progress",
+    eyebrow: "Your journey",
+    title: "Track your progress",
+    sub: "See the roadmap and your stats.",
+    items: [
+      { id: "path",  icon: "🗺", title: "Path (K0 → K5)", sub: "The full roadmap and lessons.", target: "path" },
+      { id: "stats", icon: "📊", title: "Stats & streak", sub: "Accuracy, streak, and milestones.", target: "progress" },
+    ],
+  },
+};
+
+// Legacy nav names (used by in-screen buttons) → {hub, item}.
+const LEGACY_ROUTE = {
+  today:     { hub: "home" },
+  path:      { hub: "progress", item: "path" },
+  progress:  { hub: "progress", item: "stats" },
+  library:   { hub: "learn",    item: "vocabulary" },
+  practice:  { hub: "practice", item: "sentences" },
+  listening: { hub: "learn",    item: "listening" },
+};
+
+let activeHub = "home";
+
+function setNavActive(hub) {
+  document.querySelectorAll(".nav-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.nav === hub);
+  });
+}
+
+function showScreen(screenId) {
+  const targetId = "screen-" + screenId;
+  // Hide every screen and empty the inactive ones. Inactive screens keep their
+  // quiz cards in the DOM otherwise, and the alphabet quiz on Home shares its
+  // element IDs with the alphabet practice screen — getElementById would then
+  // write into the hidden copy. Each screen is fully re-rendered when shown.
+  document.querySelectorAll(".screen").forEach((s) => {
+    s.hidden = true;
+    if (s.id !== targetId) s.innerHTML = "";
+  });
+  const screen = document.getElementById(targetId);
+  if (screen) { screen.hidden = false; screen.scrollTop = 0; }
+  return screen;
+}
+
+// Render a leaf content screen via the existing renderers. `focus` decides
+// whether the screen shows study material, the quiz, or everything.
+function renderLeafContent(navName, focus = "all") {
+  const normalized = normalizeNavTab(navName);
   activeTab = normalized;
   state.navTab = normalized;
   state.mainTab = getMainTabForNavTab(normalized);
   currentQuizScope = getQuizScopeForNavTab(normalized);
   state.studio = getStudioForNavTab(normalized);
+  currentFocus = focus;
   if (normalized !== "today" && normalized !== "path") {
     alphabetStageMenuOpen = false;
   }
-  saveState();
-  document.querySelectorAll(".screen").forEach((s) => { s.hidden = true; });
   const screenId = NAV_TAB_SCREEN_IDS[normalized] || NAV_TAB_SCREEN_IDS.today;
-  const screen = document.getElementById("screen-" + screenId);
-  if (screen) screen.hidden = false;
-  document.querySelectorAll(".nav-btn").forEach((b) => {
-    b.classList.toggle("active", normalizeNavTab(b.dataset.tab) === normalized);
+  showScreen(screenId);
+  if (normalized === "today")     renderTodayView();
+  if (normalized === "path")      renderPath();
+  if (normalized === "practice")  renderPracticeView();
+  if (normalized === "library")   renderVocabulary();
+  if (normalized === "listening") renderLibrary();
+  if (normalized === "progress")  renderProgress();
+}
+
+// A persistent "‹ <hub>" bar above the screens. It lives outside the screen
+// containers so it survives in-screen re-renders (level rails, lesson steps…).
+function showDetailBar(hub, itemTitle) {
+  const bar = document.getElementById("detail-bar");
+  if (!bar) return;
+  const label = HUB_DEFS[hub] ? HUB_DEFS[hub].label : "Menu";
+  bar.innerHTML = `
+    <button class="back-btn" type="button">‹ ${escapeHtml(label)}</button>
+    ${itemTitle ? `<span class="detail-bar-title">${escapeHtml(itemTitle)}</span>` : ""}
+  `;
+  bar.querySelector(".back-btn").addEventListener("click", () => goHub(hub));
+  bar.hidden = false;
+}
+
+function hideDetailBar() {
+  const bar = document.getElementById("detail-bar");
+  if (bar) { bar.hidden = true; bar.innerHTML = ""; }
+}
+
+function renderHubMenu(hub) {
+  const def = HUB_DEFS[hub];
+  const el = showScreen("menu");
+  if (!def || !el) return;
+  el.innerHTML = `
+    <div class="hub-header">
+      <div class="eyebrow">${escapeHtml(def.eyebrow)}</div>
+      <h2 class="screen-title" style="margin-bottom:6px;">${escapeHtml(def.title)}</h2>
+      <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(def.sub)}</div>
+    </div>
+    <div class="hub-tiles">
+      ${def.items.map((item) => `
+        <button class="hub-tile" type="button" data-hub-item="${escapeHtml(item.id)}">
+          <span class="hub-tile-icon">${item.icon}</span>
+          <span class="hub-tile-text">
+            <strong>${escapeHtml(item.title)}</strong>
+            <small>${escapeHtml(item.sub)}</small>
+          </span>
+          <span class="hub-tile-go" aria-hidden="true">›</span>
+        </button>
+      `).join("")}
+    </div>
+  `;
+  el.querySelectorAll("[data-hub-item]").forEach((btn) => {
+    btn.addEventListener("click", () => openHubItem(hub, btn.dataset.hubItem));
   });
-  // Render the screen
-  if (normalized === "today")       renderTodayView();
-  if (normalized === "path")        renderPath();
-  if (normalized === "practice")    renderPracticeView();
-  if (normalized === "library")     renderVocabulary();
-  if (normalized === "listening")   renderLibrary();
-  if (normalized === "progress")    renderProgress();
+}
+
+function openHubItem(hub, itemId) {
+  const def = HUB_DEFS[hub];
+  if (!def) return;
+  const item = def.items.find((i) => i.id === itemId);
+  if (!item) return;
+  refreshProgressionState();
+  activeHub = hub;
+  state.route = { hub, item: itemId };
+  if (item.view) { state.vocabView = item.view; }
+  saveState();
+  setNavActive(hub);
+
+  const focus = hub === "practice" ? "practice" : hub === "learn" ? "learn" : "all";
+  showDetailBar(hub, item.title);
+
+  if (item.custom === "alphabetLearn") {
+    renderAlphabetLearn();
+    return;
+  }
+  if (item.custom === "alphabetPractice") {
+    renderAlphabetPractice();
+    return;
+  }
+
+  renderLeafContent(item.target, focus);
+}
+
+function goHub(hub) {
+  refreshProgressionState();
+  if (!HUBS.includes(hub)) hub = "home";
+  activeHub = hub;
+  setNavActive(hub);
+  hideDetailBar();
+  if (hub === "home") {
+    state.route = { hub: "home", item: null };
+    saveState();
+    renderLeafContent("today", "all");
+    return;
+  }
+  state.route = { hub, item: null };
+  saveState();
+  renderHubMenu(hub);
+}
+
+// Backwards-compatible entry point for in-screen buttons that still call
+// showTab("library"), showTab("practice"), etc.
+function showTab(name) {
+  const normalized = normalizeNavTab(name);
+  const route = LEGACY_ROUTE[normalized] || LEGACY_ROUTE.today;
+  if (route.item) {
+    openHubItem(route.hub, route.item);
+  } else {
+    goHub(route.hub);
+  }
+}
+
+// Detail screens for the alphabet (no dedicated legacy screen exists).
+function renderAlphabetLearn() {
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+  currentFocus = "learn";
+  activeTab = "today";
+  const el = showScreen("detail");
+  if (!el) return;
+  const glyphCard = (char, title, note, example) => `
+    <button class="glyph-card" type="button" data-speak="${escapeHtml(example)}" aria-label="Hear ${escapeHtml(example)}">
+      <div class="glyph-top"><span class="glyph" lang="ko">${escapeHtml(char)}</span></div>
+      <div>
+        <strong>${escapeHtml(title)}</strong>
+        <p>${escapeHtml(note)}</p>
+        <p><strong>Example:</strong> <span lang="ko">${escapeHtml(example)}</span></p>
+      </div>
+    </button>`;
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Learn · Alphabet</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Hangul letters &amp; sounds</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Tap any letter to hear it. When you're ready, try the Alphabet quiz under Practice.</div>
+    </div>
+    <div class="card">
+      <div class="eyebrow mb-12">Consonants</div>
+      <div class="glyph-grid">
+        ${consonantAtlas.map((it) => glyphCard(it.char, `${CONSONANT_NAMES[it.char] || it.char} · ${it.name}`, it.note, it.example)).join("")}
+      </div>
+    </div>
+    <div class="card">
+      <div class="eyebrow mb-12">Vowels</div>
+      <div class="glyph-grid">
+        ${vowelAtlas.map((it) => glyphCard(it.char, it.name, it.note, it.example)).join("")}
+      </div>
+    </div>
+  `;
+  el.querySelectorAll(".glyph-card[data-speak]").forEach((card) => {
+    card.addEventListener("click", () => speak(card.dataset.speak || ""));
+  });
+}
+
+function renderAlphabetPractice() {
+  refreshProgressionState();
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+  currentFocus = "practice";
+  activeTab = "today";
+  const el = showScreen("detail");
+  if (!el) return;
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Practice · Alphabet</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Alphabet quiz</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Match each letter to its sound. Press a number key (1–4) or tap an answer.</div>
+    </div>
+    ${renderQuizCard("alphabet")}
+  `;
+  el.querySelectorAll("[data-speak]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
+  });
+  renderQuestion(generateQuestion(), { scope: "alphabet" });
 }
 
 // ─── ONBOARDING ──────────────────────────────────────────────────────────────
@@ -6762,9 +7004,12 @@ function renderPracticeView() {
       ? "Use this phrase in a real situation."
       : "Order the words, then read them aloud.";
 
+  const showStudy = currentFocus !== "practice";
+  const showQuiz = currentFocus !== "learn";
+
   el.innerHTML = `
     <div class="card">
-      <div class="eyebrow">Practice</div>
+      <div class="eyebrow">${showQuiz && !showStudy ? "Practice · Sentences" : "Learn · Sentences"}</div>
       <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(practiceTitle)}</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(practiceCue)}</div>
       <div class="speak-actions">
@@ -6777,6 +7022,7 @@ function renderPracticeView() {
 
     ${renderLevelRail("sentences")}
 
+    ${showStudy ? `
     <div class="card">
       <div class="flex-between mb-12">
         <div>
@@ -6832,8 +7078,9 @@ function renderPracticeView() {
         </div>
       </div>
     </div>
+    ` : ""}
 
-    ${renderQuizCard("sentences")}
+    ${showQuiz ? renderQuizCard("sentences") : ""}
   `;
 
   bindLevelRail(el, "sentences", renderPracticeView);
@@ -6856,7 +7103,7 @@ function renderPracticeView() {
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
-  renderQuestion(generateQuestion(), { scope: "sentences" });
+  if (showQuiz) renderQuestion(generateQuestion(), { scope: "sentences" });
 }
 
 function renderVocabulary() {
@@ -6879,14 +7126,22 @@ function renderVocabulary() {
   const active = currentBandItems[0] || vocabBank[0] || null;
   const dailyWords = currentBandItems.slice(0, 10);
   const dailyWordCount = dailyWords.length || currentBandItems.length;
-  const activeView = normalizeVocabView(state.vocabView || "learn");
+  const showStudy = currentFocus !== "practice";
+  const showQuiz = currentFocus !== "learn";
+  let activeView = normalizeVocabView(state.vocabView || "learn");
+  if (currentFocus === "practice") activeView = "test";
+  else if (currentFocus === "learn" && activeView === "test") activeView = "learn";
   const currentEnglish = active ? (active.englishSpelling || active.romanization || "") : "";
   const currentPronunciation = active ? (active.pronunciation || currentEnglish) : "";
-  const viewButtons = VOCAB_VIEWS
+  const visibleViews = currentFocus === "practice"
+    ? []
+    : currentFocus === "learn"
+      ? VOCAB_VIEWS.filter((v) => v.id !== "test")
+      : VOCAB_VIEWS;
+  const viewButtons = visibleViews
     .map((view) => `<button class="filter-chip ${activeView === view.id ? "active" : ""}" type="button" data-vocab-view="${view.id}">${view.label}</button>`)
     .join("");
   const browserView = activeView === "browse" ? buildVocabLibraryView() : null;
-  const quizCard = renderQuizCard("vocabulary");
 
   let content = "";
   if (activeView === "learn") {
@@ -6950,18 +7205,18 @@ function renderVocabulary() {
 
   el.innerHTML = `
     <div class="card">
-      <div class="eyebrow">Library</div>
+      <div class="eyebrow">${showQuiz && !showStudy ? "Practice · Vocabulary" : "Learn · Vocabulary"}</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Today&apos;s words</h2>
       <div class="text-muted-2 fs-sm">Today&apos;s flow: ${dailyWordCount} words · ${escapeHtml(bandLabel)}</div>
       ${active ? `<div class="vocab-hero-count mt-12" lang="ko">${escapeHtml(active.korean)} · ${escapeHtml(currentEnglish)} · ${escapeHtml(currentPronunciation)}</div>` : ""}
-      <div class="vocab-filters mt-12">${viewButtons}</div>
+      ${viewButtons ? `<div class="vocab-filters mt-12">${viewButtons}</div>` : ""}
     </div>
 
     ${renderLevelRail("vocabulary")}
 
     ${content}
 
-    ${quizCard}
+    ${showQuiz ? renderQuizCard("vocabulary") : ""}
   `;
 
   bindLevelRail(el, "vocabulary", renderVocabulary);
@@ -6981,7 +7236,7 @@ function renderVocabulary() {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
 
-  renderQuestion(generateQuestion(), { scope: "vocabulary" });
+  if (showQuiz) renderQuestion(generateQuestion(), { scope: "vocabulary" });
 }
 
 function renderLibrary() {
@@ -7008,19 +7263,23 @@ function renderLibrary() {
           ? "Dictation"
           : "Mixed listening";
 
+  const showStudy = currentFocus !== "practice";
+  const showQuiz = currentFocus !== "learn";
+
   el.innerHTML = `
     <div class="card">
-      <div class="eyebrow">Listening</div>
+      <div class="eyebrow">${showQuiz && !showStudy ? "Practice · Listening" : "Learn · Listening"}</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Hear the sentence</h2>
       <div class="speak-actions mt-12">
-        <button class="button secondary compact" type="button" id="listenBackBtn">Back to practice</button>
-        <button class="button secondary compact" type="button" id="listenLibraryBtn">Open library</button>
+        <button class="button secondary compact" type="button" id="listenBackBtn">Sentences</button>
+        <button class="button secondary compact" type="button" id="listenLibraryBtn">Vocabulary</button>
       </div>
       <div class="text-muted-2 fs-sm">Level ${level}/10 · ${escapeHtml(bandLabel)} · choose, type, and replay</div>
     </div>
 
     ${renderLevelRail("listening")}
 
+    ${showStudy ? `
     <div class="card">
       <div class="flex-between mb-12">
         <div>
@@ -7076,8 +7335,9 @@ function renderLibrary() {
         </div>
       </div>
     </div>
+    ` : ""}
 
-    ${renderQuizCard("listening")}
+    ${showQuiz ? renderQuizCard("listening") : ""}
   `;
 
   bindLevelRail(el, "listening", renderLibrary);
@@ -7092,9 +7352,7 @@ function renderLibrary() {
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
-  renderQuestion(generateQuestion(), { scope: "listening" });
-  return;
-
+  if (showQuiz) renderQuestion(generateQuestion(), { scope: "listening" });
 }
 
 function renderProgress() {
@@ -7236,10 +7494,16 @@ async function init() {
   if (onbDiv) onbDiv.hidden = true;
   if (appDiv) appDiv.hidden = false;
   document.querySelectorAll(".nav-btn").forEach((btn) => {
-    btn.addEventListener("click", () => showTab(btn.dataset.tab));
+    btn.addEventListener("click", () => goHub(btn.dataset.nav));
   });
   bindKeyboardShortcuts();
-  showTab(state.navTab || getNavTabForMainTab(state.mainTab) || "today");
+  // Restore the last hub/submenu the user was on.
+  const route = state.route && HUBS.includes(state.route.hub) ? state.route : { hub: "home", item: null };
+  if (route.item) {
+    openHubItem(route.hub, route.item);
+  } else {
+    goHub(route.hub);
+  }
 }
 
 function registerServiceWorker() {

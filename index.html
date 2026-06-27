@@ -14,8 +14,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="HanaPath" />
-    <link rel="stylesheet" href="./styles.css?v=20260627d" />
-    <script defer src="./app.js?v=20260627d"></script>
+    <link rel="stylesheet" href="./styles.css?v=20260627e" />
+    <script defer src="./app.js?v=20260627e"></script>
   </head>
   <body>
     <div class="bg-orb orb-a" aria-hidden="true"></div>
@@ -26,29 +26,32 @@
 
     <!-- Main app shell -->
     <div id="app" class="app-shell" hidden>
+      <div id="detail-bar" class="detail-bar" hidden></div>
       <div id="screen-today"    class="screen" data-screen="today"></div>
       <div id="screen-path"     class="screen" data-screen="path"     hidden></div>
       <div id="screen-review"   class="screen" data-screen="review"   hidden></div>
       <div id="screen-speak"    class="screen" data-screen="speak"    hidden></div>
       <div id="screen-library"  class="screen" data-screen="library"  hidden></div>
       <div id="screen-progress" class="screen" data-screen="progress" hidden></div>
+      <div id="screen-menu"     class="screen" data-screen="menu"     hidden></div>
+      <div id="screen-detail"   class="screen" data-screen="detail"   hidden></div>
 
       <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
-        <button class="nav-btn" data-tab="today" type="button">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M4.9 4.9l2.1 2.1"/><path d="M17 17l2.1 2.1"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="M4.9 19.1l2.1-2.1"/><path d="M17 7l2.1-2.1"/></svg>
-          <span>Today</span>
+        <button class="nav-btn" data-nav="home" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+          <span>Home</span>
         </button>
-        <button class="nav-btn" data-tab="path" type="button">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19c6-10 10-10 16-14"/><path d="M4 19h4"/><path d="M20 5v4"/><circle cx="18" cy="7" r="1.5"/></svg>
-          <span>Path</span>
+        <button class="nav-btn" data-nav="learn" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-14A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>
+          <span>Learn</span>
         </button>
-        <button class="nav-btn" data-tab="practice" type="button">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20l4-1 10-10-3-3L5 16l-1 4z"/><path d="M13 7l3 3"/></svg>
+        <button class="nav-btn" data-nav="practice" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>
           <span>Practice</span>
         </button>
-        <button class="nav-btn" data-tab="library" type="button">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-14A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>
-          <span>Library</span>
+        <button class="nav-btn" data-nav="progress" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
+          <span>Progress</span>
         </button>
       </nav>
     </div>
