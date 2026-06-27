@@ -725,6 +725,13 @@ input, textarea { cursor: text; }
 .lesson-dots span.active { background: var(--accent); }
 .lesson-dots span.done   { background: var(--accent-2); }
 
+.phase-one-action-slot {
+  margin: -4px 0 14px;
+}
+.phase-one-action-slot .player-actions {
+  margin-top: 0;
+}
+
 .player-actions {
   display: flex;
   gap: 10px;

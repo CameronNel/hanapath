@@ -4462,7 +4462,22 @@ function getPhaseOneVoiceText() {
   return "";
 }
 
+function restorePhaseOneActions() {
+  const actions = document.getElementById("hpActions");
+  const stage = els.phaseOneStage || document.getElementById("hpStage");
+  if (!actions || !stage || !stage.contains(actions)) return;
+  stage.insertAdjacentElement("afterend", actions);
+}
+
+function placePhaseOneActions() {
+  const actions = document.getElementById("hpActions");
+  const slot = document.querySelector("[data-phase-one-actions-slot]");
+  if (!actions || !slot) return;
+  slot.appendChild(actions);
+}
+
 function renderPhaseOneConcept(lesson) {
+  restorePhaseOneActions();
   const concept = lesson.concepts[phaseOneView.slideIndex];
   const dots = lesson.concepts
     .map(
@@ -4484,6 +4499,7 @@ function renderPhaseOneConcept(lesson) {
     dots +
     "</div>" +
     "</div>" +
+    '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="concept-card">' +
     '<div class="concept-visual" lang="ko">' +
     escapeHtml(concept.visual) +
@@ -4509,9 +4525,11 @@ function renderPhaseOneConcept(lesson) {
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.slideIndex === lesson.concepts.length - 1 ? "Start checkpoint" : "Next card";
+  placePhaseOneActions();
 }
 
 function renderPhaseOneQuestion(lesson) {
+  restorePhaseOneActions();
   const question = lesson.questions[phaseOneView.questionIndex];
   const cleanCount = phaseOneView.results.filter(Boolean).length;
 
@@ -4526,6 +4544,7 @@ function renderPhaseOneQuestion(lesson) {
     cleanCount +
     " clean</strong>" +
     "</div>" +
+    '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="checkpoint-card">' +
     '<div class="checkpoint-visual" lang="ko">' +
     escapeHtml(question.visual) +
@@ -4556,9 +4575,11 @@ function renderPhaseOneQuestion(lesson) {
   els.phaseOneActionButton.disabled = true;
   els.phaseOneActionButton.textContent =
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
+  placePhaseOneActions();
 }
 
 function renderPhaseOneResult(lesson) {
+  restorePhaseOneActions();
   const cleanCount = phaseOneView.results.filter(Boolean).length;
   const total = lesson.questions.length;
   const percent = Math.round((cleanCount / total) * 100);
@@ -6390,7 +6411,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
         <button class="hear-btn" id="hpHearBtn" type="button">▶ Hear</button>
       </div>
       <div id="hpStage"></div>
-      <div class="player-actions">
+      <div class="player-actions" id="hpActions">
         <button class="button secondary compact" id="hpBackBtn" type="button">Back</button>
         <button class="button primary compact" id="hpActionBtn" type="button">Next card</button>
       </div>
