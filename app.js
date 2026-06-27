@@ -6463,10 +6463,62 @@ function openLearnLesson(index, { resume = false } = {}) {
       if (passed) {
         state.learnInProgress = false;
         saveState();
-        renderLearnComplete(idx);
+        renderCompleteInPlayer(idx);
       }
     },
   });
+}
+
+// Inline complete: keep the player in place, replace hpStage with dots + next card.
+function renderCompleteInPlayer(index) {
+  refreshProgressionState();
+  const lesson = phaseOneLessons[index];
+  const nextIndex = getFirstIncompletePhaseOneIndex();
+  const next = phaseOneLessons[nextIndex];
+  const dueCount = getTodayReviewCount();
+
+  showDetailBar("learn", `Stage ${String(index + 1).padStart(2, "0")}: ${lesson.shortTitle}`);
+
+  const dots = lesson.concepts.map(() => '<span class="done"></span>').join("");
+
+  if (!els.phaseOneStage) return;
+  els.phaseOneStage.innerHTML =
+    '<div class="lesson-step-row">' +
+    "<span>Done</span>" +
+    '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
+    "</div>" +
+    '<div class="card" style="margin-top:16px;">' +
+    (next
+      ? '<div class="eyebrow">Keep going</div>' +
+        '<h3 class="screen-title" style="margin-bottom:8px;">Next: ' + escapeHtml(next.shortTitle) + "</h3>" +
+        '<div class="screen-sub" style="margin-bottom:12px;">' + escapeHtml(next.goal) + "</div>" +
+        '<button class="button primary compact" type="button" id="learnNextBtn">Start next lesson</button>'
+      : '<div class="eyebrow">Hangul complete</div>' +
+        '<h3 class="screen-title" style="margin-bottom:8px;">You can read Hangul! 🎉</h3>' +
+        '<div class="screen-sub" style="margin-bottom:12px;">New vocabulary is now your next new material.</div>' +
+        '<button class="button primary compact" type="button" id="learnNextBtn">Start vocabulary</button>'
+    ) +
+    "</div>" +
+    (dueCount
+      ? '<div class="card"><div class="flex-between">' +
+        "<div><div class=\"eyebrow\">Lock it in</div>" +
+        '<div class="screen-sub" style="margin-bottom:0;">Quick review of what\'s due.</div></div>' +
+        '<button class="button secondary compact" type="button" id="learnReviewBtn">Review (' + dueCount + ")</button>" +
+        "</div></div>"
+      : ""
+    );
+
+  if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
+  if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
+  if (els.phaseOneBackButton) {
+    els.phaseOneBackButton.textContent = "Back to lessons";
+    els.phaseOneBackButton.onclick = () => goHub("learn");
+  }
+
+  const nextBtn = document.getElementById("learnNextBtn");
+  if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
+  const reviewBtn = document.getElementById("learnReviewBtn");
+  if (reviewBtn) reviewBtn.addEventListener("click", () => showTab("practice"));
 }
 
 // "Lesson complete" screen: celebrate, then offer the next new lesson.
