@@ -6284,7 +6284,206 @@ function renderOnboarding() {
   });
 }
 
-// ??? PATH SCREEN ??????????????????????????????????????????????????????????????
+function getTodayReviewCount() {
+  const vocabKnown = Array.isArray(state.vocabKnownRanks) ? state.vocabKnownRanks.length : 0;
+  const vocabHard = Array.isArray(state.vocabHardRanks) ? state.vocabHardRanks.length : 0;
+  const backlog = Math.max(0, 20 - (state.asked % 20));
+  return Math.max(3, Math.min(18, backlog + Math.ceil(vocabHard / 8) + Math.ceil(vocabKnown / 80)));
+}
+
+function getNextAction() {
+  const nextIndex = getFirstIncompletePhaseOneIndex();
+  const nextLesson = phaseOneLessons[nextIndex] || null;
+  const hasHangulLesson = Boolean(
+    nextLesson &&
+    (state.level === "K0" || !state.knowsHangul || state.phaseOneCompleted.length < phaseOneLessons.length),
+  );
+
+  if (hasHangulLesson) {
+    return {
+      title: `Continue: ${nextLesson.shortTitle}`,
+      subtitle: nextLesson.goal,
+      meta: `${nextLesson.duration} · Stage ${Math.min(nextIndex + 1, phaseOneLessons.length)} of ${phaseOneLessons.length}`,
+      cta: "Start lesson",
+      tab: "path",
+      lessonIndex: nextIndex,
+    };
+  }
+
+  if (state.goal === "travel") {
+    return {
+      title: "Survival phrases",
+      subtitle: state.speakingAnxiety === "high"
+        ? "Shadow the phrase, then try it aloud."
+        : "Requests, directions, and ordering in one path.",
+      meta: "8 min · guided",
+      cta: "Open path",
+      tab: "path",
+    };
+  }
+
+  if (state.speakingAnxiety === "high") {
+    return {
+      title: "Shadowing drill",
+      subtitle: "Listen first, copy the rhythm, then speak.",
+      meta: "2 min · low pressure",
+      cta: "Start practice",
+      tab: "practice",
+    };
+  }
+
+  if (state.goal === "media") {
+    return {
+      title: "Listening + vocab",
+      subtitle: "Tiny reviews from your current level.",
+      meta: "10 min · low friction",
+      cta: "Start practice",
+      tab: "practice",
+    };
+  }
+
+  return {
+    title: "Review due",
+    subtitle: `${getTodayReviewCount()} cards are waiting.`,
+    meta: "5 min · keep momentum",
+    cta: "Review now",
+    tab: "library",
+    view: "review",
+  };
+}
+
+function startPathLesson(index) {
+  if (!Number.isInteger(index) || index < 0) return;
+  state.pendingPathLesson = index;
+  saveState();
+  showTab("path");
+}
+
+function renderTodayView(options = {}) {
+  const { preserveScroll = false } = options;
+  const el = document.getElementById("screen-today");
+  if (!el) return;
+  refreshProgressionState();
+
+  const scrollTop = preserveScroll ? el.scrollTop : 0;
+  const scrollLeft = preserveScroll ? el.scrollLeft : 0;
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+
+  const today = new Date();
+  const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
+  const dateStr = today.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const nextAction = getNextAction();
+  const hangulPct = Math.round((state.phaseOneCompleted.length / Math.max(1, phaseOneLessons.length)) * 100);
+  const progressLabel = state.level === "K0"
+    ? `${hangulPct}% through Hangul Boot Camp`
+    : `Unlocked through ${escapeHtml(state.level)}`;
+  const speakCopy = state.speakingAnxiety === "high"
+    ? "2-minute shadowing"
+    : "2-minute pronunciation drill";
+  const dueCount = getTodayReviewCount();
+  const streakLabel = state.studyDays > 0 ? `${state.studyDays}-day streak` : "Build your streak";
+
+  el.innerHTML = `
+    <div class="today-header">
+      <div>
+        <div class="today-greeting">${escapeHtml(dayName)}, ${escapeHtml(dateStr)}</div>
+        <div class="today-title">Today</div>
+      </div>
+      <div class="today-badge">◎</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Next action</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(nextAction.title)}</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(nextAction.subtitle)}</div>
+      <div class="flex-between" style="gap:12px; align-items:center; flex-wrap:wrap;">
+        <span class="pill accent">${escapeHtml(nextAction.meta)}</span>
+        <button class="button primary compact" type="button" id="todayPrimaryBtn">${escapeHtml(nextAction.cta)}</button>
+      </div>
+    </div>
+
+    <div class="card" style="padding:14px 16px 6px;">
+      <div class="flex-between mb-8">
+        <span class="eyebrow">Quick cards</span>
+        <span class="fs-xs text-muted-2">${escapeHtml(progressLabel)}</span>
+      </div>
+      <div class="plan-blocks">
+        <div class="plan-block">
+          <div class="plan-icon purple">↻</div>
+          <div class="plan-copy">
+            <div class="plan-label">Review due</div>
+            <div class="plan-desc">${dueCount} cards waiting</div>
+            <div class="plan-meta">Keep yesterday alive</div>
+          </div>
+          <button class="plan-go" type="button" data-today-action="review">Open</button>
+        </div>
+        <div class="plan-block">
+          <div class="plan-icon green">◌</div>
+          <div class="plan-copy">
+            <div class="plan-label">Speak</div>
+            <div class="plan-desc">${escapeHtml(speakCopy)}</div>
+            <div class="plan-meta">${state.speakingAnxiety === "high" ? "Low-pressure shadowing" : "Daily pronunciation"}</div>
+          </div>
+          <button class="plan-go" type="button" data-today-action="practice">Open</button>
+        </div>
+        <div class="plan-block">
+          <div class="plan-icon blue">↗</div>
+          <div class="plan-copy">
+            <div class="plan-label">Progress</div>
+            <div class="plan-desc">${escapeHtml(streakLabel)}</div>
+            <div class="plan-meta">${escapeHtml(progressLabel)}</div>
+          </div>
+          <button class="plan-go" type="button" data-today-action="progress">Open</button>
+        </div>
+      </div>
+    </div>
+
+    ${renderQuizCard("alphabet")}
+  `;
+
+  const startBtn = document.getElementById("todayPrimaryBtn");
+  if (startBtn) {
+    startBtn.addEventListener("click", () => {
+      if (Number.isInteger(nextAction.lessonIndex)) {
+        startPathLesson(nextAction.lessonIndex);
+        return;
+      }
+      if (nextAction.view === "review") {
+        state.vocabView = "review";
+        saveState();
+      }
+      showTab(nextAction.tab);
+    });
+  }
+
+  el.querySelectorAll("[data-today-action]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const action = btn.dataset.todayAction;
+      if (action === "review") {
+        state.vocabView = "review";
+        saveState();
+        showTab("library");
+        return;
+      }
+      if (action === "practice") {
+        showTab("practice");
+        return;
+      }
+      if (action === "progress") {
+        showTab("progress");
+      }
+    });
+  });
+
+  renderQuestion(generateQuestion(), { scope: "alphabet" });
+  if (preserveScroll) {
+    window.requestAnimationFrame(() => {
+      el.scrollTop = scrollTop;
+      el.scrollLeft = scrollLeft;
+    });
+  }
+}
 
 function renderPath() {
   const el = document.getElementById("screen-path");
