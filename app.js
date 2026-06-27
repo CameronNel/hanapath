@@ -4462,6 +4462,22 @@ function getPhaseOneVoiceText() {
   return "";
 }
 
+function flashElement(target) {
+  if (!target || !target.classList) return;
+  target.classList.remove("flash-pulse");
+  // Force a reflow so the flash can restart on repeated taps.
+  void target.offsetWidth;
+  target.classList.add("flash-pulse");
+  window.setTimeout(() => {
+    target.classList.remove("flash-pulse");
+  }, 720);
+}
+
+function getPhaseOneFlashTarget() {
+  if (!els.phaseOneStage) return null;
+  return els.phaseOneStage.querySelector(".concept-visual, .checkpoint-visual");
+}
+
 function restorePhaseOneActions() {
   const actions = document.getElementById("hpActions");
   const stage = els.phaseOneStage || document.getElementById("hpStage");
@@ -6030,6 +6046,9 @@ function renderQuestion(question, options = {}) {
     if (speakBtn.dataset.boundQuizControl !== "true") {
       speakBtn.dataset.boundQuizControl = "true";
       speakBtn.addEventListener("click", () => {
+        if (currentQuizScope === "alphabet") {
+          flashElement(quizVisual);
+        }
         speak(currentQuestion?.voiceText || currentQuestion?.answer || "");
       });
     }
@@ -6439,7 +6458,10 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
 
   renderPhaseOnePlayer();
 
-  els.phaseOneHearButton.addEventListener("click", () => speak(getPhaseOneVoiceText()));
+  els.phaseOneHearButton.addEventListener("click", () => {
+    flashElement(getPhaseOneFlashTarget());
+    speak(getPhaseOneVoiceText());
+  });
   els.phaseOneBackButton.addEventListener("click", goBackPhaseOne);
   els.phaseOneActionButton.addEventListener("click", () => {
     const wasResult = phaseOneView.mode === "result";
@@ -6656,7 +6678,10 @@ function renderAlphabetLearn() {
     </div>
   `;
   el.querySelectorAll(".glyph-card[data-speak]").forEach((card) => {
-    card.addEventListener("click", () => speak(card.dataset.speak || ""));
+    card.addEventListener("click", () => {
+      flashElement(card.querySelector(".glyph") || card);
+      speak(card.dataset.speak || "");
+    });
   });
 }
 

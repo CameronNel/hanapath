@@ -738,6 +738,33 @@ input, textarea { cursor: text; }
   margin-top: 14px;
 }
 
+.flash-pulse {
+  animation: flash-pulse .72s ease;
+  will-change: transform, filter;
+}
+
+.glyph.flash-pulse {
+  display: inline-block;
+}
+
+@keyframes flash-pulse {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+    text-shadow: none;
+  }
+  35% {
+    transform: scale(1.08);
+    filter: brightness(1.22);
+    text-shadow: 0 0 18px rgba(91, 157, 255, .65);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+    text-shadow: none;
+  }
+}
+
 /* ── REVIEW SCREEN ───────────────────────────────── */
 .review-header {
   display: flex;
