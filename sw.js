@@ -1,9 +1,9 @@
-const CACHE_NAME = "hanapath-shell-v17";
+const CACHE_NAME = "hanapath-shell-v18";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260627h",
-  "./app.js?v=20260627h",
+  "./styles.css?v=20260627i",
+  "./app.js?v=20260627i",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
