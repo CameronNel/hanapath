@@ -490,7 +490,7 @@ const phaseOneLessons = [
       {
         prompt: "Which vowel is the y-version of ㅏ?",
         detail: "Look for the doubled short stroke.",
-        visual: "ㅏ → ?",
+        visual: "ㅏ → ㅑ",
         options: ["ㅑ", "ㅕ", "ㅛ", "ㅠ"],
         answer: "ㅑ",
         explanation: "Adding a second short stroke turns ㅏ into ㅑ.",
