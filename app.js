@@ -4453,6 +4453,35 @@ function openPhaseOneLesson(index, shouldScroll = false) {
   }
 }
 
+function openPreviousPhaseOneLesson(index, shouldScroll = false) {
+  if (index <= 0) {
+    goHub("learn");
+    return;
+  }
+
+  const previousIndex = index - 1;
+  const previousLesson = phaseOneLessons[previousIndex];
+  if (!previousLesson) {
+    goHub("learn");
+    return;
+  }
+
+  activeHub = "learn";
+  setNavActive("learn");
+  state.phaseOneActive = previousIndex;
+  state.learnInProgress = true;
+  state.route = { hub: "learn", item: "alphabet" };
+  resetPhaseOneView(previousIndex, "learn");
+  phaseOneView.slideIndex = Math.max(previousLesson.concepts.length - 1, 0);
+  saveState();
+  showDetailBar("learn", `Stage ${String(previousIndex + 1).padStart(2, "0")}: ${previousLesson.shortTitle}`);
+  renderPhaseOneCourse();
+
+  if (shouldScroll && els.phaseOnePlayer) {
+    els.phaseOnePlayer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 function renderPhaseOneOverview() {
   const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
   const percent = Math.round((completedCount / phaseOneLessons.length) * 100);
@@ -4750,8 +4779,13 @@ function renderPhaseOneConcept(lesson) {
     "</div>" +
     "</div>";
 
-  els.phaseOneBackButton.disabled = phaseOneView.slideIndex === 0;
-  els.phaseOneBackButton.textContent = "Back";
+  els.phaseOneBackButton.disabled = false;
+  els.phaseOneBackButton.textContent =
+    phaseOneView.slideIndex > 0
+      ? "Back card"
+      : phaseOneView.lessonIndex > 0
+        ? "Prev stage"
+        : "Back to lessons";
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.slideIndex === lesson.concepts.length - 1 ? "Start checkpoint" : "Next card";
@@ -4867,7 +4901,13 @@ function renderPhaseOnePlayer() {
     return;
   }
 
-  els.phaseOneStageNumber.textContent = "Stage " + String(phaseOneView.lessonIndex + 1).padStart(2, "0");
+  const playerHead = els.phaseOnePlayer && els.phaseOnePlayer.querySelector(".player-head");
+  if (playerHead) playerHead.style.display = "";
+  if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "";
+  if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "";
+  if (els.phaseOneBackButton) els.phaseOneBackButton.onclick = null;
+
+  els.phaseOneStageNumber.textContent = "Stage " + String(phaseOneView.lessonIndex + 1).padStart(2, "0") + " of " + phaseOneLessons.length;
   els.phaseOneStageDuration.textContent = lesson.duration;
   els.phaseOneStageTitle.textContent = lesson.title;
   els.phaseOneStageGoal.textContent = lesson.goal;
@@ -4992,6 +5032,12 @@ function goBackPhaseOne() {
     if (phaseOneView.slideIndex > 0) {
       phaseOneView.slideIndex -= 1;
       renderPhaseOnePlayer();
+      saveState();
+      return;
+    }
+
+    if (phaseOneView.lessonIndex > 0) {
+      openPreviousPhaseOneLesson(phaseOneView.lessonIndex, true);
     }
     return;
   }
@@ -6633,7 +6679,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     <div class="lesson-player-wrap" id="lessonPlayerWrap">
       <div class="player-head">
         <div>
-          <div class="eyebrow">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
+          <div class="eyebrow" id="hpStageNumber">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
           <div class="player-title" id="hpStageTitle"></div>
           <div class="player-goal text-muted fs-sm mt-4" id="hpStageGoal"></div>
         </div>
@@ -6647,7 +6693,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     </div>
   `;
 
-  els.phaseOneStageNumber   = { textContent: "" };
+  els.phaseOneStageNumber   = document.getElementById("hpStageNumber");
   els.phaseOneStageDuration = { textContent: "" };
   els.phaseOneStageTitle    = document.getElementById("hpStageTitle");
   els.phaseOneStageGoal     = document.getElementById("hpStageGoal");
@@ -6765,8 +6811,13 @@ function renderCompleteInPlayer(index) {
   if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
   if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
   if (els.phaseOneBackButton) {
-    els.phaseOneBackButton.textContent = "Back to lessons";
-    els.phaseOneBackButton.onclick = () => goHub("learn");
+    if (index > 0) {
+      els.phaseOneBackButton.textContent = "Prev stage";
+      els.phaseOneBackButton.onclick = () => openPreviousPhaseOneLesson(index, true);
+    } else {
+      els.phaseOneBackButton.textContent = "Back to lessons";
+      els.phaseOneBackButton.onclick = () => goHub("learn");
+    }
   }
 
   const nextBtn = document.getElementById("learnNextBtn");
