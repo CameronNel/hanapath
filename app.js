@@ -218,35 +218,35 @@ const phaseOneLessons = [
     introCards: [
       {
         kicker: "Before you start",
-        title: "Your first six vowel anchors",
-        body: "This stage gives you the six base vowels and the silent ㅇ frame that lets them become real blocks.",
+        title: "Hangul uses syllable blocks",
+        body: "Korean letters do not sit in one long row like English. They are grouped into square syllable blocks. Each block needs a starting consonant seat and a vowel seat.",
         bullets: [
-          "Why vowels need silent ㅇ at the start",
-          "How direction helps you tell vowels apart",
-          "How vowels fit inside square syllable blocks",
+          "A block is one written syllable",
+          "Some syllables start with a vowel sound",
+          "The seats help the letters line up",
         ],
-        snag: "Do not read ㅇ as ng at the start. Initial ㅇ is silent.",
-        cool: "Once these six shapes click, the rest of the vowels are mostly upgrades and combinations.",
+        snag: "Some syllables begin with a vowel sound.",
+        cool: "First learn the seats. Then the letters make more sense.",
       },
       {
-        kicker: "Direction clues",
-        title: "Read the shape before the sound",
-        body: "The short stroke tells you where the vowel opens and where it sits in the block.",
+        kicker: "Starting seat",
+        title: "What if the syllable starts with a vowel?",
+        body: "Korean still fills the starting consonant seat. It uses ㅇ as an empty placeholder before the vowel. In this position, ㅇ is not pronounced.",
         bullets: [
-          "ㅏ and ㅓ mirror each other",
-          "ㅗ and ㅜ swap top and bottom positions",
-          "ㅣ and ㅡ are the tall and flat anchors",
+          "Initial ㅇ holds the starting seat",
+          "You hear the vowel, not the ㅇ",
+          "Later, final ㅇ at the bottom sounds like ng",
         ],
-        snag: "A vowel can look similar but sit in a different seat.",
-        cool: "Direction is the cheat code for the first lesson.",
+        snag: "Do not read initial ㅇ as ng. Only final ㅇ makes the ng sound.",
+        cool: "ㅇ + ㅏ = 아, pronounced 'a'. The ㅇ is only holding the starting seat.",
       },
     ],
     concepts: [
       {
-        title: "Silent ㅇ fills the first seat",
+        title: "What if the syllable starts with a vowel?",
         visual: "아 · 어 · 오 · 우",
-        body: "Korean blocks cannot start with a bare vowel. Silent ㅇ fills the empty first seat so the vowel can become a complete block.",
-        cue: "Example: ㅇ + ㅏ = 아. At the start, ㅇ is silent.",
+        body: "Korean still fills the starting consonant seat. It uses ㅇ as an empty placeholder before the vowel. In this position, ㅇ is not pronounced.",
+        cue: "ㅇ + ㅏ = 아, pronounced 'a'. The ㅇ is only holding the starting seat.",
         voiceText: "아, 어, 오, 우",
       },
       {
@@ -261,7 +261,7 @@ const phaseOneLessons = [
         kicker: "Up and down",
         title: "ㅗ and ㅜ each have two seats",
         visual: "오 · 고 · 우 · 구",
-        body: "A vowel can sit in a starter block with silent ㅇ, or after a regular consonant. That is why ㅗ becomes 오 or 고, and ㅜ becomes 우 or 구.",
+        body: "A vowel can sit in a starter block with initial ㅇ as an empty placeholder, or after a regular consonant. That is why ㅗ becomes 오 or 고, and ㅜ becomes 우 or 구.",
         cue: "One vowel shape, two block positions.",
         voiceText: "오, 고, 우, 구",
       },
@@ -290,7 +290,7 @@ const phaseOneLessons = [
         visual: "ㅗ",
         options: ["오", "우", "어", "이"],
         answer: "오",
-        explanation: "Silent ㅇ plus ㅗ builds 오.",
+        explanation: "Initial ㅇ is an empty placeholder, so ㅇ + ㅗ builds 오.",
         voiceText: "오",
       },
       {
@@ -308,7 +308,7 @@ const phaseOneLessons = [
         visual: "ㅇ + ㅏ = 아",
         options: ["No sound", "n", "ng", "h"],
         answer: "No sound",
-        explanation: "At the start, ㅇ is silent and simply holds the vowel.",
+        explanation: "Initial ㅇ is an empty placeholder and is not pronounced in this position.",
         voiceText: "아",
       },
     ],
@@ -8720,7 +8720,7 @@ function registerServiceWorker() {
   }
 
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js?v=20260628j").catch((error) => {
+    navigator.serviceWorker.register("./sw.js?v=20260628k").catch((error) => {
       console.warn("Service worker registration failed:", error);
     });
   });
