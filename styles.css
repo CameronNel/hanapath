@@ -721,6 +721,27 @@ input, textarea { cursor: text; }
 .checkpoint-token {
   display: inline-block;
 }
+/* Tap-to-hear affordance on Hangul tokens. */
+.concept-token.tappable,
+.checkpoint-token.tappable {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0 .04em;
+  transition: color var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-spring), text-shadow var(--dur-2) var(--ease-out);
+  outline: none;
+}
+.concept-token.tappable:hover,
+.checkpoint-token.tappable:hover {
+  background: rgba(91, 157, 255, .14);
+  text-shadow: 0 0 16px rgba(91, 157, 255, .5);
+  transform: translateY(-1px);
+}
+.concept-token.tappable:active,
+.checkpoint-token.tappable:active { transform: scale(.94); }
+.concept-token.tappable:focus-visible,
+.checkpoint-token.tappable:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
 .visual-stack {
   display: inline-flex;
   flex-direction: column;
@@ -859,6 +880,11 @@ input, textarea { cursor: text; }
   min-height: 0;
 }
 .lesson-feedback:not(:empty) { background: rgba(255,255,255,.05); }
+
+.letter-review-banner {
+  background: rgba(45, 212, 191, .08);
+  border: 1px solid rgba(45, 212, 191, .22);
+}
 
 .lesson-summary-card {
   background: rgba(45, 212, 191, .08);

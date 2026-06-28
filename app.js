@@ -316,6 +316,24 @@ const phaseOneLessons = [
         explanation: "Initial ㅇ is an empty placeholder and is not pronounced in this position.",
         voiceText: "아",
       },
+      {
+        prompt: "Which vowel makes the clear 'ee' sound in 이?",
+        detail: "Look for the single tall stroke.",
+        visual: "이",
+        options: ["ㅣ", "ㅡ", "ㅓ", "ㅜ"],
+        answer: "ㅣ",
+        explanation: "ㅣ stands straight up and makes the 'ee' sound, as in 이.",
+        voiceText: "이",
+      },
+      {
+        prompt: "Which block is built from ㅇ + ㅜ?",
+        detail: "ㅜ is horizontal, so it sits below the silent ㅇ.",
+        visual: "ㅇ + ㅜ",
+        options: ["우", "오", "어", "으"],
+        answer: "우",
+        explanation: "Silent ㅇ plus ㅜ builds 우, pronounced 'u'.",
+        voiceText: "우",
+      },
     ],
   },
   {
@@ -425,6 +443,24 @@ const phaseOneLessons = [
         answer: "하",
         explanation: "ㅎ + ㅏ builds 하.",
         voiceText: "하",
+      },
+      {
+        prompt: "Which consonant starts 사?",
+        detail: "Look for the tent-like shape.",
+        visual: "사",
+        options: ["ㅅ", "ㅈ", "ㅊ", "ㅁ"],
+        answer: "ㅅ",
+        explanation: "사 begins with ㅅ, the s sound.",
+        voiceText: "사",
+      },
+      {
+        prompt: "Which block begins with ㄷ?",
+        detail: "ㄷ looks like a mouth opening to the right.",
+        visual: "ㄷ",
+        options: ["다", "나", "라", "가"],
+        answer: "다",
+        explanation: "ㄷ + ㅏ builds 다, which starts near the d sound.",
+        voiceText: "다",
       },
     ],
   },
@@ -536,6 +572,24 @@ const phaseOneLessons = [
         explanation: "Silent ㅇ fills the onset seat before ㅏ.",
         voiceText: "아",
       },
+      {
+        prompt: "Where does the vowel sit in 노?",
+        detail: "ㅗ is a horizontal vowel.",
+        visual: "노",
+        options: ["Below the consonant", "To the right", "On the floor", "Above the block"],
+        answer: "Below the consonant",
+        explanation: "ㅗ is horizontal, so ㄴ stacks on top and ㅗ sits below in 노.",
+        voiceText: "노",
+      },
+      {
+        prompt: "What block does ㅁ + ㅏ make?",
+        detail: "ㅏ is vertical, so it takes the right seat.",
+        visual: "ㅁ + ㅏ",
+        options: ["마", "머", "모", "무"],
+        answer: "마",
+        explanation: "ㅁ sits left of vertical ㅏ to form 마.",
+        voiceText: "마",
+      },
     ],
   },
   {
@@ -645,6 +699,24 @@ const phaseOneLessons = [
         answer: "ㅐ · ㅔ",
         explanation: "Many speakers pronounce ㅐ and ㅔ similarly, though they remain different letters.",
         voiceText: "애, 에",
+      },
+      {
+        prompt: "Which vowel is the y-version of ㅜ?",
+        detail: "Look for the doubled short stroke.",
+        visual: "ㅜ → ㅠ",
+        options: ["ㅠ", "ㅛ", "ㅑ", "ㅕ"],
+        answer: "ㅠ",
+        explanation: "A second short stroke turns ㅜ into ㅠ (yu).",
+        voiceText: "우, 유",
+      },
+      {
+        prompt: "Which compound is built from ㅜ + ㅓ?",
+        detail: "Combine the two familiar shapes.",
+        visual: "ㅜ + ㅓ",
+        options: ["ㅝ", "ㅘ", "ㅚ", "ㅟ"],
+        answer: "ㅝ",
+        explanation: "ㅜ + ㅓ combine into ㅝ (wo), as in 워.",
+        voiceText: "워",
       },
     ],
   },
@@ -756,6 +828,24 @@ const phaseOneLessons = [
         explanation: "까 begins with doubled, tense ㄲ.",
         voiceText: "까",
       },
+      {
+        prompt: "Which letter is the tense partner of ㄷ?",
+        detail: "Tense consonants double the base shape.",
+        visual: "ㄷ → tension",
+        options: ["ㄸ", "ㅌ", "ㄴ", "ㄲ"],
+        answer: "ㄸ",
+        explanation: "Doubling ㄷ creates tense ㄸ; ㅌ is the aspirated one.",
+        voiceText: "다, 따",
+      },
+      {
+        prompt: "Which letter is the aspirated partner of ㅈ?",
+        detail: "Aspirated adds a stroke, not a doubled shape.",
+        visual: "ㅈ → more air",
+        options: ["ㅊ", "ㅉ", "ㅅ", "ㅋ"],
+        answer: "ㅊ",
+        explanation: "ㅊ adds a stroke to ㅈ for more air; ㅉ is the tense partner.",
+        voiceText: "자, 차",
+      },
     ],
   },
   {
@@ -865,6 +955,24 @@ const phaseOneLessons = [
         answer: "한",
         explanation: "ㅎ + ㅏ forms 하, then final ㄴ closes it as 한.",
         voiceText: "한",
+      },
+      {
+        prompt: "Which end sound do ㄱ, ㄲ, and ㅋ all share as a batchim?",
+        detail: "Many spellings collapse into seven end sounds.",
+        visual: "ㄱ ㄲ ㅋ → ?",
+        options: ["k", "t", "ng", "p"],
+        answer: "k",
+        explanation: "At the bottom, ㄱ, ㄲ, and ㅋ all collapse to the k stop.",
+        voiceText: "악",
+      },
+      {
+        prompt: "Which consonant is the batchim in 밤?",
+        detail: "Read the shape on the floor.",
+        visual: "밤",
+        options: ["ㅁ", "ㅂ", "ㄴ", "ㅇ"],
+        answer: "ㅁ",
+        explanation: "밤 breaks into ㅂ + ㅏ + final ㅁ (m).",
+        voiceText: "밤",
       },
     ],
   },
@@ -984,6 +1092,168 @@ const phaseOneLessons = [
         answer: "ㅎ+ㅏ+ㄴ / ㄱ+ㅡ+ㄹ",
         explanation: "한 is ㅎ + ㅏ + ㄴ, and 글 is ㄱ + ㅡ + ㄹ.",
         voiceText: "한글",
+      },
+      {
+        prompt: "Which jamo build 모자?",
+        detail: "Decode each block on its own.",
+        visual: "모자",
+        options: ["ㅁ+ㅗ / ㅈ+ㅏ", "ㅁ+ㅓ / ㅈ+ㅏ", "ㅂ+ㅗ / ㅊ+ㅏ", "ㅁ+ㅜ / ㅈ+ㅓ"],
+        answer: "ㅁ+ㅗ / ㅈ+ㅏ",
+        explanation: "모 is ㅁ + ㅗ and 자 is ㅈ + ㅏ; 모자 means hat.",
+        voiceText: "모자",
+      },
+      {
+        prompt: "Which word is read 'a-gi' (baby)?",
+        detail: "Both blocks are open — no batchim.",
+        visual: "ㅇ+ㅏ / ㄱ+ㅣ",
+        options: ["아기", "오이", "우유", "바다"],
+        answer: "아기",
+        explanation: "ㅇ + ㅏ is 아 and ㄱ + ㅣ is 기, so 아기 means baby.",
+        voiceText: "아기",
+      },
+    ],
+  },
+  {
+    id: "alphabet-mastery",
+    title: "Alphabet mastery test",
+    shortTitle: "Mastery test",
+    duration: "10 min",
+    goal: "Prove you can read every Hangul vowel, consonant, block, and final sound on sight.",
+    summary: [
+      "You can read all 21 vowels and 19 consonants by shape.",
+      "You can build and split syllable blocks, including batchim.",
+      "You can decode real Korean words straight from Hangul — no romanization needed.",
+    ],
+    introCards: [
+      {
+        kicker: "The final check",
+        title: "One cumulative test for the whole alphabet",
+        body: "This last stage pulls together everything from the previous six: vowel shapes, consonant families, block geometry, batchim, and real-word reading. Skim the recap charts, then take the cumulative checkpoint.",
+        bullets: [
+          "Recap the full vowel and consonant charts",
+          "Answer questions drawn from every earlier stage",
+          "Tap any letter to hear it while you review",
+        ],
+        snag: "This checkpoint is longer and the pass bar is higher.",
+        cool: "Clear it and you have genuinely learned to read Hangul.",
+      },
+    ],
+    concepts: [
+      {
+        kicker: "Vowel recap",
+        title: "Every basic and y-vowel",
+        visual: "ㅏ ㅑ · ㅓ ㅕ · ㅗ ㅛ · ㅜ ㅠ · ㅡ · ㅣ",
+        body: "These ten carry most of your reading: the six anchors plus their y-glide partners. Tap each one to hear its sound and confirm the shape-to-sound link is automatic.",
+        cue: "아 야 · 어 여 · 오 요 · 우 유 · 으 · 이",
+        voiceText: "아, 야, 어, 여, 오, 요, 우, 유, 으, 이",
+      },
+      {
+        kicker: "Vowel recap",
+        title: "The e-zone and the compounds",
+        visual: "ㅐ ㅔ ㅒ ㅖ · ㅘ ㅙ ㅚ · ㅝ ㅞ ㅟ · ㅢ",
+        body: "The remaining eleven vowels: the close-sounding e-zone and the compounds built by joining shapes you already know, ending with ㅢ. Together they complete all 21 modern vowels.",
+        cue: "애 에 얘 예 · 와 왜 외 · 워 웨 위 · 의",
+        voiceText: "애, 에, 얘, 예, 와, 왜, 외, 워, 웨, 위, 의",
+      },
+      {
+        kicker: "Consonant recap",
+        title: "All 19 consonants by family",
+        visual: "ㄱ ㅋ ㄲ · ㄷ ㅌ ㄸ · ㅂ ㅍ ㅃ · ㅈ ㅊ ㅉ · ㅅ ㅆ · ㄴ ㄹ ㅁ ㅇ ㅎ",
+        body: "Plain, aspirated, and tense across four families, plus the ㅅ/ㅆ pair and the singles ㄴ, ㄹ, ㅁ, ㅇ, ㅎ. Tap through and make sure each shape triggers the right sound.",
+        cue: "가 카 까 · 다 타 따 · 바 파 빠 · 자 차 짜",
+        voiceText: "가, 카, 까, 다, 타, 따, 바, 파, 빠, 자, 차, 짜, 사, 싸, 나, 라, 마, 아, 하",
+      },
+    ],
+    questions: [
+      {
+        prompt: "Which vowel has its short stroke pointing left?",
+        detail: "Use direction, not romanization.",
+        visual: "left ←",
+        options: ["ㅓ", "ㅏ", "ㅗ", "ㅜ"],
+        answer: "ㅓ",
+        explanation: "ㅓ opens to the left and makes the vowel in 어.",
+        voiceText: "어",
+      },
+      {
+        prompt: "Which consonant starts 바?",
+        detail: "Split the block into its first shape and vowel.",
+        visual: "바",
+        options: ["ㅂ", "ㅁ", "ㅃ", "ㅍ"],
+        answer: "ㅂ",
+        explanation: "바 begins with ㅂ, near the b sound.",
+        voiceText: "바",
+      },
+      {
+        prompt: "What block does ㄱ + ㅜ make?",
+        detail: "ㅜ is horizontal, so it sits below.",
+        visual: "ㄱ + ㅜ",
+        options: ["구", "고", "거", "가"],
+        answer: "구",
+        explanation: "ㄱ stacks over ㅜ to form 구.",
+        voiceText: "구",
+      },
+      {
+        prompt: "Which vowel is the y-version of ㅗ?",
+        detail: "Look for the doubled short stroke.",
+        visual: "ㅗ → ㅛ",
+        options: ["ㅛ", "ㅠ", "ㅑ", "ㅕ"],
+        answer: "ㅛ",
+        explanation: "A second short stroke turns ㅗ into ㅛ (yo).",
+        voiceText: "오, 요",
+      },
+      {
+        prompt: "Which compound is built from ㅜ + ㅣ?",
+        detail: "Combine the two shapes.",
+        visual: "ㅜ + ㅣ",
+        options: ["ㅟ", "ㅚ", "ㅢ", "ㅝ"],
+        answer: "ㅟ",
+        explanation: "ㅜ + ㅣ combine into ㅟ (wi), as in 위.",
+        voiceText: "위",
+      },
+      {
+        prompt: "Which letter is the tense partner of ㄱ?",
+        detail: "Tense consonants double the base shape.",
+        visual: "ㄱ → tension",
+        options: ["ㄲ", "ㅋ", "ㄷ", "ㄴ"],
+        answer: "ㄲ",
+        explanation: "Doubling ㄱ creates tense ㄲ; ㅋ is the aspirated one.",
+        voiceText: "가, 까",
+      },
+      {
+        prompt: "Which letter is the aspirated partner of ㅂ?",
+        detail: "Aspirated adds a stroke, not a doubled shape.",
+        visual: "ㅂ → more air",
+        options: ["ㅍ", "ㅃ", "ㅁ", "ㅌ"],
+        answer: "ㅍ",
+        explanation: "ㅍ adds air to ㅂ; ㅃ is the tense partner.",
+        voiceText: "바, 파",
+      },
+      {
+        prompt: "What sound does the batchim make in 강?",
+        detail: "Final ㅇ has a different job from initial ㅇ.",
+        visual: "강",
+        options: ["ng", "n", "k", "silent"],
+        answer: "ng",
+        explanation: "Final ㅇ closes 강 with the ng sound.",
+        voiceText: "강",
+      },
+      {
+        prompt: "Which consonant is the batchim in 산?",
+        detail: "Read the shape on the floor.",
+        visual: "산",
+        options: ["ㄴ", "ㅅ", "ㅇ", "ㅁ"],
+        answer: "ㄴ",
+        explanation: "산 breaks into ㅅ + ㅏ + final ㄴ (n).",
+        voiceText: "산",
+      },
+      {
+        prompt: "How does 우유 split into jamo?",
+        detail: "Both blocks begin with silent ㅇ.",
+        visual: "우유",
+        options: ["ㅇ+ㅜ / ㅇ+ㅠ", "ㅇ+ㅗ / ㅇ+ㅛ", "ㅇ+ㅜ / ㅇ+ㅗ", "ㅇ+ㅠ / ㅇ+ㅜ"],
+        answer: "ㅇ+ㅜ / ㅇ+ㅠ",
+        explanation: "우 is ㅇ + ㅜ and 유 is ㅇ + ㅠ; 우유 means milk.",
+        voiceText: "우유",
       },
     ],
   },
@@ -3442,6 +3712,7 @@ function loadState() {
     vocabActiveRank: 1,
     vocabKnownRanks: [],
     vocabHardRanks: [],
+    letterSrs: {},
     speakDone: false,
     resetArmed: false,
   };
@@ -5049,6 +5320,113 @@ const HANGUL_JAMO_ROMAN = {
   ㅣ: "i",
 };
 
+// A speakable demo syllable for each bare jamo. Lone consonants/vowels do not
+// synthesize well on their own, so consonants are voiced with ㅏ (가, 나 …) and
+// vowels with a silent ㅇ onset (아, 어 …). Used for tap-to-hear.
+const HANGUL_JAMO_SPEAK = {
+  ㄱ: "가", ㄲ: "까", ㄴ: "나", ㄷ: "다", ㄸ: "따", ㄹ: "라", ㅁ: "마",
+  ㅂ: "바", ㅃ: "빠", ㅅ: "사", ㅆ: "싸", ㅇ: "아", ㅈ: "자", ㅉ: "짜",
+  ㅊ: "차", ㅋ: "카", ㅌ: "타", ㅍ: "파", ㅎ: "하",
+  ㅏ: "아", ㅐ: "애", ㅑ: "야", ㅒ: "얘", ㅓ: "어", ㅔ: "에", ㅕ: "여",
+  ㅖ: "예", ㅗ: "오", ㅘ: "와", ㅙ: "왜", ㅚ: "외", ㅛ: "요", ㅜ: "우",
+  ㅝ: "워", ㅞ: "웨", ㅟ: "위", ㅠ: "유", ㅡ: "으", ㅢ: "의", ㅣ: "이",
+};
+
+// Turn a matched Hangul chunk into something the TTS voice can actually say.
+// Full syllables/words speak as-is; bare jamo map to their demo syllable.
+function speakableForChunk(chunk) {
+  const text = String(chunk || "");
+  if (/^[가-힣]+$/.test(text)) return text;
+  if (/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(text)) {
+    return Array.from(text)
+      .map((ch) => HANGUL_JAMO_SPEAK[ch] || ch)
+      .join(" ");
+  }
+  return text;
+}
+
+// ── HANGUL LETTER SRS ──────────────────────────────────────────────
+// A lightweight Leitner system so individual letters resurface over days
+// until they are truly memorised. Only stages that introduce new jamo enroll
+// letters; block geometry, batchim, reading and the mastery test reuse them.
+const STAGE_LETTERS = {
+  "anchor-vowels": ["ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅡ", "ㅣ"],
+  "base-consonants": ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"],
+  "complete-vowels": ["ㅑ", "ㅕ", "ㅛ", "ㅠ", "ㅐ", "ㅔ", "ㅒ", "ㅖ", "ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ", "ㅟ", "ㅢ"],
+  "strong-consonants": ["ㄲ", "ㄸ", "ㅃ", "ㅆ", "ㅉ"],
+};
+
+// The teaching "sound" for each letter (initial sound for consonants).
+const LETTER_SOUND = {
+  ㄱ: "g", ㄲ: "kk", ㄴ: "n", ㄷ: "d", ㄸ: "tt", ㄹ: "r", ㅁ: "m", ㅂ: "b",
+  ㅃ: "pp", ㅅ: "s", ㅆ: "ss", ㅇ: "silent (ng)", ㅈ: "j", ㅉ: "jj", ㅊ: "ch",
+  ㅋ: "k", ㅌ: "t", ㅍ: "p", ㅎ: "h",
+  ㅏ: "a", ㅐ: "ae", ㅑ: "ya", ㅒ: "yae", ㅓ: "eo", ㅔ: "e", ㅕ: "yeo", ㅖ: "ye",
+  ㅗ: "o", ㅘ: "wa", ㅙ: "wae", ㅚ: "oe", ㅛ: "yo", ㅜ: "u", ㅝ: "wo", ㅞ: "we",
+  ㅟ: "wi", ㅠ: "yu", ㅡ: "eu", ㅢ: "ui", ㅣ: "i",
+};
+
+// Leitner box index → milliseconds until the letter is due again.
+const LETTER_SRS_INTERVALS = [
+  2 * 60 * 1000,                 // box 0: ~2 min (same session)
+  20 * 60 * 60 * 1000,           // box 1: ~the next day
+  3 * 24 * 60 * 60 * 1000,       // box 2: 3 days
+  7 * 24 * 60 * 60 * 1000,       // box 3: 1 week
+  16 * 24 * 60 * 60 * 1000,      // box 4: ~2.5 weeks
+  35 * 24 * 60 * 60 * 1000,      // box 5: ~5 weeks
+];
+
+function getLetterSrs() {
+  if (!state.letterSrs || typeof state.letterSrs !== "object") state.letterSrs = {};
+  return state.letterSrs;
+}
+
+// Enroll a stage's new letters the first time it is cleared (idempotent).
+function enrollStageLetters(lessonId) {
+  const letters = STAGE_LETTERS[lessonId];
+  if (!Array.isArray(letters) || !letters.length) return;
+  const srs = getLetterSrs();
+  const now = Date.now();
+  let added = false;
+  letters.forEach((letter) => {
+    if (!srs[letter]) {
+      srs[letter] = { box: 0, due: now };
+      added = true;
+    }
+  });
+  if (added) saveState();
+}
+
+// Enroll letters for any already-completed stages (covers existing users).
+function backfillLetterSrs() {
+  (state.phaseOneCompleted || []).forEach((id) => enrollStageLetters(id));
+}
+
+function getEnrolledLetters() {
+  return Object.keys(getLetterSrs());
+}
+
+function getDueLetters(now = Date.now()) {
+  const srs = getLetterSrs();
+  return Object.keys(srs)
+    .filter((letter) => (srs[letter] && srs[letter].due ? srs[letter].due : 0) <= now)
+    .sort((a, b) => srs[a].due - srs[b].due);
+}
+
+function getDueLetterCount(now = Date.now()) {
+  return getDueLetters(now).length;
+}
+
+// Grade one letter review and reschedule it via the Leitner boxes.
+function recordLetterReview(letter, correct) {
+  const srs = getLetterSrs();
+  const entry = srs[letter] || { box: 0, due: Date.now() };
+  entry.box = correct ? Math.min(entry.box + 1, LETTER_SRS_INTERVALS.length - 1) : 0;
+  entry.due = Date.now() + LETTER_SRS_INTERVALS[entry.box];
+  srs[letter] = entry;
+  saveState();
+}
+
 function romanizeHangulSyllable(char) {
   const code = String(char || "").charCodeAt(0);
   if (!Number.isFinite(code) || code < 0xac00 || code > 0xd7a3) {
@@ -5117,10 +5495,11 @@ function renderFlashableHangulText(text, className = "concept-token") {
     const hintHtml = hint
       ? `<span class="visual-hint">${escapeHtml(hint)}</span>`
       : '<span class="visual-hint visual-hint-empty" aria-hidden="true">&#8203;</span>';
+    const speakText = speakableForChunk(match[0]);
     parts.push(
       '<span class="visual-stack">' +
         hintHtml +
-        `<span class="${className}" data-flash-index="${index}">${escapeHtml(match[0])}</span>` +
+        `<span class="${className} tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakText)}" title="Tap to hear" data-flash-index="${index}" data-speak="${escapeHtml(speakText)}">${escapeHtml(match[0])}</span>` +
       "</span>",
     );
     index += 1;
@@ -5349,7 +5728,7 @@ function renderPhaseOneConcept(lesson) {
     escapeHtml(concept.body) +
     "</p>" +
     '<div class="concept-cue">' +
-    escapeHtml(concept.cue) +
+    renderFlashableHangulText(concept.cue, "concept-token").html +
     "</div>" +
     "</div>" +
     "</div>";
@@ -5411,7 +5790,7 @@ function renderPhaseOneIntro(lesson) {
     "</div>" +
     "</div>" +
     '<div class="concept-cue">' +
-    escapeHtml(introCard?.cool || lesson.goal) +
+    renderFlashableHangulText(introCard?.cool || lesson.goal, "concept-token").html +
     "</div>" +
     "</div>";
 
@@ -5489,12 +5868,13 @@ function renderPhaseOneResult(lesson) {
   const cleanCount = phaseOneView.results.filter(Boolean).length;
   const total = lesson.questions.length;
   const percent = Math.round((cleanCount / total) * 100);
-  const requiredPercent = lesson.id === "reading-graduation" ? 80 : 75;
+  const requiredPercent = lesson.id === "alphabet-mastery" ? 85 : lesson.id === "reading-graduation" ? 80 : 75;
   const passed = percent >= requiredPercent;
   phaseOneView.passed = passed;
 
   if (passed && !state.phaseOneCompleted.includes(lesson.id)) {
     state.phaseOneCompleted.push(lesson.id);
+    enrollStageLetters(lesson.id);
     saveState();
     refreshProgressionState();
   }
@@ -7552,6 +7932,20 @@ function renderLearnStageMenu(itemId) {
     `;
   }).join("");
 
+  const letterDue = itemId === "alphabet" ? getDueLetterCount() : 0;
+  const letterReviewHtml = letterDue
+    ? `
+    <div class="card letter-review-banner">
+      <div class="flex-between">
+        <div>
+          <div class="eyebrow">Make it stick</div>
+          <div class="screen-sub" style="margin-bottom:0;">${letterDue} letter${letterDue === 1 ? "" : "s"} ready for spaced review.</div>
+        </div>
+        <button class="button primary compact" type="button" id="stageLetterReviewBtn">Review (${letterDue})</button>
+      </div>
+    </div>`
+    : "";
+
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
@@ -7563,6 +7957,7 @@ function renderLearnStageMenu(itemId) {
         <span class="pill muted">Locked</span>
       </div>
     </div>
+    ${letterReviewHtml}
     <div class="card">
       <div class="flex-between mb-12">
         <div>
@@ -7580,6 +7975,8 @@ function renderLearnStageMenu(itemId) {
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
     btn.addEventListener("click", () => openLearnStage(itemId, Number(btn.dataset.learnStage)));
   });
+  const stageLetterReviewBtn = document.getElementById("stageLetterReviewBtn");
+  if (stageLetterReviewBtn) stageLetterReviewBtn.addEventListener("click", () => startLetterReview());
 }
 
 function openLearnStageMenu(itemId) {
@@ -7788,8 +8185,23 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     });
   }
   stageEl.addEventListener("click", (e) => {
+    const token = e.target.closest("[data-speak]");
+    if (token && stageEl.contains(token)) {
+      flashElement(token);
+      void speak(token.dataset.speak || token.textContent || "");
+      return;
+    }
     const btn = e.target.closest(".lesson-option");
     if (btn instanceof HTMLButtonElement && !btn.disabled) answerPhaseOneQuestion(btn.dataset.option || "", btn);
+  });
+  // Keyboard activation for tap-to-hear tokens.
+  stageEl.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const token = e.target.closest("[data-speak]");
+    if (!token || !stageEl.contains(token)) return;
+    e.preventDefault();
+    flashElement(token);
+    void speak(token.dataset.speak || token.textContent || "");
   });
 }
 
@@ -7875,6 +8287,14 @@ function renderCompleteInPlayer(index) {
         '<button class="button primary compact" type="button" id="learnNextBtn">Start vocabulary</button>'
     ) +
     "</div>" +
+    (getDueLetterCount()
+      ? '<div class="card"><div class="flex-between">' +
+        "<div><div class=\"eyebrow\">Make it stick</div>" +
+        '<div class="screen-sub" style="margin-bottom:0;">Spaced review of the letters you\'ve learned.</div></div>' +
+        '<button class="button secondary compact" type="button" id="learnLetterReviewBtn">Review letters (' + getDueLetterCount() + ")</button>" +
+        "</div></div>"
+      : ""
+    ) +
     (dueCount
       ? '<div class="card"><div class="flex-between">' +
         "<div><div class=\"eyebrow\">Lock it in</div>" +
@@ -7902,6 +8322,8 @@ function renderCompleteInPlayer(index) {
   if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
   const reviewBtn = document.getElementById("learnReviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", () => showTab("practice"));
+  const letterReviewBtn = document.getElementById("learnLetterReviewBtn");
+  if (letterReviewBtn) letterReviewBtn.addEventListener("click", () => startLetterReview());
 }
 
 // "Lesson complete" screen: celebrate, then offer the next new lesson.
@@ -8043,6 +8465,115 @@ function renderAlphabetPractice() {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
   renderQuestion(generateQuestion(), { scope: "alphabet" });
+}
+
+// ─── ALPHABET LETTER REVIEW (SRS) ─────────────────────────────────────────────
+let letterReview = { queue: [], index: 0, correct: 0, answered: false };
+
+function startLetterReview() {
+  refreshProgressionState();
+  letterReview = { queue: getDueLetters(), index: 0, correct: 0, answered: false };
+  activeHub = "learn";
+  setNavActive("learn");
+  renderLetterReview();
+}
+
+function renderLetterReview() {
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("learn", "Alphabet review", () => openLearnStageMenu("alphabet"), "Alphabet");
+
+  const total = letterReview.queue.length;
+  if (!total || letterReview.index >= total) {
+    el.innerHTML = `
+      <div class="card" style="text-align:center;">
+        <div class="eyebrow">Alphabet review</div>
+        <h2 class="screen-title" style="margin:6px 0 8px;">${total ? "Review complete 🎉" : "All caught up"}</h2>
+        <div class="screen-sub">${
+          total
+            ? `You recalled ${letterReview.correct} of ${total} letters. Each one comes back automatically when it's due.`
+            : "No letters are due right now. Finish more alphabet stages or check back later."
+        }</div>
+        <button class="button primary full" id="letterReviewDone" type="button" style="margin-top:6px;">Back to stages</button>
+      </div>`;
+    const done = document.getElementById("letterReviewDone");
+    if (done) done.addEventListener("click", () => openLearnStageMenu("alphabet"));
+    return;
+  }
+
+  const letter = letterReview.queue[letterReview.index];
+  const sound = LETTER_SOUND[letter] || "";
+  const distractors = shuffle(
+    getEnrolledLetters()
+      .filter((l) => l !== letter)
+      .map((l) => LETTER_SOUND[l])
+      .filter((s) => s && s !== sound),
+  )
+    .filter((s, i, a) => a.indexOf(s) === i)
+    .slice(0, 3);
+  // Fall back to a fixed sound pool if too few letters are enrolled for distractors.
+  while (distractors.length < 3) {
+    const pool = ["a", "eo", "o", "u", "g", "n", "m", "s", "b", "d"].filter((s) => s !== sound && !distractors.includes(s));
+    if (!pool.length) break;
+    distractors.push(pool[0]);
+  }
+  const opts = shuffle([sound, ...distractors]);
+  letterReview.answered = false;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Alphabet review</div>
+          <div class="screen-sub" style="margin-bottom:0;">Letter ${letterReview.index + 1} of ${total} due</div>
+        </div>
+        <span class="pill green">Spaced review</span>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-visual" lang="ko"><span class="checkpoint-token tappable" role="button" tabindex="0" data-speak="${escapeHtml(speakableForChunk(letter))}" title="Tap to hear">${escapeHtml(letter)}</span></div>
+        <div class="quiz-prompt">Which sound does this letter make?</div>
+        <div class="quiz-detail">Tap the letter above to hear it again.</div>
+        <div class="quiz-options" id="letterReviewOptions">
+          ${opts.map((o) => `<button class="option" type="button" data-sound="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join("")}
+        </div>
+        <div class="quiz-feedback" id="letterReviewFeedback"></div>
+      </div>
+    </div>`;
+
+  scheduleAutoSpeak(speakableForChunk(letter), 220);
+  const token = el.querySelector("[data-speak]");
+  if (token) token.addEventListener("click", () => { flashElement(token); void speak(token.dataset.speak || ""); });
+  el.querySelectorAll("#letterReviewOptions .option").forEach((btn) => {
+    btn.addEventListener("click", () => answerLetterReview(btn, letter, sound));
+  });
+}
+
+function answerLetterReview(button, letter, correctSound) {
+  if (letterReview.answered) return;
+  letterReview.answered = true;
+  const correct = (button.dataset.sound || "") === correctSound;
+  [...document.querySelectorAll("#letterReviewOptions .option")].forEach((b) => {
+    b.disabled = true;
+    if (b.dataset.sound === correctSound) b.classList.add("correct");
+    if (b === button && !correct) b.classList.add("wrong");
+  });
+  recordLetterReview(letter, correct);
+  if (correct) {
+    letterReview.correct += 1;
+    showCorrectToast();
+  } else {
+    showRetryToast(`${letter} sounds like "${correctSound}".`);
+  }
+  const fb = document.getElementById("letterReviewFeedback");
+  if (fb) {
+    fb.innerHTML = correct
+      ? `<strong>Correct.</strong> ${escapeHtml(letter)} sounds like "${escapeHtml(correctSound)}".`
+      : `<strong>Not quite.</strong> ${escapeHtml(letter)} sounds like "${escapeHtml(correctSound)}".`;
+  }
+  window.setTimeout(() => {
+    letterReview.index += 1;
+    renderLetterReview();
+  }, correct ? 850 : 1650);
 }
 
 // ─── ONBOARDING ──────────────────────────────────────────────────────────────
@@ -8971,6 +9502,7 @@ function renderProgress() {
 
 async function init() {
   validatePhaseOneLessons();
+  backfillLetterSrs();
 
   // Track daily streak
   const todayStr = new Date().toISOString().slice(0, 10);
