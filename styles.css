@@ -2508,20 +2508,11 @@ li { margin-bottom: 4px; }
 .alpha-list-sub { font-size: .72rem; color: var(--muted); font-weight: 600; }
 .alpha-list-letter.selected .alpha-list-sub { color: var(--text); }
 
-.screen:has(.alpha-detail) {
-  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 118px);
-}
-
 .alpha-detail {
-  position: fixed;
-  right: 12px;
-  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 10px);
-  z-index: 45;
-  width: min(238px, calc(100vw - 24px));
+  width: min(360px, 100%);
+  margin: -2px 0 12px auto;
   padding: 10px;
   border-radius: 14px;
-  box-shadow: 0 12px 28px rgba(2, 6, 20, .48);
-  backdrop-filter: blur(18px);
 }
 .alpha-detail-head {
   display: flex;

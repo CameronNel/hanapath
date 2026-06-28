@@ -6439,8 +6439,8 @@ function renderEntireAlphabet() {
         </div>
       </div>
     </div>
-    ${mode === "keyboard" ? renderAlphabetKeyboardBoard() : renderAlphabetListBoard()}
     <div class="card alpha-detail" id="alphaBoardDetail">${alphabetDetailHtml(alphabetBoardSelected)}</div>
+    ${mode === "keyboard" ? renderAlphabetKeyboardBoard() : renderAlphabetListBoard()}
   `;
 
   // Mode / label segmented controls.

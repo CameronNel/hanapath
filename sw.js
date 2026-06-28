@@ -1,11 +1,11 @@
-// [2026-06-29] Cache bumped to v58 (+asset ?v=20260629b) to ship the compact alphabet tile.
-const CACHE_NAME = "hanapath-shell-v58";
+// [2026-06-29] Cache bumped to v59 (+asset ?v=20260629c) to stop the alphabet tile overlay.
+const CACHE_NAME = "hanapath-shell-v59";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260629b",
+  "./styles.css?v=20260629c",
   "./lib/hangul.js",
-  "./app.js?v=20260628x",
+  "./app.js?v=20260629c",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
