@@ -2893,6 +2893,26 @@ function renderAlphabetTabs(activeView, menuOpen = alphabetStageMenuOpen) {
   `;
 }
 
+function getAlphabetSpeakText(source) {
+  if (!source) return "";
+  if (Array.isArray(source.concepts)) {
+    return source.concepts
+      .map((concept) => getAlphabetSpeakText(concept))
+      .filter(Boolean)
+      .join(" / ");
+  }
+
+  return String(
+    source.voiceText ||
+    source.visual ||
+    source.example ||
+    source.kicker ||
+    source.title ||
+    source.shortTitle ||
+    "",
+  ).trim();
+}
+
 function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
   const concepts = lesson.concepts || [];
   const lead = concepts[0] || { title: lesson.title, body: lesson.goal, cue: lesson.goal, voiceText: lesson.goal, visual: "" };
@@ -2904,7 +2924,7 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
         <div class="study-row-ko">${escapeHtml(concept.kicker || concept.title || lesson.shortTitle)}</div>
         <div class="study-row-sub">${escapeHtml(concept.cue || concept.body || lesson.goal)}</div>
       </div>
-      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(concept.voiceText || concept.cue || lesson.goal)}">▶</button>
+      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(concept))}">▶</button>
     </div>
   `).join("");
   const repeatRows = repeatLessons.slice(-3).map((lessonItem, index) => `
@@ -2913,7 +2933,7 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
         <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lessonItem.shortTitle)}</div>
         <div class="study-row-sub">${escapeHtml(lessonItem.goal)}</div>
       </div>
-      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lessonItem.goal)}">▶</button>
+      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lessonItem))}">▶</button>
     </div>
   `).join("");
 
@@ -2947,24 +2967,24 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
         </div>
         <div class="big-glyph" lang="ko">${escapeHtml(lead.visual || lead.voiceText || lesson.shortTitle)}</div>
         <div class="study-list">
-          <div class="study-row active">
-            <div>
-              <div class="study-row-ko">${escapeHtml(lead.title || lesson.title)}</div>
-              <div class="study-row-sub">${escapeHtml(lead.body || lesson.goal)}</div>
-            </div>
-            <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lead.voiceText || lesson.goal)}">▶</button>
+        <div class="study-row active">
+          <div>
+            <div class="study-row-ko">${escapeHtml(lead.title || lesson.title)}</div>
+            <div class="study-row-sub">${escapeHtml(lead.body || lesson.goal)}</div>
           </div>
-          <div class="study-row">
-            <div>
-              <div class="study-row-ko">${escapeHtml(support.title || lesson.shortTitle)}</div>
-              <div class="study-row-sub">${escapeHtml(support.cue || support.body || lesson.goal)}</div>
-            </div>
-            <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(support.voiceText || lesson.goal)}">▶</button>
+          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lead))}">▶</button>
+        </div>
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko">${escapeHtml(support.title || lesson.shortTitle)}</div>
+            <div class="study-row-sub">${escapeHtml(support.cue || support.body || lesson.goal)}</div>
           </div>
+          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(support))}">▶</button>
         </div>
       </div>
-    `;
-  }
+    </div>
+  `;
+}
 
   if (view === "test") {
     return `
@@ -3009,14 +3029,14 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
             <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
             <div class="fs-xs text-muted-2 mt-4">${escapeHtml(lead.body || lead.cue || lesson.goal)}</div>
           </div>
-          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lead.voiceText || lesson.goal)}">▶</button>
+          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lead))}">▶</button>
         </div>
         <div class="study-row">
           <div>
             <div class="study-row-ko">${escapeHtml(support.kicker || "Shape")}</div>
             <div class="study-row-sub">${escapeHtml(support.title || support.cue || lesson.goal)}</div>
           </div>
-          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(support.voiceText || lesson.goal)}">▶</button>
+          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(support))}">▶</button>
         </div>
       </div>
     </div>
@@ -3038,7 +3058,7 @@ function renderAlphabetPanelV2(view) {
           <div class="study-row-sub">${escapeHtml(concept.cue || concept.body || stageLessons[0].goal)}</div>
           <div class="fs-xs text-muted-2 mt-4">${escapeHtml(concept.body || stageLessons[0].goal)}</div>
         </div>
-        <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(concept.voiceText || concept.cue || stageLessons[0].goal)}">▶</button>
+        <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(concept))}">▶</button>
       </div>
     `).join("")
     : stageLessons.map((lesson, index) => `
@@ -3048,7 +3068,7 @@ function renderAlphabetPanelV2(view) {
           <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
           <div class="fs-xs text-muted-2 mt-4">${escapeHtml(lesson.duration)}</div>
         </div>
-        <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lesson.goal)}">▶</button>
+        <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lesson))}">▶</button>
       </div>
     `).join("");
 
@@ -3058,7 +3078,7 @@ function renderAlphabetPanelV2(view) {
         <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lesson.shortTitle)}</div>
         <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
       </div>
-      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(lesson.goal)}">▶</button>
+      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lesson))}">▶</button>
     </div>
   `).join("");
 
