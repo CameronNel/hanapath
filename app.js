@@ -8720,7 +8720,7 @@ function registerServiceWorker() {
   }
 
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch((error) => {
+    navigator.serviceWorker.register("./sw.js?v=20260628j").catch((error) => {
       console.warn("Service worker registration failed:", error);
     });
   });
