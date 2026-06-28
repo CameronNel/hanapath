@@ -2708,6 +2708,7 @@ function getTrackLevel(tab) {
 }
 
 function setTrackLevel(tab, level) {
+  stopSpeech();
   const safeTab = normalizeMainTab(tab);
   state.tabLevels = normalizeTabLevels(state.tabLevels);
   state.tabLevels[safeTab] = clampLevel(level);
@@ -3996,6 +3997,7 @@ function toggleStudio(target) {
 }
 
 function setStudio(studio) {
+  stopSpeech();
   refreshProgressionState();
   const normalized = normalizeMainTab(studio);
   const requestedStudio = normalized === "alphabet" && !MAIN_TABS.includes(String(studio).toLowerCase())
@@ -4448,6 +4450,7 @@ function openPhaseOneLesson(index, shouldScroll = false) {
     return;
   }
 
+  stopSpeech();
   state.phaseOneActive = index;
   resetPhaseOneView(index);
   saveState();
@@ -4571,16 +4574,7 @@ function getPhaseOneVoiceSegments() {
     return [];
   }
 
-  const drillSegments = splitVoiceSequence(source.voiceText);
-  if (phaseOneView.mode !== "learn") {
-    return drillSegments;
-  }
-
-  const teachingSegments = [source.title, source.body, source.cue]
-    .map((part) => String(part || "").trim())
-    .filter(Boolean);
-
-  return [...teachingSegments, ...drillSegments];
+  return splitVoiceSequence(source.voiceText);
 }
 
 function getPhaseOneVoiceText() {
@@ -4610,19 +4604,9 @@ function getPhaseOneVoiceFlashTargets() {
   }
 
   const drillSegments = splitVoiceSequence(source.voiceText);
-  const drillFlashTargets = drillSegments.map((_, index) =>
+  return drillSegments.map((_, index) =>
     Number.isInteger(source.voiceFlashTargets?.[index]) ? source.voiceFlashTargets[index] : index,
   );
-
-  if (phaseOneView.mode !== "learn") {
-    return drillFlashTargets;
-  }
-
-  const teachingSegments = [source.title, source.body, source.cue]
-    .map((part) => String(part || "").trim())
-    .filter(Boolean);
-
-  return [...teachingSegments.map(() => null), ...drillFlashTargets];
 }
 
 function splitVoiceSequence(text) {
@@ -4669,6 +4653,7 @@ function getPhaseOneFlashTargets() {
 
 let phaseOneVoicePlaybackId = 0;
 let speechVoicesCache = [];
+let speechAutoSpeakTimer = 0;
 
 function refreshSpeechVoices() {
   if (!("speechSynthesis" in window) || typeof window.speechSynthesis.getVoices !== "function") return;
@@ -4714,11 +4699,44 @@ if ("speechSynthesis" in window && typeof window.speechSynthesis.getVoices === "
   }
 }
 
-function speak(text) {
+function cancelSpeechOutput() {
+  if (speechAutoSpeakTimer) {
+    window.clearTimeout(speechAutoSpeakTimer);
+    speechAutoSpeakTimer = 0;
+  }
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function stopSpeech() {
+  phaseOneVoicePlaybackId += 1;
+  cancelSpeechOutput();
+}
+
+function scheduleAutoSpeak(text, delay = 160) {
+  if (!text) return;
+  if (speechAutoSpeakTimer) {
+    window.clearTimeout(speechAutoSpeakTimer);
+  }
+  speechAutoSpeakTimer = window.setTimeout(() => {
+    speechAutoSpeakTimer = 0;
+    void speak(text);
+  }, delay);
+}
+
+function speak(text, options = {}) {
+  const { preserveSequence = false } = options;
   return new Promise((resolve) => {
     if (!text || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance !== "function") {
       resolve();
       return;
+    }
+
+    if (preserveSequence) {
+      cancelSpeechOutput();
+    } else {
+      stopSpeech();
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -4737,7 +4755,6 @@ function speak(text) {
 
     utterance.onend = finish;
     utterance.onerror = finish;
-    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
     window.setTimeout(finish, Math.max(1200, String(text).length * 80));
   });
@@ -4751,7 +4768,7 @@ async function playPhaseOneVoiceSequence() {
   if (!voiceParts.length) {
     const fallback = targets[0];
     if (fallback) flashElement(fallback);
-    await speak(voiceText);
+    await speak(voiceText, { preserveSequence: true });
     return;
   }
 
@@ -4767,7 +4784,7 @@ async function playPhaseOneVoiceSequence() {
     }
     const minStepMs = Math.max(PHASE_ONE_VOICE_MIN_STEP_MS, String(voiceParts[index]).length * PHASE_ONE_VOICE_CHAR_MS);
     await Promise.all([
-      speak(voiceParts[index]),
+      speak(voiceParts[index], { preserveSequence: true }),
       new Promise((resolve) => window.setTimeout(resolve, minStepMs)),
     ]);
     if (tokenId !== phaseOneVoicePlaybackId) return;
@@ -6394,7 +6411,7 @@ function renderQuestion(question, options = {}) {
     nextBtn.addEventListener("click", nextQuestion);
   }
   syncReviewActionButton(question);
-  if (question.autoSpeak && !preserveState && question.voiceText) window.setTimeout(() => void speak(question.voiceText), 160);
+  if (question.autoSpeak && !preserveState && question.voiceText) scheduleAutoSpeak(question.voiceText);
 
   updateStats();
   saveState();
@@ -6648,6 +6665,7 @@ function setNavActive(hub) {
 }
 
 function showScreen(screenId) {
+  stopSpeech();
   const targetId = "screen-" + screenId;
   // Hide every screen and empty the inactive ones. Inactive screens keep their
   // quiz cards in the DOM otherwise, and the alphabet quiz on Home shares its
@@ -7795,6 +7813,7 @@ function openPathLesson(index) {
   if (!phaseOneLessons[index]) return;
   if (index > state.phaseOneCompleted.length) return; // locked
 
+  stopSpeech();
   state.phaseOneActive = index;
   resetPhaseOneView(index);
   saveState();
@@ -8342,6 +8361,11 @@ async function init() {
       else goHub(btn.dataset.nav);
     });
   });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopSpeech();
+  });
+  window.addEventListener("blur", stopSpeech);
+  window.addEventListener("pagehide", stopSpeech);
   bindKeyboardShortcuts();
   // Learning-first: open straight into the next new lesson.
   startNextLearn({ resume: true });
