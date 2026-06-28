@@ -7314,7 +7314,7 @@ function renderTypeQuestion(question, quizOptions) {
         class="sentence-input"
         id="${ids.options}Input"
         type="text"
-        inputmode="text"
+        inputmode="none"
         autocomplete="off"
         autocapitalize="off"
         spellcheck="false"
@@ -7325,6 +7325,45 @@ function renderTypeQuestion(question, quizOptions) {
       <div class="sentence-type-actions">
         <button class="button secondary compact" type="button" id="${ids.options}Clear" ${currentAnswered ? "disabled" : ""}>Clear</button>
       </div>
+      <div class="virtual-keyboard" id="${ids.options}Keyboard" ${currentAnswered ? "hidden" : ""}>
+         <div class="vk-row">
+            <button type="button" class="vk-key" data-key="ㅂ" data-shift="ㅃ">ㅂ</button>
+            <button type="button" class="vk-key" data-key="ㅈ" data-shift="ㅉ">ㅈ</button>
+            <button type="button" class="vk-key" data-key="ㄷ" data-shift="ㄸ">ㄷ</button>
+            <button type="button" class="vk-key" data-key="ㄱ" data-shift="ㄲ">ㄱ</button>
+            <button type="button" class="vk-key" data-key="ㅅ" data-shift="ㅆ">ㅅ</button>
+            <button type="button" class="vk-key" data-key="ㅛ" data-shift="ㅛ">ㅛ</button>
+            <button type="button" class="vk-key" data-key="ㅕ" data-shift="ㅕ">ㅕ</button>
+            <button type="button" class="vk-key" data-key="ㅑ" data-shift="ㅑ">ㅑ</button>
+            <button type="button" class="vk-key" data-key="ㅐ" data-shift="ㅒ">ㅐ</button>
+            <button type="button" class="vk-key" data-key="ㅔ" data-shift="ㅖ">ㅔ</button>
+         </div>
+         <div class="vk-row">
+            <button type="button" class="vk-key" data-key="ㅁ">ㅁ</button>
+            <button type="button" class="vk-key" data-key="ㄴ">ㄴ</button>
+            <button type="button" class="vk-key" data-key="ㅇ">ㅇ</button>
+            <button type="button" class="vk-key" data-key="ㄹ">ㄹ</button>
+            <button type="button" class="vk-key" data-key="ㅎ">ㅎ</button>
+            <button type="button" class="vk-key" data-key="ㅗ">ㅗ</button>
+            <button type="button" class="vk-key" data-key="ㅓ">ㅓ</button>
+            <button type="button" class="vk-key" data-key="ㅏ">ㅏ</button>
+            <button type="button" class="vk-key" data-key="ㅣ">ㅣ</button>
+         </div>
+         <div class="vk-row">
+            <button type="button" class="vk-key vk-shift" id="${ids.options}VkShift">⇧</button>
+            <button type="button" class="vk-key" data-key="ㅋ">ㅋ</button>
+            <button type="button" class="vk-key" data-key="ㅌ">ㅌ</button>
+            <button type="button" class="vk-key" data-key="ㅊ">ㅊ</button>
+            <button type="button" class="vk-key" data-key="ㅍ">ㅍ</button>
+            <button type="button" class="vk-key" data-key="ㅠ">ㅠ</button>
+            <button type="button" class="vk-key" data-key="ㅜ">ㅜ</button>
+            <button type="button" class="vk-key" data-key="ㅡ">ㅡ</button>
+            <button type="button" class="vk-key vk-backspace" id="${ids.options}VkBksp">⌫</button>
+         </div>
+         <div class="vk-row">
+            <button type="button" class="vk-key vk-space" id="${ids.options}VkSpace">Space</button>
+         </div>
+      </div>
     </div>
   `;
 
@@ -7332,6 +7371,8 @@ function renderTypeQuestion(question, quizOptions) {
 
   const input = document.getElementById(`${ids.options}Input`);
   const clearBtn = document.getElementById(`${ids.options}Clear`);
+  const vkKeyboard = document.getElementById(`${ids.options}Keyboard`);
+  const vkShift = document.getElementById(`${ids.options}VkShift`);
 
   if (input) {
     input.focus({ preventScroll: true });
@@ -7349,6 +7390,57 @@ function renderTypeQuestion(question, quizOptions) {
       if (event.key === "Enter") {
         event.preventDefault();
         nextQuestion();
+      }
+    });
+  }
+
+  if (vkKeyboard && input) {
+    let isShift = false;
+    const updateInputFromJamo = (jamos) => {
+      input.value = window.Hangul ? window.Hangul.assemble(jamos) : jamos.join("");
+      input.dispatchEvent(new Event("input"));
+      input.focus({ preventScroll: true });
+      input.setSelectionRange(input.value.length, input.value.length);
+    };
+
+    vkKeyboard.addEventListener("click", (e) => {
+      const btn = e.target.closest(".vk-key");
+      if (!btn) return;
+      
+      const currentJamos = window.Hangul ? window.Hangul.disassemble(input.value) : input.value.split("");
+
+      if (btn.id === `${ids.options}VkShift`) {
+        isShift = !isShift;
+        btn.classList.toggle("active", isShift);
+        vkKeyboard.querySelectorAll(".vk-key[data-shift]").forEach(k => {
+          k.textContent = isShift ? k.dataset.shift : k.dataset.key;
+        });
+        return;
+      }
+
+      if (btn.id === `${ids.options}VkBksp`) {
+        currentJamos.pop();
+        updateInputFromJamo(currentJamos);
+        return;
+      }
+
+      if (btn.id === `${ids.options}VkSpace`) {
+        currentJamos.push(" ");
+        updateInputFromJamo(currentJamos);
+        return;
+      }
+
+      if (btn.dataset.key) {
+        const char = isShift && btn.dataset.shift ? btn.dataset.shift : btn.dataset.key;
+        currentJamos.push(char);
+        updateInputFromJamo(currentJamos);
+        if (isShift) {
+           isShift = false;
+           vkShift.classList.remove("active");
+           vkKeyboard.querySelectorAll(".vk-key[data-shift]").forEach(k => {
+             k.textContent = k.dataset.key;
+           });
+        }
       }
     });
   }
