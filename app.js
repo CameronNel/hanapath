@@ -5015,13 +5015,13 @@ function isPhaseOneLessonUnlocked(index) {
   return Boolean(lesson) && (state.phaseOneCompleted.includes(lesson.id) || index <= getFirstIncompletePhaseOneIndex());
 }
 
-function resetPhaseOneView(index, mode = "intro") {
+function resetPhaseOneView(index, mode = "intro", options = {}) {
   phaseOneView = {
     lessonIndex: index,
     mode,
-    introIndex: 0,
-    slideIndex: 0,
-    questionIndex: 0,
+    introIndex: Number.isInteger(options.introIndex) ? options.introIndex : 0,
+    slideIndex: Number.isInteger(options.slideIndex) ? options.slideIndex : 0,
+    questionIndex: Number.isInteger(options.questionIndex) ? options.questionIndex : 0,
     results: [],
     hadMistake: false,
     answered: false,
@@ -8090,6 +8090,35 @@ function startNextLearn(opts = {}) {
   openLearnStageContent("vocabulary", getTrackLevel("vocabulary"));
 }
 
+function getRequestedLearnLaunch() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("learn") !== "alphabet") {
+    return null;
+  }
+
+  const requestedStage = Number(params.get("stage"));
+  const stageNumber = Number.isInteger(requestedStage) ? requestedStage : 1;
+  const stageIndex = clampLevel(stageNumber, 1, phaseOneLessons.length) - 1;
+  const lesson = phaseOneLessons[stageIndex];
+  if (!lesson) {
+    return null;
+  }
+
+  const requestedCard = Number(params.get("card"));
+  const hasCard = Number.isInteger(requestedCard);
+  const cardIndex = hasCard ? clampLevel(requestedCard, 1, lesson.concepts.length) - 1 : 0;
+  const requestedMode = params.get("mode");
+  const mode = requestedMode === "intro" || requestedMode === "learn" || requestedMode === "check"
+    ? requestedMode
+    : (hasCard ? "learn" : "intro");
+
+  return {
+    lessonIndex: stageIndex,
+    mode,
+    slideIndex: cardIndex,
+  };
+}
+
 // Mount the Hangul lesson player inside `area` and wire its controls.
 // onResult(passed) fires once when the lesson reaches its result screen.
 function mountLessonPlayer(area, index, { onResult } = {}) {
@@ -8206,7 +8235,17 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
 }
 
 // Open a Hangul lesson inside the Learn hub (detail screen).
-function openLearnLesson(index, { resume = false, trackProgress = true } = {}) {
+function openLearnLesson(
+  index,
+  {
+    resume = false,
+    trackProgress = true,
+    startMode = "intro",
+    startIntroIndex = 0,
+    startSlideIndex = 0,
+    startQuestionIndex = 0,
+  } = {},
+) {
   let idx = index;
   if (!phaseOneLessons[idx]) { startNextLearn(); return; }
   if (idx > state.phaseOneCompleted.length) {
@@ -8217,7 +8256,13 @@ function openLearnLesson(index, { resume = false, trackProgress = true } = {}) {
   activeHub = "learn";
   setNavActive("learn");
   const canResume = resume && phaseOneView.lessonIndex === idx && phaseOneView.mode !== "result";
-  if (!canResume) resetPhaseOneView(idx);
+  if (!canResume) {
+    resetPhaseOneView(idx, startMode, {
+      introIndex: startIntroIndex,
+      slideIndex: startSlideIndex,
+      questionIndex: startQuestionIndex,
+    });
+  }
   if (trackProgress) {
     state.phaseOneActive = idx;
     state.learnInProgress = true;
@@ -9550,6 +9595,16 @@ async function init() {
   window.addEventListener("blur", stopSpeech);
   window.addEventListener("pagehide", stopSpeech);
   bindKeyboardShortcuts();
+  const requestedLearnLaunch = getRequestedLearnLaunch();
+  if (requestedLearnLaunch) {
+    openLearnLesson(requestedLearnLaunch.lessonIndex, {
+      resume: false,
+      trackProgress: true,
+      startMode: requestedLearnLaunch.mode,
+      startSlideIndex: requestedLearnLaunch.slideIndex,
+    });
+    return;
+  }
   // Learning-first: open straight into the next new lesson.
   startNextLearn({ resume: true });
 }
