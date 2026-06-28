@@ -2373,3 +2373,175 @@ li { margin-bottom: 4px; }
 .virtual-keyboard[hidden] {
   display: none !important;
 }
+
+/* ── ENTIRE KOREAN ALPHABET BOARD ─────────────────────────────── */
+/* [2026-06-29] Styles for the new full-alphabet reference (keyboard + list views). */
+.alpha-board-entry {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid var(--line-strong);
+  background:
+    linear-gradient(135deg, rgba(91,157,255,.16), rgba(45,212,191,.10));
+  transition: transform var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out);
+}
+.alpha-board-entry:hover { transform: translateY(-2px); box-shadow: var(--glow-accent); }
+.alpha-board-entry-main { flex: 1 1 auto; }
+.alpha-board-entry-glyphs {
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 2px;
+  opacity: .9;
+}
+
+.alpha-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.alpha-seg-group {
+  display: inline-flex;
+  background: var(--panel-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  padding: 3px;
+  gap: 2px;
+}
+.alpha-seg {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease-soft), color var(--dur-1) var(--ease-soft);
+}
+.alpha-seg.active { background: var(--accent); color: #06122b; }
+
+.alpha-keyboard { display: flex; flex-direction: column; gap: 8px; }
+.alpha-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.alpha-row.wrap { flex-wrap: wrap; }
+
+.alpha-key {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 60px;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  cursor: pointer;
+  padding: 4px 2px;
+  transition: transform var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-soft), border-color var(--dur-1) var(--ease-soft);
+  touch-action: manipulation;
+}
+.alpha-key:hover { border-color: var(--accent); transform: translateY(-1px); }
+.alpha-key:active { transform: translateY(1px); }
+.alpha-key.selected { background: rgba(91,157,255,.22); border-color: var(--accent); }
+.alpha-key.flash-pulse { background: var(--accent); color: #06122b; }
+.alpha-key-glyph { font-family: "Noto Sans KR", sans-serif; font-size: 1.4rem; font-weight: 700; line-height: 1; }
+.alpha-key-sub { font-size: .62rem; color: var(--muted); font-weight: 600; }
+.alpha-key.selected .alpha-key-sub { color: var(--text); }
+.alpha-key.control {
+  flex: 1.4 1 0;
+  max-width: 78px;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--panel-strong);
+}
+.alpha-key.control.active { background: var(--accent); color: #06122b; border-color: var(--accent); }
+.alpha-key.compound { max-width: 64px; flex: 0 0 auto; min-width: 52px; }
+
+.alpha-compound-head,
+.alpha-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 14px 0 10px;
+}
+.alpha-compound-head { border-top: 1px solid var(--line); padding-top: 14px; }
+.alpha-group-head { margin-top: 0; }
+
+.alpha-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+  gap: 8px;
+}
+.alpha-list-letter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 64px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-soft);
+  touch-action: manipulation;
+}
+.alpha-list-letter:hover { border-color: var(--accent); transform: translateY(-1px); }
+.alpha-list-letter.selected { background: rgba(91,157,255,.22); border-color: var(--accent); }
+.alpha-list-letter.flash-pulse { background: var(--accent); color: #06122b; }
+.alpha-list-glyph { font-family: "Noto Sans KR", sans-serif; font-size: 1.6rem; font-weight: 700; line-height: 1; }
+.alpha-list-sub { font-size: .72rem; color: var(--muted); font-weight: 600; }
+.alpha-list-letter.selected .alpha-list-sub { color: var(--text); }
+
+.alpha-detail { position: sticky; bottom: 8px; }
+.alpha-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.alpha-detail-glyph {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  border: 1px solid var(--line-strong);
+  background: rgba(91,157,255,.14);
+  color: var(--text);
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 2.1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.alpha-detail-glyph:hover { border-color: var(--accent); }
+.alpha-detail-meta { flex: 1 1 auto; min-width: 0; }
+.alpha-detail-name { font-family: "Noto Sans KR", sans-serif; font-size: 1.3rem; font-weight: 700; }
+.alpha-detail-roman { font-size: .85rem; color: var(--muted); }
+.alpha-detail-play {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--accent);
+  color: #06122b;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.alpha-detail-play:hover { filter: brightness(1.08); }
+.alpha-detail-note { margin: 12px 0 4px; color: var(--text); }
+.alpha-detail-example { margin: 0; color: var(--muted); }

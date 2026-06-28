@@ -140,19 +140,21 @@ const BATCHIM_GROUPS = [
   { group: "ng", letters: ["ㅇ"] },
 ];
 
+// [2026-06-29] Romanization standardized to Revised Romanization (single
+// initials) so the atlas matches LETTER_SOUND; fixes the "g / k" vs "g" drift.
 const consonantAtlas = [
-  { char: "ㄱ", tag: "plain", name: "g / k", note: "Soft at the start, stronger at the end.", example: "가" },
+  { char: "ㄱ", tag: "plain", name: "g", note: "Soft at the start, stronger at the end.", example: "가" },
   { char: "ㄲ", tag: "tense", name: "kk", note: "Tense twin of ㄱ.", example: "까" },
   { char: "ㄴ", tag: "plain", name: "n", note: "A clean nasal sound.", example: "나" },
-  { char: "ㄷ", tag: "plain", name: "d / t", note: "Pairs with a sharper tense version.", example: "다" },
+  { char: "ㄷ", tag: "plain", name: "d", note: "Pairs with a sharper tense version.", example: "다" },
   { char: "ㄸ", tag: "tense", name: "tt", note: "Tense twin of ㄷ.", example: "따" },
-  { char: "ㄹ", tag: "plain", name: "r / l", note: "Flaps between r and l depending on position.", example: "라" },
+  { char: "ㄹ", tag: "plain", name: "r", note: "Flaps between r and l depending on position.", example: "라" },
   { char: "ㅁ", tag: "plain", name: "m", note: "A steady closed-mouth sound.", example: "마" },
-  { char: "ㅂ", tag: "plain", name: "b / p", note: "Soft in front, firmer at the end.", example: "바" },
+  { char: "ㅂ", tag: "plain", name: "b", note: "Soft in front, firmer at the end.", example: "바" },
   { char: "ㅃ", tag: "tense", name: "pp", note: "Tense twin of ㅂ.", example: "빠" },
   { char: "ㅅ", tag: "plain", name: "s", note: "Starts with s; closes in the t group as batchim.", example: "사" },
   { char: "ㅆ", tag: "tense", name: "ss", note: "Tense twin of ㅅ.", example: "싸" },
-  { char: "ㅇ", tag: "support", name: "silent / ng", note: "Silent at the start, nasal at the end.", example: "아" },
+  { char: "ㅇ", tag: "support", name: "silent (ng)", note: "Silent at the start, nasal at the end.", example: "아" },
   { char: "ㅈ", tag: "plain", name: "j", note: "Soft affricate with a neat tongue release.", example: "자" },
   { char: "ㅉ", tag: "tense", name: "jj", note: "Tense twin of ㅈ.", example: "짜" },
   { char: "ㅊ", tag: "aspirated", name: "ch", note: "Breathier than ㅈ.", example: "차" },
@@ -205,7 +207,8 @@ const vowelAtlas = [
   { char: "ㅝ", family: "compound", name: "wo", note: "ㅜ + ㅓ in one block.", example: "궈" },
   { char: "ㅞ", family: "compound", name: "we", note: "ㅜ + ㅔ in one block.", example: "궤" },
   { char: "ㅟ", family: "compound", name: "wi", note: "ㅜ + ㅣ in one block.", example: "귀" },
-  { char: "ㅢ", family: "compound", name: "ui", note: "A special compound vowel.", example: "긔" },
+  // [2026-06-29] Example changed 긔 → 의 (긔 is effectively a non-word; 의 matches the demo audio).
+  { char: "ㅢ", family: "compound", name: "ui", note: "A special compound vowel.", example: "의" },
 ];
 
 const phaseOneLessons = [
@@ -3692,6 +3695,9 @@ function loadState() {
     learnInProgress: false,
     mainTab: "alphabet",
     alphabetView: "vowels",
+    // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
+    alphabetBoardMode: "keyboard",
+    alphabetBoardLabels: "roman",
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
@@ -6207,6 +6213,277 @@ function renderAtlas() {
   });
 }
 
+// ─── ENTIRE KOREAN ALPHABET REFERENCE ─────────────────────────────────────────
+// [2026-06-29] New feature: full-alphabet reference tab (keyboard + list views,
+// tap-to-hear, per-group Play all). Reuses existing atlases/audio map.
+// A single "see the whole system" view: every consonant and vowel laid out
+// either as a real Dubeolsik (2-set) keyboard or as grouped lists. Tap any
+// letter to hear its demo syllable and open a detail card.
+
+// Standard Korean 2-set (Dubeolsik) keyboard, mirroring the in-app typing
+// keyboard. Only the top row gains tense letters under Shift.
+const DUBEOLSIK_ROWS = [
+  ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ"],
+  ["ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ"],
+  ["ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ"],
+];
+const DUBEOLSIK_SHIFT = {
+  "ㅂ": "ㅃ", "ㅈ": "ㅉ", "ㄷ": "ㄸ", "ㄱ": "ㄲ", "ㅅ": "ㅆ", "ㅐ": "ㅒ", "ㅔ": "ㅖ",
+};
+// Compound vowels are not single keys on a 2-set keyboard; they are typed as
+// two-key combos. Shown as a strip beneath the board.
+const COMPOUND_VOWELS = [
+  { char: "ㅘ", combo: ["ㅗ", "ㅏ"] },
+  { char: "ㅙ", combo: ["ㅗ", "ㅐ"] },
+  { char: "ㅚ", combo: ["ㅗ", "ㅣ"] },
+  { char: "ㅝ", combo: ["ㅜ", "ㅓ"] },
+  { char: "ㅞ", combo: ["ㅜ", "ㅔ"] },
+  { char: "ㅟ", combo: ["ㅜ", "ㅣ"] },
+  { char: "ㅢ", combo: ["ㅡ", "ㅣ"] },
+];
+
+// Pedagogical groupings for the list view (with per-group "Play all").
+const ALPHABET_LIST_GROUPS = [
+  { title: "Basic consonants", sub: "14 core consonants", chars: ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"] },
+  { title: "Tense consonants", sub: "Doubled, tighter sounds", chars: ["ㄲ", "ㄸ", "ㅃ", "ㅆ", "ㅉ"] },
+  { title: "Basic vowels", sub: "Simple and y-vowels", chars: ["ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ", "ㅣ"] },
+  { title: "Compound vowels", sub: "Combined vowel shapes", chars: ["ㅐ", "ㅒ", "ㅔ", "ㅖ", "ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ", "ㅟ", "ㅢ"] },
+];
+
+// Merge the existing atlases into one lookup so the board shares the same
+// notes, examples and tags as the lesson screens (single source of truth).
+const JAMO_INFO = (() => {
+  const map = {};
+  consonantAtlas.forEach((it) => {
+    map[it.char] = { kind: "consonant", tag: it.tag, note: it.note, example: it.example, name: CONSONANT_NAMES[it.char] || it.char };
+  });
+  vowelAtlas.forEach((it) => {
+    map[it.char] = { kind: "vowel", family: it.family, note: it.note, example: it.example, name: HANGUL_JAMO_SPEAK[it.char] || it.char };
+  });
+  return map;
+})();
+
+let alphabetBoardShift = false;
+let alphabetBoardSelected = "ㄱ";
+
+// Compact romanization for a keycap. LETTER_SOUND stays the single source of
+// truth; only ㅇ's long label is shortened to fit.
+function jamoRoman(ch) {
+  const r = LETTER_SOUND[ch] || "";
+  return r === "silent (ng)" ? "–/ng" : r;
+}
+
+// The syllable that actually plays when a letter is tapped (가 / 아 / 의…).
+function jamoDemo(ch) {
+  return HANGUL_JAMO_SPEAK[ch] || ch;
+}
+
+function jamoSubLabel(ch) {
+  const mode = state.alphabetBoardLabels || "roman";
+  if (mode === "none") return "";
+  if (mode === "name") return (JAMO_INFO[ch] && JAMO_INFO[ch].name) || ch;
+  return jamoRoman(ch);
+}
+
+// Sequential player id so a new "Play all" interrupts a running one.
+let alphabetPlayAllToken = 0;
+async function playAlphabetGroup(chars) {
+  const token = ++alphabetPlayAllToken;
+  for (const ch of chars) {
+    if (token !== alphabetPlayAllToken) return;
+    selectAlphabetLetter(ch, { play: false });
+    await speak(jamoDemo(ch), { preserveSequence: true });
+    if (token !== alphabetPlayAllToken) return;
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+  }
+}
+
+function alphabetDetailHtml(ch) {
+  const info = JAMO_INFO[ch] || {};
+  const kindLabel = info.kind === "vowel"
+    ? `Vowel · ${escapeHtml(info.family || "")}`
+    : `Consonant · ${escapeHtml(info.tag || "")}`;
+  return `
+    <div class="alpha-detail-head">
+      <button class="alpha-detail-glyph" type="button" data-alpha-letter="${escapeHtml(ch)}" lang="ko" aria-label="Hear ${escapeHtml(jamoDemo(ch))}">${escapeHtml(ch)}</button>
+      <div class="alpha-detail-meta">
+        <div class="eyebrow">${kindLabel}</div>
+        <div class="alpha-detail-name" lang="ko">${escapeHtml(info.name || ch)}</div>
+        <div class="alpha-detail-roman">Sounds like “${escapeHtml(jamoRoman(ch))}” · plays <span lang="ko">${escapeHtml(jamoDemo(ch))}</span></div>
+      </div>
+      <button class="alpha-detail-play" type="button" data-alpha-letter="${escapeHtml(ch)}" aria-label="Play sound">▶</button>
+    </div>
+    <p class="alpha-detail-note">${escapeHtml(info.note || "")}</p>
+    <p class="alpha-detail-example"><strong>Example:</strong> <span lang="ko">${escapeHtml(info.example || jamoDemo(ch))}</span></p>
+  `;
+}
+
+// Update the detail card and (optionally) play the letter, without a full
+// re-render so the board stays put.
+function selectAlphabetLetter(ch, { play = true } = {}) {
+  alphabetBoardSelected = ch;
+  const detail = document.getElementById("alphaBoardDetail");
+  if (detail) detail.innerHTML = alphabetDetailHtml(ch);
+  document.querySelectorAll("#screen-detail [data-alpha-letter]").forEach((node) => {
+    node.classList.toggle("selected", node.dataset.alphaLetter === ch);
+  });
+  if (play) {
+    alphabetPlayAllToken += 1; // cancel any running "Play all"
+    const target = document.querySelector(`#screen-detail .alpha-key[data-alpha-letter="${ch}"]`)
+      || document.querySelector(`#screen-detail .alpha-list-letter[data-alpha-letter="${ch}"]`);
+    if (target) flashElement(target);
+    void speak(jamoDemo(ch));
+  }
+}
+
+function alphabetKeyHtml(ch, { wide = false } = {}) {
+  const sub = jamoSubLabel(ch);
+  return `
+    <button class="alpha-key${wide ? " wide" : ""}${ch === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(ch)}" lang="ko" aria-label="${escapeHtml(jamoDemo(ch))}">
+      <span class="alpha-key-glyph">${escapeHtml(ch)}</span>
+      ${sub ? `<span class="alpha-key-sub">${escapeHtml(sub)}</span>` : ""}
+    </button>`;
+}
+
+function renderAlphabetKeyboardBoard() {
+  const rows = DUBEOLSIK_ROWS.map((row, rowIndex) => {
+    const keys = row.map((baseCh) => {
+      const ch = alphabetBoardShift && DUBEOLSIK_SHIFT[baseCh] ? DUBEOLSIK_SHIFT[baseCh] : baseCh;
+      return alphabetKeyHtml(ch);
+    }).join("");
+    // Put the Shift toggle at the start of the bottom row, like a real keyboard.
+    if (rowIndex === 2) {
+      return `<div class="alpha-row">
+        <button class="alpha-key control${alphabetBoardShift ? " active" : ""}" type="button" data-alpha-shift aria-pressed="${alphabetBoardShift}">⇧ Shift</button>
+        ${keys}
+      </div>`;
+    }
+    return `<div class="alpha-row">${keys}</div>`;
+  }).join("");
+
+  const compoundStrip = COMPOUND_VOWELS.map(({ char, combo }) => `
+    <button class="alpha-key compound${char === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(char)}" lang="ko" aria-label="${escapeHtml(jamoDemo(char))}">
+      <span class="alpha-key-glyph">${escapeHtml(char)}</span>
+      <span class="alpha-key-sub">${escapeHtml(combo.join("+"))}</span>
+    </button>
+  `).join("");
+
+  return `
+    <div class="card alpha-keyboard">
+      <div class="screen-sub" style="margin-bottom:10px;">Korean 2-set (Dubeolsik) layout — the real keyboard you'll type on. Tap a key to hear it; tap <strong>Shift</strong> for the tense letters.</div>
+      ${rows}
+      <div class="alpha-compound-head">
+        <div>
+          <div class="eyebrow">Compound vowels</div>
+          <div class="screen-sub" style="margin-bottom:0;">Typed as two keys (shown below each).</div>
+        </div>
+        <button class="button secondary compact" type="button" data-alpha-playgroup="compound">▶ Play all</button>
+      </div>
+      <div class="alpha-row wrap">${compoundStrip}</div>
+    </div>
+  `;
+}
+
+function renderAlphabetListBoard() {
+  return ALPHABET_LIST_GROUPS.map((group, index) => `
+    <div class="card">
+      <div class="alpha-group-head">
+        <div>
+          <div class="eyebrow">${escapeHtml(group.title)}</div>
+          <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(group.sub)} · ${group.chars.length} letters</div>
+        </div>
+        <button class="button secondary compact" type="button" data-alpha-playgroup="${index}">▶ Play all</button>
+      </div>
+      <div class="alpha-list-grid">
+        ${group.chars.map((ch) => `
+          <button class="alpha-list-letter${ch === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(ch)}" lang="ko" aria-label="${escapeHtml(jamoDemo(ch))}">
+            <span class="alpha-list-glyph">${escapeHtml(ch)}</span>
+            <span class="alpha-list-sub">${escapeHtml(jamoSubLabel(ch) || jamoRoman(ch))}</span>
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderEntireAlphabet() {
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+  activeHub = "learn";
+  setNavActive("learn");
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("learn", "Entire Korean alphabet", () => openLearnStageMenu("alphabet"), "Alphabet");
+
+  const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
+  const labels = state.alphabetBoardLabels || "roman";
+  if (!alphabetBoardSelected) alphabetBoardSelected = "ㄱ";
+
+  const seg = (group, value, current, label) =>
+    `<button class="alpha-seg${value === current ? " active" : ""}" type="button" data-alpha-${group}="${value}" aria-pressed="${value === current}">${label}</button>`;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Reference · Full alphabet</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">The entire Korean alphabet</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">All 19 consonants and 21 vowels in one place. Tap any letter to hear it.</div>
+      <div class="alpha-controls">
+        <div class="alpha-seg-group" role="group" aria-label="Display mode">
+          ${seg("mode", "keyboard", mode, "⌨ Keyboard")}
+          ${seg("mode", "list", mode, "☰ List")}
+        </div>
+        <div class="alpha-seg-group" role="group" aria-label="Letter labels">
+          ${seg("labels", "roman", labels, "Aa Sound")}
+          ${seg("labels", "name", labels, "가 Name")}
+          ${seg("labels", "none", labels, "∅ Hide")}
+        </div>
+      </div>
+    </div>
+    ${mode === "keyboard" ? renderAlphabetKeyboardBoard() : renderAlphabetListBoard()}
+    <div class="card alpha-detail" id="alphaBoardDetail">${alphabetDetailHtml(alphabetBoardSelected)}</div>
+  `;
+
+  // Mode / label segmented controls.
+  el.querySelectorAll("[data-alpha-mode]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.alphabetBoardMode = btn.dataset.alphaMode;
+      saveState();
+      renderEntireAlphabet();
+    });
+  });
+  el.querySelectorAll("[data-alpha-labels]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.alphabetBoardLabels = btn.dataset.alphaLabels;
+      saveState();
+      renderEntireAlphabet();
+    });
+  });
+  const shiftBtn = el.querySelector("[data-alpha-shift]");
+  if (shiftBtn) shiftBtn.addEventListener("click", () => {
+    alphabetBoardShift = !alphabetBoardShift;
+    renderEntireAlphabet();
+  });
+  el.querySelectorAll("[data-alpha-playgroup]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.alphaPlaygroup;
+      const chars = key === "compound"
+        ? COMPOUND_VOWELS.map((v) => v.char)
+        : (ALPHABET_LIST_GROUPS[Number(key)] || {}).chars || [];
+      if (chars.length) void playAlphabetGroup(chars);
+    });
+  });
+  el.querySelectorAll("[data-alpha-letter]").forEach((btn) => {
+    btn.addEventListener("click", () => selectAlphabetLetter(btn.dataset.alphaLetter));
+  });
+}
+
+function openEntireAlphabet() {
+  refreshProgressionState();
+  state.route = { hub: "learn", item: "alphabet", stage: null };
+  saveState();
+  renderEntireAlphabet();
+}
+
 function populateSyllableLab() {
   els.labInitial.innerHTML = INITIALS.map((item) => `<option value="${item}">${item}</option>`).join("");
   els.labVowel.innerHTML = MEDIALS.map((item) => `<option value="${item}">${item}</option>`).join("");
@@ -7853,7 +8130,8 @@ function showDetailBarWithBack(hub, itemTitle, onBack = null, backLabel = null) 
   if (!bar) return;
   const label = backLabel || (HUB_DEFS[hub] ? HUB_DEFS[hub].label : "Menu");
   bar.innerHTML = `
-    <button class="back-btn" type="button">â€¹ ${escapeHtml(label)}</button>
+    <!-- [2026-06-29] Fixed mojibake back-arrow (â€¹ → ‹) in this back-bar variant. -->
+    <button class="back-btn" type="button">‹ ${escapeHtml(label)}</button>
     ${itemTitle ? `<span class="detail-bar-title">${escapeHtml(itemTitle)}</span>` : ""}
   `;
   bar.querySelector(".back-btn").addEventListener("click", () => {
@@ -8067,6 +8345,19 @@ function renderLearnStageMenu(itemId) {
     `;
   }).join("");
 
+  // [2026-06-29] Entry card for the Entire Korean Alphabet board, pinned atop the alphabet stage list.
+  const fullAlphabetHtml = itemId === "alphabet"
+    ? `
+    <button class="card alpha-board-entry" type="button" id="openEntireAlphabet">
+      <div class="alpha-board-entry-main">
+        <div class="eyebrow">Reference</div>
+        <div class="study-row-ko">Entire Korean alphabet</div>
+        <div class="screen-sub" style="margin-bottom:0;">Every consonant and vowel as a keyboard or list — tap to hear each sound.</div>
+      </div>
+      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가나다</span>
+    </button>`
+    : "";
+
   const letterDue = itemId === "alphabet" ? getDueLetterCount() : 0;
   const letterReviewHtml = letterDue
     ? `
@@ -8092,6 +8383,7 @@ function renderLearnStageMenu(itemId) {
         <span class="pill muted">Locked</span>
       </div>
     </div>
+    ${fullAlphabetHtml}
     ${letterReviewHtml}
     <div class="card">
       <div class="flex-between mb-12">
@@ -8112,6 +8404,9 @@ function renderLearnStageMenu(itemId) {
   });
   const stageLetterReviewBtn = document.getElementById("stageLetterReviewBtn");
   if (stageLetterReviewBtn) stageLetterReviewBtn.addEventListener("click", () => startLetterReview());
+  // [2026-06-29] Wire the full-alphabet entry card.
+  const entireAlphabetBtn = document.getElementById("openEntireAlphabet");
+  if (entireAlphabetBtn) entireAlphabetBtn.addEventListener("click", () => openEntireAlphabet());
 }
 
 function openLearnStageMenu(itemId) {

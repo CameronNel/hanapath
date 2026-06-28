@@ -1,10 +1,11 @@
-const CACHE_NAME = "hanapath-shell-v56";
+// [2026-06-29] Cache bumped to v57 (+asset ?v=20260628x) to ship the alphabet board.
+const CACHE_NAME = "hanapath-shell-v57";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260628w",
+  "./styles.css?v=20260628x",
   "./lib/hangul.js",
-  "./app.js?v=20260628w",
+  "./app.js?v=20260628x",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
