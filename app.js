@@ -9281,19 +9281,19 @@ function renderPracticeView() {
         <span class="pill muted">Build + type</span>
       </div>
       <div class="study-list">
-        <div class="study-row">
+        <div class="study-row" style="pointer-events: none;">
           <div>
             <div class="study-row-ko">Drag-and-drop</div>
             <div class="study-row-sub">Put the Korean words into the right order.</div>
           </div>
         </div>
-        <div class="study-row">
+        <div class="study-row" style="pointer-events: none;">
           <div>
             <div class="study-row-ko">Dictation</div>
             <div class="study-row-sub">Hear a sentence and type it out.</div>
           </div>
         </div>
-        <div class="study-row">
+        <div class="study-row" style="pointer-events: none;">
           <div>
             <div class="study-row-ko">Replay</div>
             <div class="study-row-sub">Tap Replay sound whenever you need it.</div>
