@@ -678,6 +678,46 @@ input, textarea { cursor: text; }
   color: var(--accent);
 }
 
+.lesson-intro-card {
+  padding: 20px;
+}
+
+.lesson-intro-card .concept-cue {
+  margin-top: 14px;
+}
+
+.intro-grid {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.intro-grid strong {
+  display: block;
+  font-size: .78rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+.intro-grid ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.intro-grid li {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: .88rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 560px) {
+  .intro-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .checkpoint-card {
   background: rgba(255,255,255,.04);
   border: 1px solid var(--line);

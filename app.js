@@ -215,6 +215,32 @@ const phaseOneLessons = [
     shortTitle: "Anchor vowels",
     duration: "5 min",
     goal: "Own ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ before adding anything fancy.",
+    introCards: [
+      {
+        kicker: "Before you start",
+        title: "Your first six vowel anchors",
+        body: "This stage gives you the six base vowels and the silent ㅇ frame that lets them become real blocks.",
+        bullets: [
+          "Why vowels need silent ㅇ at the start",
+          "How direction helps you tell vowels apart",
+          "How vowels fit inside square syllable blocks",
+        ],
+        snag: "Do not read ㅇ as ng at the start. Initial ㅇ is silent.",
+        cool: "Once these six shapes click, the rest of the vowels are mostly upgrades and combinations.",
+      },
+      {
+        kicker: "Direction clues",
+        title: "Read the shape before the sound",
+        body: "The short stroke tells you where the vowel opens and where it sits in the block.",
+        bullets: [
+          "ㅏ and ㅓ mirror each other",
+          "ㅗ and ㅜ swap top and bottom positions",
+          "ㅣ and ㅡ are the tall and flat anchors",
+        ],
+        snag: "A vowel can look similar but sit in a different seat.",
+        cool: "Direction is the cheat code for the first lesson.",
+      },
+    ],
     concepts: [
       {
         title: "Silent ㅇ fills the first seat",
@@ -293,6 +319,32 @@ const phaseOneLessons = [
     shortTitle: "Base consonants",
     duration: "7 min",
     goal: "Recognize the 14 base consonants by shape and their most useful starting sound.",
+    introCards: [
+      {
+        kicker: "Before you start",
+        title: "The base consonant map",
+        body: "These 14 consonants are the shapes you reuse over and over in Hangul.",
+        bullets: [
+          "Meet the easiest anchors first: ㄱ, ㄴ, ㅁ, ㅅ, ㅇ",
+          "Use 가-style sound anchors before exact pronunciation",
+          "Treat tense and aspirated letters as families",
+        ],
+        snag: "English names are only temporary handles.",
+        cool: "The shapes are the real memory hook.",
+      },
+      {
+        kicker: "Shape families",
+        title: "See the families",
+        body: "Plain, aspirated, and tense shapes are related by visible changes.",
+        bullets: [
+          "ㄱ pairs with ㅋ",
+          "ㄷ pairs with ㅌ",
+          "ㅂ pairs with ㅍ",
+        ],
+        snag: "Do not memorize each letter as isolated noise.",
+        cool: "Once the family is visible, the row is easier to remember.",
+      },
+    ],
     concepts: [
       {
         kicker: "Shape memory",
@@ -372,6 +424,32 @@ const phaseOneLessons = [
     shortTitle: "Block geometry",
     duration: "6 min",
     goal: "Build and split Hangul blocks without reading separate letters in a row.",
+    introCards: [
+      {
+        kicker: "Before you start",
+        title: "How Hangul blocks are built",
+        body: "The same letters sit in different seats depending on the vowel shape and whether a final consonant appears.",
+        bullets: [
+          "Vertical vowels sit on the right",
+          "Horizontal vowels sit below",
+          "Batchim sits on the bottom",
+        ],
+        snag: "A block is one syllable even when it has three parts.",
+        cool: "The seat map explains most of Hangul layout.",
+      },
+      {
+        kicker: "One block, one beat",
+        title: "Read the square, not the parts",
+        body: "Read the finished square as a single unit instead of spelling it out letter by letter.",
+        bullets: [
+          "Left/right for vertical vowels",
+          "Top/bottom for horizontal vowels",
+          "Close the floor when batchim appears",
+        ],
+        snag: "Do not scan Korean as a row of loose jamo.",
+        cool: "The layout is doing half the work for you.",
+      },
+    ],
     concepts: [
       {
         kicker: "Vertical vowels",
@@ -451,6 +529,32 @@ const phaseOneLessons = [
     shortTitle: "All vowels",
     duration: "8 min",
     goal: "Expand six anchors into all 21 modern vowels by spotting reusable pieces.",
+    introCards: [
+      {
+        kicker: "Before you start",
+        title: "From six vowels to all 21",
+        body: "The anchor vowels expand into y-vowels, close pairs, compounds, and ㅢ.",
+        bullets: [
+          "Double the short stroke for y-vowels",
+          "Keep ㅐ and ㅔ separate",
+          "Combine ㅗ/ㅜ with ㅏ/ㅓ/ㅣ",
+        ],
+        snag: "Modern pronunciation can blur some pairs, but spelling still matters.",
+        cool: "Most of the set is reusable parts plus one extra motion.",
+      },
+      {
+        kicker: "Same pieces, new sounds",
+        title: "Watch the patterns reuse themselves",
+        body: "The vowel set grows by reusing the shapes you already know.",
+        bullets: [
+          "ㅏ → ㅑ, ㅓ → ㅕ, ㅗ → ㅛ, ㅜ → ㅠ",
+          "ㅘ, ㅙ, ㅚ and ㅝ, ㅞ, ㅟ are compounds",
+          "ㅢ completes the modern set",
+        ],
+        snag: "Do not treat the new vowels as random symbols.",
+        cool: "The pattern is still shape first, sound second.",
+      },
+    ],
     concepts: [
       {
         kicker: "Add a y",
@@ -530,6 +634,32 @@ const phaseOneLessons = [
     shortTitle: "Strong consonants",
     duration: "7 min",
     goal: "Recognize all 19 initial consonant shapes and their five contrast families.",
+    introCards: [
+      {
+        kicker: "Before you start",
+        title: "Three consonant strengths",
+        body: "Hangul contrasts plain, aspirated, and tense consonants.",
+        bullets: [
+          "Plain is the base shape",
+          "Aspirated adds a puff of air",
+          "Tense doubles the shape",
+        ],
+        snag: "Do not force these into exact English boxes.",
+        cool: "The contrast is visual before it is phonetic.",
+      },
+      {
+        kicker: "Family pattern",
+        title: "Look for the repeated logic",
+        body: "The rows repeat the same idea across ㄱ, ㄷ, ㅂ, and ㅈ.",
+        bullets: [
+          "One base, one breathy partner, one tense partner",
+          "Double shapes usually mark tense",
+          "Recognition comes before finesse",
+        ],
+        snag: "Some rows are incomplete, like ㅅ and ㅆ without an aspirated partner.",
+        cool: "Spotting the family is enough for Phase 1.",
+      },
+    ],
     concepts: [
       {
         kicker: "The five rows",
@@ -609,6 +739,32 @@ const phaseOneLessons = [
     shortTitle: "Batchim",
     duration: "8 min",
     goal: "Spot a final consonant and close a syllable with one of seven basic end sounds.",
+    introCards: [
+      {
+        kicker: "Before you start",
+        title: "The bottom seat",
+        body: "Final consonants close the syllable and sit underneath the vowel pair.",
+        bullets: [
+          "Many spellings collapse into seven final sounds",
+          "ㅇ changes jobs at the end",
+          "Complex finals come later",
+        ],
+        snag: "A final letter does not always sound the same as when it starts a block.",
+        cool: "Batchim makes one written final become a smaller set of spoken endings.",
+      },
+      {
+        kicker: "Sound groups",
+        title: "Read the floor, then the frame",
+        body: "Start with the main block and only then listen for the closing consonant.",
+        bullets: [
+          "Open syllables stay airy",
+          "Closed syllables end on the floor",
+          "ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅇ are the anchor finals",
+        ],
+        snag: "The bottom seat is easy to miss if you read too fast.",
+        cool: "Once the floor is visible, finals stop feeling mysterious.",
+      },
+    ],
     concepts: [
       {
         kicker: "Block anatomy",
@@ -688,6 +844,32 @@ const phaseOneLessons = [
     shortTitle: "Read real words",
     duration: "8 min",
     goal: "Prove that you can decode short Korean words directly from their blocks.",
+    introCards: [
+      {
+        kicker: "Before you start",
+        title: "Read real words block by block",
+        body: "Now you decode whole words from their blocks instead of leaning on romanization.",
+        bullets: [
+          "Read one square, then move forward",
+          "Mix open and closed syllables",
+          "Use audio after your own attempt",
+        ],
+        snag: "Do not fall back into letter-by-letter scanning.",
+        cool: "This is where Hangul starts feeling like real text.",
+      },
+      {
+        kicker: "Graduation set",
+        title: "Prove the alphabet is landing",
+        body: "These words are the checkpoint that shows the alphabet is sticking.",
+        bullets: [
+          "Decode the shape first",
+          "Let meaning come second",
+          "Use sound to confirm, not replace",
+        ],
+        snag: "If you get lost, reset to the block, not the romanization.",
+        cool: "The final stage is about fluency, not speed reading.",
+      },
+    ],
     concepts: [
       {
         kicker: "Block by block",
@@ -2545,7 +2727,7 @@ let currentQuestion = null;
 let currentAnswered = false;
 let phaseOneResetArmed = false;
 let phaseOneResetTimer = 0;
-let phaseOneView = { lessonIndex: 0, mode: "learn", slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
+let phaseOneView = { lessonIndex: 0, mode: "intro", introIndex: 0, slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
 let currentQuizScope = "alphabet";
 let alphabetStageMenuOpen = false;
 let correctToastState = { hideTimer: 0, removeTimer: 0, listenersBound: false };
@@ -4427,7 +4609,13 @@ function validatePhaseOneLessons() {
   const ids = new Set();
 
   phaseOneLessons.forEach((lesson) => {
-    if (ids.has(lesson.id) || lesson.concepts.length < 1 || lesson.questions.length < 4) {
+    if (
+      ids.has(lesson.id) ||
+      !Array.isArray(lesson.introCards) ||
+      lesson.introCards.length < 1 ||
+      lesson.concepts.length < 1 ||
+      lesson.questions.length < 4
+    ) {
       throw new Error("Invalid Phase 1 lesson: " + lesson.id);
     }
 
@@ -4451,10 +4639,11 @@ function isPhaseOneLessonUnlocked(index) {
   return Boolean(lesson) && (state.phaseOneCompleted.includes(lesson.id) || index <= getFirstIncompletePhaseOneIndex());
 }
 
-function resetPhaseOneView(index, mode = "learn") {
+function resetPhaseOneView(index, mode = "intro") {
   phaseOneView = {
     lessonIndex: index,
     mode,
+    introIndex: 0,
     slideIndex: 0,
     questionIndex: 0,
     results: [],
@@ -4601,8 +4790,17 @@ function getPhaseOneVoiceText() {
 }
 
 function getPhaseOneButtonLabel(source, mode = phaseOneView.mode) {
+  if (mode === "intro") return "Preview intro";
   if (mode === "learn") return "Hear lesson";
   return "Review answer";
+}
+
+function getPhaseOneIntroCards(lesson) {
+  if (!lesson || !Array.isArray(lesson.introCards) || lesson.introCards.length === 0) {
+    return [];
+  }
+
+  return lesson.introCards;
 }
 
 function getPhaseOneVoiceFlashTargets() {
@@ -4881,6 +5079,67 @@ function renderPhaseOneConcept(lesson) {
   animateMotionScope(els.phaseOneStage);
 }
 
+function renderPhaseOneIntro(lesson) {
+  restorePhaseOneActions();
+  const introCards = getPhaseOneIntroCards(lesson);
+  const introCard = introCards[phaseOneView.introIndex] || introCards[0] || null;
+  const bullets = Array.isArray(introCard?.bullets) ? introCard.bullets.filter(Boolean) : [];
+  const dots = introCards
+    .map(
+      (_, index) =>
+        '<span class="' +
+        (index === phaseOneView.introIndex ? "active" : index < phaseOneView.introIndex ? "done" : "") +
+        '"></span>',
+    )
+    .join("");
+
+  els.phaseOneStage.innerHTML =
+    '<div class="lesson-step-row">' +
+    "<span>Before you start</span>" +
+    '<div class="lesson-dots" aria-hidden="true">' +
+    dots +
+    "</div>" +
+    "</div>" +
+    '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
+    '<div class="lesson-intro-card concept-card">' +
+    (introCard?.kicker ? '<p class="concept-kicker">' + escapeHtml(introCard.kicker) + "</p>" : "") +
+    "<h4>" +
+    escapeHtml(introCard?.title || lesson.shortTitle) +
+    "</h4>" +
+    "<p>" +
+    escapeHtml(introCard?.body || lesson.goal) +
+    "</p>" +
+    '<div class="intro-grid">' +
+    '<div><strong>You\'ll learn</strong>' +
+    (bullets.length
+      ? "<ul>" + bullets.map((bullet) => "<li>" + escapeHtml(bullet) + "</li>").join("") + "</ul>"
+      : "<p>" + escapeHtml(lesson.goal) + "</p>") +
+    "</div>" +
+    '<div><strong>Watch out for</strong>' +
+    "<p>" +
+    escapeHtml(introCard?.snag || lesson.goal) +
+    "</p>" +
+    "</div>" +
+    "</div>" +
+    '<div class="concept-cue">' +
+    escapeHtml(introCard?.cool || lesson.goal) +
+    "</div>" +
+    "</div>";
+
+  els.phaseOneBackButton.disabled = false;
+  els.phaseOneBackButton.textContent =
+    phaseOneView.introIndex > 0
+      ? "Back card"
+      : phaseOneView.lessonIndex > 0
+        ? "Prev stage"
+        : "Back to lessons";
+  els.phaseOneActionButton.disabled = false;
+  els.phaseOneActionButton.textContent =
+    phaseOneView.introIndex === introCards.length - 1 ? "Start lesson" : "Next card";
+  placePhaseOneActions();
+  animateMotionScope(els.phaseOneStage);
+}
+
 function renderPhaseOneQuestion(lesson) {
   restorePhaseOneActions();
   const question = lesson.questions[phaseOneView.questionIndex];
@@ -5003,7 +5262,9 @@ function renderPhaseOnePlayer() {
   els.phaseOneStageTitle.textContent = lesson.title;
   els.phaseOneStageGoal.textContent = lesson.goal;
 
-  if (phaseOneView.mode === "learn") {
+  if (phaseOneView.mode === "intro") {
+    renderPhaseOneIntro(lesson);
+  } else if (phaseOneView.mode === "learn") {
     renderPhaseOneConcept(lesson);
   } else if (phaseOneView.mode === "check") {
     renderPhaseOneQuestion(lesson);
@@ -5011,8 +5272,16 @@ function renderPhaseOnePlayer() {
     renderPhaseOneResult(lesson);
   }
 
-  els.phaseOneHearButton.disabled = !getPhaseOneVoiceText();
-  els.phaseOneHearButton.textContent = `▶ ${getPhaseOneButtonLabel(getPhaseOneVoiceSource())}`;
+  if (els.phaseOneHearButton) {
+    if (phaseOneView.mode === "intro") {
+      els.phaseOneHearButton.style.display = "none";
+      els.phaseOneHearButton.disabled = true;
+    } else {
+      els.phaseOneHearButton.style.display = "";
+      els.phaseOneHearButton.disabled = !getPhaseOneVoiceText();
+      els.phaseOneHearButton.textContent = `▶ ${getPhaseOneButtonLabel(getPhaseOneVoiceSource())}`;
+    }
+  }
 }
 
 function renderPhaseOneCourse() {
@@ -5067,6 +5336,18 @@ function answerPhaseOneQuestion(choice, button) {
 function advancePhaseOne() {
   const lesson = phaseOneLessons[phaseOneView.lessonIndex];
 
+  if (phaseOneView.mode === "intro") {
+    const introCards = getPhaseOneIntroCards(lesson);
+    if (phaseOneView.introIndex < introCards.length - 1) {
+      phaseOneView.introIndex += 1;
+    } else {
+      phaseOneView.mode = "learn";
+      phaseOneView.slideIndex = 0;
+    }
+    renderPhaseOnePlayer();
+    return;
+  }
+
   if (phaseOneView.mode === "learn") {
     if (phaseOneView.slideIndex < lesson.concepts.length - 1) {
       phaseOneView.slideIndex += 1;
@@ -5119,11 +5400,34 @@ function advancePhaseOne() {
 }
 
 function goBackPhaseOne() {
+  if (phaseOneView.mode === "intro") {
+    if (phaseOneView.introIndex > 0) {
+      phaseOneView.introIndex -= 1;
+      renderPhaseOnePlayer();
+      return;
+    }
+
+    if (phaseOneView.lessonIndex > 0) {
+      openPreviousPhaseOneLesson(phaseOneView.lessonIndex, true);
+    } else {
+      openLearnStageMenu("alphabet");
+    }
+    return;
+  }
+
   if (phaseOneView.mode === "learn") {
     if (phaseOneView.slideIndex > 0) {
       phaseOneView.slideIndex -= 1;
       renderPhaseOnePlayer();
       saveState();
+      return;
+    }
+
+    const introCards = getPhaseOneIntroCards(lesson);
+    if (introCards.length) {
+      phaseOneView.mode = "intro";
+      phaseOneView.introIndex = introCards.length - 1;
+      renderPhaseOnePlayer();
       return;
     }
 
@@ -7153,7 +7457,41 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
       onResult(phaseOneView.passed);
     }
   });
-  document.getElementById("hpStage").addEventListener("click", (e) => {
+  const stageEl = document.getElementById("hpStage");
+  let introSwipeStart = null;
+  if (stageEl) {
+    stageEl.addEventListener("pointerdown", (event) => {
+      if (phaseOneView.mode !== "intro") return;
+      if (event.button !== 0 && event.pointerType === "mouse") return;
+      if (event.target instanceof Element && event.target.closest("button, a, input, textarea, select")) return;
+      introSwipeStart = {
+        x: event.clientX,
+        y: event.clientY,
+        time: Date.now(),
+      };
+    });
+    stageEl.addEventListener("pointerup", (event) => {
+      if (phaseOneView.mode !== "intro" || !introSwipeStart) return;
+      const dx = event.clientX - introSwipeStart.x;
+      const dy = event.clientY - introSwipeStart.y;
+      const dt = Date.now() - introSwipeStart.time;
+      introSwipeStart = null;
+      if (dt > 650) return;
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+      if (dx < 0) {
+        advancePhaseOne();
+      } else {
+        goBackPhaseOne();
+      }
+    });
+    stageEl.addEventListener("pointercancel", () => {
+      introSwipeStart = null;
+    });
+    stageEl.addEventListener("lostpointercapture", () => {
+      introSwipeStart = null;
+    });
+  }
+  stageEl.addEventListener("click", (e) => {
     const btn = e.target.closest(".lesson-option");
     if (btn instanceof HTMLButtonElement && !btn.disabled) answerPhaseOneQuestion(btn.dataset.option || "", btn);
   });
