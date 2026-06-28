@@ -3225,11 +3225,11 @@ function getQuizIds(scope = getCurrentQuizScope()) {
   };
 }
 
-function getLevelBand(level, bands = 5) {
+function getLevelBand(level, bands = 10) {
   return Math.min(bands, Math.max(1, Math.ceil(clampLevel(level) / (10 / bands))));
 }
 
-function getCurrentBandSlice(items, level, bands = 5) {
+function getCurrentBandSlice(items, level, bands = 10) {
   const ordered = [...items];
   const band = getLevelBand(level, bands);
   const chunk = Math.max(1, Math.ceil(ordered.length / bands));
@@ -3237,7 +3237,7 @@ function getCurrentBandSlice(items, level, bands = 5) {
   return ordered.slice(start, Math.min(ordered.length, start + chunk));
 }
 
-function getRepeatBandSlice(items, level, bands = 5) {
+function getRepeatBandSlice(items, level, bands = 10) {
   const ordered = [...items];
   const band = getLevelBand(level, bands);
   const chunk = Math.max(1, Math.ceil(ordered.length / bands));
@@ -9111,8 +9111,8 @@ function renderPracticeView() {
   const sentenceBank = getSentenceStudyBank()
     .filter((item) => item.tokenCount >= 2)
     .sort((a, b) => a.tokenCount - b.tokenCount);
-  const currentSlice = getCurrentBandSlice(sentenceBank, level, 5);
-  const repeatSlice = getRepeatBandSlice(sentenceBank, level, 5);
+  const currentSlice = getCurrentBandSlice(sentenceBank, level, 10);
+  const repeatSlice = getRepeatBandSlice(sentenceBank, level, 10);
   const bandLabel = level <= 2
     ? "Basic sentence frames"
     : level <= 4
@@ -9383,8 +9383,8 @@ function renderLibrary() {
   const listenBank = getSentenceStudyBank()
     .filter((item) => item.tokenCount >= 2)
     .sort((a, b) => a.tokenCount - b.tokenCount);
-  const currentSlice = getCurrentBandSlice(listenBank, level, 5);
-  const repeatSlice = getRepeatBandSlice(listenBank, level, 5);
+  const currentSlice = getCurrentBandSlice(listenBank, level, 10);
+  const repeatSlice = getRepeatBandSlice(listenBank, level, 10);
   const bandLabel = level <= 2
     ? "Short sounds"
     : level <= 4
