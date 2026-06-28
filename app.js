@@ -5351,7 +5351,10 @@ function renderPhaseOneQuestion(lesson) {
     escapeHtml(question.detail) +
     "</p>" +
     '<div class="lesson-options">' +
-    question.options
+    // The lesson banks list the correct answer first; shuffle a copy so the
+    // right choice isn't always the top button. Order is matched by value, so
+    // shuffling the display has no effect on grading.
+    shuffle([...question.options])
       .map(
         (option) =>
           '<button class="lesson-option" type="button" data-option="' +
