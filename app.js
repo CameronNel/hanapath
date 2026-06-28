@@ -5573,10 +5573,16 @@ if ("speechSynthesis" in window && typeof window.speechSynthesis.getVoices === "
   }
 }
 
+let currentCustomAudio = null;
+
 function cancelSpeechOutput() {
   if (speechAutoSpeakTimer) {
     window.clearTimeout(speechAutoSpeakTimer);
     speechAutoSpeakTimer = 0;
+  }
+  if (currentCustomAudio) {
+    currentCustomAudio.pause();
+    currentCustomAudio.currentTime = 0;
   }
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
@@ -5602,7 +5608,7 @@ function scheduleAutoSpeak(text, delay = 160) {
 function speak(text, options = {}) {
   const { preserveSequence = false } = options;
   return new Promise((resolve) => {
-    if (!text || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance !== "function") {
+    if (!text) {
       resolve();
       return;
     }
@@ -5613,6 +5619,44 @@ function speak(text, options = {}) {
       stopSpeech();
     }
 
+    if (typeof window.AUDIO_MAP !== 'undefined') {
+      const cleanText = String(text).trim();
+      const audioUrl = window.AUDIO_MAP[cleanText];
+      
+      if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        
+        audio.onended = () => {
+          if (currentCustomAudio === audio) currentCustomAudio = null;
+          resolve();
+        };
+        
+        audio.onerror = () => {
+          console.warn(`Failed to play ${audioUrl}`);
+          if (currentCustomAudio === audio) currentCustomAudio = null;
+          fallbackSpeak(text, resolve);
+        };
+
+        currentCustomAudio = audio;
+        audio.play().catch(e => {
+          if (currentCustomAudio === audio) currentCustomAudio = null;
+          fallbackSpeak(text, resolve);
+        });
+        return;
+      } else {
+        console.warn(`No pre-generated audio found for: "${cleanText}"`);
+      }
+    }
+    
+    fallbackSpeak(text, resolve);
+  });
+}
+
+function fallbackSpeak(text, resolve) {
+    if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance !== "function") {
+      resolve();
+      return;
+    }
     const utterance = new SpeechSynthesisUtterance(text);
     const koreanVoice = getPreferredKoreanVoice();
     utterance.lang = koreanVoice?.lang || "ko-KR";
@@ -5631,7 +5675,6 @@ function speak(text, options = {}) {
     utterance.onerror = finish;
     window.speechSynthesis.speak(utterance);
     window.setTimeout(finish, Math.max(1200, String(text).length * 80));
-  });
 }
 
 async function playPhaseOneVoiceSequence() {
