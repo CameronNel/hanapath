@@ -2370,7 +2370,7 @@ function makeSentenceTypingQuestion(level = getTrackLevel("sentences")) {
     mode: "Listen and type",
     prompt: "Listen, then type the Korean sentence.",
     detail: `${item.source || "Sentence"} • ${item.tokenCount} words`,
-    visual: `<div class="sentence-clue">${escapeHtml(item.meaning || "Dictation")}</div><div class="fs-xs text-muted-2">Use the play button if you want a replay</div>`,
+    visual: `<div class="sentence-clue">${escapeHtml(item.meaning || "Dictation")}</div><div class="fs-xs text-muted-2">Use Replay sound for another pass</div>`,
     interaction: "type",
     options: [],
     answer: item.korean,
@@ -2554,6 +2554,7 @@ let correctToastState = { hideTimer: 0, removeTimer: 0, listenersBound: false };
 // "practice" (quiz only), or "all" (the full legacy screen).
 let currentFocus = "all";
 const SPEAK_RATE = 0.76;
+const KOREAN_VOICE_HINTS = ["neural", "natural", "premium", "enhanced", "google", "microsoft", "samsung", "naver", "kakao"];
 const PHASE_ONE_VOICE_MIN_STEP_MS = 650;
 const PHASE_ONE_VOICE_CHAR_MS = 170;
 const PHASE_ONE_VOICE_GAP_MS = 120;
@@ -4064,7 +4065,7 @@ function renderQuizCard(scope) {
       </div>
 
       <div class="review-actions">
-        <button class="button secondary" id="${ids.speak}" type="button">▶ Hear it</button>
+        <button class="button secondary" id="${ids.speak}" type="button" aria-label="Replay the current sound" title="Replay the current sound">▶ Replay sound</button>
         <button class="button primary" id="${ids.next}" type="button">Next →</button>
       </div>
     </div>
@@ -4667,6 +4668,51 @@ function getPhaseOneFlashTargets() {
 }
 
 let phaseOneVoicePlaybackId = 0;
+let speechVoicesCache = [];
+
+function refreshSpeechVoices() {
+  if (!("speechSynthesis" in window) || typeof window.speechSynthesis.getVoices !== "function") return;
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length) speechVoicesCache = voices;
+}
+
+function getSpeechVoices() {
+  if (speechVoicesCache.length) return speechVoicesCache;
+  refreshSpeechVoices();
+  return speechVoicesCache;
+}
+
+function scoreKoreanVoice(voice) {
+  const lang = String(voice?.lang || "").toLowerCase();
+  const name = String(voice?.name || "").toLowerCase();
+
+  let score = 0;
+  if (lang === "ko-kr") score += 30;
+  else if (lang.startsWith("ko")) score += 24;
+  else if (name.includes("korean") || name.includes("한국")) score += 14;
+  else return Number.NEGATIVE_INFINITY;
+
+  if (KOREAN_VOICE_HINTS.some((hint) => name.includes(hint))) score += 30;
+  if (voice?.localService === false) score += 4;
+  if (voice?.default) score += 2;
+  if (name.includes("demo") || name.includes("sample") || name.includes("test") || name.includes("basic") || name.includes("fallback")) score -= 12;
+  return score;
+}
+
+function getPreferredKoreanVoice() {
+  const voices = getSpeechVoices();
+  if (!voices.length) return null;
+  const koreanVoices = voices.filter((voice) => scoreKoreanVoice(voice) > Number.NEGATIVE_INFINITY);
+  if (!koreanVoices.length) return null;
+  return koreanVoices.reduce((best, voice) => (scoreKoreanVoice(voice) > scoreKoreanVoice(best) ? voice : best), koreanVoices[0]);
+}
+
+if ("speechSynthesis" in window && typeof window.speechSynthesis.getVoices === "function") {
+  refreshSpeechVoices();
+  if ("onvoiceschanged" in window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = refreshSpeechVoices;
+  }
+}
 
 function speak(text) {
   return new Promise((resolve) => {
@@ -4676,10 +4722,10 @@ function speak(text) {
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ko-KR";
+    const koreanVoice = getPreferredKoreanVoice();
+    utterance.lang = koreanVoice?.lang || "ko-KR";
     utterance.rate = SPEAK_RATE;
     utterance.pitch = 1;
-    const koreanVoice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("ko"));
     if (koreanVoice) utterance.voice = koreanVoice;
 
     let settled = false;
@@ -5754,7 +5800,7 @@ function generateListenQuestion(pools) {
     kind: "Listen",
     mode: "Audio match",
     prompt: "Listen, then choose the syllable.",
-    detail: "Use the play button to hear a fresh Hangul block.",
+    detail: "Use Replay sound to hear a fresh Hangul block.",
     visual: `<div class="big-glyph">◉</div>`,
     options,
     answer,
@@ -7809,7 +7855,7 @@ function renderPracticeView() {
       <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(practiceCue)}</div>
       <div class="text-muted-2 fs-sm" style="margin-bottom:12px;">Stage ${String(level).padStart(2, "0")} of 10 Â· ${escapeHtml(bandLabel)}</div>
       <div class="speak-actions">
-        <button class="button secondary compact" type="button" id="practiceHearTask">Hear example</button>
+        <button class="button secondary compact" type="button" id="practiceHearTask">Replay example</button>
         <button class="button secondary compact" type="button" id="practiceReviewWords">Review words</button>
         <button class="button secondary compact" type="button" id="practiceListenBtn">Listen</button>
       </div>
@@ -7869,7 +7915,7 @@ function renderPracticeView() {
         <div class="study-row">
           <div>
             <div class="study-row-ko">Replay</div>
-            <div class="study-row-sub">Hit Hear again whenever you need it.</div>
+            <div class="study-row-sub">Tap Replay sound whenever you need it.</div>
           </div>
         </div>
       </div>
@@ -8121,7 +8167,7 @@ function renderLibrary() {
         <div class="study-row">
           <div>
             <div class="study-row-ko">Dictation</div>
-            <div class="study-row-sub">Hear it and type the Korean sentence.</div>
+            <div class="study-row-sub">Replay the sound, then type the Korean sentence.</div>
           </div>
         </div>
         <div class="study-row">
