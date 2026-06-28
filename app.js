@@ -264,10 +264,10 @@ const phaseOneLessons = [
       },
       {
         kicker: "Up and down",
-        title: "ㅗ and ㅜ each have two seats",
+        title: "ㅗ and ㅜ also sit after a consonant",
         visual: "오 · 고 · 우 · 구",
-        body: "A vowel can sit in a starter block with initial ㅇ as an empty placeholder, or after a regular consonant. That is why ㅗ becomes 오 or 고, and ㅜ becomes 우 or 구.",
-        cue: "One vowel shape, two block positions.",
+        body: "You already saw ㅇ + ㅗ = 오 and ㅇ + ㅜ = 우. The same vowels also appear after a real consonant, so ㄱ + ㅗ becomes 고 and ㄱ + ㅜ becomes 구. Same vowel, different starter seat.",
+        cue: "Silent ㅇ gives you 오/우; a real consonant gives you 고/구.",
         voiceText: "오, 고, 우, 구",
       },
       {
