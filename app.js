@@ -5106,7 +5106,7 @@ function renderPhaseOneIntro(lesson) {
     "<h4>" +
     escapeHtml(introCard?.title || lesson.shortTitle) +
     "</h4>" +
-    "<p>" +
+    '<p class="intro-body">' +
     escapeHtml(introCard?.body || lesson.goal) +
     "</p>" +
     '<div class="intro-grid">' +
@@ -7323,7 +7323,7 @@ function openLearnStage(itemId, stageNumber, { resume = false } = {}) {
 
   if (itemId === "alphabet") {
     openLearnLesson(safeStage - 1, {
-      resume: (resume || (status === "current" && state.learnInProgress)),
+      resume: false,
       trackProgress: status === "current",
     });
     return;
