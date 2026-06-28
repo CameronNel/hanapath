@@ -217,8 +217,7 @@ const phaseOneLessons = [
     goal: "Own ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ before adding anything fancy.",
     concepts: [
       {
-        kicker: "Starting slot",
-        title: "A Korean block needs a starting slot",
+        title: "Silent ㅇ fills the first seat",
         visual: "아 · 어 · 오 · 우",
         body: "Korean blocks cannot start with a bare vowel. Silent ㅇ fills the empty first seat so the vowel can become a complete block.",
         cue: "Example: ㅇ + ㅏ = 아. At the start, ㅇ is silent.",
@@ -2921,7 +2920,7 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
   const sampleRows = concepts.slice(0, 3).map((concept) => `
     <div class="study-row">
       <div>
-        <div class="study-row-ko">${escapeHtml(concept.kicker || concept.title || lesson.shortTitle)}</div>
+        <div class="study-row-ko">${escapeHtml(concept.title || lesson.shortTitle)}</div>
         <div class="study-row-sub">${escapeHtml(concept.cue || concept.body || lesson.goal)}</div>
       </div>
       <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(concept))}">▶</button>
@@ -3033,7 +3032,7 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
         </div>
         <div class="study-row">
           <div>
-            <div class="study-row-ko">${escapeHtml(support.kicker || "Shape")}</div>
+            <div class="study-row-ko">${escapeHtml(support.title || "Shape")}</div>
             <div class="study-row-sub">${escapeHtml(support.title || support.cue || lesson.goal)}</div>
           </div>
           <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(support))}">▶</button>
@@ -3054,7 +3053,7 @@ function renderAlphabetPanelV2(view) {
     ? (stageLessons[0].concepts || []).slice(0, 3).map((concept, index) => `
       <div class="study-row">
         <div>
-          <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(concept.kicker || concept.title || stageLessons[0].shortTitle)}</div>
+          <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(concept.title || stageLessons[0].shortTitle)}</div>
           <div class="study-row-sub">${escapeHtml(concept.cue || concept.body || stageLessons[0].goal)}</div>
           <div class="fs-xs text-muted-2 mt-4">${escapeHtml(concept.body || stageLessons[0].goal)}</div>
         </div>
@@ -4602,18 +4601,7 @@ function getPhaseOneVoiceText() {
 }
 
 function getPhaseOneButtonLabel(source, mode = phaseOneView.mode) {
-  if (!source) {
-    return mode === "learn" ? "Example" : "Review answer";
-  }
-
-  if (mode === "learn") {
-    const kicker = String(source.kicker || "").trim();
-    if (kicker) return kicker;
-    const title = String(source.title || "").trim();
-    if (title) return title;
-    return "Example";
-  }
-
+  if (mode === "learn") return "Hear lesson";
   return "Review answer";
 }
 
@@ -4867,9 +4855,6 @@ function renderPhaseOneConcept(lesson) {
     conceptVisual.html +
     "</div>" +
     '<div class="concept-copy">' +
-    '<p class="concept-kicker">' +
-    escapeHtml(concept.kicker) +
-    "</p>" +
     "<h4>" +
     escapeHtml(concept.title) +
     "</h4>" +
