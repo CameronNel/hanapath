@@ -215,6 +215,11 @@ const phaseOneLessons = [
     shortTitle: "Anchor vowels",
     duration: "5 min",
     goal: "Own ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ before adding anything fancy.",
+    summary: [
+      "ㅏ ㅓ ㅗ ㅜ ㅡ ㅣ are your six anchor vowels.",
+      "Short stroke right = ㅏ, left = ㅓ; pointing up = ㅗ, down = ㅜ.",
+      "Initial ㅇ is a silent placeholder, so 아 is just the vowel 'a'.",
+    ],
     introCards: [
       {
         kicker: "Before you start",
@@ -319,11 +324,16 @@ const phaseOneLessons = [
     shortTitle: "Base consonants",
     duration: "7 min",
     goal: "Recognize the 14 base consonants by shape and their most useful starting sound.",
+    summary: [
+      "The 14 base consonants: ㄱ ㄴ ㄷ ㄹ ㅁ ㅂ ㅅ ㅇ ㅈ ㅊ ㅋ ㅌ ㅍ ㅎ.",
+      "An added stroke means more breath: ㄱ→ㅋ, ㄷ→ㅌ, ㅂ→ㅍ, ㅈ→ㅊ.",
+      "English sounds are just handles — the shapes are the real memory hook.",
+    ],
     introCards: [
       {
         kicker: "Before you start",
         title: "The base consonant map",
-        body: "These 14 consonants are the shapes you reuse over and over in Hangul.",
+        body: "These 14 consonants are the building blocks you will reuse in every Korean word. Learn each one by its shape first; the precise sound gets refined later. Many shapes even hint at how the mouth forms the sound, which makes them easier to remember.",
         bullets: [
           "Meet the easiest anchors first: ㄱ, ㄴ, ㅁ, ㅅ, ㅇ",
           "Use 가-style sound anchors before exact pronunciation",
@@ -424,6 +434,11 @@ const phaseOneLessons = [
     shortTitle: "Block geometry",
     duration: "6 min",
     goal: "Build and split Hangul blocks without reading separate letters in a row.",
+    summary: [
+      "Vertical vowels (ㅏ ㅓ ㅣ) sit to the right of the consonant.",
+      "Horizontal vowels (ㅗ ㅜ ㅡ) sit below the consonant.",
+      "A final consonant (batchim) closes the floor — still one block, one beat.",
+    ],
     introCards: [
       {
         kicker: "Before you start",
@@ -529,11 +544,16 @@ const phaseOneLessons = [
     shortTitle: "All vowels",
     duration: "8 min",
     goal: "Expand six anchors into all 21 modern vowels by spotting reusable pieces.",
+    summary: [
+      "A second short stroke adds a y-glide: ㅏ→ㅑ, ㅓ→ㅕ, ㅗ→ㅛ, ㅜ→ㅠ.",
+      "ㅐ and ㅔ look different but sound nearly the same for most speakers.",
+      "Compounds combine shapes (ㅗ+ㅏ=ㅘ, ㅜ+ㅓ=ㅝ); ㅢ completes all 21 vowels.",
+    ],
     introCards: [
       {
         kicker: "Before you start",
         title: "From six vowels to all 21",
-        body: "The anchor vowels expand into y-vowels, close pairs, compounds, and ㅢ.",
+        body: "Your six anchor vowels expand into the full set of 21 by reusing pieces you already know. Add a short stroke for y-vowels, learn the close-sounding e-zone pair, and combine shapes for compounds — finishing with ㅢ. Almost nothing here is truly new.",
         bullets: [
           "Double the short stroke for y-vowels",
           "Keep ㅐ and ㅔ separate",
@@ -634,11 +654,16 @@ const phaseOneLessons = [
     shortTitle: "Strong consonants",
     duration: "7 min",
     goal: "Recognize all 19 initial consonant shapes and their five contrast families.",
+    summary: [
+      "Three strengths: plain, aspirated (extra air), and tense (doubled shape).",
+      "ㄱㅋㄲ · ㄷㅌㄸ · ㅂㅍㅃ · ㅈㅊㅉ all follow the same pattern.",
+      "ㅅ only has a tense twin ㅆ — not every family has all three members.",
+    ],
     introCards: [
       {
         kicker: "Before you start",
         title: "Three consonant strengths",
-        body: "Hangul contrasts plain, aspirated, and tense consonants.",
+        body: "Korean splits many consonants into three related strengths: plain, aspirated, and tense. The difference is meaningful — it can turn one word into a completely different one — but the shapes let you see the contrast clearly before you can fully hear it.",
         bullets: [
           "Plain is the base shape",
           "Aspirated adds a puff of air",
@@ -739,6 +764,11 @@ const phaseOneLessons = [
     shortTitle: "Batchim",
     duration: "8 min",
     goal: "Spot a final consonant and close a syllable with one of seven basic end sounds.",
+    summary: [
+      "A final consonant (batchim) sits on the floor of the block.",
+      "Many spellings collapse into seven end sounds: k, n, t, l, m, p, ng.",
+      "Final ㅇ says 'ng', even though initial ㅇ is silent.",
+    ],
     introCards: [
       {
         kicker: "Before you start",
@@ -844,6 +874,11 @@ const phaseOneLessons = [
     shortTitle: "Read real words",
     duration: "8 min",
     goal: "Prove that you can decode short Korean words directly from their blocks.",
+    summary: [
+      "Read one square at a time, then move to the next block.",
+      "Decode the shapes first; let meaning and audio confirm after your attempt.",
+      "You can now read real words like 나무, 바다, and 한글.",
+    ],
     introCards: [
       {
         kicker: "Before you start",
@@ -2731,6 +2766,7 @@ let phaseOneView = { lessonIndex: 0, mode: "intro", introIndex: 0, slideIndex: 0
 let currentQuizScope = "alphabet";
 let alphabetStageMenuOpen = false;
 let correctToastState = { hideTimer: 0, removeTimer: 0, listenersBound: false };
+let retryToastState = { hideTimer: 0, removeTimer: 0, listenersBound: false };
 // Which slice of a screen to show: "learn" (study material only),
 // "practice" (quiz only), or "all" (the full legacy screen).
 let currentFocus = "all";
@@ -4382,6 +4418,75 @@ function showCorrectToast(message = "Correct!") {
   }, 1500);
 }
 
+function getRetryToastElement() {
+  return document.getElementById("retryToast");
+}
+
+function bindRetryToastDismissals() {
+  if (retryToastState.listenersBound) return;
+  retryToastState.listenersBound = true;
+  const dismiss = () => hideRetryToast(true);
+  window.addEventListener("pointerdown", dismiss, true);
+  window.addEventListener("keydown", dismiss, true);
+}
+
+function hideRetryToast(immediate = false) {
+  const toast = getRetryToastElement();
+  if (!toast || toast.hidden) return;
+
+  if (retryToastState.hideTimer) {
+    window.clearTimeout(retryToastState.hideTimer);
+    retryToastState.hideTimer = 0;
+  }
+  if (retryToastState.removeTimer) {
+    window.clearTimeout(retryToastState.removeTimer);
+    retryToastState.removeTimer = 0;
+  }
+
+  toast.classList.remove("is-visible");
+
+  if (immediate) {
+    toast.hidden = true;
+    return;
+  }
+
+  retryToastState.removeTimer = window.setTimeout(() => {
+    toast.hidden = true;
+    retryToastState.removeTimer = 0;
+  }, 420);
+}
+
+// A wrong-answer nudge: "Try again!" plus a brief rule to learn from.
+// The clean-run score is already lost for this question, so restating the
+// rule helps the learner without affecting the pass threshold.
+function showRetryToast(rule = "") {
+  const toast = getRetryToastElement();
+  if (!toast) return;
+
+  bindRetryToastDismissals();
+
+  if (retryToastState.hideTimer) {
+    window.clearTimeout(retryToastState.hideTimer);
+    retryToastState.hideTimer = 0;
+  }
+  if (retryToastState.removeTimer) {
+    window.clearTimeout(retryToastState.removeTimer);
+    retryToastState.removeTimer = 0;
+  }
+
+  const ruleHtml = rule ? " " + escapeHtml(rule) : "";
+  toast.innerHTML = `<span class="toast-rule"><strong>Try again!</strong>${ruleHtml}</span>`;
+  toast.hidden = false;
+  toast.classList.remove("is-visible");
+  void toast.offsetWidth;
+  toast.classList.add("is-visible");
+
+  // Linger longer than the correct toast — there's a rule to read.
+  retryToastState.hideTimer = window.setTimeout(() => {
+    hideRetryToast();
+  }, 3200);
+}
+
 function composeHangul(initial, medial, final = "") {
   const initialIndex = INITIALS.indexOf(initial);
   const medialIndex = MEDIALS.indexOf(medial);
@@ -4868,35 +4973,37 @@ const HANGUL_MEDIAL_ROMAN = [
   "i",
 ];
 
+// Pronounced final-consonant sound for each of the 28 batchim slots, in
+// Unicode order (index 0 = no final). Complex clusters use their spoken value.
 const HANGUL_FINAL_ROMAN = [
-  "",
-  "k",
-  "k",
-  "k",
-  "n",
-  "n",
-  "n",
-  "t",
-  "l",
-  "k",
-  "m",
-  "l",
-  "l",
-  "l",
-  "l",
-  "l",
-  "m",
-  "p",
-  "p",
-  "t",
-  "t",
-  "ng",
-  "t",
-  "t",
-  "k",
-  "t",
-  "p",
-  "t",
+  "",   // (none)
+  "k",  // ㄱ
+  "k",  // ㄲ
+  "k",  // ㄳ
+  "n",  // ㄴ
+  "n",  // ㄵ
+  "n",  // ㄶ
+  "t",  // ㄷ
+  "l",  // ㄹ
+  "k",  // ㄺ
+  "m",  // ㄻ
+  "l",  // ㄼ
+  "l",  // ㄽ
+  "l",  // ㄾ
+  "p",  // ㄿ
+  "l",  // ㅀ
+  "m",  // ㅁ
+  "p",  // ㅂ
+  "p",  // ㅄ
+  "t",  // ㅅ
+  "t",  // ㅆ
+  "ng", // ㅇ
+  "t",  // ㅈ
+  "t",  // ㅊ
+  "k",  // ㅋ
+  "t",  // ㅌ
+  "p",  // ㅍ
+  "t",  // ㅎ
 ];
 
 const HANGUL_JAMO_ROMAN = {
@@ -5499,9 +5606,9 @@ function answerPhaseOneQuestion(choice, button) {
     phaseOneView.hadMistake = true;
     button.classList.add("wrong");
     button.disabled = true;
-    feedback.innerHTML =
-      "<strong>Not yet.</strong> " +
-      escapeHtml(question.explanation || "Use the shape clue and try another answer.");
+    const rule = question.explanation || question.detail || "Use the shape clue and try another answer.";
+    feedback.innerHTML = "<strong>Not yet.</strong> " + escapeHtml(rule);
+    showRetryToast(rule);
     return;
   }
 
@@ -7737,6 +7844,17 @@ function renderCompleteInPlayer(index) {
   showDetailBarWithBack("learn", `Stage ${String(index + 1).padStart(2, "0")}: ${lesson.shortTitle}`, () => openLearnStageMenu("alphabet"), "Alphabet");
 
   const dots = lesson.concepts.map(() => '<span class="done"></span>').join("");
+  const summaryPoints = Array.isArray(lesson.summary) ? lesson.summary.filter(Boolean) : [];
+  const summaryHtml = summaryPoints.length
+    ? '<div class="lesson-summary-card">' +
+      '<div class="eyebrow">What you learned</div>' +
+      '<h3 class="lesson-summary-title">' + escapeHtml(lesson.title) + "</h3>" +
+      '<ul class="lesson-summary-list">' +
+      summaryPoints
+        .map((point) => '<li lang="ko">' + escapeHtml(point) + "</li>")
+        .join("") +
+      "</ul></div>"
+    : "";
 
   if (!els.phaseOneStage) return;
   els.phaseOneStage.innerHTML =
@@ -7744,6 +7862,7 @@ function renderCompleteInPlayer(index) {
     "<span>Done</span>" +
     '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
     "</div>" +
+    summaryHtml +
     '<div class="card" style="margin-top:16px;">' +
     (next
       ? '<div class="eyebrow">Keep going</div>' +
