@@ -4822,6 +4822,179 @@ function splitVoiceSequence(text) {
     .filter(Boolean);
 }
 
+const HANGUL_INITIAL_ROMAN = [
+  "g",
+  "kk",
+  "n",
+  "d",
+  "tt",
+  "r",
+  "m",
+  "b",
+  "pp",
+  "s",
+  "ss",
+  "",
+  "j",
+  "jj",
+  "ch",
+  "k",
+  "t",
+  "p",
+  "h",
+];
+
+const HANGUL_MEDIAL_ROMAN = [
+  "a",
+  "ae",
+  "ya",
+  "yae",
+  "eo",
+  "e",
+  "yeo",
+  "ye",
+  "o",
+  "wa",
+  "wae",
+  "oe",
+  "yo",
+  "u",
+  "wo",
+  "we",
+  "wi",
+  "yu",
+  "eu",
+  "ui",
+  "i",
+];
+
+const HANGUL_FINAL_ROMAN = [
+  "",
+  "k",
+  "k",
+  "k",
+  "n",
+  "n",
+  "n",
+  "t",
+  "l",
+  "k",
+  "m",
+  "l",
+  "l",
+  "l",
+  "l",
+  "l",
+  "m",
+  "p",
+  "p",
+  "t",
+  "t",
+  "ng",
+  "t",
+  "t",
+  "k",
+  "t",
+  "p",
+  "t",
+];
+
+const HANGUL_JAMO_ROMAN = {
+  ㄱ: "g",
+  ㄲ: "kk",
+  ㄴ: "n",
+  ㄷ: "d",
+  ㄸ: "tt",
+  ㄹ: "r",
+  ㅁ: "m",
+  ㅂ: "b",
+  ㅃ: "pp",
+  ㅅ: "s",
+  ㅆ: "ss",
+  ㅇ: "ng",
+  ㅈ: "j",
+  ㅉ: "jj",
+  ㅊ: "ch",
+  ㅋ: "k",
+  ㅌ: "t",
+  ㅍ: "p",
+  ㅎ: "h",
+  ㅏ: "a",
+  ㅐ: "ae",
+  ㅑ: "ya",
+  ㅒ: "yae",
+  ㅓ: "eo",
+  ㅔ: "e",
+  ㅕ: "yeo",
+  ㅖ: "ye",
+  ㅗ: "o",
+  ㅘ: "wa",
+  ㅙ: "wae",
+  ㅚ: "oe",
+  ㅛ: "yo",
+  ㅜ: "u",
+  ㅝ: "wo",
+  ㅞ: "we",
+  ㅟ: "wi",
+  ㅠ: "yu",
+  ㅡ: "eu",
+  ㅢ: "ui",
+  ㅣ: "i",
+};
+
+function romanizeHangulSyllable(char) {
+  const code = String(char || "").charCodeAt(0);
+  if (!Number.isFinite(code) || code < 0xac00 || code > 0xd7a3) {
+    return "";
+  }
+
+  const offset = code - 0xac00;
+  const initialIndex = Math.floor(offset / 588);
+  const medialIndex = Math.floor((offset % 588) / 28);
+  const finalIndex = offset % 28;
+
+  return (
+    (HANGUL_INITIAL_ROMAN[initialIndex] || "") +
+    (HANGUL_MEDIAL_ROMAN[medialIndex] || "") +
+    (HANGUL_FINAL_ROMAN[finalIndex] || "")
+  );
+}
+
+function shouldHideInitialIeungHint(chunk, source, matchIndex) {
+  if (chunk !== "ㅇ") {
+    return false;
+  }
+
+  const tail = String(source || "").slice(matchIndex + chunk.length);
+  const nextHangulIndex = tail.search(/[가-힣ㄱ-ㅎㅏ-ㅣ]/);
+  const beforeNextHangul = nextHangulIndex === -1 ? tail : tail.slice(0, nextHangulIndex);
+  return /[+=]/.test(beforeNextHangul);
+}
+
+function romanizeHangulChunk(chunk, source, matchIndex) {
+  if (!chunk) {
+    return "";
+  }
+
+  if (/^[가-힣]+$/.test(chunk)) {
+    return Array.from(chunk)
+      .map((char) => romanizeHangulSyllable(char))
+      .join("");
+  }
+
+  if (/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(chunk)) {
+    if (shouldHideInitialIeungHint(chunk, source, matchIndex)) {
+      return "";
+    }
+
+    return Array.from(chunk)
+      .map((char) => HANGUL_JAMO_ROMAN[char] || "")
+      .join("");
+  }
+
+  return "";
+}
+
 function renderFlashableHangulText(text, className = "concept-token") {
   const source = String(text || "");
   const pattern = /[가-힣ㄱ-ㅎㅏ-ㅣ]+/g;
@@ -4833,7 +5006,16 @@ function renderFlashableHangulText(text, className = "concept-token") {
     if (match.index > lastIndex) {
       parts.push(escapeHtml(source.slice(lastIndex, match.index)));
     }
-    parts.push(`<span class="${className}" data-flash-index="${index}">${escapeHtml(match[0])}</span>`);
+    const hint = romanizeHangulChunk(match[0], source, match.index);
+    const hintHtml = hint
+      ? `<span class="visual-hint">${escapeHtml(hint)}</span>`
+      : '<span class="visual-hint visual-hint-empty" aria-hidden="true">&#8203;</span>';
+    parts.push(
+      '<span class="visual-stack">' +
+        hintHtml +
+        `<span class="${className}" data-flash-index="${index}">${escapeHtml(match[0])}</span>` +
+      "</span>",
+    );
     index += 1;
     lastIndex = match.index + match[0].length;
   }
@@ -8720,7 +8902,7 @@ function registerServiceWorker() {
   }
 
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js?v=20260628k").catch((error) => {
+    navigator.serviceWorker.register("./sw.js?v=20260628l").catch((error) => {
       console.warn("Service worker registration failed:", error);
     });
   });

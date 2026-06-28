@@ -651,31 +651,59 @@ input, textarea { cursor: text; }
   background: rgba(255,255,255,.04);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 18px;
+  padding: 24px;
   margin-bottom: 14px;
 }
 .concept-visual {
-  font-size: 2.2rem;
+  font-size: 2.05rem;
   font-family: "Noto Sans KR", sans-serif;
   color: var(--accent);
-  margin-bottom: 12px;
-  letter-spacing: .05em;
-  line-height: 1.35;
+  margin-bottom: 14px;
+  letter-spacing: .03em;
+  line-height: 1.15;
+  text-align: center;
 }
 .concept-token,
 .checkpoint-token {
   display: inline-block;
 }
+.visual-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 .03em;
+  vertical-align: middle;
+  line-height: 1;
+}
+.visual-hint {
+  display: block;
+  min-height: .72em;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  line-height: 1;
+  text-transform: lowercase;
+  color: var(--muted-2);
+  margin-bottom: 4px;
+}
+.visual-hint-empty {
+  visibility: hidden;
+}
 .concept-kicker { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 4px; }
 .concept-card h4 { font-size: 1rem; font-weight: 700; margin: 0 0 8px; }
 .concept-card p  { font-size: .88rem; color: var(--muted); margin: 0 0 10px; line-height: 1.5; }
+.concept-copy {
+  text-align: center;
+}
 .concept-cue {
   background: rgba(91, 157, 255,.1);
-  border-left: 3px solid var(--accent);
-  padding: 8px 12px;
-  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  border: 1px solid rgba(91, 157, 255,.18);
+  padding: 10px 14px;
+  border-radius: var(--radius-xs);
   font-size: .83rem;
   color: var(--accent);
+  text-align: center;
 }
 
 .lesson-intro-card {
@@ -729,14 +757,18 @@ input, textarea { cursor: text; }
   background: rgba(255,255,255,.04);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 18px;
+  padding: 24px;
   margin-bottom: 14px;
+  text-align: center;
 }
 .checkpoint-visual {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-family: "Noto Sans KR", sans-serif;
   color: var(--text);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  letter-spacing: .03em;
+  line-height: 1.15;
+  text-align: center;
 }
 .checkpoint-card h4 { font-size: 1rem; font-weight: 700; margin: 0 0 6px; }
 .checkpoint-card p  { font-size: .85rem; color: var(--muted); margin: 0 0 14px; }
