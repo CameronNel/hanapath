@@ -2508,40 +2508,70 @@ li { margin-bottom: 4px; }
 .alpha-list-sub { font-size: .72rem; color: var(--muted); font-weight: 600; }
 .alpha-list-letter.selected .alpha-list-sub { color: var(--text); }
 
-.alpha-detail { position: sticky; bottom: 8px; }
+.screen:has(.alpha-detail) {
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 118px);
+}
+
+.alpha-detail {
+  position: fixed;
+  right: 12px;
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 10px);
+  z-index: 45;
+  width: min(238px, calc(100vw - 24px));
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(2, 6, 20, .48);
+  backdrop-filter: blur(18px);
+}
 .alpha-detail-head {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 9px;
 }
 .alpha-detail-glyph {
   flex: 0 0 auto;
-  width: 64px;
-  height: 64px;
-  border-radius: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
   border: 1px solid var(--line-strong);
   background: rgba(91,157,255,.14);
   color: var(--text);
   font-family: "Noto Sans KR", sans-serif;
-  font-size: 2.1rem;
+  font-size: 1.45rem;
   font-weight: 800;
   cursor: pointer;
 }
 .alpha-detail-glyph:hover { border-color: var(--accent); }
 .alpha-detail-meta { flex: 1 1 auto; min-width: 0; }
-.alpha-detail-name { font-family: "Noto Sans KR", sans-serif; font-size: 1.3rem; font-weight: 700; }
-.alpha-detail-roman { font-size: .85rem; color: var(--muted); }
+.alpha-detail .eyebrow { font-size: .58rem; letter-spacing: .1em; }
+.alpha-detail-name {
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: .98rem;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.alpha-detail-roman {
+  font-size: .68rem;
+  line-height: 1.2;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .alpha-detail-play {
   flex: 0 0 auto;
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 0;
   background: var(--accent);
   color: #06122b;
-  font-size: 1rem;
+  font-size: .85rem;
   cursor: pointer;
 }
 .alpha-detail-play:hover { filter: brightness(1.08); }
-.alpha-detail-note { margin: 12px 0 4px; color: var(--text); }
-.alpha-detail-example { margin: 0; color: var(--muted); }
+.alpha-detail-note,
+.alpha-detail-example { display: none; }

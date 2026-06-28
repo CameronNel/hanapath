@@ -1,9 +1,9 @@
-// [2026-06-29] Cache bumped to v57 (+asset ?v=20260628x) to ship the alphabet board.
-const CACHE_NAME = "hanapath-shell-v57";
+// [2026-06-29] Cache bumped to v58 (+asset ?v=20260629b) to ship the compact alphabet tile.
+const CACHE_NAME = "hanapath-shell-v58";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260628x",
+  "./styles.css?v=20260629b",
   "./lib/hangul.js",
   "./app.js?v=20260628x",
   "./manifest.webmanifest",
