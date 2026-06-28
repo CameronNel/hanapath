@@ -4353,7 +4353,7 @@ function hideCorrectToast(immediate = false) {
   correctToastState.removeTimer = window.setTimeout(() => {
     toast.hidden = true;
     correctToastState.removeTimer = 0;
-  }, 180);
+  }, 420);
 }
 
 function showCorrectToast(message = "Correct!") {
@@ -4379,7 +4379,7 @@ function showCorrectToast(message = "Correct!") {
 
   correctToastState.hideTimer = window.setTimeout(() => {
     hideCorrectToast();
-  }, 1100);
+  }, 1500);
 }
 
 function composeHangul(initial, medial, final = "") {
@@ -6634,6 +6634,10 @@ function getTokenById(question, tokenId) {
 
 function renderChoiceQuestion(question, quizOptions) {
   const response = question.response || createQuestionResponse(question);
+  // The picked answer is recorded on `userAnswer` for every quiz type; `choice`
+  // is only populated for interaction === "choice", so fall back to it here so
+  // the option the learner tapped always gets the wrong-answer styling.
+  const chosen = response.choice || response.userAnswer;
   quizOptions.innerHTML = (Array.isArray(question.options) ? question.options : [])
     .map((option) => {
       const classes = ["option"];
@@ -6641,7 +6645,7 @@ function renderChoiceQuestion(question, quizOptions) {
         if (option === question.answer) {
           classes.push("correct");
         }
-        if (response.choice === option && option !== question.answer) {
+        if (chosen === option && option !== question.answer) {
           classes.push("wrong");
         }
       }
@@ -8901,10 +8905,34 @@ function registerServiceWorker() {
     return;
   }
 
+  // When a freshly-installed worker takes control, reload once so the page
+  // runs against the new shell. Guard against first-ever install (no prior
+  // controller) and against reload loops.
+  let reloadingForUpdate = false;
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloadingForUpdate) return;
+    reloadingForUpdate = true;
+    window.location.reload();
+  });
+
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js?v=20260628l").catch((error) => {
-      console.warn("Service worker registration failed:", error);
-    });
+    // No version query: the browser refetches sw.js on every load and installs
+    // a new worker whenever its bytes change (i.e. when CACHE_NAME is bumped),
+    // so updates ship without anyone having to touch this string.
+    navigator.serviceWorker
+      .register("./sw.js")
+      .then((registration) => {
+        // Proactively check for a newer worker on load and when the tab
+        // regains focus, so long-lived installs pick up releases promptly.
+        registration.update().catch(() => {});
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") registration.update().catch(() => {});
+        });
+      })
+      .catch((error) => {
+        console.warn("Service worker registration failed:", error);
+      });
   });
 }
 
