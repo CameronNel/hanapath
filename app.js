@@ -9605,8 +9605,8 @@ async function init() {
     });
     return;
   }
-  // Learning-first: open straight into the next new lesson.
-  startNextLearn({ resume: true });
+  // Base app load lands on the Learn home menu.
+  goHub("learn");
 }
 
 function registerServiceWorker() {
