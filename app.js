@@ -8472,12 +8472,12 @@ function renderLearnStageMenu(itemId) {
   const letterReviewHtml = letterDue
     ? `
     <div class="card letter-review-banner">
-      <div class="flex-between">
-        <div>
+      <div class="flex-between" style="gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
           <div class="eyebrow">Make it stick</div>
           <div class="screen-sub" style="margin-bottom:0;">${letterDue} letter${letterDue === 1 ? "" : "s"} ready for spaced review.</div>
         </div>
-        <button class="button primary compact" type="button" id="stageLetterReviewBtn">Review (${letterDue})</button>
+        <button class="button primary compact" type="button" id="stageLetterReviewBtn" style="white-space:nowrap;flex-shrink:0;">Review (${letterDue})</button>
       </div>
     </div>`
     : "";

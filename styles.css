@@ -884,6 +884,7 @@ input, textarea { cursor: text; }
 .letter-review-banner {
   background: rgba(45, 212, 191, .08);
   border: 1px solid rgba(45, 212, 191, .22);
+  padding: 16px 18px;
 }
 
 .lesson-summary-card {
