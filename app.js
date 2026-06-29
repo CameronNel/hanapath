@@ -5789,9 +5789,7 @@ function renderPhaseOneConcept(lesson) {
   els.phaseOneBackButton.textContent =
     phaseOneView.slideIndex > 0 || getPhaseOneIntroCards(lesson).length > 0
       ? "Prev card"
-      : phaseOneView.lessonIndex > 0
-        ? "Prev stage"
-        : "Back to lessons";
+      : "Lessons";
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.slideIndex === lesson.concepts.length - 1 ? "Start checkpoint" : "Next card";
@@ -5850,9 +5848,7 @@ function renderPhaseOneIntro(lesson) {
   els.phaseOneBackButton.textContent =
     phaseOneView.introIndex > 0
       ? "Prev card"
-      : phaseOneView.lessonIndex > 0
-        ? "Prev stage"
-        : "Back to lessons";
+      : "Lessons";
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.introIndex === introCards.length - 1 ? "Start lesson" : "Next card";
@@ -6132,11 +6128,7 @@ function goBackPhaseOne() {
       return;
     }
 
-    if (phaseOneView.lessonIndex > 0) {
-      openPreviousPhaseOneLesson(phaseOneView.lessonIndex, true);
-    } else {
-      openLearnStageMenu("alphabet");
-    }
+    openLearnStageMenu("alphabet");
     return;
   }
 
@@ -6156,11 +6148,7 @@ function goBackPhaseOne() {
       return;
     }
 
-    if (phaseOneView.lessonIndex > 0) {
-      openPreviousPhaseOneLesson(phaseOneView.lessonIndex, true);
-    } else {
-      openLearnStageMenu("alphabet");
-    }
+    openLearnStageMenu("alphabet");
     return;
   }
 
@@ -8501,7 +8489,7 @@ function renderLearnStageMenu(itemId) {
           <div class="eyebrow">Stages</div>
           <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo(itemId, progress.currentStage).detail)}`}</div>
         </div>
-        <span class="pill accent">${progress.completedCount}/${progress.total} done</span>
+        <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
       </div>
       <div class="study-list">
         ${stageRows}
@@ -8901,13 +8889,8 @@ function renderCompleteInPlayer(index) {
   if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
   if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
   if (els.phaseOneBackButton) {
-    if (index > 0) {
-      els.phaseOneBackButton.textContent = "Prev stage";
-      els.phaseOneBackButton.onclick = () => openPreviousPhaseOneLesson(index, true);
-    } else {
-      els.phaseOneBackButton.textContent = "Back to stages";
-      els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
-    }
+    els.phaseOneBackButton.textContent = "Lessons";
+    els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
   }
 
   const nextBtn = document.getElementById("learnNextBtn");
