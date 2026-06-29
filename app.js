@@ -6431,6 +6431,83 @@ function renderAlphabetListBoard() {
   `).join("");
 }
 
+function renderAlphabetBoardMarkup() {
+  return state.alphabetBoardMode === "list"
+    ? renderAlphabetListBoard()
+    : renderAlphabetKeyboardBoard();
+}
+
+// Bind the interactive bits inside the board mount (letter taps, per-group
+// "Play all", and the keyboard Shift toggle). Called every time the mount is
+// re-rendered in place.
+function bindAlphabetBoard(mount) {
+  mount.querySelectorAll(".alpha-key[data-alpha-letter], .alpha-list-letter[data-alpha-letter]").forEach((btn) => {
+    btn.addEventListener("click", () => selectAlphabetLetter(btn.dataset.alphaLetter));
+  });
+  mount.querySelectorAll("[data-alpha-playgroup]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.alphaPlaygroup;
+      const chars = key === "compound"
+        ? COMPOUND_VOWELS.map((v) => v.char)
+        : (ALPHABET_LIST_GROUPS[Number(key)] || {}).chars || [];
+      if (chars.length) void playAlphabetGroup(chars);
+    });
+  });
+  const shiftBtn = mount.querySelector("[data-alpha-shift]");
+  if (shiftBtn) shiftBtn.addEventListener("click", () => {
+    alphabetBoardShift = !alphabetBoardShift;
+    refreshAlphabetBoard({ animate: "board" });
+  });
+}
+
+// Re-render just the board (keyboard ⇄ list, or Shift) in place — no full-screen
+// re-render, so the rest of the page stays put instead of replaying the whole
+// screen-enter animation. `animate` adds a small flourish scoped to what changed.
+function refreshAlphabetBoard({ animate } = {}) {
+  const mount = document.getElementById("alphaBoardMount");
+  if (!mount) return;
+  mount.innerHTML = renderAlphabetBoardMarkup();
+  bindAlphabetBoard(mount);
+  if (animate) {
+    const cls = animate === "labels" ? "alpha-anim-labels" : "alpha-anim-board";
+    mount.classList.remove("alpha-anim-board", "alpha-anim-labels");
+    void mount.offsetWidth; // restart the CSS animation
+    mount.classList.add(cls);
+  }
+}
+
+// Switching label mode only changes the little sub-labels. Animate just those:
+// fade the old ones out when hiding, fade the new ones in otherwise.
+function refreshAlphabetLabels() {
+  const mount = document.getElementById("alphaBoardMount");
+  if (!mount) { refreshAlphabetBoard({}); return; }
+  const hiding = (state.alphabetBoardLabels || "roman") === "none";
+  const subs = mount.querySelectorAll(".alpha-key:not(.compound) .alpha-key-sub, .alpha-list-sub");
+  if (hiding && subs.length) {
+    subs.forEach((s) => s.classList.add("alpha-sub-out"));
+    window.setTimeout(() => refreshAlphabetBoard({}), 190);
+  } else {
+    refreshAlphabetBoard({ animate: "labels" });
+  }
+}
+
+// Reflect the current mode/labels on the segmented control buttons without a
+// re-render (they persist across in-place board updates).
+function syncAlphabetSeg() {
+  const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
+  const labels = state.alphabetBoardLabels || "roman";
+  document.querySelectorAll("[data-alpha-mode]").forEach((b) => {
+    const on = b.dataset.alphaMode === mode;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-pressed", String(on));
+  });
+  document.querySelectorAll("[data-alpha-labels]").forEach((b) => {
+    const on = b.dataset.alphaLabels === labels;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-pressed", String(on));
+  });
+}
+
 function renderEntireAlphabet() {
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
@@ -6466,43 +6543,31 @@ function renderEntireAlphabet() {
       </div>
     </div>
     <div class="card alpha-detail" id="alphaBoardDetail">${alphabetDetailHtml(alphabetBoardSelected)}</div>
-    ${mode === "keyboard" ? renderAlphabetKeyboardBoard() : renderAlphabetListBoard()}
+    <div id="alphaBoardMount">${renderAlphabetBoardMarkup()}</div>
   `;
 
-  // Mode / label segmented controls.
+  // Mode / label segmented controls. These update only the board in place (no
+  // full-screen re-render) so toggling doesn't replay the whole page animation.
   el.querySelectorAll("[data-alpha-mode]").forEach((btn) => {
     btn.addEventListener("click", () => {
+      if (state.alphabetBoardMode === btn.dataset.alphaMode) return;
       state.alphabetBoardMode = btn.dataset.alphaMode;
       saveState();
-      renderEntireAlphabet();
+      syncAlphabetSeg();
+      refreshAlphabetBoard({ animate: "board" });
     });
   });
   el.querySelectorAll("[data-alpha-labels]").forEach((btn) => {
     btn.addEventListener("click", () => {
+      if ((state.alphabetBoardLabels || "roman") === btn.dataset.alphaLabels) return;
       state.alphabetBoardLabels = btn.dataset.alphaLabels;
       saveState();
-      renderEntireAlphabet();
+      syncAlphabetSeg();
+      refreshAlphabetLabels();
     });
   });
-  const shiftBtn = el.querySelector("[data-alpha-shift]");
-  if (shiftBtn) shiftBtn.addEventListener("click", () => {
-    alphabetBoardShift = !alphabetBoardShift;
-    renderEntireAlphabet();
-  });
-  el.querySelectorAll("[data-alpha-playgroup]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const key = btn.dataset.alphaPlaygroup;
-      const chars = key === "compound"
-        ? COMPOUND_VOWELS.map((v) => v.char)
-        : (ALPHABET_LIST_GROUPS[Number(key)] || {}).chars || [];
-      if (chars.length) void playAlphabetGroup(chars);
-    });
-  });
-  // Board keys (keyboard / list) are recreated on every full render, so bind
-  // them directly.
-  el.querySelectorAll(".alpha-key[data-alpha-letter], .alpha-list-letter[data-alpha-letter]").forEach((btn) => {
-    btn.addEventListener("click", () => selectAlphabetLetter(btn.dataset.alphaLetter));
-  });
+  // Board keys, Play-all and Shift are (re)bound here and on every in-place update.
+  bindAlphabetBoard(el.querySelector("#alphaBoardMount"));
   // The detail card's glyph + ▶ buttons live inside #alphaBoardDetail, whose
   // innerHTML is rewritten by selectAlphabetLetter on every selection. Binding
   // each button directly would go stale after the first tap, so delegate on the

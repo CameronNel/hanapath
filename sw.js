@@ -1,13 +1,13 @@
-// [2026-06-29] Cache bumped to v63 (+styles.css ?v=20260629g): give the alphabet
-// detail bar a reserved min-height so the board doesn't jump when the voicing
-// note appears.
-const CACHE_NAME = "hanapath-shell-v63";
+// [2026-06-29] Cache bumped to v64 (+app.js/styles.css ?v=20260629h): alphabet
+// board toggles (Keyboard/List, Sound/Phonetic/Name/Hide) now update in place
+// with scoped animations instead of replaying the whole-screen transition.
+const CACHE_NAME = "hanapath-shell-v64";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260629g",
+  "./styles.css?v=20260629h",
   "./lib/hangul.js",
-  "./app.js?v=20260629e",
+  "./app.js?v=20260629h",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
