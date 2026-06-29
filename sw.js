@@ -1,11 +1,11 @@
-// [2026-06-29] Cache bumped to v64 (+app.js/styles.css ?v=20260629h): alphabet
-// board toggles (Keyboard/List, Sound/Phonetic/Name/Hide) now update in place
-// with scoped animations instead of replaying the whole-screen transition.
-const CACHE_NAME = "hanapath-shell-v64";
+// [2026-06-29] Cache bumped to v65 (+styles.css ?v=20260629i): top-align the
+// alphabet detail bar so the glyph/name don't drift between letters with and
+// without the voicing note.
+const CACHE_NAME = "hanapath-shell-v65";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260629h",
+  "./styles.css?v=20260629i",
   "./lib/hangul.js",
   "./app.js?v=20260629h",
   "./manifest.webmanifest",

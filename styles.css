@@ -2516,11 +2516,13 @@ li { margin-bottom: 4px; }
   padding: 12px 18px;
   border-radius: 14px;
   /* Reserve room for the voicing note (shown only for ㄱㄷㅂㅈ) so the board
-     below doesn't jump when switching between letters with and without it. */
+     below doesn't jump when switching between letters with and without it. The
+     header stays top-aligned so the glyph/name don't drift vertically either —
+     the note just fills the reserved space below when present. */
   min-height: 116px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .alpha-detail-head {
   display: flex;
