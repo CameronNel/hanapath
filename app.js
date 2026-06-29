@@ -3702,7 +3702,7 @@ function loadState() {
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
     studio: "alphabet",
-    phaseOneCompleted: [],
+    phaseOneCompleted: ["anchor-vowels", "base-consonants", "block-geometry", "complete-vowels", "strong-consonants"], // TEST: remove before ship
     phaseOneActive: 0,
     todayDate: "",
     todayDone: [],
@@ -5789,9 +5789,7 @@ function renderPhaseOneConcept(lesson) {
   els.phaseOneBackButton.textContent =
     phaseOneView.slideIndex > 0 || getPhaseOneIntroCards(lesson).length > 0
       ? "Prev card"
-      : phaseOneView.lessonIndex > 0
-        ? "Prev stage"
-        : "Back to lessons";
+      : "Lessons";
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.slideIndex === lesson.concepts.length - 1 ? "Start checkpoint" : "Next card";
@@ -5850,9 +5848,7 @@ function renderPhaseOneIntro(lesson) {
   els.phaseOneBackButton.textContent =
     phaseOneView.introIndex > 0
       ? "Prev card"
-      : phaseOneView.lessonIndex > 0
-        ? "Prev stage"
-        : "Back to lessons";
+      : "Lessons";
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.introIndex === introCards.length - 1 ? "Start lesson" : "Next card";
@@ -6132,11 +6128,7 @@ function goBackPhaseOne() {
       return;
     }
 
-    if (phaseOneView.lessonIndex > 0) {
-      openPreviousPhaseOneLesson(phaseOneView.lessonIndex, true);
-    } else {
-      openLearnStageMenu("alphabet");
-    }
+    openLearnStageMenu("alphabet");
     return;
   }
 
@@ -6156,11 +6148,7 @@ function goBackPhaseOne() {
       return;
     }
 
-    if (phaseOneView.lessonIndex > 0) {
-      openPreviousPhaseOneLesson(phaseOneView.lessonIndex, true);
-    } else {
-      openLearnStageMenu("alphabet");
-    }
+    openLearnStageMenu("alphabet");
     return;
   }
 
@@ -8442,8 +8430,9 @@ function renderLearnStageMenu(itemId) {
     const dotClass = complete ? "done" : current ? "next" : "lock";
     const dotText = complete ? "✓" : String(stageNumber).padStart(2, "0");
 
+    const lockHint = locked ? ` data-locked-stage="${stageNumber}"` : "";
     return `
-      <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}" ${locked ? "disabled" : ""}>
+      <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}"${lockHint}>
         <span class="unit-dot ${dotClass}">${escapeHtml(dotText)}</span>
         <div>
           <div class="study-row-ko">${escapeHtml(stageInfo.title)}</div>
@@ -8471,12 +8460,12 @@ function renderLearnStageMenu(itemId) {
   const letterReviewHtml = letterDue
     ? `
     <div class="card letter-review-banner">
-      <div class="flex-between">
-        <div>
+      <div class="flex-between" style="gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
           <div class="eyebrow">Make it stick</div>
           <div class="screen-sub" style="margin-bottom:0;">${letterDue} letter${letterDue === 1 ? "" : "s"} ready for spaced review.</div>
         </div>
-        <button class="button primary compact" type="button" id="stageLetterReviewBtn">Review (${letterDue})</button>
+        <button class="button primary compact" type="button" id="stageLetterReviewBtn" style="white-space:nowrap;flex-shrink:0;">Review (${letterDue})</button>
       </div>
     </div>`
     : "";
@@ -8500,7 +8489,7 @@ function renderLearnStageMenu(itemId) {
           <div class="eyebrow">Stages</div>
           <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo(itemId, progress.currentStage).detail)}`}</div>
         </div>
-        <span class="pill accent">${progress.completedCount}/${progress.total} done</span>
+        <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
       </div>
       <div class="study-list">
         ${stageRows}
@@ -8509,7 +8498,14 @@ function renderLearnStageMenu(itemId) {
   `;
 
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
-    btn.addEventListener("click", () => openLearnStage(itemId, Number(btn.dataset.learnStage)));
+    btn.addEventListener("click", () => {
+      if (btn.dataset.lockedStage) {
+        const currentStageInfo = getLearnStageInfo(itemId, progress.currentStage);
+        showRetryToast(`Finish "${currentStageInfo.title}" to unlock this stage.`);
+        return;
+      }
+      openLearnStage(itemId, Number(btn.dataset.learnStage));
+    });
   });
   const stageLetterReviewBtn = document.getElementById("stageLetterReviewBtn");
   if (stageLetterReviewBtn) stageLetterReviewBtn.addEventListener("click", () => startLetterReview());
@@ -8671,12 +8667,12 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   area.innerHTML = `
     <div class="lesson-player-wrap" id="lessonPlayerWrap">
       <div class="player-head">
-        <div>
+        <div class="player-head-top">
           <div class="eyebrow" id="hpStageNumber">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
-          <div class="player-title" id="hpStageTitle"></div>
-          <div class="player-goal text-muted fs-sm mt-4" id="hpStageGoal"></div>
+          <button class="hear-btn" id="hpHearBtn" type="button">▶ ${escapeHtml(initialLabel)}</button>
         </div>
-        <button class="hear-btn" id="hpHearBtn" type="button">▶ ${escapeHtml(initialLabel)}</button>
+        <div class="player-title" id="hpStageTitle"></div>
+        <div class="player-goal text-muted fs-sm" id="hpStageGoal"></div>
       </div>
       <div id="hpStage"></div>
       <div class="player-actions" id="hpActions">
@@ -8893,13 +8889,8 @@ function renderCompleteInPlayer(index) {
   if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
   if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
   if (els.phaseOneBackButton) {
-    if (index > 0) {
-      els.phaseOneBackButton.textContent = "Prev stage";
-      els.phaseOneBackButton.onclick = () => openPreviousPhaseOneLesson(index, true);
-    } else {
-      els.phaseOneBackButton.textContent = "Back to stages";
-      els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
-    }
+    els.phaseOneBackButton.textContent = "Lessons";
+    els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
   }
 
   const nextBtn = document.getElementById("learnNextBtn");
