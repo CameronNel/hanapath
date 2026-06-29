@@ -687,13 +687,18 @@ input, textarea { cursor: text; }
 
 .player-head {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
   margin-bottom: 16px;
-  gap: 12px;
+  gap: 8px;
+}
+.player-head-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
 }
 .player-title  { font-size: 1.1rem; font-weight: 800; }
-.player-goal   { font-size: .82rem; color: var(--muted); margin-top: 4px; }
+.player-goal   { font-size: .82rem; color: var(--muted); }
 
 .hear-btn {
   display: flex;

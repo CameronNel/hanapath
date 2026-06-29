@@ -8667,12 +8667,12 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   area.innerHTML = `
     <div class="lesson-player-wrap" id="lessonPlayerWrap">
       <div class="player-head">
-        <div>
+        <div class="player-head-top">
           <div class="eyebrow" id="hpStageNumber">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
-          <div class="player-title" id="hpStageTitle"></div>
-          <div class="player-goal text-muted fs-sm mt-4" id="hpStageGoal"></div>
+          <button class="hear-btn" id="hpHearBtn" type="button">▶ ${escapeHtml(initialLabel)}</button>
         </div>
-        <button class="hear-btn" id="hpHearBtn" type="button">▶ ${escapeHtml(initialLabel)}</button>
+        <div class="player-title" id="hpStageTitle"></div>
+        <div class="player-goal text-muted fs-sm" id="hpStageGoal"></div>
       </div>
       <div id="hpStage"></div>
       <div class="player-actions" id="hpActions">
