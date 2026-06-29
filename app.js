@@ -8473,13 +8473,7 @@ function renderLearnStageMenu(itemId) {
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">Choose a stage</h2>
-      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(item.sub)} Completed stages are highlighted. The current stage stays neutral. Locked stages stay grey.</div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <span class="pill green">Completed</span>
-        <span class="pill muted">Current</span>
-        <span class="pill muted">Locked</span>
-      </div>
+      <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
     </div>
     ${fullAlphabetHtml}
     ${letterReviewHtml}
