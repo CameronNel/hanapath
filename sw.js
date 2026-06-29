@@ -1,10 +1,11 @@
-// [2026-06-29] Cache bumped to v62 (+styles.css ?v=20260629f): make the alphabet
-// detail card a full-width bar so its ▶ button no longer overflows/clips.
-const CACHE_NAME = "hanapath-shell-v62";
+// [2026-06-29] Cache bumped to v63 (+styles.css ?v=20260629g): give the alphabet
+// detail bar a reserved min-height so the board doesn't jump when the voicing
+// note appears.
+const CACHE_NAME = "hanapath-shell-v63";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260629f",
+  "./styles.css?v=20260629g",
   "./lib/hangul.js",
   "./app.js?v=20260629e",
   "./manifest.webmanifest",
