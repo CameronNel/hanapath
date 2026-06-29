@@ -5783,9 +5783,12 @@ function renderPhaseOneConcept(lesson) {
     "</div>";
 
   els.phaseOneBackButton.disabled = false;
+  // On the first learn card, "back" steps into the stage's intro cards if it has
+  // any (so it's still a card step, not a stage jump); only a stage with no intro
+  // cards shows "Prev stage" here.
   els.phaseOneBackButton.textContent =
-    phaseOneView.slideIndex > 0
-      ? "Back card"
+    phaseOneView.slideIndex > 0 || getPhaseOneIntroCards(lesson).length > 0
+      ? "Prev card"
       : phaseOneView.lessonIndex > 0
         ? "Prev stage"
         : "Back to lessons";
@@ -5846,7 +5849,7 @@ function renderPhaseOneIntro(lesson) {
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent =
     phaseOneView.introIndex > 0
-      ? "Back card"
+      ? "Prev card"
       : phaseOneView.lessonIndex > 0
         ? "Prev stage"
         : "Back to lessons";
@@ -6121,6 +6124,7 @@ function advancePhaseOne() {
 }
 
 function goBackPhaseOne() {
+  const lesson = phaseOneLessons[phaseOneView.lessonIndex];
   if (phaseOneView.mode === "intro") {
     if (phaseOneView.introIndex > 0) {
       phaseOneView.introIndex -= 1;
