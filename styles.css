@@ -2515,6 +2515,12 @@ li { margin-bottom: 4px; }
   margin: 0 0 12px;
   padding: 12px 18px;
   border-radius: 14px;
+  /* Reserve room for the voicing note (shown only for ㄱㄷㅂㅈ) so the board
+     below doesn't jump when switching between letters with and without it. */
+  min-height: 116px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .alpha-detail-head {
   display: flex;
@@ -2580,4 +2586,9 @@ li { margin-bottom: 4px; }
   font-size: .68rem;
   line-height: 1.35;
   color: var(--text);
+}
+/* Below 540px the voicing note wraps to two lines, so reserve a little more
+   height to keep the board from shifting on narrow screens. */
+@media (max-width: 540px) {
+  .alpha-detail { min-height: 132px; }
 }
