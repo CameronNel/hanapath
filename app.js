@@ -6278,10 +6278,32 @@ function jamoDemo(ch) {
   return HANGUL_JAMO_SPEAK[ch] || ch;
 }
 
+// Phonetic hint vs. romanization: the plain stops/affricate ㄱㄷㅂㅈ are
+// voiceless at the start of a word (가 ≈ "ka") and only voice to g/d/b/j between
+// vowels, so the Revised-Romanization keycap (g/d/b/j) doesn't match what you
+// hear in isolation. Phonetic mode shows that dual nature; every other letter
+// already matches its romanization closely enough to reuse it.
+const JAMO_PHONETIC = {
+  "ㄱ": "k→g", "ㄷ": "t→d", "ㅂ": "p→b", "ㅈ": "ch→j",
+};
+function jamoPhonetic(ch) {
+  return JAMO_PHONETIC[ch] || jamoRoman(ch);
+}
+
+// The "why does my g sound like ka" explainer, shown in the detail card for the
+// letters whose isolated sound differs from their romanization.
+const JAMO_VOICING_NOTE = {
+  "ㄱ": "Voiceless at the start of a word (가 ≈ “ka”); only becomes a true “g” between vowels.",
+  "ㄷ": "Voiceless at the start of a word (다 ≈ “ta”); only becomes a true “d” between vowels.",
+  "ㅂ": "Voiceless at the start of a word (바 ≈ “pa”); only becomes a true “b” between vowels.",
+  "ㅈ": "Voiceless at the start of a word (자 ≈ “cha”); only becomes a true “j” between vowels.",
+};
+
 function jamoSubLabel(ch) {
   const mode = state.alphabetBoardLabels || "roman";
   if (mode === "none") return "";
   if (mode === "name") return (JAMO_INFO[ch] && JAMO_INFO[ch].name) || ch;
+  if (mode === "phonetic") return jamoPhonetic(ch);
   return jamoRoman(ch);
 }
 
@@ -6314,6 +6336,7 @@ function alphabetDetailHtml(ch) {
       <button class="alpha-detail-play" type="button" data-alpha-letter="${escapeHtml(ch)}" aria-label="Play sound">▶</button>
     </div>
     <p class="alpha-detail-note">${escapeHtml(info.note || "")}</p>
+    ${JAMO_VOICING_NOTE[ch] ? `<p class="alpha-detail-voicing">💡 ${escapeHtml(JAMO_VOICING_NOTE[ch])}</p>` : ""}
     <p class="alpha-detail-example"><strong>Example:</strong> <span lang="ko">${escapeHtml(info.example || jamoDemo(ch))}</span></p>
   `;
 }
@@ -6395,12 +6418,14 @@ function renderAlphabetListBoard() {
         <button class="button secondary compact" type="button" data-alpha-playgroup="${index}">▶ Play all</button>
       </div>
       <div class="alpha-list-grid">
-        ${group.chars.map((ch) => `
+        ${group.chars.map((ch) => {
+          const sub = jamoSubLabel(ch);
+          return `
           <button class="alpha-list-letter${ch === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(ch)}" lang="ko" aria-label="${escapeHtml(jamoDemo(ch))}">
             <span class="alpha-list-glyph">${escapeHtml(ch)}</span>
-            <span class="alpha-list-sub">${escapeHtml(jamoSubLabel(ch) || jamoRoman(ch))}</span>
-          </button>
-        `).join("")}
+            ${sub ? `<span class="alpha-list-sub">${escapeHtml(sub)}</span>` : ""}
+          </button>`;
+        }).join("")}
       </div>
     </div>
   `).join("");
@@ -6434,6 +6459,7 @@ function renderEntireAlphabet() {
         </div>
         <div class="alpha-seg-group" role="group" aria-label="Letter labels">
           ${seg("labels", "roman", labels, "Aa Sound")}
+          ${seg("labels", "phonetic", labels, "k→g Phonetic")}
           ${seg("labels", "name", labels, "가 Name")}
           ${seg("labels", "none", labels, "∅ Hide")}
         </div>

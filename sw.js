@@ -1,12 +1,12 @@
-// [2026-06-29] Cache bumped to v60 (+app.js ?v=20260629d): fix the alphabet detail
-// card play button and expand the per-letter descriptions.
-const CACHE_NAME = "hanapath-shell-v60";
+// [2026-06-29] Cache bumped to v61 (+app.js/styles.css ?v=20260629e): add the
+// Phonetic label toggle + voicing explainer, and fix Hide leaving list labels on.
+const CACHE_NAME = "hanapath-shell-v61";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260629c",
+  "./styles.css?v=20260629e",
   "./lib/hangul.js",
-  "./app.js?v=20260629d",
+  "./app.js?v=20260629e",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
