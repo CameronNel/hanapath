@@ -2508,16 +2508,18 @@ li { margin-bottom: 4px; }
 .alpha-list-sub { font-size: .72rem; color: var(--muted); font-weight: 600; }
 .alpha-list-letter.selected .alpha-list-sub { color: var(--text); }
 
+/* Full-width detail bar (was a floating 360px tile that right-flushed to a
+   fragile edge and clipped the ▶ button at some widths). Sharing the cards'
+   box keeps the ▶ aligned with the "Play all" buttons and can't overflow. */
 .alpha-detail {
-  width: min(360px, 100%);
-  margin: -2px 0 12px auto;
-  padding: 10px;
+  margin: 0 0 12px;
+  padding: 12px 18px;
   border-radius: 14px;
 }
 .alpha-detail-head {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 12px;
 }
 .alpha-detail-glyph {
   flex: 0 0 auto;

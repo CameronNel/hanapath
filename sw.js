@@ -1,10 +1,10 @@
-// [2026-06-29] Cache bumped to v61 (+app.js/styles.css ?v=20260629e): add the
-// Phonetic label toggle + voicing explainer, and fix Hide leaving list labels on.
-const CACHE_NAME = "hanapath-shell-v61";
+// [2026-06-29] Cache bumped to v62 (+styles.css ?v=20260629f): make the alphabet
+// detail card a full-width bar so its ▶ button no longer overflows/clips.
+const CACHE_NAME = "hanapath-shell-v62";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260629e",
+  "./styles.css?v=20260629f",
   "./lib/hangul.js",
   "./app.js?v=20260629e",
   "./manifest.webmanifest",
