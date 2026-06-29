@@ -1,10 +1,10 @@
-// [2026-06-29] Cache bumped to v67 (+app.js ?v=20260629l): locked stage buttons
-// now show a toast instead of silently doing nothing.
-const CACHE_NAME = "hanapath-shell-v68";
+// [2026-06-29] Cache bumped to v69 (+styles.css ?v=20260629j): more breathing
+// room on stage rows (padding, gap, dot size) and bump --gap to 14px globally.
+const CACHE_NAME = "hanapath-shell-v69";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260629i",
+  "./styles.css?v=20260629j",
   "./lib/hangul.js",
   "./app.js?v=20260629l",
   "./manifest.webmanifest",
