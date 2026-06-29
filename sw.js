@@ -1,13 +1,13 @@
-// [2026-06-29] Cache bumped to v65 (+styles.css ?v=20260629i): top-align the
-// alphabet detail bar so the glyph/name don't drift between letters with and
-// without the voicing note.
-const CACHE_NAME = "hanapath-shell-v65";
+// [2026-06-29] Cache bumped to v66 (+app.js ?v=20260629j): fix the lesson player
+// back button (Prev stage crashed on the first learn card) and rename
+// "Back card" → "Prev card".
+const CACHE_NAME = "hanapath-shell-v66";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260629i",
   "./lib/hangul.js",
-  "./app.js?v=20260629h",
+  "./app.js?v=20260629j",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
