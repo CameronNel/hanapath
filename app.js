@@ -143,25 +143,25 @@ const BATCHIM_GROUPS = [
 // [2026-06-29] Romanization standardized to Revised Romanization (single
 // initials) so the atlas matches LETTER_SOUND; fixes the "g / k" vs "g" drift.
 const consonantAtlas = [
-  { char: "ㄱ", tag: "plain", name: "g", note: "Soft at the start, stronger at the end.", example: "가" },
-  { char: "ㄲ", tag: "tense", name: "kk", note: "Tense twin of ㄱ.", example: "까" },
-  { char: "ㄴ", tag: "plain", name: "n", note: "A clean nasal sound.", example: "나" },
-  { char: "ㄷ", tag: "plain", name: "d", note: "Pairs with a sharper tense version.", example: "다" },
-  { char: "ㄸ", tag: "tense", name: "tt", note: "Tense twin of ㄷ.", example: "따" },
-  { char: "ㄹ", tag: "plain", name: "r", note: "Flaps between r and l depending on position.", example: "라" },
-  { char: "ㅁ", tag: "plain", name: "m", note: "A steady closed-mouth sound.", example: "마" },
-  { char: "ㅂ", tag: "plain", name: "b", note: "Soft in front, firmer at the end.", example: "바" },
-  { char: "ㅃ", tag: "tense", name: "pp", note: "Tense twin of ㅂ.", example: "빠" },
-  { char: "ㅅ", tag: "plain", name: "s", note: "Starts with s; closes in the t group as batchim.", example: "사" },
-  { char: "ㅆ", tag: "tense", name: "ss", note: "Tense twin of ㅅ.", example: "싸" },
-  { char: "ㅇ", tag: "support", name: "silent (ng)", note: "Silent at the start, nasal at the end.", example: "아" },
-  { char: "ㅈ", tag: "plain", name: "j", note: "Soft affricate with a neat tongue release.", example: "자" },
-  { char: "ㅉ", tag: "tense", name: "jj", note: "Tense twin of ㅈ.", example: "짜" },
-  { char: "ㅊ", tag: "aspirated", name: "ch", note: "Breathier than ㅈ.", example: "차" },
-  { char: "ㅋ", tag: "aspirated", name: "k", note: "Breathier than ㄱ.", example: "카" },
-  { char: "ㅌ", tag: "aspirated", name: "t", note: "Breathier than ㄷ.", example: "타" },
-  { char: "ㅍ", tag: "aspirated", name: "p", note: "Breathier than ㅂ.", example: "파" },
-  { char: "ㅎ", tag: "aspirated", name: "h", note: "A soft airy stop.", example: "하" },
+  { char: "ㄱ", tag: "plain", name: "g", note: "Like the g in “go” at the start of a word; hardens toward a k sound at the end of a syllable.", example: "가" },
+  { char: "ㄲ", tag: "tense", name: "kk", note: "The tense twin of ㄱ: a sharp, tight k like the k in “ski”, said with no puff of air.", example: "까" },
+  { char: "ㄴ", tag: "plain", name: "n", note: "Like the n in “now” — a clean nasal made with the tongue behind the teeth.", example: "나" },
+  { char: "ㄷ", tag: "plain", name: "d", note: "Like the d in “dog” at the start; closes toward a t sound at the end of a syllable.", example: "다" },
+  { char: "ㄸ", tag: "tense", name: "tt", note: "The tense twin of ㄷ: a sharp, tight t like the t in “stop”, with no puff of air.", example: "따" },
+  { char: "ㄹ", tag: "plain", name: "r", note: "Flaps between r and l: a light tapped r between vowels (like the tt in “butter”), but an l at the end of a syllable.", example: "라" },
+  { char: "ㅁ", tag: "plain", name: "m", note: "Like the m in “mom” — a steady, closed-mouth nasal.", example: "마" },
+  { char: "ㅂ", tag: "plain", name: "b", note: "Like the b in “boy” at the start; closes toward a p sound at the end of a syllable.", example: "바" },
+  { char: "ㅃ", tag: "tense", name: "pp", note: "The tense twin of ㅂ: a tight p like the p in “spy”, with no puff of air.", example: "빠" },
+  { char: "ㅅ", tag: "plain", name: "s", note: "Like the s in “see”; softens toward “sh” before i or y, and closes to a t sound when it ends a syllable.", example: "사" },
+  { char: "ㅆ", tag: "tense", name: "ss", note: "The tense twin of ㅅ: a stronger, hissier s, said with tight muscles.", example: "싸" },
+  { char: "ㅇ", tag: "support", name: "silent (ng)", note: "A silent placeholder at the start of a block (it just holds the vowel); the “ng” in “sing” when it ends a syllable.", example: "아" },
+  { char: "ㅈ", tag: "plain", name: "j", note: "Like the j in “jump” — a soft affricate with a neat tongue release.", example: "자" },
+  { char: "ㅉ", tag: "tense", name: "jj", note: "The tense twin of ㅈ: a tight, hard j said with no puff of air.", example: "짜" },
+  { char: "ㅊ", tag: "aspirated", name: "ch", note: "Like the ch in “church” — the breathy, strong-air version of ㅈ.", example: "차" },
+  { char: "ㅋ", tag: "aspirated", name: "k", note: "Like the k in “kite” — the breathy, strong-air version of ㄱ.", example: "카" },
+  { char: "ㅌ", tag: "aspirated", name: "t", note: "Like the t in “top” — the breathy, strong-air version of ㄷ.", example: "타" },
+  { char: "ㅍ", tag: "aspirated", name: "p", note: "Like the p in “pop” — the breathy, strong-air version of ㅂ.", example: "파" },
+  { char: "ㅎ", tag: "aspirated", name: "h", note: "Like the h in “hat” — a soft, airy sound that often fades between vowels.", example: "하" },
 ];
 
 const CONSONANT_NAMES = {
@@ -187,28 +187,28 @@ const CONSONANT_NAMES = {
 };
 
 const vowelAtlas = [
-  { char: "ㅏ", family: "vertical", name: "a", note: "Open and bright.", example: "가" },
-  { char: "ㅐ", family: "vertical", name: "ae", note: "Close to the mouth shape for ㅏ.", example: "개" },
-  { char: "ㅑ", family: "vertical", name: "ya", note: "The y-version of ㅏ.", example: "갸" },
-  { char: "ㅒ", family: "vertical", name: "yae", note: "The y-version of ㅐ.", example: "걔" },
-  { char: "ㅓ", family: "vertical", name: "eo", note: "Open in a lower, rounder place.", example: "거" },
-  { char: "ㅔ", family: "vertical", name: "e", note: "A tidy, front vowel.", example: "게" },
-  { char: "ㅕ", family: "vertical", name: "yeo", note: "The y-version of ㅓ.", example: "겨" },
-  { char: "ㅖ", family: "vertical", name: "ye", note: "The y-version of ㅔ.", example: "계" },
-  { char: "ㅗ", family: "horizontal", name: "o", note: "A rounded top vowel.", example: "고" },
-  { char: "ㅛ", family: "horizontal", name: "yo", note: "The y-version of ㅗ.", example: "교" },
-  { char: "ㅜ", family: "horizontal", name: "u", note: "A rounded bottom vowel.", example: "구" },
-  { char: "ㅠ", family: "horizontal", name: "yu", note: "The y-version of ㅜ.", example: "규" },
-  { char: "ㅡ", family: "horizontal", name: "eu", note: "A flat, compressed vowel.", example: "그" },
-  { char: "ㅣ", family: "vertical", name: "i", note: "A tall, simple vowel.", example: "기" },
-  { char: "ㅘ", family: "compound", name: "wa", note: "ㅗ + ㅏ in one block.", example: "과" },
-  { char: "ㅙ", family: "compound", name: "wae", note: "ㅗ + ㅐ in one block.", example: "괘" },
-  { char: "ㅚ", family: "compound", name: "oe", note: "A rounded front compound vowel.", example: "괴" },
-  { char: "ㅝ", family: "compound", name: "wo", note: "ㅜ + ㅓ in one block.", example: "궈" },
-  { char: "ㅞ", family: "compound", name: "we", note: "ㅜ + ㅔ in one block.", example: "궤" },
-  { char: "ㅟ", family: "compound", name: "wi", note: "ㅜ + ㅣ in one block.", example: "귀" },
+  { char: "ㅏ", family: "vertical", name: "a", note: "Like the a in “father” — open, bright, with the mouth wide.", example: "가" },
+  { char: "ㅐ", family: "vertical", name: "ae", note: "Like the e in “bed”. In modern speech it sounds almost identical to ㅔ.", example: "개" },
+  { char: "ㅑ", family: "vertical", name: "ya", note: "Like “ya” in “yacht” — a quick y-glide onto ㅏ.", example: "갸" },
+  { char: "ㅒ", family: "vertical", name: "yae", note: "Like “ye” in “yes” — a y-glide onto ㅐ (now nearly the same as ㅖ).", example: "걔" },
+  { char: "ㅓ", family: "vertical", name: "eo", note: "Like the u in “cup” — open and unrounded, not the “o” the spelling suggests.", example: "거" },
+  { char: "ㅔ", family: "vertical", name: "e", note: "Like the e in “bed” — now nearly identical to ㅐ.", example: "게" },
+  { char: "ㅕ", family: "vertical", name: "yeo", note: "Like “yu” in “young” — a y-glide onto ㅓ.", example: "겨" },
+  { char: "ㅖ", family: "vertical", name: "ye", note: "Like “ye” in “yes” — a y-glide onto ㅔ.", example: "계" },
+  { char: "ㅗ", family: "horizontal", name: "o", note: "Like the o in “go” — rounded, with the lips pushed forward.", example: "고" },
+  { char: "ㅛ", family: "horizontal", name: "yo", note: "Like “yo” in “yo-yo” — a y-glide onto ㅗ.", example: "교" },
+  { char: "ㅜ", family: "horizontal", name: "u", note: "Like the oo in “moon” — rounded, with the lips pushed forward.", example: "구" },
+  { char: "ㅠ", family: "horizontal", name: "yu", note: "Like the word “you” — a y-glide onto ㅜ.", example: "규" },
+  { char: "ㅡ", family: "horizontal", name: "eu", note: "No exact English match: say “oo” as in “moon” but spread your lips flat and tense, almost a grunt.", example: "그" },
+  { char: "ㅣ", family: "vertical", name: "i", note: "Like the ee in “see” — a tall, simple vowel.", example: "기" },
+  { char: "ㅘ", family: "compound", name: "wa", note: "Like “wa” in “water” — ㅗ + ㅏ glided together in one block.", example: "과" },
+  { char: "ㅙ", family: "compound", name: "wae", note: "Like “we” in “wet” — ㅗ + ㅐ in one block (now nearly the same as ㅞ and ㅚ).", example: "괘" },
+  { char: "ㅚ", family: "compound", name: "oe", note: "Historically a single rounded vowel, but today most speakers say it like “we” in “wet” (≈ ㅞ).", example: "괴" },
+  { char: "ㅝ", family: "compound", name: "wo", note: "Like “wo” in “wonder” — ㅜ + ㅓ glided together in one block.", example: "궈" },
+  { char: "ㅞ", family: "compound", name: "we", note: "Like “we” in “wet” — ㅜ + ㅔ in one block.", example: "궤" },
+  { char: "ㅟ", family: "compound", name: "wi", note: "Like “wi” in “week” — ㅜ + ㅣ glided together in one block.", example: "귀" },
   // [2026-06-29] Example changed 긔 → 의 (긔 is effectively a non-word; 의 matches the demo audio).
-  { char: "ㅢ", family: "compound", name: "ui", note: "A special compound vowel.", example: "의" },
+  { char: "ㅢ", family: "compound", name: "ui", note: "ㅡ + ㅣ glided quickly; often softens to “i” mid-word, and to “e” in the possessive particle 의.", example: "의" },
 ];
 
 const phaseOneLessons = [
@@ -6309,7 +6309,7 @@ function alphabetDetailHtml(ch) {
       <div class="alpha-detail-meta">
         <div class="eyebrow">${kindLabel}</div>
         <div class="alpha-detail-name" lang="ko">${escapeHtml(info.name || ch)}</div>
-        <div class="alpha-detail-roman">Sounds like “${escapeHtml(jamoRoman(ch))}” · plays <span lang="ko">${escapeHtml(jamoDemo(ch))}</span></div>
+        <div class="alpha-detail-roman">Sounds like “${escapeHtml(jamoRoman(ch))}” · tap ▶ to hear it in <span lang="ko">${escapeHtml(jamoDemo(ch))}</span></div>
       </div>
       <button class="alpha-detail-play" type="button" data-alpha-letter="${escapeHtml(ch)}" aria-label="Play sound">▶</button>
     </div>
@@ -6472,9 +6472,23 @@ function renderEntireAlphabet() {
       if (chars.length) void playAlphabetGroup(chars);
     });
   });
-  el.querySelectorAll("[data-alpha-letter]").forEach((btn) => {
+  // Board keys (keyboard / list) are recreated on every full render, so bind
+  // them directly.
+  el.querySelectorAll(".alpha-key[data-alpha-letter], .alpha-list-letter[data-alpha-letter]").forEach((btn) => {
     btn.addEventListener("click", () => selectAlphabetLetter(btn.dataset.alphaLetter));
   });
+  // The detail card's glyph + ▶ buttons live inside #alphaBoardDetail, whose
+  // innerHTML is rewritten by selectAlphabetLetter on every selection. Binding
+  // each button directly would go stale after the first tap, so delegate on the
+  // persistent container instead (it survives selectAlphabetLetter re-renders
+  // and is itself recreated on each full render, so listeners never stack).
+  const detailCard = el.querySelector("#alphaBoardDetail");
+  if (detailCard) {
+    detailCard.addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-alpha-letter]");
+      if (btn) selectAlphabetLetter(btn.dataset.alphaLetter);
+    });
+  }
 }
 
 function openEntireAlphabet() {
