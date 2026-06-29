@@ -8442,8 +8442,9 @@ function renderLearnStageMenu(itemId) {
     const dotClass = complete ? "done" : current ? "next" : "lock";
     const dotText = complete ? "✓" : String(stageNumber).padStart(2, "0");
 
+    const lockHint = locked ? ` data-locked-stage="${stageNumber}"` : "";
     return `
-      <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}" ${locked ? "disabled" : ""}>
+      <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}"${lockHint}>
         <span class="unit-dot ${dotClass}">${escapeHtml(dotText)}</span>
         <div>
           <div class="study-row-ko">${escapeHtml(stageInfo.title)}</div>
@@ -8509,7 +8510,14 @@ function renderLearnStageMenu(itemId) {
   `;
 
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
-    btn.addEventListener("click", () => openLearnStage(itemId, Number(btn.dataset.learnStage)));
+    btn.addEventListener("click", () => {
+      if (btn.dataset.lockedStage) {
+        const currentStageInfo = getLearnStageInfo(itemId, progress.currentStage);
+        showRetryToast(`Finish "${currentStageInfo.title}" to unlock this stage.`);
+        return;
+      }
+      openLearnStage(itemId, Number(btn.dataset.learnStage));
+    });
   });
   const stageLetterReviewBtn = document.getElementById("stageLetterReviewBtn");
   if (stageLetterReviewBtn) stageLetterReviewBtn.addEventListener("click", () => startLetterReview());

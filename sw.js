@@ -1,13 +1,12 @@
-// [2026-06-29] Cache bumped to v66 (+app.js ?v=20260629j): fix the lesson player
-// back button (Prev stage crashed on the first learn card) and rename
-// "Back card" → "Prev card".
-const CACHE_NAME = "hanapath-shell-v66";
+// [2026-06-29] Cache bumped to v67 (+app.js ?v=20260629k): locked stage buttons
+// now show a toast instead of silently doing nothing.
+const CACHE_NAME = "hanapath-shell-v67";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260629i",
   "./lib/hangul.js",
-  "./app.js?v=20260629j",
+  "./app.js?v=20260629k",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
