@@ -3702,7 +3702,7 @@ function loadState() {
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
     studio: "alphabet",
-    phaseOneCompleted: [],
+    phaseOneCompleted: ["anchor-vowels", "base-consonants", "block-geometry", "complete-vowels", "strong-consonants"], // TEST: remove before ship
     phaseOneActive: 0,
     todayDate: "",
     todayDone: [],
