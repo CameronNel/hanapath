@@ -1,11 +1,12 @@
-// [2026-06-29] Cache bumped to v59 (+asset ?v=20260629c) to stop the alphabet tile overlay.
-const CACHE_NAME = "hanapath-shell-v59";
+// [2026-06-29] Cache bumped to v60 (+app.js ?v=20260629d): fix the alphabet detail
+// card play button and expand the per-letter descriptions.
+const CACHE_NAME = "hanapath-shell-v60";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260629c",
   "./lib/hangul.js",
-  "./app.js?v=20260629c",
+  "./app.js?v=20260629d",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
