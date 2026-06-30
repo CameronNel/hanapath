@@ -1,0 +1,7 @@
+# Keep source text normalized across Windows, macOS, and Linux.
+* text=auto eol=lf
+
+# Treat generated media assets as binary.
+*.png binary
+*.mp3 binary
+*.ico binary
