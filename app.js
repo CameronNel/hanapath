@@ -3655,14 +3655,66 @@ function getAlphabetQuizPools() {
   return ALPHABET_QUIZ_POOLS[stage.id] || ALPHABET_QUIZ_POOLS.vowels;
 }
 
+// ─── ALPHABET PROGRESS (canonical source of truth) ──────────────────────────
+// Phase One progress is the *longest ordered prefix* of completed lessons, not a
+// raw count. A corrupted array like ["anchor-vowels", "strong-consonants"]
+// counts as one completed stage (base-consonants is missing), so later stages
+// stay locked. Everything that gates or counts alphabet progress should flow
+// through getAlphabetProgress() / normalizeCompletedAlphabetIds().
+const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
+
+// Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
+// collapse to the longest ordered prefix of the real lesson order.
+function normalizeCompletedAlphabetIds(ids) {
+  const have = new Set(
+    (Array.isArray(ids) ? ids : []).filter((id) => ALPHABET_LESSON_IDS.includes(id)),
+  );
+  const prefix = [];
+  for (const id of ALPHABET_LESSON_IDS) {
+    if (!have.has(id)) break;
+    prefix.push(id);
+  }
+  return prefix;
+}
+
+function getAlphabetProgress() {
+  const completedIds = normalizeCompletedAlphabetIds(state.phaseOneCompleted);
+  const completedCount = completedIds.length;
+  const total = ALPHABET_LESSON_IDS.length;
+  const complete = completedCount >= total;
+  const currentIndex = complete ? total : completedCount;
+  return {
+    orderedLessonIds: ALPHABET_LESSON_IDS,
+    completedIds,
+    completedCount,
+    currentIndex,
+    currentStage: complete ? total : completedCount + 1,
+    total,
+    complete,
+    nextLesson: phaseOneLessons[currentIndex] || null,
+    // A lesson is unlocked once every lesson before it is complete.
+    isLessonUnlocked: (index) =>
+      Number.isInteger(index) && index >= 0 && index < total && index <= completedCount,
+  };
+}
+
+// One-time defensive cleanup of stored progress (debug seed, gaps, duplicates,
+// unknown ids). Runs at load before anything reads phaseOneCompleted.
+function migrateAlphabetProgress() {
+  const before = JSON.stringify(Array.isArray(state.phaseOneCompleted) ? state.phaseOneCompleted : null);
+  let cleaned = normalizeCompletedAlphabetIds(state.phaseOneCompleted);
+  // A profile that has not finished onboarding cannot have legitimate alphabet
+  // progress, so any completion here is leftover debug/seed data — clear it.
+  if (!state.onboarded) cleaned = [];
+  state.phaseOneCompleted = cleaned;
+  if (JSON.stringify(cleaned) !== before) saveState();
+}
+
 const state = loadState();
 state.navTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTab) || "today");
 state.mainTab = normalizeMainTab(state.mainTab || getMainTabForNavTab(state.navTab) || "alphabet");
 state.tabLevels = normalizeTabLevels(state.tabLevels);
 state.alphabetView = normalizeAlphabetView(state.alphabetView || getDefaultAlphabetView());
-state.phaseOneCompleted = Array.isArray(state.phaseOneCompleted)
-  ? state.phaseOneCompleted.filter((id) => phaseOneLessons.some((lesson) => lesson.id === id))
-  : [];
 state.phaseOneActive = Number.isInteger(state.phaseOneActive)
   ? Math.min(Math.max(state.phaseOneActive, 0), phaseOneLessons.length - 1)
   : 0;
@@ -3679,6 +3731,7 @@ state.vocabKnownRanks = Array.isArray(state.vocabKnownRanks)
 state.vocabHardRanks = Array.isArray(state.vocabHardRanks)
   ? [...new Set(state.vocabHardRanks.map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0))]
   : [];
+migrateAlphabetProgress();
 
 // (quick-nav removed in HanaPath)
 
@@ -3702,7 +3755,7 @@ function loadState() {
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
     studio: "alphabet",
-    phaseOneCompleted: ["anchor-vowels", "base-consonants", "block-geometry", "complete-vowels", "strong-consonants"], // TEST: remove before ship
+    phaseOneCompleted: [],
     phaseOneActive: 0,
     todayDate: "",
     todayDone: [],
@@ -3790,7 +3843,7 @@ function getLevelIndex(level) {
 function getUnlockedLevelFromProgress() {
   let unlockedIndex = 0;
 
-  if (phaseOneLessons.every((lesson) => state.phaseOneCompleted.includes(lesson.id))) {
+  if (getAlphabetProgress().complete) {
     unlockedIndex = 1;
   }
 
@@ -5012,13 +5065,11 @@ function validatePhaseOneLessons() {
 }
 
 function getFirstIncompletePhaseOneIndex() {
-  const index = phaseOneLessons.findIndex((lesson) => !state.phaseOneCompleted.includes(lesson.id));
-  return index === -1 ? phaseOneLessons.length : index;
+  return getAlphabetProgress().currentIndex;
 }
 
 function isPhaseOneLessonUnlocked(index) {
-  const lesson = phaseOneLessons[index];
-  return Boolean(lesson) && (state.phaseOneCompleted.includes(lesson.id) || index <= getFirstIncompletePhaseOneIndex());
+  return getAlphabetProgress().isLessonUnlocked(index);
 }
 
 function resetPhaseOneView(index, mode = "intro", options = {}) {
@@ -8267,7 +8318,7 @@ function getLearnStageCount(itemId) {
 function getLearnProgress(itemId) {
   const total = getLearnStageCount(itemId);
   if (itemId === "alphabet") {
-    const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
+    const completedCount = getAlphabetProgress().completedCount;
     const currentStage = completedCount >= total ? total : completedCount + 1;
     return {
       total,
@@ -8777,7 +8828,7 @@ function openLearnLesson(
 ) {
   let idx = index;
   if (!phaseOneLessons[idx]) { startNextLearn(); return; }
-  if (idx > state.phaseOneCompleted.length) {
+  if (!getAlphabetProgress().isLessonUnlocked(idx)) {
     idx = Math.min(getFirstIncompletePhaseOneIndex(), phaseOneLessons.length - 1);
   }
   const lesson = phaseOneLessons[idx];
@@ -9539,7 +9590,7 @@ function renderPath() {
 
 function openPathLesson(index) {
   if (!phaseOneLessons[index]) return;
-  if (index > state.phaseOneCompleted.length) return; // locked
+  if (!getAlphabetProgress().isLessonUnlocked(index)) return; // locked
 
   stopSpeech();
   state.phaseOneActive = index;
