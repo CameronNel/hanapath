@@ -40,8 +40,6 @@ Snapshot for the next contributor (human or agent) picking up this project.
 ## Open / optional (intentionally not done)
 1. **P2 — SRS expansion:** add a small alphabet-*skill* SRS (block geometry, batchim detection, word decoding) on top of the existing per-letter Leitner system (`letterSrs`, `STAGE_LETTERS`, `renderLetterReview`). Keep it minimal.
 2. **P4.1 — modularization:** extract alphabet logic into `src/alphabet/*`. Needs a build step first (the app is currently one static script), so probably defer.
-3. **CI:** none exists. A GitHub Action running `node --check app.js` + `node scripts/audit-alphabet-audio.mjs --strict` would be a reasonable first gate.
-4. **Missing audio:** the audit flags `앋` (a ㄷ-batchim demo) with no mp3; it falls back to TTS. Generate it via `generate_assets.py` if desired.
 
 ## Workflow
 Branch off `main`, open a **draft** PR, keep it small and single-purpose. The owner marks ready and squash-merges.

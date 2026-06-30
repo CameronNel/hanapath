@@ -30,4 +30,4 @@ jobs:
         run: node --check app.js
 
       - name: Audit alphabet audio coverage
-        run: node scripts/audit-alphabet-audio.mjs --strict --allow-missing=앋
+        run: node scripts/audit-alphabet-audio.mjs --strict
