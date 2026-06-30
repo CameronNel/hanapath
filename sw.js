@@ -1,12 +1,12 @@
-// [2026-06-30] Cache bumped to v86: Graphic split layout, highlights, and option speakers.
-const CACHE_NAME = "hanapath-shell-v86";
+// [2026-06-30] Cache bumped to v87: Quick alphabet reference link and resume progress.
+const CACHE_NAME = "hanapath-shell-v87";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260630c",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630h",
+  "./app.js?v=20260630i",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

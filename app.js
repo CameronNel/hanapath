@@ -5628,16 +5628,13 @@ function renderCheckpointVisualHtml(question) {
 }
 
 function renderCheckpointAudioHelpers(lesson, question) {
-  if (lesson.id !== "block-geometry") return "";
-  
-  const components = getQuestionComponents(question);
-  const targetText = question.voiceText || question.answer || "";
+  const isBlockGeometry = lesson.id === "block-geometry";
+  const components = isBlockGeometry ? getQuestionComponents(question) : [];
+  const targetText = isBlockGeometry ? (question.voiceText || question.answer || "") : "";
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
   const hasComponents = components.length > 0;
   
-  if (!hasTarget && !hasComponents) return "";
-  
-  let html = '<div class="checkpoint-audio-helpers" style="margin: 16px 0; display: flex; gap: 12px; justify-content: center; width: 100%;">';
+  let html = '<div class="checkpoint-audio-helpers" style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: 100%;">';
   
   if (hasTarget) {
     html += '<button class="button secondary compact" type="button" data-checkpoint-speak-target="' + escapeHtml(targetText) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear target</button>';
@@ -5647,11 +5644,22 @@ function renderCheckpointAudioHelpers(lesson, question) {
     html += '<button class="button secondary compact" type="button" data-checkpoint-speak-components="' + escapeHtml(components.join(",")) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear building blocks</button>';
   }
   
+  // Quick Reference button for ALL phase one stage checkpoints
+  html += '<button class="button secondary compact" type="button" data-checkpoint-open-reference style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">📖 View Alphabet Reference</button>';
+  
   html += '</div>';
   return html;
 }
 
 function bindCheckpointAudioHelpers(container, lesson) {
+  const refBtn = container.querySelector("[data-checkpoint-open-reference]");
+  if (refBtn) {
+    refBtn.addEventListener("click", () => {
+      state.quickRefActive = true;
+      openEntireAlphabet();
+    });
+  }
+
   if (lesson.id !== "block-geometry") return;
 
   const targetBtn = container.querySelector("[data-checkpoint-speak-target]");
@@ -5794,6 +5802,7 @@ function renderPhaseOneQuestion(lesson) {
       "<p>" +
       escapeHtml(question.detail) +
       "</p>" +
+      renderCheckpointAudioHelpers(lesson, question) +
       '<div class="lesson-options">' +
       shuffle([...question.options])
         .map(
@@ -5808,6 +5817,8 @@ function renderPhaseOneQuestion(lesson) {
       "</div>" +
       '<div class="lesson-feedback" id="phaseOneFeedback" aria-live="polite"></div>' +
       "</div>";
+
+    bindCheckpointAudioHelpers(els.phaseOneStage, lesson);
   }
 
   els.phaseOneBackButton.disabled = false;
