@@ -515,9 +515,9 @@ const phaseOneLessons = [
         title: "Tall vowels take the right-hand seat",
         visual: "ㄴ + ㅏ = 나",
         diagram: [
-          { onset: "ㄴ", vowel: "ㅏ" },
-          { onset: "ㄱ", vowel: "ㅓ" },
-          { onset: "ㅁ", vowel: "ㅣ" },
+          { onset: "ㄴ", vowel: "ㅏ", char: "나" },
+          { onset: "ㄱ", vowel: "ㅓ", char: "거" },
+          { onset: "ㅁ", vowel: "ㅣ", char: "미" },
         ],
         body: "With a vertical vowel such as ㅏ, ㅓ, or ㅣ, the initial consonant sits left and the vowel sits right. Read the finished square as one beat.",
         cue: "left + right → one block",
@@ -528,9 +528,9 @@ const phaseOneLessons = [
         title: "Flat vowels take the lower seat",
         visual: "ㄱ + ㅗ = 고",
         diagram: [
-          { onset: "ㄱ", vowel: "ㅗ" },
-          { onset: "ㄴ", vowel: "ㅜ" },
-          { onset: "ㄱ", vowel: "ㅡ" },
+          { onset: "ㄱ", vowel: "ㅗ", char: "고" },
+          { onset: "ㄴ", vowel: "ㅜ", char: "누" },
+          { onset: "ㄱ", vowel: "ㅡ", char: "그" },
         ],
         body: "With ㅗ, ㅜ, or ㅡ, the initial consonant moves above the vowel. The ingredients are the same; only the block geometry changes.",
         cue: "top + bottom → one block",
@@ -541,9 +541,9 @@ const phaseOneLessons = [
         title: "A vowel still needs a complete frame",
         visual: "ㅇ + ㅣ = 이",
         diagram: [
-          { onset: "ㅇ", vowel: "ㅣ" },
-          { onset: "ㅇ", vowel: "ㅏ" },
-          { onset: "ㅇ", vowel: "ㅜ" },
+          { onset: "ㅇ", vowel: "ㅣ", char: "이" },
+          { onset: "ㅇ", vowel: "ㅏ", char: "아" },
+          { onset: "ㅇ", vowel: "ㅜ", char: "우" },
         ],
         body: "Hangul blocks cannot visually begin with a bare vowel, so silent ㅇ fills the first seat. It adds no sound in 이, 아, or 우.",
         cue: "ㅇ is visible but silent at the start.",
@@ -554,9 +554,9 @@ const phaseOneLessons = [
         title: "A final consonant sits on the floor",
         visual: "ㅎ + ㅏ + ㄴ = 한",
         diagram: [
-          { onset: "ㅎ", vowel: "ㅏ", batchim: "ㄴ" },
-          { onset: "ㄱ", vowel: "ㅏ", batchim: "ㄱ" },
-          { onset: "ㅁ", vowel: "ㅏ", batchim: "ㅁ" },
+          { onset: "ㅎ", vowel: "ㅏ", batchim: "ㄴ", char: "한" },
+          { onset: "ㄱ", vowel: "ㅏ", batchim: "ㄱ", char: "각" },
+          { onset: "ㅁ", vowel: "ㅏ", batchim: "ㅁ", char: "맘" },
         ],
         body: "Some blocks close with a consonant called batchim. Build the initial and vowel first, then place the final consonant underneath the whole pair.",
         cue: "한 is still one square and one syllable.",
@@ -5325,12 +5325,13 @@ function renderBlockDiagram(onset, vowel, batchim = "") {
 }
 
 // Renders a row of block-diagram + arrow + assembled-syllable equations.
-// diagrams: array of { onset, vowel, batchim? }
+// diagrams: array of { onset, vowel, batchim?, char? }
+// Provide `char` with the pre-composed Unicode syllable (e.g. "나") for correct display.
 function renderBlockDiagrams(diagrams) {
   const equations = diagrams.map((d) => {
-    const assembled = d.batchim
+    const assembled = d.char || (d.batchim
       ? (d.onset + d.vowel + d.batchim)
-      : (d.onset + d.vowel);
+      : (d.onset + d.vowel));
     return (
       `<div class="bd-equation">` +
       renderBlockDiagram(d.onset, d.vowel, d.batchim || "") +
