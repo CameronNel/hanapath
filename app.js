@@ -6575,8 +6575,13 @@ function renderEntireAlphabet() {
   const el = showScreen("detail");
   if (!el) return;
 
-  const activeLessonIdx = phaseOneView.lessonIndex;
-  const isQuickRef = state.quickRefActive && typeof activeLessonIdx === "number";
+  const activeLessonIdx = state.phaseOneActive;
+  const isQuickRef = !!state.quickRefActive;
+  console.log("renderEntireAlphabet quick-ref status:", {
+    quickRefActive: state.quickRefActive,
+    phaseOneActive: state.phaseOneActive,
+    isQuickRef: isQuickRef
+  });
 
   if (isQuickRef) {
     showDetailBarWithBack(

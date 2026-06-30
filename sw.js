@@ -1,12 +1,12 @@
-// [2026-06-30] Cache bumped to v89: Clickable geometry equations and column diagram tokens.
-const CACHE_NAME = "hanapath-shell-v89";
+// [2026-06-30] Cache bumped to v90: Robust quick reference routing logic.
+const CACHE_NAME = "hanapath-shell-v90";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260630d",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630k",
+  "./app.js?v=20260630l",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
