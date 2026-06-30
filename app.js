@@ -6583,20 +6583,11 @@ function renderEntireAlphabet() {
     isQuickRef: isQuickRef
   });
 
-  if (isQuickRef) {
-    showDetailBarWithBack(
-      "learn",
-      "Entire Korean alphabet",
-      () => {
-        state.quickRefActive = false;
-        saveState();
-        openLearnLesson(activeLessonIdx, { resume: true });
-      },
-      `Stage ${String(activeLessonIdx + 1).padStart(2, "0")}`
-    );
-  } else {
-    showDetailBarWithBack("learn", "Entire Korean alphabet", () => openLearnStageMenu("alphabet"), "Alphabet");
-  }
+  showDetailBarWithBack("learn", "Entire Korean alphabet", () => {
+    state.quickRefActive = false;
+    saveState();
+    openLearnStageMenu("alphabet");
+  }, "Alphabet");
 
   const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
   const labels = state.alphabetBoardLabels || "roman";
