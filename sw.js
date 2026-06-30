@@ -1,12 +1,12 @@
-// [2026-06-30] Cache bumped to v91: Back button always goes to Alphabet Stage Menu.
-const CACHE_NAME = "hanapath-shell-v91";
+// [2026-06-30] Cache bumped to v92: Optimized vocab search and fixed search bar focus loss.
+const CACHE_NAME = "hanapath-shell-v92";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260630d",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630m",
+  "./app.js?v=20260630n",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

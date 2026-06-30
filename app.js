@@ -3595,16 +3595,28 @@ function normalizeVocabEntry(row) {
     return null;
   }
 
+  const finalEnglish = englishSpelling || korean;
+  const finalPron = pronunciation || finalEnglish || korean;
+  const finalSyllables = Number.isInteger(syllables) && syllables > 0 ? syllables : 1;
+
   return {
     rank,
     korean,
-    englishSpelling: englishSpelling || korean,
-    pronunciation: pronunciation || englishSpelling || korean,
-    romanization: englishSpelling || korean,
+    englishSpelling: finalEnglish,
+    pronunciation: finalPron,
+    romanization: finalEnglish,
     frequencyBand,
-    syllables: Number.isInteger(syllables) && syllables > 0 ? syllables : 1,
+    syllables: finalSyllables,
     tokenNote,
     sourceUrl,
+    // Cached lowercase fields for instant O(1) filter matching
+    _rankStr: String(rank),
+    _koreanLower: korean.toLowerCase(),
+    _englishLower: finalEnglish.toLowerCase(),
+    _pronLower: finalPron.toLowerCase(),
+    _bandLower: frequencyBand.toLowerCase(),
+    _syllablesStr: String(finalSyllables),
+    _noteLower: tokenNote.toLowerCase(),
   };
 }
 
@@ -3855,24 +3867,24 @@ function bindVocabBrowser(root, vocabView, rerender) {
 function findVocabMatches(query, band) {
   const trimmed = String(query || "").trim().toLowerCase();
   const activeBand = band || "all";
+  if (!trimmed) {
+    return activeBand === "all"
+      ? vocabBank
+      : vocabBank.filter((entry) => entry.frequencyBand === activeBand);
+  }
   return vocabBank.filter((entry) => {
     if (activeBand !== "all" && entry.frequencyBand !== activeBand) {
       return false;
     }
-
-    if (!trimmed) {
-      return true;
-    }
-
-    return [
-      String(entry.rank),
-      entry.korean,
-      entry.englishSpelling || entry.romanization,
-      entry.pronunciation || entry.englishSpelling || entry.romanization,
-      entry.frequencyBand,
-      String(entry.syllables),
-      entry.tokenNote,
-    ].some((value) => value.toLowerCase().includes(trimmed));
+    return (
+      (entry._rankStr && entry._rankStr.includes(trimmed)) ||
+      (entry._koreanLower && entry._koreanLower.includes(trimmed)) ||
+      (entry._englishLower && entry._englishLower.includes(trimmed)) ||
+      (entry._pronLower && entry._pronLower.includes(trimmed)) ||
+      (entry._bandLower && entry._bandLower.includes(trimmed)) ||
+      (entry._syllablesStr && entry._syllablesStr.includes(trimmed)) ||
+      (entry._noteLower && entry._noteLower.includes(trimmed))
+    );
   });
 }
 
@@ -9791,6 +9803,12 @@ function renderVocabulary() {
   currentQuizScope = "vocabulary";
   state.studio = "vocab";
 
+  // Capture search box focus & cursor selection before rebuilding the DOM
+  const activeEl = document.activeElement;
+  const isSearchActive = activeEl && activeEl.id === "vocabSearch";
+  const selectionStart = isSearchActive ? activeEl.selectionStart : null;
+  const selectionEnd = isSearchActive ? activeEl.selectionEnd : null;
+
   const level = getActiveLearnLevel("vocabulary");
   const bandIndex = getLevelBand(level, VOCAB_BANDS.length);
   const bandLabel = VOCAB_BANDS[bandIndex - 1] || VOCAB_BANDS[0];
@@ -9916,6 +9934,17 @@ function renderVocabulary() {
 
   if (showQuiz) renderQuestion(generateQuestion(), { scope: "vocabulary" });
   showTapHint("vocabulary");
+
+  // Restore focus and cursor selection range to search box if it was active
+  if (isSearchActive) {
+    const search = el.querySelector("#vocabSearch");
+    if (search) {
+      search.focus();
+      if (selectionStart !== null && selectionEnd !== null) {
+        search.setSelectionRange(selectionStart, selectionEnd);
+      }
+    }
+  }
 }
 
 function renderLibrary() {
