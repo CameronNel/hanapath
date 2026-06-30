@@ -2893,7 +2893,7 @@ function getLegacyTabStartLevel(tab) {
   const legacyLevel = Number(String(state.level || "K0").replace(/\D+/g, "")) || 0;
   const base = Math.min(10, Math.max(1, legacyLevel * 2 + 1));
   if (tab === "alphabet") {
-    const done = Array.isArray(state.phaseOneCompleted) ? state.phaseOneCompleted.length : 0;
+    const done = getAlphabetProgress().completedCount;
     if (!done) return 1;
     return clampLevel(Math.ceil((done / Math.max(1, phaseOneLessons.length)) * 10));
   }
@@ -3405,7 +3405,7 @@ function isFreshProfile() {
     state.correct === 0 &&
     state.studyDays === 0 &&
     state.totalMinutes === 0 &&
-    state.phaseOneCompleted.length === 0 &&
+    getAlphabetProgress().completedCount === 0 &&
     state.vocabKnownRanks.length === 0 &&
     state.vocabHardRanks.length === 0
   );
@@ -4562,12 +4562,13 @@ function openPreviousPhaseOneLesson(index, shouldScroll = false) {
 }
 
 function renderPhaseOneOverview() {
-  const completedCount = phaseOneLessons.filter((lesson) => state.phaseOneCompleted.includes(lesson.id)).length;
-  const percent = Math.round((completedCount / phaseOneLessons.length) * 100);
-  const nextIndex = getFirstIncompletePhaseOneIndex();
-  const nextLesson = phaseOneLessons[nextIndex];
+  const progress = getAlphabetProgress();
+  const completedCount = progress.completedCount;
+  const percent = Math.round((completedCount / progress.total) * 100);
+  const nextIndex = progress.currentIndex;
+  const nextLesson = progress.nextLesson;
 
-  els.phaseOneProgressText.textContent = completedCount + " of " + phaseOneLessons.length + " stages";
+  els.phaseOneProgressText.textContent = completedCount + " of " + progress.total + " stages";
   els.phaseOneProgressPercent.textContent = percent + "%";
   els.phaseOneProgressBar.setAttribute("aria-valuenow", String(percent));
   els.phaseOneProgressBar.querySelector("span").style.width = percent + "%";
@@ -4576,13 +4577,15 @@ function renderPhaseOneOverview() {
     : "Phase 01 cleared. Keep decoding until the blocks feel immediate.";
   els.continuePhaseOneButton.textContent =
     completedCount === 0 ? "Start Phase 01" : nextLesson ? "Continue with stage " + String(nextIndex + 1).padStart(2, "0") : "Review Phase 01";
-  els.phaseOneFinale.hidden = completedCount !== phaseOneLessons.length;
+  els.phaseOneFinale.hidden = !progress.complete;
 }
 
 function renderPhaseOneTrack() {
+  const progress = getAlphabetProgress();
+  const completedIds = new Set(progress.completedIds);
   els.phaseOneTrack.innerHTML = phaseOneLessons
     .map((lesson, index) => {
-      const complete = state.phaseOneCompleted.includes(lesson.id);
+      const complete = completedIds.has(lesson.id);
       const locked = !isPhaseOneLessonUnlocked(index);
       const active = index === phaseOneView.lessonIndex;
       const classes = ["track-lesson"];
@@ -4886,7 +4889,7 @@ function enrollStageLetters(lessonId) {
 
 // Enroll letters for any already-completed stages (covers existing users).
 function backfillLetterSrs() {
-  (state.phaseOneCompleted || []).forEach((id) => enrollStageLetters(id));
+  getAlphabetProgress().completedIds.forEach((id) => enrollStageLetters(id));
 }
 
 function getEnrolledLetters() {
@@ -5426,7 +5429,7 @@ function renderPhaseOneResult(lesson) {
   const passed = percent >= requiredPercent;
   phaseOneView.passed = passed;
 
-  if (passed && !state.phaseOneCompleted.includes(lesson.id)) {
+  if (passed && !getAlphabetProgress().completedIds.includes(lesson.id)) {
     state.phaseOneCompleted.push(lesson.id);
     enrollStageLetters(lesson.id);
     saveState();
@@ -5511,9 +5514,10 @@ function renderPhaseOnePlayer() {
 }
 
 function renderPhaseOneCourse() {
-  const firstIncomplete = getFirstIncompletePhaseOneIndex();
+  const progress = getAlphabetProgress();
+  const firstIncomplete = progress.currentIndex;
   if (
-    !state.phaseOneCompleted.includes(phaseOneLessons[phaseOneView.lessonIndex]?.id) &&
+    !progress.completedIds.includes(phaseOneLessons[phaseOneView.lessonIndex]?.id) &&
     phaseOneView.lessonIndex > firstIncomplete
   ) {
     const safeIndex = Math.min(firstIncomplete, phaseOneLessons.length - 1);
@@ -8769,11 +8773,12 @@ function getTodayReviewCount() {
 }
 
 function getNextAction() {
-  const nextIndex = getFirstIncompletePhaseOneIndex();
-  const nextLesson = phaseOneLessons[nextIndex] || null;
+  const progress = getAlphabetProgress();
+  const nextIndex = progress.currentIndex;
+  const nextLesson = progress.nextLesson;
   const hasHangulLesson = Boolean(
     nextLesson &&
-    (state.level === "K0" || !state.knowsHangul || state.phaseOneCompleted.length < phaseOneLessons.length),
+    (state.level === "K0" || !state.knowsHangul || !progress.complete),
   );
 
   if (hasHangulLesson) {
@@ -8843,10 +8848,11 @@ function renderTodayView() {
   if (!el) return;
   refreshProgressionState();
 
-  const nextIndex = getFirstIncompletePhaseOneIndex();
-  const nextLesson = phaseOneLessons[nextIndex] || null;
-  const hangulDone = !nextLesson;
-  const hangulPct = Math.round((state.phaseOneCompleted.length / Math.max(1, phaseOneLessons.length)) * 100);
+  const progress = getAlphabetProgress();
+  const nextIndex = progress.currentIndex;
+  const nextLesson = progress.nextLesson;
+  const hangulDone = progress.complete;
+  const hangulPct = Math.round((progress.completedCount / Math.max(1, progress.total)) * 100);
 
   const continueTitle = nextLesson
     ? `Next: ${nextLesson.shortTitle}`
@@ -8924,11 +8930,13 @@ function renderPath() {
     { id: "K5", name: "Fluency Bridge",        time: "Months 19–24",units: [] },
   ];
 
-  const completedK0 = state.phaseOneCompleted.length;
-  const k0Pct = Math.round((completedK0 / phaseOneLessons.length) * 100);
+  const progress = getAlphabetProgress();
+  const completedK0 = progress.completedCount;
+  const completedK0Ids = new Set(progress.completedIds);
+  const k0Pct = Math.round((completedK0 / progress.total) * 100);
   const unlockedIndex = getLevelIndex(state.level);
-  const nextIndex = getFirstIncompletePhaseOneIndex();
-  const nextLesson = phaseOneLessons[nextIndex] || null;
+  const nextIndex = progress.currentIndex;
+  const nextLesson = progress.nextLesson;
   const pathHeroTitle = nextLesson ? `Continue: ${nextLesson.shortTitle}` : "Hangul complete";
   const pathHeroSubtitle = nextLesson
     ? nextLesson.goal
@@ -8974,8 +8982,8 @@ function renderPath() {
         }
 
         const unitsHtml = lv.units.map((u, i) => {
-          const done = lv.isK0 ? state.phaseOneCompleted.includes(phaseOneLessons[i]?.id) : false;
-          const isCurr = lv.isK0 ? (i === completedK0 && completedK0 < phaseOneLessons.length) : false;
+          const done = lv.isK0 ? completedK0Ids.has(phaseOneLessons[i]?.id) : false;
+          const isCurr = lv.isK0 ? (i === completedK0 && !progress.complete) : false;
           const isLocked = locked || (lv.isK0 ? i > completedK0 : false);
           const dotClass = done ? "done" : isCurr ? "curr" : isLocked ? "lock" : "next";
           const dotLabel = done ? "✓" : isCurr ? "▶" : isLocked ? "🔒" : String(i + 1);
@@ -9452,8 +9460,9 @@ function renderProgress() {
   if (!el) return;
   refreshProgressionState();
 
-  const completedK0 = state.phaseOneCompleted.length;
-  const k0Pct = Math.round((completedK0 / Math.max(1, phaseOneLessons.length)) * 100);
+  const progress = getAlphabetProgress();
+  const completedK0 = progress.completedCount;
+  const k0Pct = Math.round((completedK0 / Math.max(1, progress.total)) * 100);
   const levelIndex = getLevelIndex(state.level);
   const levelNames = {
     K0: "Hangul & Sound",
@@ -9472,7 +9481,7 @@ function renderProgress() {
   const nextLevel = LEVEL_ORDER[Math.min(levelIndex + 1, LEVEL_ORDER.length - 1)] || state.level;
   const canDoItems = [
     { done: completedK0 > 0, label: "Started Hangul Boot Camp" },
-    { done: completedK0 >= phaseOneLessons.length, label: "Completed all K0 reading stages" },
+    { done: progress.complete, label: "Completed all K0 reading stages" },
     { done: state.correct >= 20, label: "Answered 20 quiz cards correctly" },
     { done: knownWords >= 20, label: "Marked 20 vocabulary words as known" },
     { done: state.studyDays >= 3, label: "Built a 3-day study streak" },
