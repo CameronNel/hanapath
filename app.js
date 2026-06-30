@@ -1182,6 +1182,32 @@ const phaseOneLessons = [
         explanation: "ㅇ + ㅏ is 아 and ㄱ + ㅣ is 기, so 아기 means baby.",
         voiceText: "아기",
       },
+      {
+        type: "build",
+        prompt: "Build the word that means “tree” (na-mu)",
+        detail: "Build the first block, then the second — left to right.",
+        target: "나무",
+        blocks: [
+          { onset: "ㄴ", vowel: "ㅏ" },
+          { onset: "ㅁ", vowel: "ㅜ" },
+        ],
+        tray: ["ㄴ", "ㅏ", "ㅁ", "ㅜ", "ㅓ", "ㅗ"],
+        explanation: "나 (ㄴ + ㅏ) and 무 (ㅁ + ㅜ) read left to right as 나무 — two blocks, two beats.",
+        voiceText: "나무",
+      },
+      {
+        type: "build",
+        prompt: "Build the word “han-geul” (the Korean alphabet)",
+        detail: "Each block closes with a batchim — onset, vowel, then the floor.",
+        target: "한글",
+        blocks: [
+          { onset: "ㅎ", vowel: "ㅏ", batchim: "ㄴ" },
+          { onset: "ㄱ", vowel: "ㅡ", batchim: "ㄹ" },
+        ],
+        tray: ["ㅎ", "ㅏ", "ㄴ", "ㄱ", "ㅡ", "ㄹ", "ㅗ"],
+        explanation: "한 (ㅎ + ㅏ + ㄴ) and 글 (ㄱ + ㅡ + ㄹ) build 한글 — the script you just learned.",
+        voiceText: "한글",
+      },
     ],
   },
   {
@@ -4581,7 +4607,12 @@ function validatePhaseOneLessons() {
     lesson.questions.forEach((question) => {
       if (question.type === "build") {
         const tray = new Set(question.tray);
-        const needed = [question.onset, question.vowel].concat(question.batchim ? [question.batchim] : []);
+        const blocks = Array.isArray(question.blocks)
+          ? question.blocks
+          : [{ onset: question.onset, vowel: question.vowel, batchim: question.batchim }];
+        const needed = blocks.flatMap((block) =>
+          [block.onset, block.vowel].concat(block.batchim ? [block.batchim] : []),
+        );
         if (!question.target || !Array.isArray(question.tray) || needed.some((jamo) => !jamo || !tray.has(jamo))) {
           throw new Error("Invalid build question in lesson: " + lesson.id);
         }
@@ -5724,28 +5755,46 @@ function answerPhaseOneQuestion(choice, button) {
   els.phaseOneActionButton.disabled = false;
 }
 
-// Interactive "build a block" checkpoint: the learner assembles a target
-// syllable by tapping jamo tiles in order (onset → vowel → optional batchim),
-// each landing in its real geometric seat. Scoring mirrors the multiple-choice
-// path: a clean (no-mistake) build counts toward the pass threshold.
+// Interactive "build" checkpoint: the learner assembles a target syllable —
+// or a whole word of several syllables — by tapping jamo tiles in order
+// (onset → vowel → optional batchim, block by block), each landing in its real
+// geometric seat. Scoring mirrors the multiple-choice path: a clean
+// (no-mistake) build counts toward the pass threshold.
 function renderPhaseOneBuildQuestion(lesson, question) {
   restorePhaseOneActions();
   const cleanCount = phaseOneView.results.filter(Boolean).length;
 
-  const seq = [question.onset, question.vowel];
-  if (question.batchim) seq.push(question.batchim);
-  phaseOneView.buildSeq = seq;
-  phaseOneView.buildFilled = [];
+  // Normalize single-syllable and multi-syllable builds to a list of blocks.
+  const blocks = Array.isArray(question.blocks)
+    ? question.blocks
+    : [{ onset: question.onset, vowel: question.vowel, batchim: question.batchim }];
 
-  const layoutClass = VERTICAL_VOWELS.has(question.vowel) ? "bd-vertical" : "bd-horizontal";
+  const seq = [];
+  const roles = [];
   const slotSpan = (cls, slotIndex) =>
     `<span class="${cls} bd-slot" data-build-slot="${slotIndex}" aria-hidden="true">·</span>`;
-  const diagram =
-    `<div class="block-diagram ${layoutClass} bd-build" lang="ko">` +
-    slotSpan("bd-onset", 0) +
-    slotSpan("bd-vowel", 1) +
-    (question.batchim ? slotSpan("bd-batchim", 2) : "") +
-    `</div>`;
+  const diagram = blocks
+    .map((block) => {
+      const layoutClass = VERTICAL_VOWELS.has(block.vowel) ? "bd-vertical" : "bd-horizontal";
+      let html = `<div class="block-diagram ${layoutClass} bd-build" lang="ko">`;
+      html += slotSpan("bd-onset", seq.length);
+      seq.push(block.onset);
+      roles.push("onset");
+      html += slotSpan("bd-vowel", seq.length);
+      seq.push(block.vowel);
+      roles.push("vowel");
+      if (block.batchim) {
+        html += slotSpan("bd-batchim", seq.length);
+        seq.push(block.batchim);
+        roles.push("batchim");
+      }
+      return html + "</div>";
+    })
+    .join('<span class="bd-word-sep" aria-hidden="true">·</span>');
+
+  phaseOneView.buildSeq = seq;
+  phaseOneView.buildRoles = roles;
+  phaseOneView.buildFilled = [];
 
   const tiles = shuffle([...question.tray])
     .map(
@@ -5801,10 +5850,13 @@ function answerPhaseOneBuild(jamo, tile) {
   const lesson = phaseOneLessons[phaseOneView.lessonIndex];
   const question = lesson.questions[phaseOneView.questionIndex];
   const seq = phaseOneView.buildSeq || [];
+  const roles = phaseOneView.buildRoles || [];
   const filled = phaseOneView.buildFilled || [];
   const feedback = document.getElementById("phaseOneFeedback");
   const slotIndex = filled.length;
-  const slotName = slotIndex === 0 ? "first consonant" : slotIndex === 1 ? "vowel" : "final consonant";
+  const roleLabel = (role) =>
+    role === "vowel" ? "vowel" : role === "batchim" ? "final consonant" : "consonant";
+  const slotName = roleLabel(roles[slotIndex]);
 
   if (jamo !== seq[slotIndex]) {
     phaseOneView.hadMistake = true;
@@ -5842,8 +5894,7 @@ function answerPhaseOneBuild(jamo, tile) {
     els.phaseOneActionButton.disabled = false;
     void speak(question.target);
   } else {
-    const nextName = filled.length === 1 ? "Now the vowel." : "Now the final consonant.";
-    feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml(nextName);
+    feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + roleLabel(roles[filled.length]) + ".");
     void speak(jamo);
   }
 }
