@@ -797,6 +797,26 @@ input, textarea { cursor: text; }
   gap: 10px;
   font-family: "Noto Sans KR", sans-serif;
 }
+.bd-equation.concept-token.tappable,
+.bd-block-col.concept-token.tappable {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bd-equation.concept-token.tappable:hover,
+.bd-block-col.concept-token.tappable:hover {
+  background: rgba(91, 157, 255, 0.08);
+  border-color: rgba(91, 157, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.bd-equation.concept-token.tappable:active,
+.bd-block-col.concept-token.tappable:active {
+  transform: translateY(0) scale(0.97);
+}
 .bd-arrow {
   font-size: 1.1rem;
   color: var(--muted-2);

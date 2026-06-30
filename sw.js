@@ -1,12 +1,12 @@
-// [2026-06-30] Cache bumped to v88: Fix Alphabet Reference return buttons.
-const CACHE_NAME = "hanapath-shell-v88";
+// [2026-06-30] Cache bumped to v89: Clickable geometry equations and column diagram tokens.
+const CACHE_NAME = "hanapath-shell-v89";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260630c",
+  "./styles.css?v=20260630d",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630j",
+  "./app.js?v=20260630k",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

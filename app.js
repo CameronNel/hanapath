@@ -5402,12 +5402,12 @@ function renderBlockDiagram(onset, vowel, batchim = "") {
 // diagrams: array of { onset, vowel, batchim?, char? }
 // Provide `char` with the pre-composed Unicode syllable (e.g. "나") for correct display.
 function renderBlockDiagrams(diagrams) {
-  const equations = diagrams.map((d) => {
+  const equations = diagrams.map((d, index) => {
     const assembled = d.char || (d.batchim
       ? (d.onset + d.vowel + d.batchim)
       : (d.onset + d.vowel));
     return (
-      `<div class="bd-equation">` +
+      `<div class="bd-equation concept-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(assembled)}" title="Tap to hear" data-flash-index="${index}" data-speak="${escapeHtml(assembled)}">` +
       renderBlockDiagram(d.onset, d.vowel, d.batchim || "") +
       `<span class="bd-arrow">→</span>` +
       `<span class="bd-assembled" lang="ko">${escapeHtml(assembled)}</span>` +
@@ -5425,7 +5425,7 @@ function renderWordBreakdown(blocks) {
       ? `<span class="bd-word-sep" aria-hidden="true">·</span>`
       : "";
     return (
-      `<div class="bd-block-col">` +
+      `<div class="bd-block-col concept-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(b.char)}" title="Tap to hear" data-flash-index="${i}" data-speak="${escapeHtml(b.char)}">` +
       `<span class="bd-word-char" lang="ko">${escapeHtml(b.char)}</span>` +
       renderBlockDiagram(b.onset, b.vowel, b.batchim || "") +
       `</div>` +
