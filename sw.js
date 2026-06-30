@@ -1,12 +1,12 @@
-// [2026-06-30] Cache bumped to v85: Add audio helper buttons to Stage 3 checkpoint.
-const CACHE_NAME = "hanapath-shell-v85";
+// [2026-06-30] Cache bumped to v86: Graphic split layout, highlights, and option speakers.
+const CACHE_NAME = "hanapath-shell-v86";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260630c",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630g",
+  "./app.js?v=20260630h",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

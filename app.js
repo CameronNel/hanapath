@@ -5592,6 +5592,41 @@ function getQuestionComponents(question) {
   return components.filter(Boolean);
 }
 
+function renderCheckpointVisualHtml(question) {
+  const visualText = String(question.visual || "").trim();
+  const components = getQuestionComponents(question);
+  
+  let html = '<div class="checkpoint-visual-container">';
+  
+  if (visualText.includes("+")) {
+    html += '<div class="components-breakdown">';
+    const parts = visualText.split("+");
+    parts.forEach((part, index) => {
+      const trimmed = part.trim();
+      html += `<span class="visual-comp" data-comp-index="${index}">${escapeHtml(trimmed)}</span>`;
+      if (index < parts.length - 1) {
+        html += '<span class="visual-op">+</span>';
+      }
+    });
+    html += '</div>';
+  } else {
+    html += `<div class="visual-target" data-visual-target>${escapeHtml(visualText)}</div>`;
+    if (components.length > 0) {
+      html += '<div class="components-breakdown">';
+      components.forEach((comp, index) => {
+        html += `<span class="visual-comp" data-comp-index="${index}">${escapeHtml(comp)}</span>`;
+        if (index < components.length - 1) {
+          html += '<span class="visual-op">+</span>';
+        }
+      });
+      html += '</div>';
+    }
+  }
+  
+  html += '</div>';
+  return html;
+}
+
 function renderCheckpointAudioHelpers(lesson, question) {
   if (lesson.id !== "block-geometry") return "";
   
@@ -5623,10 +5658,21 @@ function bindCheckpointAudioHelpers(container, lesson) {
   const componentsBtn = container.querySelector("[data-checkpoint-speak-components]");
 
   if (targetBtn) {
-    targetBtn.addEventListener("click", () => {
+    targetBtn.addEventListener("click", async () => {
       checkpointPlaybackId += 1;
+      const tokenId = checkpointPlaybackId;
       const text = targetBtn.getAttribute("data-checkpoint-speak-target") || "";
-      void speak(text);
+      
+      container.querySelectorAll(".visual-comp, [data-visual-target]").forEach(el => el.classList.remove("active-highlight"));
+      
+      const targetEl = container.querySelector("[data-visual-target]");
+      if (targetEl) targetEl.classList.add("active-highlight");
+      
+      await speak(text);
+      
+      if (tokenId === checkpointPlaybackId && targetEl) {
+        targetEl.classList.remove("active-highlight");
+      }
     });
   }
 
@@ -5635,20 +5681,37 @@ function bindCheckpointAudioHelpers(container, lesson) {
       const tokenId = ++checkpointPlaybackId;
       const parts = (componentsBtn.getAttribute("data-checkpoint-speak-components") || "").split(",").filter(Boolean);
       
+      container.querySelectorAll(".visual-comp, [data-visual-target]").forEach(el => el.classList.remove("active-highlight"));
+      
       for (let i = 0; i < parts.length; i++) {
         if (tokenId !== checkpointPlaybackId) return;
         const speakText = speakableForChunk(parts[i]);
+        
+        const compEl = container.querySelector(`.visual-comp[data-comp-index="${i}"]`);
+        if (compEl) compEl.classList.add("active-highlight");
         
         await Promise.all([
           speak(speakText, { preserveSequence: true }),
           new Promise((resolve) => window.setTimeout(resolve, 800))
         ]);
         
+        if (compEl) compEl.classList.remove("active-highlight");
+        
         if (tokenId !== checkpointPlaybackId) return;
         await new Promise((resolve) => window.setTimeout(resolve, 200));
       }
     });
   }
+
+  // Bind speak option buttons next to choices
+  container.querySelectorAll(".speak-option-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      checkpointPlaybackId += 1;
+      const text = btn.getAttribute("data-speak-option") || "";
+      void speak(text);
+    });
+  });
 }
 
 function renderPhaseOneQuestion(lesson) {
@@ -5659,50 +5722,93 @@ function renderPhaseOneQuestion(lesson) {
   }
   restorePhaseOneActions();
   const cleanCount = phaseOneView.results.filter(Boolean).length;
-  const questionVisual = renderFlashableHangulText(question.visual, "checkpoint-token");
 
-  els.phaseOneStage.innerHTML =
-    '<div class="lesson-step-row">' +
-    "<span>Checkpoint " +
-    (phaseOneView.questionIndex + 1) +
-    " / " +
-    lesson.questions.length +
-    "</span>" +
-    "<strong>" +
-    cleanCount +
-    " clean</strong>" +
-    "</div>" +
-    '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
-    '<div class="checkpoint-card">' +
-    '<div class="checkpoint-visual" lang="ko" data-phase-one-visual>' +
-    questionVisual.html +
-    "</div>" +
-    "<h4>" +
-    escapeHtml(question.prompt) +
-    "</h4>" +
-    "<p>" +
-    escapeHtml(question.detail) +
-    "</p>" +
-    renderCheckpointAudioHelpers(lesson, question) +
-    '<div class="lesson-options">' +
-    // The lesson banks list the correct answer first; shuffle a copy so the
-    // right choice isn't always the top button. Order is matched by value, so
-    // shuffling the display has no effect on grading.
-    shuffle([...question.options])
-      .map(
-        (option) =>
-          '<button class="lesson-option" type="button" data-option="' +
-          escapeHtml(option) +
-          '">' +
-          escapeHtml(option) +
-          "</button>",
-      )
-      .join("") +
-    "</div>" +
-    '<div class="lesson-feedback" id="phaseOneFeedback" aria-live="polite"></div>' +
-    "</div>";
+  if (lesson.id === "block-geometry") {
+    const visualHtml = renderCheckpointVisualHtml(question);
+    const audioHelpersHtml = renderCheckpointAudioHelpers(lesson, question);
+    
+    els.phaseOneStage.innerHTML =
+      '<div class="lesson-step-row">' +
+      "<span>Checkpoint " +
+      (phaseOneView.questionIndex + 1) +
+      " / " +
+      lesson.questions.length +
+      "</span>" +
+      "<strong>" +
+      cleanCount +
+      " clean</strong>" +
+      "</div>" +
+      '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
+      '<div class="checkpoint-card">' +
+      
+      '<div class="checkpoint-split-layout">' +
+        '<div class="checkpoint-left-pane">' +
+          visualHtml +
+          audioHelpersHtml +
+        '</div>' +
+        '<div class="checkpoint-right-pane">' +
+          "<h4>" + escapeHtml(question.prompt) + "</h4>" +
+          "<p style=\"margin-bottom: 16px;\">" + escapeHtml(question.detail) + "</p>" +
+          '<div class="lesson-options">' +
+            shuffle([...question.options])
+              .map(
+                (option) =>
+                  '<div class="lesson-option-row">' +
+                    '<button class="lesson-option" type="button" data-option="' + escapeHtml(option) + '">' + escapeHtml(option) + '</button>' +
+                    (option !== "No letter" && option !== "To the right" && option !== "Below the consonant" && option !== "On the floor" && option !== "Above the block"
+                      ? '<button class="button secondary compact speak-option-btn" type="button" data-speak-option="' + escapeHtml(option) + '" aria-label="Hear option ' + escapeHtml(option) + '">🔊</button>'
+                      : '') +
+                  '</div>'
+              )
+              .join("") +
+          "</div>" +
+        '</div>' +
+      '</div>' +
+      
+      '<div class="lesson-feedback" id="phaseOneFeedback" aria-live="polite"></div>' +
+      "</div>";
 
-  bindCheckpointAudioHelpers(els.phaseOneStage, lesson);
+    bindCheckpointAudioHelpers(els.phaseOneStage, lesson);
+  } else {
+    const questionVisual = renderFlashableHangulText(question.visual, "checkpoint-token");
+
+    els.phaseOneStage.innerHTML =
+      '<div class="lesson-step-row">' +
+      "<span>Checkpoint " +
+      (phaseOneView.questionIndex + 1) +
+      " / " +
+      lesson.questions.length +
+      "</span>" +
+      "<strong>" +
+      cleanCount +
+      " clean</strong>" +
+      "</div>" +
+      '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
+      '<div class="checkpoint-card">' +
+      '<div class="checkpoint-visual" lang="ko" data-phase-one-visual>' +
+      questionVisual.html +
+      "</div>" +
+      "<h4>" +
+      escapeHtml(question.prompt) +
+      "</h4>" +
+      "<p>" +
+      escapeHtml(question.detail) +
+      "</p>" +
+      '<div class="lesson-options">' +
+      shuffle([...question.options])
+        .map(
+          (option) =>
+            '<button class="lesson-option" type="button" data-option="' +
+            escapeHtml(option) +
+            '">' +
+            escapeHtml(option) +
+            "</button>",
+        )
+        .join("") +
+      "</div>" +
+      '<div class="lesson-feedback" id="phaseOneFeedback" aria-live="polite"></div>' +
+      "</div>";
+  }
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent = "Review cards";
