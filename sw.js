@@ -1,6 +1,6 @@
-// [2026-06-30] Cache bumped to v78: tap-to-hear hint toast for first visit to
-// each studio (app.js + styles.css).
-const CACHE_NAME = "hanapath-shell-v78";
+// [2026-06-30] Cache bumped to v79: precache alphabet_skill_srs.js extension
+// for Phase One skill review cards.
+const CACHE_NAME = "hanapath-shell-v79";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./lib/hangul.js",
   "./audio_map.js",
   "./app.js?v=20260630b",
+  "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
