@@ -5662,6 +5662,31 @@ function scheduleAutoSpeak(text, delay = 160) {
   }, delay);
 }
 
+// Normalize a string before looking it up in AUDIO_MAP. Trimming + Unicode NFC
+// means lookups survive equivalent-but-differently-encoded Hangul (e.g. a
+// precomposed 가 vs a decomposed ᄀ+ᅡ) instead of silently falling back to TTS.
+function normalizeAudioKey(text) {
+  return String(text || "").trim().normalize("NFC");
+}
+
+// Lazily-built index of AUDIO_MAP keyed by NFC-normalized text, so a lookup can
+// still hit a key that was stored in a different normalization form.
+let audioMapNfcIndex = null;
+function lookupAudioUrl(text) {
+  const map = window.AUDIO_MAP;
+  if (typeof map === "undefined") return undefined;
+  const key = normalizeAudioKey(text);
+  if (map[key]) return map[key]; // fast path: stored key already matches
+  if (!audioMapNfcIndex) {
+    audioMapNfcIndex = Object.create(null);
+    for (const storedKey of Object.keys(map)) {
+      const normalized = normalizeAudioKey(storedKey);
+      if (!(normalized in audioMapNfcIndex)) audioMapNfcIndex[normalized] = map[storedKey];
+    }
+  }
+  return audioMapNfcIndex[key];
+}
+
 function speak(text, options = {}) {
   const { preserveSequence = false } = options;
   return new Promise((resolve) => {
@@ -5677,9 +5702,9 @@ function speak(text, options = {}) {
     }
 
     if (typeof window.AUDIO_MAP !== 'undefined') {
-      const cleanText = String(text).trim();
-      const audioUrl = window.AUDIO_MAP[cleanText];
-      
+      const cleanText = normalizeAudioKey(text);
+      const audioUrl = lookupAudioUrl(text);
+
       if (audioUrl) {
         const audio = new Audio(audioUrl);
         
