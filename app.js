@@ -1131,7 +1131,7 @@ const phaseOneLessons = [
       {
         kicker: "The final check",
         title: "One cumulative test for the whole alphabet",
-        body: "This last stage pulls together everything from the previous six: vowel shapes, consonant families, block geometry, batchim, and real-word reading. Skim the recap charts, then take the cumulative checkpoint.",
+        body: "This last stage pulls together everything from the previous seven stages: vowel shapes, consonant families, block geometry, batchim, and real-word reading. Skim the recap charts, then take the cumulative checkpoint.",
         bullets: [
           "Recap the full vowel and consonant charts",
           "Answer questions drawn from every earlier stage",
@@ -1266,7 +1266,7 @@ const curriculum = [
   {
     title: "Hangul boot camp",
     summary: "Get from symbols to readable syllables without leaning on romanization.",
-    goal: "Complete seven gated stages and graduate by decoding short Korean words directly from Hangul.",
+    goal: "Complete eight gated stages, finishing with a cumulative mastery test that proves you can decode short Korean words directly from Hangul.",
     lessons: [
       {
         title: "Six anchor vowels",
@@ -1309,6 +1309,12 @@ const curriculum = [
         focus: "Decode short words block by block without leaning on romanization.",
         practice: ["Count syllable squares.", "Split words into jamo.", "Read 한글 and other transparent words aloud."],
         payoff: "Phase 1 ends with a real reading skill, not a recognition badge.",
+      },
+      {
+        title: "Alphabet mastery test",
+        focus: "Prove every vowel, consonant, block, and final sound is automatic on sight.",
+        practice: ["Recap the full vowel and consonant charts.", "Answer questions drawn from every earlier stage.", "Clear the cumulative checkpoint."],
+        payoff: "The learner has genuinely learned to read Hangul.",
       },
     ],
   },
