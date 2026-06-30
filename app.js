@@ -3290,6 +3290,7 @@ function loadState() {
     navTab: "today",
     route: { hub: "learn", item: null, stage: null },
     learnInProgress: false,
+    quickRefActive: false,
     mainTab: "alphabet",
     alphabetView: "vowels",
     // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
@@ -6573,7 +6574,24 @@ function renderEntireAlphabet() {
   setNavActive("learn");
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("learn", "Entire Korean alphabet", () => openLearnStageMenu("alphabet"), "Alphabet");
+
+  const activeLessonIdx = phaseOneView.lessonIndex;
+  const isQuickRef = state.quickRefActive && typeof activeLessonIdx === "number";
+
+  if (isQuickRef) {
+    showDetailBarWithBack(
+      "learn",
+      "Entire Korean alphabet",
+      () => {
+        state.quickRefActive = false;
+        saveState();
+        openLearnLesson(activeLessonIdx, { resume: true });
+      },
+      `Stage ${String(activeLessonIdx + 1).padStart(2, "0")}`
+    );
+  } else {
+    showDetailBarWithBack("learn", "Entire Korean alphabet", () => openLearnStageMenu("alphabet"), "Alphabet");
+  }
 
   const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
   const labels = state.alphabetBoardLabels || "roman";
@@ -6582,11 +6600,18 @@ function renderEntireAlphabet() {
   const seg = (group, value, current, label) =>
     `<button class="alpha-seg${value === current ? " active" : ""}" type="button" data-alpha-${group}="${value}" aria-pressed="${value === current}">${label}</button>`;
 
+  const resumeBtnHtml = isQuickRef
+    ? `<div style="margin-bottom: 16px;">
+         <button class="button primary" type="button" id="resumeActiveLessonBtn" style="font-size: 0.95rem; padding: 10px 20px; background-color: var(--color-accent-blue, #5b9dff); color: white; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; box-shadow: 0 4px 12px rgba(91, 157, 255, 0.3); transition: all 0.2s ease;">🔙 Return to active lesson (Stage ${String(activeLessonIdx + 1).padStart(2, "0")})</button>
+       </div>`
+    : "";
+
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Reference · Full alphabet</div>
       <h2 class="screen-title" style="margin-bottom:8px;">The entire Korean alphabet</h2>
       <div class="screen-sub" style="margin-bottom:12px;">All 19 consonants and 21 vowels in one place. Tap any letter to hear it.</div>
+      ${resumeBtnHtml}
       <div class="alpha-controls">
         <div class="alpha-seg-group" role="group" aria-label="Display mode">
           ${seg("mode", "keyboard", mode, "⌨ Keyboard")}
@@ -6604,8 +6629,16 @@ function renderEntireAlphabet() {
     <div id="alphaBoardMount">${renderAlphabetBoardMarkup()}</div>
   `;
 
-  // Mode / label segmented controls. These update only the board in place (no
-  // full-screen re-render) so toggling doesn't replay the whole page animation.
+  // Bind the resume button in the card if it exists
+  const resumeBtn = el.querySelector("#resumeActiveLessonBtn");
+  if (resumeBtn) {
+    resumeBtn.addEventListener("click", () => {
+      state.quickRefActive = false;
+      saveState();
+      openLearnLesson(activeLessonIdx, { resume: true });
+    });
+  }
+
   el.querySelectorAll("[data-alpha-mode]").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (state.alphabetBoardMode === btn.dataset.alphaMode) return;
@@ -6624,13 +6657,7 @@ function renderEntireAlphabet() {
       refreshAlphabetLabels();
     });
   });
-  // Board keys, Play-all and Shift are (re)bound here and on every in-place update.
   bindAlphabetBoard(el.querySelector("#alphaBoardMount"));
-  // The detail card's glyph + ▶ buttons live inside #alphaBoardDetail, whose
-  // innerHTML is rewritten by selectAlphabetLetter on every selection. Binding
-  // each button directly would go stale after the first tap, so delegate on the
-  // persistent container instead (it survives selectAlphabetLetter re-renders
-  // and is itself recreated on each full render, so listeners never stack).
   const detailCard = el.querySelector("#alphaBoardDetail");
   if (detailCard) {
     detailCard.addEventListener("click", (event) => {
@@ -6642,7 +6669,9 @@ function renderEntireAlphabet() {
 
 function openEntireAlphabet() {
   refreshProgressionState();
-  state.route = { hub: "learn", item: "alphabet", stage: null };
+  if (!state.quickRefActive) {
+    state.route = { hub: "learn", item: "alphabet", stage: null };
+  }
   saveState();
   renderEntireAlphabet();
 }

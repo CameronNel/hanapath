@@ -1,12 +1,12 @@
-// [2026-06-30] Cache bumped to v87: Quick alphabet reference link and resume progress.
-const CACHE_NAME = "hanapath-shell-v87";
+// [2026-06-30] Cache bumped to v88: Fix Alphabet Reference return buttons.
+const CACHE_NAME = "hanapath-shell-v88";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260630c",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630i",
+  "./app.js?v=20260630j",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
