@@ -9,8 +9,9 @@
 // AUDIO_MAP keys that are not already NFC-normalized (the ones the normalizer
 // now rescues at runtime).
 //
-// Usage: node scripts/audit-alphabet-audio.mjs [--strict]
-//   --strict exits non-zero if any required token is missing.
+// Usage: node scripts/audit-alphabet-audio.mjs [--strict] [--allow-missing=앋]
+//   --strict exits non-zero if any unallowed required token is missing.
+//   --allow-missing can be passed more than once for documented asset gaps.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -21,6 +22,16 @@ const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), ".."
 const appSrc = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
 
 const norm = (s) => String(s || "").trim().normalize("NFC");
+
+function getAllowedMissingTokens(args) {
+  return new Set(
+    args
+      .filter((arg) => arg.startsWith("--allow-missing="))
+      .flatMap((arg) => arg.slice("--allow-missing=".length).split(","))
+      .map(norm)
+      .filter(Boolean),
+  );
+}
 
 // ── Load AUDIO_MAP from audio_map.js (it assigns window.AUDIO_MAP) ──────────
 function loadAudioMap() {
@@ -66,6 +77,7 @@ function collectRequired() {
 
 // ── Run ─────────────────────────────────────────────────────────────────────
 const strict = process.argv.includes("--strict");
+const allowedMissing = getAllowedMissingTokens(process.argv.slice(2));
 const audioMap = loadAudioMap();
 
 // Index map keys by NFC form (mirrors lookupAudioUrl in app.js).
@@ -75,6 +87,7 @@ const nonNormalizedKeys = Object.keys(audioMap).filter((k) => k !== norm(k));
 const required = collectRequired();
 const present = required.filter((t) => normalizedKeys.has(t));
 const missing = required.filter((t) => !normalizedKeys.has(t));
+const unallowedMissing = missing.filter((t) => !allowedMissing.has(t));
 
 console.log("Phase One alphabet audio audit");
 console.log("==============================");
@@ -82,11 +95,16 @@ console.log(`audio_map.js keys : ${Object.keys(audioMap).length}`);
 console.log(`required tokens   : ${required.length}`);
 console.log(`present           : ${present.length}`);
 console.log(`missing           : ${missing.length}`);
+console.log(`allowed missing   : ${missing.length - unallowedMissing.length}`);
+console.log(`unallowed missing : ${unallowedMissing.length}`);
 console.log(`non-NFC map keys  : ${nonNormalizedKeys.length} (rescued by normalizeAudioKey at runtime)`);
 
 if (missing.length) {
   console.log("\nMissing audio (falls back to browser TTS):");
-  for (const t of missing) console.log("  - " + JSON.stringify(t));
+  for (const t of missing) {
+    const allowed = allowedMissing.has(t) ? " (allowed)" : "";
+    console.log("  - " + JSON.stringify(t) + allowed);
+  }
 }
 if (nonNormalizedKeys.length) {
   console.log("\nNon-NFC keys in audio_map.js (consider re-normalizing the source):");
@@ -94,5 +112,5 @@ if (nonNormalizedKeys.length) {
   if (nonNormalizedKeys.length > 50) console.log(`  …and ${nonNormalizedKeys.length - 50} more`);
 }
 
-console.log(missing.length ? "\nResult: gaps found (see above)." : "\nResult: all required Phase One audio present.");
-process.exit(strict && missing.length ? 1 : 0);
+console.log(unallowedMissing.length ? "\nResult: unallowed gaps found (see above)." : "\nResult: all required Phase One audio present or explicitly allowed.");
+process.exit(strict && unallowedMissing.length ? 1 : 0);
