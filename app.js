@@ -3425,7 +3425,7 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
         <div class="study-row-ko">${escapeHtml(concept.title || lesson.shortTitle)}</div>
         <div class="study-row-sub">${escapeHtml(concept.cue || concept.body || lesson.goal)}</div>
       </div>
-      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(concept))}">▶</button>
+      ${hearIconButton(getAlphabetSpeakText(concept), "data-alpha-speak")}
     </div>
   `).join("");
   const repeatRows = repeatLessons.slice(-3).map((lessonItem, index) => `
@@ -3434,7 +3434,7 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
         <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lessonItem.shortTitle)}</div>
         <div class="study-row-sub">${escapeHtml(lessonItem.goal)}</div>
       </div>
-      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lessonItem))}">▶</button>
+      ${hearIconButton(getAlphabetSpeakText(lessonItem), "data-alpha-speak")}
     </div>
   `).join("");
 
@@ -3473,14 +3473,14 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
             <div class="study-row-ko">${escapeHtml(lead.title || lesson.title)}</div>
             <div class="study-row-sub">${escapeHtml(lead.body || lesson.goal)}</div>
           </div>
-          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lead))}">▶</button>
+          ${hearIconButton(getAlphabetSpeakText(lead), "data-alpha-speak")}
         </div>
         <div class="study-row">
           <div>
             <div class="study-row-ko">${escapeHtml(support.title || lesson.shortTitle)}</div>
             <div class="study-row-sub">${escapeHtml(support.cue || support.body || lesson.goal)}</div>
           </div>
-          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(support))}">▶</button>
+          ${hearIconButton(getAlphabetSpeakText(support), "data-alpha-speak")}
         </div>
       </div>
     </div>
@@ -3530,14 +3530,14 @@ function renderAlphabetPanel(view, lesson, levelIndex, repeatLessons) {
             <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
             <div class="fs-xs text-muted-2 mt-4">${escapeHtml(lead.body || lead.cue || lesson.goal)}</div>
           </div>
-          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lead))}">▶</button>
+          ${hearIconButton(getAlphabetSpeakText(lead), "data-alpha-speak")}
         </div>
         <div class="study-row">
           <div>
             <div class="study-row-ko">${escapeHtml(support.title || "Shape")}</div>
             <div class="study-row-sub">${escapeHtml(support.title || support.cue || lesson.goal)}</div>
           </div>
-          <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(support))}">▶</button>
+          ${hearIconButton(getAlphabetSpeakText(support), "data-alpha-speak")}
         </div>
       </div>
     </div>
@@ -3559,7 +3559,7 @@ function renderAlphabetPanelV2(view) {
           <div class="study-row-sub">${escapeHtml(concept.cue || concept.body || stageLessons[0].goal)}</div>
           <div class="fs-xs text-muted-2 mt-4">${escapeHtml(concept.body || stageLessons[0].goal)}</div>
         </div>
-        <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(concept))}">▶</button>
+        ${hearIconButton(getAlphabetSpeakText(concept), "data-alpha-speak")}
       </div>
     `).join("")
     : stageLessons.map((lesson, index) => `
@@ -3569,7 +3569,7 @@ function renderAlphabetPanelV2(view) {
           <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
           <div class="fs-xs text-muted-2 mt-4">${escapeHtml(lesson.duration)}</div>
         </div>
-        <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lesson))}">▶</button>
+        ${hearIconButton(getAlphabetSpeakText(lesson), "data-alpha-speak")}
       </div>
     `).join("");
 
@@ -3579,7 +3579,7 @@ function renderAlphabetPanelV2(view) {
         <div class="study-row-ko">${String(index + 1).padStart(2, "0")}. ${escapeHtml(lesson.shortTitle)}</div>
         <div class="study-row-sub">${escapeHtml(lesson.goal)}</div>
       </div>
-      <button class="lib-hear-btn" type="button" data-alpha-speak="${escapeHtml(getAlphabetSpeakText(lesson))}">▶</button>
+      ${hearIconButton(getAlphabetSpeakText(lesson), "data-alpha-speak")}
     </div>
   `).join("");
 
@@ -4217,7 +4217,7 @@ function renderVocabStudyRows(items, limit = 6) {
           <div class="study-row-sub">English spelling: ${escapeHtml(english)}</div>
           <div class="fs-xs text-muted-2 mt-4">Pronunciation: ${escapeHtml(pronunciation)} · ${escapeHtml(entry.frequencyBand)}</div>
         </div>
-        <button class="lib-hear-btn" type="button" data-vocab-hear="${escapeHtml(entry.korean)}">▶</button>
+        ${hearIconButton(entry.korean, "data-vocab-hear")}
       </div>
     `;
   }).join("");
@@ -4498,7 +4498,7 @@ function buildVocabLibraryView() {
                       ${rowHard ? `<span class="vocab-status hard">Hard</span>` : ""}
                     </div>
                   </div>
-                  <button class="lib-hear-btn" type="button" data-vocab-hear="${escapeHtml(entry.korean)}">▶</button>
+                  ${hearIconButton(entry.korean, "data-vocab-hear")}
                 </div>
               `;
             })
@@ -4677,7 +4677,7 @@ function renderSentenceRows(items, limit = 4) {
         <div class="study-row-ko" lang="ko">${escapeHtml(item.korean)}</div>
         <div class="study-row-sub">${escapeHtml(item.meaning || item.source || "")}</div>
       </div>
-      <button class="lib-hear-btn" type="button" data-speak="${escapeHtml(item.voiceText || item.korean)}">▶</button>
+      ${hearIconButton(item.voiceText || item.korean, "data-speak")}
     </div>
   `).join("");
 }
@@ -4689,6 +4689,27 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+// Icon-only "▶" hear button. `dataAttr` is the data-* the relevant click
+// handler listens on (data-speak / data-vocab-hear / data-alpha-speak). The
+// aria-label gives screen readers a real name instead of just "▶".
+function hearIconButton(speakText, dataAttr = "data-speak") {
+  const safe = escapeHtml(speakText);
+  return `<button class="lib-hear-btn" type="button" ${dataAttr}="${safe}" aria-label="Hear ${safe}">▶</button>`;
+}
+
+// Wire a tap-to-hear token for both pointer and keyboard (Enter/Space), so the
+// large focusable letter tokens are operable without a mouse.
+function bindTapToHearToken(token) {
+  if (!token) return;
+  const fire = () => { flashElement(token); void speak(token.dataset.speak || token.textContent || ""); };
+  token.addEventListener("click", fire);
+  token.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    fire();
+  });
 }
 
 function randomItem(list) {
@@ -9172,7 +9193,7 @@ function renderLetterReview() {
         <span class="pill green">Spaced review</span>
       </div>
       <div class="quiz-card">
-        <div class="quiz-visual" lang="ko"><span class="checkpoint-token tappable" role="button" tabindex="0" data-speak="${escapeHtml(speakableForChunk(letter))}" title="Tap to hear">${escapeHtml(letter)}</span></div>
+        <div class="quiz-visual" lang="ko"><span class="checkpoint-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakableForChunk(letter))}" data-speak="${escapeHtml(speakableForChunk(letter))}" title="Tap to hear">${escapeHtml(letter)}</span></div>
         <div class="quiz-prompt">Which sound does this letter make?</div>
         <div class="quiz-detail">Tap the letter above to hear it again.</div>
         <div class="quiz-options" id="letterReviewOptions">
@@ -9183,8 +9204,7 @@ function renderLetterReview() {
     </div>`;
 
   scheduleAutoSpeak(speakableForChunk(letter), 220);
-  const token = el.querySelector("[data-speak]");
-  if (token) token.addEventListener("click", () => { flashElement(token); void speak(token.dataset.speak || ""); });
+  bindTapToHearToken(el.querySelector("[data-speak]"));
   el.querySelectorAll("#letterReviewOptions .option").forEach((btn) => {
     btn.addEventListener("click", () => answerLetterReview(btn, letter, sound));
   });

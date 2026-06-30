@@ -454,7 +454,11 @@ input, textarea { cursor: text; }
 .stage-row { width: 100%; text-align: left; }
 .stage-row.complete { background: rgba(45, 212, 191,.08); }
 .stage-row.current  { background: rgba(255,255,255,.03); }
-.stage-row.locked   { opacity: .45; cursor: default; }
+/* Locked rows stay readable — the lock dot and muted pill already signal the
+   state, so we don't dim the whole row (and its text) with opacity. */
+.stage-row.locked   { cursor: default; }
+.stage-row.locked .study-row-ko { color: var(--muted); }
+.stage-row.locked:hover { transform: none; background: transparent; }
 .study-pill {
   display: flex;
   flex-direction: column;
@@ -641,7 +645,8 @@ input, textarea { cursor: text; }
 .unit-row:hover:not(.locked) { border-color: var(--line-strong); background: rgba(255,255,255,.06); }
 .unit-row.active  { border-color: rgba(91, 157, 255,.4); background: rgba(91, 157, 255,.08); }
 .unit-row.complete { border-color: rgba(45, 212, 191,.25); }
-.unit-row.locked  { opacity: .45; cursor: default; }
+.unit-row.locked  { cursor: default; }
+.unit-row.locked .unit-name { color: var(--muted); }
 
 .unit-dot {
   width: 28px; height: 28px;
