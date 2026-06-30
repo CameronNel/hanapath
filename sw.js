@@ -1,12 +1,12 @@
-// [2026-06-30] Cache bumped to v92: Optimized vocab search and fixed search bar focus loss.
-const CACHE_NAME = "hanapath-shell-v92";
+// [2026-06-30] Cache bumped to v93: Deferred PWA update reloads to prevent study interruption.
+const CACHE_NAME = "hanapath-shell-v93";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260630d",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630n",
+  "./app.js?v=20260630o",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

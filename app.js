@@ -8263,6 +8263,14 @@ function setNavActive(hub) {
 
 function showScreen(screenId) {
   stopSpeech();
+
+  // If a PWA update is pending, perform the reload only when returning to a safe screen (menu or progress)
+  if (window.pendingUpdateReload && (screenId === "menu" || screenId === "progress")) {
+    console.log("HanaPath: Performing deferred service worker update reload on safe screen:", screenId);
+    window.location.reload();
+    return null;
+  }
+
   const targetId = "screen-" + screenId;
   // Hide every screen and empty the inactive ones. Inactive screens keep their
   // quiz cards in the DOM otherwise, and the alphabet quiz on Home shares its
@@ -10234,15 +10242,23 @@ function registerServiceWorker() {
     return;
   }
 
-  // When a freshly-installed worker takes control, reload once so the page
-  // runs against the new shell. Guard against first-ever install (no prior
-  // controller) and against reload loops.
   let reloadingForUpdate = false;
   const hadController = Boolean(navigator.serviceWorker.controller);
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (!hadController || reloadingForUpdate) return;
-    reloadingForUpdate = true;
-    window.location.reload();
+    
+    // Check which screen is currently visible in the DOM
+    const activeScreen = document.querySelector(".screen:not([hidden])");
+    const activeScreenId = activeScreen ? activeScreen.id.replace("screen-", "") : "";
+    const isSafeToReload = activeScreenId === "menu" || activeScreenId === "progress" || !activeScreenId;
+
+    if (isSafeToReload) {
+      reloadingForUpdate = true;
+      window.location.reload();
+    } else {
+      window.pendingUpdateReload = true;
+      console.log("HanaPath: Service worker update detected. Reload deferred until returning to the home menu to protect active study progress.");
+    }
   });
 
   window.addEventListener("load", () => {
