@@ -1,13 +1,13 @@
-// [2026-06-30] Cache bumped to v82: interactive "build a block" checkpoint
-// question type in the block-geometry stage.
-const CACHE_NAME = "hanapath-shell-v82";
+// [2026-06-30] Cache bumped to v83: "build a word" multi-block checkpoint
+// questions in the reading-graduation stage.
+const CACHE_NAME = "hanapath-shell-v83";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260630c",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630e",
+  "./app.js?v=20260630f",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
