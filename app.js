@@ -78,6 +78,11 @@ const FINALS = [
 const SIMPLE_INITIALS = ["ㄱ", "ㄴ", "ㄷ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅎ"];
 const SIMPLE_MEDIALS = ["ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅡ", "ㅣ"];
 const SIMPLE_FINALS = ["", "ㄱ", "ㄴ", "ㅁ", "ㅇ"];
+// The seven basic batchim closing sounds taught in Phase One, as single jamo
+// (plus the open syllable). Complex/double finals (ㄳ, ㄺ, ㄻ, ㅄ, …) stay
+// recognition-only until Phase 2, so K0 free-practice never composes or quizzes
+// them.
+const BATCHIM_FINALS = ["", "ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅇ"];
 const LAB_PRESETS = [
   "가",
   "나",
@@ -3645,20 +3650,29 @@ const ALPHABET_QUIZ_POOLS = {
   advanced: {
     initials: INITIALS,
     medials: MEDIALS,
-    finals: FINALS,
+    finals: BATCHIM_FINALS,
     deck: ["vowel-shape", "sound-family", "tense", "batchim", "compose", "decompose", "listen"],
   },
   reading: {
     initials: INITIALS,
     medials: MEDIALS,
-    finals: FINALS,
+    finals: BATCHIM_FINALS,
     deck: ["listen", "listen", "compose", "decompose", "batchim"],
   },
 };
 
 function getAlphabetQuizPools() {
   const stage = getAlphabetStageDefinition();
-  return ALPHABET_QUIZ_POOLS[stage.id] || ALPHABET_QUIZ_POOLS.vowels;
+  const pool = ALPHABET_QUIZ_POOLS[stage.id] || ALPHABET_QUIZ_POOLS.vowels;
+  // The board view is a free choice, so a learner can jump to a later view
+  // before they've reached it. Finals and batchim drills only make sense once
+  // block geometry (the stage that introduces the syllable floor) is unlocked,
+  // so before then fall back to open syllables regardless of the chosen view.
+  const blocksIndex = ALPHABET_LESSON_IDS.indexOf("block-geometry");
+  if (blocksIndex >= 0 && !getAlphabetProgress().isLessonUnlocked(blocksIndex)) {
+    return { ...pool, finals: [""], deck: pool.deck.filter((type) => type !== "batchim") };
+  }
+  return pool;
 }
 
 // ─── ALPHABET PROGRESS (canonical source of truth) ──────────────────────────
