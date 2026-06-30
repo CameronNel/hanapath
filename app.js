@@ -2776,6 +2776,7 @@ let phaseOneView = { lessonIndex: 0, mode: "intro", introIndex: 0, slideIndex: 0
 let currentQuizScope = "alphabet";
 let correctToastState = { hideTimer: 0, removeTimer: 0, listenersBound: false };
 let retryToastState = { hideTimer: 0, removeTimer: 0, listenersBound: false };
+let tapHintTimer = 0;
 // Which slice of a screen to show: "learn" (study material only),
 // "practice" (quiz only), or "all" (the full legacy screen).
 let currentFocus = "all";
@@ -4290,6 +4291,35 @@ function showRetryToast(rule = "") {
   retryToastState.hideTimer = window.setTimeout(() => {
     hideRetryToast();
   }, 3200);
+}
+
+// Shows a one-time "Tap any Hangul to hear it" hint the first time a user
+// enters each studio. Tracked per studio in localStorage so it only fires once.
+function showTapHint(studio) {
+  const KEY = "hanapath-tap-hints";
+  let seen;
+  try {
+    const raw = localStorage.getItem(KEY);
+    const parsed = JSON.parse(raw || "[]");
+    seen = new Set(Array.isArray(parsed) ? parsed : []);
+  } catch {
+    seen = new Set();
+  }
+  if (seen.has(studio)) return;
+  seen.add(studio);
+  try { localStorage.setItem(KEY, JSON.stringify([...seen])); } catch { /* ignore */ }
+
+  const toast = document.getElementById("tapHintToast");
+  if (!toast) return;
+  if (tapHintTimer) { window.clearTimeout(tapHintTimer); tapHintTimer = 0; }
+  toast.hidden = false;
+  toast.classList.remove("is-visible");
+  void toast.offsetWidth;
+  toast.classList.add("is-visible");
+  tapHintTimer = window.setTimeout(() => {
+    toast.classList.remove("is-visible");
+    tapHintTimer = window.setTimeout(() => { toast.hidden = true; tapHintTimer = 0; }, 420);
+  }, 4000);
 }
 
 function composeHangul(initial, medial, final = "") {
@@ -8514,6 +8544,7 @@ function renderAlphabetPractice() {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
   renderQuestion(generateQuestion(), { scope: "alphabet" });
+  showTapHint("alphabet");
 }
 
 // ─── ALPHABET LETTER REVIEW (SRS) ─────────────────────────────────────────────
@@ -9195,6 +9226,7 @@ function renderPracticeView() {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
   if (showQuiz) renderQuestion(generateQuestion(), { scope: "sentences" });
+  showTapHint("sentences");
 }
 
 function renderVocabulary() {
@@ -9329,6 +9361,7 @@ function renderVocabulary() {
   });
 
   if (showQuiz) renderQuestion(generateQuestion(), { scope: "vocabulary" });
+  showTapHint("vocabulary");
 }
 
 function renderLibrary() {
@@ -9445,6 +9478,7 @@ function renderLibrary() {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
   if (showQuiz) renderQuestion(generateQuestion(), { scope: "listening" });
+  showTapHint("listening");
 }
 
 function renderProgress() {

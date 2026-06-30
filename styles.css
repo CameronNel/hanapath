@@ -1105,6 +1105,62 @@ input, textarea { cursor: text; }
   animation: badge-pop .45s cubic-bezier(.2, .85, .2, 1) both;
 }
 
+/* ── TAP-TO-HEAR HINT ────────────────────────────── */
+.tap-hint-toast {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  left: 50%;
+  z-index: 1200;
+  min-width: min(300px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(99, 179, 237, .32);
+  background:
+    radial-gradient(circle at top left, rgba(91, 157, 255, .2), transparent 56%),
+    linear-gradient(135deg, rgba(11, 20, 41, .98), rgba(17, 30, 64, .94));
+  box-shadow:
+    0 20px 50px rgba(2, 6, 23, .40),
+    0 0 32px rgba(91, 157, 255, .18);
+  color: var(--text);
+  font-size: .85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  pointer-events: none;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transform: translate(-50%, -12px) scale(.94);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity .4s var(--ease-soft),
+    transform .4s var(--ease-out),
+    visibility 0s linear .4s;
+}
+.tap-hint-toast::before {
+  content: "▶";
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--accent, #5b9dff);
+  background: rgba(91, 157, 255, .14);
+  box-shadow: inset 0 0 0 1px rgba(91, 157, 255, .34);
+  font-size: .7rem;
+  font-weight: 900;
+}
+.tap-hint-toast.is-visible {
+  animation: toast-enter .38s cubic-bezier(.2, .85, .2, 1) both;
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0) scale(1);
+  transition: opacity .18s ease, transform .18s ease, visibility 0s;
+}
+
 .flash-pulse {
   animation: flash-pulse .72s ease;
   will-change: transform, filter;

@@ -1,13 +1,13 @@
-// [2026-06-29] Cache bumped to v70 (+styles.css ?v=20260629j): more breathing
-// room on stage rows (padding, gap, dot size) and bump --gap to 14px globally.
-const CACHE_NAME = "hanapath-shell-v77";
+// [2026-06-30] Cache bumped to v78: tap-to-hear hint toast for first visit to
+// each studio (app.js + styles.css).
+const CACHE_NAME = "hanapath-shell-v78";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260629m",
+  "./styles.css?v=20260630a",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260629r",
+  "./app.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
