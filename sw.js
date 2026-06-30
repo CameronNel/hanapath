@@ -1,6 +1,5 @@
-// [2026-06-30] Cache bumped to v83: "build a word" multi-block checkpoint
-// questions in the reading-graduation stage.
-const CACHE_NAME = "hanapath-shell-v83";
+// [2026-06-30] Cache bumped to v84: Add missing '앋' audio asset for batchim lesson.
+const CACHE_NAME = "hanapath-shell-v84";
 const APP_SHELL = [
   "./",
   "./index.html",

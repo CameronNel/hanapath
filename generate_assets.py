@@ -37,6 +37,13 @@ def extract_korean_text():
                 clean_m = m.replace('\\"', '"').replace("\\'", "'").strip()
                 if clean_m:
                     phrases.add(clean_m)
+                    # Split comma, slash, vertical bar, or interpunct separated sequences (like splitVoiceSequence in app.js)
+                    parts = re.split(r'[,\u3001/·|]+', clean_m)
+                    if len(parts) > 1:
+                        for part in parts:
+                            part_clean = part.strip()
+                            if part_clean:
+                                phrases.add(part_clean)
                     
             # Also capture the previous crude regex for sentences not enclosed in standard quotes if any
             matches_sentences = re.findall(r'([가-힣][가-힣\s\.\?!,]+[가-힣\.\?!])', content)
