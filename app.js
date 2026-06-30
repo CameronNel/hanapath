@@ -514,22 +514,37 @@ const phaseOneLessons = [
         kicker: "Vertical vowels",
         title: "Tall vowels take the right-hand seat",
         visual: "ㄴ + ㅏ = 나",
+        diagram: [
+          { onset: "ㄴ", vowel: "ㅏ", char: "나" },
+          { onset: "ㄱ", vowel: "ㅓ", char: "거" },
+          { onset: "ㅁ", vowel: "ㅣ", char: "미" },
+        ],
         body: "With a vertical vowel such as ㅏ, ㅓ, or ㅣ, the initial consonant sits left and the vowel sits right. Read the finished square as one beat.",
         cue: "left + right → one block",
-        voiceText: "나, 너, 니",
+        voiceText: "나, 거, 미",
       },
       {
         kicker: "Horizontal vowels",
         title: "Flat vowels take the lower seat",
         visual: "ㄱ + ㅗ = 고",
+        diagram: [
+          { onset: "ㄱ", vowel: "ㅗ", char: "고" },
+          { onset: "ㄴ", vowel: "ㅜ", char: "누" },
+          { onset: "ㄱ", vowel: "ㅡ", char: "그" },
+        ],
         body: "With ㅗ, ㅜ, or ㅡ, the initial consonant moves above the vowel. The ingredients are the same; only the block geometry changes.",
         cue: "top + bottom → one block",
-        voiceText: "고, 구, 그",
+        voiceText: "고, 누, 그",
       },
       {
         kicker: "Empty onset",
         title: "A vowel still needs a complete frame",
         visual: "ㅇ + ㅣ = 이",
+        diagram: [
+          { onset: "ㅇ", vowel: "ㅣ", char: "이" },
+          { onset: "ㅇ", vowel: "ㅏ", char: "아" },
+          { onset: "ㅇ", vowel: "ㅜ", char: "우" },
+        ],
         body: "Hangul blocks cannot visually begin with a bare vowel, so silent ㅇ fills the first seat. It adds no sound in 이, 아, or 우.",
         cue: "ㅇ is visible but silent at the start.",
         voiceText: "이, 아, 우",
@@ -538,9 +553,14 @@ const phaseOneLessons = [
         kicker: "The third seat",
         title: "A final consonant sits on the floor",
         visual: "ㅎ + ㅏ + ㄴ = 한",
+        diagram: [
+          { onset: "ㅎ", vowel: "ㅏ", batchim: "ㄴ", char: "한" },
+          { onset: "ㄱ", vowel: "ㅏ", batchim: "ㄱ", char: "각" },
+          { onset: "ㅁ", vowel: "ㅏ", batchim: "ㅁ", char: "맘" },
+        ],
         body: "Some blocks close with a consonant called batchim. Build the initial and vowel first, then place the final consonant underneath the whole pair.",
         cue: "한 is still one square and one syllable.",
-        voiceText: "한",
+        voiceText: "한, 각, 맘",
       },
     ],
     questions: [
@@ -1025,7 +1045,10 @@ const phaseOneLessons = [
       {
         kicker: "Block by block",
         title: "Read one square, then move forward",
-        visual: "나 · 무 → 나무",
+        wordBreakdown: [
+          { char: "나", onset: "ㄴ", vowel: "ㅏ" },
+          { char: "무", onset: "ㅁ", vowel: "ㅜ" },
+        ],
         body: "Do not scan Korean as a row of loose jamo. Decode the first block, say its beat, then move to the next. 나 plus 무 becomes 나무.",
         cue: "나무 has two blocks and two spoken beats.",
         voiceText: "나무",
@@ -1033,7 +1056,10 @@ const phaseOneLessons = [
       {
         kicker: "Trust the script",
         title: "Let romanization leave the stage",
-        visual: "바 · 다 → 바다",
+        wordBreakdown: [
+          { char: "바", onset: "ㅂ", vowel: "ㅏ" },
+          { char: "다", onset: "ㄷ", vowel: "ㅏ" },
+        ],
         body: "Sound labels helped introduce the alphabet, but fluent decoding comes from seeing ㅂ + ㅏ as 바 immediately. Keep your eyes on Hangul.",
         cue: "바다 means sea. The meaning is a bonus; decoding is the skill.",
         voiceText: "바다",
@@ -1041,7 +1067,10 @@ const phaseOneLessons = [
       {
         kicker: "Open and closed",
         title: "Mix blocks with and without batchim",
-        visual: "한 · 글 → 한글",
+        wordBreakdown: [
+          { char: "한", onset: "ㅎ", vowel: "ㅏ", batchim: "ㄴ" },
+          { char: "글", onset: "ㄱ", vowel: "ㅡ", batchim: "ㄹ" },
+        ],
         body: "한 closes with ㄴ. 글 closes with ㄹ. Read each square as one syllable, then connect them without losing the final consonants.",
         cue: "한글 is the Korean alphabet you just learned.",
         voiceText: "한글",
@@ -5276,10 +5305,70 @@ function placePhaseOneActions() {
   slot.appendChild(actions);
 }
 
+// Vertical vowels sit to the right of the onset; all others go below.
+const VERTICAL_VOWELS = new Set(["ㅏ","ㅓ","ㅣ","ㅑ","ㅕ","ㅐ","ㅔ","ㅒ","ㅖ"]);
+
+// Renders the jamo of one syllable in their geometric positions (onset, vowel,
+// optional batchim). Shows learners why Korean looks the way it does rather than
+// just showing the assembled character.
+function renderBlockDiagram(onset, vowel, batchim = "") {
+  const isVertical = VERTICAL_VOWELS.has(vowel);
+  const layoutClass = isVertical ? "bd-vertical" : "bd-horizontal";
+  const batchimHtml = batchim ? `<span class="bd-batchim">${escapeHtml(batchim)}</span>` : "";
+  return (
+    `<div class="block-diagram ${layoutClass}" lang="ko">` +
+    `<span class="bd-onset">${escapeHtml(onset)}</span>` +
+    `<span class="bd-vowel">${escapeHtml(vowel)}</span>` +
+    batchimHtml +
+    `</div>`
+  );
+}
+
+// Renders a row of block-diagram + arrow + assembled-syllable equations.
+// diagrams: array of { onset, vowel, batchim?, char? }
+// Provide `char` with the pre-composed Unicode syllable (e.g. "나") for correct display.
+function renderBlockDiagrams(diagrams) {
+  const equations = diagrams.map((d) => {
+    const assembled = d.char || (d.batchim
+      ? (d.onset + d.vowel + d.batchim)
+      : (d.onset + d.vowel));
+    return (
+      `<div class="bd-equation">` +
+      renderBlockDiagram(d.onset, d.vowel, d.batchim || "") +
+      `<span class="bd-arrow">→</span>` +
+      `<span class="bd-assembled" lang="ko">${escapeHtml(assembled)}</span>` +
+      `</div>`
+    );
+  });
+  return `<div class="bd-showcase">${equations.join("")}</div>`;
+}
+
+// Renders a word broken into its syllable blocks with jamo diagrams underneath.
+// blocks: array of { char, onset, vowel, batchim? }
+function renderWordBreakdown(blocks) {
+  const cols = blocks.map((b, i) => {
+    const sep = i < blocks.length - 1
+      ? `<span class="bd-word-sep" aria-hidden="true">·</span>`
+      : "";
+    return (
+      `<div class="bd-block-col">` +
+      `<span class="bd-word-char" lang="ko">${escapeHtml(b.char)}</span>` +
+      renderBlockDiagram(b.onset, b.vowel, b.batchim || "") +
+      `</div>` +
+      sep
+    );
+  });
+  return `<div class="bd-word-row">${cols.join("")}</div>`;
+}
+
 function renderPhaseOneConcept(lesson) {
   restorePhaseOneActions();
   const concept = lesson.concepts[phaseOneView.slideIndex];
-  const conceptVisual = renderFlashableHangulText(concept.visual);
+  const conceptVisualHtml = concept.diagram
+    ? renderBlockDiagrams(concept.diagram)
+    : concept.wordBreakdown
+      ? renderWordBreakdown(concept.wordBreakdown)
+      : renderFlashableHangulText(concept.visual).html;
   const dots = lesson.concepts
     .map(
       (_, index) =>
@@ -5303,7 +5392,7 @@ function renderPhaseOneConcept(lesson) {
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="concept-card">' +
     '<div class="concept-visual" lang="ko" data-phase-one-visual>' +
-    conceptVisual.html +
+    conceptVisualHtml +
     "</div>" +
     '<div class="concept-copy">' +
     "<h4>" +
@@ -7583,7 +7672,7 @@ let activeTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTa
 // dashboard; Learn / Practice / Progress each open a submenu of tiles, and a
 // tile opens a focused content screen with a "back to <hub>" bar at the top.
 
-const HUBS = ["home", "learn", "practice", "progress"];
+const HUBS = ["learn", "practice", "progress"];
 
 const HUB_DEFS = {
   learn: {
@@ -7624,7 +7713,7 @@ const HUB_DEFS = {
 
 // Legacy nav names (used by in-screen buttons) → {hub, item}.
 const LEGACY_ROUTE = {
-  today:     { hub: "home" },
+  today:     { hub: "learn" },
   path:      { hub: "progress", item: "path" },
   progress:  { hub: "progress", item: "stats" },
   library:   { hub: "learn",    item: "vocabulary" },
@@ -7632,7 +7721,7 @@ const LEGACY_ROUTE = {
   listening: { hub: "learn",    item: "listening" },
 };
 
-let activeHub = "home";
+let activeHub = "learn";
 
 const MOTION_SELECTORS = [
   ".card",
@@ -7777,11 +7866,11 @@ function showDetailBarWithBack(hub, itemTitle, onBack = null, backLabel = null) 
 
 function normalizeRoute(route) {
   if (!route || typeof route !== "object") {
-    return { hub: "home", item: null, stage: null };
+    return { hub: "learn", item: null, stage: null };
   }
 
-  const allowedHubs = ["home", "learn", "practice", "progress"];
-  const hub = allowedHubs.includes(route.hub) ? route.hub : "home";
+  const allowedHubs = ["learn", "practice", "progress"];
+  const hub = allowedHubs.includes(route.hub) ? route.hub : "learn";
   const item = typeof route.item === "string" ? route.item : null;
   const stage = Number.isInteger(route.stage) ? route.stage : null;
   return { hub, item, stage };
@@ -8453,16 +8542,10 @@ function renderLearnComplete(index) {
 
 function goHub(hub) {
   refreshProgressionState();
-  if (!HUBS.includes(hub)) hub = "home";
+  if (!HUBS.includes(hub)) hub = "learn";
   activeHub = hub;
   setNavActive(hub);
   hideDetailBar();
-  if (hub === "home") {
-    state.route = { hub: "home", item: null, stage: null };
-    saveState();
-    renderLeafContent("today", "all");
-    return;
-  }
   state.route = { hub, item: null, stage: null };
   saveState();
   renderHubMenu(hub);
