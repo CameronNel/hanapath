@@ -8825,7 +8825,6 @@ function renderCompleteInPlayer(index) {
   const lesson = phaseOneLessons[index];
   const nextIndex = getFirstIncompletePhaseOneIndex();
   const next = phaseOneLessons[nextIndex];
-  const dueCount = getTodayReviewCount();
 
   showDetailBarWithBack("learn", `Stage ${String(index + 1).padStart(2, "0")}: ${lesson.shortTitle}`, () => openLearnStageMenu("alphabet"), "Alphabet");
 
@@ -8868,14 +8867,6 @@ function renderCompleteInPlayer(index) {
         '<button class="button secondary compact" type="button" id="learnLetterReviewBtn">Review letters (' + getDueLetterCount() + ")</button>" +
         "</div></div>"
       : ""
-    ) +
-    (dueCount
-      ? '<div class="card"><div class="flex-between">' +
-        "<div><div class=\"eyebrow\">Lock it in</div>" +
-        '<div class="screen-sub" style="margin-bottom:0;">Quick review of what\'s due.</div></div>' +
-        '<button class="button secondary compact" type="button" id="learnReviewBtn">Review (' + dueCount + ")</button>" +
-        "</div></div>"
-      : ""
     );
 
   const playerHead = els.phaseOnePlayer && els.phaseOnePlayer.querySelector(".player-head");
@@ -8889,8 +8880,6 @@ function renderCompleteInPlayer(index) {
 
   const nextBtn = document.getElementById("learnNextBtn");
   if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
-  const reviewBtn = document.getElementById("learnReviewBtn");
-  if (reviewBtn) reviewBtn.addEventListener("click", () => showTab("practice"));
   const letterReviewBtn = document.getElementById("learnLetterReviewBtn");
   if (letterReviewBtn) letterReviewBtn.addEventListener("click", () => startLetterReview());
 }
@@ -8901,7 +8890,6 @@ function renderLearnComplete(index) {
   const lesson = phaseOneLessons[index];
   const nextIndex = getFirstIncompletePhaseOneIndex();
   const next = phaseOneLessons[nextIndex];
-  const dueCount = getTodayReviewCount();
 
   showDetailBarWithBack("learn", "Lesson complete", () => openLearnStageMenu("alphabet"), "Alphabet");
   const el = showScreen("detail");
@@ -8925,20 +8913,9 @@ function renderLearnComplete(index) {
       <h2 class="screen-title" style="margin-bottom:6px;">Lesson complete!</h2>
       <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(lesson.shortTitle)} is locked in.</div>
     </div>
-    <div class="card">
-      <div class="flex-between">
-        <div>
-          <div class="eyebrow">Lock it in</div>
-          <div class="screen-sub" style="margin-bottom:0;">Quick review of what's due.</div>
-        </div>
-        <button class="button secondary compact" type="button" id="learnReviewBtn">Review today's cards${dueCount ? ` (${dueCount})` : ""}</button>
-      </div>
-    </div>
   `;
   const nextBtn = document.getElementById("learnNextBtn");
   if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
-  const reviewBtn = document.getElementById("learnReviewBtn");
-  if (reviewBtn) reviewBtn.addEventListener("click", () => showTab("practice"));
 }
 
 function goHub(hub) {
