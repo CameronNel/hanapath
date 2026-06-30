@@ -866,6 +866,76 @@ input, textarea { cursor: text; }
   padding-top: 6px;
 }
 
+/* interactive "build a block" checkpoint */
+.bd-builder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 6px 0 14px;
+}
+.bd-build {
+  font-size: 2rem;
+  padding: 8px;
+}
+.bd-slot {
+  color: var(--muted-2);
+  transition: color .18s ease;
+}
+.bd-slot:not(.filled) {
+  opacity: .5;
+}
+.bd-build .bd-onset.filled   { color: var(--accent); }
+.bd-build .bd-vowel.filled   { color: #a78bfa; }
+.bd-build .bd-batchim.filled { color: #34d399; }
+.bd-build-result {
+  min-width: 2.2rem;
+  text-align: center;
+  color: var(--muted-2);
+}
+.bd-build-result.done {
+  color: var(--text);
+}
+.bd-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.bd-tile {
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: 8px 12px;
+  color: var(--text);
+  background: rgba(91, 157, 255, .1);
+  border: 1px solid rgba(91, 157, 255, .28);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform .12s ease, background .18s ease, border-color .18s ease;
+}
+.bd-tile:hover:not(:disabled) {
+  background: rgba(91, 157, 255, .2);
+  transform: translateY(-2px);
+}
+.bd-tile:disabled {
+  opacity: .45;
+  cursor: default;
+}
+.bd-tile.wrong {
+  border-color: #f87171;
+  background: rgba(248, 113, 113, .18);
+  animation: shake .35s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
 .lesson-intro-card {
   padding: 20px;
 }
