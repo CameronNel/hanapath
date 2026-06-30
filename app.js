@@ -5554,6 +5554,103 @@ function renderPhaseOneIntro(lesson) {
   animateMotionScope(els.phaseOneStage);
 }
 
+let checkpointPlaybackId = 0;
+
+function getQuestionComponents(question) {
+  const components = [];
+  
+  if (question.visual && String(question.visual).includes("+")) {
+    String(question.visual)
+      .split("+")
+      .forEach(part => {
+        const trimmed = part.trim();
+        if (trimmed && /^[가-힣ㄱ-ㅎㅏ-ㅣ]+$/.test(trimmed)) {
+          components.push(trimmed);
+        }
+      });
+  } 
+  else if (question.type === "build") {
+    if (Array.isArray(question.blocks)) {
+      question.blocks.forEach(block => {
+        if (block.onset) components.push(block.onset);
+        if (block.vowel) components.push(block.vowel);
+        if (block.batchim) components.push(block.batchim);
+      });
+    } else {
+      if (question.onset) components.push(question.onset);
+      if (question.vowel) components.push(question.vowel);
+      if (question.batchim) components.push(question.batchim);
+    }
+  } 
+  else if (question.visual && /^[가-힣]+$/.test(String(question.visual).trim())) {
+    const text = String(question.visual).trim();
+    if (window.Hangul) {
+      components.push(...window.Hangul.disassemble(text));
+    }
+  }
+  
+  return components.filter(Boolean);
+}
+
+function renderCheckpointAudioHelpers(lesson, question) {
+  if (lesson.id !== "block-geometry") return "";
+  
+  const components = getQuestionComponents(question);
+  const targetText = question.voiceText || question.answer || "";
+  const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
+  const hasComponents = components.length > 0;
+  
+  if (!hasTarget && !hasComponents) return "";
+  
+  let html = '<div class="checkpoint-audio-helpers" style="margin: 16px 0; display: flex; gap: 12px; justify-content: center; width: 100%;">';
+  
+  if (hasTarget) {
+    html += '<button class="button secondary compact" type="button" data-checkpoint-speak-target="' + escapeHtml(targetText) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear target</button>';
+  }
+  
+  if (hasComponents) {
+    html += '<button class="button secondary compact" type="button" data-checkpoint-speak-components="' + escapeHtml(components.join(",")) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear building blocks</button>';
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+function bindCheckpointAudioHelpers(container, lesson) {
+  if (lesson.id !== "block-geometry") return;
+
+  const targetBtn = container.querySelector("[data-checkpoint-speak-target]");
+  const componentsBtn = container.querySelector("[data-checkpoint-speak-components]");
+
+  if (targetBtn) {
+    targetBtn.addEventListener("click", () => {
+      checkpointPlaybackId += 1;
+      const text = targetBtn.getAttribute("data-checkpoint-speak-target") || "";
+      void speak(text);
+    });
+  }
+
+  if (componentsBtn) {
+    componentsBtn.addEventListener("click", async () => {
+      const tokenId = ++checkpointPlaybackId;
+      const parts = (componentsBtn.getAttribute("data-checkpoint-speak-components") || "").split(",").filter(Boolean);
+      
+      for (let i = 0; i < parts.length; i++) {
+        if (tokenId !== checkpointPlaybackId) return;
+        const speakText = speakableForChunk(parts[i]);
+        
+        await Promise.all([
+          speak(speakText, { preserveSequence: true }),
+          new Promise((resolve) => window.setTimeout(resolve, 800))
+        ]);
+        
+        if (tokenId !== checkpointPlaybackId) return;
+        await new Promise((resolve) => window.setTimeout(resolve, 200));
+      }
+    });
+  }
+}
+
 function renderPhaseOneQuestion(lesson) {
   const question = lesson.questions[phaseOneView.questionIndex];
   if (question.type === "build") {
@@ -5586,6 +5683,7 @@ function renderPhaseOneQuestion(lesson) {
     "<p>" +
     escapeHtml(question.detail) +
     "</p>" +
+    renderCheckpointAudioHelpers(lesson, question) +
     '<div class="lesson-options">' +
     // The lesson banks list the correct answer first; shuffle a copy so the
     // right choice isn't always the top button. Order is matched by value, so
@@ -5603,6 +5701,8 @@ function renderPhaseOneQuestion(lesson) {
     "</div>" +
     '<div class="lesson-feedback" id="phaseOneFeedback" aria-live="polite"></div>' +
     "</div>";
+
+  bindCheckpointAudioHelpers(els.phaseOneStage, lesson);
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent = "Review cards";
@@ -5822,6 +5922,7 @@ function renderPhaseOneBuildQuestion(lesson, question) {
     "<p>" +
     escapeHtml(question.detail) +
     "</p>" +
+    renderCheckpointAudioHelpers(lesson, question) +
     '<div class="bd-builder">' +
     diagram +
     '<span class="bd-arrow">→</span>' +
@@ -5832,6 +5933,8 @@ function renderPhaseOneBuildQuestion(lesson, question) {
     "</div>" +
     '<div class="lesson-feedback" id="phaseOneFeedback" aria-live="polite"></div>' +
     "</div>";
+
+  bindCheckpointAudioHelpers(els.phaseOneStage, lesson);
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent = "Review cards";
