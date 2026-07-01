@@ -1,13 +1,13 @@
-// [2026-07-01] Cache bumped to v97: tile-assembly Build Blocks drill mode +
-// first-try checkpoint tip.
-const CACHE_NAME = "hanapath-shell-v97";
+// [2026-07-01] Cache bumped to v98: intro-card audio, checkpoint Hear-button
+// label, Drill Lab first-open tip.
+const CACHE_NAME = "hanapath-shell-v98";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260701d",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260701d",
+  "./app.js?v=20260701e",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

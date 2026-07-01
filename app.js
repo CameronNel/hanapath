@@ -3293,6 +3293,8 @@ function loadState() {
     quickRefActive: false,
     // Alphabet Drill Lab: jamo → miss count, feeds the Weak Spots drill mode.
     alphabetWeakSpots: {},
+    // One-time flag: show the Drill Lab first-open explainer only once.
+    drillLabSeen: false,
     mainTab: "alphabet",
     alphabetView: "vowels",
     // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
@@ -4783,6 +4785,10 @@ function getPhaseOneVoiceSource() {
     return lesson.questions[phaseOneView.questionIndex] || null;
   }
 
+  if (phaseOneView.mode === "intro") {
+    return getPhaseOneIntroCards(lesson)[phaseOneView.introIndex] || null;
+  }
+
   return null;
 }
 
@@ -4791,8 +4797,12 @@ function getPhaseOneVoiceSegments() {
   if (!source) {
     return [];
   }
-
-  return splitVoiceSequence(source.voiceText);
+  if (source.voiceText) {
+    return splitVoiceSequence(source.voiceText);
+  }
+  // Intro cards carry no voiceText; play any Korean examples in their copy.
+  const korean = [source.cool, source.body, source.snag].filter(Boolean).join(" ").match(/[가-힣ㄱ-ㅎㅏ-ㅣ]+/g);
+  return korean ? [...new Set(korean)] : [];
 }
 
 function getPhaseOneVoiceText() {
@@ -4802,7 +4812,15 @@ function getPhaseOneVoiceText() {
 function getPhaseOneButtonLabel(source, mode = phaseOneView.mode) {
   if (mode === "intro") return "Preview intro";
   if (mode === "learn") return "Hear lesson";
-  return "Review answer";
+  // On a checkpoint the button plays the question prompt until you answer, so it
+  // is "Hear" first and only becomes "Review answer" once an answer is locked in.
+  return phaseOneView.answered ? "Review answer" : "Hear";
+}
+// Refresh the checkpoint Hear button label after an answer is recorded.
+function refreshPhaseOneHearLabel() {
+  if (els.phaseOneHearButton && phaseOneView.mode === "check") {
+    els.phaseOneHearButton.textContent = `▶ ${getPhaseOneButtonLabel(getPhaseOneVoiceSource())}`;
+  }
 }
 
 function getPhaseOneIntroCards(lesson) {
@@ -5937,12 +5955,15 @@ function renderPhaseOnePlayer() {
   }
 
   if (els.phaseOneHearButton) {
-    if (phaseOneView.mode === "intro") {
+    const hasVoice = !!getPhaseOneVoiceText();
+    // Intro cards get a Hear button only when their copy has a Korean example to
+    // play; otherwise there is nothing to say, so keep it hidden.
+    if (phaseOneView.mode === "intro" && !hasVoice) {
       els.phaseOneHearButton.style.display = "none";
       els.phaseOneHearButton.disabled = true;
     } else {
       els.phaseOneHearButton.style.display = "";
-      els.phaseOneHearButton.disabled = !getPhaseOneVoiceText();
+      els.phaseOneHearButton.disabled = !hasVoice;
       els.phaseOneHearButton.textContent = `▶ ${getPhaseOneButtonLabel(getPhaseOneVoiceSource())}`;
     }
   }
@@ -5988,6 +6009,7 @@ function restoreAnsweredChoiceVisual(question) {
   });
   if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation || "");
   els.phaseOneActionButton.disabled = false;
+  refreshPhaseOneHearLabel();
 }
 
 function restoreAnsweredBuildVisual(question) {
@@ -6010,6 +6032,7 @@ function restoreAnsweredBuildVisual(question) {
   const feedback = document.getElementById("phaseOneFeedback");
   if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation || "");
   els.phaseOneActionButton.disabled = false;
+  refreshPhaseOneHearLabel();
 }
 
 function answerPhaseOneQuestion(choice, button) {
@@ -6043,6 +6066,7 @@ function answerPhaseOneQuestion(choice, button) {
   feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation);
   showCorrectToast();
   els.phaseOneActionButton.disabled = false;
+  refreshPhaseOneHearLabel();
 }
 
 // Interactive "build" checkpoint: the learner assembles a target syllable —
@@ -6187,6 +6211,7 @@ function answerPhaseOneBuild(jamo, tile) {
     feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation);
     showCorrectToast();
     els.phaseOneActionButton.disabled = false;
+    refreshPhaseOneHearLabel();
     void speak(question.target);
   } else {
     feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + roleLabel(roles[filled.length]) + ".");
@@ -6840,12 +6865,17 @@ function renderAlphabetDrillLab() {
   const lenBtns = DRILL_LENGTHS.map((n, i) =>
     `<button class="alpha-seg${i === 0 ? " active" : ""}" type="button" data-drill-len="${n}">${n === "∞" ? "Infinite" : n}</button>`).join("");
   const weakCount = getWeakSpotList().length;
+  const firstOpenHint = !state.drillLabSeen
+    ? `<div class="card first-try-note" style="margin-bottom:0;">Pick a <strong>mode</strong> (Mixed blends them all), choose how many questions, then Start. Questions generate forever — tap <strong>End session</strong> any time in Infinite. Letters you miss are saved and resurface in <strong>Weak Spots</strong>.</div>`
+    : "";
+  if (!state.drillLabSeen) { state.drillLabSeen = true; saveState(); }
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Practice · Hangul forever</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Alphabet Drill Lab</h2>
       <div class="screen-sub" style="margin-bottom:0;">Infinite Hangul drills. Pick a mode and a session length.${weakCount ? ` You have <strong>${weakCount}</strong> weak spot${weakCount === 1 ? "" : "s"} logged.` : ""}</div>
     </div>
+    ${firstOpenHint}
     <div class="card">
       <div class="eyebrow" style="margin-bottom:8px;">Mode</div>
       <div class="drill-mode-grid">${modeBtns}</div>
