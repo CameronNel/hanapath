@@ -5491,7 +5491,8 @@ function renderPhaseOneConcept(lesson) {
     renderFlashableHangulText(concept.cue, "concept-token").html +
     "</div>" +
     "</div>" +
-    "</div>";
+    "</div>" +
+    phaseOneReferenceButtonHtml();
 
   els.phaseOneBackButton.disabled = false;
   // On the first learn card, "back" steps into the stage's intro cards if it has
@@ -5553,7 +5554,8 @@ function renderPhaseOneIntro(lesson) {
     '<div class="concept-cue">' +
     renderFlashableHangulText(introCard?.cool || lesson.goal, "concept-token").html +
     "</div>" +
-    "</div>";
+    "</div>" +
+    phaseOneReferenceButtonHtml();
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent =
@@ -5640,6 +5642,16 @@ function renderCheckpointVisualHtml(question) {
   return html;
 }
 
+// Standalone "open the alphabet quick reference" button for lesson screens that
+// have no checkpoint audio-helper row (intro cards, learn cards, result/review).
+// Uses the same data hook as the checkpoint button so the delegated stage click
+// handler opens the reference from any Phase One state.
+function phaseOneReferenceButtonHtml() {
+  return '<div class="phase-one-reference-row" style="margin: 16px 0 0; display: flex; justify-content: center;">' +
+    '<button class="button secondary compact" type="button" data-checkpoint-open-reference style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">📖 View Alphabet Reference</button>' +
+    '</div>';
+}
+
 function renderCheckpointAudioHelpers(lesson, question) {
   const isBlockGeometry = lesson.id === "block-geometry";
   const components = isBlockGeometry ? getQuestionComponents(question) : [];
@@ -5665,14 +5677,9 @@ function renderCheckpointAudioHelpers(lesson, question) {
 }
 
 function bindCheckpointAudioHelpers(container, lesson) {
-  const refBtn = container.querySelector("[data-checkpoint-open-reference]");
-  if (refBtn) {
-    refBtn.addEventListener("click", () => {
-      state.quickRefActive = true;
-      openEntireAlphabet();
-    });
-  }
-
+  // The quick-reference button (data-checkpoint-open-reference) is handled by the
+  // delegated stage click listener in mountLessonPlayer, so it works from every
+  // Phase One screen and needs no per-render binding here.
   if (lesson.id !== "block-geometry") return;
 
   const targetBtn = container.querySelector("[data-checkpoint-speak-target]");
@@ -5840,6 +5847,7 @@ function renderPhaseOneQuestion(lesson) {
   els.phaseOneActionButton.textContent =
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
+  if (phaseOneView.answered) restoreAnsweredChoiceVisual(question);
   animateMotionScope(els.phaseOneStage);
 }
 
@@ -5881,7 +5889,8 @@ function renderPhaseOneResult(lesson) {
       : "You scored " + percent + "% clean. Reach " + requiredPercent + "% to unlock the next stage.") +
     "</p>" +
     "</div>" +
-    "</div>";
+    "</div>" +
+    phaseOneReferenceButtonHtml();
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent = "Review lesson";
@@ -5950,6 +5959,42 @@ function renderPhaseOneCourse() {
   renderPhaseOneOverview();
   renderPhaseOneTrack();
   renderPhaseOnePlayer();
+}
+
+// Repaint an already-answered checkpoint after a fresh re-render (e.g. returning
+// from the alphabet quick reference). Without this the question redraws blank
+// with a disabled "Next question" while `phaseOneView.answered` stays true — so
+// option taps are ignored and the learner can neither re-answer nor advance.
+function restoreAnsweredChoiceVisual(question) {
+  const feedback = document.getElementById("phaseOneFeedback");
+  els.phaseOneStage.querySelectorAll(".lesson-option").forEach((b) => {
+    b.disabled = true;
+    if ((b.dataset.option || "") === question.answer) b.classList.add("correct");
+  });
+  if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation || "");
+  els.phaseOneActionButton.disabled = false;
+}
+
+function restoreAnsweredBuildVisual(question) {
+  const seq = phaseOneView.buildSeq || [];
+  seq.forEach((jamo, i) => {
+    const slotEl = els.phaseOneStage.querySelector('[data-build-slot="' + i + '"]');
+    if (slotEl) {
+      slotEl.textContent = jamo;
+      slotEl.classList.add("filled");
+      slotEl.removeAttribute("aria-hidden");
+    }
+  });
+  phaseOneView.buildFilled = [...seq];
+  const assembledEl = els.phaseOneStage.querySelector("[data-build-assembled]");
+  if (assembledEl) {
+    assembledEl.textContent = question.target;
+    assembledEl.classList.add("done");
+  }
+  els.phaseOneStage.querySelectorAll(".bd-tile").forEach((t) => { t.disabled = true; });
+  const feedback = document.getElementById("phaseOneFeedback");
+  if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation || "");
+  els.phaseOneActionButton.disabled = false;
 }
 
 function answerPhaseOneQuestion(choice, button) {
@@ -6072,6 +6117,7 @@ function renderPhaseOneBuildQuestion(lesson, question) {
   els.phaseOneActionButton.textContent =
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
+  if (phaseOneView.answered) restoreAnsweredBuildVisual(question);
   animateMotionScope(els.phaseOneStage);
 }
 
@@ -6642,7 +6688,7 @@ function renderEntireAlphabet() {
     resumeBtn.addEventListener("click", () => {
       state.quickRefActive = false;
       saveState();
-      openLearnLesson(activeLessonIdx, { resume: true });
+      openLearnLesson(activeLessonIdx, { resume: true, allowResult: true });
     });
   }
 
@@ -8850,6 +8896,12 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     });
   }
   stageEl.addEventListener("click", (e) => {
+    const openRef = e.target.closest("[data-checkpoint-open-reference]");
+    if (openRef) {
+      state.quickRefActive = true;
+      openEntireAlphabet();
+      return;
+    }
     const token = e.target.closest("[data-speak]");
     if (token && stageEl.contains(token)) {
       flashElement(token);
@@ -8880,6 +8932,7 @@ function openLearnLesson(
   index,
   {
     resume = false,
+    allowResult = false,
     trackProgress = true,
     startMode = "intro",
     startIntroIndex = 0,
@@ -8896,7 +8949,10 @@ function openLearnLesson(
 
   activeHub = "learn";
   setNavActive("learn");
-  const canResume = resume && phaseOneView.lessonIndex === idx && phaseOneView.mode !== "result";
+  // Normally re-opening a lesson with `resume` restarts a finished (result) view
+  // from the top; but the alphabet quick-reference return passes `allowResult`
+  // so it lands the learner back exactly on the result/review screen they left.
+  const canResume = resume && phaseOneView.lessonIndex === idx && (allowResult || phaseOneView.mode !== "result");
   if (!canResume) {
     resetPhaseOneView(idx, startMode, {
       introIndex: startIntroIndex,

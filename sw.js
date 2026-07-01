@@ -1,13 +1,13 @@
-// [2026-07-01] Cache bumped to v94: alphabet detail card notes/examples surfaced,
-// stable reserved height (no board jump), compound label modes, split vowel groups.
-const CACHE_NAME = "hanapath-shell-v94";
+// [2026-07-01] Cache bumped to v95: alphabet quick reference reachable from every
+// Phase One screen; returning to an answered checkpoint/build no longer soft-locks.
+const CACHE_NAME = "hanapath-shell-v95";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260701a",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260701a",
+  "./app.js?v=20260701b",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
