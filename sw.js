@@ -1,13 +1,13 @@
-// [2026-07-01] Cache bumped to v95: alphabet quick reference reachable from every
-// Phase One screen; returning to an answered checkpoint/build no longer soft-locks.
-const CACHE_NAME = "hanapath-shell-v95";
+// [2026-07-01] Cache bumped to v96: Alphabet Drill Lab (infinite drills, 6 modes,
+// session lengths, weak-spot store) + quick-ref button on the pass completion screen.
+const CACHE_NAME = "hanapath-shell-v96";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260701a",
+  "./styles.css?v=20260701c",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260701b",
+  "./app.js?v=20260701c",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

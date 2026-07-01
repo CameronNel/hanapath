@@ -2984,3 +2984,9 @@ li { margin-bottom: 4px; }
     min-height: auto;
   }
 }
+
+/* Alphabet Drill Lab mode picker */
+.drill-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.drill-mode-card { text-align: left; cursor: pointer; padding: 12px; }
+.drill-mode-card.selected { border-color: var(--accent); background: rgba(91,157,255,.14); }
+@media (max-width: 380px) { .drill-mode-grid { grid-template-columns: 1fr; } }
