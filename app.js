@@ -6593,11 +6593,6 @@ function renderEntireAlphabet() {
 
   const activeLessonIdx = state.phaseOneActive;
   const isQuickRef = !!state.quickRefActive;
-  console.log("renderEntireAlphabet quick-ref status:", {
-    quickRefActive: state.quickRefActive,
-    phaseOneActive: state.phaseOneActive,
-    isQuickRef: isQuickRef
-  });
 
   showDetailBarWithBack("learn", "Entire Korean alphabet", () => {
     state.quickRefActive = false;
