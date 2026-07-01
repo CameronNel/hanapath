@@ -6318,7 +6318,8 @@ const ALPHABET_LIST_GROUPS = [
   { title: "Basic consonants", sub: "14 core consonants", chars: ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"] },
   { title: "Tense consonants", sub: "Doubled, tighter sounds", chars: ["ㄲ", "ㄸ", "ㅃ", "ㅆ", "ㅉ"] },
   { title: "Basic vowels", sub: "Simple and y-vowels", chars: ["ㅏ", "ㅑ", "ㅓ", "ㅕ", "ㅗ", "ㅛ", "ㅜ", "ㅠ", "ㅡ", "ㅣ"] },
-  { title: "Compound vowels", sub: "Combined vowel shapes", chars: ["ㅐ", "ㅒ", "ㅔ", "ㅖ", "ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ", "ㅟ", "ㅢ"] },
+  { title: "Ae & ye vowels", sub: "Single keys, double-vowel shape", chars: ["ㅐ", "ㅒ", "ㅔ", "ㅖ"] },
+  { title: "Compound vowels", sub: "Typed as two keys", chars: ["ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ", "ㅟ", "ㅢ"] },
 ];
 
 // Merge the existing atlases into one lookup so the board shares the same
@@ -6455,12 +6456,15 @@ function renderAlphabetKeyboardBoard() {
     return `<div class="alpha-row">${keys}</div>`;
   }).join("");
 
-  const compoundStrip = COMPOUND_VOWELS.map(({ char, combo }) => `
+  const compoundStrip = COMPOUND_VOWELS.map(({ char, combo }) => {
+    const mode = state.alphabetBoardLabels || "roman";
+    const sub = mode === "none" ? "" : mode === "roman" ? combo.join("+") : jamoSubLabel(char);
+    return `
     <button class="alpha-key compound${char === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(char)}" lang="ko" aria-label="${escapeHtml(jamoDemo(char))}">
       <span class="alpha-key-glyph">${escapeHtml(char)}</span>
-      <span class="alpha-key-sub">${escapeHtml(combo.join("+"))}</span>
-    </button>
-  `).join("");
+      ${sub ? `<span class="alpha-key-sub">${escapeHtml(sub)}</span>` : ""}
+    </button>`;
+  }).join("");
 
   return `
     <div class="card alpha-keyboard">
