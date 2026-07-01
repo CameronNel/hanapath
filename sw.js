@@ -1,13 +1,13 @@
-// [2026-07-01] Cache bumped to v96: Alphabet Drill Lab (infinite drills, 6 modes,
-// session lengths, weak-spot store) + quick-ref button on the pass completion screen.
-const CACHE_NAME = "hanapath-shell-v96";
+// [2026-07-01] Cache bumped to v97: tile-assembly Build Blocks drill mode +
+// first-try checkpoint tip.
+const CACHE_NAME = "hanapath-shell-v97";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260701c",
+  "./styles.css?v=20260701d",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260701c",
+  "./app.js?v=20260701d",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

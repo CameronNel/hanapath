@@ -2990,3 +2990,15 @@ li { margin-bottom: 4px; }
 .drill-mode-card { text-align: left; cursor: pointer; padding: 12px; }
 .drill-mode-card.selected { border-color: var(--accent); background: rgba(91,157,255,.14); }
 @media (max-width: 380px) { .drill-mode-grid { grid-template-columns: 1fr; } }
+
+/* Drill Lab tile-build slots + first-try checkpoint note */
+.drill-build-slots { display: inline-flex; gap: 6px; }
+.drill-build-slots .bd-slot {
+  min-width: 34px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px dashed var(--line-strong); border-radius: 8px; font-size: 1.5rem; font-weight: 700; color: var(--muted);
+}
+.drill-build-slots .bd-slot.filled { border-style: solid; border-color: var(--accent); color: var(--text); }
+.first-try-note {
+  font-size: .72rem; color: var(--muted); margin-bottom: 10px; padding: 6px 10px;
+  border-radius: 8px; background: rgba(91,157,255,.10); border: 1px solid var(--line);
+}
