@@ -1,12 +1,13 @@
-// [2026-06-30] Cache bumped to v93: Deferred PWA update reloads to prevent study interruption.
-const CACHE_NAME = "hanapath-shell-v93";
+// [2026-07-01] Cache bumped to v94: alphabet detail card notes/examples surfaced,
+// stable reserved height (no board jump), compound label modes, split vowel groups.
+const CACHE_NAME = "hanapath-shell-v94";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260630d",
+  "./styles.css?v=20260701a",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260630o",
+  "./app.js?v=20260701a",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

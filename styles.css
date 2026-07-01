@@ -2747,11 +2747,13 @@ li { margin-bottom: 4px; }
   margin: 0 0 12px;
   padding: 12px 18px;
   border-radius: 14px;
-  /* Reserve room for the voicing note (shown only for ㄱㄷㅂㅈ) so the board
-     below doesn't jump when switching between letters with and without it. The
-     header stays top-aligned so the glyph/name don't drift vertically either —
-     the note just fills the reserved space below when present. */
-  min-height: 116px;
+  /* Reserve room for the tallest letter's content (long note + example, plus
+     the voicing note shown only for ㄱㄷㅂㅈ) so the board below doesn't jump
+     when switching between letters. The header stays top-aligned so the
+     glyph/name don't drift vertically either — the note fills the reserved
+     space below. Values come from measuring every jamo's rendered height at
+     each width band (see the per-band @media overrides below). */
+  min-height: 172px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -2821,10 +2823,14 @@ li { margin-bottom: 4px; }
   line-height: 1.35;
   color: var(--text);
 }
-/* Below 540px the voicing note wraps to two lines, so reserve a little more
-   height to keep the board from shifting on narrow screens. */
-@media (max-width: 540px) {
-  .alpha-detail { min-height: 132px; }
+/* Narrower screens wrap the note (and voicing box) onto more lines, so the
+   tallest card grows — reserve more to keep the board from shifting. Measured
+   maxima: ~202px at 400–700px, ~218px at ≤400px. */
+@media (max-width: 700px) {
+  .alpha-detail { min-height: 206px; }
+}
+@media (max-width: 400px) {
+  .alpha-detail { min-height: 222px; }
 }
 
 /* Scoped board animations: toggling Keyboard/List/Sound/Phonetic/Name/Hide
