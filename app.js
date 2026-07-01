@@ -5849,6 +5849,7 @@ function renderPhaseOneQuestion(lesson) {
   els.phaseOneActionButton.textContent =
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
+  addFirstTryNote();
   if (phaseOneView.answered) restoreAnsweredChoiceVisual(question);
   animateMotionScope(els.phaseOneStage);
 }
@@ -5967,6 +5968,18 @@ function renderPhaseOneCourse() {
 // from the alphabet quick reference). Without this the question redraws blank
 // with a disabled "Next question" while `phaseOneView.answered` stays true — so
 // option taps are ignored and the learner can neither re-answer nor advance.
+// Beginners are often surprised that fumbling a checkpoint (wrong-then-right)
+// can still fail the stage: the pass score counts only the first attempt on each
+// question. Surface that once, unobtrusively, on every checkpoint card.
+function addFirstTryNote() {
+  const card = els.phaseOneStage && els.phaseOneStage.querySelector(".checkpoint-card");
+  if (!card || card.querySelector(".first-try-note")) return;
+  const note = document.createElement("div");
+  note.className = "first-try-note";
+  note.textContent = "Only your first answer on each question counts toward your score.";
+  card.insertBefore(note, card.firstChild);
+}
+
 function restoreAnsweredChoiceVisual(question) {
   const feedback = document.getElementById("phaseOneFeedback");
   els.phaseOneStage.querySelectorAll(".lesson-option").forEach((b) => {
@@ -6119,6 +6132,7 @@ function renderPhaseOneBuildQuestion(lesson, question) {
   els.phaseOneActionButton.textContent =
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
+  addFirstTryNote();
   if (phaseOneView.answered) restoreAnsweredBuildVisual(question);
   animateMotionScope(els.phaseOneStage);
 }
@@ -6762,6 +6776,36 @@ function makeLetterDrillQuestion(forceLetter) {
     voiceText: HANGUL_JAMO_SPEAK[letter] || letter, weakKey: letter,
   };
 }
+// Short romanization hint for a build prompt. Initial ㅇ is a silent seat; final
+// ㅇ is "ng". Other letters reuse LETTER_SOUND (first variant, no parenthetical).
+function jamoRomanShort(ch, position) {
+  if (ch === "ㅇ") return position === "final" ? "ng" : "";
+  const r = LETTER_SOUND[ch] || "";
+  return r.replace(/\s*\(.*\)/, "").split("/")[0].trim();
+}
+// Tile-assembly build question: the learner taps jamo in seat order to build a
+// real syllable (like the lesson checkpoints, but generated and infinite).
+function makeBuildTileDrillQuestion(pools) {
+  let initial, medial, final, target, seq, tries = 0;
+  do {
+    initial = randomItem(pools.initials);
+    medial = randomItem(pools.medials);
+    final = (Math.random() < 0.45 && pools.finals.some((f) => f)) ? randomItem(pools.finals.filter((f) => f)) : "";
+    target = composeHangul(initial, medial, final);
+    seq = final ? [initial, medial, final] : [initial, medial];
+  } while (!target && ++tries < 25);
+  const distract = [...new Set([...pools.initials, ...pools.medials, ...pools.finals.filter((f) => f)])].filter((j) => !seq.includes(j));
+  const tray = shuffle([...seq, ...shuffle(distract).slice(0, 3)]);
+  const sound = (jamoRomanShort(initial, "initial") + jamoRomanShort(medial, "medial") + (final ? jamoRomanShort(final, "final") : "")) || target;
+  return {
+    kind: "Build", interaction: "build",
+    prompt: `Build the block that sounds like “${sound}”`,
+    detail: `Tap the letters in order — consonant, then vowel${final ? ", then the final consonant" : ""}.`,
+    target, seq, tray, voiceText: target, weakKey: initial,
+    explanation: `${seq.join(" + ")} = ${target}.`,
+  };
+}
+
 function makeDrillQuestion(mode) {
   const pools = drillPools();
   let m = mode;
@@ -6772,7 +6816,7 @@ function makeDrillQuestion(mode) {
     m = randomItem(["build", "split", "letters", "batchim"]);
   }
   let q;
-  if (m === "build") { q = { ...generateComposeQuestion(pools) }; const d = decomposeHangul(q.answer); if (d) q.weakKey = d.initial; }
+  if (m === "build") { q = makeBuildTileDrillQuestion(pools); }
   else if (m === "split") { q = { ...generateDecomposeQuestion(pools) }; q.weakKey = /^[ㄱ-ㅎㅏ-ㅣ]$/.test(q.answer) ? q.answer : null; }
   else if (m === "batchim") { q = { ...generateBatchimQuestion(pools) }; }
   else { q = makeLetterDrillQuestion(); }
@@ -6839,17 +6883,29 @@ function renderDrillQuestion() {
   showDetailBarWithBack("learn", modeLabel, () => renderAlphabetDrillLab(), "Drill Lab");
   const q = s.current = makeDrillQuestion(s.mode);
   s.answered = false;
+  s.buildFilled = [];
+  const isBuild = q.interaction === "build";
   const progress = s.total === Infinity ? `${s.asked + 1}` : `${s.asked + 1} / ${s.total}`;
+  const interactiveHtml = isBuild
+    ? `<div class="bd-builder" id="drillBuilder" lang="ko">
+         <div class="drill-build-slots">${q.seq.map((_, i) => `<span class="bd-slot" data-drill-slot="${i}" aria-hidden="true">·</span>`).join("")}</div>
+         <span class="bd-arrow">→</span>
+         <span class="bd-assembled" data-drill-assembled lang="ko">?</span>
+       </div>
+       <div class="bd-tray" id="drillTray" role="group" aria-label="Letter tiles">
+         ${q.tray.map((j) => `<button class="bd-tile" type="button" data-drill-jamo="${escapeHtml(j)}" lang="ko" aria-label="Korean letter ${escapeHtml(j)}">${escapeHtml(j)}</button>`).join("")}
+       </div>`
+    : `<div class="quiz-options" id="drillOptions">
+         ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" lang="ko">${escapeHtml(o)}</button>`).join("")}
+       </div>`;
   el.innerHTML = `
     <div class="card">
       <div class="lesson-step-row"><span>${escapeHtml(modeLabel)} · ${progress}</span><strong>${s.correct} correct · streak ${s.streak}</strong></div>
-      <div class="quiz-visual" style="text-align:center;margin:10px 0;">${q.visual}</div>
+      ${q.visual ? `<div class="quiz-visual" style="text-align:center;margin:10px 0;">${q.visual}</div>` : ""}
       <button class="button secondary compact" type="button" id="drillHearBtn" style="margin-bottom:10px;">▶ Hear</button>
       <h3 class="screen-title" style="font-size:1.05rem;margin-bottom:4px;">${escapeHtml(q.prompt)}</h3>
       ${q.detail ? `<div class="screen-sub">${escapeHtml(q.detail)}</div>` : ""}
-      <div class="quiz-options" id="drillOptions">
-        ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" lang="ko">${escapeHtml(o)}</button>`).join("")}
-      </div>
+      ${interactiveHtml}
       <div class="lesson-feedback" id="drillFeedback" aria-live="polite"></div>
       <div class="flex-between" style="margin-top:12px;gap:10px;">
         <button class="button secondary compact" type="button" id="drillEndBtn">End session</button>
@@ -6857,12 +6913,54 @@ function renderDrillQuestion() {
       </div>
     </div>`;
   const hear = document.getElementById("drillHearBtn");
-  if (hear) hear.addEventListener("click", () => void speak(q.voiceText || q.answer || ""));
-  if (q.autoSpeak || s.mode === "letters" || s.mode === "mixed") { /* keep quiet by default; user taps Hear */ }
-  document.querySelectorAll("#drillOptions .option").forEach((b) =>
-    b.addEventListener("click", () => answerDrill(b.dataset.drillOption, b)));
+  if (hear) hear.addEventListener("click", () => void speak(q.voiceText || q.answer || q.target || ""));
+  if (isBuild) {
+    document.querySelectorAll("#drillTray .bd-tile").forEach((b) =>
+      b.addEventListener("click", () => answerDrillBuild(b.dataset.drillJamo, b)));
+  } else {
+    document.querySelectorAll("#drillOptions .option").forEach((b) =>
+      b.addEventListener("click", () => answerDrill(b.dataset.drillOption, b)));
+  }
   document.getElementById("drillEndBtn").addEventListener("click", () => renderDrillResult());
   document.getElementById("drillNextBtn").addEventListener("click", () => { s.asked += 1; renderDrillQuestion(); });
+}
+
+// Tile-assembly answer handler for the Build Blocks drill mode.
+function answerDrillBuild(jamo, tile) {
+  const s = drillSession;
+  if (!s || s.answered) return;
+  const q = s.current;
+  const feedback = document.getElementById("drillFeedback");
+  const filled = s.buildFilled || (s.buildFilled = []);
+  const idx = filled.length;
+  const seatName = idx === 0 ? "first consonant" : idx === 1 ? "vowel" : "final consonant";
+  if (jamo !== q.seq[idx]) {
+    tile.classList.add("wrong");
+    setTimeout(() => tile.classList.remove("wrong"), 500);
+    if (q.weakKey) { recordWeakSpot(q.weakKey); s.missed[q.weakKey] = (s.missed[q.weakKey] || 0) + 1; }
+    s.streak = 0;
+    if (feedback) feedback.innerHTML = "<strong>Not yet.</strong> " + escapeHtml("Tap the " + seatName + " next.");
+    return;
+  }
+  filled.push(jamo);
+  const slot = document.querySelector('#drillBuilder [data-drill-slot="' + idx + '"]');
+  if (slot) { slot.textContent = jamo; slot.classList.add("filled"); slot.removeAttribute("aria-hidden"); flashElement(slot); }
+  if (filled.length >= q.seq.length) {
+    s.answered = true;
+    s.correct += 1;
+    s.streak += 1;
+    s.bestStreak = Math.max(s.bestStreak, s.streak);
+    const assembled = document.querySelector("[data-drill-assembled]");
+    if (assembled) { assembled.textContent = q.target; assembled.classList.add("done"); }
+    document.querySelectorAll("#drillTray .bd-tile").forEach((t) => { t.disabled = true; });
+    if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(q.explanation || "");
+    const next = document.getElementById("drillNextBtn");
+    if (next) { next.disabled = false; next.textContent = s.total !== Infinity && s.asked + 1 >= s.total ? "See result" : "Next"; }
+    void speak(q.target);
+  } else {
+    if (feedback) feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + (filled.length === 1 ? "vowel" : "final consonant") + ".");
+    void speak(jamo);
+  }
 }
 
 function answerDrill(choice, button) {
