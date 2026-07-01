@@ -6719,7 +6719,7 @@ function renderEntireAlphabet() {
         </div>
       </div>
     </div>
-    <div class="card alpha-detail" id="alphaBoardDetail">${alphabetDetailHtml(alphabetBoardSelected)}</div>
+    <div class="card alpha-detail" id="alphaBoardDetail" role="status" aria-live="polite" aria-label="Selected letter">${alphabetDetailHtml(alphabetBoardSelected)}</div>
     <div id="alphaBoardMount">${renderAlphabetBoardMarkup()}</div>
   `;
 
@@ -6858,12 +6858,12 @@ function renderAlphabetDrillLab() {
   if (!el) return;
   showDetailBarWithBack("learn", "Alphabet Drill Lab", () => openLearnStageMenu("alphabet"), "Alphabet");
   const modeBtns = DRILL_MODES.map((mo, i) =>
-    `<button class="card drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}">
+    `<button class="card drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}" aria-pressed="${i === 0}">
        <div class="study-row-ko">${escapeHtml(mo.label)}</div>
        <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(mo.sub)}</div>
      </button>`).join("");
   const lenBtns = DRILL_LENGTHS.map((n, i) =>
-    `<button class="alpha-seg${i === 0 ? " active" : ""}" type="button" data-drill-len="${n}">${n === "∞" ? "Infinite" : n}</button>`).join("");
+    `<button class="alpha-seg${i === 0 ? " active" : ""}" type="button" data-drill-len="${n}" aria-pressed="${i === 0}">${n === "∞" ? "Infinite" : n}</button>`).join("");
   const weakCount = getWeakSpotList().length;
   const firstOpenHint = !state.drillLabSeen
     ? `<div class="card first-try-note" style="margin-bottom:0;">Pick a <strong>mode</strong> (Mixed blends them all), choose how many questions, then Start. Questions generate forever — tap <strong>End session</strong> any time in Infinite. Letters you miss are saved and resurface in <strong>Weak Spots</strong>.</div>`
@@ -6886,11 +6886,11 @@ function renderAlphabetDrillLab() {
   let mode = "mixed", len = 5;
   el.querySelectorAll("[data-drill-mode]").forEach((b) => b.addEventListener("click", () => {
     mode = b.dataset.drillMode;
-    el.querySelectorAll("[data-drill-mode]").forEach((x) => x.classList.toggle("selected", x === b));
+    el.querySelectorAll("[data-drill-mode]").forEach((x) => { const on = x === b; x.classList.toggle("selected", on); x.setAttribute("aria-pressed", String(on)); });
   }));
   el.querySelectorAll("[data-drill-len]").forEach((b) => b.addEventListener("click", () => {
     len = b.dataset.drillLen === "∞" ? "∞" : Number(b.dataset.drillLen);
-    el.querySelectorAll("[data-drill-len]").forEach((x) => x.classList.toggle("active", x === b));
+    el.querySelectorAll("[data-drill-len]").forEach((x) => { const on = x === b; x.classList.toggle("active", on); x.setAttribute("aria-pressed", String(on)); });
   }));
   document.getElementById("drillStartBtn").addEventListener("click", () => startDrillSession(mode, len));
 }
@@ -9601,7 +9601,7 @@ function renderLetterReview() {
         <div class="quiz-options" id="letterReviewOptions">
           ${opts.map((o) => `<button class="option" type="button" data-sound="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join("")}
         </div>
-        <div class="quiz-feedback" id="letterReviewFeedback"></div>
+        <div class="quiz-feedback" id="letterReviewFeedback" role="status" aria-live="polite"></div>
       </div>
     </div>`;
 

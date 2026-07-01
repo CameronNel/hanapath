@@ -1,13 +1,13 @@
-// [2026-07-01] Cache bumped to v98: intro-card audio, checkpoint Hear-button
-// label, Drill Lab first-open tip.
-const CACHE_NAME = "hanapath-shell-v98";
+// [2026-07-01] Cache bumped to v99: alphabet a11y — live regions on
+// letter-review + reference, aria-pressed on drill controls.
+const CACHE_NAME = "hanapath-shell-v99";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260701d",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260701e",
+  "./app.js?v=20260701f",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
