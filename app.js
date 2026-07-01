@@ -3291,6 +3291,8 @@ function loadState() {
     route: { hub: "learn", item: null, stage: null },
     learnInProgress: false,
     quickRefActive: false,
+    // Alphabet Drill Lab: jamo → miss count, feeds the Weak Spots drill mode.
+    alphabetWeakSpots: {},
     mainTab: "alphabet",
     alphabetView: "vowels",
     // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
@@ -6720,6 +6722,212 @@ function renderEntireAlphabet() {
   }
 }
 
+// ─── ALPHABET DRILL LAB ───────────────────────────────────────────────────────
+// Permanent, infinite Hangul drill hub unlocked after the mastery test. Reuses
+// the existing question generators (all produce valid Hangul); adds session
+// lengths, an End-session control, a result screen, and a weak-spot store.
+const DRILL_MODES = [
+  { id: "mixed", label: "Mixed Drill", sub: "A bit of everything" },
+  { id: "build", label: "Build Blocks", sub: "Pick the syllable the jamo make" },
+  { id: "split", label: "Split Blocks", sub: "Break a block into jamo" },
+  { id: "letters", label: "Letters", sub: "Match a letter to its sound" },
+  { id: "batchim", label: "Batchim", sub: "Final consonant sounds" },
+  { id: "weak", label: "Weak Spots", sub: "Your most-missed letters" },
+];
+const DRILL_LENGTHS = [5, 10, 20, "∞"];
+let drillSession = null;
+
+function drillPools() { return ALPHABET_QUIZ_POOLS.reading; }
+function recordWeakSpot(jamo) {
+  if (!jamo || !/^[ㄱ-ㅎㅏ-ㅣ]$/.test(jamo)) return;
+  const w = state.alphabetWeakSpots || (state.alphabetWeakSpots = {});
+  w[jamo] = (w[jamo] || 0) + 1;
+  saveState();
+}
+function getWeakSpotList() {
+  const w = state.alphabetWeakSpots || {};
+  return Object.entries(w).filter(([, c]) => c > 0).sort((a, b) => b[1] - a[1]).map(([j]) => j);
+}
+function makeLetterDrillQuestion(forceLetter) {
+  const enrolled = getEnrolledLetters();
+  const letters = enrolled.length ? enrolled : [...consonantAtlas.map((c) => c.char), ...vowelAtlas.map((v) => v.char)];
+  const letter = forceLetter || randomItem(letters);
+  const sound = LETTER_SOUND[letter] || "";
+  const distract = [...new Set(shuffle(letters.filter((l) => l !== letter).map((l) => LETTER_SOUND[l]).filter((s) => s && s !== sound)))].slice(0, 3);
+  return {
+    kind: "Letter", prompt: "Which sound does this letter make?", detail: "",
+    visual: `<div class="big-glyph" lang="ko">${escapeHtml(letter)}</div>`,
+    options: shuffle([sound, ...distract]), answer: sound,
+    explanation: `${letter} sounds like “${sound}”.`,
+    voiceText: HANGUL_JAMO_SPEAK[letter] || letter, weakKey: letter,
+  };
+}
+function makeDrillQuestion(mode) {
+  const pools = drillPools();
+  let m = mode;
+  if (mode === "mixed") m = randomItem(["build", "split", "letters", "batchim"]);
+  if (mode === "weak") {
+    const spots = getWeakSpotList();
+    if (spots.length) return makeLetterDrillQuestion(randomItem(spots.slice(0, 8)));
+    m = randomItem(["build", "split", "letters", "batchim"]);
+  }
+  let q;
+  if (m === "build") { q = { ...generateComposeQuestion(pools) }; const d = decomposeHangul(q.answer); if (d) q.weakKey = d.initial; }
+  else if (m === "split") { q = { ...generateDecomposeQuestion(pools) }; q.weakKey = /^[ㄱ-ㅎㅏ-ㅣ]$/.test(q.answer) ? q.answer : null; }
+  else if (m === "batchim") { q = { ...generateBatchimQuestion(pools) }; }
+  else { q = makeLetterDrillQuestion(); }
+  return q;
+}
+
+function renderAlphabetDrillLab() {
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+  activeHub = "learn";
+  setNavActive("learn");
+  drillSession = null;
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("learn", "Alphabet Drill Lab", () => openLearnStageMenu("alphabet"), "Alphabet");
+  const modeBtns = DRILL_MODES.map((mo, i) =>
+    `<button class="card drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}">
+       <div class="study-row-ko">${escapeHtml(mo.label)}</div>
+       <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(mo.sub)}</div>
+     </button>`).join("");
+  const lenBtns = DRILL_LENGTHS.map((n, i) =>
+    `<button class="alpha-seg${i === 0 ? " active" : ""}" type="button" data-drill-len="${n}">${n === "∞" ? "Infinite" : n}</button>`).join("");
+  const weakCount = getWeakSpotList().length;
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Practice · Hangul forever</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Alphabet Drill Lab</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Infinite Hangul drills. Pick a mode and a session length.${weakCount ? ` You have <strong>${weakCount}</strong> weak spot${weakCount === 1 ? "" : "s"} logged.` : ""}</div>
+    </div>
+    <div class="card">
+      <div class="eyebrow" style="margin-bottom:8px;">Mode</div>
+      <div class="drill-mode-grid">${modeBtns}</div>
+      <div class="eyebrow" style="margin:16px 0 8px;">Session length</div>
+      <div class="alpha-seg-group" role="group" aria-label="Session length">${lenBtns}</div>
+      <button class="button primary full" type="button" id="drillStartBtn" style="margin-top:16px;">Start drill</button>
+    </div>`;
+  let mode = "mixed", len = 5;
+  el.querySelectorAll("[data-drill-mode]").forEach((b) => b.addEventListener("click", () => {
+    mode = b.dataset.drillMode;
+    el.querySelectorAll("[data-drill-mode]").forEach((x) => x.classList.toggle("selected", x === b));
+  }));
+  el.querySelectorAll("[data-drill-len]").forEach((b) => b.addEventListener("click", () => {
+    len = b.dataset.drillLen === "∞" ? "∞" : Number(b.dataset.drillLen);
+    el.querySelectorAll("[data-drill-len]").forEach((x) => x.classList.toggle("active", x === b));
+  }));
+  document.getElementById("drillStartBtn").addEventListener("click", () => startDrillSession(mode, len));
+}
+
+function startDrillSession(mode, len) {
+  drillSession = {
+    mode, len, total: len === "∞" ? Infinity : len,
+    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null,
+  };
+  renderDrillQuestion();
+}
+
+function renderDrillQuestion() {
+  const s = drillSession;
+  if (!s) return;
+  if (s.asked >= s.total) return renderDrillResult();
+  const el = showScreen("detail");
+  if (!el) return;
+  const modeLabel = (DRILL_MODES.find((m) => m.id === s.mode) || {}).label || "Drill";
+  showDetailBarWithBack("learn", modeLabel, () => renderAlphabetDrillLab(), "Drill Lab");
+  const q = s.current = makeDrillQuestion(s.mode);
+  s.answered = false;
+  const progress = s.total === Infinity ? `${s.asked + 1}` : `${s.asked + 1} / ${s.total}`;
+  el.innerHTML = `
+    <div class="card">
+      <div class="lesson-step-row"><span>${escapeHtml(modeLabel)} · ${progress}</span><strong>${s.correct} correct · streak ${s.streak}</strong></div>
+      <div class="quiz-visual" style="text-align:center;margin:10px 0;">${q.visual}</div>
+      <button class="button secondary compact" type="button" id="drillHearBtn" style="margin-bottom:10px;">▶ Hear</button>
+      <h3 class="screen-title" style="font-size:1.05rem;margin-bottom:4px;">${escapeHtml(q.prompt)}</h3>
+      ${q.detail ? `<div class="screen-sub">${escapeHtml(q.detail)}</div>` : ""}
+      <div class="quiz-options" id="drillOptions">
+        ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" lang="ko">${escapeHtml(o)}</button>`).join("")}
+      </div>
+      <div class="lesson-feedback" id="drillFeedback" aria-live="polite"></div>
+      <div class="flex-between" style="margin-top:12px;gap:10px;">
+        <button class="button secondary compact" type="button" id="drillEndBtn">End session</button>
+        <button class="button primary compact" type="button" id="drillNextBtn" disabled>Next</button>
+      </div>
+    </div>`;
+  const hear = document.getElementById("drillHearBtn");
+  if (hear) hear.addEventListener("click", () => void speak(q.voiceText || q.answer || ""));
+  if (q.autoSpeak || s.mode === "letters" || s.mode === "mixed") { /* keep quiet by default; user taps Hear */ }
+  document.querySelectorAll("#drillOptions .option").forEach((b) =>
+    b.addEventListener("click", () => answerDrill(b.dataset.drillOption, b)));
+  document.getElementById("drillEndBtn").addEventListener("click", () => renderDrillResult());
+  document.getElementById("drillNextBtn").addEventListener("click", () => { s.asked += 1; renderDrillQuestion(); });
+}
+
+function answerDrill(choice, button) {
+  const s = drillSession;
+  if (!s || s.answered) return;
+  const q = s.current;
+  const feedback = document.getElementById("drillFeedback");
+  if (choice !== q.answer) {
+    button.classList.add("wrong");
+    button.disabled = true;
+    if (q.weakKey) { recordWeakSpot(q.weakKey); s.missed[q.weakKey] = (s.missed[q.weakKey] || 0) + 1; }
+    s.streak = 0;
+    if (feedback) feedback.innerHTML = "<strong>Not yet.</strong> " + escapeHtml(q.explanation || "Try the other answer.");
+    return;
+  }
+  s.answered = true;
+  s.correct += 1;
+  s.streak += 1;
+  s.bestStreak = Math.max(s.bestStreak, s.streak);
+  document.querySelectorAll("#drillOptions .option").forEach((b) => {
+    b.disabled = true;
+    if ((b.dataset.drillOption || "") === q.answer) b.classList.add("correct");
+  });
+  if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(q.explanation || "");
+  const next = document.getElementById("drillNextBtn");
+  if (next) { next.disabled = false; next.textContent = s.total !== Infinity && s.asked + 1 >= s.total ? "See result" : "Next"; }
+  void speak(q.voiceText || q.answer || "");
+}
+
+function renderDrillResult() {
+  const s = drillSession;
+  if (!s) return renderAlphabetDrillLab();
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("learn", "Drill complete", () => renderAlphabetDrillLab(), "Drill Lab");
+  // `asked` counts questions already advanced past. On a natural finish it equals
+  // the session length; on an early End-session the current question counts only
+  // if it was answered. (Never +1 on natural completion, which would double-count.)
+  const total = s.asked + (s.answered && s.asked < s.total ? 1 : 0);
+  const accuracy = total ? Math.round((s.correct / total) * 100) : 0;
+  const missedList = Object.entries(s.missed).sort((a, b) => b[1] - a[1]).map(([j]) => j);
+  el.innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div class="eyebrow">Drill complete</div>
+      <h2 class="screen-title" style="margin:6px 0 4px;">${accuracy}% accuracy</h2>
+      <div class="screen-sub">${s.correct} / ${total} correct · best streak ${s.bestStreak}</div>
+      ${missedList.length
+        ? `<div class="screen-sub" style="margin-top:10px;">Weak spots this session: <strong lang="ko">${missedList.map(escapeHtml).join(" ")}</strong></div>`
+        : `<div class="screen-sub" style="margin-top:10px;">No misses — clean run! 🎉</div>`}
+      <div class="flex-between" style="gap:10px;margin-top:16px;">
+        <button class="button secondary full" type="button" id="drillAgainBtn">Back to Drill Lab</button>
+        <button class="button primary full" type="button" id="drillRepeatBtn">Run it again</button>
+      </div>
+    </div>`;
+  document.getElementById("drillAgainBtn").addEventListener("click", () => renderAlphabetDrillLab());
+  document.getElementById("drillRepeatBtn").addEventListener("click", () => startDrillSession(s.mode, s.len));
+}
+
+function openAlphabetDrillLab() {
+  refreshProgressionState();
+  state.route = { hub: "learn", item: "alphabet", stage: null };
+  saveState();
+  renderAlphabetDrillLab();
+}
+
 function openEntireAlphabet() {
   refreshProgressionState();
   if (!state.quickRefActive) {
@@ -8609,6 +8817,19 @@ function renderLearnStageMenu(itemId) {
     </button>`
     : "";
 
+  // Alphabet Drill Lab: permanent, unlocked once the mastery test is done.
+  const drillLabHtml = itemId === "alphabet" && progress.complete
+    ? `
+    <button class="card alpha-board-entry" type="button" id="openDrillLab">
+      <div class="alpha-board-entry-main">
+        <div class="eyebrow">Practice · Forever</div>
+        <div class="study-row-ko">Alphabet Drill Lab</div>
+        <div class="screen-sub" style="margin-bottom:0;">Infinite Hangul drills — mixed, build, split, letters, batchim, weak spots.</div>
+      </div>
+      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">∞</span>
+    </button>`
+    : "";
+
   const letterDue = itemId === "alphabet" ? getDueLetterCount() : 0;
   const letterReviewHtml = letterDue
     ? `
@@ -8629,6 +8850,7 @@ function renderLearnStageMenu(itemId) {
       <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
     </div>
     ${fullAlphabetHtml}
+    ${drillLabHtml}
     ${letterReviewHtml}
     <div class="card">
       <div class="flex-between mb-12">
@@ -8659,6 +8881,8 @@ function renderLearnStageMenu(itemId) {
   // [2026-06-29] Wire the full-alphabet entry card.
   const entireAlphabetBtn = document.getElementById("openEntireAlphabet");
   if (entireAlphabetBtn) entireAlphabetBtn.addEventListener("click", () => openEntireAlphabet());
+  const drillLabBtn = document.getElementById("openDrillLab");
+  if (drillLabBtn) drillLabBtn.addEventListener("click", () => openAlphabetDrillLab());
 }
 
 function openLearnStageMenu(itemId) {
@@ -9024,10 +9248,12 @@ function renderCompleteInPlayer(index) {
         '<button class="button primary compact" type="button" id="learnNextBtn">Start next lesson</button>'
       : '<div class="eyebrow">Hangul complete</div>' +
         '<h3 class="screen-title" style="margin-bottom:8px;">You can read Hangul! 🎉</h3>' +
-        '<div class="screen-sub" style="margin-bottom:12px;">New vocabulary is now your next new material.</div>' +
-        '<button class="button primary compact" type="button" id="learnNextBtn">Start vocabulary</button>'
+        '<div class="screen-sub" style="margin-bottom:12px;">Keep the alphabet sharp with infinite drills, or move on to vocabulary.</div>' +
+        '<button class="button primary compact" type="button" id="learnDrillLabBtn" style="margin-right:8px;">Open Drill Lab</button>' +
+        '<button class="button secondary compact" type="button" id="learnNextBtn">Start vocabulary</button>'
     ) +
     "</div>" +
+    phaseOneReferenceButtonHtml() +
     (getDueLetterCount()
       ? '<div class="card"><div class="flex-between">' +
         "<div><div class=\"eyebrow\">Make it stick</div>" +
@@ -9050,6 +9276,8 @@ function renderCompleteInPlayer(index) {
   if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
   const letterReviewBtn = document.getElementById("learnLetterReviewBtn");
   if (letterReviewBtn) letterReviewBtn.addEventListener("click", () => startLetterReview());
+  const drillLabBtn = document.getElementById("learnDrillLabBtn");
+  if (drillLabBtn) drillLabBtn.addEventListener("click", () => openAlphabetDrillLab());
 }
 
 // "Lesson complete" screen: celebrate, then offer the next new lesson.
