@@ -2806,8 +2806,8 @@ li { margin-bottom: 4px; }
   cursor: pointer;
 }
 .alpha-detail-play:hover { filter: brightness(1.08); }
-.alpha-detail-note,
-.alpha-detail-example { display: none; }
+.alpha-detail-note { display: block; margin: 8px 0 0; font-size: .82rem; color: var(--muted); line-height: 1.45; }
+.alpha-detail-example { display: block; margin: 6px 0 0; font-size: .82rem; color: var(--muted); }
 /* Voicing explainer ("g sounds like ka at the start") — shown only for the
    plain consonants whose isolated sound differs from their romanization. */
 .alpha-detail-voicing {
