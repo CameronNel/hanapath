@@ -4215,15 +4215,22 @@ function buildWordReferenceRows() {
     rows.push(row);
   });
 
+  // Real (hand-written) English meanings for raw frequency entries, distinct
+  // from the CSV's own "english_spelling" column which is a romanization, not
+  // a translation. Coverage is partial (see raw_word_meanings.js) — anything
+  // not in the map stays honestly meaning-less rather than guessing.
+  const rawMeanings = window.HANAPATH_RAW_MEANINGS || {};
+
   const claimedRanks = new Set(rows.filter((row) => row.raw).map((row) => row.raw.rank));
   vocabBank.forEach((entry) => {
     if (claimedRanks.has(entry.rank)) return;
+    const meaning = rawMeanings[entry.korean] || "";
     const row = {
       id: `raw-${entry.rank}`,
       source: "raw",
       korean: entry.korean,
       display: entry.korean,
-      meaning: "",
+      meaning,
       pos: "",
       pronunciation: entry.pronunciation || entry.englishSpelling,
       exampleKo: "",
@@ -4238,7 +4245,7 @@ function buildWordReferenceRows() {
       word: null,
       raw: entry,
     };
-    row._search = [entry._koreanLower, entry._englishLower, entry._pronLower, entry._bandLower, entry._noteLower, entry._rankStr]
+    row._search = [entry._koreanLower, entry._englishLower, entry._pronLower, entry._bandLower, entry._noteLower, entry._rankStr, meaning.toLowerCase()]
       .filter(Boolean).join(" ");
     rows.push(row);
   });
@@ -5321,7 +5328,9 @@ function wordBankRowHtml(row, knownSet, hardSet, now) {
   const status = getWordRowStatus(row, knownSet, hardSet, now);
   const sub = row.word
     ? escapeHtml(row.meaning)
-    : `${escapeHtml(row.pronunciation || "")} <span class="word-bank-refonly">· reference only</span>`;
+    : row.meaning
+      ? `${escapeHtml(row.meaning)} <span class="word-bank-refonly">· no example yet</span>`
+      : `${escapeHtml(row.pronunciation || "")} <span class="word-bank-refonly">· reference only</span>`;
   const metaParts = [];
   if (row.pos) metaParts.push(escapeHtml(row.pos));
   if (row.word && row.pronunciation) metaParts.push(escapeHtml(row.pronunciation));
@@ -5423,10 +5432,12 @@ function wordBankDetailHtml(row) {
   const statusLabel = status === "fresh" ? "Not studied yet" : status.charAt(0).toUpperCase() + status.slice(1);
 
   if (!row.word) {
+    const hasMeaning = Boolean(row.meaning);
     return `
       <div class="card word-bank-detail">
         <button class="button secondary compact" type="button" data-word-detail-back>‹ Back to list</button>
         <div class="word-card-ko-static" lang="ko">${escapeHtml(row.korean)}</div>
+        ${hasMeaning ? `<div class="word-card-meaning">${escapeHtml(row.meaning)}</div>` : ""}
         <div class="vocab-meta-grid" style="margin-top:12px;">
           <div class="vocab-meta-box"><span>Romanization</span><strong>${escapeHtml(row.pronunciation || "—")}</strong></div>
           <div class="vocab-meta-box"><span>Frequency rank</span><strong>#${row.rank ?? "—"}</strong></div>
@@ -5434,7 +5445,9 @@ function wordBankDetailHtml(row) {
           <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>
         </div>
         ${row.tokenNote ? `<div class="vocab-note">${escapeHtml(row.tokenNote)}</div>` : ""}
-        <div class="word-refonly-note">Reference only — this entry comes from the raw 5,000 frequency list and has no curated meaning yet. HanaPath won't guess at meanings.</div>
+        <div class="word-refonly-note">${hasMeaning
+          ? "This entry comes from the raw 5,000 frequency list. The meaning above is real, but there is no curated example sentence, audio-checked pronunciation, or usage note yet."
+          : "Reference only — this entry comes from the raw 5,000 frequency list and has no curated meaning yet. HanaPath won't guess at meanings."}</div>
         <div class="word-card-actions">
           <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(row.korean)}">▶ Hear</button>
           <button class="button ${status === "hard" ? "primary" : "secondary"} compact" type="button" data-word-detail-hard="${escapeHtml(row.id)}">${status === "hard" ? "Marked for later ✓" : "Mark for later"}</button>
