@@ -6,6 +6,13 @@ Owner intent: alphabet/Hangul is treated as sorted. The next major product-quali
 
 This file is a Codex-ready implementation plan. It is intentionally detailed. The goal is that a contributor can pick this up, understand the current app, implement the words section without breaking alphabet, and test it like a cold learner.
 
+> **Governing north star:** [`VOCABULARY_TEACHING_SPEC.md`](VOCABULARY_TEACHING_SPEC.md)
+> defines *what and how* the Words section must teach (linguistics + pedagogy).
+> This file is the *implementation* plan. Where the two differ, the teaching
+> spec sets the target and this plan must be brought toward it. See
+> [§25](#25-pedagogy--linguistics-alignment-external-teaching-spec-adopted) for
+> the reconciliation, schema deltas, and the pedagogy-first roadmap.
+
 ---
 
 ## 0. Product verdict
@@ -3065,3 +3072,73 @@ After Hangul is complete, the learner opens Words, sees a top "Entire Korean Wor
 ```
 
 That is the next HanaPath milestone.
+
+---
+
+# 25. Pedagogy & linguistics alignment (external teaching spec adopted)
+
+Added 2026-07-02. The full pedagogical/linguistic north star now lives in
+[`VOCABULARY_TEACHING_SPEC.md`](VOCABULARY_TEACHING_SPEC.md). This section records
+what that adoption changes for this implementation plan. Read the teaching spec
+first; this section is the delta.
+
+## 25.1 What the teaching spec adds on top of §0–§24
+
+Sections 0–24 above already get the **scaffold** right: Hangul-first UX, the
+two-bank model, curated lexeme+forms schema, SRS, guided lessons, and a
+non-laggy Word Bank. The teaching spec raises the bar on the parts that make
+Korean vocabulary *usable*:
+
+- The core unit is a **sense** (not a type): 보다 is many senses, each with its
+  own context, example, and review history.
+- **Register and word origin** (native / Sino-Korean / loanword) are data axes,
+  because one English gloss can map to several Korean words (오늘 vs 금일).
+- Predicates come from a **stem + inflection engine**, not hand-authored form
+  strings — this is treated as a first-release capability.
+- **Pronunciation training** (minimal pairs for the three-way stop contrast,
+  ㅓ/ㅗ, ㅡ/ㅜ, ㄹ) belongs at the vocabulary layer from week one, not just in the
+  alphabet phase.
+- Assessment measures **recall, latency, inflection accuracy by irregular
+  family, particle accuracy, retention, and pronunciation** — not just
+  correctness.
+
+## 25.2 Schema deltas to §4.3 / §4.4 (additive, backward compatible)
+
+Add these fields to the curated schema when known; enforce enums in
+`audit-words-data.mjs` when present. Existing rows stay valid.
+
+| Field | Purpose |
+|---|---|
+| `senseKey` / `senseNo` | Split polysemy; many rows share one `lemma` |
+| `register`, `speechLevel` | Correct-context teaching (enum, not free text) |
+| `originType`, `hanja` | native / Sino-Korean / loanword; word-family teaching |
+| `irregularFamily` | Trigger-based inflection family (ㄷ/ㅂ/ㅅ/ㅎ/르/ㄹ-deletion) |
+| `morphTag` | Sejong/UD tag preserved under the learner-facing `pos` |
+| structured `inflections` | Generated + authored forms per §3.1 of the teaching spec |
+
+Note: the master schema already declares `register`/`politeness`/`related`;
+main's shipped `defineWord` dropped them for simplicity. Re-add additively.
+
+## 25.3 Revised PR sequence (supersedes §20 ordering)
+
+§20's PRs 1–7 (data foundation → bank → SRS → lessons → quick-ref → quiz →
+polish) are **largely delivered** in the shipped app. The remaining work is
+re-prioritized by learning leverage (full detail in the teaching spec §9):
+
+1. **Data axes** — additive sense/register/origin/morph fields + audit enums.
+2. **Sense split** — per-sense rows for high-frequency polysemous lexemes.
+3. **Inflection engine** — stem→form generator/recognizer; drive form
+   checkpoints from it.
+4. **Pronunciation layer** — minimal-pair drills + "spelling vs sounds-like" +
+   segmental/prosodic scoring stub.
+5. **Authoring to Core 1000** — ~230 → 800–1,000 senses vs the official level-1
+   list; numbers/counters and Sino-Korean families as explicit themes.
+6. **Assessment & analytics** — per-item review events, mastery model, retention
+   metrics.
+
+## 25.4 Status snapshot
+
+See the scorecard in [`VOCABULARY_TEACHING_SPEC.md` §8](VOCABULARY_TEACHING_SPEC.md#8-current-status-vs-this-spec).
+In short: script course, Hangul-first UX, SRS, and bidirectional retrieval are
+solid; the open gaps are data-model depth (sense/register/origin/morph), the
+inflection engine, pronunciation training, and lexicon volume.

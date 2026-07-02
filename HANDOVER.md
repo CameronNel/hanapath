@@ -37,6 +37,12 @@ Snapshot for the next contributor (human or agent) picking up this project.
 - **Browser:** Chromium is available; drive it with `playwright-core`. Serve the directory, seed `localStorage["hanapath-v1"]`, load `index.html`, assert on the DOM and capture `pageerror` events.
   - **Gotcha:** the background orbs animate forever — do **not** `await Promise.all(document.getAnimations().map(a => a.finished))` (it never resolves). Use a fixed wait instead.
 
+## Words section planning
+- **North star (what/how to teach):** [`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md) — linguistics + pedagogy requirements, a current-status scorecard (§8), and a pedagogy-first roadmap (§9).
+- **Implementation plan (how it's built):** [`docs/WORDS_SECTION_MASTER_SPEC.md`](docs/WORDS_SECTION_MASTER_SPEC.md) — schema, SRS, lesson flow, screens; §25 reconciles it with the north star (schema deltas + revised PR order).
+- **Shipped so far:** Hangul-first UX, script course, Leitner SRS, guided W0–W16 lessons, non-laggy Word Bank. A W17–W19 grammar-mechanics track (endings/register, negation, connectives, modifiers, honorifics, irregular families) is in PR #42 (pending).
+- **Biggest open gaps (in leverage order):** sense/register/origin/morph data axes → sense split for polysemous lexemes → stem→form inflection engine → vocab-layer pronunciation training → grow lexicon to Core 1000 → per-item review analytics. See teaching spec §9.
+
 ## Open / optional (intentionally not done)
 1. **P2 — SRS expansion:** add a small alphabet-*skill* SRS (block geometry, batchim detection, word decoding) on top of the existing per-letter Leitner system (`letterSrs`, `STAGE_LETTERS`, `renderLetterReview`). Keep it minimal.
 2. **P4.1 — modularization:** extract alphabet logic into `src/alphabet/*`. Needs a build step first (the app is currently one static script), so probably defer.
