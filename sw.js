@@ -1,8 +1,9 @@
-// [2026-07-02] Cache bumped to v103: curated word detail notes now load before
-// app.js, and the word drawer renders sentence romanization plus form/sound
-// explanations on top of the curated word bank + lesson plan data files, Entire
-// Word Bank reference, word SRS, and guided word lessons.
-const CACHE_NAME = "hanapath-shell-v103";
+// [2026-07-02] Cache bumped to v104: curated word detail notes now cover the
+// main conjugated verbs/adjectives, and the word drawer renders sentence
+// romanization plus form/sound explanations on top of the curated word bank +
+// lesson plan data files, Entire Word Bank reference, word SRS, and guided
+// word lessons.
+const CACHE_NAME = "hanapath-shell-v104";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,7 +12,7 @@ const APP_SHELL = [
   "./audio_map.js",
   "./words_curated_core.js?v=20260702a",
   "./words_lesson_plan.js?v=20260702a",
-  "./words_curated_detail_patch.js?v=20260702a",
+  "./words_curated_detail_patch.js?v=20260702b",
   "./app.js?v=20260702a",
   "./words_sentence_romanization_patch.js?v=20260702d",
   "./alphabet_skill_srs.js?v=20260630a",
