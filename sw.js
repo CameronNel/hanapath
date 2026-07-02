@@ -1,5 +1,5 @@
 // [2026-07-03] Cache bumped to v106: implements polyseme splits, inflection engine, and pronunciation drills.
-const CACHE_NAME = "hanapath-shell-v106";
+const CACHE_NAME = "hanapath-shell-v107";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703a",
   "./words_lesson_plan.js?v=20260703b",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260703b",
+  "./app.js?v=20260703c",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

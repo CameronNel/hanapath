@@ -2859,6 +2859,7 @@ let els = {};
 
 let currentQuestion = null;
 let currentAnswered = false;
+let currentQuestionStartedAt = 0;
 let phaseOneResetArmed = false;
 let phaseOneResetTimer = 0;
 let phaseOneView = { lessonIndex: 0, mode: "intro", introIndex: 0, slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
@@ -3325,6 +3326,7 @@ function loadState() {
     // Words section (see docs/WORDS_SECTION_MASTER_SPEC.md): SRS records per
     // curated word id, lesson progression, and Word Bank browse state.
     vocabSrs: {},
+    vocabReviewEvents: [],
     vocabLessonCompleted: [],
     vocabLessonActive: null,
     vocabDailyNewTarget: 5,
@@ -3529,6 +3531,7 @@ const VOCAB_VIEWS = [
   { id: "browse", label: "Browse" },
   { id: "test", label: "Quiz" },
   { id: "review", label: "Review" },
+  { id: "metrics", label: "Insights" },
 ];
 
 if (!["all", ...VOCAB_BANDS].includes(state.vocabBand)) {
@@ -3759,7 +3762,7 @@ function getVocabStudyEntry(rank) {
 
 function normalizeVocabView(value) {
   const raw = String(value || "").toLowerCase();
-  return ["learn", "browse", "test", "review"].includes(raw) ? raw : "learn";
+  return ["learn", "browse", "test", "review", "metrics"].includes(raw) ? raw : "learn";
 }
 
 function renderVocabStudyRows(items, limit = 6) {
@@ -4074,6 +4077,271 @@ function buildVocabLibraryView() {
   };
 }
 
+function getVocabReviewEvents() {
+  return Array.isArray(state.vocabReviewEvents) ? state.vocabReviewEvents : [];
+}
+
+function formatVocabLatencyMs(ms) {
+  const safe = Math.max(0, Math.round(Number(ms) || 0));
+  if (safe < 1000) return `${safe}ms`;
+  if (safe < 60000) return `${(safe / 1000).toFixed(safe < 10000 ? 1 : 0)}s`;
+  return `${(safe / 60000).toFixed(safe < 600000 ? 1 : 0)}m`;
+}
+
+function formatVocabRelativeTime(at) {
+  const delta = Date.now() - Number(at || 0);
+  if (!Number.isFinite(delta) || delta < 60000) return "just now";
+  if (delta < 3600000) return `${Math.max(1, Math.round(delta / 60000))}m ago`;
+  if (delta < VOCAB_ANALYTICS_DAY_MS) return `${Math.max(1, Math.round(delta / 3600000))}h ago`;
+  if (delta < 7 * VOCAB_ANALYTICS_DAY_MS) return `${Math.max(1, Math.round(delta / VOCAB_ANALYTICS_DAY_MS))}d ago`;
+  return new Date(at).toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+function formatVocabPercent(value) {
+  return Number.isFinite(value) ? `${Math.round(value)}%` : "—";
+}
+
+function formatVocabRatio(value) {
+  return Number.isFinite(value) ? `${Math.round(value * 100)}%` : "—";
+}
+
+function computeVocabRetention(events, days) {
+  const cutoff = Date.now() - (days * VOCAB_ANALYTICS_DAY_MS);
+  let anchorIndex = -1;
+  for (let index = events.length - 1; index >= 0; index -= 1) {
+    if (events[index].at <= cutoff) {
+      anchorIndex = index;
+      break;
+    }
+  }
+  if (anchorIndex < 0) return { pct: null, samples: 0 };
+  const followUp = events.slice(anchorIndex + 1).find((event) => event.at > cutoff);
+  if (!followUp) return { pct: null, samples: 0 };
+  return { pct: followUp.result === "correct" ? 1 : 0, samples: 1 };
+}
+
+function computeVocabMastery(summary) {
+  const accuracy = summary.total ? summary.correct / summary.total : 0;
+  const recentAccuracy = Number.isFinite(summary.recentAccuracy) ? summary.recentAccuracy : accuracy;
+  const latencyScore = summary.total ? Math.max(0, Math.min(1, 1 - (summary.avgLatencyMs / 12000))) : 0;
+  const confidenceScore = Number.isFinite(summary.avgConfidence) ? summary.avgConfidence : accuracy;
+  const sampleScore = Math.min(1, summary.total / 6);
+  return Math.round((accuracy * 0.45 + recentAccuracy * 0.2 + latencyScore * 0.2 + confidenceScore * 0.1 + sampleScore * 0.05) * 100);
+}
+
+function buildVocabWordAnalytics(wordId, events) {
+  const word = curatedWordsById.get(wordId);
+  if (!word || !Array.isArray(events) || !events.length) return null;
+  const sorted = [...events].sort((a, b) => a.at - b.at);
+  const total = sorted.length;
+  const correct = sorted.filter((event) => event.result === "correct").length;
+  const incorrect = sorted.filter((event) => event.result === "incorrect").length;
+  const skipped = sorted.filter((event) => event.result === "skipped").length;
+  const avgLatencyMs = Math.round(sorted.reduce((sum, event) => sum + (Number(event.latencyMs) || 0), 0) / total);
+  const avgConfidence = sorted.reduce((sum, event) => sum + (Number(event.confidence) || 0), 0) / total;
+  const recent = sorted.slice(-5);
+  const recentAccuracy = recent.length ? recent.filter((event) => event.result === "correct").length / recent.length : null;
+  const retention1w = computeVocabRetention(sorted, 7);
+  const retention1m = computeVocabRetention(sorted, 30);
+  const mastery = computeVocabMastery({ total, correct, recentAccuracy, avgLatencyMs, avgConfidence });
+  const last = sorted[sorted.length - 1];
+  return {
+    wordId,
+    word,
+    events: sorted,
+    total,
+    correct,
+    incorrect,
+    skipped,
+    avgLatencyMs,
+    avgConfidence,
+    recentAccuracy,
+    retention1w,
+    retention1m,
+    mastery,
+    lastAt: last?.at || 0,
+    lastResult: last?.result || "correct",
+  };
+}
+
+function getVocabAnalyticsSnapshot() {
+  const events = getVocabReviewEvents();
+  const byWord = new Map();
+  events.forEach((event) => {
+    if (!event || !event.wordId || !curatedWordsById.has(event.wordId)) return;
+    if (!byWord.has(event.wordId)) byWord.set(event.wordId, []);
+    byWord.get(event.wordId).push(event);
+  });
+
+  const wordSummaries = [...byWord.entries()]
+    .map(([wordId, wordEvents]) => buildVocabWordAnalytics(wordId, wordEvents))
+    .filter(Boolean)
+    .sort((a, b) => a.mastery - b.mastery || b.total - a.total || b.lastAt - a.lastAt);
+
+  const totalEvents = events.length;
+  const correctEvents = events.filter((event) => event.result === "correct").length;
+  const avgLatencyMs = totalEvents
+    ? Math.round(events.reduce((sum, event) => sum + (Number(event.latencyMs) || 0), 0) / totalEvents)
+    : 0;
+  const avgConfidence = totalEvents
+    ? events.reduce((sum, event) => sum + (Number(event.confidence) || 0), 0) / totalEvents
+    : 0;
+  const masteryAvg = wordSummaries.length
+    ? Math.round(wordSummaries.reduce((sum, summary) => sum + summary.mastery, 0) / wordSummaries.length)
+    : 0;
+  const retention1w = wordSummaries.length
+    ? wordSummaries.reduce((acc, summary) => {
+      if (summary.retention1w.samples) {
+        acc.samples += 1;
+        acc.retained += summary.retention1w.pct || 0;
+      }
+      return acc;
+    }, { retained: 0, samples: 0 })
+    : { retained: 0, samples: 0 };
+  const retention1m = wordSummaries.length
+    ? wordSummaries.reduce((acc, summary) => {
+      if (summary.retention1m.samples) {
+        acc.samples += 1;
+        acc.retained += summary.retention1m.pct || 0;
+      }
+      return acc;
+    }, { retained: 0, samples: 0 })
+    : { retained: 0, samples: 0 };
+
+  return {
+    events,
+    wordSummaries,
+    totalEvents,
+    reviewedWords: wordSummaries.length,
+    correctPct: totalEvents ? Math.round((correctEvents / totalEvents) * 100) : 0,
+    avgLatencyMs,
+    avgLatencyLabel: formatVocabLatencyMs(avgLatencyMs),
+    avgConfidencePct: totalEvents ? Math.round(avgConfidence * 100) : 0,
+    masteryAvg,
+    retention1w: {
+      pct: retention1w.samples ? retention1w.retained / retention1w.samples : null,
+      samples: retention1w.samples,
+    },
+    retention1m: {
+      pct: retention1m.samples ? retention1m.retained / retention1m.samples : null,
+      samples: retention1m.samples,
+    },
+    masteredWords: wordSummaries.filter((summary) => summary.mastery >= 80).length,
+    weakWords: wordSummaries.slice(0, 6),
+    recentEvents: events.slice(-8).reverse(),
+  };
+}
+
+function buildVocabMetricsView() {
+  const stats = getVocabAnalyticsSnapshot();
+  const retention1wLabel = stats.retention1w.samples ? formatVocabRatio(stats.retention1w.pct) : "collecting";
+  const retention1mLabel = stats.retention1m.samples ? formatVocabRatio(stats.retention1m.pct) : "collecting";
+  const weakRows = stats.weakWords.length
+    ? stats.weakWords.map((summary) => {
+      const word = summary.word;
+      const masteryClass = summary.mastery >= 80 ? "green" : summary.mastery >= 60 ? "accent" : "muted";
+      return `
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko" lang="ko">${escapeHtml(word.display || word.korean)}</div>
+            <div class="study-row-sub">${escapeHtml(word.meaningShort || word.meaning || "")} · ${summary.total} events · ${summary.correct}/${summary.total} correct · ${formatVocabLatencyMs(summary.avgLatencyMs)} avg</div>
+            <div class="study-row-sub">7d ${summary.retention1w.samples ? formatVocabRatio(summary.retention1w.pct) : "collecting"} · 30d ${summary.retention1m.samples ? formatVocabRatio(summary.retention1m.pct) : "collecting"} · last ${formatVocabRelativeTime(summary.lastAt)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+            <span class="pill ${masteryClass}">${summary.mastery}% mastery</span>
+            ${hearIconButton(word.voiceText || word.korean, "data-speak")}
+          </div>
+        </div>
+      `;
+    }).join("")
+    : `
+      <div class="study-row">
+        <div>
+          <div class="study-row-ko">No review history yet</div>
+          <div class="study-row-sub">Answer a few vocabulary questions to start building item-level analytics.</div>
+        </div>
+      </div>
+    `;
+
+  const recentRows = stats.recentEvents.length
+    ? stats.recentEvents.map((event) => {
+      const word = curatedWordsById.get(event.wordId);
+      const label = event.result === "correct" ? "Correct" : event.result === "skipped" ? "Skipped" : "Missed";
+      const masteryClass = event.result === "correct" ? "green" : event.result === "skipped" ? "muted" : "accent";
+      return `
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko" lang="ko">${escapeHtml(word?.display || word?.korean || event.wordId)}</div>
+            <div class="study-row-sub">${escapeHtml(label)} · ${escapeHtml(event.direction)} · ${formatVocabLatencyMs(event.latencyMs)} · conf ${formatVocabRatio(event.confidence)} · ${escapeHtml(event.errorType || "none")}</div>
+            <div class="study-row-sub">${escapeHtml(event.source)} · ${formatVocabRelativeTime(event.at)}</div>
+          </div>
+          <span class="pill ${masteryClass}">${formatVocabRatio(event.confidence)}</span>
+        </div>
+      `;
+    }).join("")
+    : `
+      <div class="study-row">
+        <div>
+          <div class="study-row-ko">No events yet</div>
+          <div class="study-row-sub">The review trail will appear here after the first answer.</div>
+        </div>
+      </div>
+    `;
+
+  return `
+    <div class="card">
+      <div class="eyebrow">Assessment & analytics</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Word insights</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">Review events persist per item, and the dashboard tracks mastery, latency, and retention windows.</div>
+      <div class="flex-between" style="gap:12px; flex-wrap:wrap;">
+        <span class="pill accent">${stats.totalEvents} events</span>
+        <span class="pill muted">${stats.reviewedWords} words tracked</span>
+      </div>
+      <div class="word-card-actions" style="margin-top:12px;">
+        <button class="button primary compact" type="button" data-vocab-view="review">Open review</button>
+        <button class="button secondary compact" type="button" data-vocab-view="learn">Back to words</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box"><span class="sv">${stats.correctPct}%</span><span class="sl">Accuracy</span></div>
+      <div class="stat-box"><span class="sv">${stats.avgLatencyLabel}</span><span class="sl">Avg latency</span></div>
+      <div class="stat-box"><span class="sv">${stats.masteryAvg}%</span><span class="sl">Mastery</span></div>
+      <div class="stat-box"><span class="sv">${stats.masteredWords}</span><span class="sl">Mastered words</span></div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box"><span class="sv">${retention1wLabel}</span><span class="sl">1-week retention</span></div>
+      <div class="stat-box"><span class="sv">${retention1mLabel}</span><span class="sl">1-month retention</span></div>
+      <div class="stat-box"><span class="sv">${stats.avgConfidencePct}%</span><span class="sl">Confidence</span></div>
+      <div class="stat-box"><span class="sv">${stats.reviewedWords}</span><span class="sl">Tracked words</span></div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Weak spots</div>
+          <div class="screen-sub" style="margin-bottom:0;">Lowest mastery items bubble to the top.</div>
+        </div>
+        <span class="pill muted">${stats.weakWords.length} shown</span>
+      </div>
+      <div class="study-list">${weakRows}</div>
+      <div class="screen-sub fs-xs" style="margin-top:8px;">1-week sample: ${stats.retention1w.samples} · 1-month sample: ${stats.retention1m.samples}</div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Recent events</div>
+          <div class="screen-sub" style="margin-bottom:0;">Latest attempt trail across lessons, reviews, and quizzes.</div>
+        </div>
+        <span class="pill accent">${stats.recentEvents.length}</span>
+      </div>
+      <div class="study-list">${recentRows}</div>
+    </div>
+  `;
+}
+
 // ─── WORDS SECTION ────────────────────────────────────────────────────────────
 // Curated learning bank + raw 5,000 reference bank, vocabulary SRS, the
 // "Entire Korean Word Bank" reference screen, and the guided word lesson
@@ -4090,6 +4358,8 @@ const VOCAB_SRS_INTERVALS = [
   30 * 24 * 60 * 60 * 1000, // box 6: 30 days
   60 * 24 * 60 * 60 * 1000, // box 7: 60 days
 ];
+const VOCAB_REVIEW_EVENT_LIMIT = 5000;
+const VOCAB_ANALYTICS_DAY_MS = 24 * 60 * 60 * 1000;
 
 const WORD_BANK_FILTERS = [
   { id: "all", label: "All" },
@@ -4130,6 +4400,22 @@ let wordBankSearchTimer = null;
 // (including the Word Bank quick reference) but not a full reload.
 let wordLessonView = null;
 
+function startWordLessonStudyTimer(view) {
+  if (view) view.stepStartedAt = Date.now();
+}
+
+function startWordLessonQuestionTimer(view) {
+  if (view) view.questionStartedAt = Date.now();
+}
+
+function getWordLessonStudyLatencyMs(view) {
+  return Math.max(0, Date.now() - (Number(view?.stepStartedAt) || Date.now()));
+}
+
+function getWordLessonQuestionLatencyMs(view) {
+  return Math.max(0, Date.now() - (Number(view?.questionStartedAt) || Date.now()));
+}
+
 function getCuratedWords() {
   return Array.isArray(window.HANAPATH_CURATED_WORDS) ? window.HANAPATH_CURATED_WORDS : [];
 }
@@ -4140,6 +4426,7 @@ function getWordLessons() {
 
 function migrateVocabState() {
   if (!state.vocabSrs || typeof state.vocabSrs !== "object" || Array.isArray(state.vocabSrs)) state.vocabSrs = {};
+  state.vocabReviewEvents = normalizeVocabReviewEvents(state.vocabReviewEvents);
   if (!Array.isArray(state.vocabLessonCompleted)) state.vocabLessonCompleted = [];
   state.vocabLessonCompleted = [...new Set(state.vocabLessonCompleted.filter((id) => typeof id === "string"))];
   if (typeof state.vocabLessonActive !== "string") state.vocabLessonActive = null;
@@ -4285,15 +4572,97 @@ function getSrsDirectionRecord(record, direction) {
   return record.directions[direction];
 }
 
-function recordVocabAttempt(wordId, direction, isCorrect) {
+function normalizeVocabReviewResult(result, isCorrect) {
+  const raw = String(result || "").toLowerCase();
+  if (raw === "correct" || raw === "incorrect" || raw === "skipped") return raw;
+  return isCorrect ? "correct" : "incorrect";
+}
+
+function inferVocabErrorType(direction, result) {
+  if (result === "correct") return null;
+  if (result === "skipped") return "skipped";
+  const map = {
+    koToMeaning: "meaning-recall",
+    meaningToKo: "hangul-recall",
+    audioToMeaning: "audio-discrimination",
+    audioToKo: "audio-recall",
+    typeKo: "typing-recall",
+    context: "context-recall",
+    functionUsage: "particle-recall",
+    formRecognition: "inflection-recognition",
+    formProduction: "inflection-production",
+  };
+  return map[direction] || "recall-miss";
+}
+
+function estimateVocabConfidence(direction, result, latencyMs) {
+  if (result === "skipped") return 0;
+  const safeLatency = Math.max(0, Number(latencyMs) || 0);
+  const speed = 1 - Math.min(1, safeLatency / 15000);
+  const base = result === "correct" ? 0.62 : 0.24;
+  const swing = result === "correct" ? 0.33 : -0.08;
+  const directionBonus = direction === "typeKo" || direction === "formProduction" ? 0.03 : 0;
+  const confidence = base + (speed * swing) + directionBonus;
+  return Math.max(0.05, Math.min(0.99, Math.round(confidence * 100) / 100));
+}
+
+function normalizeVocabReviewEvent(event) {
+  if (!event || typeof event !== "object") return null;
+  const wordId = typeof event.wordId === "string" ? event.wordId : "";
+  if (!wordId) return null;
+  const direction = typeof event.direction === "string" && event.direction ? event.direction : "koToMeaning";
+  const result = normalizeVocabReviewResult(event.result, event.result === "correct");
+  const at = Number.isFinite(Number(event.at)) ? Number(event.at) : Date.now();
+  const latencyMs = Number.isFinite(Number(event.latencyMs)) ? Math.max(0, Math.round(Number(event.latencyMs))) : 0;
+  const confidence = Number.isFinite(Number(event.confidence))
+    ? Math.max(0, Math.min(1, Math.round(Number(event.confidence) * 100) / 100))
+    : estimateVocabConfidence(direction, result, latencyMs);
+  return {
+    wordId,
+    direction,
+    result,
+    latencyMs,
+    errorType: typeof event.errorType === "string" && event.errorType
+      ? event.errorType
+      : inferVocabErrorType(direction, result),
+    confidence,
+    source: typeof event.source === "string" && event.source ? event.source : "quiz",
+    lessonId: typeof event.lessonId === "string" && event.lessonId ? event.lessonId : null,
+    at,
+  };
+}
+
+function normalizeVocabReviewEvents(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((event) => normalizeVocabReviewEvent(event))
+    .filter(Boolean)
+    .sort((a, b) => a.at - b.at)
+    .slice(-VOCAB_REVIEW_EVENT_LIMIT);
+}
+
+function pushVocabReviewEvent(event) {
+  if (!Array.isArray(state.vocabReviewEvents)) state.vocabReviewEvents = [];
+  const normalized = normalizeVocabReviewEvent(event);
+  if (!normalized) return null;
+  state.vocabReviewEvents.push(normalized);
+  if (state.vocabReviewEvents.length > VOCAB_REVIEW_EVENT_LIMIT) {
+    state.vocabReviewEvents.splice(0, state.vocabReviewEvents.length - VOCAB_REVIEW_EVENT_LIMIT);
+  }
+  return normalized;
+}
+
+function recordVocabAttempt(wordId, direction, isCorrect, meta = {}) {
   if (!wordId || !curatedWordsById.has(wordId)) return;
   const now = Date.now();
   const record = getVocabSrsRecord(wordId, true);
   const dir = getSrsDirectionRecord(record, direction || "koToMeaning");
+  const result = normalizeVocabReviewResult(meta.result, isCorrect);
+  const latencyMs = Number.isFinite(Number(meta.latencyMs)) ? Math.max(0, Math.round(Number(meta.latencyMs))) : 0;
 
   record.seen += 1;
   record.lastSeen = now;
-  record.lastResult = isCorrect ? "correct" : "missed";
+  record.lastResult = result;
   dir.seen += 1;
 
   if (isCorrect) {
@@ -4312,9 +4681,21 @@ function recordVocabAttempt(wordId, direction, isCorrect) {
   record.due = now + VOCAB_SRS_INTERVALS[record.box];
   dir.due = now + VOCAB_SRS_INTERVALS[dir.box];
   record.leech = record.missed >= 5 && record.missed / Math.max(1, record.seen) > 0.45;
+  pushVocabReviewEvent({
+    wordId,
+    direction: direction || "koToMeaning",
+    result,
+    latencyMs,
+    errorType: typeof meta.errorType === "string" && meta.errorType ? meta.errorType : inferVocabErrorType(direction || "koToMeaning", result),
+    confidence: Number.isFinite(Number(meta.confidence))
+      ? Math.max(0, Math.min(1, Math.round(Number(meta.confidence) * 100) / 100))
+      : estimateVocabConfidence(direction || "koToMeaning", result, latencyMs),
+    source: typeof meta.source === "string" && meta.source ? meta.source : "quiz",
+    lessonId: typeof meta.lessonId === "string" && meta.lessonId ? meta.lessonId : null,
+    at: Number.isFinite(Number(meta.at)) ? Number(meta.at) : now,
+  });
 
   wordBankStatusVersion += 1;
-  saveState();
 }
 
 // Manual known/hard/clear for a curated word. Keeps the legacy rank sets in
@@ -4728,6 +5109,8 @@ function initWordLessonView(lesson) {
     mode: "intro", // intro | study | check | result
     stepIndex: 0,
     questionIndex: 0,
+    stepStartedAt: 0,
+    questionStartedAt: 0,
     steps,
     questions: buildWordLessonQuestions(lesson, words),
     words,
@@ -4781,6 +5164,8 @@ function openWordReview() {
     mode: "check",
     stepIndex: 0,
     questionIndex: 0,
+    stepStartedAt: 0,
+    questionStartedAt: Date.now(),
     steps: [],
     questions,
     words: due.map((item) => item.word),
@@ -4838,6 +5223,8 @@ function renderWordLesson() {
   state.studio = "vocab";
   activeHub = "learn";
   setNavActive("learn");
+  if (view.mode === "study" && !(Number(view.stepStartedAt) > 0)) startWordLessonStudyTimer(view);
+  if (view.mode === "check" && !(Number(view.questionStartedAt) > 0)) startWordLessonQuestionTimer(view);
   const el = showScreen("detail");
   if (!el) return;
 
@@ -5127,7 +5514,16 @@ function advanceWordLessonStudy(view) {
   const step = getWordLessonStep(view);
   if (step && step.type === "type" && !view.typedDone) {
     // "Next" on an unchecked type card counts as an attempt (skipped).
-    if (!(step.wordId in view.typedAttempts)) view.typedAttempts[step.wordId] = false;
+    if (!(step.wordId in view.typedAttempts)) {
+      view.typedAttempts[step.wordId] = false;
+      recordVocabAttempt(step.wordId, "typeKo", false, {
+        result: "skipped",
+        latencyMs: getWordLessonStudyLatencyMs(view),
+        source: "lesson",
+        lessonId: view.lessonId || null,
+      });
+      saveState();
+    }
   }
   view.typedValue = "";
   view.typedFeedback = "";
@@ -5136,11 +5532,13 @@ function advanceWordLessonStudy(view) {
   view.typeTilesWordId = null;
   if (view.stepIndex + 1 < view.steps.length) {
     view.stepIndex += 1;
+    startWordLessonStudyTimer(view);
   } else if (view.questions.length) {
     view.mode = "check";
     view.questionIndex = 0;
     view.answered = false;
     view.selectedChoice = "";
+    startWordLessonQuestionTimer(view);
   } else {
     view.mode = "result";
     finishWordLesson(getWordLessonById(view.lessonId), view);
@@ -5158,6 +5556,7 @@ function advanceWordLessonCheck(view) {
   view.typeTilesWordId = null;
   if (view.questionIndex + 1 < view.questions.length) {
     view.questionIndex += 1;
+    startWordLessonQuestionTimer(view);
   } else {
     view.mode = "result";
     finishWordLesson(view.isReview ? null : getWordLessonById(view.lessonId), view);
@@ -5175,7 +5574,13 @@ function answerWordLessonChoice(view, choice) {
   view.checkFeedback = isCorrect
     ? `<strong>Correct.</strong> ${escapeHtml(question.explanation)}`
     : `<strong>Not quite.</strong> The answer is <strong lang="ko">${escapeHtml(question.answer)}</strong>. ${escapeHtml(question.explanation)}`;
-  recordVocabAttempt(question.wordId, question.direction, isCorrect);
+  recordVocabAttempt(question.wordId, question.direction, isCorrect, {
+    latencyMs: getWordLessonQuestionLatencyMs(view),
+    source: view.isReview ? "review" : "lesson",
+    lessonId: view.lessonId || null,
+    result: isCorrect ? "correct" : "incorrect",
+  });
+  saveState();
   if (isCorrect) showCorrectToast();
   renderWordLesson();
 }
@@ -5197,7 +5602,13 @@ function answerWordLessonTyped(view) {
   view.checkFeedback = isCorrect
     ? `<strong>Correct.</strong> ${escapeHtml(question.explanation)}`
     : `<strong>Not quite.</strong> You typed <strong lang="ko">${escapeHtml(typed)}</strong>. The answer is <strong lang="ko">${escapeHtml(question.answer)}</strong>. ${escapeHtml(question.explanation)}`;
-  recordVocabAttempt(question.wordId, "typeKo", isCorrect);
+  recordVocabAttempt(question.wordId, "typeKo", isCorrect, {
+    latencyMs: getWordLessonQuestionLatencyMs(view),
+    source: view.isReview ? "review" : "lesson",
+    lessonId: view.lessonId || null,
+    result: isCorrect ? "correct" : "incorrect",
+  });
+  saveState();
   if (isCorrect) showCorrectToast();
   renderWordLesson();
 }
@@ -5213,7 +5624,13 @@ function checkWordLessonStudyTyped(view) {
   }
   const isCorrect = isWordTypedCorrect(typed, word);
   view.typedAttempts[step.wordId] = isCorrect || Boolean(view.typedAttempts[step.wordId]);
-  recordVocabAttempt(word.id, "typeKo", isCorrect);
+  recordVocabAttempt(word.id, "typeKo", isCorrect, {
+    latencyMs: getWordLessonStudyLatencyMs(view),
+    source: "lesson",
+    lessonId: view.lessonId || null,
+    result: isCorrect ? "correct" : "incorrect",
+  });
+  saveState();
   if (isCorrect) {
     view.typedDone = true;
     view.typedFeedback = `<strong>Correct.</strong> <span lang="ko">${escapeHtml(getWordTypeTarget(word))}</span> — ${escapeHtml(word.meaningShort)}.`;
@@ -5243,6 +5660,8 @@ function bindWordLessonRoot(root) {
     if (event.target.closest("[data-word-lesson-start]")) {
       view.mode = view.steps.length ? "study" : "check";
       view.stepIndex = 0;
+      if (view.mode === "study") startWordLessonStudyTimer(view);
+      else startWordLessonQuestionTimer(view);
       renderWordLesson();
       return;
     }
@@ -5260,6 +5679,7 @@ function bindWordLessonRoot(root) {
         view.typedDone = false;
         view.typeTiles = null;
         view.typeTilesWordId = null;
+        startWordLessonStudyTimer(view);
         renderWordLesson();
       }
       return;
@@ -5875,7 +6295,10 @@ function wordsHomeContentHtml() {
           <div class="eyebrow">Review due</div>
           <div class="screen-sub" style="margin-bottom:0;">${dueCount ? `${dueCount} word${dueCount === 1 ? "" : "s"} waiting to come back.` : "No reviews due. Learn new words or browse the word bank."}</div>
         </div>
-        <button class="button ${dueCount ? "primary" : "secondary"} compact" type="button" data-words-start-review ${dueCount ? "" : "disabled"}>Review${dueCount ? ` (${dueCount})` : ""}</button>
+        <div class="word-card-actions" style="margin:0; gap:8px; flex-wrap:wrap;">
+          <button class="button ${dueCount ? "primary" : "secondary"} compact" type="button" data-words-start-review ${dueCount ? "" : "disabled"}>Review${dueCount ? ` (${dueCount})` : ""}</button>
+          <button class="button secondary compact" type="button" data-vocab-view="metrics">Insights</button>
+        </div>
       </div>
     </div>`;
 
@@ -10257,6 +10680,7 @@ function renderQuestion(question, options = {}) {
   question.scope = currentQuizScope;
   if (!preserveState) {
     currentAnswered = false;
+    currentQuestionStartedAt = Date.now();
     question.response = createQuestionResponse(question);
   } else if (!question.response) {
     question.response = createQuestionResponse(question);
@@ -10349,7 +10773,10 @@ function finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml) {
 
   // Word questions carry their curated word id so attempts feed the vocab SRS.
   if (currentQuestion.srsWordId) {
-    recordVocabAttempt(currentQuestion.srsWordId, currentQuestion.srsDirection || "koToMeaning", isCorrect);
+    recordVocabAttempt(currentQuestion.srsWordId, currentQuestion.srsDirection || "koToMeaning", isCorrect, {
+      latencyMs: Math.max(0, Date.now() - (Number(currentQuestionStartedAt) || Date.now())),
+      source: "quiz",
+    });
   }
 
   currentAnswered = true;
@@ -12492,6 +12919,7 @@ function renderVocabulary() {
   else if (currentFocus === "learn" && activeView === "test") activeView = "learn";
   const currentEnglish = active ? (active.englishSpelling || active.romanization || "") : "";
   const currentPronunciation = active ? (active.pronunciation || currentEnglish) : "";
+  const showLevelRail = activeView !== "learn" && activeView !== "metrics";
   const visibleViews = currentFocus === "practice"
     ? []
     : currentFocus === "learn"
@@ -12521,6 +12949,8 @@ function renderVocabulary() {
         <div class="screen-sub" style="margin-bottom:0;">This deck alternates between Korean to English spelling, English spelling to Hangul, and listening prompts so the same words keep coming back in different forms.</div>
       </div>
     `;
+  } else if (activeView === "metrics") {
+    content = buildVocabMetricsView();
   } else {
     // Review view: the spaced-review queue for studied curated words.
     const dueItems = getDueVocabReviews(8);
@@ -12558,7 +12988,7 @@ function renderVocabulary() {
 
     ${wordBankEntryCardHtml()}
 
-    ${activeView === "learn" ? "" : renderLevelRail("vocabulary", level)}
+    ${showLevelRail ? renderLevelRail("vocabulary", level) : ""}
 
     ${content}
 
