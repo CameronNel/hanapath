@@ -35,6 +35,14 @@ http://localhost:8000
 - `styles.css`
 - `korean_5000_claude_ready.csv`
 
+## Planning & docs
+
+- **[`CLAUDE.md`](CLAUDE.md)** — read-this-first guide for contributors and AI agents.
+- **[`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md)** — the governing north star for the Words section (linguistics + pedagogy, status scorecard, roadmap, milestone sheet, and implementation dependency order).
+- [`docs/VOCABULARY_TEACHING_SPEC_SOURCE.md`](docs/VOCABULARY_TEACHING_SPEC_SOURCE.md) — the original research spec, verbatim.
+- [`docs/WORDS_SECTION_MASTER_SPEC.md`](docs/WORDS_SECTION_MASTER_SPEC.md) — the Words implementation plan.
+- [`HANDOVER.md`](HANDOVER.md) — repo snapshot and conventions.
+
 ## Notes
 
 - Progress is stored in the browser.

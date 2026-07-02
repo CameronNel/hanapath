@@ -13,6 +13,15 @@ Status: **governing spec for *what* and *how* the Words section teaches.**
   When the two disagree, this doc sets the target and the master spec is the
   implementation that must be brought toward it (see §8–§9 below).
 
+The original research spec is reproduced **verbatim** in
+[`VOCABULARY_TEACHING_SPEC_SOURCE.md`](VOCABULARY_TEACHING_SPEC_SOURCE.md) (source
+of record); this doc is its repo-actionable adaptation.
+
+**If you are an AI/agent about to build Words features:** read §8 (status), then
+§11 (milestone reference sheet) and §12 (dependency & implementation order).
+§11–§12 tell you *when* a piece is ready to build, *where* the code lives, and
+*how* to land it.
+
 The one-line thesis, which the rest of this doc unpacks:
 
 > A beginner Korean app should not treat "vocabulary" as isolated word pairs.
@@ -344,6 +353,118 @@ beats adding 5,000 more flat words.
 | Pronunciation ignored until later | Phonology affects lexical identity early | minimal-pair work from week one (PR 4) |
 | Content team can't scale morphology | Forms proliferate fast | separate authored lexemes from generated forms (PR 3) |
 | Assessment only measures recognition | Recognition overestimates ability | track recall, latency, inflection, reuse (PR 6) |
+
+---
+
+## 11. Milestone reference sheet
+
+At-a-glance map of the whole build. `M0`/`M0.5` are the current baseline; `M1`–`M6`
+are the roadmap from §9. Effort is a rough band, not a schedule. Status is honest
+as of 2026-07-02.
+
+| ID | Milestone | Depends on | Primary files | Ships when (acceptance) | Effort | Status |
+|---|---|---|---|---|---|---|
+| **M0** | Shipped baseline: script course, Leitner SRS, Word Bank, W0–W16 lessons | — | `app.js`, `words_curated_core.js`, `words_lesson_plan.js`, `alphabet_*` | (already live) | — | ✅ done |
+| **M0.5** | W17–W19 grammar-mechanics track (endings/register, negation, connectives, modifiers, honorifics, irregulars) | M0 | `words_curated_core.js`, `words_lesson_plan.js` | 6 lessons render; strict audit clean | S | 🟡 PR #42 pending |
+| **M1** | **Data axes** — additive `senseKey`/`register`/`speechLevel`/`originType`/`hanja`/`irregularFamily`/`morphTag` + audit enums | M0 | `words_curated_core.js` (`defineWord`), `scripts/audit-words-data.mjs` | fields optional; enums validated when present; all existing rows still pass strict | S–M | ⬜ not started |
+| **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | ⬜ not started |
+| **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ⬜ not started |
+| **M4** | **Pronunciation layer** — minimal-pair drills, spelling/sounds-like, segmental+prosodic scoring stub | M0 (audio); M1 optional | `app.js`, `audio/` + `generate_assets.py`, new drill data | drills exist for the §6.2 pitfall sets; every card shows both layers | M | ⬜ not started |
+| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ⬜ not started |
+| **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ⬜ not started |
+
+Guiding rule: **depth before breadth.** M1→M3 (correct, register-aware,
+inflectable senses) matter more than rushing M5 (raw volume).
+
+---
+
+## 12. Dependency & implementation order (when / where / how)
+
+### 12.1 Dependency graph
+
+```
+M0 (shipped baseline)
+ ├─▶ M1 Data axes ──┬─▶ M2 Sense split ──▶ M6 Assessment & analytics
+ │                  ├─▶ M3 Inflection engine ─┐
+ │                  └─▶ M5 Authoring to Core 1000 ◀─┘ (M3 makes M5 cheaper)
+ └─▶ M4 Pronunciation layer            (needs only M0 audio; start any time)
+```
+
+Read it as: **M1 is the gate.** Almost everything of value depends on the data
+axes landing first. M4 (pronunciation) is the one independent track — it can run
+in parallel from day one because it only needs the existing audio system.
+
+### 12.2 Cross-cutting rules (apply to every milestone)
+
+- **Additive & backward-compatible.** New schema fields are optional; existing
+  curated rows and lessons must keep passing `node scripts/audit-words-data.mjs --strict`.
+- **Vanilla/static.** New data goes in a plain browser-global file loaded before
+  `app.js` (like `words_curated_core.js`). No build step.
+- **Cache discipline.** Any change to a loaded file → bump `CACHE_NAME` in `sw.js`
+  and the `?v=...` strings in `index.html` + `sw.js`.
+- **Audio.** New Korean text → regenerate assets (`python generate_assets.py`),
+  never hand-edit `audio_map.js`.
+- **PRs.** One milestone per PR (or smaller); draft PR, owner squash-merges.
+
+### 12.3 Per-milestone: preconditions · where · how · done-when
+
+**M1 — Data axes.**
+- *Preconditions:* none beyond M0.
+- *Where:* `defineWord()` in `words_curated_core.js`; validation in
+  `scripts/audit-words-data.mjs`.
+- *How:* (1) allow the new optional fields through `defineWord` (pass-through like
+  `forms`/`grammarRole`); (2) add enum constants (`register`, `speechLevel`,
+  `originType`, `irregularFamily`) and validate them **only when present** in the
+  audit; (3) backfill the highest-value existing rows opportunistically. No UI
+  change required.
+- *Done when:* audit strict-passes with several rows carrying the new fields and
+  all legacy rows untouched.
+
+**M2 — Sense split.**
+- *Preconditions:* M1 (needs `senseKey`/`senseNo`).
+- *Where:* `words_curated_core.js` (data), `app.js` Word Bank + lesson renderers.
+- *How:* split a shortlist of high-frequency polysemes into multiple rows sharing
+  one `lemma` but distinct `senseKey`; ensure the Word Bank groups senses under a
+  lemma and lessons target a single sense.
+- *Done when:* 보다/하다/나다 (and a few more) show distinct senses with their own
+  examples and review identity.
+
+**M3 — Inflection engine.**
+- *Preconditions:* M1 (needs `irregularFamily` + structured `inflections`).
+- *Where:* new `words_inflect.js` (pure functions on `window`), consumed by
+  `buildWordLessonQuestions`/`generateWordQuestionFor` in `app.js`.
+- *How:* implement stem→form generation for the §3.1 scope + §3.2 irregular
+  families and a recognizer; validate generated forms against a hand-authored
+  gold set in the audit; switch `form-production`/`form-recognition` checkpoints
+  to the engine.
+- *Done when:* engine reproduces the authored forms for the gold set and powers
+  at least one lesson's form checkpoints.
+
+**M4 — Pronunciation layer.**
+- *Preconditions:* M0 audio only (independent track).
+- *Where:* `app.js` (new drill mode + card "sounds-like" line), `audio/` assets.
+- *How:* author minimal-pair sets for the §6.2 pitfalls (three-way stops, ㅓ/ㅗ,
+  ㅡ/ㅜ, ㄹ, batchim); add a discrimination drill; render "spelling" vs
+  "sounds-like" on every word card; stub a segmental+prosodic score field.
+- *Done when:* a learner can drill 달/딸/탈-type sets and every card shows both
+  pronunciation layers.
+
+**M5 — Authoring to Core 1000.**
+- *Preconditions:* M1 (schema stable); strongly benefits from M3 (engine reduces
+  hand-authoring of forms).
+- *Where:* `words_curated_core.js`, `words_lesson_plan.js`.
+- *How:* author in small batches against the official level-1 list, re-ranked by
+  frequency/lesson fit; add numbers/counters and Sino-Korean families as explicit
+  themes; keep 5–6 items per grammar lesson, 6–8 per vocab lesson.
+- *Done when:* ≥800 curated senses, strict audit clean, no orphan words.
+
+**M6 — Assessment & analytics.**
+- *Preconditions:* M0 (SRS) + M2 (sense-level identity to attribute events to).
+- *Where:* `app.js` state (`vocabSrs` + a new review-event log), a metrics view.
+- *How:* log per-item `{result, latency, errorType, confidence}` events; compute
+  mastery + 1-week/1-month retention; surface a formative dashboard.
+- *Done when:* review events persist per item and retention/error metrics are
+  visible.
 
 ---
 
