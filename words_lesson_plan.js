@@ -1,0 +1,216 @@
+// HanaPath word lesson plan (Words section curriculum).
+// Plain static browser global — no modules, no build step. Loaded before app.js.
+// Every newWordIds entry must exist in words_curated_core.js
+// (verified by scripts/audit-words-data.mjs).
+(function () {
+  "use strict";
+
+  var DEFAULT_CHECKPOINTS = ["ko-to-meaning", "audio-to-meaning", "meaning-to-ko", "type-ko", "sentence-blank"];
+  var DEFAULT_PASS = { minFirstTryPct: 75, requireTypedAttempt: true };
+
+  var previousId = null;
+  function defineLesson(lesson) {
+    var full = {
+      id: lesson.id,
+      stage: lesson.stage,
+      title: lesson.title,
+      subtitle: lesson.subtitle,
+      goal: lesson.goal,
+      tutorial: Boolean(lesson.tutorial),
+      unlock: {
+        requiresAlphabetComplete: true,
+        previousLessonId: previousId,
+      },
+      newWordIds: lesson.newWordIds,
+      reviewPolicy: { includeDue: true, maxReviewCards: 4 },
+      checkpoints: lesson.checkpoints || DEFAULT_CHECKPOINTS,
+      pass: lesson.pass || DEFAULT_PASS,
+    };
+    previousId = lesson.id;
+    return full;
+  }
+
+  window.HANAPATH_WORD_LESSONS = [
+    defineLesson({
+      id: "w0-post-hangul-bridge-01",
+      stage: "W0",
+      title: "Post-Hangul bridge",
+      subtitle: "Turn letters into words",
+      goal: "Learn how word cards work: see, hear, type, repeat, and review.",
+      tutorial: true,
+      newWordIds: ["w0001_hangul", "w0002_hangugeo", "w0003_mal", "w0004_daneo", "w0005_sori"],
+    }),
+    defineLesson({
+      id: "w0-post-hangul-bridge-02",
+      stage: "W0",
+      title: "Read, listen, write",
+      subtitle: "The study verbs",
+      goal: "Learn the verbs you will use to talk about learning Korean.",
+      newWordIds: ["w0006_ikda", "w0007_deutda", "w0008_sseuda", "w0009_munjang", "w0010_yeonseup"],
+    }),
+    defineLesson({
+      id: "w1-survival-core-01",
+      stage: "W1",
+      title: "Survival core",
+      subtitle: "Words you can use immediately",
+      goal: "Understand, hear, type, and say 5 survival words.",
+      newWordIds: ["w0101_annyeonghaseyo", "w0102_gamsahamnida", "w0103_ne", "w0104_aniyo", "w0105_juseyo"],
+    }),
+    defineLesson({
+      id: "w1-survival-core-02",
+      stage: "W1",
+      title: "Survival core II",
+      subtitle: "Polite problem-solving",
+      goal: "Apologise, ask for help, and buy yourself a moment.",
+      newWordIds: ["w0106_joesonghamnida", "w0107_gwaenchanayo", "w0108_dowajuseyo", "w0109_jamsimanyo", "w0110_mollayo", "w0111_algesseoyo"],
+    }),
+    defineLesson({
+      id: "w2-people-pronouns-01",
+      stage: "W2",
+      title: "People and pronouns",
+      subtitle: "Talking about people",
+      goal: "Introduce yourself and ask who someone is.",
+      newWordIds: ["w0201_jeo_i", "w0205_saram", "w0206_chingu", "w0209_ireum", "w0210_nugu"],
+    }),
+    defineLesson({
+      id: "w2-people-pronouns-02",
+      stage: "W2",
+      title: "People and pronouns II",
+      subtitle: "We, you, and roles",
+      goal: "Learn casual pronouns and the people around you.",
+      newWordIds: ["w0202_na", "w0203_neo", "w0204_uri", "w0207_haksaeng", "w0208_seonsaengnim"],
+    }),
+    defineLesson({
+      id: "w3-things-demonstratives-01",
+      stage: "W3",
+      title: "Things and demonstratives",
+      subtitle: "This one, that one",
+      goal: "Point at things and ask what they are.",
+      newWordIds: ["w0304_igeo", "w0305_geugeo", "w0306_jeogeo", "w0307_geot", "w0308_mwo"],
+    }),
+    defineLesson({
+      id: "w3-things-demonstratives-02",
+      stage: "W3",
+      title: "Things and demonstratives II",
+      subtitle: "This book, that person",
+      goal: "Use this/that before nouns you already know.",
+      newWordIds: ["w0301_i_this", "w0302_geu_that", "w0303_jeo_that_over", "w0309_chaek", "w0310_jeonhwa"],
+    }),
+    defineLesson({
+      id: "w4-places-movement-01",
+      stage: "W4",
+      title: "Places and movement",
+      subtitle: "Here, there, home",
+      goal: "Name the places around you.",
+      newWordIds: ["w0401_yeogi", "w0402_geogi", "w0403_jeogi", "w0404_jip", "w0405_hakgyo"],
+    }),
+    defineLesson({
+      id: "w4-places-movement-02",
+      stage: "W4",
+      title: "Places and movement II",
+      subtitle: "Going and coming",
+      goal: "Find the bathroom, find the station, go and come.",
+      newWordIds: ["w0406_hoesa", "w0407_hwajangsil", "w0408_yeok", "w0409_gada", "w0410_oda"],
+    }),
+    defineLesson({
+      id: "w5-food-drink-01",
+      stage: "W5",
+      title: "Food and drink",
+      subtitle: "Eating essentials",
+      goal: "Order water, talk about meals, eat and drink.",
+      newWordIds: ["w0501_mul", "w0502_bap", "w0503_eumsik", "w0509_meokda", "w0510_masida"],
+    }),
+    defineLesson({
+      id: "w5-food-drink-02",
+      stage: "W5",
+      title: "Food and drink II",
+      subtitle: "At the café and market",
+      goal: "Name common foods and drinks.",
+      newWordIds: ["w0504_keopi", "w0505_cha", "w0506_gogi", "w0507_gwail", "w0508_ppang"],
+    }),
+    defineLesson({
+      id: "w6-time-daily-01",
+      stage: "W6",
+      title: "Time and daily rhythm",
+      subtitle: "Yesterday, today, tomorrow",
+      goal: "Anchor events in time.",
+      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje"],
+    }),
+    defineLesson({
+      id: "w6-time-daily-02",
+      stage: "W6",
+      title: "Time and daily rhythm II",
+      subtitle: "Morning to evening",
+      goal: "Talk about the parts of the day.",
+      newWordIds: ["w0605_sigan", "w0606_achim", "w0607_jeomsim", "w0608_jeonyeok", "w0609_nal"],
+    }),
+    defineLesson({
+      id: "w7-core-actions-01",
+      stage: "W7",
+      title: "Core actions",
+      subtitle: "Do, have, see, speak",
+      goal: "Learn the verbs Korean sentences are built on.",
+      newWordIds: ["w0701_hada", "w0702_itda", "w0703_eopda", "w0704_boda", "w0705_malhada"],
+    }),
+    defineLesson({
+      id: "w7-core-actions-02",
+      stage: "W7",
+      title: "Core actions II",
+      subtitle: "Daily-life verbs",
+      goal: "Buy, meet, sleep, get up, and like.",
+      newWordIds: ["w0706_sada", "w0707_mannada", "w0708_jada", "w0709_ireonada", "w0710_joahada"],
+    }),
+    defineLesson({
+      id: "w8-feelings-descriptions-01",
+      stage: "W8",
+      title: "Feelings and descriptions",
+      subtitle: "Good, bad, big, small",
+      goal: "Describe things and say what you like.",
+      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w0804_jakda", "w0809_masitda"],
+    }),
+    defineLesson({
+      id: "w8-feelings-descriptions-02",
+      stage: "W8",
+      title: "Feelings and descriptions II",
+      subtitle: "Many, few, fun, tired",
+      goal: "Describe amounts and how you feel.",
+      newWordIds: ["w0805_manta", "w0806_jeokda", "w0807_jaemiitda", "w0808_pigonhada", "w0810_yeppeuda"],
+    }),
+    defineLesson({
+      id: "w9-question-words-01",
+      stage: "W9",
+      title: "Question words",
+      subtitle: "Where, why, how",
+      goal: "Ask the questions that get you around.",
+      newWordIds: ["w0901_eodi", "w0902_wae", "w0903_eotteoke", "w0904_eolma", "w0905_myeot"],
+    }),
+    defineLesson({
+      id: "w9-question-words-02",
+      stage: "W9",
+      title: "Question words II",
+      subtitle: "Which and what kind",
+      goal: "Ask about kinds, choices, and degree.",
+      newWordIds: ["w0906_museun", "w0907_eotteon", "w0908_eolmana"],
+    }),
+    defineLesson({
+      id: "w10-function-words-01",
+      stage: "W10",
+      title: "Function words 1",
+      subtitle: "The little words that glue Korean together",
+      goal: "Meet the topic, subject, and object markers.",
+      newWordIds: ["fw1001_eun_neun", "fw1002_i_ga", "fw1003_eul_reul", "fw1004_e", "fw1006_do"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
+      pass: { minFirstTryPct: 60, requireTypedAttempt: false },
+    }),
+    defineLesson({
+      id: "w10-function-words-02",
+      stage: "W10",
+      title: "Function words 1 · part 2",
+      subtitle: "Where, with, and and",
+      goal: "Mark action locations and join words together.",
+      newWordIds: ["fw1005_eseo", "fw1007_ui", "fw1008_wa_gwa", "fw1009_hago", "fw1010_go"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
+      pass: { minFirstTryPct: 60, requireTypedAttempt: false },
+    }),
+  ];
+})();

@@ -1,13 +1,16 @@
-// [2026-07-01] Cache bumped to v99: alphabet a11y — live regions on
-// letter-review + reference, aria-pressed on drill controls.
-const CACHE_NAME = "hanapath-shell-v99";
+// [2026-07-02] Cache bumped to v100: Words section foundation — curated word
+// bank + lesson plan data files, Entire Word Bank reference, word SRS,
+// guided word lessons.
+const CACHE_NAME = "hanapath-shell-v100";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260701d",
+  "./styles.css?v=20260702a",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./app.js?v=20260701f",
+  "./words_curated_core.js?v=20260702a",
+  "./words_lesson_plan.js?v=20260702a",
+  "./app.js?v=20260702a",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
