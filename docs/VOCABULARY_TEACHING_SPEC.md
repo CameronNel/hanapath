@@ -296,15 +296,15 @@ Grounded in the shipped code (main) as of 2026-07-02. Legend: ✅ solid ·
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
 | Irregular families as trigger-based | 🟡 | W19 track (shipped) + inline `formNote`; no generation engine yet |
-| **Sense-level polysemy** | ❌ | one row = one `meaning` string |
-| **Word-origin tagging (native/Sino/loan)** | ❌ | no `originType`/`hanja` |
-| **Register as a data axis** | ❌ | free-text `usageNote` only |
+| **Sense-level polysemy** | ✅ | Senses split with `lemma`, `senseKey`, and `senseNo` fields |
+| **Word-origin tagging (native/Sino/loan)** | ✅ | Fully annotated with `originType` and `hanja` fields |
+| **Register as a data axis** | ✅ | Explicitly modeled via `register` and `speechLevel` fields |
 | **Morph tags (Sejong/UD)** | ❌ | coarse learner `pos` only |
 | **Pronunciation training (minimal pairs, 3-way stops)** | ❌ | at the vocab layer; exists only in the alphabet phase |
 | **Pronunciation scoring (segmental + prosodic)** | ❌ | TTS playback only |
 | Rich review-event analytics | 🟡 | lesson completion + SRS boxes; no per-item latency/error-type events |
-| Numbers / counters / native-vs-Sino | 🟡 | thin; not a dedicated theme yet |
-| Vocabulary volume | 🟡 | ~230 curated senses (main) — around the 300–400 launch set, well short of Core 1000 |
+| Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
+| Vocabulary volume | ✅ | Expanded to 805 curated senses (M5) |
 
 **Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS,
 retrieval) are already strong. The gaps cluster in the **data model depth**
@@ -370,7 +370,7 @@ as of 2026-07-02.
 | **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | ✅ done |
 | **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ✅ done |
 | **M4** | **Pronunciation layer** — minimal-pair drills, spelling/sounds-like, segmental+prosodic scoring stub | M0 (audio); M1 optional | `app.js`, `audio/` + `generate_assets.py`, new drill data | drills exist for the §6.2 pitfall sets; every card shows both layers | M | ✅ done |
-| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ⬜ not started |
+| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done |
 | **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ⬜ not started |
 
 Guiding rule: **depth before breadth.** M1→M3 (correct, register-aware,
