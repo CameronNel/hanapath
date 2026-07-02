@@ -1,14 +1,14 @@
 // [2026-07-03] Cache bumped to v106: implements polyseme splits, inflection engine, and pronunciation drills.
-const CACHE_NAME = "hanapath-shell-v106";
+const CACHE_NAME = "hanapath-shell-v107";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260702b",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./words_curated_core.js?v=20260703c",
+  "./words_curated_core.js?v=20260703d",
   "./words_inflect.js?v=20260703a",
-  "./words_lesson_plan.js?v=20260703b",
+  "./words_lesson_plan.js?v=20260703c",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260703b",
   "./alphabet_skill_srs.js?v=20260630a",
