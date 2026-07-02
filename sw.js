@@ -1,14 +1,13 @@
-// [2026-07-03] Cache bumped to v104: adds the W17-W19 grammar-mechanics track
-// (polite endings/register, past tense & negation, connectives, noun
-// modification, honorifics, and irregular families) to the curated Words data.
-const CACHE_NAME = "hanapath-shell-v104";
+// [2026-07-03] Cache bumped to v105: implements milestone M1 Data Axes schema
+// (senseKey, register, speechLevel, originType, hanja, irregularFamily, morphTag).
+const CACHE_NAME = "hanapath-shell-v105";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260702b",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./words_curated_core.js?v=20260703b",
+  "./words_curated_core.js?v=20260703c",
   "./words_lesson_plan.js?v=20260703b",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260703a",

@@ -58,6 +58,52 @@ for (const word of words || []) {
   if (!word.lessonGroup) errors.push(`${label}: missing lessonGroup`);
   if (!word.pronunciation) errors.push(`${label}: missing pronunciation`);
 
+  const VALID_REGISTERS = new Set(['everyday', 'polite', 'formal', 'honorific', 'written-formal']);
+  const VALID_SPEECH_LEVELS = new Set(['plain', 'polite informal', 'polite formal']);
+  const VALID_ORIGIN_TYPES = new Set(['native', 'Sino-Korean', 'loanword', 'hybrid']);
+  const VALID_IRREGULAR_FAMILIES = new Set(['ㄷ', 'ㅂ', 'ㅅ', 'ㅎ', '르', '러', 'ㄹ-deletion']);
+  const VALID_MORPH_TAGS = new Set([
+    'NNG', 'NNB', 'XR', 'NNP', 'NP', 'VV', 'VX', 'VCP', 'VCN', 'VA', 'MAG', 'MAJ',
+    'JKS', 'JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC',
+    'EP', 'EF', 'EC', 'ETN', 'ETM', 'XPN', 'XSN', 'XSA', 'XSV', 'IC'
+  ]);
+
+  if (word.register !== undefined && !VALID_REGISTERS.has(word.register)) {
+    errors.push(`${label}: invalid register "${word.register}"`);
+  }
+  if (word.speechLevel !== undefined && !VALID_SPEECH_LEVELS.has(word.speechLevel)) {
+    errors.push(`${label}: invalid speechLevel "${word.speechLevel}"`);
+  }
+  if (word.originType !== undefined && !VALID_ORIGIN_TYPES.has(word.originType)) {
+    errors.push(`${label}: invalid originType "${word.originType}"`);
+  }
+  if (word.irregularFamily !== undefined && !VALID_IRREGULAR_FAMILIES.has(word.irregularFamily)) {
+    errors.push(`${label}: invalid irregularFamily "${word.irregularFamily}"`);
+  }
+  if (word.morphTag !== undefined && !VALID_MORPH_TAGS.has(word.morphTag)) {
+    errors.push(`${label}: invalid morphTag "${word.morphTag}"`);
+  }
+  if (word.senseKey !== undefined && typeof word.senseKey !== 'string') {
+    errors.push(`${label}: senseKey must be a string`);
+  }
+  if (word.senseNo !== undefined && (!Number.isInteger(word.senseNo) || word.senseNo < 1)) {
+    errors.push(`${label}: senseNo must be a positive integer`);
+  }
+  if (word.hanja !== undefined && typeof word.hanja !== 'string') {
+    errors.push(`${label}: hanja must be a string`);
+  }
+  if (word.inflections !== undefined) {
+    if (typeof word.inflections !== 'object' || word.inflections === null || Array.isArray(word.inflections)) {
+      errors.push(`${label}: inflections must be a key-value object`);
+    } else {
+      for (const [key, val] of Object.entries(word.inflections)) {
+        if (typeof key !== 'string' || typeof val !== 'string') {
+          errors.push(`${label}: inflections key and value must be strings`);
+        }
+      }
+    }
+  }
+
   if (!word.voiceText) errors.push(`${label}: missing voiceText`);
   else if (!HANGUL_RE.test(word.voiceText)) errors.push(`${label}: voiceText has no Hangul: ${JSON.stringify(word.voiceText)}`);
   else if (LATIN_RE.test(word.voiceText)) errors.push(`${label}: voiceText contains English letters: ${JSON.stringify(word.voiceText)}`);
