@@ -1,5 +1,9 @@
 # CLAUDE.md — read this first
 
+> **Continuing the project?** Start with **[`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md)** —
+> the step-by-step runbook (orient → find the next task → build → verify → ship).
+> This file is the rules + document map it refers back to.
+
 HanaPath is a **vanilla static Korean-learning PWA**: no framework, no bundler,
 **no build step**, no `package.json`. `app.js` is one large plain browser script
 loaded via `<script defer>`. Keep it that way unless the owner explicitly asks

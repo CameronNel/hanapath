@@ -37,7 +37,8 @@ http://localhost:8000
 
 ## Planning & docs
 
-- **[`CLAUDE.md`](CLAUDE.md)** — read-this-first guide for contributors and AI agents.
+- **[`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md)** — the "continue the project" runbook for an AI/agent (orient → pick next task → build → verify → ship).
+- **[`CLAUDE.md`](CLAUDE.md)** — read-this-first guide for contributors and AI agents (rules + document map).
 - **[`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md)** — the governing north star for the Words section (linguistics + pedagogy, status scorecard, roadmap, milestone sheet, and implementation dependency order).
 - [`docs/VOCABULARY_TEACHING_SPEC_SOURCE.md`](docs/VOCABULARY_TEACHING_SPEC_SOURCE.md) — the original research spec, verbatim.
 - [`docs/WORDS_SECTION_MASTER_SPEC.md`](docs/WORDS_SECTION_MASTER_SPEC.md) — the Words implementation plan.
