@@ -1,7 +1,7 @@
-// [2026-07-02] Cache bumped to v102: curated word bank expanded from 109 to
-// 229 words (W11-W16: daily objects/tech, home/routine, travel/city,
-// shopping/money, body/health, weather/nature), plus 24 new guided lessons.
-const CACHE_NAME = "hanapath-shell-v102";
+// [2026-07-03] Cache bumped to v103: raw 5,000-word frequency list now has
+// real hand-written English meanings for ranks 1-500 (raw_word_meanings.js),
+// shown in the Word Bank instead of "reference only" wherever available.
+const CACHE_NAME = "hanapath-shell-v103";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,8 @@ const APP_SHELL = [
   "./audio_map.js",
   "./words_curated_core.js?v=20260702c",
   "./words_lesson_plan.js?v=20260702a",
-  "./app.js?v=20260702b",
+  "./raw_word_meanings.js?v=20260703a",
+  "./app.js?v=20260703a",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
