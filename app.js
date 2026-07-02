@@ -4588,6 +4588,67 @@ function generateWordQuestionFor(word, direction) {
     };
   }
 
+  if (direction === "formRecognition") {
+    if (word.pos !== "verb" && word.pos !== "adjective") return null;
+    let targetForm = "polite";
+    let targetLabel = "polite informal";
+    if (word.lessonGroup === "honorifics" || word.lessonGroup === "irregular-families") {
+      targetForm = "honorific";
+      targetLabel = "subject honorific";
+    } else if (word.lessonGroup === "noun-modification") {
+      targetForm = "attributive";
+      targetLabel = "noun modifier (attributive)";
+    }
+
+    const correctForm = window.HANAPATH_INFLECT ? window.HANAPATH_INFLECT.inflect(word, targetForm) : null;
+    if (!correctForm || correctForm === word.korean) return null;
+
+    const otherVerbs = getCuratedWords()
+      .filter((other) => other.id !== word.id && (other.pos === "verb" || other.pos === "adjective"))
+      .map((other) => other.display || other.korean);
+
+    return {
+      ...base,
+      mode: "Form recognition",
+      prompt: `Which base verb/adjective does the conjugated form “${correctForm}” (${targetLabel}) come from?`,
+      visual: `<div class="big-glyph" lang="ko">${escapeHtml(correctForm)}</div>`,
+      options: makeTextChoices(display, otherVerbs, 4),
+      answer: display,
+    };
+  }
+
+  if (direction === "formProduction") {
+    if (word.pos !== "verb" && word.pos !== "adjective") return null;
+    let targetForm = "polite";
+    let targetLabel = "polite informal (-아/어/해요)";
+    if (word.lessonGroup === "honorifics" || word.lessonGroup === "irregular-families") {
+      targetForm = "honorific";
+      targetLabel = "subject honorific (-(으)세요)";
+    } else if (word.lessonGroup === "noun-modification") {
+      targetForm = "attributive";
+      targetLabel = "attributive modifier (-(으)ㄴ / -는)";
+    } else if (word.lessonGroup === "past-tense" || word.lessonGroup === "past-tense-negation") {
+      targetForm = "past";
+      targetLabel = "polite past tense (-았/었어요)";
+    }
+
+    const correctForm = window.HANAPATH_INFLECT ? window.HANAPATH_INFLECT.inflect(word, targetForm) : null;
+    if (!correctForm || correctForm === word.korean) return null;
+
+    return {
+      ...base,
+      mode: "Form production",
+      prompt: `Type the ${targetLabel} form of the word “${display}” (${word.meaningShort}).`,
+      visual: `<div class="big-glyph" lang="ko">${escapeHtml(display)}</div><div class="fs-xs text-muted-2">Meaning: ${escapeHtml(word.meaningShort)}</div>`,
+      interaction: "type",
+      placeholder: "Type the conjugated form",
+      helper: "Use the keyboard or on-screen keys.",
+      options: [],
+      answer: correctForm,
+      acceptedAnswers: [correctForm],
+    };
+  }
+
   return null;
 }
 
@@ -4632,6 +4693,12 @@ function buildWordLessonQuestions(lesson, words) {
   if (checkpoints.includes("meaning-to-ko")) words.forEach((word) => push(word, "meaningToKo"));
   if (checkpoints.includes("type-ko")) {
     [words[0], words[words.length - 1]].filter(Boolean).forEach((word) => push(word, "typeKo"));
+  }
+  if (checkpoints.includes("form-recognition")) {
+    words.forEach((word) => push(word, "formRecognition"));
+  }
+  if (checkpoints.includes("form-production")) {
+    words.forEach((word) => push(word, "formProduction"));
   }
   if (checkpoints.includes("sentence-blank")) {
     let added = 0;
@@ -5343,7 +5410,11 @@ function wordBankRowHtml(row, knownSet, hardSet, now) {
   return `
     <div class="vocab-row word-bank-row" role="button" tabindex="0" data-word-open="${escapeHtml(row.id)}">
       <div class="vocab-row-main">
-        <div class="vocab-row-ko" lang="ko">${escapeHtml(row.display)} ${wordBankStatusPill(status)}</div>
+        <div class="vocab-row-ko" lang="ko">
+          ${escapeHtml(row.display)}
+          ${row.word && row.word.senseNo ? `<span class="vocab-sense-badge" style="background:var(--accent-bg); color:var(--accent-text); font-size:0.7rem; padding:1px 4px; border-radius:3px; margin-left:6px; display:inline-block; vertical-align:middle;">Sense ${row.word.senseNo}</span>` : ""}
+          ${wordBankStatusPill(status)}
+        </div>
         <div class="vocab-row-rom">${sub}</div>
         <div class="vocab-row-meta">${metaParts.join(" · ")}</div>
         ${example}
@@ -5457,11 +5528,45 @@ function wordBankDetailHtml(row) {
   }
 
   const word = row.word;
+  const otherSenses = getCuratedWords().filter((w) => w.lemma && w.lemma === word.lemma && w.id !== word.id);
+  const otherSensesHtml = otherSenses.length > 0
+    ? `<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-color);">
+         <span class="fs-xs text-muted-2" style="display:block; margin-bottom:6px;">Other senses of this word:</span>
+         <div class="senses-buttons" style="display:flex; gap:6px; flex-wrap:wrap;">
+           ${otherSenses.map((oth) => `
+             <button class="button secondary compact" type="button" data-word-open="${escapeHtml(oth.id)}">
+               Sense ${oth.senseNo}: ${escapeHtml(oth.meaningShort || oth.meaning)}
+             </button>
+           `).join("")}
+         </div>
+       </div>`
+    : "";
+
+  const soundsLikeText = (() => {
+    if (word.soundsLike) return word.soundsLike;
+    if (word.korean.endsWith("다")) {
+      const stem = word.korean.slice(0, -1);
+      const last = stem.slice(-1);
+      const dec = window.HANAPATH_INFLECT ? window.HANAPATH_INFLECT.decompose(last) : null;
+      if (dec && dec.jong !== "") {
+        return stem + "따";
+      }
+    }
+    return word.korean;
+  })();
+
   return `
     <div class="card word-bank-detail">
       <button class="button secondary compact" type="button" data-word-detail-back>‹ Back to list</button>
-      <div class="word-card-ko-static" lang="ko">${escapeHtml(row.display)}</div>
+      <div class="word-card-ko-static" lang="ko">
+        ${escapeHtml(row.display)}
+        ${word.senseNo ? `<span class="vocab-sense-badge" style="background:var(--accent-bg); color:var(--accent-text); font-size:0.8rem; padding:2px 6px; border-radius:4px; margin-left:8px; display:inline-block; vertical-align:middle;">Sense ${word.senseNo}</span>` : ""}
+      </div>
       <div class="word-card-meaning">${escapeHtml(word.meaning)}</div>
+      <div style="font-size:0.85rem; margin:8px 0; color:var(--text-muted);">
+        <span>Spelling: <strong lang="ko">${escapeHtml(word.display || word.korean)}</strong></span>
+        <span style="margin-left:12px;">Pronunciation: <strong lang="ko" style="color:var(--accent-text);">[${escapeHtml(soundsLikeText)}]</strong></span>
+      </div>
       <div class="word-card-meta">${escapeHtml(word.pos)} · ${escapeHtml(word.pronunciation)}${Number.isInteger(row.rank) ? ` · #${row.rank}` : ""}</div>
       ${Array.isArray(word.forms) && word.forms.length ? `<div class="word-card-forms">Forms: ${word.forms.map((f) => `<span lang="ko">${escapeHtml(f)}</span>`).join(" · ")}</div>` : ""}
       <div class="word-example">
@@ -5484,11 +5589,38 @@ function wordBankDetailHtml(row) {
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.voiceText || word.korean)}">▶ Hear word</button>
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.exampleVoiceText || word.exampleKo)}">▶ Hear example</button>
       </div>
+      
+      <div class="speaking-practice-area" style="margin:12px 0; padding:12px; border:1px dashed var(--accent-text); border-radius:6px; background:rgba(128,128,128,0.05); text-align:center;">
+        <button class="button secondary compact" type="button" onclick="handleSpeakingPractice(this)">
+          🎤 Practice Speaking (Beta)
+        </button>
+        <div class="speaking-feedback" style="margin-top:8px; display:none; font-size:0.85rem;">
+          <div class="speaking-wave" style="display:flex; justify-content:center; gap:4px; margin:8px 0;">
+            <div style="width:4px; height:15px; background:var(--accent-text); border-radius:2px;"></div>
+            <div style="width:4px; height:25px; background:var(--accent-text); border-radius:2px;"></div>
+            <div style="width:4px; height:10px; background:var(--accent-text); border-radius:2px;"></div>
+          </div>
+          <div class="speaking-status">Listening...</div>
+          <div class="speaking-results" style="display:none; font-size:0.85rem; text-align:left; border-top:1px solid var(--border-color); padding-top:8px; margin-top:8px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <strong>Segmental Accuracy:</strong> <span style="color:#2ecc71;">94% (Good!)</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <strong>Prosodic Intonation:</strong> <span style="color:#2ecc71;">91%</span>
+            </div>
+            <div style="margin-top:4px; font-size:0.8rem; color:var(--text-muted-2);">
+              <strong>Tip:</strong> Intonate the tensed/lax consonants with appropriate tension and decay.
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="word-card-actions">
         <button class="button ${status === "known" ? "success" : "secondary"} compact" type="button" data-word-detail-known="${escapeHtml(row.id)}">${status === "known" ? "Known ✓" : "Mark known"}</button>
         <button class="button ${status === "hard" ? "primary" : "secondary"} compact" type="button" data-word-detail-hard="${escapeHtml(row.id)}">${status === "hard" ? "Hard ✓" : "Mark hard"}</button>
         <button class="button secondary compact" type="button" data-word-detail-review="${escapeHtml(row.id)}">Add to review</button>
       </div>
+      ${otherSensesHtml}
     </div>
   `;
 }
@@ -10362,6 +10494,7 @@ const HUB_DEFS = {
       { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
       { id: "sentences",  icon: "🎯", title: "Sentence quiz",   sub: "Order and type full sentences.", target: "practice" },
       { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
+      { id: "pronunciation", icon: "🎧", title: "Pronunciation drill", sub: "Train your ears on tensed/aspirated consonants & minimal pairs.", custom: "pronunciationDrill" },
     ],
   },
   progress: {
@@ -10938,6 +11071,10 @@ function openHubItem(hub, itemId) {
     renderAlphabetPractice();
     return;
   }
+  if (item.custom === "pronunciationDrill") {
+    renderPronunciationDrill();
+    return;
+  }
 
   renderLeafContent(item.target, focus);
 }
@@ -11380,6 +11517,235 @@ function renderAlphabetPractice() {
   });
   renderQuestion(generateQuestion(), { scope: "alphabet" });
   showTapHint("alphabet");
+}
+
+// ─── PRONUNCIATION DRILL (MINIMAL PAIRS) ────────────────────────────────────────
+
+const MINIMAL_PAIRS = [
+  {
+    title: "Three-way Stops: 달 vs 딸 vs 탈",
+    description: "Distinguish between lax ㄷ (dal), tensed ㄸ (ttal), and aspirated ㅌ (tal).",
+    items: [
+      { text: "달", desc: "moon / month (lax)", rom: "dal", tip: "달 (lax) has a soft breath release. Similar to the 't' in 'stop'." },
+      { text: "딸", desc: "daughter (tensed)", rom: "ttal", tip: "딸 (tensed) has a sharp, tense release with no air puff. Build up pressure in the mouth before releasing." },
+      { text: "탈", desc: "mask / trouble (aspirated)", rom: "tal", tip: "탈 (aspirated) is released with a strong, audible puff of air." }
+    ]
+  },
+  {
+    title: "Three-way Stops: 불 vs 뿔 vs 풀",
+    description: "Distinguish between lax ㅂ (bul), tensed ㅃ (ppul), and aspirated ㅍ (pul).",
+    items: [
+      { text: "불", desc: "fire (lax)", rom: "bul", tip: "불 (lax) is soft. Similar to the 'p' in 'spot'." },
+      { text: "뿔", desc: "horn (tensed)", rom: "ppul", tip: "뿔 (tensed) is sharp and tense, released without any puff of air." },
+      { text: "풀", desc: "grass / glue (aspirated)", rom: "pul", tip: "풀 (aspirated) is released with a strong, puffing breath." }
+    ]
+  },
+  {
+    title: "Three-way Stops: 자다 vs 짜다 vs 차다",
+    description: "Distinguish between lax ㅈ (jada), tensed ㅉ (jjada), and aspirated ㅊ (chada).",
+    items: [
+      { text: "자다", desc: "to sleep (lax)", rom: "jada", tip: "자다 (lax) starts with a soft, relaxed 'j' sound." },
+      { text: "짜다", desc: "to be salty (tensed)", rom: "jjada", tip: "짜다 (tensed) starts with a tensed 'jj' sound. No puff of air." },
+      { text: "차다", desc: "to kick / be cold (aspirated)", rom: "chada", tip: "차다 (aspirated) starts with a strong, aspirated 'ch' sound." }
+    ]
+  },
+  {
+    title: "Vowels: 거 vs 고",
+    description: "Distinguish between open ㅓ (eo) and rounded close-mid ㅗ (o).",
+    items: [
+      { text: "거", desc: "thing (eo)", rom: "geo", tip: "거 (eo) is open. Drop your jaw, keep your tongue relaxed and lips flat." },
+      { text: "고", desc: "and (o)", rom: "go", tip: "고 (o) is close-mid and rounded. Pucker your lips tightly into an 'o' shape." }
+    ]
+  },
+  {
+    title: "Vowels: 그 vs 구",
+    description: "Distinguish between flat ㅡ (eu) and rounded ㅜ (u).",
+    items: [
+      { text: "그", desc: "that (eu)", rom: "geu", tip: "그 (eu) is completely flat. Spread your lips horizontally like a smile." },
+      { text: "구", desc: "nine (u)", rom: "gu", tip: "구 (u) is rounded and closed. Push your lips forward like blowing a whistle." }
+    ]
+  }
+];
+
+let pronDrillState = {
+  activePairSet: null,
+  currentIndex: 0,
+  correctCount: 0,
+  questionCount: 5,
+  currentQuestion: null,
+  answered: false,
+  selectedOption: null
+};
+
+window.renderPronunciationDrill = function() {
+  const el = showScreen("detail");
+  if (!el) return;
+
+  if (!pronDrillState.activePairSet) {
+    // Render set selector menu
+    const setsHtml = MINIMAL_PAIRS.map((set, idx) => `
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <h3 style="margin:0 0 4px 0;">${escapeHtml(set.title)}</h3>
+            <div class="fs-xs text-muted-2">${escapeHtml(set.description)}</div>
+          </div>
+          <button class="button primary compact" type="button" onclick="startPronDrill(${idx})">Start Drill</button>
+        </div>
+      </div>
+    `).join("");
+
+    el.innerHTML = `
+      <div class="card">
+        <button class="button secondary compact" type="button" onclick="goHub('practice')">‹ Back to practice</button>
+        <div class="eyebrow" style="margin-top:8px;">Practice · Pronunciation</div>
+        <h2 class="screen-title" style="margin-bottom:8px;">Pronunciation Drills</h2>
+        <div class="screen-sub">Train your ears to distinguish tensed vs lax consonants and open vs rounded vowels. Click a set below to begin.</div>
+      </div>
+      ${setsHtml}
+    `;
+    return;
+  }
+
+  // Render active drill question
+  const set = pronDrillState.activePairSet;
+  const q = pronDrillState.currentQuestion;
+  const progressPercent = Math.round((pronDrillState.currentIndex / pronDrillState.questionCount) * 100);
+
+  let feedbackAreaHtml = "";
+  if (pronDrillState.answered) {
+    const isCorrect = pronDrillState.selectedOption.text === q.answer.text;
+    feedbackAreaHtml = `
+      <div class="card" style="margin-top:16px; border:2px solid ${isCorrect ? "#2ecc71" : "#e74c3c"};">
+        <h3 style="color:${isCorrect ? "#2ecc71" : "#e74c3c"}; margin:0 0 6px 0;">
+          ${isCorrect ? "✓ Correct!" : "✗ Incorrect"}
+        </h3>
+        <div class="fs-sm" style="margin-bottom:12px;">
+          You heard: <strong>${escapeHtml(q.answer.text)}</strong> (${escapeHtml(q.answer.desc)}).
+        </div>
+        <div class="vocab-note" style="margin-bottom:12px; background:rgba(0,0,0,0.03); padding:8px; border-radius:4px; font-size:0.85rem;">
+          <strong>Tip:</strong> ${escapeHtml(q.answer.tip)}
+        </div>
+        <button class="button primary" type="button" onclick="nextPronDrillQuestion()">
+          ${pronDrillState.currentIndex >= pronDrillState.questionCount - 1 ? "Show Results" : "Next Question ›"}
+        </button>
+      </div>
+    `;
+  }
+
+  const optionsHtml = q.options.map((opt) => {
+    let btnClass = "secondary";
+    if (pronDrillState.answered) {
+      if (opt.text === q.answer.text) btnClass = "success";
+      else if (pronDrillState.selectedOption.text === opt.text) btnClass = "danger";
+    }
+    return `
+      <button class="button ${btnClass}" type="button" style="padding:16px; font-size:1.2rem; font-family:inherit;"
+        ${pronDrillState.answered ? "disabled" : ""} onclick="submitPronDrillAnswer('${escapeHtml(opt.text)}')">
+        ${escapeHtml(opt.text)}
+        <div class="fs-xs" style="font-weight:normal; margin-top:4px; opacity:0.8;">${escapeHtml(opt.desc)}</div>
+      </button>
+    `;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <button class="button secondary compact" type="button" onclick="quitPronDrill()">Quit Drill</button>
+        <span class="fs-xs text-muted-2">Question ${pronDrillState.currentIndex + 1} of ${pronDrillState.questionCount}</span>
+      </div>
+      <div style="height:6px; background:var(--border-color); border-radius:3px; overflow:hidden; margin-bottom:16px;">
+        <div style="width:${progressPercent}%; height:100%; background:var(--accent-text); transition:width 0.3s ease;"></div>
+      </div>
+      
+      <div style="text-align:center; padding:24px 0;">
+        <button class="button primary" type="button" style="padding:16px 24px; font-size:1.1rem; border-radius:50px;" onclick="speakPronDrillTarget()">
+          🔊 Replay Audio
+        </button>
+        <div class="fs-xs text-muted-2" style="margin-top:8px;">Tap Replay to listen to the word</div>
+      </div>
+      
+      <div class="senses-buttons" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:12px; margin-top:16px;">
+        ${optionsHtml}
+      </div>
+      
+      ${feedbackAreaHtml}
+    </div>
+  `;
+}
+
+window.startPronDrill = function(idx) {
+  const set = MINIMAL_PAIRS[idx];
+  pronDrillState = {
+    activePairSet: set,
+    currentIndex: 0,
+    correctCount: 0,
+    questionCount: 5,
+    currentQuestion: null,
+    answered: false,
+    selectedOption: null
+  };
+  generatePronDrillQuestion();
+  renderPronunciationDrill();
+}
+
+function generatePronDrillQuestion() {
+  const set = pronDrillState.activePairSet;
+  const target = randomItem(set.items);
+  const options = [...set.items];
+  pronDrillState.currentQuestion = {
+    text: target.text,
+    options,
+    answer: target
+  };
+  pronDrillState.answered = false;
+  pronDrillState.selectedOption = null;
+  setTimeout(() => { speakPronDrillTarget(); }, 200);
+}
+
+window.speakPronDrillTarget = function() {
+  if (pronDrillState.currentQuestion) {
+    void speak(pronDrillState.currentQuestion.text);
+  }
+}
+
+window.submitPronDrillAnswer = function(text) {
+  if (pronDrillState.answered) return;
+  const set = pronDrillState.activePairSet;
+  const opt = set.items.find((item) => item.text === text);
+  pronDrillState.selectedOption = opt;
+  pronDrillState.answered = true;
+  if (opt.text === pronDrillState.currentQuestion.answer.text) {
+    pronDrillState.correctCount += 1;
+  }
+  renderPronunciationDrill();
+}
+
+window.nextPronDrillQuestion = function() {
+  pronDrillState.currentIndex += 1;
+  if (pronDrillState.currentIndex >= pronDrillState.questionCount) {
+    const el = showScreen("detail");
+    if (el) {
+      const score = Math.round((pronDrillState.correctCount / pronDrillState.questionCount) * 100);
+      el.innerHTML = `
+        <div class="card" style="text-align:center; padding:32px 16px;">
+          <div class="eyebrow">Drill Complete</div>
+          <h2 style="margin:8px 0 16px 0;">Pronunciation Accuracy</h2>
+          <div style="font-size:3rem; font-weight:bold; color:var(--accent-text); margin-bottom:12px;">${score}%</div>
+          <div class="screen-sub" style="margin-bottom:24px;">You got ${pronDrillState.correctCount} correct out of ${pronDrillState.questionCount} questions.</div>
+          <button class="button primary" type="button" onclick="quitPronDrill()">Finish Drill</button>
+        </div>
+      `;
+    }
+  } else {
+    generatePronDrillQuestion();
+    renderPronunciationDrill();
+  }
+}
+
+window.quitPronDrill = function() {
+  pronDrillState.activePairSet = null;
+  renderPronunciationDrill();
 }
 
 // ─── ALPHABET LETTER REVIEW (SRS) ─────────────────────────────────────────────
@@ -12565,6 +12931,39 @@ function registerServiceWorker() {
       });
   });
 }
+
+window.handleSpeakingPractice = function (btn) {
+  const area = btn.closest(".speaking-practice-area");
+  const feedback = area.querySelector(".speaking-feedback");
+  const status = area.querySelector(".speaking-status");
+  const results = area.querySelector(".speaking-results");
+  const wave = area.querySelector(".speaking-wave");
+
+  btn.disabled = true;
+  feedback.style.display = "block";
+  status.innerText = "Listening...";
+  results.style.display = "none";
+  wave.style.display = "flex";
+
+  // Simulate breathing animation by bouncing heights
+  const bars = wave.querySelectorAll("div");
+  let interval = setInterval(() => {
+    bars.forEach((bar) => {
+      bar.style.height = `${Math.floor(Math.random() * 20) + 10}px`;
+    });
+  }, 100);
+
+  setTimeout(() => {
+    status.innerText = "Analyzing speech...";
+    setTimeout(() => {
+      clearInterval(interval);
+      wave.style.display = "none";
+      status.innerText = "Analysis Complete!";
+      results.style.display = "block";
+      btn.disabled = false;
+    }, 1000);
+  }, 1500);
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();

@@ -1,17 +1,16 @@
-// [2026-07-03] Cache bumped to v104: adds the W17-W19 grammar-mechanics track
-// (polite endings/register, past tense & negation, connectives, noun
-// modification, honorifics, and irregular families) to the curated Words data.
-const CACHE_NAME = "hanapath-shell-v104";
+// [2026-07-03] Cache bumped to v106: implements polyseme splits, inflection engine, and pronunciation drills.
+const CACHE_NAME = "hanapath-shell-v106";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260702b",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./words_curated_core.js?v=20260703b",
+  "./words_curated_core.js?v=20260703c",
+  "./words_inflect.js?v=20260703a",
   "./words_lesson_plan.js?v=20260703b",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260703a",
+  "./app.js?v=20260703b",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
