@@ -289,13 +289,13 @@ Grounded in the shipped code (main) as of 2026-07-02. Legend: ✅ solid ·
 |---|---|---|
 | Hangul-first, romanization secondary | ✅ | UX is Hangul-primary; romanization is a support layer |
 | Script → block → batchim course | ✅ | Full alphabet module (drill lab, skill-SRS, 72 audio tokens, batchim) |
-| Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + checkpoint ladder (W17–W19 grammar track in PR #42, pending) |
+| Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + checkpoint ladder + W17–W19 grammar track (merged) |
 | Lexeme + forms, not flat pairs | 🟡 | `forms`/`grammarRole`/`pattern`/`formNote` exist, but forms are **hand-authored**, no engine |
 | Particles & endings first-class | ✅ | Function-word entries with forms/grammarRole/contrastWith/pattern |
-| Honorifics (subject vs listener) | 🟡 | Honorific verb table + W19 lesson (pending); not a systematic register axis |
+| Honorifics (subject vs listener) | 🟡 | Honorific verb table + W19 lesson (shipped); not yet a systematic register axis |
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
-| Irregular families as trigger-based | 🟡 | W19 track (pending) + inline `formNote`; no generation |
+| Irregular families as trigger-based | 🟡 | W19 track (shipped) + inline `formNote`; no generation engine yet |
 | **Sense-level polysemy** | ❌ | one row = one `meaning` string |
 | **Word-origin tagging (native/Sino/loan)** | ❌ | no `originType`/`hanja` |
 | **Register as a data axis** | ❌ | free-text `usageNote` only |
@@ -365,7 +365,7 @@ as of 2026-07-02.
 | ID | Milestone | Depends on | Primary files | Ships when (acceptance) | Effort | Status |
 |---|---|---|---|---|---|---|
 | **M0** | Shipped baseline: script course, Leitner SRS, Word Bank, W0–W16 lessons | — | `app.js`, `words_curated_core.js`, `words_lesson_plan.js`, `alphabet_*` | (already live) | — | ✅ done |
-| **M0.5** | W17–W19 grammar-mechanics track (endings/register, negation, connectives, modifiers, honorifics, irregulars) | M0 | `words_curated_core.js`, `words_lesson_plan.js` | 6 lessons render; strict audit clean | S | 🟡 PR #42 pending |
+| **M0.5** | W17–W19 grammar-mechanics track (endings/register, negation, connectives, modifiers, honorifics, irregulars) | M0 | `words_curated_core.js`, `words_lesson_plan.js` | 6 lessons render; strict audit clean | S | ✅ done (#42) |
 | **M1** | **Data axes** — additive `senseKey`/`register`/`speechLevel`/`originType`/`hanja`/`irregularFamily`/`morphTag` + audit enums | M0 | `words_curated_core.js` (`defineWord`), `scripts/audit-words-data.mjs` | fields optional; enums validated when present; all existing rows still pass strict | S–M | ⬜ not started |
 | **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | ⬜ not started |
 | **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ⬜ not started |
