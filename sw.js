@@ -1,17 +1,15 @@
-// [2026-07-02] Cache bumped to v100: Words section foundation — curated word
-// bank + lesson plan data files, Entire Word Bank reference, word SRS,
-// guided word lessons.
-const CACHE_NAME = "hanapath-shell-v100";
+// [2026-07-02] Cache bumped to v101: Words detail romanization patch on top of
+// the curated word bank + lesson plan data files, Entire Word Bank reference,
+// word SRS, and guided word lessons.
+const CACHE_NAME = "hanapath-shell-v101";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260702a",
+  "./styles.css?v=20260629m",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./words_curated_core.js?v=20260702a",
-  "./words_lesson_plan.js?v=20260702a",
-  "./app.js?v=20260702a",
-  "./alphabet_skill_srs.js?v=20260630a",
+  "./app.js?v=20260629r",
+  "./words_sentence_romanization_patch.js?v=20260702b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./icons/icon-192.png",
