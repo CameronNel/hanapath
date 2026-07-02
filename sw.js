@@ -1,16 +1,14 @@
-// [2026-07-02] Cache bumped to v101: word bank detail drawer now shows
-// sentence romanization plus a short form/sound-change note next to the
-// example, for curated words whose spoken sentence form differs from the
-// dictionary form. Implemented directly in app.js/words_curated_core.js (no
-// runtime monkey-patch files — those were removed).
-const CACHE_NAME = "hanapath-shell-v101";
+// [2026-07-02] Cache bumped to v102: curated word bank expanded from 109 to
+// 229 words (W11-W16: daily objects/tech, home/routine, travel/city,
+// shopping/money, body/health, weather/nature), plus 24 new guided lessons.
+const CACHE_NAME = "hanapath-shell-v102";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260702b",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./words_curated_core.js?v=20260702b",
+  "./words_curated_core.js?v=20260702c",
   "./words_lesson_plan.js?v=20260702a",
   "./app.js?v=20260702b",
   "./alphabet_skill_srs.js?v=20260630a",
