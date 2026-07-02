@@ -3002,3 +3002,74 @@ li { margin-bottom: 4px; }
   font-size: .72rem; color: var(--muted); margin-bottom: 10px; padding: 6px 10px;
   border-radius: 8px; background: rgba(91,157,255,.10); border: 1px solid var(--line);
 }
+
+/* ─── Words section (word bank + guided word lessons) ─────────────────────── */
+/* [2026-07-02] Entire Korean Word Bank, word cards, tiles, and lesson runner. */
+
+.word-reference-row { margin: 16px 0 0; display: flex; justify-content: center; }
+.word-reference-row .button { font-size: .85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; }
+
+.word-card { text-align: left; }
+.word-card-ko,
+.word-card-ko-static {
+  display: block; width: 100%; text-align: center;
+  font-family: "Noto Sans KR", sans-serif; font-weight: 900;
+  font-size: clamp(2rem, 9vw, 3rem); line-height: 1.25;
+  color: var(--text); margin: 12px 0 4px;
+}
+.word-card-ko { background: none; border: none; cursor: pointer; border-radius: 12px; padding: 4px 8px; }
+.word-card-ko:hover { background: rgba(91,157,255,.08); }
+.word-card-meaning { text-align: center; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+.word-card-meta { text-align: center; font-size: .82rem; color: var(--muted); margin-bottom: 8px; }
+.word-card-forms { text-align: center; font-size: .85rem; color: var(--muted); margin-bottom: 8px; }
+.word-card-forms span { color: var(--text); font-weight: 700; }
+
+.word-example {
+  margin: 12px 0; padding: 12px; border-radius: 12px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 4px; align-items: center;
+}
+.word-example-ko,
+.word-example-ko-static { font-size: 1.05rem; font-weight: 700; color: var(--text); text-align: center; }
+.word-example-ko { background: none; border: none; cursor: pointer; border-radius: 8px; padding: 2px 6px; }
+.word-example-ko:hover { background: rgba(91,157,255,.08); }
+.word-example-en { font-size: .85rem; color: var(--muted); text-align: center; }
+.word-usage-note {
+  font-size: .82rem; color: var(--muted); margin: 8px 0;
+  padding: 8px 10px; border-radius: 8px; background: rgba(91,157,255,.08); border: 1px solid var(--line);
+}
+
+.word-card-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+
+.word-type-box { margin: 12px 0 4px; }
+.word-tile-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; justify-content: center; }
+.word-tile {
+  min-width: 48px; min-height: 48px; padding: 8px 12px;
+  border-radius: 12px; border: 1px solid var(--line);
+  background: rgba(255,255,255,.05); color: var(--text);
+  font-family: "Noto Sans KR", sans-serif; font-size: 1.15rem; font-weight: 700;
+  cursor: pointer; transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+.word-tile:hover:not(:disabled) { border-color: var(--accent); background: rgba(91,157,255,.12); transform: translateY(-2px); }
+.word-tile:disabled { opacity: .5; cursor: default; }
+.word-tile-erase { font-size: 1rem; }
+.word-type-feedback { min-height: 20px; font-size: .85rem; margin-top: 8px; }
+
+.word-sentence-blank {
+  font-family: "Noto Sans KR", sans-serif; font-size: 1.3rem; font-weight: 700;
+  text-align: center; margin: 8px 0 4px;
+}
+.word-result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; }
+@media (min-width: 560px) { .word-result-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.word-bank-panel .vocab-filters { margin-bottom: 8px; }
+.word-bank-sort-row { gap: 6px; }
+.word-bank-example { opacity: .85; }
+.word-bank-refonly { font-size: .72rem; color: var(--muted); }
+.word-refonly-note {
+  margin: 12px 0; padding: 10px 12px; border-radius: 10px; font-size: .85rem;
+  color: var(--muted); background: rgba(248,113,113,.08); border: 1px solid var(--line);
+}
+.word-bank-detail > .button { margin-bottom: 4px; }
+.vocab-status.due { background: rgba(251,191,36,.15); color: #fbbf24; }
+.vocab-status.learning { background: rgba(91,157,255,.15); color: var(--accent); }
