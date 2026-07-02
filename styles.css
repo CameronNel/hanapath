@@ -1824,6 +1824,20 @@ input, textarea { cursor: text; }
   letter-spacing: -.02em;
   line-height: 1.1;
 }
+.vocab-meaning {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: .94rem;
+  font-weight: 600;
+}
+.vocab-form-label {
+  margin-top: 10px;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
 .vocab-rom {
   margin-top: 4px;
   color: var(--accent-2);
@@ -1865,6 +1879,62 @@ input, textarea { cursor: text; }
   font-size: .8rem;
   color: var(--muted);
   margin-bottom: 12px;
+}
+.word-example {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+}
+.word-example-ko-static {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: "Noto Sans KR", sans-serif;
+  line-height: 1.45;
+}
+.word-example-rom {
+  margin-top: 4px;
+  color: var(--accent-2);
+  font-size: .9rem;
+  font-weight: 700;
+  word-break: break-word;
+}
+.word-example-en {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: .84rem;
+  line-height: 1.45;
+}
+.word-form-note {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-xs);
+  background: rgba(45, 212, 191,.07);
+  border: 1px solid rgba(45, 212, 191,.16);
+}
+.word-form-note-label {
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 6px;
+}
+.word-form-note-body,
+.word-form-note-usage,
+.word-form-note-sound {
+  font-size: .82rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+.word-form-note-usage {
+  margin-top: 6px;
+  color: var(--muted);
+}
+.word-form-note-sound {
+  margin-top: 8px;
+  color: var(--muted-2);
 }
 .vocab-actions {
   display: flex;
@@ -2154,6 +2224,10 @@ input, textarea { cursor: text; }
 
 @media (max-width: 640px) {
   .quiz-options {
+    grid-template-columns: 1fr;
+  }
+
+  .vocab-meta-grid {
     grid-template-columns: 1fr;
   }
 

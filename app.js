@@ -3434,6 +3434,10 @@ let vocabKoreanChoices = [];
 let vocabEnglishChoices = [];
 let vocabPronunciationChoices = [];
 let vocabRomanizationChoices = [];
+const VOCAB_BROWSE_NOTES = window.VOCAB_BROWSE_NOTES || {};
+const VOCAB_BROWSE_EXTRAS = window.VOCAB_BROWSE_EXTRAS || [];
+let vocabBrowseBank = [];
+let vocabBrowseByRank = new Map();
 
 function parseCSV(text) {
   const rows = [];
@@ -3499,6 +3503,12 @@ function normalizeVocabEntry(row) {
   const syllables = Number(row.syllables);
   const tokenNote = String(row.token_note || "").trim();
   const sourceUrl = String(row.source_url || "").trim();
+  const usageNote = String(row.usage_note || row.usageNote || "").trim();
+  const exampleKo = String(row.example_ko || row.exampleKo || "").trim();
+  const examplePronunciation = String(row.example_pronunciation || row.examplePronunciation || "").trim();
+  const exampleEn = String(row.example_en || row.exampleEn || "").trim();
+  const formNote = String(row.form_note || row.formNote || "").trim();
+  const soundNote = String(row.sound_note || row.soundNote || "").trim();
 
   if (!Number.isInteger(rank) || rank <= 0 || !korean) {
     return null;
@@ -3513,8 +3523,103 @@ function normalizeVocabEntry(row) {
     frequencyBand,
     syllables: Number.isInteger(syllables) && syllables > 0 ? syllables : 1,
     tokenNote,
+    usageNote,
+    exampleKo,
+    examplePronunciation,
+    exampleEn,
+    formNote,
+    soundNote,
     sourceUrl,
   };
+}
+
+function mergeVocabBrowseEntry(entry, overlay = {}) {
+  const merged = { ...overlay, ...entry };
+  const fields = ["meaning", "partOfSpeech", "exampleKo", "examplePronunciation", "exampleEn", "formNote", "soundNote", "usageNote"];
+
+  fields.forEach((field) => {
+    if (!String(entry[field] || "").trim() && String(overlay[field] || "").trim()) {
+      merged[field] = overlay[field];
+    }
+  });
+
+  return merged;
+}
+
+function rebuildVocabBrowseBank() {
+  const merged = vocabBank.map((entry) => mergeVocabBrowseEntry(entry, VOCAB_BROWSE_NOTES[entry.korean] || {}));
+  VOCAB_BROWSE_EXTRAS.forEach((entry) => {
+    if (!vocabByRank.has(Number(entry.rank))) {
+      merged.push(mergeVocabBrowseEntry({}, entry));
+    }
+  });
+
+  merged.sort((a, b) => a.rank - b.rank);
+  vocabBrowseBank = merged;
+  vocabBrowseByRank = new Map(merged.map((entry) => [entry.rank, entry]));
+}
+
+function getVocabBrowseBank() {
+  if (!vocabBrowseBank.length && vocabBank.length) {
+    rebuildVocabBrowseBank();
+  }
+  return vocabBrowseBank;
+}
+
+function getVocabBrowseEntry(rank) {
+  if (!vocabBrowseByRank.size && vocabBank.length) {
+    rebuildVocabBrowseBank();
+  }
+  return vocabBrowseByRank.get(Number(rank)) || null;
+}
+
+function countRawKnownRanks(ranks) {
+  const set = ranks instanceof Set ? ranks : new Set(ranks || []);
+  let count = 0;
+  set.forEach((rank) => {
+    if (vocabByRank.has(Number(rank))) {
+      count += 1;
+    }
+  });
+  return count;
+}
+
+function getVocabDictionaryLine(entry) {
+  const romanization = entry.romanization || entry.englishSpelling || entry.pronunciation || "";
+  if (!romanization) {
+    return "";
+  }
+  return entry.partOfSpeech ? `${entry.partOfSpeech} · ${romanization}` : romanization;
+}
+
+function renderVocabExampleBlock(entry) {
+  if (!entry.exampleKo && !entry.examplePronunciation && !entry.exampleEn) {
+    return "";
+  }
+
+  return `
+    <div class="word-example">
+      ${entry.exampleKo ? `<div class="word-example-ko-static" lang="ko">${escapeHtml(entry.exampleKo)}</div>` : ""}
+      ${entry.examplePronunciation ? `<div class="word-example-rom">${escapeHtml(entry.examplePronunciation)}</div>` : ""}
+      ${entry.exampleEn ? `<div class="word-example-en">${escapeHtml(entry.exampleEn)}</div>` : ""}
+    </div>
+  `;
+}
+
+function renderVocabFormNoteBlock(entry) {
+  if (!entry.formNote && !entry.soundNote && !entry.usageNote) {
+    return "";
+  }
+
+  const label = entry.formNote ? "Why it changed" : "Why it sounds different";
+  return `
+    <div class="word-form-note">
+      <div class="word-form-note-label">${label}</div>
+      ${entry.formNote ? `<div class="word-form-note-body">${escapeHtml(entry.formNote)}</div>` : ""}
+      ${entry.usageNote ? `<div class="word-form-note-usage">${escapeHtml(entry.usageNote)}</div>` : ""}
+      ${entry.soundNote ? `<div class="word-form-note-sound">${escapeHtml(entry.soundNote)}</div>` : ""}
+    </div>
+  `;
 }
 
 function dedupeStrings(values) {
@@ -3556,6 +3661,7 @@ async function loadVocabBank() {
       vocabEnglishChoices = dedupeStrings(normalizedRows.map((entry) => entry.englishSpelling));
       vocabPronunciationChoices = dedupeStrings(normalizedRows.map((entry) => entry.pronunciation));
       vocabRomanizationChoices = vocabEnglishChoices;
+      rebuildVocabBrowseBank();
       vocabBankError = "";
       vocabBankReady = true;
       updateVocabSkill();
@@ -3563,6 +3669,8 @@ async function loadVocabBank() {
     } catch (error) {
       vocabBank = [];
       vocabByRank = new Map();
+      vocabBrowseBank = [];
+      vocabBrowseByRank = new Map();
       vocabKoreanChoices = [];
       vocabEnglishChoices = [];
       vocabPronunciationChoices = [];
@@ -3589,7 +3697,7 @@ function updateVocabSkill() {
     return;
   }
 
-  const knownCount = state.vocabKnownRanks.length;
+  const knownCount = countRawKnownRanks(state.vocabKnownRanks || []);
   const bonus = Math.min(100, Math.max(0, 8 + Math.floor(knownCount / 8)));
   state.skills.vocab = bonus;
 }
@@ -3684,6 +3792,7 @@ function bindVocabBrowser(root, vocabView, rerender) {
   const randomBtn = root.querySelector("#vocabRandomBtn");
   const knownBtn = root.querySelector("#vocabKnownBtn");
   const hardBtn = root.querySelector("#vocabHardBtn");
+  const reviewBtn = root.querySelector("#vocabReviewBtn");
 
   if (prevPage) {
     prevPage.addEventListener("click", () => {
@@ -3726,9 +3835,16 @@ function bindVocabBrowser(root, vocabView, rerender) {
     });
   }
 
+  if (reviewBtn && vocabView.active) {
+    reviewBtn.addEventListener("click", () => {
+      setVocabStatus(vocabView.active.rank, "hard");
+      rerender();
+    });
+  }
+
   root.querySelectorAll("[data-vocab-rank]").forEach((row) => {
     const rank = Number(row.dataset.vocabRank);
-    const entry = getVocabStudyEntry(rank);
+    const entry = getVocabBrowseEntry(rank);
     if (!entry) {
       return;
     }
@@ -3764,7 +3880,7 @@ function bindVocabBrowser(root, vocabView, rerender) {
 function findVocabMatches(query, band) {
   const trimmed = String(query || "").trim().toLowerCase();
   const activeBand = band || "all";
-  return vocabBank.filter((entry) => {
+  return getVocabBrowseBank().filter((entry) => {
     if (activeBand !== "all" && entry.frequencyBand !== activeBand) {
       return false;
     }
@@ -3778,10 +3894,19 @@ function findVocabMatches(query, band) {
       entry.korean,
       entry.englishSpelling || entry.romanization,
       entry.pronunciation || entry.englishSpelling || entry.romanization,
+      entry.meaning,
+      entry.partOfSpeech,
+      entry.exampleKo,
+      entry.examplePronunciation,
+      entry.exampleEn,
+      entry.formNote,
+      entry.soundNote,
+      entry.usageNote,
       entry.frequencyBand,
       String(entry.syllables),
       entry.tokenNote,
-    ].some((value) => value.toLowerCase().includes(trimmed));
+      entry.sourceUrl,
+    ].some((value) => String(value || "").toLowerCase().includes(trimmed));
   });
 }
 
@@ -3833,19 +3958,30 @@ function buildVocabLibraryView() {
 
   const knownSet = getVocabKnownSet();
   const hardSet = getVocabHardSet();
+  const browseBank = getVocabBrowseBank();
   const filtered = findVocabMatches(state.vocabQuery, state.vocabBand);
   const total = vocabBank.length;
-  const knownCount = knownSet.size;
-  const hardCount = hardSet.size;
+  const browseTotal = browseBank.length;
+  const knownCount = countRawKnownRanks(knownSet);
+  const hardCount = countRawKnownRanks(hardSet);
   const pageCount = Math.max(1, Math.ceil(filtered.length / VOCAB_PAGE_SIZE));
   const page = Math.min(Math.max(state.vocabPage || 0, 0), pageCount - 1);
   const start = page * VOCAB_PAGE_SIZE;
   const pageItems = filtered.slice(start, start + VOCAB_PAGE_SIZE);
   const active = filtered.find((entry) => entry.rank === state.vocabActiveRank) || filtered[0] || null;
   const activeRank = active ? active.rank : state.vocabActiveRank;
-  const progressPct = total ? Math.round((knownCount / total) * 100) : 0;
+  const progressPct = total ? Math.min(100, Math.round((knownCount / total) * 100)) : 0;
   const activeKnown = active ? knownSet.has(active.rank) : false;
   const activeHard = active ? hardSet.has(active.rank) : false;
+  const activeDictionaryLine = active ? getVocabDictionaryLine(active) : "";
+  const activeExampleHtml = active ? renderVocabExampleBlock(active) : "";
+  const activeFormNoteHtml = active ? renderVocabFormNoteBlock(active) : "";
+  const activeExtraNotes = active
+    ? [active.tokenNote, active.usageNote]
+      .filter(Boolean)
+      .map((note) => `<div class="vocab-note">${escapeHtml(note)}</div>`)
+      .join("")
+    : "";
 
   const bandButtons = ["all", ...VOCAB_BANDS]
     .map((band) => {
@@ -3857,10 +3993,12 @@ function buildVocabLibraryView() {
   const heroActions = active
     ? `
       <div class="vocab-actions">
-        <button class="button secondary compact" id="vocabHearBtn" type="button" data-vocab-hear="${escapeHtml(active.korean)}">Hear</button>
+        <button class="button secondary compact" id="vocabHearWordBtn" type="button" data-vocab-hear="${escapeHtml(active.korean)}">Hear word</button>
         <button class="button success compact" id="vocabKnownBtn" type="button" data-vocab-toggle-known="${active.rank}">${activeKnown ? "Known ✓" : "Mark known"}</button>
         <button class="button secondary compact" id="vocabHardBtn" type="button" data-vocab-toggle-hard="${active.rank}">${activeHard ? "Hard ✓" : "Mark hard"}</button>
-        <button class="button primary compact" id="vocabRandomBtn" type="button">Random word</button>
+        <button class="button secondary compact" id="vocabHearExampleBtn" type="button"${active.exampleKo ? ` data-vocab-hear="${escapeHtml(active.exampleKo)}"` : " disabled"}>Hear example</button>
+        <button class="button primary compact" id="vocabReviewBtn" type="button">Add to review</button>
+        <button class="button secondary compact" id="vocabRandomBtn" type="button">Random word</button>
       </div>
     `
     : "";
@@ -3869,13 +4007,13 @@ function buildVocabLibraryView() {
     ? `
       <div class="vocab-meta-grid">
         <div class="vocab-meta-box"><span>Korean spelling</span><strong lang="ko">${escapeHtml(active.korean)}</strong></div>
-        <div class="vocab-meta-box"><span>English spelling</span><strong>${escapeHtml(active.englishSpelling || active.romanization)}</strong></div>
+        <div class="vocab-meta-box"><span>Dictionary form</span><strong>${escapeHtml(activeDictionaryLine || active.englishSpelling || active.romanization)}</strong></div>
         <div class="vocab-meta-box"><span>Pronunciation</span><strong>${escapeHtml(active.pronunciation || active.englishSpelling || active.romanization)}</strong></div>
         <div class="vocab-meta-box"><span>Band</span><strong>${escapeHtml(active.frequencyBand)}</strong></div>
         <div class="vocab-meta-box"><span>Syllables</span><strong>${active.syllables}</strong></div>
         <div class="vocab-meta-box"><span>Status</span><strong>${activeKnown ? "Known" : activeHard ? "Hard" : "Fresh"}</strong></div>
       </div>
-      ${active.tokenNote ? `<div class="vocab-note">${escapeHtml(active.tokenNote)}</div>` : ""}
+      ${activeExtraNotes}
     `
     : `<div class="screen-sub" style="margin-bottom:0;">No vocabulary entry matched the current filters.</div>`;
 
@@ -3894,8 +4032,11 @@ function buildVocabLibraryView() {
             <div class="vocab-current">
               <div class="vocab-rank">#${active.rank}</div>
               <div class="vocab-word" lang="ko">${escapeHtml(active.korean)}</div>
-              <div class="vocab-rom">${escapeHtml(active.englishSpelling || active.romanization)}</div>
-              <div class="vocab-detail">${escapeHtml(active.pronunciation || active.englishSpelling || active.romanization)}</div>
+              ${active.meaning ? `<div class="vocab-meaning">${escapeHtml(active.meaning)}</div>` : ""}
+              <div class="vocab-form-label">Dictionary form</div>
+              <div class="vocab-rom">${escapeHtml(activeDictionaryLine || active.englishSpelling || active.romanization)}</div>
+              ${activeExampleHtml}
+              ${activeFormNoteHtml}
               <div class="vocab-detail">${escapeHtml(active.frequencyBand)} • ${active.syllables} syllable${active.syllables === 1 ? "" : "s"}</div>
             </div>
             ${heroMeta}
@@ -3907,7 +4048,7 @@ function buildVocabLibraryView() {
       <div class="card vocab-panel">
         <input class="vocab-search" id="vocabSearch" type="search" placeholder="Search Korean, English spelling, pronunciation, rank, or note" value="${escapeHtml(state.vocabQuery)}" />
         <div class="vocab-filters">${bandButtons}</div>
-        <div class="vocab-summary">${filtered.length} of ${total} words shown</div>
+        <div class="vocab-summary">${filtered.length} of ${browseTotal} words shown</div>
         <div class="vocab-pagebar">
           <button class="button secondary compact" id="vocabPrevPage" type="button" ${page <= 0 ? "disabled" : ""}>Prev</button>
           <span class="vocab-pageinfo">Page ${page + 1} of ${pageCount}</span>
