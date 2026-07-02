@@ -21,3 +21,18 @@ This project uses a custom, offline audio generation pipeline to ensure high-qua
 4. **Never Break the Map**:
    - Do NOT change the `speak()` function to rely purely on `md5` hashing on the fly or robotic TTS.
    - If you need to debug missing audio, verify that the string passed to `speak(text)` exactly matches a key in `window.AUDIO_MAP`. Whitespace is stripped via `.trim()`.
+
+---
+
+## Project docs (start here for anything beyond audio)
+
+This file covers only the audio pipeline. For the project as a whole, read
+[`../CLAUDE.md`](../CLAUDE.md) first. Key planning docs:
+
+- **`../docs/VOCABULARY_TEACHING_SPEC.md`** — governing north star for the Words
+  section (linguistics + pedagogy, status scorecard, roadmap, milestone sheet,
+  and the dependency/implementation order that tells you when/where/how to build
+  each piece).
+- `../docs/VOCABULARY_TEACHING_SPEC_SOURCE.md` — the original research spec, verbatim.
+- `../docs/WORDS_SECTION_MASTER_SPEC.md` — the Words implementation plan.
+- `../HANDOVER.md` — repo snapshot and conventions.
