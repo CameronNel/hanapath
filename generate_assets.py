@@ -25,34 +25,35 @@ def extract_korean_text():
     except Exception as e:
         print("Could not read CSV:", e)
 
-    # 2. Extract from app.js (Match any string literal containing Korean Jamo or Syllables)
-    try:
-        with open("app.js", "r", encoding="utf-8") as f:
-            content = f.read()
-            # Match strings in double or single quotes containing at least one Korean char (no newlines)
-            matches_double = re.findall(r'"([^"\n\\]*(?:\\.[^"\n\\]*)*[가-힣ㄱ-ㅎㅏ-ㅣ]+[^"\n\\]*(?:\\.[^"\n\\]*)*)"', content)
-            matches_single = re.findall(r"'([^'\n\\]*(?:\\.[^'\n\\]*)*[가-힣ㄱ-ㅎㅏ-ㅣ]+[^'\n\\]*(?:\\.[^'\n\\]*)*)'", content)
-            
-            for m in matches_double + matches_single:
-                clean_m = m.replace('\\"', '"').replace("\\'", "'").strip()
-                if clean_m:
-                    phrases.add(clean_m)
-                    # Split comma, slash, vertical bar, or interpunct separated sequences (like splitVoiceSequence in app.js)
-                    parts = re.split(r'[,\u3001/·|]+', clean_m)
-                    if len(parts) > 1:
-                        for part in parts:
-                            part_clean = part.strip()
-                            if part_clean:
-                                phrases.add(part_clean)
-                    
-            # Also capture the previous crude regex for sentences not enclosed in standard quotes if any
-            matches_sentences = re.findall(r'([가-힣][가-힣\s\.\?!,]+[가-힣\.\?!])', content)
-            for m in matches_sentences:
-                if m.strip():
-                    phrases.add(m.strip())
-                    
-    except Exception as e:
-        print("Could not read app.js:", e)
+    # 2. Extract from JS files (Match any string literal containing Korean Jamo or Syllables)
+    for filename in ["app.js", "words_curated_core.js", "words_lesson_plan.js"]:
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                content = f.read()
+                # Match strings in double or single quotes containing at least one Korean char (no newlines)
+                matches_double = re.findall(r'"([^"\n\\]*(?:\\.[^"\n\\]*)*[가-힣ㄱ-ㅎㅏ-ㅣ]+[^"\n\\]*(?:\\.[^"\n\\]*)*)"', content)
+                matches_single = re.findall(r"'([^'\n\\]*(?:\\.[^'\n\\]*)*[가-힣ㄱ-ㅎㅏ-ㅣ]+[^'\n\\]*(?:\\.[^'\n\\]*)*)'", content)
+                
+                for m in matches_double + matches_single:
+                    clean_m = m.replace('\\"', '"').replace("\\'", "'").strip()
+                    if clean_m:
+                        phrases.add(clean_m)
+                        # Split comma, slash, vertical bar, or interpunct separated sequences (like splitVoiceSequence in app.js)
+                        parts = re.split(r'[,\u3001/·|]+', clean_m)
+                        if len(parts) > 1:
+                            for part in parts:
+                                part_clean = part.strip()
+                                if part_clean:
+                                    phrases.add(part_clean)
+                        
+                # Also capture the previous crude regex for sentences not enclosed in standard quotes if any
+                matches_sentences = re.findall(r'([가-힣][가-힣\s\.\?!,]+[가-힣\.\?!])', content)
+                for m in matches_sentences:
+                    if m.strip():
+                        phrases.add(m.strip())
+                        
+        except Exception as e:
+            print(f"Could not read {filename}:", e)
         
     return list(phrases)
 

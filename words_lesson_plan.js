@@ -420,8 +420,8 @@
       title: "Polite endings and register",
       subtitle: "Casual, polite, and formal force",
       goal: "Contrast sentence endings by politeness and situation.",
-      newWordIds: ["fw1701_a_eo", "fw1702_ayo_eoyo", "fw1703_seumnida", "fw1704_neyo", "fw1705_lkkayo"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
+      newWordIds: ["fw1701_a_eo", "fw1702_ayo_eoyo", "fw1703_seumnida", "fw1704_neyo", "fw1705_lkkayo", "fw1706_hada_say"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
     defineLesson({
@@ -431,7 +431,7 @@
       subtitle: "Not, cannot, and the past",
       goal: "Build basic time and negative sentence meanings.",
       newWordIds: ["fw1711_an", "fw1712_mot", "fw1713_ji_anta", "fw1714_ji_mothada", "fw1715_asseoyo"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
     defineLesson({
@@ -440,8 +440,8 @@
       title: "Connectives and clause chaining",
       subtitle: "Link clauses naturally",
       goal: "Join short Korean clauses with condition, purpose, and reason.",
-      newWordIds: ["fw1801_myeon", "fw1802_reo", "fw1803_geona", "fw1804_jamaja", "fw1805_daga", "fw1806_ttaemune"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
+      newWordIds: ["fw1801_myeon", "fw1802_reo", "fw1803_geona", "fw1804_jamaja", "fw1805_daga", "fw1806_ttaemune", "w1816_boda_try"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
     defineLesson({
@@ -451,7 +451,7 @@
       subtitle: "Forms that sit before a noun",
       goal: "Recognize present, past, future, and adjective modifier forms.",
       newWordIds: ["fw1811_neun_mod", "fw1812_eun_verb", "fw1813_eul_prosp", "fw1814_eun_adj", "fw1815_geot"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
     defineLesson({
@@ -461,7 +461,7 @@
       subtitle: "Respect the subject, not just the listener",
       goal: "Separate the subject honorific marker from listener politeness.",
       newWordIds: ["fw1901_si", "w1902_gyesida", "w1903_deusida", "w1904_jumusida", "w1905_seongham", "w1906_yeonse"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
     defineLesson({
@@ -470,8 +470,8 @@
       title: "Irregular families",
       subtitle: "Trigger-based sound changes",
       goal: "Treat irregular predicates as predictable trigger families.",
-      newWordIds: ["w1911_geotda", "w1912_maepda", "w1913_jitda", "w1914_ppalgata", "w1915_ppareuda", "w1916_salda"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
+      newWordIds: ["w1911_geotda", "w1912_maepda", "w1913_jitda", "w1914_ppalgata", "w1915_ppareuda", "w1916_salda", "w1917_nada_occur", "w1918_nada_sprout"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
   ];

@@ -25,7 +25,7 @@ const strict = process.argv.includes("--strict");
 
 const sandbox = { window: {} };
 vm.createContext(sandbox);
-for (const file of ["words_curated_core.js", "words_lesson_plan.js"]) {
+for (const file of ["words_curated_core.js", "words_inflect.js", "words_lesson_plan.js"]) {
   vm.runInContext(readFileSync(join(root, file), "utf8"), sandbox, { filename: file });
 }
 
@@ -160,6 +160,37 @@ for (const lesson of lessons || []) {
 const referenced = new Set((lessons || []).flatMap((l) => l.newWordIds || []));
 for (const word of words || []) {
   if (word.id && !referenced.has(word.id)) warnings.push(`${word.id}: not used by any lesson`);
+}
+
+// Inflection engine verification
+const Inflect = sandbox.window.HANAPATH_INFLECT;
+if (!Inflect) {
+  errors.push("HANAPATH_INFLECT is not loaded in sandbox context");
+} else {
+  const GOLD_INFLECTIONS = [
+    { korean: "가다", pos: "verb", forms: { polite: "가요", formal: "갑니다", past: "갔어요", honorific: "가세요", attributive: "가는" } },
+    { korean: "먹다", pos: "verb", forms: { polite: "먹어요", formal: "먹습니다", past: "먹었어요", honorific: "먹으세요", attributive: "먹는" } },
+    { korean: "크다", pos: "adjective", forms: { polite: "커요", formal: "큽니다", past: "컸어요", honorific: "크세요", attributive: "큰" } },
+    { korean: "작다", pos: "adjective", forms: { polite: "작아요", formal: "작습니다", past: "작았어요", honorific: "작으세요", attributive: "작은" } },
+    { korean: "하다", pos: "verb", forms: { polite: "해요", formal: "합니다", past: "했어요", honorific: "하세요", attributive: "하는" } },
+    { korean: "듣다", pos: "verb", irregularFamily: "ㄷ", forms: { polite: "들어요", formal: "듣습니다", past: "들었어요", honorific: "들으세요", attributive: "듣는" } },
+    { korean: "걷다", pos: "verb", irregularFamily: "ㄷ", forms: { polite: "걸어요", formal: "걷습니다", past: "걸었어요", honorific: "걸으세요", attributive: "걷는" } },
+    { korean: "춥다", pos: "adjective", irregularFamily: "ㅂ", forms: { polite: "추워요", formal: "춥습니다", past: "추웠어요", honorific: "추우세요", attributive: "추운" } },
+    { korean: "돕다", pos: "verb", irregularFamily: "ㅂ", forms: { polite: "도와요", formal: "돕습니다", past: "도왔어요", honorific: "도우세요", attributive: "돕는" } },
+    { korean: "짓다", pos: "verb", irregularFamily: "ㅅ", forms: { polite: "지어요", formal: "짓습니다", past: "지었어요", honorific: "지으세요", attributive: "짓는" } },
+    { korean: "빨갛다", pos: "adjective", irregularFamily: "ㅎ", forms: { polite: "빨개요", formal: "빨갛습니다", past: "빨갰어요", honorific: "빨가세요", attributive: "빨간" } },
+    { korean: "빠르다", pos: "adjective", irregularFamily: "르", forms: { polite: "빨라요", formal: "빠릅니다", past: "빨랐어요", honorific: "빠르세요", attributive: "빠른" } },
+    { korean: "살다", pos: "verb", irregularFamily: "ㄹ-deletion", forms: { polite: "살아요", formal: "삽니다", past: "살았어요", honorific: "사세요", attributive: "사는" } }
+  ];
+
+  for (const testCase of GOLD_INFLECTIONS) {
+    for (const [formName, expected] of Object.entries(testCase.forms)) {
+      const generated = Inflect.conjugate(testCase.korean, testCase.pos, testCase.irregularFamily, formName);
+      if (generated !== expected) {
+        errors.push(`Inflection engine fail: conjugate(${testCase.korean}, ${formName}) expected "${expected}" but got "${generated}"`);
+      }
+    }
+  }
 }
 
 console.log(`Curated words: ${(words || []).length}`);
