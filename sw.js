@@ -1,7 +1,8 @@
-// [2026-07-02] Cache bumped to v101: Words detail romanization patch on top of
-// the curated word bank + lesson plan data files, Entire Word Bank reference,
+// [2026-07-02] Cache bumped to v102: Words detail romanization patch now adds
+// sentence romanization plus explicit form and sound notes on top of the
+// curated word bank + lesson plan data files, Entire Word Bank reference,
 // word SRS, and guided word lessons.
-const CACHE_NAME = "hanapath-shell-v101";
+const CACHE_NAME = "hanapath-shell-v102";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,7 +12,7 @@ const APP_SHELL = [
   "./words_curated_core.js?v=20260702a",
   "./words_lesson_plan.js?v=20260702a",
   "./app.js?v=20260702a",
-  "./words_sentence_romanization_patch.js?v=20260702b",
+  "./words_sentence_romanization_patch.js?v=20260702c",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
