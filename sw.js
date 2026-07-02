@@ -1,15 +1,15 @@
-// [2026-07-03] Cache bumped to v103: raw 5,000-word frequency list now has
-// real hand-written English meanings for ranks 1-500 (raw_word_meanings.js),
-// shown in the Word Bank instead of "reference only" wherever available.
-const CACHE_NAME = "hanapath-shell-v103";
+// [2026-07-03] Cache bumped to v104: adds the W17-W19 grammar-mechanics track
+// (polite endings/register, past tense & negation, connectives, noun
+// modification, honorifics, and irregular families) to the curated Words data.
+const CACHE_NAME = "hanapath-shell-v104";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260702b",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./words_curated_core.js?v=20260702c",
-  "./words_lesson_plan.js?v=20260702a",
+  "./words_curated_core.js?v=20260703b",
+  "./words_lesson_plan.js?v=20260703b",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260703a",
   "./alphabet_skill_srs.js?v=20260630a",
