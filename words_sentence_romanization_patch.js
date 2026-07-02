@@ -52,43 +52,36 @@
     return String(value || "")
       .replace(/^Form note:\s*/i, "")
       .replace(/^Sound note:\s*/i, "")
-      .replace(/^Dictionary form is the base entry\.\s*/i, "")
-      .replace(/^This is the dictionary form\.\s*/i, "")
       .trim();
   }
 
   function getFormNote(word) {
-    const usageNote = cleanNoteText(word.usageNote);
-    const dictForm = String(word.display || word.korean || "").trim();
-    const base = dictForm ? `${dictForm} is the dictionary form.` : "This is the dictionary form.";
+    const explicit = cleanNoteText(word.formNote);
+    if (explicit) {
+      return explicit;
+    }
 
-    if (usageNote) {
-      return `${base} ${usageNote}`;
+    const legacy = cleanNoteText(word.usageNote);
+    const dictForm = String(word.display || word.korean || "").trim();
+
+    if (legacy) {
+      if (word.pos === "verb" || word.pos === "adjective") {
+        return dictForm ? `${dictForm} is the dictionary form. ${legacy}` : legacy;
+      }
+      return legacy;
     }
 
     if (word.pos === "verb" || word.pos === "adjective") {
-      return `${base} In this sentence, the word changes to fit tense and politeness.`;
+      return dictForm
+        ? `${dictForm} is the dictionary form. In this sentence, the word changes to fit tense and politeness.`
+        : "In this sentence, the word changes to fit tense and politeness.";
     }
 
     return "";
   }
 
-  function getSoundNote(word, sentenceText) {
-    const custom = cleanNoteText(word.soundNote);
-    if (custom) {
-      return custom;
-    }
-
-    if (word.pos !== "verb" && word.pos !== "adjective") {
-      return "";
-    }
-
-    const spoken = stripSentencePunctuation(sentenceText);
-    if (!spoken) {
-      return "";
-    }
-
-    return "This is the spoken sentence form, so the audio can link sounds together and sound smoother than the written spelling.";
+  function getSoundNote(word) {
+    return cleanNoteText(word.soundNote);
   }
 
   function noteHtml(label, body, extraClass) {
@@ -113,6 +106,7 @@
     style.id = "wordSentenceRomanizationPatchStyles";
     style.textContent = `
       .word-example-rom {
+        margin-top: 2px;
         font-size: .8rem;
         line-height: 1.35;
         color: var(--muted-2);
@@ -122,8 +116,11 @@
       .word-note {
         margin-top: 10px;
         padding: 10px 12px;
+        border: 1px solid rgba(108, 124, 255, 0.16);
         border-left: 2px solid var(--accent-2);
-        border-radius: 0 8px 8px 0;
+        border-radius: 8px;
+        background: rgba(10, 14, 28, 0.72);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
         font-size: .9rem;
         line-height: 1.45;
       }
@@ -131,10 +128,11 @@
       .word-note-label {
         font-weight: 700;
         margin-bottom: 2px;
+        color: var(--accent-2);
       }
 
       .word-note-body {
-        color: var(--muted-1);
+        color: var(--muted-1, var(--muted-2));
       }
     `;
     document.head.appendChild(style);
@@ -155,9 +153,9 @@
       const statusLabel = status === "fresh" ? "Not studied yet" : status.charAt(0).toUpperCase() + status.slice(1);
       const word = row.word;
       const sentenceText = String(word.exampleVoiceText || word.exampleKo || "");
-      const sentenceRomanization = romanizeSentence(sentenceText);
+      const sentenceRomanization = stripSentencePunctuation(word.examplePronunciation || romanizeSentence(sentenceText));
       const formNote = getFormNote(word);
-      const soundNote = getSoundNote(word, sentenceText);
+      const soundNote = getSoundNote(word);
 
       return `
         <div class="card word-bank-detail">
