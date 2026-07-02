@@ -3073,3 +3073,38 @@ li { margin-bottom: 4px; }
 .word-bank-detail > .button { margin-bottom: 4px; }
 .vocab-status.due { background: rgba(251,191,36,.15); color: #fbbf24; }
 .vocab-status.learning { background: rgba(91,157,255,.15); color: var(--accent); }
+
+/* ─── Word detail: sentence romanization + form/sound notes ────────────────── */
+/* [2026-07-02] Word bank detail drawer: shows the example sentence's own
+   romanization (which can differ from the dictionary form's pronunciation)
+   plus a short beginner-facing note on why. Hand-curated only; any
+   auto-derived fallback romanization is visually marked as approximate. */
+
+.word-example-rom {
+  margin-top: 2px;
+  font-size: .8rem;
+  line-height: 1.35;
+  color: var(--muted-2);
+  text-align: center;
+}
+.word-example-rom.is-approx {
+  font-style: italic;
+  opacity: .85;
+}
+
+.word-form-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(108, 124, 255, 0.16);
+  border-left: 2px solid var(--accent-2);
+  border-radius: 8px;
+  background: rgba(10, 14, 28, 0.72);
+  font-size: .85rem;
+  line-height: 1.45;
+  color: var(--muted-2);
+}
+.word-form-note-label {
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: var(--accent-2);
+}

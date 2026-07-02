@@ -1,20 +1,18 @@
-// [2026-07-02] Cache bumped to v104: curated word detail notes now cover the
-// main conjugated verbs/adjectives, and the word drawer renders sentence
-// romanization plus form/sound explanations on top of the curated word bank +
-// lesson plan data files, Entire Word Bank reference, word SRS, and guided
-// word lessons.
-const CACHE_NAME = "hanapath-shell-v104";
+// [2026-07-02] Cache bumped to v101: word bank detail drawer now shows
+// sentence romanization plus a short form/sound-change note next to the
+// example, for curated words whose spoken sentence form differs from the
+// dictionary form. Implemented directly in app.js/words_curated_core.js (no
+// runtime monkey-patch files — those were removed).
+const CACHE_NAME = "hanapath-shell-v101";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260702a",
+  "./styles.css?v=20260702b",
   "./lib/hangul.js",
   "./audio_map.js",
-  "./words_curated_core.js?v=20260702a",
+  "./words_curated_core.js?v=20260702b",
   "./words_lesson_plan.js?v=20260702a",
-  "./words_curated_detail_patch.js?v=20260702b",
-  "./app.js?v=20260702a",
-  "./words_sentence_romanization_patch.js?v=20260702d",
+  "./app.js?v=20260702b",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

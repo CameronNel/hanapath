@@ -5374,6 +5374,48 @@ function wordBankListHtml() {
   `;
 }
 
+// The alphabet section's per-syllable romanizer (romanizeHangulChunk) uses
+// each batchim's neutralized-in-isolation sound, which is wrong once that
+// batchim links into a following vowel (e.g. 집에 -> "jipe" instead of
+// "jibe", 없어요 -> "eopeoyo" instead of "eopseoyo"). It's fine for the
+// alphabet lessons' single-syllable hints but not for sentence liaison, so it
+// is only used here as a last-resort, visibly-marked approximation when a
+// curated examplePronunciation isn't available.
+function approximateSentenceRomanization(text) {
+  const source = String(text || "").normalize("NFC");
+  const pattern = /[가-힣ㄱ-ㅎㅏ-ㅣ]+/g;
+  let lastIndex = 0;
+  let output = "";
+  for (const match of source.matchAll(pattern)) {
+    if (match.index > lastIndex) output += source.slice(lastIndex, match.index);
+    output += romanizeHangulChunk(match[0], source, match.index);
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < source.length) output += source.slice(lastIndex);
+  return output.replace(/[.!?…]+$/, "").replace(/\s+/g, " ").trim();
+}
+
+// Sentence romanization for a word's example: prefer a hand-verified
+// examplePronunciation; only fall back to the approximate per-syllable
+// romanizer when nothing curated exists, and mark it as approximate so it's
+// never shown with the same confidence as a checked value.
+function getWordExampleRomanization(word) {
+  const curated = String(word.examplePronunciation || "").trim();
+  if (curated) return { text: curated, approximate: false };
+  const guess = approximateSentenceRomanization(word.exampleVoiceText || word.exampleKo || "");
+  return { text: guess, approximate: true };
+}
+
+function wordDetailNoteHtml(label, body, extraClass = "") {
+  if (!body) return "";
+  return `
+    <div class="word-form-note ${extraClass}">
+      <div class="word-form-note-label">${escapeHtml(label)}</div>
+      <div>${escapeHtml(body)}</div>
+    </div>
+  `;
+}
+
 function wordBankDetailHtml(row) {
   const knownSet = getVocabKnownSet();
   const hardSet = getVocabHardSet();
@@ -5411,9 +5453,16 @@ function wordBankDetailHtml(row) {
       ${Array.isArray(word.forms) && word.forms.length ? `<div class="word-card-forms">Forms: ${word.forms.map((f) => `<span lang="ko">${escapeHtml(f)}</span>`).join(" · ")}</div>` : ""}
       <div class="word-example">
         <div class="word-example-ko-static" lang="ko">${escapeHtml(word.exampleKo)}</div>
+        ${(() => {
+          const rom = getWordExampleRomanization(word);
+          if (!rom.text) return "";
+          return `<div class="word-example-rom${rom.approximate ? " is-approx" : ""}"${rom.approximate ? ' title="Approximate — not hand-checked"' : ""}>${rom.approximate ? "≈ " : ""}${escapeHtml(rom.text)}</div>`;
+        })()}
         <div class="word-example-en">${escapeHtml(word.exampleEn)}</div>
       </div>
       ${word.usageNote ? `<div class="word-usage-note">${escapeHtml(word.usageNote)}</div>` : ""}
+      ${wordDetailNoteHtml("Why it changed", word.formNote, "word-form-note-change")}
+      ${wordDetailNoteHtml("Sound note", word.soundNote, "word-form-note-sound")}
       <div class="vocab-meta-grid" style="margin-top:12px;">
         <div class="vocab-meta-box"><span>Lesson group</span><strong>${escapeHtml(word.lessonTitle || word.lessonGroup)}</strong></div>
         <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>
