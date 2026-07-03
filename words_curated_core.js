@@ -32,6 +32,34 @@
     "irregular-families": "Irregular families",
   };
 
+  function inferMorphTag(entry) {
+    if (!entry) return "";
+    if (entry.pos === "noun") return "NNG";
+    if (entry.pos === "pronoun") return "NP";
+    if (entry.pos === "numeral") return "NR";
+    if (entry.pos === "counter") return "NNB";
+    if (entry.pos === "verb") return "VV";
+    if (entry.pos === "adjective") return "VA";
+    if (entry.pos === "adverb") return "MAG";
+    if (entry.pos === "determiner") return "MM";
+    if (entry.pos === "interjection" || entry.pos === "phrase") return "IC";
+    if (entry.pos === "ending") {
+      return entry.grammarRole === "sentence-ending" ? "EF" : "EC";
+    }
+    if (entry.pos === "particle") {
+      if (entry.grammarRole === "subject") return "JKS";
+      if (entry.grammarRole === "object") return "JKO";
+      if (entry.grammarRole === "possessive") return "JKG";
+      if (entry.grammarRole === "connective") return "JC";
+      if (entry.grammarRole === "vocative") return "JKV";
+      if (entry.grammarRole === "quotation") return "JKQ";
+      if (entry.grammarRole === "complement") return "JKC";
+      if (entry.grammarRole === "location-time" || entry.grammarRole === "action-location") return "JKB";
+      return "JX";
+    }
+    return "";
+  }
+
   function defineWord(entry) {
     var word = {
       id: entry.id,
@@ -71,7 +99,7 @@
     if (entry.originType) word.originType = entry.originType;
     if (entry.hanja) word.hanja = entry.hanja;
     if (entry.irregularFamily) word.irregularFamily = entry.irregularFamily;
-    if (entry.morphTag) word.morphTag = entry.morphTag;
+    word.morphTag = entry.morphTag || inferMorphTag(entry);
     if (entry.inflections) word.inflections = entry.inflections;
     // Optional word-detail-drawer fields (docs/WORDS_SECTION_MASTER_SPEC.md
     // word-detail UX): the sentence's own romanization when it differs

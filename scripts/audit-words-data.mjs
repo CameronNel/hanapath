@@ -64,7 +64,7 @@ for (const word of words || []) {
   const VALID_ORIGIN_TYPES = new Set(['native', 'Sino-Korean', 'loanword', 'hybrid']);
   const VALID_IRREGULAR_FAMILIES = new Set(['ㄷ', 'ㅂ', 'ㅅ', 'ㅎ', '르', '러', 'ㄹ-deletion']);
   const VALID_MORPH_TAGS = new Set([
-    'NNG', 'NNB', 'XR', 'NNP', 'NP', 'VV', 'VX', 'VCP', 'VCN', 'VA', 'MAG', 'MAJ',
+    'NNG', 'NNB', 'XR', 'NNP', 'NP', 'NR', 'VV', 'VX', 'VCP', 'VCN', 'VA', 'MAG', 'MAJ', 'MM',
     'JKS', 'JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC',
     'EP', 'EF', 'EC', 'ETN', 'ETM', 'XPN', 'XSN', 'XSA', 'XSV', 'IC'
   ]);
@@ -81,7 +81,9 @@ for (const word of words || []) {
   if (word.irregularFamily !== undefined && !VALID_IRREGULAR_FAMILIES.has(word.irregularFamily)) {
     errors.push(`${label}: invalid irregularFamily "${word.irregularFamily}"`);
   }
-  if (word.morphTag !== undefined && !VALID_MORPH_TAGS.has(word.morphTag)) {
+  if (!word.morphTag) {
+    errors.push(`${label}: missing effective morphTag`);
+  } else if (!VALID_MORPH_TAGS.has(word.morphTag)) {
     errors.push(`${label}: invalid morphTag "${word.morphTag}"`);
   }
   if (word.senseKey !== undefined && typeof word.senseKey !== 'string') {

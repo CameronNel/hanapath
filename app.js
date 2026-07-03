@@ -6020,6 +6020,7 @@ function wordBankDetailHtml(row) {
       ${wordDetailNoteHtml("Spelling vs sounds-like", pronunciationLayer, "word-form-note-sound")}
       <div class="vocab-meta-grid" style="margin-top:12px;">
         <div class="vocab-meta-box"><span>Lesson group</span><strong>${escapeHtml(word.lessonTitle || word.lessonGroup)}</strong></div>
+        <div class="vocab-meta-box"><span>Morph tag</span><strong>${escapeHtml(word.morphTag || "—")}</strong></div>
         <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>
       </div>
       <div class="word-card-actions">

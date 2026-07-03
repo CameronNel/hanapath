@@ -299,7 +299,7 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | **Sense-level polysemy** | ✅ | Senses split with `lemma`, `senseKey`, and `senseNo` fields |
 | **Word-origin tagging (native/Sino/loan)** | 🟡 | `originType` is broadly present; `hanja` is retained only when verified as real CJK ideographs |
 | **Register as a data axis** | 🟡 | Explicitly modeled via `register` and `speechLevel` fields on register-bearing rows; not corpus-wide |
-| **Morph tags (Sejong/UD)** | ❌ | coarse learner `pos` only |
+| **Morph tags (Sejong/UD)** | 🟡 | every row now has a validated effective `morphTag`; broad tags are derived from learner `pos`, not fully hand-curated |
 | **Pronunciation training (minimal pairs, 3-way stops)** | ✅ | Vocab minimal-pair drill exists; every curated word card shows spelling vs sounds-like layers |
 | **Pronunciation scoring (segmental + prosodic)** | ❌ | TTS playback only |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
