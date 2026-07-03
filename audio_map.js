@@ -7718,5 +7718,7 @@ window.AUDIO_MAP = {
   "영화 보면서 과자를 먹어요.": "./audio/b6502aa9df83293fc6f35e3627ba16b5.mp3",
   "자라": "./audio/86b736d45aa0bd80f0f8d376b3687435.mp3",
   "주파수": "./audio/7f6b67bb112aa1f8c140ba73a854e6fe.mp3",
-  "꺼": "./audio/0bfa396fb44e13630498d1fbefc2419b.mp3"
+  "꺼": "./audio/0bfa396fb44e13630498d1fbefc2419b.mp3",
+  "사과 두 개가 있어요.": "./audio/ada213ce42efafee85fc26fb89ef0ebc.mp3",
+  "꽃 시장에서 장미를 샀어요.": "./audio/d093ce2b723143b53e705a6f6508ce83.mp3"
 };

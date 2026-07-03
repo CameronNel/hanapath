@@ -5,6 +5,8 @@
 import os
 import re
 
+HANJA_RE = re.compile(r"[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]")
+
 # Word definitions grouped by category
 CATEGORIES = {
     "numbers-sino": [
@@ -24,7 +26,7 @@ CATEGORIES = {
     ],
     "numbers-native": [
         {"korean": "하나", "pos": "numeral", "meaning": "one (native)", "pron": "hana", "exKo": "사과 하나 주세요.", "exEn": "Give me one apple, please.", "origin": "native"},
-        {"korean": "둘", "pos": "numeral", "meaning": "two (native)", "pron": "dul", "exKo": "사과 둘 개가 있어요.", "exEn": "I have two apples.", "origin": "native"},
+        {"korean": "둘", "pos": "numeral", "meaning": "two (native)", "pron": "dul", "exKo": "사과 두 개가 있어요.", "exEn": "I have two apples.", "origin": "native"},
         {"korean": "셋", "pos": "numeral", "meaning": "three (native)", "pron": "set", "exKo": "셋이서 밥을 먹어요.", "exEn": "The three of us eat a meal.", "origin": "native"},
         {"korean": "넷", "pos": "numeral", "meaning": "four (native)", "pron": "net", "exKo": "넷이서 놀러 가요.", "exEn": "The four of us go play.", "origin": "native"},
         {"korean": "다섯", "pos": "numeral", "meaning": "five (native)", "pron": "daseot", "exKo": "다섯 명이 있어요.", "exEn": "There are five people.", "origin": "native"},
@@ -616,7 +618,7 @@ MORE_WORDS = [
     {"korean": "강_river", "pos": "noun", "meaning": "river flow", "pron": "gang", "exKo": "강물 소리가 잔잔해요.", "exEn": "The river water sound is calm.", "origin": "Sino-Korean", "hanja": "강", "group": "weather-nature"},
     {"korean": "바다_sea", "pos": "noun", "meaning": "ocean sea", "pron": "bada", "exKo": "바다 냄새가 아주 짭짤해요.", "exEn": "The sea smell is very salty.", "origin": "native", "group": "weather-nature"},
     {"korean": "나무_tree", "pos": "noun", "meaning": "plant tree", "pron": "namu", "exKo": "나무 밑에서 바람을 피해요.", "exEn": "I avoid the wind under the tree.", "origin": "native", "group": "weather-nature"},
-    {"korean": "꽃_flower", "pos": "noun", "meaning": "blooming flower", "pron": "kkot", "exKo": "꽃 시장에서장미를 샀어요.", "exEn": "I bought roses at the flower market.", "origin": "native", "group": "weather-nature"},
+    {"korean": "꽃_flower", "pos": "noun", "meaning": "blooming flower", "pron": "kkot", "exKo": "꽃 시장에서 장미를 샀어요.", "exEn": "I bought roses at the flower market.", "origin": "native", "group": "weather-nature"},
     {"korean": "풀_grass", "pos": "noun", "meaning": "green grass", "pron": "pul", "exKo": "풀밭에 누워서 하늘을 봐요.", "exEn": "I lie on the grass and watch the sky.", "origin": "native", "group": "weather-nature"},
     {"korean": "돌_stone", "pos": "noun", "meaning": "hard stone", "pron": "dol", "exKo": "돌탑을 정성껏 쌓았어요.", "exEn": "I built a stone tower with care.", "origin": "native", "group": "weather-nature"},
     {"korean": "흙_soil", "pos": "noun", "meaning": "earth soil", "pron": "heuk", "exKo": "흙을 만지면 기분이 좋아져요.", "exEn": "Touching soil makes me feel better.", "origin": "native", "group": "weather-nature"},
@@ -664,7 +666,7 @@ def process_entry(item, idx):
         "difficulty": item.get("difficulty", 3)
     }
     
-    if "hanja" in item:
+    if "hanja" in item and HANJA_RE.search(item["hanja"]):
         w_obj["hanja"] = item["hanja"]
     if "irregularFamily" in item:
         w_obj["irregularFamily"] = item["irregularFamily"]
