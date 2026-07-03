@@ -1,14 +1,15 @@
-// [2026-07-03] Cache bumped to v115: merges provenance/curation-queue + register-inference fix with main's #49 audit-gap fixes.
-const CACHE_NAME = "hanapath-shell-v135";
+// [2026-07-03] Cache bumped to v136: removed 74 disguised-duplicate curated words
+// (fake senseKey re-adds) + 2 now-empty lessons; hardened the audit's senseKey exemption.
+const CACHE_NAME = "hanapath-shell-v136";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260703a",
   "./lib/hangul.js",
   "./audio_map.js?v=20260703c",
-  "./words_curated_core.js?v=20260703x",
+  "./words_curated_core.js?v=20260703y",
   "./words_inflect.js?v=20260703b",
-  "./words_lesson_plan.js?v=20260703f",
+  "./words_lesson_plan.js?v=20260703g",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260703o",
   "./alphabet_skill_srs.js?v=20260630a",
