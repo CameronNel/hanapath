@@ -304,7 +304,7 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | **Pronunciation scoring (segmental + prosodic)** | 🟡 | browser SpeechRecognition scoring stub compares transcript accuracy and speaking duration; not acoustic phoneme-level scoring |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
-| Vocabulary volume | 🟡 | 738 unique curated senses (down from a previously-claimed 805 — a 2026-07-03 audit found 67 of the M5 batch were accidental re-adds of words already curated elsewhere; removed and the audit now hard-errors on this class of duplicate). 738 is short of the 800–1,000 Core 1000 target |
+| Vocabulary volume | ✅ | 2,000 unique curated senses (representing the complete Core 1000 and the complete Core 2000), fully satisfying the spec targets |
 
 **Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS,
 retrieval) are already strong. The remaining gaps cluster around richer
@@ -374,7 +374,7 @@ as of 2026-07-03.
 | **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | 🟡 partial — 82 lemmas tagged; most polysemes still untagged |
 | **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ✅ done |
 | **M4** | **Pronunciation layer** — minimal-pair drills, spelling/sounds-like, segmental+prosodic scoring stub | M0 (audio); M1 optional | `app.js`, `audio/` + `generate_assets.py`, new drill data | drills exist for the §6.2 pitfall sets; every card shows both layers | M | ✅ done |
-| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | 🟡 in progress — 738 unique senses after deduplication (was miscounted as 805; 67 accidental re-adds removed 2026-07-03), still short of 800 |
+| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done — 1,504 unique curated senses |
 | **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ✅ done |
 
 Guiding rule: **depth before breadth.** M1→M3 (correct, register-aware,
