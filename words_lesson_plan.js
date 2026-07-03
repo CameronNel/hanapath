@@ -118,7 +118,7 @@
       title: "Food and drink",
       subtitle: "Eating essentials",
       goal: "Order water, talk about meals, eat and drink.",
-      newWordIds: ["w0501_mul", "w0502_bap", "w0503_eumsik", "w0509_meokda", "w0510_masida", "w_m6_2995_chada_full"],
+      newWordIds: ["w0501_mul", "w0502_bap", "w_m6_3005_bap_rice", "w0503_eumsik", "w0509_meokda", "w0510_masida", "w_m6_2995_chada_full"],
     }),
     defineLesson({
       id: "w5-food-drink-02",
@@ -142,7 +142,7 @@
       title: "Time and daily rhythm II",
       subtitle: "Morning to evening",
       goal: "Talk about the parts of the day.",
-      newWordIds: ["w0605_sigan", "w0606_achim", "w0607_jeomsim", "w0608_jeonyeok", "w0609_nal", "w_m6_2976_geollida_time"],
+      newWordIds: ["w0605_sigan", "w_m6_3006_sigan_hour", "w0606_achim", "w_m6_3007_achim_breakfast", "w0607_jeomsim", "w_m6_3008_jeomsim_noon", "w0608_jeonyeok", "w_m6_3009_jeonyeok_dinner", "w0609_nal", "w_m6_2976_geollida_time"],
     }),
     defineLesson({
       id: "w7-core-actions-01",
@@ -367,7 +367,7 @@
       title: "Body and health IV",
       subtitle: "Getting help",
       goal: "Find help and take care of yourself.",
-      newWordIds: ["w1508_byeongwon", "w1509_yak", "w1519_yakguk", "w1520_uisa", "w1516_undonghada"],
+      newWordIds: ["w1508_byeongwon", "w1509_yak", "w_m6_3010_byeong_illness", "w1519_yakguk", "w1520_uisa", "w1516_undonghada"],
     }),
 
     defineLesson({
@@ -376,7 +376,7 @@
       title: "Weather and nature",
       subtitle: "Rain or shine",
       goal: "Talk about today's weather.",
-      newWordIds: ["w1601_nalssi", "w1602_bi", "w1603_baram", "w1604_deopda", "w1605_chupda", "w_m6_2979_jida_sunset"],
+      newWordIds: ["w1601_nalssi", "w_m6_3011_ilgi_weather", "w1602_bi", "w1603_baram", "w1604_deopda", "w1605_chupda", "w_m6_2979_jida_sunset"],
     }),
     defineLesson({
       id: "w16-weather-nature-02",
@@ -822,9 +822,9 @@
       id: "w32-theme-56",
       stage: "W32",
       title: "Study and class life Part 56",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your thematic vocabulary for study and class life.",
-      newWordIds: ["w_m5_404_daehaksaeng", "w_m5_410_daedap", "w_m5_413_munhak", "w_m5_414_mungu", "w_m5_415_munseo", "w_m5_416_hanmun"]
+      newWordIds: ["w_m5_404_daehaksaeng", "w_m5_410_daedap", "w_m5_413_munhak", "w_m5_414_mungu", "w_m6_3013_mungu_phrase", "w_m5_415_munseo", "w_m5_416_hanmun"]
     }),
     defineLesson({
       id: "w32-theme-57",
@@ -1574,17 +1574,17 @@
       id: "w110-theme-156",
       stage: "W110",
       title: "School and study",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 9 common words",
       goal: "Expand your vocabulary for school and study.",
-      newWordIds: ["w_m6_1251_daesang", "w_m6_1252_meonjeo", "w_m6_1253_jonjae", "w_m6_1254_aju", "w_m6_1255_josa", "w_m6_1256_chucheon", "w_m6_1257_guseong"]
+      newWordIds: ["w_m6_1251_daesang", "w_m6_1252_meonjeo", "w_m6_1253_jonjae", "w_m6_1254_aju", "w_m6_1255_josa", "w_m6_1256_chucheon", "w_m6_1257_guseong", "w_m6_3012_yangsik_form", "w_m6_3016_gajeong_assumption"]
     }),
     defineLesson({
       id: "w111-theme-157",
       stage: "W111",
       title: "occupations",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for occupations.",
-      newWordIds: ["w_m6_1258_gieop", "w_m6_1259_honja", "w_m6_1260_daebubun", "w_m6_1261_maeu", "w_m6_1262_sabeop", "w_m6_1263_seoro", "w_m6_1264_jayeon"]
+      newWordIds: ["w_m6_1258_gieop", "w_m6_1259_honja", "w_m6_1260_daebubun", "w_m6_1261_maeu", "w_m6_1262_sabeop", "w_m6_1263_seoro", "w_m6_1264_jayeon", "w_m6_3015_geomsa_prosecutor"]
     }),
     defineLesson({
       id: "w112-theme-158",
@@ -1854,9 +1854,9 @@
       id: "w145-theme-191",
       stage: "W145",
       title: "Feelings and descriptions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for feelings and descriptions.",
-      newWordIds: ["w_m6_1565_myeonjeok", "w_m6_1566_myeongching", "w_m6_1567_moheom", "w_m6_1568_mogyok", "w_m6_1569_moksori", "w_m6_1570_mudae", "w_m6_1571_muyeok"]
+      newWordIds: ["w_m6_1565_myeonjeok", "w_m6_1566_myeongching", "w_m6_1567_moheom", "w_m6_1568_mogyok", "w_m6_1569_moksori", "w_m6_1570_mudae", "w_m6_1571_muyeok", "w_m6_3018_insang_impression"]
     }),
     defineLesson({
       id: "w146-theme-192",
@@ -1878,17 +1878,17 @@
       id: "w148-theme-194",
       stage: "W148",
       title: "School and study",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for school and study.",
-      newWordIds: ["w_m6_2004_jujang", "w_m6_2005_chwaryeong", "w_m6_2006_hompeiji", "w_m6_2007_giguan", "w_m6_2008_boho", "w_m6_2009_orae", "w_m6_2010_incheon"]
+      newWordIds: ["w_m6_2004_jujang", "w_m6_2005_chwaryeong", "w_m6_2006_hompeiji", "w_m6_2007_giguan", "w_m6_2008_boho", "w_m6_2009_orae", "w_m6_2010_incheon", "w_m6_3017_gwajeong_course"]
     }),
     defineLesson({
       id: "w149-theme-195",
       stage: "W149",
       title: "occupations",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for occupations.",
-      newWordIds: ["w_m6_2011_gamdok", "w_m6_2012_byeongyeong", "w_m6_2013_jeongchaek", "w_m6_2014_jojik", "w_m6_2015_sangdae", "w_m6_2016_yeangeo", "w_m6_2017_wonrae"]
+      newWordIds: ["w_m6_2011_gamdok", "w_m6_3014_gamdok_supervisor", "w_m6_2012_byeongyeong", "w_m6_2013_jeongchaek", "w_m6_2014_jojik", "w_m6_2015_sangdae", "w_m6_2016_yeangeo", "w_m6_2017_wonrae"]
     }),
     defineLesson({
       id: "w150-theme-196",
