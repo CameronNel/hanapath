@@ -1,20 +1,20 @@
 # HanaPath
 
-HanaPath is a mobile-first Korean learning app built around four learner-first tabs:
+HanaPath is a mobile-first Korean learning app built around three tabs:
 
-- Today
-- Path
+- Learn
 - Practice
-- Library
+- Progress
 
-The app opens with a guided daily action, routes learners based on onboarding answers, and grows through level-based practice with review loops, quizzes, and the 5k vocabulary file.
+The app teaches Hangul first (a complete 8-stage alphabet course), then a
+curated ~1,900-sense Words curriculum with SRS review, an inflection engine,
+pronunciation drills, and the 5k frequency word bank as reference.
 
 ## What each tab does
 
-- `Today` tells you what to do next.
-- `Path` shows the full roadmap through Hangul and beyond.
-- `Practice` handles sentence building, speaking-style drills, and listening work.
-- `Library` keeps vocabulary, phrases, and reference content close at hand.
+- `Learn` holds the study material: the alphabet course, vocabulary lessons and the full Word Bank, sentences, and listening.
+- `Practice` handles quizzes, review sessions, and drills.
+- `Progress` shows mastery, review analytics, and retention metrics.
 
 ## Run locally
 
@@ -39,10 +39,11 @@ node scripts/audit-app-shell.mjs
 
 ## Main files
 
-- `index.html`
-- `app.js`
-- `styles.css`
-- `korean_5000_claude_ready.csv`
+- `index.html`, `app.js`, `styles.css`
+- `words_curated_core.js`, `words_lesson_plan.js`, `words_inflect.js` — Words data + inflection engine
+- `korean_5000_claude_ready.csv`, `raw_word_meanings.js` — 5k frequency reference
+- `audio_map.js`, `audio/` — pre-generated TTS assets
+- `sw.js` — service worker (cache-versioned app shell)
 
 ## Planning & docs
 

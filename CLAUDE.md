@@ -19,10 +19,12 @@ otherwise.
 > **dependency & implementation order (§12)** — §11–§12 tell you *when, where,
 > and how* to implement each piece.
 
-The app is **not there yet**. The spec describes a script-aware,
-morphology-aware, register-aware lexical system; the shipped app is a solid
-beginner scaffold. Do not assume the spec describes current behavior — check the
-scorecard.
+Most of the spec is now built (script course, SRS, inflection engine,
+pronunciation drills, ~1,900 curated senses, analytics). What remains to
+finalize the Words section is listed in the spec's **§9 roadmap** — do not
+assume either "done" or "not done" from memory; **check the scorecard, then
+verify its claims against the actual data** (the scorecard has been wrong
+three times: PRs #50, #51, #54).
 
 ## Document map (what to read for what)
 

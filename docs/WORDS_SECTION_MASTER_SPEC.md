@@ -3119,26 +3119,19 @@ Add these fields to the curated schema when known; enforce enums in
 Note: the master schema already declares `register`/`politeness`/`related`;
 main's shipped `defineWord` dropped them for simplicity. Re-add additively.
 
-## 25.3 Revised PR sequence (supersedes §20 ordering)
+## 25.3 Revised PR sequence (supersedes §20 ordering) — delivered
 
 §20's PRs 1–7 (data foundation → bank → SRS → lessons → quick-ref → quiz →
-polish) are **largely delivered** in the shipped app. The remaining work is
-re-prioritized by learning leverage (full detail in the teaching spec §9):
-
-1. **Data axes** — additive sense/register/origin/morph fields + audit enums.
-2. **Sense split** — per-sense rows for high-frequency polysemous lexemes.
-3. **Inflection engine** — stem→form generator/recognizer; drive form
-   checkpoints from it.
-4. **Pronunciation layer** — minimal-pair drills + "spelling vs sounds-like" +
-   segmental/prosodic scoring stub.
-5. **Authoring to Core 1000** — ~230 → 800–1,000 senses vs the official level-1
-   list; numbers/counters and Sino-Korean families as explicit themes.
-6. **Assessment & analytics** — per-item review events, mastery model, retention
-   metrics.
+polish) shipped, and so did the re-prioritized follow-on sequence this section
+introduced: data axes, inflection engine, pronunciation layer, Core 1000/2000
+authoring, and assessment & analytics are all live (PRs #40–#54). The one item
+still open is the **sense split** — per-sense rows for high-frequency
+polysemous lexemes.
 
 ## 25.4 Status snapshot
 
-See the scorecard in [`VOCABULARY_TEACHING_SPEC.md` §8](VOCABULARY_TEACHING_SPEC.md#8-current-status-vs-this-spec).
-In short: script course, Hangul-first UX, SRS, and bidirectional retrieval are
-solid; the open gaps are data-model depth (sense/register/origin/morph), the
-inflection engine, pronunciation training, and lexicon volume.
+See the scorecard in [`VOCABULARY_TEACHING_SPEC.md` §8](VOCABULARY_TEACHING_SPEC.md#8-current-status-vs-this-spec)
+and the **§9 finalization checklist** — §9 is the live work list. In short:
+everything structural is shipped; what remains is genuine sense-splitting
+(M2), curation of inferred labels, curriculum polish after the dedupe passes,
+and an owner decision on pronunciation scoring.

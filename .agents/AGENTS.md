@@ -10,7 +10,7 @@ This project uses a custom, offline audio generation pipeline to ensure high-qua
    - The `speak(text)` function in `app.js` first looks up `window.AUDIO_MAP[text]`. If an exact match is found, it plays the `.mp3`. If it misses, it falls back to `window.speechSynthesis`.
 
 2. **When Adding New Vocabulary / Text**:
-   - If you add new Korean words, sentences, or characters to `korean_5000_claude_ready.csv` or anywhere inside `app.js`, **you MUST regenerate the audio assets**.
+   - If you add new Korean words, sentences, or characters **anywhere the app speaks them** — `words_curated_core.js` (including example sentences and `voiceText`/`exampleVoiceText`), `words_lesson_plan.js`, `korean_5000_claude_ready.csv`, or inside `app.js` — **you MUST regenerate the audio assets**.
    
 3. **How to Regenerate Assets**:
    - Run the Python script: `python generate_assets.py`
