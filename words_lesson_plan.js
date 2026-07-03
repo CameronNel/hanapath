@@ -182,17 +182,9 @@
       title: "Question words",
       subtitle: "Where, why, how",
       goal: "Ask the questions that get you around.",
-      newWordIds: ["w0901_eodi", "w0902_wae", "w0903_eotteoke", "w0904_eolma", "w0905_myeot"],
+      newWordIds: ["w0901_eodi", "w0902_wae", "w0903_eotteoke", "w0904_eolma", "w0905_myeot", "w0906_museun", "w0907_eotteon", "w0908_eolmana"],
     }),
-    defineLesson({
-      id: "w9-question-words-02",
-      stage: "W9",
-      title: "Question words II",
-      subtitle: "Which and what kind",
-      goal: "Ask about kinds, choices, and degree.",
-      newWordIds: ["w0906_museun", "w0907_eotteon", "w0908_eolmana"],
-    }),
-    defineLesson({
+        defineLesson({
       id: "w10-function-words-01",
       stage: "W10",
       title: "Function words 1",
@@ -518,19 +510,11 @@
       id: "w21-theme-06",
       stage: "W21",
       title: "Building bridge Part 6",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 9 common words",
       goal: "Expand your thematic vocabulary for building bridge.",
-      newWordIds: ["w_m5_035_mari", "w_m5_036_gwon", "w_m5_037_byeong", "w_m5_038_jan", "w_m5_039_geureut", "w_m5_040_jang", "w_m5_041_dae"]
+      newWordIds: ["w_m5_035_mari", "w_m5_036_gwon", "w_m5_037_byeong", "w_m5_038_jan", "w_m5_039_geureut", "w_m5_040_jang", "w_m5_041_dae", "w_m5_042_beol", "w_m5_043_kyeolle"]
     }),
-    defineLesson({
-      id: "w21-theme-07",
-      stage: "W21",
-      title: "Building bridge Part 7",
-      subtitle: "Learn 2 common words",
-      goal: "Expand your thematic vocabulary for building bridge.",
-      newWordIds: ["w_m5_042_beol", "w_m5_043_kyeolle"]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w22-theme-08",
       stage: "W22",
       title: "Family and relationship Part 8",
@@ -550,7 +534,7 @@
       id: "w22-theme-10",
       stage: "W22",
       title: "Family and relationship Part 10",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your thematic vocabulary for family and relationship.",
       newWordIds: ["w_m5_058_halmeoni", "w_m5_059_samchon", "w_m5_060_imo", "w_m5_061_gomo", "w_m5_062_sachon", "w_m5_063_joka", "w_m5_402_sikgu", "w_m5_406_daegajok"]
     }),
@@ -570,15 +554,7 @@
       goal: "Expand your thematic vocabulary for colors of the world.",
       newWordIds: ["w_m5_071_borasaek", "w_m5_072_galsaek", "w_m5_073_hoesaek", "w_m5_074_juhwangsaek", "w_m5_075_bunhongsaek"]
     }),
-    defineLesson({
-      id: "w24-theme-14",
-      stage: "W24",
-      title: "Human body Part 14",
-      subtitle: "Learn 7 common words",
-      goal: "Expand your thematic vocabulary for human body.",
-      newWordIds: [   "w_m5_079_ko", "w_m5_080_ip", "w_m5_081_gwi", ]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w24-theme-15",
       stage: "W24",
       title: "Human body Part 15",
@@ -590,15 +566,15 @@
       id: "w24-theme-16",
       stage: "W24",
       title: "Human body Part 16",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your thematic vocabulary for human body.",
-      newWordIds: ["w_m5_090_bae", "w_m5_091_songarak", "w_m5_092_balgarak", "w_m5_093_ippal", "w_m5_094_pibu", ]
+      newWordIds: ["w_m5_090_bae", "w_m5_091_songarak", "w_m5_092_balgarak", "w_m5_093_ippal", "w_m5_094_pibu", "w_m5_079_ko", "w_m5_080_ip", "w_m5_081_gwi"]
     }),
     defineLesson({
       id: "w25-theme-17",
       stage: "W25",
       title: "Fashion and clothing Part 17",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for fashion and clothing.",
       newWordIds: [ "w_m5_097_moja", "w_m5_098_baji", "w_m5_099_chima", "w_m5_100_syeocheu", "w_m5_101_yangmal", "w_m5_102_gudu"]
     }),
@@ -606,27 +582,19 @@
       id: "w25-theme-18",
       stage: "W25",
       title: "Fashion and clothing Part 18",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for fashion and clothing.",
-      newWordIds: [ "w_m5_104_koteu", "w_m5_105_tisyeocheu",   "w_m5_108_belteu", "w_m5_109_janggap"]
+      newWordIds: ["w_m5_104_koteu", "w_m5_105_tisyeocheu", "w_m5_108_belteu", "w_m5_109_janggap", "w_m5_476_ipda", "w_m5_477_beotda"]
     }),
     defineLesson({
       id: "w25-theme-19",
       stage: "W25",
       title: "Fashion and clothing Part 19",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for fashion and clothing.",
       newWordIds: ["w_m5_110_mokdori",  "w_m5_112_nektai",  "w_m5_426_hwajangpum", "w_m5_473_sseuda_wear", "w_m5_475_sinda"]
     }),
-    defineLesson({
-      id: "w25-theme-20",
-      stage: "W25",
-      title: "Fashion and clothing Part 20",
-      subtitle: "Learn 2 common words",
-      goal: "Expand your thematic vocabulary for fashion and clothing.",
-      newWordIds: ["w_m5_476_ipda", "w_m5_477_beotda"]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w26-theme-21",
       stage: "W26",
       title: "Nature's animals Part 21",
@@ -654,7 +622,7 @@
       id: "w27-theme-24",
       stage: "W27",
       title: "Food and taste Part 24",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 4 common words",
       goal: "Expand your thematic vocabulary for food and taste.",
       newWordIds: ["w_m5_133_banchan",  "w_m5_135_yachae",  "w_m5_137_uyu",  "w_m5_139_gyeran"]
     }),
@@ -694,15 +662,15 @@
       id: "w28-theme-31",
       stage: "W28",
       title: "Home routine Part 31",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for home routine.",
-      newWordIds: ["w_m5_164_jeondeung",  "w_m5_166_setakgi",  "w_m5_168_jeonhwagi", "w_m5_169_sopa", ]
+      newWordIds: ["w_m5_164_jeondeung", "w_m5_166_setakgi", "w_m5_168_jeonhwagi", "w_m5_169_sopa", "w_m5_505_kal"]
     }),
     defineLesson({
       id: "w28-theme-32",
       stage: "W28",
       title: "Home routine Part 32",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for home routine.",
       newWordIds: ["w_m5_171_hwabun", "w_m5_172_begae", "w_m5_173_ibul",  "w_m5_175_hyuji", "w_m5_176_sugeon", "w_m5_177_binu"]
     }),
@@ -710,31 +678,15 @@
       id: "w28-theme-33",
       stage: "W28",
       title: "Home routine Part 33",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your thematic vocabulary for home routine.",
-      newWordIds: ["w_m5_178_chiyak", "w_m5_179_chitsol", "w_m5_180_syampu", "w_m5_388_saenghwal", "w_m5_407_daemun",  "w_m5_432_gongdong"]
+      newWordIds: ["w_m5_178_chiyak", "w_m5_179_chitsol", "w_m5_180_syampu", "w_m5_388_saenghwal", "w_m5_407_daemun", "w_m5_432_gongdong", "w_m5_506_teipeu", "w_m5_507_sseuregitong"]
     }),
-    defineLesson({
-      id: "w28-theme-34",
-      stage: "W28",
-      title: "Home routine Part 34",
-      subtitle: "Learn 7 common words",
-      goal: "Expand your thematic vocabulary for home routine.",
-      newWordIds: ["w_m5_505_kal"]
-    }),
-    defineLesson({
-      id: "w28-theme-35",
-      stage: "W28",
-      title: "Home routine Part 35",
-      subtitle: "Learn 2 common words",
-      goal: "Expand your thematic vocabulary for home routine.",
-      newWordIds: ["w_m5_506_teipeu", "w_m5_507_sseuregitong"]
-    }),
-    defineLesson({
+            defineLesson({
       id: "w29-theme-36",
       stage: "W29",
       title: "Travel and city places Part 36",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 4 common words",
       goal: "Expand your thematic vocabulary for travel and city places.",
       newWordIds: ["w_m5_181_gyotong",   "w_m5_184_bihaenggi", "w_m5_185_jajeongeo",  "w_m5_187_jeongryujang"]
     }),
@@ -742,7 +694,7 @@
       id: "w29-theme-37",
       stage: "W29",
       title: "Travel and city places Part 37",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 4 common words",
       goal: "Expand your thematic vocabulary for travel and city places.",
       newWordIds: [  "w_m5_190_otobai", "w_m5_191_bae_boat",  "w_m5_193_unjeon", "w_m5_194_sinhodeung"]
     }),
@@ -750,15 +702,15 @@
       id: "w29-theme-38",
       stage: "W29",
       title: "Travel and city places Part 38",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for travel and city places.",
-      newWordIds: ["w_m5_195_dosi",  "w_m5_197_mateu", "w_m5_198_eunhaeng",   "w_m5_201_ucheguk"]
+      newWordIds: ["w_m5_195_dosi", "w_m5_197_mateu", "w_m5_198_eunhaeng", "w_m5_201_ucheguk", "w_m5_514_kape_cafe", "w_m6_2966_cha_car"]
     }),
     defineLesson({
       id: "w29-theme-39",
       stage: "W29",
       title: "Travel and city places Part 39",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for travel and city places.",
       newWordIds: ["w_m5_202_seojeom", "w_m5_203_geukjang", "w_m5_376_jungguk", "w_m5_377_miguk", "w_m5_378_yeongguk", "w_m5_379_ilbon"]
     }),
@@ -782,7 +734,7 @@
       id: "w29-theme-42",
       stage: "W29",
       title: "Travel and city places Part 42",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for travel and city places.",
       newWordIds: ["w_m5_447_misulgwan", "w_m5_448_suyeongjang", "w_m5_449_cheyukgwan", "w_m5_450_helseujang", "w_m5_451_noraebang", "w_m5_452_yeonghwagwan", ]
     }),
@@ -790,23 +742,15 @@
       id: "w29-theme-43",
       stage: "W29",
       title: "Travel and city places Part 43",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for travel and city places.",
       newWordIds: ["w_m5_454_juyuso", "w_m5_455_gyeongchalseo", "w_m5_456_sobangseo", "w_m5_457_sicheong", "w_m5_458_gucheong"]
     }),
-    defineLesson({
-      id: "w29-theme-44",
-      stage: "W29",
-      title: "Travel and city places Part 44",
-      subtitle: "Learn 2 common words",
-      goal: "Expand your thematic vocabulary for travel and city places.",
-      newWordIds: ["w_m5_514_kape_cafe", "w_m6_2966_cha_car"]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w30-theme-45",
       stage: "W30",
       title: "Nature and landscape Part 45",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for nature and landscape.",
       newWordIds: [ "w_m5_206_hae_sun", "w_m5_207_gureum",  "w_m5_209_ondo", "w_m5_210_san", "w_m5_211_gang"]
     }),
@@ -822,19 +766,11 @@
       id: "w30-theme-47",
       stage: "W30",
       title: "Nature and landscape Part 47",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for nature and landscape.",
-      newWordIds: ["w_m5_423_byeonhwa", "w_m5_431_dongjjok", "w_m5_479_naerida_fall"]
+      newWordIds: ["w_m5_423_byeonhwa", "w_m5_431_dongjjok", "w_m5_479_naerida_fall", "w_m5_520_pul_grass", "w_m5_525_namunnip"]
     }),
-    defineLesson({
-      id: "w30-theme-48",
-      stage: "W30",
-      title: "Nature and landscape Part 48",
-      subtitle: "Learn 7 common words",
-      goal: "Expand your thematic vocabulary for nature and landscape.",
-      newWordIds: ["w_m5_520_pul_grass", "w_m5_525_namunnip"]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w31-theme-49",
       stage: "W31",
       title: "Time and calendar Part 49",
@@ -854,23 +790,15 @@
       id: "w31-theme-51",
       stage: "W31",
       title: "Time and calendar Part 51",
-      subtitle: "Learn 7 common words",
-      goal: "Expand your thematic vocabulary for time and calendar.",
-      newWordIds: ["w_m5_231_gonghyuil", "w_m5_232_hyuga", "w_m5_386_saengil", "w_m5_387_insaeng", "w_m5_420_hwayoil"]
-    }),
-    defineLesson({
-      id: "w31-theme-52",
-      stage: "W31",
-      title: "Time and calendar Part 52",
       subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for time and calendar.",
-      newWordIds: ["w_m5_530_banghak_break"]
+      newWordIds: ["w_m5_231_gonghyuil", "w_m5_232_hyuga", "w_m5_386_saengil", "w_m5_387_insaeng", "w_m5_420_hwayoil", "w_m5_530_banghak_break"]
     }),
-    defineLesson({
+        defineLesson({
       id: "w32-theme-53",
       stage: "W32",
       title: "Study and class life Part 53",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for study and class life.",
       newWordIds: ["w_m5_233_gongchaek",   "w_m5_236_sukje", "w_m5_237_chilpan", "w_m5_238_seongjeok", "w_m5_239_gyosil"]
     }),
@@ -878,7 +806,7 @@
       id: "w32-theme-54",
       stage: "W32",
       title: "Study and class life Part 54",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for study and class life.",
       newWordIds: ["w_m5_240_gyogwaseo", "w_m5_241_piltong", "w_m5_242_jiugae",   "w_m5_368_hagwon", "w_m5_369_suhak"]
     }),
@@ -894,7 +822,7 @@
       id: "w32-theme-56",
       stage: "W32",
       title: "Study and class life Part 56",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for study and class life.",
       newWordIds: ["w_m5_404_daehaksaeng", "w_m5_410_daedap", "w_m5_413_munhak", "w_m5_414_mungu", "w_m5_415_munseo", "w_m5_416_hanmun"]
     }),
@@ -902,7 +830,7 @@
       id: "w32-theme-57",
       stage: "W32",
       title: "Study and class life Part 57",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 4 common words",
       goal: "Expand your thematic vocabulary for study and class life.",
       newWordIds: ["w_m5_417_sinmun", "w_m5_418_jilmun_sino", "w_m5_425_hoehwa", "w_m5_429_hwalldong"]
     }),
@@ -910,7 +838,7 @@
       id: "w33-theme-59",
       stage: "W33",
       title: "Hobbies and leisure Part 59",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for hobbies and leisure.",
       newWordIds: ["w_m5_243_chwimi", "w_m5_244_dokseo", "w_m5_246_yori", "w_m5_247_naksi", "w_m5_248_deungsan", "w_m5_249_geim"]
     }),
@@ -918,47 +846,31 @@
       id: "w33-theme-60",
       stage: "W33",
       title: "Hobbies and leisure Part 60",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for hobbies and leisure.",
       newWordIds: ["w_m5_250_geurim", "w_m5_251_akgi", "w_m5_252_piano", "w_m5_253_gita_instrument", "w_m5_424_yeonghwa"]
     }),
-    defineLesson({
-      id: "w33-theme-61",
-      stage: "W33",
-      title: "Hobbies and leisure Part 61",
-      subtitle: "Learn 7 common words",
-      goal: "Expand your thematic vocabulary for hobbies and leisure.",
-      newWordIds: ["w_m5_467_norae_hobby"]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w33-theme-62",
       stage: "W33",
       title: "Hobbies and leisure Part 62",
       subtitle: "Learn 4 common words",
       goal: "Expand your thematic vocabulary for hobbies and leisure.",
-      newWordIds: ["w_m5_469_gongyeon", "w_m5_470_jeonsihoe", "w_m5_471_eumakhoe"]
+      newWordIds: ["w_m5_469_gongyeon", "w_m5_470_jeonsihoe", "w_m5_471_eumakhoe", "w_m5_467_norae_hobby"]
     }),
     defineLesson({
       id: "w34-theme-63",
       stage: "W34",
       title: "Active sports Part 63",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 10 common words",
       goal: "Expand your thematic vocabulary for active sports.",
-      newWordIds: ["w_m5_254_chukgu", "w_m5_255_yagu", "w_m5_256_nonggu", "w_m5_257_baegu", "w_m5_258_teniseu", "w_m5_259_baedeuminteon", "w_m5_260_suyeong_sport"]
+      newWordIds: ["w_m5_254_chukgu", "w_m5_255_yagu", "w_m5_256_nonggu", "w_m5_257_baegu", "w_m5_258_teniseu", "w_m5_259_baedeuminteon", "w_m5_260_suyeong_sport", "w_m5_261_dalligi", "w_m5_408_daehoe", "w_m5_427_undong"]
     }),
-    defineLesson({
-      id: "w34-theme-64",
-      stage: "W34",
-      title: "Active sports Part 64",
-      subtitle: "Learn 3 common words",
-      goal: "Expand your thematic vocabulary for active sports.",
-      newWordIds: ["w_m5_261_dalligi", "w_m5_408_daehoe", "w_m5_427_undong"]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w35-theme-65",
       stage: "W35",
       title: "Jobs and careers Part 65",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for jobs and careers.",
       newWordIds: ["w_m5_262_jigeop", "w_m5_263_hoesawon", "w_m5_264_gongmuwon",  "w_m5_266_ganhosa", "w_m5_267_yaksa", "w_m5_268_gyeongchalgwan"]
     }),
@@ -994,21 +906,13 @@
       goal: "Expand your thematic vocabulary for everyday actions.",
       newWordIds: ["w_m5_276_danida", "w_m5_277_nagada", "w_m5_278_deureooda", "w_m5_279_doragada", "w_m5_280_ttwida", "w_m5_281_ollagada", "w_m5_282_naeryeogada"]
     }),
-    defineLesson({
-      id: "w36-theme-70",
-      stage: "W36",
-      title: "Everyday actions Part 70",
-      subtitle: "Learn 7 common words",
-      goal: "Expand your thematic vocabulary for everyday actions.",
-      newWordIds: ["w_m5_286_mandeulda"]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w36-theme-71",
       stage: "W36",
       title: "Everyday actions Part 71",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 4 common words",
       goal: "Expand your thematic vocabulary for everyday actions.",
-      newWordIds: ["w_m5_292_ppallaehada", "w_m5_295_gidarida", "w_m5_296_baeuda"]
+      newWordIds: ["w_m5_292_ppallaehada", "w_m5_295_gidarida", "w_m5_296_baeuda", "w_m5_286_mandeulda"]
     }),
     defineLesson({
       id: "w36-theme-72",
@@ -1022,7 +926,7 @@
       id: "w36-theme-73",
       stage: "W36",
       title: "Everyday actions Part 73",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for everyday actions.",
       newWordIds: ["w_m5_304_dowajuda",  "w_m5_306_sesuhada", "w_m5_307_yangchihada", "w_m5_308_hwajanghada", "w_m5_309_myeondohada", "w_m5_310_chulgeunhada"]
     }),
@@ -1038,7 +942,7 @@
       id: "w36-theme-75",
       stage: "W36",
       title: "Everyday actions Part 75",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for everyday actions.",
       newWordIds: ["w_m5_318_sijakhada", "w_m5_319_kkeunnada", "w_m5_320_saranghada",  "w_m5_322_sireohada", "w_m5_323_chukhahada", "w_m5_324_noraehada"]
     }),
@@ -1046,7 +950,7 @@
       id: "w36-theme-76",
       stage: "W36",
       title: "Everyday actions Part 76",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for everyday actions.",
       newWordIds: ["w_m5_392_saenggak", "w_m5_430_haengdong", "w_m5_472_ireonada_stand", "w_m5_474_sseuda_use", "w_m5_478_tada_burn", "w_m5_481_bureuda"]
     }),
@@ -1054,7 +958,7 @@
       id: "w37-theme-77",
       stage: "W37",
       title: "Descriptions and feelings Part 77",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for descriptions and feelings.",
       newWordIds: ["w_m5_325_neopda", "w_m5_326_jopda", "w_m5_327_nopda", "w_m5_328_natda", "w_m5_330_saeropda", "w_m5_331_oraedoeda"]
     }),
@@ -1062,9 +966,9 @@
       id: "w37-theme-78",
       stage: "W37",
       title: "Descriptions and feelings Part 78",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for descriptions and feelings.",
-      newWordIds: ["w_m5_332_madeopda",   "w_m5_335_hangahada", "w_m5_336_neurida",  ]
+      newWordIds: ["w_m5_332_madeopda", "w_m5_335_hangahada", "w_m5_336_neurida", "w_m5_488_nappuda_bad", "w_m5_491_gopeuda", "w_m5_492_gichada"]
     }),
     defineLesson({
       id: "w37-theme-79",
@@ -1086,35 +990,19 @@
       id: "w37-theme-81",
       stage: "W37",
       title: "Descriptions and feelings Part 81",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 4 common words",
       goal: "Expand your thematic vocabulary for descriptions and feelings.",
       newWordIds: ["w_m5_353_sikkeureopda", "w_m5_354_chinjeolhada", "w_m5_355_ttokttokhada", "w_m5_482_bureuda_full"]
     }),
-    defineLesson({
-      id: "w37-theme-82",
-      stage: "W37",
-      title: "Descriptions and feelings Part 82",
-      subtitle: "Learn 7 common words",
-      goal: "Expand your thematic vocabulary for descriptions and feelings.",
-      newWordIds: ["w_m5_488_nappuda_bad", "w_m5_491_gopeuda", "w_m5_492_gichada"]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w38-theme-83",
       stage: "W38",
       title: "Asking questions Part 83",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for asking questions.",
-      newWordIds: [ "w_m5_357_eonje",   "w_m5_360_mueot", "w_m5_361_eoneu", "w_m5_362_igeot"]
+      newWordIds: ["w_m5_357_eonje", "w_m5_360_mueot", "w_m5_361_eoneu", "w_m5_362_igeot", "w_m5_363_geugeot", "w_m5_364_jeogeot"]
     }),
-    defineLesson({
-      id: "w38-theme-84",
-      stage: "W38",
-      title: "Asking questions Part 84",
-      subtitle: "Learn 3 common words",
-      goal: "Expand your thematic vocabulary for asking questions.",
-      newWordIds: ["w_m5_363_geugeot", "w_m5_364_jeogeot", ]
-    }),
-    defineLesson({
+        defineLesson({
       id: "w39-theme-85",
       stage: "W39",
       title: "Body and health",
@@ -1222,7 +1110,7 @@
       id: "w52-theme-98",
       stage: "W52",
       title: "School and study",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for school and study.",
       newWordIds: ["w_m5_691_bangbeop", "w_m5_692_seonsu", "w_m5_693_baksu", "w_m5_694_susul", "w_m5_696_sudong", "w_m5_697_sucheop"]
     }),
@@ -1262,7 +1150,7 @@
       id: "w57-theme-103",
       stage: "W57",
       title: "Time and daily rhythm",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your vocabulary for time and daily rhythm.",
       newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil"]
     }),
@@ -1286,7 +1174,7 @@
       id: "w60-theme-106",
       stage: "W60",
       title: "Hobbies and leisure",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for hobbies and leisure.",
       newWordIds: ["w_m5_747_chum", "w_m5_748_pisibang", "w_m5_749_hyeonjae", "w_m5_751_bidio", "w_m5_752_yutyubeu", "w_m5_753_seumateupon"]
     }),
@@ -1318,7 +1206,7 @@
       id: "w64-theme-110",
       stage: "W64",
       title: "School and study",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your vocabulary for school and study.",
       newWordIds: ["w_m5_776_munmaek", "w_m5_777_munmyeong", "w_m5_778_munbeop", "w_m5_779_munhwajae", "w_m5_780_mungujeom"]
     }),
@@ -1342,7 +1230,7 @@
       id: "w67-theme-113",
       stage: "W67",
       title: "Travel and city",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your vocabulary for travel and city.",
       newWordIds: ["w_m5_796_gukje", "w_m5_797_jeon", "w_m5_798_gukgi", "w_m5_799_gukgyeong", "w_m5_802_gukjeok"]
     }),
@@ -1374,7 +1262,7 @@
       id: "w71-theme-117",
       stage: "W71",
       title: "Connectives and clause chaining",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your vocabulary for connectives and clause chaining.",
       newWordIds: ["w_m5_825_geurigo", "w_m5_826_geunyang", "w_m5_828_neotda", "w_m5_829_dasi", "w_m5_830_hamkke"]
     }),
@@ -1382,7 +1270,7 @@
       id: "w72-theme-118",
       stage: "W72",
       title: "Feelings and descriptions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for feelings and descriptions.",
       newWordIds: ["w_m5_833_tto", "w_m5_834_museopda", "w_m5_835_jeulgeopda", "w_m5_837_oeropda", "w_m5_839_neomu", "w_m5_840_deo"]
     }),
@@ -1390,7 +1278,7 @@
       id: "w73-theme-119",
       stage: "W73",
       title: "Feelings and descriptions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for feelings and descriptions.",
       newWordIds: ["w_m5_841_ani", "w_m5_842_meolda", "w_m5_843_gakkapda", "w_m5_844_eoryeopda", "w_m5_845_swipda", "w_m5_846_bappeuda"]
     }),
@@ -1406,7 +1294,7 @@
       id: "w75-theme-121",
       stage: "W75",
       title: "Connectives and clause chaining",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for connectives and clause chaining.",
       newWordIds: ["w_m5_857_jiman", "w_m5_858_myeonseo", "w_m5_859_geona", "w_m5_860_dorok", "w_m5_861_ryeogo", "w_m5_863_chigo"]
     }),
