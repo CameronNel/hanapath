@@ -4983,6 +4983,10 @@ function generateWordQuestionFor(word, direction) {
 
     const correctForm = window.HANAPATH_INFLECT ? window.HANAPATH_INFLECT.inflect(word, targetForm) : null;
     if (!correctForm || correctForm === word.korean) return null;
+    const recognizerMatches = window.HANAPATH_INFLECT && typeof window.HANAPATH_INFLECT.recognize === "function"
+      ? window.HANAPATH_INFLECT.recognize(correctForm, [word], [targetForm])
+      : [];
+    if (!recognizerMatches.length) return null;
 
     const otherVerbs = getCuratedWords()
       .filter((other) => other.id !== word.id && (other.pos === "verb" || other.pos === "adjective"))
@@ -5283,6 +5287,7 @@ function wordLessonStudyHtml(lesson, view) {
   if (!word) return "";
   const display = word.display || word.korean;
   const progress = `Word ${step.wordIndex + 1} of ${view.words.length}`;
+  const pronunciationLayer = getWordPronunciationLayerText(word);
 
   if (step.type === "card") {
     const record = getVocabSrsRecord(word.id);
@@ -5297,6 +5302,7 @@ function wordLessonStudyHtml(lesson, view) {
         <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}">${escapeHtml(display)}</button>
         <div class="word-card-meaning">${escapeHtml(word.meaning)}</div>
         <div class="word-card-meta">${escapeHtml(word.pos)} · ${escapeHtml(word.pronunciation)}</div>
+        ${pronunciationLayer ? `<div class="word-card-meta">${escapeHtml(pronunciationLayer)}</div>` : ""}
         ${formsHtml}
         <div class="word-example">
           <button class="word-example-ko" type="button" lang="ko" data-speak="${escapeHtml(word.exampleVoiceText || word.exampleKo)}" aria-label="Hear example sentence">${escapeHtml(word.exampleKo)}</button>
@@ -5354,6 +5360,7 @@ function wordLessonStudyHtml(lesson, view) {
       <div class="eyebrow">${escapeHtml(progress)} · Repeat aloud</div>
       <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}">${escapeHtml(display)}</button>
       <div class="word-card-meta">${escapeHtml(word.pronunciation)} · ${escapeHtml(word.meaningShort)}</div>
+      ${pronunciationLayer ? `<div class="word-card-meta">${escapeHtml(pronunciationLayer)}</div>` : ""}
       <div class="screen-sub" style="margin:12px 0;">Tap Hear, say it out loud once, then continue. Nobody is grading your accent.</div>
       <div class="word-card-actions">
         <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear</button>
@@ -5906,6 +5913,15 @@ function getWordExampleRomanization(word) {
   return { text: guess, approximate: true };
 }
 
+function getWordPronunciationLayerText(word) {
+  if (!word) return "";
+  const spelling = word.display || word.korean || "";
+  const soundsLike = word.soundsLike || word.pronunciation || "";
+  if (!spelling && !soundsLike) return "";
+  if (!soundsLike || soundsLike === spelling) return `Spelling: ${spelling}`;
+  return `Spelling: ${spelling} · Sounds-like: ${soundsLike}`;
+}
+
 function wordDetailNoteHtml(label, body, extraClass = "") {
   if (!body) return "";
   return `
@@ -5974,6 +5990,7 @@ function wordBankDetailHtml(row) {
     }
     return word.korean;
   })();
+  const pronunciationLayer = word.soundNote || getWordPronunciationLayerText(word);
 
   return `
     <div class="card word-bank-detail">
@@ -6000,7 +6017,7 @@ function wordBankDetailHtml(row) {
       </div>
       ${word.usageNote ? `<div class="word-usage-note">${escapeHtml(word.usageNote)}</div>` : ""}
       ${wordDetailNoteHtml("Why it changed", word.formNote, "word-form-note-change")}
-      ${wordDetailNoteHtml("Sound note", word.soundNote, "word-form-note-sound")}
+      ${wordDetailNoteHtml("Spelling vs sounds-like", pronunciationLayer, "word-form-note-sound")}
       <div class="vocab-meta-grid" style="margin-top:12px;">
         <div class="vocab-meta-box"><span>Lesson group</span><strong>${escapeHtml(word.lessonTitle || word.lessonGroup)}</strong></div>
         <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>

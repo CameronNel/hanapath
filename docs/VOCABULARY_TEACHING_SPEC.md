@@ -290,17 +290,17 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | Hangul-first, romanization secondary | ✅ | UX is Hangul-primary; romanization is a support layer |
 | Script → block → batchim course | ✅ | Full alphabet module (drill lab, skill-SRS, 72 audio tokens, batchim) |
 | Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + checkpoint ladder + W17–W19 grammar track (merged) |
-| Lexeme + forms, not flat pairs | 🟡 | `forms`/`grammarRole`/`pattern`/`formNote` exist, but forms are **hand-authored**, no engine |
+| Lexeme + forms, not flat pairs | ✅ | `forms`/`grammarRole`/`pattern`/`formNote` exist; `words_inflect.js` now provides generator + recognizer coverage |
 | Particles & endings first-class | ✅ | Function-word entries with forms/grammarRole/contrastWith/pattern |
 | Honorifics (subject vs listener) | 🟡 | Honorific verb table + W19 lesson (shipped); not yet a systematic register axis |
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
-| Irregular families as trigger-based | 🟡 | W19 track (shipped) + inline `formNote`; no generation engine yet |
+| Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
 | **Sense-level polysemy** | ✅ | Senses split with `lemma`, `senseKey`, and `senseNo` fields |
-| **Word-origin tagging (native/Sino/loan)** | ✅ | Fully annotated with `originType` and `hanja` fields |
-| **Register as a data axis** | ✅ | Explicitly modeled via `register` and `speechLevel` fields |
+| **Word-origin tagging (native/Sino/loan)** | 🟡 | `originType` is broadly present; `hanja` is retained only when verified as real CJK ideographs |
+| **Register as a data axis** | 🟡 | Explicitly modeled via `register` and `speechLevel` fields on register-bearing rows; not corpus-wide |
 | **Morph tags (Sejong/UD)** | ❌ | coarse learner `pos` only |
-| **Pronunciation training (minimal pairs, 3-way stops)** | ❌ | at the vocab layer; exists only in the alphabet phase |
+| **Pronunciation training (minimal pairs, 3-way stops)** | ✅ | Vocab minimal-pair drill exists; every curated word card shows spelling vs sounds-like layers |
 | **Pronunciation scoring (segmental + prosodic)** | ❌ | TTS playback only |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |

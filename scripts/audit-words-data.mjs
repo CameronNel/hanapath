@@ -44,6 +44,7 @@ if (!Array.isArray(lessons) || lessons.length === 0) {
 
 const HANGUL_RE = /[가-힣ㄱ-ㅎㅏ-ㅣ]/;
 const LATIN_RE = /[a-zA-Z]/;
+const HANJA_RE = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/;
 
 const idSet = new Set();
 for (const word of words || []) {
@@ -89,8 +90,12 @@ for (const word of words || []) {
   if (word.senseNo !== undefined && (!Number.isInteger(word.senseNo) || word.senseNo < 1)) {
     errors.push(`${label}: senseNo must be a positive integer`);
   }
-  if (word.hanja !== undefined && typeof word.hanja !== 'string') {
-    errors.push(`${label}: hanja must be a string`);
+  if (word.hanja !== undefined) {
+    if (typeof word.hanja !== 'string') {
+      errors.push(`${label}: hanja must be a string`);
+    } else if (!HANJA_RE.test(word.hanja)) {
+      errors.push(`${label}: hanja must contain at least one CJK ideograph`);
+    }
   }
   if (word.inflections !== undefined) {
     if (typeof word.inflections !== 'object' || word.inflections === null || Array.isArray(word.inflections)) {
@@ -189,6 +194,19 @@ if (!Inflect) {
       if (generated !== expected) {
         errors.push(`Inflection engine fail: conjugate(${testCase.korean}, ${formName}) expected "${expected}" but got "${generated}"`);
       }
+    }
+  }
+
+  if (typeof Inflect.recognize !== "function") {
+    errors.push("Inflection engine fail: recognize(surface, candidates, formNames) is missing");
+  } else {
+    const recognized = Inflect.recognize("들어요", [
+      { id: "gold_listen", korean: "듣다", pos: "verb", irregularFamily: "ㄷ" },
+      { id: "gold_walk", korean: "걷다", pos: "verb", irregularFamily: "ㄷ" }
+    ], ["polite"]);
+    const recognizedIds = recognized.map((match) => match.word && match.word.id);
+    if (!recognizedIds.includes("gold_listen") || recognizedIds.includes("gold_walk")) {
+      errors.push(`Inflection engine fail: recognize("들어요") expected 듣다 only, got ${JSON.stringify(recognizedIds)}`);
     }
   }
 }

@@ -259,11 +259,41 @@
     return korean;
   }
 
+  const DEFAULT_FORM_NAMES = ['polite', 'formal', 'past', 'honorific', 'attributive'];
+
+  function normalizeSurface(surface) {
+    return String(surface || '').normalize('NFC').trim();
+  }
+
+  function recognize(surface, candidates, formNames) {
+    const target = normalizeSurface(surface);
+    if (!target || !Array.isArray(candidates)) return [];
+
+    const names = Array.isArray(formNames) && formNames.length ? formNames : DEFAULT_FORM_NAMES;
+    const matches = [];
+    for (const word of candidates) {
+      if (!word || (word.pos !== 'verb' && word.pos !== 'adjective')) continue;
+      for (const formName of names) {
+        const form = conjugate(word.korean, word.pos, word.irregularFamily, formName);
+        if (normalizeSurface(form) === target) {
+          matches.push({ word, formName, form });
+        }
+      }
+    }
+    return matches;
+  }
+
+  function recognizeWord(word, surface, formNames) {
+    return recognize(surface, word ? [word] : [], formNames);
+  }
+
   const Inflect = {
     decompose,
     assemble,
     getStem,
     conjugate,
+    recognize,
+    recognizeWord,
     inflect: function (word, formName) {
       return conjugate(word.korean, word.pos, word.irregularFamily, formName);
     }

@@ -4,6 +4,7 @@ import csv
 import hashlib
 import subprocess
 import sys
+import json
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -58,14 +59,13 @@ def extract_korean_text():
     return list(phrases)
 
 def generate_audio(phrases):
-    import json
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
     total = len(phrases)
     print(f"Found {total} unique Korean phrases (including Jamo).")
-    
-    audio_map = {}
+
+    audio_map = load_existing_audio_map()
     
     for i, text in enumerate(phrases):
         if not text: continue
@@ -74,8 +74,8 @@ def generate_audio(phrases):
         filename = f"{md5_hash}.mp3"
         out_mp3 = os.path.join(OUTPUT_DIR, filename)
         
-        # Add to map
-        audio_map[text] = f"./audio/{filename}"
+        if text not in audio_map:
+            audio_map[text] = f"./audio/{filename}"
         
         if os.path.exists(out_mp3):
             continue
@@ -98,6 +98,18 @@ def generate_audio(phrases):
         f.write("window.AUDIO_MAP = ")
         json.dump(audio_map, f, ensure_ascii=False, indent=2)
         f.write(";")
+
+def load_existing_audio_map():
+    try:
+        with open("audio_map.js", "r", encoding="utf-8") as f:
+            content = f.read().strip()
+        match = re.match(r"^window\.AUDIO_MAP\s*=\s*(\{.*\});?\s*$", content, re.S)
+        if not match:
+            return {}
+        data = json.loads(match.group(1))
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
 
 if __name__ == "__main__":
     print("Starting generation process using Microsoft Edge TTS...")
