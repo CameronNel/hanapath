@@ -296,7 +296,7 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
-| **Sense-level polysemy** | 🟡 | 82 lemmas have genuine multi-sense rows tagged with `senseKey`/`senseNo` (e.g. 쓰다 write/wear/use); most polysemous lemmas are not yet tagged. The audit now hard-fails any row pair sharing Korean+POS+meaning that isn't senseKey-tagged, so untagged duplicates can't silently reappear |
+| **Sense-level polysemy** | 🟡 | 128 rows across 94 lemmas carry `senseKey`/`senseNo`; core high-contrast rows such as 쓰다 write/wear/use, 시장 market/mayor/hunger, 배 stomach/boat, 말 speech/horse, 타다 ride/burn, 내리다 get-off/fall, 일어나다 wake/stand, 것 independent/bound noun, modifier `(으)ㄴ`, and all previously fully untagged same-surface groups are tagged. 56 same-surface groups remain partially curated. The audit hard-fails any row pair sharing Korean+POS+meaning that isn't senseKey-tagged, so untagged duplicates can't silently reappear |
 | **Word-origin tagging (native/Sino/loan)** | 🟡 | every row has effective `originType`; `annotationSource` distinguishes verified vs inferred labels, and Hanja is retained only when verified |
 | **Register as a data axis** | 🟡 | `register`/`speechLevel` now inferred from **structured** signals (POS, lessonGroup, curated tags), not by scanning the example sentence — so everyday nouns (물, 책, 시간…) are no longer mislabeled polite/honorific. High-contrast lexemes (저 vs 나, 무엇 vs 뭐, 와/과 vs 하고, formal set-phrases, honorifics) are hand-verified `explicit`; the rest are correct-by-rule and flagged for review in the curation queue |
 | **Morph tags (Sejong/UD)** | 🟡 | every row has a validated effective `morphTag`; broad inferred tags are tracked separately from explicit hand-curated tags |
@@ -304,7 +304,7 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | **Pronunciation scoring (segmental + prosodic)** | 🟡 | browser SpeechRecognition scoring stub compares transcript accuracy and speaking duration; not acoustic phoneme-level scoring |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
-| Vocabulary volume | ✅ | 2,000 unique curated senses (representing the complete Core 1000 and the complete Core 2000), fully satisfying the spec targets |
+| Vocabulary volume | ✅ | 1,992 unique curated senses (representing the complete Core 1000 and the complete Core 2000 target band), with every curated row assigned to a lesson |
 
 **Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS,
 retrieval) are already strong. The remaining gaps cluster around richer
@@ -371,10 +371,10 @@ as of 2026-07-03.
 | **M0** | Shipped baseline: script course, Leitner SRS, Word Bank, W0–W16 lessons | — | `app.js`, `words_curated_core.js`, `words_lesson_plan.js`, `alphabet_*` | (already live) | — | ✅ done |
 | **M0.5** | W17–W19 grammar-mechanics track (endings/register, negation, connectives, modifiers, honorifics, irregulars) | M0 | `words_curated_core.js`, `words_lesson_plan.js` | 6 lessons render; strict audit clean | S | ✅ done (#42) |
 | **M1** | **Data axes** — additive `senseKey`/`register`/`speechLevel`/`originType`/`hanja`/`irregularFamily`/`morphTag` + audit enums | M0 | `words_curated_core.js` (`defineWord`), `scripts/audit-words-data.mjs` | fields optional; enums validated when present; all existing rows still pass strict | S–M | ✅ done |
-| **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | 🟡 partial — 82 lemmas tagged; most polysemes still untagged |
+| **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | 🟡 partial — 128 tagged rows across 94 lemmas; obvious high-frequency contrasts and all previously fully untagged same-surface groups covered, with 56 partial groups remaining |
 | **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ✅ done |
 | **M4** | **Pronunciation layer** — minimal-pair drills, spelling/sounds-like, segmental+prosodic scoring stub | M0 (audio); M1 optional | `app.js`, `audio/` + `generate_assets.py`, new drill data | drills exist for the §6.2 pitfall sets; every card shows both layers | M | ✅ done |
-| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done — 1,504 unique curated senses |
+| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done — 1,992 unique curated senses; strict audit clean; no orphan words |
 | **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ✅ done |
 
 Guiding rule: **depth before breadth.** M1→M3 (correct, register-aware,
