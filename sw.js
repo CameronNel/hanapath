@@ -1,7 +1,8 @@
-// [2026-07-03] Cache bumped to v137: M2 sense-split batch — real second senses
-// for 눈/다리/밤/차/맞다 (+ a 부르다 meaning bug fix); slotted new rows into
-// thin lessons w24-theme-15/w27-theme-28/w29-theme-44.
-const CACHE_NAME = "hanapath-shell-v137";
+// [2026-07-03] Cache bumped to v138: TEST_UNLOCK_ALL_STAGES now truly unlocks
+// every Words lesson (isWordLessonUnlocked + the "Finish Hangul first" banner
+// previously ignored the flag for two of their three gates) — OWNER TEST
+// OVERRIDE, flip TEST_UNLOCK_ALL_STAGES back to false in app.js when done.
+const CACHE_NAME = "hanapath-shell-v138";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,7 +13,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260703h",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260703o",
+  "./app.js?v=20260703p",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
