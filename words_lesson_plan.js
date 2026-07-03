@@ -134,7 +134,7 @@
       title: "Time and daily rhythm",
       subtitle: "Yesterday, today, tomorrow",
       goal: "Anchor events in time.",
-      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje"],
+      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje", "w_m6_2972_gada_time"],
     }),
     defineLesson({
       id: "w6-time-daily-02",
@@ -142,7 +142,7 @@
       title: "Time and daily rhythm II",
       subtitle: "Morning to evening",
       goal: "Talk about the parts of the day.",
-      newWordIds: ["w0605_sigan", "w0606_achim", "w0607_jeomsim", "w0608_jeonyeok", "w0609_nal"],
+      newWordIds: ["w0605_sigan", "w0606_achim", "w0607_jeomsim", "w0608_jeonyeok", "w0609_nal", "w_m6_2976_geollida_time"],
     }),
     defineLesson({
       id: "w7-core-actions-01",
@@ -150,7 +150,7 @@
       title: "Core actions",
       subtitle: "Do, have, see, speak",
       goal: "Learn the verbs Korean sentences are built on.",
-      newWordIds: ["w0701_hada", "w0702_itda", "w0703_eopda", "w0704_boda", "w0705_malhada"],
+      newWordIds: ["w0701_hada", "w0702_itda", "w0703_eopda", "w0704_boda", "w0705_malhada", "w_m6_2974_deulda_hold"],
     }),
     defineLesson({
       id: "w7-core-actions-02",
@@ -252,7 +252,7 @@
       title: "Home and routine II",
       subtitle: "Furniture and fixtures",
       goal: "Name more household objects.",
-      newWordIds: ["w1209_otjang", "w1210_changmun", "w1211_mun", "w1213_naengjanggo", "w1216_chaeksang"],
+      newWordIds: ["w1209_otjang", "w1210_changmun", "w1211_mun", "w1213_naengjanggo", "w1216_chaeksang", "w_m6_2973_ssada_pack"],
     }),
     defineLesson({
       id: "w12-home-routine-03",
@@ -310,7 +310,7 @@
       title: "Shopping and money",
       subtitle: "Paying for things",
       goal: "Talk about money, price, and payment.",
-      newWordIds: ["w1401_don", "w1402_gagyeok", "w1403_kadeu", "w1404_hyeongeum", "w1409_gyesanhada"],
+      newWordIds: ["w1401_don", "w1402_gagyeok", "w1403_kadeu", "w1404_hyeongeum", "w1409_gyesanhada", "w_m6_2975_deulda_cost"],
     }),
     defineLesson({
       id: "w14-shopping-money-02",
@@ -343,7 +343,7 @@
       title: "Body and health",
       subtitle: "Parts of the body",
       goal: "Name the parts of your body.",
-      newWordIds: ["w1501_mom", "w1502_meori", "w1503_son", "w1504_bal", "w1505_eolgul"],
+      newWordIds: ["w1501_mom", "w1502_meori", "w1503_son", "w1504_bal", "w1505_eolgul", "w_m6_2977_geollida_ill"],
     }),
     defineLesson({
       id: "w15-body-health-02",
@@ -376,7 +376,7 @@
       title: "Weather and nature",
       subtitle: "Rain or shine",
       goal: "Talk about today's weather.",
-      newWordIds: ["w1601_nalssi", "w1602_bi", "w1603_baram", "w1604_deopda", "w1605_chupda"],
+      newWordIds: ["w1601_nalssi", "w1602_bi", "w1603_baram", "w1604_deopda", "w1605_chupda", "w_m6_2979_jida_sunset"],
     }),
     defineLesson({
       id: "w16-weather-nature-02",
@@ -910,9 +910,9 @@
       id: "w36-theme-71",
       stage: "W36",
       title: "Everyday actions Part 71",
-      subtitle: "Learn 4 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for everyday actions.",
-      newWordIds: ["w_m5_292_ppallaehada", "w_m5_295_gidarida", "w_m5_296_baeuda", "w_m5_286_mandeulda"]
+      newWordIds: ["w_m5_292_ppallaehada", "w_m5_295_gidarida", "w_m5_296_baeuda", "w_m5_286_mandeulda", "w_m6_2971_ttwida_jump"]
     }),
     defineLesson({
       id: "w36-theme-72",
@@ -990,9 +990,9 @@
       id: "w37-theme-81",
       stage: "W37",
       title: "Descriptions and feelings Part 81",
-      subtitle: "Learn 4 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for descriptions and feelings.",
-      newWordIds: ["w_m5_353_sikkeureopda", "w_m5_354_chinjeolhada", "w_m5_355_ttokttokhada", "w_m5_482_bureuda_full"]
+      newWordIds: ["w_m5_353_sikkeureopda", "w_m5_354_chinjeolhada", "w_m5_355_ttokttokhada", "w_m5_482_bureuda_full", "w_m6_2970_sagwa_apology"]
     }),
         defineLesson({
       id: "w38-theme-83",
@@ -1078,9 +1078,9 @@
       id: "w48-theme-94",
       stage: "W48",
       title: "Sports and physical recreation",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for sports and physical recreation.",
-      newWordIds: ["w_m5_663_goldae", "w_m5_664_sugu", "w_m5_665_deungsanhwa", "w_m5_666_undongjang", "w_m5_667_cheyuk", "w_m5_668_takgu", "w_m5_669_danchu"]
+      newWordIds: ["w_m5_663_goldae", "w_m5_664_sugu", "w_m5_665_deungsanhwa", "w_m5_666_undongjang", "w_m5_667_cheyuk", "w_m5_668_takgu", "w_m5_669_danchu", "w_m6_2978_jida_lose"]
     }),
     defineLesson({
       id: "w49-theme-95",
