@@ -1,15 +1,16 @@
-// [2026-07-03] Cache bumped to v136: removed 74 disguised-duplicate curated words
-// (fake senseKey re-adds) + 2 now-empty lessons; hardened the audit's senseKey exemption.
-const CACHE_NAME = "hanapath-shell-v136";
+// [2026-07-03] Cache bumped to v137: M2 sense-split batch — real second senses
+// for 눈/다리/밤/차/맞다 (+ a 부르다 meaning bug fix); slotted new rows into
+// thin lessons w24-theme-15/w27-theme-28/w29-theme-44.
+const CACHE_NAME = "hanapath-shell-v137";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260703a",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260703c",
-  "./words_curated_core.js?v=20260703y",
+  "./audio_map.js?v=20260703d",
+  "./words_curated_core.js?v=20260703z",
   "./words_inflect.js?v=20260703b",
-  "./words_lesson_plan.js?v=20260703g",
+  "./words_lesson_plan.js?v=20260703h",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260703o",
   "./alphabet_skill_srs.js?v=20260630a",
