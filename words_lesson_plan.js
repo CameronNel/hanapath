@@ -126,7 +126,7 @@
       title: "Food and drink II",
       subtitle: "At the café and market",
       goal: "Name common foods and drinks.",
-      newWordIds: ["w0504_keopi", "w0505_cha", "w0506_gogi", "w0507_gwail", "w0508_ppang"],
+      newWordIds: ["w0504_keopi", "w0505_cha", "w0506_gogi", "w0507_gwail", "w0508_ppang", "w_m6_3004_sosig_eating"],
     }),
     defineLesson({
       id: "w6-time-daily-01",
@@ -400,7 +400,7 @@
       title: "Weather and nature IV",
       subtitle: "Sky, sea, and trees",
       goal: "Describe the natural world around you.",
-      newWordIds: ["w1609_namu", "w1610_kkot", "w1618_dal", "w1619_byeol", "w1620_bada"],
+      newWordIds: ["w1609_namu", "w1610_kkot", "w1618_dal", "w1619_byeol", "w1620_bada", "w_m6_3001_yeongi_smoke"],
     }),
 
     // ── Grammar mechanics track (W17–W19): endings, negation, connectives,
@@ -2358,9 +2358,9 @@
       id: "w208-theme-254",
       stage: "W208",
       title: "occupations",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for occupations.",
-      newWordIds: ["w_m6_2714_siin", "w_m6_2715_sijeom", "w_m6_2716_sigyong", "w_m6_2717_sinsa", "w_m6_2718_silseubsaeng", "w_m6_2719_jinaon", "w_m6_2720_gakkai"]
+      newWordIds: ["w_m6_2714_siin", "w_m6_2715_sijeom", "w_m6_2716_sigyong", "w_m6_2717_sinsa", "w_m6_2718_silseubsaeng", "w_m6_2719_jinaon", "w_m6_2720_gakkai", "w_m6_3003_isa_director"]
     }),
     defineLesson({
       id: "w209-theme-255",
@@ -2438,9 +2438,9 @@
       id: "w218-theme-264",
       stage: "W218",
       title: "School and study",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your vocabulary for school and study.",
-      newWordIds: ["w_m6_2962_jibjung", "w_m6_2963_teugjing", "w_m6_2964_haengjeong", "w_m6_2987_pulda_solve", "w_m6_2999_butda_pass"]
+      newWordIds: ["w_m6_2962_jibjung", "w_m6_2963_teugjing", "w_m6_2964_haengjeong", "w_m6_2987_pulda_solve", "w_m6_2999_butda_pass", "w_m6_3000_sago_thinking", "w_m6_3002_jeongi_biography"]
     }),
   ];
 })();

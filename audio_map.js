@@ -10188,5 +10188,19 @@ window.AUDIO_MAP = {
   "left out\" — see its own sense card.": "./audio/a6a2f386468c2963e92e166f7f098f68.mp3",
   "Distinct sense from 빠지다 (to fall into) — used for something missing or omitted.": "./audio/145efe310388ae7f468151df9f8fbd96.mp3",
   "빠지다 also means \"to be omitted": "./audio/7505cc1d9fd5185e02bd74a54fd83242.mp3",
-  "붙다": "./audio/45c0fdcb850d490ab0b1d1b31ccc608b.mp3"
+  "붙다": "./audio/45c0fdcb850d490ab0b1d1b31ccc608b.mp3",
+  "이사 also means \"director\" (board member) — see its own sense card.": "./audio/1de109607e10310bb9ebea85f9394fc7.mp3",
+  "lemma: \"연기\"": "./audio/b0039c27cfd010fa9dc1fc17259245bf.mp3",
+  "senseNo: 1": "./audio/c06572de51ff0bbc9a86034f6d40641c.mp3",
+  "s natural acting gave great emotion.\", usageNote: \"연기 also means \"smoke\" — see its own sense card.\", lessonGroup: \"hobbies-leisure\", originType: \"Sino-Korean\", voiceText: \"연기\", exampleVoiceText: \"그 배우의 자연스러운 연기가 큰 감동을 주었어요.\", register: \"everyday\", speechLevel: \"plain\", morphTag: \"NNG\", lemma: \"연기\", senseKey: \"acting\", senseNo: 1, annotationSource: { register:": "./audio/28a25988a3b3b1e21fcd60f1609ca846.mp3",
+  "사고 also means \"thinking": "./audio/5c4ad8ec50c32ace317a40010235d720.mp3",
+  "usageNote: \"연기 also means \"smoke\" — see its own sense card.\"": "./audio/0eecfe70c2a5d0b5bf243810808dc85c.mp3",
+  "thought\" — see its own sense card.": "./audio/bc8d3b390b802efe31a800b366f34667.mp3",
+  "연기 also means \"smoke\" — see its own sense card.": "./audio/92aee58456d51b229c38c4224d27a625.mp3",
+  "small appetite\" — see its own sense card.": "./audio/0804d7573728480ad51fe951d249b3b2.mp3",
+  "전기 also means \"biography\" — see its own sense card.": "./audio/46751f8668057bc38b1a27f549ad9f8b.mp3",
+  "소식 also means \"eating a small amount / small appetite\" — see its own sense card.": "./audio/28cadec5b8dc0d9cb596eec55a1938ad.mp3",
+  "사고 also means \"thinking / thought\" — see its own sense card.": "./audio/750f18632f93617183204afd85449001.mp3",
+  "senseKey: \"acting\"": "./audio/9edb08af5e6befde30d1d0987b424f07.mp3",
+  "소식 also means \"eating a small amount": "./audio/7abaf6f07abfab5eae9db57811c8d848.mp3"
 };
