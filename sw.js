@@ -1,12 +1,12 @@
 // [2026-07-03] Cache bumped to v113: tracks annotation provenance and curation queue state.
-const CACHE_NAME = "hanapath-shell-v113";
+const CACHE_NAME = "hanapath-shell-v114";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260702b",
   "./lib/hangul.js",
   "./audio_map.js?v=20260703a",
-  "./words_curated_core.js?v=20260703i",
+  "./words_curated_core.js?v=20260703j",
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260703c",
   "./raw_word_meanings.js?v=20260703a",
