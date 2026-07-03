@@ -405,7 +405,8 @@ in parallel from day one because it only needs the existing audio system.
 - **Vanilla/static.** New data goes in a plain browser-global file loaded before
   `app.js` (like `words_curated_core.js`). No build step.
 - **Cache discipline.** Any change to a loaded file → bump `CACHE_NAME` in `sw.js`
-  and the `?v=...` strings in `index.html` + `sw.js`.
+  and the `?v=...` strings in `index.html` + `sw.js`; verify with
+  `node scripts/audit-app-shell.mjs`.
 - **Audio.** New Korean text → regenerate assets (`python generate_assets.py`),
   never hand-edit `audio_map.js`.
 - **PRs.** One milestone per PR (or smaller); draft PR, owner squash-merges.

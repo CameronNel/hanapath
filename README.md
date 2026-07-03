@@ -28,6 +28,15 @@ Then open:
 http://localhost:8000
 ```
 
+## Verify
+
+```bash
+node --check app.js sw.js words_curated_core.js words_inflect.js scripts/audit-words-data.mjs scripts/audit-app-shell.mjs
+node scripts/audit-words-data.mjs --strict
+node scripts/audit-alphabet-audio.mjs --strict
+node scripts/audit-app-shell.mjs
+```
+
 ## Main files
 
 - `index.html`

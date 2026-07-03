@@ -66,6 +66,7 @@ If the user named a specific task, do that instead.
 node --check <file.js>                              # any JS you touched
 node scripts/audit-words-data.mjs --strict          # Words data
 node scripts/audit-alphabet-audio.mjs --strict      # audio coverage
+node scripts/audit-app-shell.mjs                    # index.html / sw.js cache-version wiring
 python -m http.server 8000                           # then open index.html, smoke-test + check console
 ```
 
