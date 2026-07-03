@@ -226,6 +226,12 @@ for (const [key, group] of byKoreanPos) {
   }
 }
 
+const stageLessonCounts = new Map();
+for (const lesson of lessons || []) {
+  if (!lesson.stage) continue;
+  stageLessonCounts.set(lesson.stage, (stageLessonCounts.get(lesson.stage) || 0) + 1);
+}
+
 const lessonIds = new Set();
 for (const lesson of lessons || []) {
   const label = lesson.id || lesson.title || "(unknown lesson)";
@@ -242,6 +248,17 @@ for (const lesson of lessons || []) {
   }
   if (!Array.isArray(lesson.checkpoints) || lesson.checkpoints.length === 0) {
     warnings.push(`${label}: no checkpoints`);
+  }
+  // A hand-authored "Learn N common words" subtitle drifts out of sync with
+  // newWordIds whenever a later pass adds/removes/dedupes words (this class
+  // of bug shipped silently in PRs #51/#53/#54 - see #58 cleanup). Catch it.
+  const subtitleMatch = /^Learn (\d+) common words?$/.exec(lesson.subtitle || "");
+  if (subtitleMatch && Number(subtitleMatch[1]) !== lesson.newWordIds.length) {
+    errors.push(`${label}: subtitle claims ${subtitleMatch[1]} words but newWordIds has ${lesson.newWordIds.length}`);
+  }
+  const hasFoldableSibling = lesson.stage && (stageLessonCounts.get(lesson.stage) || 0) > 1;
+  if (lesson.newWordIds.length < 4 && hasFoldableSibling) {
+    warnings.push(`${label}: thin lesson with only ${lesson.newWordIds.length} word(s) - consider folding into a same-stage sibling`);
   }
 }
 for (const lesson of lessons || []) {

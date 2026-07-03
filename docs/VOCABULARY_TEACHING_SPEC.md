@@ -344,17 +344,14 @@ audit-backed.
    meaning**; the audit now hard-fails identical senseKeys within a group,
    but it cannot judge semantics — read the meanings (PR #54 removed 74 rows
    of fake polysemy that had been tagged purely to dodge the duplicate check).
-2. **Curriculum polish after the dedupe passes.** As of PR #54 there are
-   **54 lessons whose subtitle ("Learn N common words") doesn't match the
-   actual word count** and **11 thin lessons with only 1–2 words**. No audit
-   check exists for this yet (adding one is part of this task); regenerate
-   the current list by loading the data files in a Node `vm` sandbox (the
-   pattern at the top of `scripts/audit-words-data.mjs`) and comparing each
-   lesson's `subtitle` number against `newWordIds.length`.
-   Fold thin lessons into same-stage siblings, derive subtitles from the
-   actual count instead of hand-writing them, and extend
-   `audit-words-data.mjs` to fail on subtitle/count mismatch and warn on
-   lessons under ~4 words so this can't drift again.
+2. **Curriculum polish after the dedupe passes — ✅ done (2026-07-03).** All 51
+   subtitle/count mismatches were corrected to the real `newWordIds.length`,
+   and all 14 thin lessons (down to 1 genuinely unfoldable single-lesson stage,
+   `w218-theme-264`, left alone since it has no same-stage sibling) were folded
+   into same-stage siblings — 312 → 298 lessons. `audit-words-data.mjs` now
+   hard-fails a subtitle/count mismatch and warns on any lesson under 4 words
+   that *has* a foldable same-stage sibling, so this can't silently drift
+   again.
 3. **Curation queue burn-down.** Every row has effective values on every axis,
    but roughly a third are `inferred`, not hand-verified (~660 rows each for
    `register`/`speechLevel`/`morphTag`, ~260 for `originType`; `hanja` is
