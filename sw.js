@@ -1,5 +1,5 @@
-// [2026-07-03] Cache bumped to v109: adds effective morph-tag coverage for curated Words data.
-const CACHE_NAME = "hanapath-shell-v109";
+// [2026-07-03] Cache bumped to v110: replaces fake speaking scores with browser-derived pronunciation scoring.
+const CACHE_NAME = "hanapath-shell-v110";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260703c",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260703e",
+  "./app.js?v=20260703f",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

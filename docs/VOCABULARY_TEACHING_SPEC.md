@@ -301,7 +301,7 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | **Register as a data axis** | 🟡 | Explicitly modeled via `register` and `speechLevel` fields on register-bearing rows; not corpus-wide |
 | **Morph tags (Sejong/UD)** | 🟡 | every row now has a validated effective `morphTag`; broad tags are derived from learner `pos`, not fully hand-curated |
 | **Pronunciation training (minimal pairs, 3-way stops)** | ✅ | Vocab minimal-pair drill exists; every curated word card shows spelling vs sounds-like layers |
-| **Pronunciation scoring (segmental + prosodic)** | ❌ | TTS playback only |
+| **Pronunciation scoring (segmental + prosodic)** | 🟡 | browser SpeechRecognition scoring stub compares transcript accuracy and speaking duration; not acoustic phoneme-level scoring |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
 | Vocabulary volume | ✅ | Expanded to 805 curated senses (M5) |
