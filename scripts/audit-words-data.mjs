@@ -195,19 +195,32 @@ for (const word of words || []) {
   if (!byKoreanPos.has(key)) byKoreanPos.set(key, []);
   byKoreanPos.get(key).push(word);
 }
+// A `senseKey` only exempts a PAIR from the duplicate-content check when both
+// rows carry one AND the two keys are genuinely different — real polysemy
+// means distinct senses get distinct keys. Two rows sharing the identical
+// senseKey (or where only one row in the pair is tagged) are not exempt: that
+// pattern previously let accidental re-adds hide behind a copy-pasted or
+// one-sided senseKey instead of being merged. (See #53 cleanup: 74 rows were
+// disguised duplicates, not real senses, caught only by removing this
+// blanket exemption.)
 for (const [key, group] of byKoreanPos) {
-  if (group.length < 2 || group.some((w) => w.senseKey)) continue;
+  if (group.length < 2) continue;
   for (let i = 0; i < group.length; i += 1) {
     for (let j = i + 1; j < group.length; j += 1) {
       const a = group[i];
       const b = group[j];
+      if (a.senseKey && b.senseKey && a.senseKey === b.senseKey) {
+        errors.push(`duplicate senseKey: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) and the identical senseKey "${a.senseKey}" — this is disguised duplicate content, not two senses. Merge the rows or give them genuinely distinct senseKeys.`);
+        continue;
+      }
+      if (a.senseKey && b.senseKey && a.senseKey !== b.senseKey) continue; // genuinely distinct declared senses
       const tokensA = normalizeMeaningForDupeCheck(a.meaning);
       const tokensB = normalizeMeaningForDupeCheck(b.meaning);
       const sim = meaningJaccard(tokensA, tokensB);
       if (sim >= 0.99) {
-        errors.push(`duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) and an identical meaning ("${a.meaning}" / "${b.meaning}"). Remove one, or add distinct senseKey/senseNo if this is intentional polysemy.`);
+        errors.push(`duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) and an identical meaning ("${a.meaning}" / "${b.meaning}"). Remove one, or add distinct senseKey/senseNo to both if this is intentional polysemy.`);
       } else if (sim >= 0.4) {
-        warnings.push(`possible duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) with similar meanings ("${a.meaning}" / "${b.meaning}"). Review: merge, or add senseKey/senseNo if this is intentional polysemy.`);
+        warnings.push(`possible duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) with similar meanings ("${a.meaning}" / "${b.meaning}"). Review: merge, or add distinct senseKey/senseNo to both if this is intentional polysemy.`);
       }
     }
   }
