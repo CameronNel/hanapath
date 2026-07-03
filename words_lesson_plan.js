@@ -102,7 +102,7 @@
       title: "Places and movement",
       subtitle: "Here, there, home",
       goal: "Name the places around you.",
-      newWordIds: ["w0401_yeogi", "w0402_geogi", "w0403_jeogi", "w0404_jip", "w0405_hakgyo"],
+      newWordIds: ["w0401_yeogi", "w0402_geogi", "w0403_jeogi", "w0404_jip", "w0405_hakgyo", "w_m6_2983_seoda_stop"],
     }),
     defineLesson({
       id: "w4-places-movement-02",
@@ -110,7 +110,7 @@
       title: "Places and movement II",
       subtitle: "Going and coming",
       goal: "Find the bathroom, find the station, go and come.",
-      newWordIds: ["w0406_hoesa", "w0407_hwajangsil", "w0408_yeok", "w0409_gada", "w0410_oda"],
+      newWordIds: ["w0406_hoesa", "w0407_hwajangsil", "w0408_yeok", "w0409_gada", "w0410_oda", "w_m6_2988_dolda_turn"],
     }),
     defineLesson({
       id: "w5-food-drink-01",
@@ -158,7 +158,7 @@
       title: "Core actions II",
       subtitle: "Daily-life verbs",
       goal: "Buy, meet, sleep, get up, and like.",
-      newWordIds: ["w0706_sada", "w0707_mannada", "w0708_jada", "w0709_ireonada", "w0710_joahada"],
+      newWordIds: ["w0706_sada", "w0707_mannada", "w0708_jada", "w0709_ireonada", "w0710_joahada", "w_m6_2982_seoda_stand"],
     }),
     defineLesson({
       id: "w8-feelings-descriptions-01",
@@ -211,7 +211,7 @@
       title: "Daily objects and technology",
       subtitle: "What's in your bag",
       goal: "Name everyday items you carry and wear.",
-      newWordIds: ["w1101_gabang", "w1102_sinbal", "w1103_ot", "w1104_sigye", "w1105_angyeong"],
+      newWordIds: ["w1101_gabang", "w1102_sinbal", "w1103_ot", "w1104_sigye", "w1105_angyeong", "w_m6_2981_geolda_call"],
     }),
     defineLesson({
       id: "w11-daily-objects-tech-02",
@@ -260,7 +260,7 @@
       title: "Home and routine III",
       subtitle: "Your daily habits",
       goal: "Talk about cleaning, washing, and resting at home.",
-      newWordIds: ["w1204_cheongsohada", "w1205_ssitda", "w1206_swida", "w1207_yorihada", "w1208_syawohada"],
+      newWordIds: ["w1204_cheongsohada", "w1205_ssitda", "w1206_swida", "w1207_yorihada", "w1208_syawohada", "w_m6_2980_geolda_hang"],
     }),
     defineLesson({
       id: "w12-home-routine-04",
@@ -854,9 +854,9 @@
       id: "w33-theme-62",
       stage: "W33",
       title: "Hobbies and leisure Part 62",
-      subtitle: "Learn 4 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for hobbies and leisure.",
-      newWordIds: ["w_m5_469_gongyeon", "w_m5_470_jeonsihoe", "w_m5_471_eumakhoe", "w_m5_467_norae_hobby"]
+      newWordIds: ["w_m5_469_gongyeon", "w_m5_470_jeonsihoe", "w_m5_471_eumakhoe", "w_m5_467_norae_hobby", "w_m6_2985_chida_instrument"]
     }),
     defineLesson({
       id: "w34-theme-63",
@@ -910,9 +910,9 @@
       id: "w36-theme-71",
       stage: "W36",
       title: "Everyday actions Part 71",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for everyday actions.",
-      newWordIds: ["w_m5_292_ppallaehada", "w_m5_295_gidarida", "w_m5_296_baeuda", "w_m5_286_mandeulda", "w_m6_2971_ttwida_jump"]
+      newWordIds: ["w_m5_292_ppallaehada", "w_m5_295_gidarida", "w_m5_296_baeuda", "w_m5_286_mandeulda", "w_m6_2971_ttwida_jump", "w_m6_2984_chida_hit"]
     }),
     defineLesson({
       id: "w36-theme-72",
@@ -1166,9 +1166,9 @@
       id: "w59-theme-105",
       stage: "W59",
       title: "Feelings and descriptions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for feelings and descriptions.",
-      newWordIds: ["w_m5_740_ttohan", "w_m5_741_bak", "w_m5_742_gamsa", "w_m5_743_modeun", "w_m5_744_piryo", "w_m5_745_jeongmal", "w_m5_746_dwi"]
+      newWordIds: ["w_m5_740_ttohan", "w_m5_741_bak", "w_m5_742_gamsa", "w_m5_743_modeun", "w_m5_744_piryo", "w_m5_745_jeongmal", "w_m5_746_dwi", "w_m6_2989_dolda_around"]
     }),
     defineLesson({
       id: "w60-theme-106",
@@ -1262,9 +1262,9 @@
       id: "w71-theme-117",
       stage: "W71",
       title: "Connectives and clause chaining",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for connectives and clause chaining.",
-      newWordIds: ["w_m5_825_geurigo", "w_m5_826_geunyang", "w_m5_828_neotda", "w_m5_829_dasi", "w_m5_830_hamkke"]
+      newWordIds: ["w_m5_825_geurigo", "w_m5_826_geunyang", "w_m5_828_neotda", "w_m5_829_dasi", "w_m5_830_hamkke", "w_m6_2986_pulda_untie"]
     }),
     defineLesson({
       id: "w72-theme-118",
@@ -2438,9 +2438,9 @@
       id: "w218-theme-264",
       stage: "W218",
       title: "School and study",
-      subtitle: "Learn 3 common words",
+      subtitle: "Learn 4 common words",
       goal: "Expand your vocabulary for school and study.",
-      newWordIds: ["w_m6_2962_jibjung", "w_m6_2963_teugjing", "w_m6_2964_haengjeong"]
+      newWordIds: ["w_m6_2962_jibjung", "w_m6_2963_teugjing", "w_m6_2964_haengjeong", "w_m6_2987_pulda_solve"]
     }),
   ];
 })();
