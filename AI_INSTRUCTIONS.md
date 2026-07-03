@@ -40,12 +40,25 @@ The implementation-level plan is
 ## Step 2 — Pick the next task
 
 From **§11**: choose the lowest-numbered milestone whose status is **not ✅** and
-whose dependencies are all ✅. **Verify against §11 live** — status changes as work
-merges; do not trust a cached memory of it. Then open that milestone's block in
-**§12** and follow *preconditions → where → how → done-when*.
+whose dependencies are all ✅. Then open that milestone's block in **§12** and
+follow *preconditions → where → how → done-when*.
 
-> As of 2026-07-02, M0/M0.5 are done and the front of the queue is **M1 (Data
-> axes)**. Confirm in §11 before starting.
+**Do not trust a "✅ done" at face value — verify it against the real data
+first.** As of 2026-07-03, M0–M6 are all marked done or partial in §11, but two
+of those claims turned out to be wrong when checked against the underlying
+data instead of the checkmark:
+- a register/speech-level inferrer that read a word's *example sentence*
+  instead of the word itself (fixed in #50 — see `HANDOVER.md`)
+- an inflated "805 senses" count that included 67 accidental duplicate rows
+  (fixed in #51 — true count is 738, and the audit now catches this class of
+  duplicate automatically)
+
+So before starting or reporting further progress on any milestone: run
+`node scripts/audit-words-data.mjs --strict` and read its **Annotation
+sources** output, spot-check a few rows/lessons in a `node -e` one-liner or a
+browser reload, and only then trust the number. See `HANDOVER.md` → "Words
+section planning" for the current honest gap list (volume, sense-split
+coverage, explicit-vs-inferred counts per axis).
 
 If the user named a specific task, do that instead.
 
