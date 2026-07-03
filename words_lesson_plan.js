@@ -211,7 +211,7 @@
       title: "Daily objects and technology",
       subtitle: "What's in your bag",
       goal: "Name everyday items you carry and wear.",
-      newWordIds: ["w1101_gabang", "w1102_sinbal", "w1103_ot", "w1104_sigye", "w1105_angyeong", "w_m6_2981_geolda_call"],
+      newWordIds: ["w1101_gabang", "w1102_sinbal", "w1103_ot", "w1104_sigye", "w_m6_3019_sigye_watch", "w1105_angyeong", "w_m6_2981_geolda_call"],
     }),
     defineLesson({
       id: "w11-daily-objects-tech-02",
@@ -343,7 +343,7 @@
       title: "Body and health",
       subtitle: "Parts of the body",
       goal: "Name the parts of your body.",
-      newWordIds: ["w1501_mom", "w1502_meori", "w1503_son", "w1504_bal", "w1505_eolgul", "w_m6_2977_geollida_ill"],
+      newWordIds: ["w1501_mom", "w1502_meori", "w_m6_3020_meori_hair", "w1503_son", "w1504_bal", "w1505_eolgul", "w_m6_2977_geollida_ill"],
     }),
     defineLesson({
       id: "w15-body-health-02",
@@ -351,7 +351,7 @@
       title: "Body and health II",
       subtitle: "More body parts",
       goal: "Round out body vocabulary.",
-      newWordIds: ["w1506_bae", "w1512_mok", "w1513_eokkae", "w1514_heori", "w1518_yeol"],
+      newWordIds: ["w1506_bae", "w1512_mok", "w_m6_3021_mok_neck", "w1513_eokkae", "w1514_heori", "w1518_yeol"],
     }),
     defineLesson({
       id: "w15-body-health-03",
@@ -558,9 +558,9 @@
       id: "w24-theme-15",
       stage: "W24",
       title: "Human body Part 15",
-      subtitle: "Learn 4 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for human body.",
-      newWordIds: [  "w_m5_085_pal",    "w_m5_089_gaseum", "w_m6_2967_dari_leg", "w_m6_2968_nun_eye"]
+      newWordIds: [  "w_m5_085_pal",    "w_m5_089_gaseum", "w_m6_3022_gaseum_chest", "w_m6_2967_dari_leg", "w_m6_2968_nun_eye"]
     }),
     defineLesson({
       id: "w24-theme-16",

@@ -10283,5 +10283,20 @@ window.AUDIO_MAP = {
   "lessonGroup: \"survival-core\"": "./audio/213295c336de0489a82a01665ac3b5d1.mp3",
   "facial look).": "./audio/933d9d92f4358d26bb6efaebadf1c804.mp3",
   "usageNote: \"Also used as \"I see": "./audio/e53bfff98b063725c42688a57058258a.mp3",
-  "Distinct sense from 인상 (price increase).": "./audio/eb692545050e2e452c38af282de6d745.mp3"
+  "Distinct sense from 인상 (price increase).": "./audio/eb692545050e2e452c38af282de6d745.mp3",
+  "Hair on the head; distinct from 머리 (head).": "./audio/035c3b84fe9725187f2cf752328d9dd8.mp3",
+  "figurative heart sense; distinct from 가슴 (chest).": "./audio/73f27901c6dfafe7edc6b5fa0ea00e5f.mp3",
+  "손목시계를 차요.": "./audio/10c8d4c709cbce8cd6212b5e3363a5e2.mp3",
+  "Body-part sense; distinct from 머리 (hair).": "./audio/6d9eb015cee23024aeba531b1bbe9d20.mp3",
+  "Wristwatch sense; distinct from 시계 (clock).": "./audio/1c9a88bb0b602077f1a8d7ac0ce93f6e.mp3",
+  "벽에 시계가 있어요.": "./audio/2eae384f4dca90d977b0439a4dde39e3.mp3",
+  "Neck sense; distinct from 목 (throat).": "./audio/51102f634c64df790c966f070d57b4cd.mp3",
+  "머리를 감아요.": "./audio/cc71b4612ad8ee0e58b8c788318770c8.mp3",
+  "Wall clock sense; distinct from 시계 (watch).": "./audio/95ca2e842f08df091b2211718030f722.mp3",
+  "가슴이 아파요.": "./audio/1d4268be712f87dfaac33e242943fae9.mp3",
+  "목이 길어요.": "./audio/a5e2f23444a0d9fef2ffec6ccd37a9c6.mp3",
+  "Literal chest sense; distinct from 가슴 (heart).": "./audio/edaa54b558df7b904aa934b32b7a2b98.mp3",
+  "Throat sense; distinct from 목 (neck).": "./audio/46ddf48cac937ee54ff434ebee291368.mp3",
+  "Emotional": "./audio/1745a9fe281909d4335ea83cf8e87393.mp3",
+  "Emotional/figurative heart sense; distinct from 가슴 (chest).": "./audio/e63475ca9d51bd4a1d584abd8486e293.mp3"
 };
