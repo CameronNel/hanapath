@@ -1,6 +1,6 @@
 # HanaPath Vocabulary Teaching Spec (pedagogy & linguistics north star)
 
-Date: 2026-07-02
+Date: 2026-07-03
 Repo: `CameronNel/hanapath`
 Status: **governing spec for *what* and *how* the Words section teaches.**
 
@@ -282,7 +282,7 @@ spec builds on.
 
 ## 8. Current status vs this spec
 
-Grounded in the shipped code (main) as of 2026-07-02. Legend: ✅ solid ·
+Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 🟡 partial · ❌ missing.
 
 | Spec pillar | Status | Where it stands |
@@ -302,14 +302,14 @@ Grounded in the shipped code (main) as of 2026-07-02. Legend: ✅ solid ·
 | **Morph tags (Sejong/UD)** | ❌ | coarse learner `pos` only |
 | **Pronunciation training (minimal pairs, 3-way stops)** | ❌ | at the vocab layer; exists only in the alphabet phase |
 | **Pronunciation scoring (segmental + prosodic)** | ❌ | TTS playback only |
-| Rich review-event analytics | 🟡 | lesson completion + SRS boxes; no per-item latency/error-type events |
+| Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
 | Vocabulary volume | ✅ | Expanded to 805 curated senses (M5) |
 
 **Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS,
-retrieval) are already strong. The gaps cluster in the **data model depth**
-(sense/register/origin/morph), the **inflection engine**, **pronunciation
-training**, and **lexicon volume**.
+retrieval) are already strong. The remaining gaps cluster around richer
+**morph tags**, deeper **pronunciation scoring**, and ongoing polish of the
+analytics and review surfaces.
 
 ---
 
@@ -360,7 +360,7 @@ beats adding 5,000 more flat words.
 
 At-a-glance map of the whole build. `M0`/`M0.5` are the current baseline; `M1`–`M6`
 are the roadmap from §9. Effort is a rough band, not a schedule. Status is honest
-as of 2026-07-02.
+as of 2026-07-03.
 
 | ID | Milestone | Depends on | Primary files | Ships when (acceptance) | Effort | Status |
 |---|---|---|---|---|---|---|
@@ -371,7 +371,7 @@ as of 2026-07-02.
 | **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ✅ done |
 | **M4** | **Pronunciation layer** — minimal-pair drills, spelling/sounds-like, segmental+prosodic scoring stub | M0 (audio); M1 optional | `app.js`, `audio/` + `generate_assets.py`, new drill data | drills exist for the §6.2 pitfall sets; every card shows both layers | M | ✅ done |
 | **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done |
-| **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ⬜ not started |
+| **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ✅ done |
 
 Guiding rule: **depth before breadth.** M1→M3 (correct, register-aware,
 inflectable senses) matter more than rushing M5 (raw volume).
