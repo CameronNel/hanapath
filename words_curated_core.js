@@ -60,6 +60,24 @@
     return "";
   }
 
+  function inferRegister(entry) {
+    if (!entry) return "everyday";
+    var text = [entry.korean, entry.exampleKo, entry.usageNote, (entry.tags || []).join(" "), entry.grammarRole || ""].join(" ");
+    if (entry.lessonGroup === "honorifics" || /\bhonorific\b/.test(text) || /님|께서|세요|십시오/.test(text)) return "honorific";
+    if (/습니다|습니까|합니다|합니다체|formal/.test(text)) return "formal";
+    if (/아요|어요|해요|네요|ㄹ까요|을까요|요\b|polite/.test(text)) return "polite";
+    if (/written-formal/.test(text)) return "written-formal";
+    return "everyday";
+  }
+
+  function inferSpeechLevel(entry) {
+    if (!entry) return "plain";
+    var text = [entry.korean, entry.exampleKo, entry.usageNote, entry.grammarRole || ""].join(" ");
+    if (/습니다|습니까|ㅂ니다|formal/.test(text)) return "polite formal";
+    if (/아요|어요|해요|세요|네요|ㄹ까요|을까요|요\b|polite/.test(text)) return "polite informal";
+    return "plain";
+  }
+
   function defineWord(entry) {
     var word = {
       id: entry.id,
@@ -94,8 +112,8 @@
     // Optional M1 Data Axes fields
     if (entry.senseKey) word.senseKey = entry.senseKey;
     if (entry.senseNo !== undefined) word.senseNo = entry.senseNo;
-    if (entry.register) word.register = entry.register;
-    if (entry.speechLevel) word.speechLevel = entry.speechLevel;
+    word.register = entry.register || inferRegister(entry);
+    word.speechLevel = entry.speechLevel || inferSpeechLevel(entry);
     if (entry.originType) word.originType = entry.originType;
     if (entry.hanja) word.hanja = entry.hanja;
     if (entry.irregularFamily) word.irregularFamily = entry.irregularFamily;

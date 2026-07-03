@@ -69,10 +69,14 @@ for (const word of words || []) {
     'EP', 'EF', 'EC', 'ETN', 'ETM', 'XPN', 'XSN', 'XSA', 'XSV', 'IC'
   ]);
 
-  if (word.register !== undefined && !VALID_REGISTERS.has(word.register)) {
+  if (!word.register) {
+    errors.push(`${label}: missing effective register`);
+  } else if (!VALID_REGISTERS.has(word.register)) {
     errors.push(`${label}: invalid register "${word.register}"`);
   }
-  if (word.speechLevel !== undefined && !VALID_SPEECH_LEVELS.has(word.speechLevel)) {
+  if (!word.speechLevel) {
+    errors.push(`${label}: missing effective speechLevel`);
+  } else if (!VALID_SPEECH_LEVELS.has(word.speechLevel)) {
     errors.push(`${label}: invalid speechLevel "${word.speechLevel}"`);
   }
   if (word.originType !== undefined && !VALID_ORIGIN_TYPES.has(word.originType)) {
