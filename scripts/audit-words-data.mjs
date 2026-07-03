@@ -79,7 +79,9 @@ for (const word of words || []) {
   } else if (!VALID_SPEECH_LEVELS.has(word.speechLevel)) {
     errors.push(`${label}: invalid speechLevel "${word.speechLevel}"`);
   }
-  if (word.originType !== undefined && !VALID_ORIGIN_TYPES.has(word.originType)) {
+  if (!word.originType) {
+    errors.push(`${label}: missing effective originType`);
+  } else if (!VALID_ORIGIN_TYPES.has(word.originType)) {
     errors.push(`${label}: invalid originType "${word.originType}"`);
   }
   if (word.irregularFamily !== undefined && !VALID_IRREGULAR_FAMILIES.has(word.irregularFamily)) {

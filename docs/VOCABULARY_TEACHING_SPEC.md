@@ -297,7 +297,7 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
 | **Sense-level polysemy** | ✅ | Senses split with `lemma`, `senseKey`, and `senseNo` fields |
-| **Word-origin tagging (native/Sino/loan)** | 🟡 | `originType` is broadly present; `hanja` is retained only when verified as real CJK ideographs |
+| **Word-origin tagging (native/Sino/loan)** | 🟡 | every row now has effective `originType`; `hanja` is retained only when verified as real CJK ideographs |
 | **Register as a data axis** | 🟡 | every row now has effective `register` and `speechLevel`; broad labels are inferred where not hand-curated |
 | **Morph tags (Sejong/UD)** | 🟡 | every row now has a validated effective `morphTag`; broad tags are derived from learner `pos`, not fully hand-curated |
 | **Pronunciation training (minimal pairs, 3-way stops)** | ✅ | Vocab minimal-pair drill exists; every curated word card shows spelling vs sounds-like layers |

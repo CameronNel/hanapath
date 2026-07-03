@@ -78,6 +78,17 @@
     return "plain";
   }
 
+  function inferOriginType(entry) {
+    if (!entry) return "native";
+    var text = [entry.korean, entry.meaning, entry.usageNote, (entry.tags || []).join(" ")].join(" ");
+    if (entry.hanja) return "Sino-Korean";
+    if (/Sino-Korean|Sino Korean|hanja/i.test(text)) return "Sino-Korean";
+    if (/loanword|English|coffee|computer|internet|email|camera|television|taxi|hotel|cafe/i.test(text)) return "loanword";
+    if (/컴퓨터|텔레비전|카메라|인터넷|이메일|택시|버스|호텔|카페|라떼|샴푸|테이프|배터리/.test(text)) return "loanword";
+    if (/hybrid/i.test(text)) return "hybrid";
+    return "native";
+  }
+
   function defineWord(entry) {
     var word = {
       id: entry.id,
@@ -114,7 +125,7 @@
     if (entry.senseNo !== undefined) word.senseNo = entry.senseNo;
     word.register = entry.register || inferRegister(entry);
     word.speechLevel = entry.speechLevel || inferSpeechLevel(entry);
-    if (entry.originType) word.originType = entry.originType;
+    word.originType = entry.originType || inferOriginType(entry);
     if (entry.hanja) word.hanja = entry.hanja;
     if (entry.irregularFamily) word.irregularFamily = entry.irregularFamily;
     word.morphTag = entry.morphTag || inferMorphTag(entry);
