@@ -582,9 +582,9 @@
       id: "w24-theme-15",
       stage: "W24",
       title: "Human body Part 15",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 4 common words",
       goal: "Expand your thematic vocabulary for human body.",
-      newWordIds: [  "w_m5_085_pal",    "w_m5_089_gaseum"]
+      newWordIds: [  "w_m5_085_pal",    "w_m5_089_gaseum", "w_m6_2967_dari_leg", "w_m6_2968_nun_eye"]
     }),
     defineLesson({
       id: "w24-theme-16",
@@ -686,9 +686,9 @@
       id: "w27-theme-28",
       stage: "W27",
       title: "Food and taste Part 28",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for food and taste.",
-      newWordIds: ["w_m5_398_hansik", "w_m5_399_yangsik", "w_m5_400_ilsik", "w_m5_401_jungsik"]
+      newWordIds: ["w_m5_398_hansik", "w_m5_399_yangsik", "w_m5_400_ilsik", "w_m5_401_jungsik", "w_m6_2969_bam_chestnut"]
     }),
         defineLesson({
       id: "w28-theme-31",
@@ -798,9 +798,9 @@
       id: "w29-theme-44",
       stage: "W29",
       title: "Travel and city places Part 44",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 2 common words",
       goal: "Expand your thematic vocabulary for travel and city places.",
-      newWordIds: ["w_m5_514_kape_cafe"]
+      newWordIds: ["w_m5_514_kape_cafe", "w_m6_2966_cha_car"]
     }),
     defineLesson({
       id: "w30-theme-45",
@@ -1366,9 +1366,9 @@
       id: "w70-theme-116",
       stage: "W70",
       title: "Core actions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for core actions.",
-      newWordIds: ["w_m5_817_barada", "w_m5_818_mitda", "w_m5_819_du", "w_m5_821_dareun", "w_m5_822_munje", "w_m5_823_billida", "w_m5_824_matda"]
+      newWordIds: ["w_m5_817_barada", "w_m5_818_mitda", "w_m5_819_du", "w_m5_821_dareun", "w_m5_822_munje", "w_m5_823_billida", "w_m5_824_matda", "w_m6_2965_matda_hit"]
     }),
     defineLesson({
       id: "w71-theme-117",
