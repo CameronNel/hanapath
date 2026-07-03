@@ -13,8 +13,11 @@ verify → ship. If the user says "continue the project," follow it top to botto
 The **Words (vocabulary) section** is built toward the target defined in
 [`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md) — the north
 star. Most of it has shipped; the live remaining-work list is its
-**§9 finalization checklist** — work it top-down (item 5, pronunciation
-scoring, is owner-gated: don't start it without an explicit owner decision).
+**§9 finalization checklist**, and the **batch-by-batch execution queue** for
+that checklist is **[`docs/WORDS_FINAL_ROADMAP.md`](docs/WORDS_FINAL_ROADMAP.md)**
+— if you were asked to "do the next task" or "work the roadmap," open that
+file, read its §2 runbook, and take the next unchecked box (one box = one PR;
+Tracks D/E are gated — don't touch them without an explicit owner decision).
 **§8** is the status scorecard, **§11** the milestone sheet, **§12** the
 how-to for the one open milestone (M2). Do not trust a "✅ done" at face
 value — the scorecard has been wrong three times (PRs #50, #51, #54);
@@ -49,6 +52,7 @@ is complete and protected** — do not regress it.
 | **`AI_INSTRUCTIONS.md`** | The "continue the project" runbook — **start here** |
 | `CLAUDE.md` | Same rules + doc map (Claude Code entry point) |
 | **`docs/VOCABULARY_TEACHING_SPEC.md`** | Words **north star**: pedagogy/linguistics, status scorecard, milestone sheet, dependency/implementation order |
+| **`docs/WORDS_FINAL_ROADMAP.md`** | Words **execution queue**: checkbox batches, per-PR recipes, curation decision guides — take the next unchecked box |
 | `docs/VOCABULARY_TEACHING_SPEC_SOURCE.md` | The original research spec, verbatim (source of record) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words **implementation** plan (schema, SRS, lesson flow); §25 reconciles it with the north star |
 | `HANDOVER.md` | Repo snapshot + conventions |

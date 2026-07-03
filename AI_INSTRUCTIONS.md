@@ -41,9 +41,12 @@ The implementation-level plan is
 
 ## Step 2 — Pick the next task
 
-Work the teaching spec's **§9 finalization checklist top-down**: take the
-first item that isn't finished and do the next small, audit-backed batch of
-it. Two special cases:
+The §9 checklist has a **batch-by-batch execution queue**:
+[`docs/WORDS_FINAL_ROADMAP.md`](docs/WORDS_FINAL_ROADMAP.md). Prefer it — read
+its §2 runbook, then take the next unchecked box (one box = one PR; Tracks
+D/E are owner-gated). Fall back to working the teaching spec's **§9
+finalization checklist top-down** only if the roadmap file is missing or
+fully checked. Two special cases:
 
 - **§9 item 1 (M2 sense split):** follow the M2 block in **§12.3**
   (*preconditions → where → how → done-when*).
