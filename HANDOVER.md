@@ -18,6 +18,14 @@ Snapshot for the next contributor (human or agent) picking up this project.
   - `scripts/audit-words-data.mjs`, `scripts/audit-alphabet-audio.mjs`, `scripts/audit-app-shell.mjs` — the audit suite (this repo's "tests")
 - **Run it:** serve the folder over static HTTP and open `index.html` (e.g. `python3 -m http.server`). State persists in `localStorage` under key `hanapath-v1`.
 
+## ⚠️ Active test override — remember to revert
+`TEST_UNLOCK_ALL_STAGES` in `app.js` (~line 3212) is currently **`true`** at the
+owner's explicit request (2026-07-03), so every alphabet stage and every Words
+lesson is reachable immediately, bypassing normal unlock order and the
+"finish the alphabet first" gate — for testing convenience only. This is
+**not** intended to ship to real learners. Flip it back to `false` (and bump
+the cache in `sw.js`/`index.html`) when the owner is done testing.
+
 ## Alphabet section — complete and protected
 Finished (progression, quiz-pool safety, audio normalization, accessibility,
 dead-code removal, skill-SRS) across earlier PRs; details are in git history.

@@ -3209,6 +3209,19 @@ function getAlphabetQuizPools() {
 // stay locked. Everything that gates or counts alphabet progress should flow
 // through getAlphabetProgress() / normalizeCompletedAlphabetIds().
 const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
+
+// ██████████████████████████████████████████████████████████████████████████
+// ███ TEMPORARY TEST OVERRIDE — REMEMBER TO FLIP THIS BACK TO `false` ███████
+// ██████████████████████████████████████████████████████████████████████████
+// Owner request (2026-07-03): make every alphabet stage AND every Words
+// lesson immediately reachable, bypassing normal unlock order and the
+// "finish the alphabet first" gate, for testing convenience. This is NOT
+// intended to ship to real learners — normal progression (locked stages,
+// gated Words lessons until Phase One is complete) is the real product
+// behavior. Progress bars/counts stay honest (this only bypasses the
+// access gate, not the completion tracking) — see isLessonUnlocked() below
+// and isWordLessonUnlocked() further down for the two places this is
+// consumed. Set back to `false` when the owner is done testing.
 const TEST_UNLOCK_ALL_STAGES = true;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
@@ -5056,8 +5069,8 @@ function isWordLessonCompleted(lessonId) {
 
 function isWordLessonUnlocked(lesson) {
   if (!lesson) return false;
+  if (TEST_UNLOCK_ALL_STAGES) return true; // see TEST_UNLOCK_ALL_STAGES above — must come before the alphabet-complete gate, not after
   if (lesson.unlock?.requiresAlphabetComplete && !getAlphabetProgress().complete) return false;
-  if (TEST_UNLOCK_ALL_STAGES) return true;
   const prev = lesson.unlock?.previousLessonId;
   return !prev || isWordLessonCompleted(prev);
 }
@@ -6350,7 +6363,7 @@ function wordsHomeContentHtml() {
     `;
   }
 
-  const alphabetDone = getAlphabetProgress().complete;
+  const alphabetDone = getAlphabetProgress().complete || TEST_UNLOCK_ALL_STAGES; // see TEST_UNLOCK_ALL_STAGES above
   const next = getNextWordLesson();
   const dueCount = getVocabDueCount();
   const completedCount = (state.vocabLessonCompleted || []).length;
@@ -11538,7 +11551,7 @@ function renderLearnStageMenu(itemId) {
   const nextWordLesson = itemId === "vocabulary" ? getNextWordLesson() : null;
   const wordDueCount = itemId === "vocabulary" ? getVocabDueCount() : 0;
   const wordBankHtml = itemId === "vocabulary" ? wordBankEntryCardHtml() : "";
-  const wordLessonHtml = itemId === "vocabulary" && nextWordLesson && getAlphabetProgress().complete
+  const wordLessonHtml = itemId === "vocabulary" && nextWordLesson && (getAlphabetProgress().complete || TEST_UNLOCK_ALL_STAGES)
     ? `
     <button class="card alpha-board-entry" type="button" id="stageOpenWordLesson">
       <div class="alpha-board-entry-main">
