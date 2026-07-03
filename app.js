@@ -4366,6 +4366,7 @@ const WORD_BANK_FILTERS = [
   { id: "curated", label: "Curated" },
   { id: "core", label: "Core" },
   { id: "function", label: "Function words" },
+  { id: "needsCuration", label: "Needs curation" },
   { id: "noun", label: "Nouns" },
   { id: "verb", label: "Verbs" },
   { id: "adjective", label: "Adjectives" },
@@ -4381,6 +4382,7 @@ const WORD_BANK_SORTS = [
   { id: "frequency", label: "Frequency" },
   { id: "hangul", label: "A–Z Korean" },
   { id: "status", label: "Known status" },
+  { id: "curation", label: "Curation priority" },
 ];
 
 const WORD_BANK_PAGE_SIZE = 50;
@@ -4497,6 +4499,8 @@ function buildWordReferenceRows() {
       row.pronunciation, row.exampleKo, row.exampleEn, row.usageNote, row.lessonGroup,
       row.lessonTitle, row.frequencyBand, row.rank, row.tokenNote,
       (word.tags || []).join(" "), (word.forms || []).join(" "),
+      word.register, word.speechLevel, word.originType, word.hanja, word.morphTag,
+      ...Object.values(word.annotationSource || {}),
     ].filter((value) => value !== null && value !== undefined && value !== "").join(" ")
       .normalize("NFKC").toLowerCase();
     rows.push(row);
@@ -5762,6 +5766,7 @@ function applyWordBankFilter(rows, filter, knownSet, hardSet, now) {
   if (filter === "curated") return rows.filter((row) => row.word);
   if (filter === "core") return rows.filter((row) => row.word && (row.word.priority || "core") === "core");
   if (filter === "function") return rows.filter((row) => row.word && row.word.isFunctionWord);
+  if (filter === "needsCuration") return rows.filter((row) => row.word && wordNeedsAnnotationCuration(row.word));
   if (filter === "noun") return rows.filter((row) => row.pos === "noun");
   if (filter === "verb") return rows.filter((row) => row.pos === "verb");
   if (filter === "adjective") return rows.filter((row) => row.pos === "adjective");
@@ -5785,6 +5790,12 @@ function sortWordBankRows(rows, sort, knownSet, hardSet, now) {
       const sa = order[getWordRowStatus(a, knownSet, hardSet, now)] ?? 3;
       const sb = order[getWordRowStatus(b, knownSet, hardSet, now)] ?? 3;
       return sa - sb || a.curriculumIndex - b.curriculumIndex || (a.rank ?? 0) - (b.rank ?? 0);
+    });
+  } else if (sort === "curation") {
+    sorted.sort((a, b) => {
+      const debtA = getWordCurationDebtScore(a.word);
+      const debtB = getWordCurationDebtScore(b.word);
+      return debtB - debtA || a.curriculumIndex - b.curriculumIndex || (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER);
     });
   } else {
     sorted.sort((a, b) => a.curriculumIndex - b.curriculumIndex || (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));
@@ -5922,6 +5933,27 @@ function getWordPronunciationLayerText(word) {
   return `Spelling: ${spelling} · Sounds-like: ${soundsLike}`;
 }
 
+function getWordAnnotationSource(word, key) {
+  return word && word.annotationSource && word.annotationSource[key] ? word.annotationSource[key] : "";
+}
+
+function wordNeedsAnnotationCuration(word) {
+  if (!word || !word.annotationSource) return true;
+  return ["register", "speechLevel", "originType", "morphTag"].some((key) => getWordAnnotationSource(word, key) === "inferred");
+}
+
+function getWordCurationDebtScore(word) {
+  if (!word || !word.annotationSource) return 99;
+  return ["register", "speechLevel", "originType", "morphTag", "hanja"]
+    .reduce((score, key) => score + (getWordAnnotationSource(word, key) === "inferred" ? 1 : 0), 0);
+}
+
+function wordAnnotationValueHtml(word, key, value) {
+  const source = getWordAnnotationSource(word, key);
+  const label = source === "inferred" ? "inferred" : source === "explicit" ? "verified" : "";
+  return `${escapeHtml(value || "—")}${label ? `<span class="fs-xs text-muted-2"> (${label})</span>` : ""}`;
+}
+
 function wordDetailNoteHtml(label, body, extraClass = "") {
   if (!body) return "";
   return `
@@ -6020,11 +6052,11 @@ function wordBankDetailHtml(row) {
       ${wordDetailNoteHtml("Spelling vs sounds-like", pronunciationLayer, "word-form-note-sound")}
       <div class="vocab-meta-grid" style="margin-top:12px;">
         <div class="vocab-meta-box"><span>Lesson group</span><strong>${escapeHtml(word.lessonTitle || word.lessonGroup)}</strong></div>
-        <div class="vocab-meta-box"><span>Register</span><strong>${escapeHtml(word.register || "—")}</strong></div>
-        <div class="vocab-meta-box"><span>Speech level</span><strong>${escapeHtml(word.speechLevel || "—")}</strong></div>
-        <div class="vocab-meta-box"><span>Origin</span><strong>${escapeHtml(word.originType || "—")}</strong></div>
-        <div class="vocab-meta-box"><span>Hanja</span><strong>${escapeHtml(word.hanja || "—")}</strong></div>
-        <div class="vocab-meta-box"><span>Morph tag</span><strong>${escapeHtml(word.morphTag || "—")}</strong></div>
+        <div class="vocab-meta-box"><span>Register</span><strong>${wordAnnotationValueHtml(word, "register", word.register)}</strong></div>
+        <div class="vocab-meta-box"><span>Speech level</span><strong>${wordAnnotationValueHtml(word, "speechLevel", word.speechLevel)}</strong></div>
+        <div class="vocab-meta-box"><span>Origin</span><strong>${wordAnnotationValueHtml(word, "originType", word.originType)}</strong></div>
+        <div class="vocab-meta-box"><span>Hanja</span><strong>${wordAnnotationValueHtml(word, "hanja", word.hanja)}</strong></div>
+        <div class="vocab-meta-box"><span>Morph tag</span><strong>${wordAnnotationValueHtml(word, "morphTag", word.morphTag)}</strong></div>
         <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>
       </div>
       <div class="word-card-actions">

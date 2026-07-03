@@ -129,6 +129,13 @@
     if (entry.hanja) word.hanja = entry.hanja;
     if (entry.irregularFamily) word.irregularFamily = entry.irregularFamily;
     word.morphTag = entry.morphTag || inferMorphTag(entry);
+    word.annotationSource = {
+      register: entry.register ? "explicit" : "inferred",
+      speechLevel: entry.speechLevel ? "explicit" : "inferred",
+      originType: entry.originType ? "explicit" : "inferred",
+      morphTag: entry.morphTag ? "explicit" : "inferred",
+      hanja: entry.hanja ? "explicit" : "absent",
+    };
     if (entry.inflections) word.inflections = entry.inflections;
     // Optional word-detail-drawer fields (docs/WORDS_SECTION_MASTER_SPEC.md
     // word-detail UX): the sentence's own romanization when it differs

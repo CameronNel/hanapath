@@ -297,9 +297,9 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
 | **Sense-level polysemy** | ✅ | Senses split with `lemma`, `senseKey`, and `senseNo` fields |
-| **Word-origin tagging (native/Sino/loan)** | 🟡 | every row now has effective `originType`; `hanja` is retained only when verified as real CJK ideographs |
-| **Register as a data axis** | 🟡 | every row now has effective `register` and `speechLevel`; broad labels are inferred where not hand-curated |
-| **Morph tags (Sejong/UD)** | 🟡 | every row now has a validated effective `morphTag`; broad tags are derived from learner `pos`, not fully hand-curated |
+| **Word-origin tagging (native/Sino/loan)** | 🟡 | every row has effective `originType`; `annotationSource` distinguishes verified vs inferred labels, and Hanja is retained only when verified |
+| **Register as a data axis** | 🟡 | every row has effective `register` and `speechLevel`; inferred rows are visible via the Word Bank curation queue |
+| **Morph tags (Sejong/UD)** | 🟡 | every row has a validated effective `morphTag`; broad inferred tags are tracked separately from explicit hand-curated tags |
 | **Pronunciation training (minimal pairs, 3-way stops)** | ✅ | Vocab minimal-pair drill exists; every curated word card shows spelling vs sounds-like layers |
 | **Pronunciation scoring (segmental + prosodic)** | 🟡 | browser SpeechRecognition scoring stub compares transcript accuracy and speaking duration; not acoustic phoneme-level scoring |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
@@ -310,6 +310,10 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 retrieval) are already strong. The remaining gaps cluster around richer
 **morph tags**, deeper **pronunciation scoring**, and ongoing polish of the
 analytics and review surfaces.
+
+The Word Bank now has a **Needs curation** filter and **Curation priority** sort
+driven by `annotationSource`, so inferred register/origin/morph labels can be
+reviewed in batches instead of hiding behind effective fallback values.
 
 ---
 
