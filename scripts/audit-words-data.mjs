@@ -47,6 +47,13 @@ const LATIN_RE = /[a-zA-Z]/;
 const HANJA_RE = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/;
 
 const idSet = new Set();
+const annotationSourceCounts = {
+  register: { explicit: 0, inferred: 0, absent: 0 },
+  speechLevel: { explicit: 0, inferred: 0, absent: 0 },
+  originType: { explicit: 0, inferred: 0, absent: 0 },
+  morphTag: { explicit: 0, inferred: 0, absent: 0 },
+  hanja: { explicit: 0, inferred: 0, absent: 0 },
+};
 for (const word of words || []) {
   const label = word.id || word.korean || "(unknown entry)";
   if (!word.id) errors.push(`entry ${JSON.stringify(word.korean)} has no id`);
@@ -62,27 +69,53 @@ for (const word of words || []) {
   const VALID_REGISTERS = new Set(['everyday', 'polite', 'formal', 'honorific', 'written-formal']);
   const VALID_SPEECH_LEVELS = new Set(['plain', 'polite informal', 'polite formal']);
   const VALID_ORIGIN_TYPES = new Set(['native', 'Sino-Korean', 'loanword', 'hybrid']);
+  const VALID_ANNOTATION_SOURCES = new Set(['explicit', 'inferred', 'absent']);
   const VALID_IRREGULAR_FAMILIES = new Set(['ㄷ', 'ㅂ', 'ㅅ', 'ㅎ', '르', '러', 'ㄹ-deletion']);
   const VALID_MORPH_TAGS = new Set([
-    'NNG', 'NNB', 'XR', 'NNP', 'NP', 'VV', 'VX', 'VCP', 'VCN', 'VA', 'MAG', 'MAJ',
+    'NNG', 'NNB', 'XR', 'NNP', 'NP', 'NR', 'VV', 'VX', 'VCP', 'VCN', 'VA', 'MAG', 'MAJ', 'MM',
     'JKS', 'JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC',
     'EP', 'EF', 'EC', 'ETN', 'ETM', 'XPN', 'XSN', 'XSA', 'XSV', 'IC'
   ]);
 
-  if (word.register !== undefined && !VALID_REGISTERS.has(word.register)) {
+  if (!word.register) {
+    errors.push(`${label}: missing effective register`);
+  } else if (!VALID_REGISTERS.has(word.register)) {
     errors.push(`${label}: invalid register "${word.register}"`);
   }
-  if (word.speechLevel !== undefined && !VALID_SPEECH_LEVELS.has(word.speechLevel)) {
+  if (!word.speechLevel) {
+    errors.push(`${label}: missing effective speechLevel`);
+  } else if (!VALID_SPEECH_LEVELS.has(word.speechLevel)) {
     errors.push(`${label}: invalid speechLevel "${word.speechLevel}"`);
   }
-  if (word.originType !== undefined && !VALID_ORIGIN_TYPES.has(word.originType)) {
+  if (!word.originType) {
+    errors.push(`${label}: missing effective originType`);
+  } else if (!VALID_ORIGIN_TYPES.has(word.originType)) {
     errors.push(`${label}: invalid originType "${word.originType}"`);
   }
   if (word.irregularFamily !== undefined && !VALID_IRREGULAR_FAMILIES.has(word.irregularFamily)) {
     errors.push(`${label}: invalid irregularFamily "${word.irregularFamily}"`);
   }
-  if (word.morphTag !== undefined && !VALID_MORPH_TAGS.has(word.morphTag)) {
+  if (!word.morphTag) {
+    errors.push(`${label}: missing effective morphTag`);
+  } else if (!VALID_MORPH_TAGS.has(word.morphTag)) {
     errors.push(`${label}: invalid morphTag "${word.morphTag}"`);
+  }
+  if (!word.annotationSource || typeof word.annotationSource !== 'object' || Array.isArray(word.annotationSource)) {
+    errors.push(`${label}: missing annotationSource`);
+  } else {
+    for (const key of ['register', 'speechLevel', 'originType', 'morphTag', 'hanja']) {
+      if (!VALID_ANNOTATION_SOURCES.has(word.annotationSource[key])) {
+        errors.push(`${label}: invalid annotationSource.${key} "${word.annotationSource[key]}"`);
+      } else {
+        annotationSourceCounts[key][word.annotationSource[key]] += 1;
+      }
+    }
+    if (word.hanja && word.annotationSource.hanja !== 'explicit') {
+      errors.push(`${label}: hanja annotationSource must be explicit when hanja is present`);
+    }
+    if (!word.hanja && word.annotationSource.hanja !== 'absent') {
+      errors.push(`${label}: hanja annotationSource must be absent when hanja is missing`);
+    }
   }
   if (word.senseKey !== undefined && typeof word.senseKey !== 'string') {
     errors.push(`${label}: senseKey must be a string`);
@@ -213,6 +246,7 @@ if (!Inflect) {
 
 console.log(`Curated words: ${(words || []).length}`);
 console.log(`Lessons: ${(lessons || []).length}`);
+console.log(`Annotation sources: ${JSON.stringify(annotationSourceCounts)}`);
 console.log(`Errors: ${errors.length}`);
 for (const message of errors) console.log(`  ERROR ${message}`);
 console.log(`Warnings: ${warnings.length}`);

@@ -297,11 +297,11 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
 | **Sense-level polysemy** | ✅ | Senses split with `lemma`, `senseKey`, and `senseNo` fields |
-| **Word-origin tagging (native/Sino/loan)** | 🟡 | `originType` is broadly present; `hanja` is retained only when verified as real CJK ideographs |
-| **Register as a data axis** | 🟡 | Explicitly modeled via `register` and `speechLevel` fields on register-bearing rows; not corpus-wide |
-| **Morph tags (Sejong/UD)** | ❌ | coarse learner `pos` only |
+| **Word-origin tagging (native/Sino/loan)** | 🟡 | every row has effective `originType`; `annotationSource` distinguishes verified vs inferred labels, and Hanja is retained only when verified |
+| **Register as a data axis** | 🟡 | `register`/`speechLevel` now inferred from **structured** signals (POS, lessonGroup, curated tags), not by scanning the example sentence — so everyday nouns (물, 책, 시간…) are no longer mislabeled polite/honorific. High-contrast lexemes (저 vs 나, 무엇 vs 뭐, 와/과 vs 하고, formal set-phrases, honorifics) are hand-verified `explicit`; the rest are correct-by-rule and flagged for review in the curation queue |
+| **Morph tags (Sejong/UD)** | 🟡 | every row has a validated effective `morphTag`; broad inferred tags are tracked separately from explicit hand-curated tags |
 | **Pronunciation training (minimal pairs, 3-way stops)** | ✅ | Vocab minimal-pair drill exists; every curated word card shows spelling vs sounds-like layers |
-| **Pronunciation scoring (segmental + prosodic)** | ❌ | TTS playback only |
+| **Pronunciation scoring (segmental + prosodic)** | 🟡 | browser SpeechRecognition scoring stub compares transcript accuracy and speaking duration; not acoustic phoneme-level scoring |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
 | Vocabulary volume | ✅ | Expanded to 805 curated senses (M5) |
@@ -310,6 +310,10 @@ Grounded in the shipped code (main) as of 2026-07-03. Legend: ✅ solid ·
 retrieval) are already strong. The remaining gaps cluster around richer
 **morph tags**, deeper **pronunciation scoring**, and ongoing polish of the
 analytics and review surfaces.
+
+The Word Bank now has a **Needs curation** filter and **Curation priority** sort
+driven by `annotationSource`, so inferred register/origin/morph labels can be
+reviewed in batches instead of hiding behind effective fallback values.
 
 ---
 
@@ -401,7 +405,8 @@ in parallel from day one because it only needs the existing audio system.
 - **Vanilla/static.** New data goes in a plain browser-global file loaded before
   `app.js` (like `words_curated_core.js`). No build step.
 - **Cache discipline.** Any change to a loaded file → bump `CACHE_NAME` in `sw.js`
-  and the `?v=...` strings in `index.html` + `sw.js`.
+  and the `?v=...` strings in `index.html` + `sw.js`; verify with
+  `node scripts/audit-app-shell.mjs`.
 - **Audio.** New Korean text → regenerate assets (`python generate_assets.py`),
   never hand-edit `audio_map.js`.
 - **PRs.** One milestone per PR (or smaller); draft PR, owner squash-merges.

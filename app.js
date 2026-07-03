@@ -4366,6 +4366,7 @@ const WORD_BANK_FILTERS = [
   { id: "curated", label: "Curated" },
   { id: "core", label: "Core" },
   { id: "function", label: "Function words" },
+  { id: "needsCuration", label: "Needs curation" },
   { id: "noun", label: "Nouns" },
   { id: "verb", label: "Verbs" },
   { id: "adjective", label: "Adjectives" },
@@ -4381,6 +4382,7 @@ const WORD_BANK_SORTS = [
   { id: "frequency", label: "Frequency" },
   { id: "hangul", label: "A–Z Korean" },
   { id: "status", label: "Known status" },
+  { id: "curation", label: "Curation priority" },
 ];
 
 const WORD_BANK_PAGE_SIZE = 50;
@@ -4497,6 +4499,8 @@ function buildWordReferenceRows() {
       row.pronunciation, row.exampleKo, row.exampleEn, row.usageNote, row.lessonGroup,
       row.lessonTitle, row.frequencyBand, row.rank, row.tokenNote,
       (word.tags || []).join(" "), (word.forms || []).join(" "),
+      word.register, word.speechLevel, word.originType, word.hanja, word.morphTag,
+      ...Object.values(word.annotationSource || {}),
     ].filter((value) => value !== null && value !== undefined && value !== "").join(" ")
       .normalize("NFKC").toLowerCase();
     rows.push(row);
@@ -5762,6 +5766,7 @@ function applyWordBankFilter(rows, filter, knownSet, hardSet, now) {
   if (filter === "curated") return rows.filter((row) => row.word);
   if (filter === "core") return rows.filter((row) => row.word && (row.word.priority || "core") === "core");
   if (filter === "function") return rows.filter((row) => row.word && row.word.isFunctionWord);
+  if (filter === "needsCuration") return rows.filter((row) => row.word && wordNeedsAnnotationCuration(row.word));
   if (filter === "noun") return rows.filter((row) => row.pos === "noun");
   if (filter === "verb") return rows.filter((row) => row.pos === "verb");
   if (filter === "adjective") return rows.filter((row) => row.pos === "adjective");
@@ -5785,6 +5790,12 @@ function sortWordBankRows(rows, sort, knownSet, hardSet, now) {
       const sa = order[getWordRowStatus(a, knownSet, hardSet, now)] ?? 3;
       const sb = order[getWordRowStatus(b, knownSet, hardSet, now)] ?? 3;
       return sa - sb || a.curriculumIndex - b.curriculumIndex || (a.rank ?? 0) - (b.rank ?? 0);
+    });
+  } else if (sort === "curation") {
+    sorted.sort((a, b) => {
+      const debtA = getWordCurationDebtScore(a.word);
+      const debtB = getWordCurationDebtScore(b.word);
+      return debtB - debtA || a.curriculumIndex - b.curriculumIndex || (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER);
     });
   } else {
     sorted.sort((a, b) => a.curriculumIndex - b.curriculumIndex || (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));
@@ -5922,6 +5933,27 @@ function getWordPronunciationLayerText(word) {
   return `Spelling: ${spelling} · Sounds-like: ${soundsLike}`;
 }
 
+function getWordAnnotationSource(word, key) {
+  return word && word.annotationSource && word.annotationSource[key] ? word.annotationSource[key] : "";
+}
+
+function wordNeedsAnnotationCuration(word) {
+  if (!word || !word.annotationSource) return true;
+  return ["register", "speechLevel", "originType", "morphTag"].some((key) => getWordAnnotationSource(word, key) === "inferred");
+}
+
+function getWordCurationDebtScore(word) {
+  if (!word || !word.annotationSource) return 99;
+  return ["register", "speechLevel", "originType", "morphTag", "hanja"]
+    .reduce((score, key) => score + (getWordAnnotationSource(word, key) === "inferred" ? 1 : 0), 0);
+}
+
+function wordAnnotationValueHtml(word, key, value) {
+  const source = getWordAnnotationSource(word, key);
+  const label = source === "inferred" ? "inferred" : source === "explicit" ? "verified" : "";
+  return `${escapeHtml(value || "—")}${label ? `<span class="fs-xs text-muted-2"> (${label})</span>` : ""}`;
+}
+
 function wordDetailNoteHtml(label, body, extraClass = "") {
   if (!body) return "";
   return `
@@ -6020,6 +6052,11 @@ function wordBankDetailHtml(row) {
       ${wordDetailNoteHtml("Spelling vs sounds-like", pronunciationLayer, "word-form-note-sound")}
       <div class="vocab-meta-grid" style="margin-top:12px;">
         <div class="vocab-meta-box"><span>Lesson group</span><strong>${escapeHtml(word.lessonTitle || word.lessonGroup)}</strong></div>
+        <div class="vocab-meta-box"><span>Register</span><strong>${wordAnnotationValueHtml(word, "register", word.register)}</strong></div>
+        <div class="vocab-meta-box"><span>Speech level</span><strong>${wordAnnotationValueHtml(word, "speechLevel", word.speechLevel)}</strong></div>
+        <div class="vocab-meta-box"><span>Origin</span><strong>${wordAnnotationValueHtml(word, "originType", word.originType)}</strong></div>
+        <div class="vocab-meta-box"><span>Hanja</span><strong>${wordAnnotationValueHtml(word, "hanja", word.hanja)}</strong></div>
+        <div class="vocab-meta-box"><span>Morph tag</span><strong>${wordAnnotationValueHtml(word, "morphTag", word.morphTag)}</strong></div>
         <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>
       </div>
       <div class="word-card-actions">
@@ -6027,7 +6064,7 @@ function wordBankDetailHtml(row) {
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.exampleVoiceText || word.exampleKo)}">▶ Hear example</button>
       </div>
       
-      <div class="speaking-practice-area" style="margin:12px 0; padding:12px; border:1px dashed var(--accent-text); border-radius:6px; background:rgba(128,128,128,0.05); text-align:center;">
+      <div class="speaking-practice-area" data-speaking-target="${escapeHtml(word.voiceText || word.korean)}" data-speaking-label="${escapeHtml(word.display || word.korean)}" style="margin:12px 0; padding:12px; border:1px dashed var(--accent-text); border-radius:6px; background:rgba(128,128,128,0.05); text-align:center;">
         <button class="button secondary compact" type="button" onclick="handleSpeakingPractice(this)">
           🎤 Practice Speaking (Beta)
         </button>
@@ -6038,17 +6075,7 @@ function wordBankDetailHtml(row) {
             <div style="width:4px; height:10px; background:var(--accent-text); border-radius:2px;"></div>
           </div>
           <div class="speaking-status">Listening...</div>
-          <div class="speaking-results" style="display:none; font-size:0.85rem; text-align:left; border-top:1px solid var(--border-color); padding-top:8px; margin-top:8px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-              <strong>Segmental Accuracy:</strong> <span style="color:#2ecc71;">94% (Good!)</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-              <strong>Prosodic Intonation:</strong> <span style="color:#2ecc71;">91%</span>
-            </div>
-            <div style="margin-top:4px; font-size:0.8rem; color:var(--text-muted-2);">
-              <strong>Tip:</strong> Intonate the tensed/lax consonants with appropriate tension and decay.
-            </div>
-          </div>
+          <div class="speaking-results" style="display:none; font-size:0.85rem; text-align:left; border-top:1px solid var(--border-color); padding-top:8px; margin-top:8px;"></div>
         </div>
       </div>
 
@@ -13379,20 +13406,76 @@ function registerServiceWorker() {
   });
 }
 
+function normalizeKoreanForSpeechScore(text) {
+  return String(text || "").normalize("NFC").replace(/[^가-힣ㄱ-ㅎㅏ-ㅣ]/g, "");
+}
+
+function levenshteinDistance(a, b) {
+  const left = Array.from(a || "");
+  const right = Array.from(b || "");
+  const dp = Array.from({ length: left.length + 1 }, () => Array(right.length + 1).fill(0));
+  for (let i = 0; i <= left.length; i += 1) dp[i][0] = i;
+  for (let j = 0; j <= right.length; j += 1) dp[0][j] = j;
+  for (let i = 1; i <= left.length; i += 1) {
+    for (let j = 1; j <= right.length; j += 1) {
+      const cost = left[i - 1] === right[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+    }
+  }
+  return dp[left.length][right.length];
+}
+
+function clampScore(value) {
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function scoreSpeechAttempt(targetText, transcript, durationMs) {
+  const target = normalizeKoreanForSpeechScore(targetText);
+  const heard = normalizeKoreanForSpeechScore(transcript);
+  const distance = levenshteinDistance(target, heard);
+  const segmental = target ? clampScore((1 - distance / Math.max(target.length, heard.length, 1)) * 100) : 0;
+  const expectedMs = Math.max(900, target.length * 420);
+  const timingRatio = durationMs > 0 ? Math.abs(durationMs - expectedMs) / expectedMs : 1;
+  const prosodic = clampScore(100 - timingRatio * 70);
+  return { target, heard, segmental, prosodic };
+}
+
+function speakingScoreHtml(targetLabel, transcript, score) {
+  const segmentColor = score.segmental >= 80 ? "#2ecc71" : score.segmental >= 55 ? "#f1c40f" : "#e74c3c";
+  const prosodyColor = score.prosodic >= 80 ? "#2ecc71" : score.prosodic >= 55 ? "#f1c40f" : "#e74c3c";
+  const tip = score.segmental >= 80
+    ? "Good match. Repeat once more and try to keep the rhythm steady."
+    : "Listen again, then focus on matching each Hangul block in order.";
+  return `
+    <div style="display:flex; justify-content:space-between; gap:12px; margin-bottom:4px;">
+      <strong>Segmental accuracy:</strong> <span style="color:${segmentColor};">${score.segmental}%</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; gap:12px; margin-bottom:4px;">
+      <strong>Prosodic fluency:</strong> <span style="color:${prosodyColor};">${score.prosodic}%</span>
+    </div>
+    <div style="margin-top:6px;"><strong>Target:</strong> <span lang="ko">${escapeHtml(targetLabel)}</span></div>
+    <div style="margin-top:4px;"><strong>Heard:</strong> <span lang="ko">${escapeHtml(transcript || "No transcript")}</span></div>
+    <div style="margin-top:6px; font-size:0.8rem; color:var(--text-muted-2);">${escapeHtml(tip)}</div>
+  `;
+}
+
 window.handleSpeakingPractice = function (btn) {
   const area = btn.closest(".speaking-practice-area");
   const feedback = area.querySelector(".speaking-feedback");
   const status = area.querySelector(".speaking-status");
   const results = area.querySelector(".speaking-results");
   const wave = area.querySelector(".speaking-wave");
+  const targetText = area.dataset.speakingTarget || "";
+  const targetLabel = area.dataset.speakingLabel || targetText;
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   btn.disabled = true;
   feedback.style.display = "block";
   status.innerText = "Listening...";
   results.style.display = "none";
+  results.innerHTML = "";
   wave.style.display = "flex";
 
-  // Simulate breathing animation by bouncing heights
   const bars = wave.querySelectorAll("div");
   let interval = setInterval(() => {
     bars.forEach((bar) => {
@@ -13400,16 +13483,65 @@ window.handleSpeakingPractice = function (btn) {
     });
   }, 100);
 
-  setTimeout(() => {
-    status.innerText = "Analyzing speech...";
-    setTimeout(() => {
-      clearInterval(interval);
-      wave.style.display = "none";
-      status.innerText = "Analysis Complete!";
-      results.style.display = "block";
-      btn.disabled = false;
-    }, 1000);
-  }, 1500);
+  function finish(message) {
+    clearInterval(interval);
+    wave.style.display = "none";
+    status.innerText = message;
+    btn.disabled = false;
+  }
+
+  if (!Recognition) {
+    finish("Speech scoring is not supported in this browser.");
+    results.innerHTML = `
+      <div style="font-size:0.85rem; color:var(--text-muted-2);">
+        This practice needs the browser SpeechRecognition API. You can still use Hear word and repeat aloud, but HanaPath cannot score this attempt here.
+      </div>
+    `;
+    results.style.display = "block";
+    return;
+  }
+
+  const recognition = new Recognition();
+  const startedAt = performance.now();
+  let transcript = "";
+  recognition.lang = "ko-KR";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.continuous = false;
+
+  recognition.onresult = (event) => {
+    const first = event.results && event.results[0] && event.results[0][0];
+    transcript = first ? first.transcript : "";
+  };
+  recognition.onerror = () => {
+    finish("Speech scoring could not hear a usable attempt.");
+    results.innerHTML = `
+      <div style="font-size:0.85rem; color:var(--text-muted-2);">
+        Try again in a quiet room, or use Hear word and repeat aloud without scoring.
+      </div>
+    `;
+    results.style.display = "block";
+  };
+  recognition.onend = () => {
+    if (!btn.disabled) return;
+    const durationMs = performance.now() - startedAt;
+    const score = scoreSpeechAttempt(targetText, transcript, durationMs);
+    finish("Analysis complete.");
+    results.innerHTML = speakingScoreHtml(targetLabel, transcript, score);
+    results.style.display = "block";
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    finish("Speech scoring could not start.");
+    results.innerHTML = `
+      <div style="font-size:0.85rem; color:var(--text-muted-2);">
+        ${escapeHtml(error && error.message ? error.message : "The browser blocked microphone recognition.")}
+      </div>
+    `;
+    results.style.display = "block";
+  }
 };
 
 document.addEventListener("DOMContentLoaded", () => {

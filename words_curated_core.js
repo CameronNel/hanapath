@@ -32,6 +32,72 @@
     "irregular-families": "Irregular families",
   };
 
+  function inferMorphTag(entry) {
+    if (!entry) return "";
+    if (entry.pos === "noun") return "NNG";
+    if (entry.pos === "pronoun") return "NP";
+    if (entry.pos === "numeral") return "NR";
+    if (entry.pos === "counter") return "NNB";
+    if (entry.pos === "verb") return "VV";
+    if (entry.pos === "adjective") return "VA";
+    if (entry.pos === "adverb") return "MAG";
+    if (entry.pos === "determiner") return "MM";
+    if (entry.pos === "interjection" || entry.pos === "phrase") return "IC";
+    if (entry.pos === "ending") {
+      return entry.grammarRole === "sentence-ending" ? "EF" : "EC";
+    }
+    if (entry.pos === "particle") {
+      if (entry.grammarRole === "subject") return "JKS";
+      if (entry.grammarRole === "object") return "JKO";
+      if (entry.grammarRole === "possessive") return "JKG";
+      if (entry.grammarRole === "connective") return "JC";
+      if (entry.grammarRole === "vocative") return "JKV";
+      if (entry.grammarRole === "quotation") return "JKQ";
+      if (entry.grammarRole === "complement") return "JKC";
+      if (entry.grammarRole === "location-time" || entry.grammarRole === "action-location") return "JKB";
+      return "JX";
+    }
+    return "";
+  }
+
+  // Register is a property of the LEXEME, not of its example sentence. A plain
+  // noun like 물/책 is register-neutral ("everyday") even though its example
+  // ("물 주세요") is polite. So infer only from structured, curated signals
+  // (POS, lessonGroup, tags, grammarRole) — never by scanning exampleKo/usageNote,
+  // which conflates the sentence's speech level with the word's register.
+  function inferRegister(entry) {
+    if (!entry) return "everyday";
+    var tags = (entry.tags || []).join(" ").toLowerCase();
+    var role = String(entry.grammarRole || "").toLowerCase();
+    if (entry.lessonGroup === "honorifics" || /\bhonorific\b/.test(tags) || /honorific/.test(role)) return "honorific";
+    if (/\bwritten-formal\b/.test(tags)) return "written-formal";
+    if (/\bformal\b/.test(tags)) return "formal";
+    if (/\bpolite\b/.test(tags)) return "polite";
+    return "everyday";
+  }
+
+  // Speech level (plain / polite informal / polite formal) is a property of an
+  // ENDING or predicate FORM, not of a dictionary lexeme. Citation forms default
+  // to "plain"; endings that carry a level are identified by their curated tags.
+  function inferSpeechLevel(entry) {
+    if (!entry) return "plain";
+    var tags = (entry.tags || []).join(" ").toLowerCase();
+    if (/\bformal\b/.test(tags)) return "polite formal";
+    if (/\bpolite\b/.test(tags)) return "polite informal";
+    return "plain";
+  }
+
+  function inferOriginType(entry) {
+    if (!entry) return "native";
+    var text = [entry.korean, entry.meaning, entry.usageNote, (entry.tags || []).join(" ")].join(" ");
+    if (entry.hanja) return "Sino-Korean";
+    if (/Sino-Korean|Sino Korean|hanja/i.test(text)) return "Sino-Korean";
+    if (/loanword|English|coffee|computer|internet|email|camera|television|taxi|hotel|cafe/i.test(text)) return "loanword";
+    if (/컴퓨터|텔레비전|카메라|인터넷|이메일|택시|버스|호텔|카페|라떼|샴푸|테이프|배터리/.test(text)) return "loanword";
+    if (/hybrid/i.test(text)) return "hybrid";
+    return "native";
+  }
+
   function defineWord(entry) {
     var word = {
       id: entry.id,
@@ -66,12 +132,19 @@
     // Optional M1 Data Axes fields
     if (entry.senseKey) word.senseKey = entry.senseKey;
     if (entry.senseNo !== undefined) word.senseNo = entry.senseNo;
-    if (entry.register) word.register = entry.register;
-    if (entry.speechLevel) word.speechLevel = entry.speechLevel;
-    if (entry.originType) word.originType = entry.originType;
+    word.register = entry.register || inferRegister(entry);
+    word.speechLevel = entry.speechLevel || inferSpeechLevel(entry);
+    word.originType = entry.originType || inferOriginType(entry);
     if (entry.hanja) word.hanja = entry.hanja;
     if (entry.irregularFamily) word.irregularFamily = entry.irregularFamily;
-    if (entry.morphTag) word.morphTag = entry.morphTag;
+    word.morphTag = entry.morphTag || inferMorphTag(entry);
+    word.annotationSource = {
+      register: entry.register ? "explicit" : "inferred",
+      speechLevel: entry.speechLevel ? "explicit" : "inferred",
+      originType: entry.originType ? "explicit" : "inferred",
+      morphTag: entry.morphTag ? "explicit" : "inferred",
+      hanja: entry.hanja ? "explicit" : "absent",
+    };
     if (entry.inflections) word.inflections = entry.inflections;
     // Optional word-detail-drawer fields (docs/WORDS_SECTION_MASTER_SPEC.md
     // word-detail UX): the sentence's own romanization when it differs
@@ -99,19 +172,19 @@
 
     // ── W1 · Survival core ─────────────────────────────────────────────────
     defineWord({ id: "w0101_annyeonghaseyo", korean: "안녕하세요", meaning: "hello", pos: "phrase", pronunciation: "annyeonghaseyo", exampleKo: "안녕하세요. 저는 학생이에요.", exampleEn: "Hello. I am a student.", usageNote: "Safe polite greeting for most situations, any time of day.", lessonGroup: "survival-core", isPhrase: true, tags: ["greeting", "survival", "speaking"] }),
-    defineWord({ id: "w0102_gamsahamnida", korean: "감사합니다", meaning: "thank you", pos: "phrase", pronunciation: "gamsahamnida", exampleKo: "정말 감사합니다.", exampleEn: "Thank you very much.", usageNote: "Formal-polite thank you. Works everywhere.", lessonGroup: "survival-core", isPhrase: true, tags: ["greeting", "survival", "speaking"], examplePronunciation: "jeongmal gamsahamnida", }),
+    defineWord({ id: "w0102_gamsahamnida", korean: "감사합니다", meaning: "thank you", pos: "phrase", pronunciation: "gamsahamnida", exampleKo: "정말 감사합니다.", exampleEn: "Thank you very much.", usageNote: "Formal-polite thank you. Works everywhere.", lessonGroup: "survival-core", isPhrase: true, tags: ["greeting", "survival", "speaking"], examplePronunciation: "jeongmal gamsahamnida", register: "formal", speechLevel: "polite formal" }),
     defineWord({ id: "w0103_ne", korean: "네", meaning: "yes", pos: "interjection", pronunciation: "ne", exampleKo: "네, 맞아요.", exampleEn: "Yes, that's right.", usageNote: "Also used as \"I see / uh-huh\" while listening.", lessonGroup: "survival-core", tags: ["survival", "speaking"], examplePronunciation: "ne, majayo", soundNote: "맞아요 is heard as majayo, not mat-ayo — the ㅈ batchim links into the next syllable.", }),
     defineWord({ id: "w0104_aniyo", korean: "아니요", meaning: "no", pos: "interjection", pronunciation: "aniyo", exampleKo: "아니요, 괜찮아요.", exampleEn: "No, it's okay.", usageNote: "Polite no. Casual form: 아니.", lessonGroup: "survival-core", tags: ["survival", "speaking"] }),
     defineWord({ id: "w0105_juseyo", korean: "주세요", meaning: "please give me", pos: "phrase", pronunciation: "juseyo", exampleKo: "물 주세요.", exampleEn: "Water, please.", usageNote: "Put the thing you want before it: [thing] + 주세요.", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "ordering", "speaking"] }),
-    defineWord({ id: "w0106_joesonghamnida", korean: "죄송합니다", meaning: "I'm sorry", pos: "phrase", pronunciation: "joesonghamnida", exampleKo: "늦어서 죄송합니다.", exampleEn: "Sorry for being late.", usageNote: "Formal-polite apology, safe with strangers.", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "speaking"], examplePronunciation: "neujeoseo joesonghamnida", soundNote: "늦어서 is heard as neujeoseo, not neut-eo-seo — the ㅈ batchim links into the next syllable.", }),
+    defineWord({ id: "w0106_joesonghamnida", korean: "죄송합니다", meaning: "I'm sorry", pos: "phrase", pronunciation: "joesonghamnida", exampleKo: "늦어서 죄송합니다.", exampleEn: "Sorry for being late.", usageNote: "Formal-polite apology, safe with strangers.", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "speaking"], examplePronunciation: "neujeoseo joesonghamnida", soundNote: "늦어서 is heard as neujeoseo, not neut-eo-seo — the ㅈ batchim links into the next syllable.", register: "formal", speechLevel: "polite formal" }),
     defineWord({ id: "w0107_gwaenchanayo", korean: "괜찮아요", meaning: "it's okay, I'm fine", meaningShort: "it's okay", pos: "phrase", pronunciation: "gwaenchanayo", exampleKo: "괜찮아요. 걱정하지 마세요.", exampleEn: "It's okay. Don't worry.", usageNote: "Also \"no thanks\" when offered something.", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "speaking"] }),
     defineWord({ id: "w0108_dowajuseyo", korean: "도와주세요", meaning: "please help me", pos: "phrase", pronunciation: "dowajuseyo", exampleKo: "저 좀 도와주세요.", exampleEn: "Please help me.", usageNote: "돕다 (to help) + 주세요 (please do for me).", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "speaking"] }),
     defineWord({ id: "w0109_jamsimanyo", korean: "잠시만요", meaning: "one moment, excuse me", meaningShort: "one moment", pos: "phrase", pronunciation: "jamsimanyo", exampleKo: "잠시만요. 금방 올게요.", exampleEn: "One moment. I'll be right back.", usageNote: "Also used to pass through a crowd, like \"excuse me\".", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "speaking"] }),
     defineWord({ id: "w0110_mollayo", korean: "몰라요", meaning: "I don't know", pos: "phrase", pronunciation: "mollayo", exampleKo: "저는 잘 몰라요.", exampleEn: "I don't really know.", usageNote: "From 모르다 (to not know).", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "speaking"] }),
-    defineWord({ id: "w0111_algesseoyo", korean: "알겠어요", meaning: "I understand, got it", meaningShort: "got it", pos: "phrase", pronunciation: "algesseoyo", exampleKo: "네, 알겠어요.", exampleEn: "Yes, got it.", usageNote: "From 알다 (to know). More formal: 알겠습니다.", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "speaking"], examplePronunciation: "ne, algesseoyo", }),
+    defineWord({ id: "w0111_algesseoyo", korean: "알겠어요", meaning: "I understand, got it", meaningShort: "got it", pos: "phrase", pronunciation: "algesseoyo", exampleKo: "네, 알겠어요.", exampleEn: "Yes, got it.", usageNote: "From 알다 (to know). More formal: 알겠습니다.", lessonGroup: "survival-core", isPhrase: true, tags: ["survival", "speaking"], examplePronunciation: "ne, algesseoyo", register: "polite", speechLevel: "polite informal" }),
 
     // ── W2 · People and pronouns ────────────────────────────────────────────
-    defineWord({ id: "w0201_jeo_i", korean: "저", meaning: "I, me (polite)", meaningShort: "I (polite)", pos: "pronoun", pronunciation: "jeo", exampleKo: "저는 학생이에요.", exampleEn: "I am a student.", usageNote: "Humble/polite \"I\". Use with people you don't know well.", lessonGroup: "people-pronouns", tags: ["people", "pronoun"] }),
+    defineWord({ id: "w0201_jeo_i", korean: "저", meaning: "I, me (polite)", meaningShort: "I (polite)", pos: "pronoun", pronunciation: "jeo", exampleKo: "저는 학생이에요.", exampleEn: "I am a student.", usageNote: "Humble/polite \"I\". Use with people you don't know well.", lessonGroup: "people-pronouns", tags: ["people", "pronoun"], register: "polite" }),
     defineWord({ id: "w0202_na", korean: "나", meaning: "I, me (casual)", meaningShort: "I (casual)", pos: "pronoun", pronunciation: "na", exampleKo: "나는 커피 좋아해.", exampleEn: "I like coffee. (casual)", usageNote: "Casual \"I\" — only with close friends or younger people.", lessonGroup: "people-pronouns", tags: ["people", "pronoun", "casual"], examplePronunciation: "naneun keopi joahae", soundNote: "좋아해 is heard as joahae — the ㅎ of 좋 drops before the vowel.", }),
     defineWord({ id: "w0203_neo", korean: "너", meaning: "you (casual)", meaningShort: "you (casual)", pos: "pronoun", pronunciation: "neo", exampleKo: "너는 어디 가?", exampleEn: "Where are you going? (casual)", usageNote: "Casual only. Koreans often use a name or title instead of \"you\".", lessonGroup: "people-pronouns", tags: ["people", "pronoun", "casual"] }),
     defineWord({ id: "w0204_uri", korean: "우리", meaning: "we, us, our", meaningShort: "we / our", pos: "pronoun", pronunciation: "uri", exampleKo: "우리는 친구예요.", exampleEn: "We are friends.", usageNote: "Also \"our\": 우리 집 (our house), even when it's just yours.", lessonGroup: "people-pronouns", tags: ["people", "pronoun"] }),
@@ -212,7 +285,7 @@
     defineWord({ id: "fw1005_eseo", korean: "에서", meaning: "at / in (where an action happens); from", meaningShort: "at (action) / from", pos: "particle", pronunciation: "eseo", exampleKo: "학교에서 공부해요.", exampleEn: "I study at school.", usageNote: "Marks where an action happens. 에 marks a destination; 에서 marks activity or a starting point.", grammarRole: "action-location", contrastWith: ["에"], pattern: "[place] + 에서", lessonGroup: "function-words-1", isFunctionWord: true, difficulty: 2, tags: ["particle", "place", "grammar"] }),
     defineWord({ id: "fw1006_do", korean: "도", meaning: "also, too", meaningShort: "also / too", pos: "particle", pronunciation: "do", exampleKo: "저도 가요.", exampleEn: "I'm going too.", usageNote: "Replaces 은/는 or 이/가 rather than stacking on top of them.", grammarRole: "additive", pattern: "[noun] + 도", lessonGroup: "function-words-1", isFunctionWord: true, difficulty: 2, tags: ["particle", "grammar"] }),
     defineWord({ id: "fw1007_ui", korean: "의", meaning: "possessive marker (of, 's)", meaningShort: "of / 's", pos: "particle", pronunciation: "ui (often e)", exampleKo: "친구의 책이에요.", exampleEn: "It's my friend's book.", usageNote: "Often pronounced 에 in this role, and frequently dropped in speech.", grammarRole: "possessive", pattern: "[owner] + 의 + [thing]", lessonGroup: "function-words-1", isFunctionWord: true, difficulty: 2, tags: ["particle", "grammar"] }),
-    defineWord({ id: "fw1008_wa_gwa", korean: "와/과", forms: ["와", "과"], meaning: "and, with (written/formal)", meaningShort: "and / with", pos: "particle", pronunciation: "wa / gwa", exampleKo: "친구와 가요.", exampleEn: "I'm going with a friend.", usageNote: "Use 와 after a vowel and 과 after a consonant. More formal than 하고.", grammarRole: "connective", contrastWith: ["하고"], pattern: "[noun] + 와/과 + [noun]", lessonGroup: "function-words-1", isFunctionWord: true, difficulty: 2, tags: ["particle", "grammar"], voiceText: "와, 과" }),
+    defineWord({ id: "fw1008_wa_gwa", korean: "와/과", forms: ["와", "과"], meaning: "and, with (written/formal)", meaningShort: "and / with", pos: "particle", pronunciation: "wa / gwa", exampleKo: "친구와 가요.", exampleEn: "I'm going with a friend.", usageNote: "Use 와 after a vowel and 과 after a consonant. More formal than 하고.", grammarRole: "connective", contrastWith: ["하고"], pattern: "[noun] + 와/과 + [noun]", lessonGroup: "function-words-1", isFunctionWord: true, difficulty: 2, tags: ["particle", "grammar"], voiceText: "와, 과", register: "formal" }),
     defineWord({ id: "fw1009_hago", korean: "하고", meaning: "and, with (spoken)", meaningShort: "and / with (spoken)", pos: "particle", pronunciation: "hago", exampleKo: "밥하고 물 주세요.", exampleEn: "Rice and water, please.", usageNote: "The everyday spoken \"and\" between nouns.", grammarRole: "connective", contrastWith: ["와/과"], pattern: "[noun] + 하고 + [noun]", lessonGroup: "function-words-1", isFunctionWord: true, difficulty: 2, tags: ["particle", "grammar"], examplePronunciation: "bapago mul juseyo", soundNote: "밥하고 is heard as bapago — the ㅂ and the ㅎ combine into an aspirated p sound.", }),
     defineWord({ id: "fw1010_go", korean: "고", meaning: "and, and then (connects verbs)", meaningShort: "and (verbs)", pos: "ending", pronunciation: "go", exampleKo: "먹고 가요.", exampleEn: "Eat and then go.", usageNote: "Attaches to a verb stem to chain actions: 먹다 → 먹고.", grammarRole: "verb-connective", pattern: "[verb stem] + 고", lessonGroup: "function-words-1", isFunctionWord: true, difficulty: 2, tags: ["ending", "grammar"] }),
 
@@ -757,7 +830,7 @@
     defineWord({ id: "w_m5_357_eonje", korean: "언제", meaning: "when", pos: "pronoun", pronunciation: "eonje", exampleKo: "생일이 언제예요?", exampleEn: "When is your birthday?", lessonGroup: "question-words", originType: "native", lemma: "언제", voiceText: "언제", exampleVoiceText: "생일이 언제예요?" }),
     defineWord({ id: "w_m5_358_eotteoke", korean: "어떻게", meaning: "how", pos: "adverb", pronunciation: "eotteoke", exampleKo: "한국어 공부는 어떻게 해요?", exampleEn: "How do you study Korean?", lessonGroup: "question-words", originType: "native", lemma: "어떻게", voiceText: "어떻게", exampleVoiceText: "한국어 공부는 어떻게 해요?" }),
     defineWord({ id: "w_m5_359_wae", korean: "왜", meaning: "why", pos: "adverb", pronunciation: "wae", exampleKo: "왜 어제 안 왔어요?", exampleEn: "Why didn't you come yesterday?", lessonGroup: "question-words", originType: "native", lemma: "왜", voiceText: "왜", exampleVoiceText: "왜 어제 안 왔어요?" }),
-    defineWord({ id: "w_m5_360_mueot", korean: "무엇", meaning: "what (formal)", pos: "pronoun", pronunciation: "mueot", exampleKo: "이것은 무엇입니까?", exampleEn: "What is this?", lessonGroup: "question-words", originType: "native", lemma: "무엇", voiceText: "무엇", exampleVoiceText: "이것은 무엇입니까?" }),
+    defineWord({ id: "w_m5_360_mueot", korean: "무엇", meaning: "what (formal)", pos: "pronoun", pronunciation: "mueot", exampleKo: "이것은 무엇입니까?", exampleEn: "What is this?", lessonGroup: "question-words", originType: "native", lemma: "무엇", voiceText: "무엇", exampleVoiceText: "이것은 무엇입니까?", register: "formal" }),
     defineWord({ id: "w_m5_361_eoneu", korean: "어느", meaning: "which", pos: "determiner", pronunciation: "eoneu", exampleKo: "어느 나라 사람이에요?", exampleEn: "Which country person are you?", lessonGroup: "question-words", originType: "native", lemma: "어느", voiceText: "어느", exampleVoiceText: "어느 나라 사람이에요?" }),
     defineWord({ id: "w_m5_362_igeot", korean: "이것", meaning: "this thing", pos: "pronoun", pronunciation: "igeot", exampleKo: "이것은 제 책이에요.", exampleEn: "This is my book.", lessonGroup: "question-words", originType: "native", lemma: "이것", voiceText: "이것", exampleVoiceText: "이것은 제 책이에요." }),
     defineWord({ id: "w_m5_363_geugeot", korean: "그것", meaning: "that thing", pos: "pronoun", pronunciation: "geugeot", exampleKo: "그것을 저에게 주세요.", exampleEn: "Please give that to me.", lessonGroup: "question-words", originType: "native", lemma: "그것", voiceText: "그것", exampleVoiceText: "그것을 저에게 주세요." }),

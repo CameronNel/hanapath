@@ -43,7 +43,9 @@ scorecard.
    curated rows and lessons must keep passing the audit.
 3. **Run the audits** after touching Words data:
    `node scripts/audit-words-data.mjs --strict` and
-   `node scripts/audit-alphabet-audio.mjs --strict`; `node --check` any JS you edit.
+   `node scripts/audit-alphabet-audio.mjs --strict`; run
+   `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
+   any loaded asset version; `node --check` any JS you edit.
 4. **Bump caches** when you change `app.js`, `styles.css`, or any loaded data
    file: update `CACHE_NAME` in `sw.js` **and** the matching `?v=...` query
    strings in both `index.html` and `sw.js`.
