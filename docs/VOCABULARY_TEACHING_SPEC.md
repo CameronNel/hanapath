@@ -324,7 +324,11 @@ The original six-PR roadmap (data axes → sense split → inflection engine →
 pronunciation layer → Core 1000 authoring → analytics) has **shipped except for
 the sense split** — see §11 for per-milestone status. This section is now the
 finalization checklist, ordered by leverage. Each item is small, additive, and
-audit-backed.
+audit-backed. The batch-by-batch execution queue for these items (per-PR
+recipes, vetted M2 candidate list, curation decision guides — written so a
+small coding model can execute safely) is
+**[`WORDS_FINAL_ROADMAP.md`](WORDS_FINAL_ROADMAP.md)**; this section stays the
+source of truth for *what*, that file for *how and in which order*.
 
 1. **M2 sense split (the one open milestone — real authoring, not tagging).**
    34 lemmas have genuine multi-sense rows (§8). Four batches so far:
