@@ -978,6 +978,7 @@ const phaseOneLessons = [
         visual: "ㄳ ㄵ ㄶ ㄺ ㄻ ㄼ ㄽ ㄾ ㄿ ㅀ ㅄ",
         body: "These double finals are real parts of the alphabet, but their sound depends on what follows. Recognize that they occupy one bottom seat; Phase 2 will teach their behavior.",
         cue: "For now: identify the coda. Later: master the sound flow.",
+        voiceFromVisual: true,
         voiceText: "값, 닭",
       },
     ],
@@ -2860,6 +2861,7 @@ let els = {};
 let currentQuestion = null;
 let currentAnswered = false;
 let currentQuestionStartedAt = 0;
+let quizStateByScope = {};
 let phaseOneResetArmed = false;
 let phaseOneResetTimer = 0;
 let phaseOneView = { lessonIndex: 0, mode: "intro", introIndex: 0, slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
@@ -3207,6 +3209,7 @@ function getAlphabetQuizPools() {
 // stay locked. Everything that gates or counts alphabet progress should flow
 // through getAlphabetProgress() / normalizeCompletedAlphabetIds().
 const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
+const TEST_UNLOCK_ALL_STAGES = true;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -3239,7 +3242,7 @@ function getAlphabetProgress() {
     nextLesson: phaseOneLessons[currentIndex] || null,
     // A lesson is unlocked once every lesson before it is complete.
     isLessonUnlocked: (index) =>
-      Number.isInteger(index) && index >= 0 && index < total && index <= completedCount,
+      Number.isInteger(index) && index >= 0 && index < total && (TEST_UNLOCK_ALL_STAGES || index <= completedCount),
   };
 }
 
@@ -5054,6 +5057,7 @@ function isWordLessonCompleted(lessonId) {
 function isWordLessonUnlocked(lesson) {
   if (!lesson) return false;
   if (lesson.unlock?.requiresAlphabetComplete && !getAlphabetProgress().complete) return false;
+  if (TEST_UNLOCK_ALL_STAGES) return true;
   const prev = lesson.unlock?.previousLessonId;
   return !prev || isWordLessonCompleted(prev);
 }
@@ -5130,6 +5134,7 @@ function initWordLessonView(lesson) {
     selectedChoice: "",
     results: [],
     resultSaved: false,
+    reviewingCheckpoint: false,
   };
 }
 
@@ -5185,6 +5190,7 @@ function openWordReview() {
     selectedChoice: "",
     results: [],
     resultSaved: false,
+    reviewingCheckpoint: false,
   };
   renderWordLesson();
 }
@@ -5321,6 +5327,7 @@ function wordLessonStudyHtml(lesson, view) {
         </div>
         <div class="word-card-actions">
           <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
+          ${view.reviewingCheckpoint ? '<button class="button secondary compact" type="button" data-word-return-checkpoint>Return to questions</button>' : ""}
           <button class="button primary compact" type="button" data-word-lesson-next>Next: type it →</button>
         </div>
         ${wordReferenceButtonHtml()}
@@ -5349,6 +5356,7 @@ function wordLessonStudyHtml(lesson, view) {
         </div>
         <div class="word-card-actions">
           <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear it</button>
+          ${view.reviewingCheckpoint ? '<button class="button secondary compact" type="button" data-word-return-checkpoint>Return to questions</button>' : ""}
           ${view.typedDone
             ? `<button class="button primary compact" type="button" data-word-lesson-next>Next →</button>`
             : `<button class="button primary compact" type="button" data-word-type-check>Check</button>`}
@@ -5369,6 +5377,7 @@ function wordLessonStudyHtml(lesson, view) {
       <div class="word-card-actions">
         <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear</button>
         <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">↻ Try again</button>
+        ${view.reviewingCheckpoint ? '<button class="button secondary compact" type="button" data-word-return-checkpoint>Return to questions</button>' : ""}
         <button class="button primary compact" type="button" data-word-lesson-next>I said it →</button>
       </div>
       ${wordReferenceButtonHtml()}
@@ -5427,6 +5436,7 @@ function wordLessonCheckHtml(lesson, view) {
       <div class="quiz-prompt">${escapeHtml(question.prompt)}</div>
       <div class="quiz-detail">${escapeHtml(question.detail || "")}</div>
       ${question.voiceText ? `<div class="word-card-actions"><button class="button secondary compact" type="button" data-speak="${escapeHtml(question.voiceText)}">▶ Hear</button></div>` : ""}
+      ${!view.isReview ? '<div class="word-card-actions"><button class="button secondary compact" type="button" data-word-review-study>Review words</button></div>' : ""}
       ${interactionHtml}
       <div class="word-type-feedback quiz-feedback" role="status" aria-live="polite">${view.answered ? view.checkFeedback || "" : ""}</div>
       ${view.answered ? `<div class="word-card-actions"><button class="button primary compact" type="button" data-word-lesson-next>${view.questionIndex + 1 >= view.questions.length ? "See results →" : "Next question →"}</button></div>` : ""}
@@ -5523,7 +5533,7 @@ function finishWordLesson(lesson, view) {
 
 function advanceWordLessonStudy(view) {
   const step = getWordLessonStep(view);
-  if (step && step.type === "type" && !view.typedDone) {
+  if (step && step.type === "type" && !view.typedDone && !view.reviewingCheckpoint) {
     // "Next" on an unchecked type card counts as an attempt (skipped).
     if (!(step.wordId in view.typedAttempts)) {
       view.typedAttempts[step.wordId] = false;
@@ -5536,14 +5546,19 @@ function advanceWordLessonStudy(view) {
       saveState();
     }
   }
-  view.typedValue = "";
-  view.typedFeedback = "";
-  view.typedDone = false;
+  if (!view.reviewingCheckpoint) {
+    view.typedValue = "";
+    view.typedFeedback = "";
+    view.typedDone = false;
+  }
   view.typeTiles = null;
   view.typeTilesWordId = null;
   if (view.stepIndex + 1 < view.steps.length) {
     view.stepIndex += 1;
     startWordLessonStudyTimer(view);
+  } else if (view.reviewingCheckpoint) {
+    returnToWordLessonCheckpoint(view);
+    return;
   } else if (view.questions.length) {
     view.mode = "check";
     view.questionIndex = 0;
@@ -5572,6 +5587,20 @@ function advanceWordLessonCheck(view) {
     view.mode = "result";
     finishWordLesson(view.isReview ? null : getWordLessonById(view.lessonId), view);
   }
+  renderWordLesson();
+}
+
+function returnToWordLessonCheckpoint(view) {
+  view.mode = "check";
+  view.reviewingCheckpoint = false;
+  if (Object.prototype.hasOwnProperty.call(view, "checkpointTypedValue")) {
+    view.typedValue = view.checkpointTypedValue || "";
+    delete view.checkpointTypedValue;
+  }
+  view.typedFeedback = "";
+  view.typedDone = false;
+  view.typeTiles = null;
+  view.typeTilesWordId = null;
   renderWordLesson();
 }
 
@@ -5680,6 +5709,25 @@ function bindWordLessonRoot(root) {
       stopSpeech();
       if (view.mode === "study") advanceWordLessonStudy(view);
       else if (view.mode === "check") advanceWordLessonCheck(view);
+      return;
+    }
+    if (event.target.closest("[data-word-review-study]")) {
+      if (view.mode === "check" && !view.isReview) {
+        view.reviewingCheckpoint = true;
+        view.checkpointTypedValue = view.typedValue || "";
+        view.mode = "study";
+        view.stepIndex = 0;
+        view.typedFeedback = "";
+        view.typedDone = false;
+        view.typeTiles = null;
+        view.typeTilesWordId = null;
+        startWordLessonStudyTimer(view);
+        renderWordLesson();
+      }
+      return;
+    }
+    if (event.target.closest("[data-word-return-checkpoint]")) {
+      if (view.reviewingCheckpoint) returnToWordLessonCheckpoint(view);
       return;
     }
     if (event.target.closest("[data-word-lesson-back]")) {
@@ -6472,7 +6520,7 @@ function setStudio(studio) {
   updateStats();
   syncStudioButton();
   saveState();
-  renderQuestion(generateQuestion(), { scope: getCurrentQuizScope() });
+  renderScopedQuestion(getCurrentQuizScope());
 }
 
 function renderLevelRail(tab, level = getTrackLevel(tab)) {
@@ -6999,6 +7047,7 @@ function resetPhaseOneView(index, mode = "intro", options = {}) {
     hadMistake: false,
     answered: false,
     passed: false,
+    reviewingCheckpoint: false,
   };
 }
 
@@ -7137,6 +7186,10 @@ function getPhaseOneVoiceSegments() {
   if (!source) {
     return [];
   }
+  if (source.voiceFromVisual && source.visual) {
+    const matches = String(source.visual).match(/[가-힣ㄱ-ㅎㅏ-ㅣ]+/g);
+    return matches ? matches.map(speakableForChunk) : [];
+  }
   if (source.voiceText) {
     return splitVoiceSequence(source.voiceText);
   }
@@ -7177,7 +7230,9 @@ function getPhaseOneVoiceFlashTargets() {
     return [];
   }
 
-  const drillSegments = splitVoiceSequence(source.voiceText);
+  const drillSegments = source.voiceFromVisual && source.visual
+    ? (String(source.visual).match(/[가-힣ㄱ-ㅎㅏ-ㅣ]+/g) || [])
+    : splitVoiceSequence(source.voiceText);
   return drillSegments.map((_, index) =>
     Number.isInteger(source.voiceFlashTargets?.[index]) ? source.voiceFlashTargets[index] : index,
   );
@@ -7324,6 +7379,25 @@ const HANGUL_JAMO_SPEAK = {
   ㅝ: "워", ㅞ: "웨", ㅟ: "위", ㅠ: "유", ㅡ: "으", ㅢ: "의", ㅣ: "이",
 };
 
+const HANGUL_COMPLEX_FINAL_INDEX = {
+  "\u3133": 3,
+  "\u3135": 5,
+  "\u3136": 6,
+  "\u313A": 9,
+  "\u313B": 10,
+  "\u313C": 11,
+  "\u313D": 12,
+  "\u313E": 13,
+  "\u313F": 14,
+  "\u3140": 15,
+  "\u3144": 18,
+};
+
+function complexFinalDemo(ch) {
+  const index = HANGUL_COMPLEX_FINAL_INDEX[ch];
+  return Number.isInteger(index) ? String.fromCharCode(0xC544 + index) : "";
+}
+
 // Turn a matched Hangul chunk into something the TTS voice can actually say.
 // Full syllables/words speak as-is; bare jamo map to their demo syllable.
 function speakableForChunk(chunk) {
@@ -7331,7 +7405,7 @@ function speakableForChunk(chunk) {
   if (/^[가-힣]+$/.test(text)) return text;
   if (/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(text)) {
     return Array.from(text)
-      .map((ch) => HANGUL_JAMO_SPEAK[ch] || ch)
+      .map((ch) => HANGUL_JAMO_SPEAK[ch] || complexFinalDemo(ch) || ch)
       .join(" ");
   }
   return text;
@@ -7864,7 +7938,9 @@ function renderPhaseOneConcept(lesson) {
       : "Lessons";
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
-    phaseOneView.slideIndex === lesson.concepts.length - 1 ? "Start checkpoint" : "Next card";
+    phaseOneView.slideIndex === lesson.concepts.length - 1
+      ? phaseOneView.reviewingCheckpoint ? "Return to questions" : "Start checkpoint"
+      : "Next card";
   placePhaseOneActions();
   animateMotionScope(els.phaseOneStage);
 }
@@ -8012,10 +8088,20 @@ function phaseOneReferenceButtonHtml() {
     '</div>';
 }
 
+function bindAlphabetReferenceButtons(container) {
+  container?.querySelectorAll("[data-checkpoint-open-reference]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.quickRefActive = true;
+      openEntireAlphabet();
+    });
+  });
+}
+
 function renderCheckpointAudioHelpers(lesson, question) {
   const isBlockGeometry = lesson.id === "block-geometry";
-  const components = isBlockGeometry ? getQuestionComponents(question) : [];
-  const targetText = isBlockGeometry ? (question.voiceText || question.answer || "") : "";
+  const isBuildQuestion = question.type === "build";
+  const components = (isBlockGeometry || isBuildQuestion) ? getQuestionComponents(question) : [];
+  const targetText = isBlockGeometry || isBuildQuestion ? (question.voiceText || question.target || question.answer || "") : "";
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
   const hasComponents = components.length > 0;
   
@@ -8040,7 +8126,10 @@ function bindCheckpointAudioHelpers(container, lesson) {
   // The quick-reference button (data-checkpoint-open-reference) is handled by the
   // delegated stage click listener in mountLessonPlayer, so it works from every
   // Phase One screen and needs no per-render binding here.
-  if (lesson.id !== "block-geometry") return;
+  const question = phaseOneView.mode === "check"
+    ? phaseOneLessons[phaseOneView.lessonIndex]?.questions?.[phaseOneView.questionIndex]
+    : null;
+  if (lesson.id !== "block-geometry" && question?.type !== "build") return;
 
   const targetBtn = container.querySelector("[data-checkpoint-speak-target]");
   const componentsBtn = container.querySelector("[data-checkpoint-speak-components]");
@@ -8447,9 +8536,14 @@ function renderPhaseOneBuildQuestion(lesson, question) {
     })
     .join('<span class="bd-word-sep" aria-hidden="true">·</span>');
 
+  const previousFilled =
+    phaseOneView.buildQuestionIndex === phaseOneView.questionIndex && Array.isArray(phaseOneView.buildFilled)
+      ? phaseOneView.buildFilled.slice(0, seq.length)
+      : [];
   phaseOneView.buildSeq = seq;
   phaseOneView.buildRoles = roles;
-  phaseOneView.buildFilled = [];
+  phaseOneView.buildQuestionIndex = phaseOneView.questionIndex;
+  phaseOneView.buildFilled = previousFilled;
 
   const tiles = shuffle([...question.tray])
     .map(
@@ -8490,6 +8584,14 @@ function renderPhaseOneBuildQuestion(lesson, question) {
     "</div>";
 
   bindCheckpointAudioHelpers(els.phaseOneStage, lesson);
+  previousFilled.forEach((jamo, slotIndex) => {
+    const slotEl = els.phaseOneStage.querySelector('[data-build-slot="' + slotIndex + '"]');
+    if (slotEl) {
+      slotEl.textContent = jamo;
+      slotEl.classList.add("filled");
+      slotEl.removeAttribute("aria-hidden");
+    }
+  });
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent = "Review cards";
@@ -8519,6 +8621,7 @@ function answerPhaseOneBuild(jamo, tile) {
   const slotName = roleLabel(roles[slotIndex]);
 
   if (jamo !== seq[slotIndex]) {
+    void speak(speakableForChunk(jamo));
     phaseOneView.hadMistake = true;
     tile.classList.add("wrong");
     setTimeout(() => tile.classList.remove("wrong"), 600);
@@ -8543,8 +8646,14 @@ function answerPhaseOneBuild(jamo, tile) {
     phaseOneView.results.push(!phaseOneView.hadMistake);
     const assembledEl = els.phaseOneStage.querySelector("[data-build-assembled]");
     if (assembledEl) {
-      assembledEl.textContent = question.target;
-      assembledEl.classList.add("done");
+      assembledEl.outerHTML =
+        '<button class="bd-assembled bd-build-result done" type="button" data-build-assembled data-speak="' +
+        escapeHtml(question.target) +
+        '" lang="ko" aria-label="Hear completed block ' +
+        escapeHtml(question.target) +
+        '">' +
+        escapeHtml(question.target) +
+        "</button>";
     }
     els.phaseOneStage.querySelectorAll(".bd-tile").forEach((t) => {
       t.disabled = true;
@@ -8556,7 +8665,7 @@ function answerPhaseOneBuild(jamo, tile) {
     void speak(question.target);
   } else {
     feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + roleLabel(roles[filled.length]) + ".");
-    void speak(jamo);
+    void speak(speakableForChunk(jamo));
   }
 }
 
@@ -8579,11 +8688,16 @@ function advancePhaseOne() {
     if (phaseOneView.slideIndex < lesson.concepts.length - 1) {
       phaseOneView.slideIndex += 1;
     } else {
-      phaseOneView.mode = "check";
-      phaseOneView.questionIndex = 0;
-      phaseOneView.results = [];
-      phaseOneView.hadMistake = false;
-      phaseOneView.answered = false;
+      if (phaseOneView.reviewingCheckpoint) {
+        phaseOneView.mode = "check";
+        phaseOneView.reviewingCheckpoint = false;
+      } else {
+        phaseOneView.mode = "check";
+        phaseOneView.questionIndex = 0;
+        phaseOneView.results = [];
+        phaseOneView.hadMistake = false;
+        phaseOneView.answered = false;
+      }
     }
     renderPhaseOnePlayer();
     return;
@@ -8635,6 +8749,7 @@ function goBackPhaseOne() {
       return;
     }
 
+    phaseOneView.reviewingCheckpoint = false;
     openLearnStageMenu("alphabet");
     return;
   }
@@ -8655,16 +8770,14 @@ function goBackPhaseOne() {
       return;
     }
 
+    phaseOneView.reviewingCheckpoint = false;
     openLearnStageMenu("alphabet");
     return;
   }
 
   phaseOneView.mode = "learn";
   phaseOneView.slideIndex = phaseOneLessons[phaseOneView.lessonIndex].concepts.length - 1;
-  phaseOneView.questionIndex = 0;
-  phaseOneView.results = [];
-  phaseOneView.hadMistake = false;
-  phaseOneView.answered = false;
+  phaseOneView.reviewingCheckpoint = true;
   renderPhaseOnePlayer();
 }
 
@@ -9128,6 +9241,16 @@ function getWeakSpotList() {
   const w = state.alphabetWeakSpots || {};
   return Object.entries(w).filter(([, c]) => c > 0).sort((a, b) => b[1] - a[1]).map(([j]) => j);
 }
+function pickWeakSpotForDrill(spots) {
+  const recent = Array.isArray(drillSession?.recentWeakKeys) ? drillSession.recentWeakKeys : [];
+  const candidates = spots.slice(0, 8);
+  const fresh = candidates.filter((spot) => !recent.includes(spot));
+  const chosen = randomItem(fresh.length ? fresh : candidates);
+  if (drillSession && chosen) {
+    drillSession.recentWeakKeys = [chosen, ...recent.filter((spot) => spot !== chosen)].slice(0, Math.min(3, candidates.length));
+  }
+  return chosen;
+}
 function makeLetterDrillQuestion(forceLetter) {
   const enrolled = getEnrolledLetters();
   const letters = enrolled.length ? enrolled : [...consonantAtlas.map((c) => c.char), ...vowelAtlas.map((v) => v.char)];
@@ -9178,7 +9301,7 @@ function makeDrillQuestion(mode) {
   if (mode === "mixed") m = randomItem(["build", "split", "letters", "batchim"]);
   if (mode === "weak") {
     const spots = getWeakSpotList();
-    if (spots.length) return makeLetterDrillQuestion(randomItem(spots.slice(0, 8)));
+    if (spots.length) return makeLetterDrillQuestion(pickWeakSpotForDrill(spots));
     m = randomItem(["build", "split", "letters", "batchim"]);
   }
   let q;
@@ -9199,7 +9322,7 @@ function renderAlphabetDrillLab() {
   if (!el) return;
   showDetailBarWithBack("learn", "Alphabet Drill Lab", () => openLearnStageMenu("alphabet"), "Alphabet");
   const modeBtns = DRILL_MODES.map((mo, i) =>
-    `<button class="card drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}" aria-pressed="${i === 0}">
+    `<button class="drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}" aria-pressed="${i === 0}">
        <div class="study-row-ko">${escapeHtml(mo.label)}</div>
        <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(mo.sub)}</div>
      </button>`).join("");
@@ -9207,23 +9330,25 @@ function renderAlphabetDrillLab() {
     `<button class="alpha-seg${i === 0 ? " active" : ""}" type="button" data-drill-len="${n}" aria-pressed="${i === 0}">${n === "∞" ? "Infinite" : n}</button>`).join("");
   const weakCount = getWeakSpotList().length;
   const firstOpenHint = !state.drillLabSeen
-    ? `<div class="card first-try-note" style="margin-bottom:0;">Pick a <strong>mode</strong> (Mixed blends them all), choose how many questions, then Start. Questions generate forever — tap <strong>End session</strong> any time in Infinite. Letters you miss are saved and resurface in <strong>Weak Spots</strong>.</div>`
+    ? `<div class="first-try-note">Pick a <strong>mode</strong> (Mixed blends them all), choose how many questions, then Start. Questions generate forever — tap <strong>End session</strong> any time in Infinite. Letters you miss are saved and resurface in <strong>Weak Spots</strong>.</div>`
     : "";
   if (!state.drillLabSeen) { state.drillLabSeen = true; saveState(); }
   el.innerHTML = `
-    <div class="card">
+    <div class="card drill-lab-hero">
       <div class="eyebrow">Practice · Hangul forever</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Alphabet Drill Lab</h2>
       <div class="screen-sub" style="margin-bottom:0;">Infinite Hangul drills. Pick a mode and a session length.${weakCount ? ` You have <strong>${weakCount}</strong> weak spot${weakCount === 1 ? "" : "s"} logged.` : ""}</div>
+      ${phaseOneReferenceButtonHtml()}
     </div>
     ${firstOpenHint}
-    <div class="card">
+    <div class="card drill-lab-picker">
       <div class="eyebrow" style="margin-bottom:8px;">Mode</div>
       <div class="drill-mode-grid">${modeBtns}</div>
       <div class="eyebrow" style="margin:16px 0 8px;">Session length</div>
       <div class="alpha-seg-group" role="group" aria-label="Session length">${lenBtns}</div>
       <button class="button primary full" type="button" id="drillStartBtn" style="margin-top:16px;">Start drill</button>
     </div>`;
+  bindAlphabetReferenceButtons(el);
   let mode = "mixed", len = 5;
   el.querySelectorAll("[data-drill-mode]").forEach((b) => b.addEventListener("click", () => {
     mode = b.dataset.drillMode;
@@ -9239,7 +9364,7 @@ function renderAlphabetDrillLab() {
 function startDrillSession(mode, len) {
   drillSession = {
     mode, len, total: len === "∞" ? Infinity : len,
-    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null,
+    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, recentWeakKeys: [],
   };
   renderDrillQuestion();
 }
@@ -9273,7 +9398,11 @@ function renderDrillQuestion() {
     <div class="card">
       <div class="lesson-step-row"><span>${escapeHtml(modeLabel)} · ${progress}</span><strong>${s.correct} correct · streak ${s.streak}</strong></div>
       ${q.visual ? `<div class="quiz-visual" style="text-align:center;margin:10px 0;">${q.visual}</div>` : ""}
-      <button class="button secondary compact" type="button" id="drillHearBtn" style="margin-bottom:10px;">▶ Hear</button>
+      <div class="drill-audio-row">
+        <button class="button secondary compact" type="button" id="drillHearBtn">▶ Hear</button>
+        ${isBuild ? '<button class="button secondary compact" type="button" id="drillHearBlocksBtn">▶ Blocks</button>' : ""}
+        ${phaseOneReferenceButtonHtml()}
+      </div>
       <h3 class="screen-title" style="font-size:1.05rem;margin-bottom:4px;">${escapeHtml(q.prompt)}</h3>
       ${q.detail ? `<div class="screen-sub">${escapeHtml(q.detail)}</div>` : ""}
       ${interactiveHtml}
@@ -9285,6 +9414,16 @@ function renderDrillQuestion() {
     </div>`;
   const hear = document.getElementById("drillHearBtn");
   if (hear) hear.addEventListener("click", () => void speak(q.voiceText || q.answer || q.target || ""));
+  bindAlphabetReferenceButtons(el);
+  const hearBlocks = document.getElementById("drillHearBlocksBtn");
+  if (hearBlocks) {
+    hearBlocks.addEventListener("click", async () => {
+      for (const part of q.seq || []) {
+        await speak(speakableForChunk(part), { preserveSequence: true });
+        await new Promise((resolve) => window.setTimeout(resolve, 180));
+      }
+    });
+  }
   if (isBuild) {
     document.querySelectorAll("#drillTray .bd-tile").forEach((b) =>
       b.addEventListener("click", () => answerDrillBuild(b.dataset.drillJamo, b)));
@@ -9306,6 +9445,7 @@ function answerDrillBuild(jamo, tile) {
   const idx = filled.length;
   const seatName = idx === 0 ? "first consonant" : idx === 1 ? "vowel" : "final consonant";
   if (jamo !== q.seq[idx]) {
+    void speak(speakableForChunk(jamo));
     tile.classList.add("wrong");
     setTimeout(() => tile.classList.remove("wrong"), 500);
     if (q.weakKey) { recordWeakSpot(q.weakKey); s.missed[q.weakKey] = (s.missed[q.weakKey] || 0) + 1; }
@@ -9322,7 +9462,23 @@ function answerDrillBuild(jamo, tile) {
     s.streak += 1;
     s.bestStreak = Math.max(s.bestStreak, s.streak);
     const assembled = document.querySelector("[data-drill-assembled]");
-    if (assembled) { assembled.textContent = q.target; assembled.classList.add("done"); }
+    if (assembled) {
+      assembled.outerHTML =
+        '<button class="bd-assembled done" type="button" data-drill-assembled data-speak="' +
+        escapeHtml(q.target) +
+        '" lang="ko" aria-label="Hear completed block ' +
+        escapeHtml(q.target) +
+        '">' +
+        escapeHtml(q.target) +
+        "</button>";
+      const playAnswer = document.querySelector("[data-drill-assembled][data-speak]");
+      if (playAnswer) {
+        playAnswer.addEventListener("click", () => {
+          flashElement(playAnswer);
+          void speak(playAnswer.dataset.speak || q.target);
+        });
+      }
+    }
     document.querySelectorAll("#drillTray .bd-tile").forEach((t) => { t.disabled = true; });
     if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(q.explanation || "");
     const next = document.getElementById("drillNextBtn");
@@ -9330,7 +9486,7 @@ function answerDrillBuild(jamo, tile) {
     void speak(q.target);
   } else {
     if (feedback) feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + (filled.length === 1 ? "vowel" : "final consonant") + ".");
-    void speak(jamo);
+    void speak(speakableForChunk(jamo));
   }
 }
 
@@ -10791,6 +10947,24 @@ function renderQuestion(question, options = {}) {
 
   updateStats();
   saveState();
+  quizStateByScope[currentQuizScope] = {
+    question: currentQuestion,
+    answered: currentAnswered,
+    startedAt: currentQuestionStartedAt,
+  };
+}
+
+function renderScopedQuestion(scope) {
+  const normalized = normalizeMainTab(scope || currentQuizScope || state.mainTab || activeTab || "alphabet");
+  const cached = quizStateByScope[normalized];
+  if (cached?.question) {
+    currentQuestion = cached.question;
+    currentAnswered = Boolean(cached.answered);
+    currentQuestionStartedAt = Number(cached.startedAt) || Date.now();
+    renderQuestion(cached.question, { preserveState: true, scope: normalized });
+    return;
+  }
+  renderQuestion(generateQuestion(), { scope: normalized });
 }
 
 function finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml) {
@@ -11201,6 +11375,10 @@ function getLearnStageStatus(itemId, stageNumber) {
     return progress.complete && itemId === "alphabet" ? "complete" : "current";
   }
 
+  if (TEST_UNLOCK_ALL_STAGES) {
+    return "current";
+  }
+
   return "locked";
 }
 
@@ -11385,7 +11563,7 @@ function renderLearnStageMenu(itemId) {
     : "";
 
   // Alphabet Drill Lab: permanent, unlocked once the mastery test is done.
-  const drillLabHtml = itemId === "alphabet" && progress.complete
+  const drillLabHtml = itemId === "alphabet" && (progress.complete || TEST_UNLOCK_ALL_STAGES)
     ? `
     <button class="card alpha-board-entry" type="button" id="openDrillLab">
       <div class="alpha-board-entry-main">
@@ -11498,9 +11676,10 @@ function openLearnStage(itemId, stageNumber, { resume = false } = {}) {
   if (status === "locked") return;
 
   if (itemId === "alphabet") {
+    const progress = getLearnProgress(itemId);
     openLearnLesson(safeStage - 1, {
       resume: false,
-      trackProgress: status === "current",
+      trackProgress: safeStage === progress.currentStage,
     });
     return;
   }
@@ -11826,17 +12005,19 @@ function renderCompleteInPlayer(index) {
     '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
     "</div>" +
     summaryHtml +
-    '<div class="card" style="margin-top:16px;">' +
+    '<div class="card alphabet-complete-panel">' +
     (next
       ? '<div class="eyebrow">Keep going</div>' +
         '<h3 class="screen-title" style="margin-bottom:8px;">Next: ' + escapeHtml(next.shortTitle) + "</h3>" +
         '<div class="screen-sub" style="margin-bottom:12px;">' + escapeHtml(next.goal) + "</div>" +
         '<button class="button primary compact" type="button" id="learnNextBtn">Start next lesson</button>'
       : '<div class="eyebrow">Hangul complete</div>' +
-        '<h3 class="screen-title" style="margin-bottom:8px;">You can read Hangul! 🎉</h3>' +
-        '<div class="screen-sub" style="margin-bottom:12px;">Keep the alphabet sharp with infinite drills, or move on to vocabulary.</div>' +
-        '<button class="button primary compact" type="button" id="learnDrillLabBtn" style="margin-right:8px;">Open Drill Lab</button>' +
-        '<button class="button secondary compact" type="button" id="learnNextBtn">Start vocabulary</button>'
+        '<h3 class="screen-title">You can read Hangul! 🎉</h3>' +
+        '<div class="screen-sub">Keep the alphabet sharp with infinite drills, or move on to vocabulary.</div>' +
+        '<div class="alphabet-complete-actions">' +
+        '<button class="button primary compact" type="button" id="learnDrillLabBtn">Open Drill Lab</button>' +
+        '<button class="button secondary compact" type="button" id="learnNextBtn">Start vocabulary</button>' +
+        '</div>'
     ) +
     "</div>" +
     phaseOneReferenceButtonHtml() +
@@ -11877,7 +12058,7 @@ function renderLearnComplete(index) {
   const el = showScreen("detail");
   if (!el) return;
   el.innerHTML = `
-    <div class="card">
+    <div class="${next ? "card" : "card alphabet-complete-panel"}">
       ${next ? `
         <div class="eyebrow">Keep going</div>
         <h3 class="screen-title" style="margin-bottom:8px;">Next: ${escapeHtml(next.shortTitle)}</h3>
@@ -11885,9 +12066,11 @@ function renderLearnComplete(index) {
         <button class="button primary compact" type="button" id="learnNextBtn">Start next lesson</button>
       ` : `
         <div class="eyebrow">Hangul complete</div>
-        <h3 class="screen-title" style="margin-bottom:8px;">You can read Hangul! 🎉</h3>
-        <div class="screen-sub" style="margin-bottom:12px;">New vocabulary is now your next new material.</div>
-        <button class="button primary compact" type="button" id="learnNextBtn">Start vocabulary</button>
+        <h3 class="screen-title">You can read Hangul! 🎉</h3>
+        <div class="screen-sub">New vocabulary is now your next new material.</div>
+        <div class="alphabet-complete-actions">
+          <button class="button primary compact" type="button" id="learnNextBtn">Start vocabulary</button>
+        </div>
       `}
     </div>
     <div class="card complete-card">
@@ -11986,7 +12169,7 @@ function renderAlphabetPractice() {
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
-  renderQuestion(generateQuestion(), { scope: "alphabet" });
+  renderScopedQuestion("alphabet");
   showTapHint("alphabet");
 }
 
@@ -12926,7 +13109,7 @@ function renderPracticeView() {
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
-  if (showQuiz) renderQuestion(generateQuestion(), { scope: "sentences" });
+  if (showQuiz) renderScopedQuestion("sentences");
   showTapHint("sentences");
 }
 
@@ -13063,7 +13246,7 @@ function renderVocabulary() {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
 
-  if (showQuiz) renderQuestion(generateQuestion(), { scope: "vocabulary" });
+  if (showQuiz) renderScopedQuestion("vocabulary");
   showTapHint("vocabulary");
 
   // Restore focus and cursor selection range to search box if it was active
@@ -13191,7 +13374,7 @@ function renderLibrary() {
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
-  if (showQuiz) renderQuestion(generateQuestion(), { scope: "listening" });
+  if (showQuiz) renderScopedQuestion("listening");
   showTapHint("listening");
 }
 

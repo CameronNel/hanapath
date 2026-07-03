@@ -826,6 +826,17 @@ input, textarea { cursor: text; }
   color: var(--text);
   line-height: 1;
 }
+button.bd-assembled {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: var(--radius-xs);
+  padding: 4px 8px;
+  cursor: pointer;
+}
+button.bd-assembled:hover {
+  border-color: var(--accent);
+  background: rgba(91,157,255,.12);
+}
 .block-diagram {
   display: inline-grid;
   background: rgba(91, 157, 255, .07);
@@ -2986,10 +2997,35 @@ li { margin-bottom: 4px; }
 }
 
 /* Alphabet Drill Lab mode picker */
-.drill-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.drill-mode-card { text-align: left; cursor: pointer; padding: 12px; }
+.drill-lab-hero,
+.drill-lab-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.drill-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.drill-mode-card {
+  text-align: left;
+  cursor: pointer;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+}
 .drill-mode-card.selected { border-color: var(--accent); background: rgba(91,157,255,.14); }
 @media (max-width: 380px) { .drill-mode-grid { grid-template-columns: 1fr; } }
+.drill-audio-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.drill-audio-row .phase-one-reference-row {
+  margin: 0 !important;
+  justify-content: flex-start !important;
+}
 
 /* Drill Lab tile-build slots + first-try checkpoint note */
 .drill-build-slots { display: inline-flex; gap: 6px; }
@@ -2999,8 +3035,26 @@ li { margin-bottom: 4px; }
 }
 .drill-build-slots .bd-slot.filled { border-style: solid; border-color: var(--accent); color: var(--text); }
 .first-try-note {
-  font-size: .72rem; color: var(--muted); margin-bottom: 10px; padding: 6px 10px;
-  border-radius: 8px; background: rgba(91,157,255,.10); border: 1px solid var(--line);
+  font-size: .78rem; color: var(--muted); margin: 0; padding: 12px 14px;
+  line-height: 1.5;
+  border-radius: var(--radius-sm); background: rgba(91,157,255,.10); border: 1px solid var(--line);
+}
+.alphabet-complete-panel {
+  margin-top: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.alphabet-complete-panel .screen-title,
+.alphabet-complete-panel .screen-sub {
+  margin-bottom: 0 !important;
+}
+.alphabet-complete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2px;
 }
 
 /* ─── Words section (word bank + guided word lessons) ─────────────────────── */
