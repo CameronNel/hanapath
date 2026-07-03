@@ -27,10 +27,12 @@ Read [`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md):
 
 - **§8 status scorecard** — what is shipped vs missing (the source of truth for
   "where are we").
+- **§9 finalization checklist** — the ordered list of what remains to finish
+  the Words section (this is the live work list).
 - **§11 milestone reference sheet** — the M0…M6 backlog with depends-on, files,
   acceptance, and status.
-- **§12 dependency & implementation order** — the dependency graph and, per
-  milestone, *preconditions / where / how / done-when*.
+- **§12 dependency & implementation order** — historical for shipped
+  milestones; still the *preconditions / where / how / done-when* for open M2.
 
 The original research spec, verbatim, is
 [`docs/VOCABULARY_TEACHING_SPEC_SOURCE.md`](docs/VOCABULARY_TEACHING_SPEC_SOURCE.md).
@@ -44,21 +46,23 @@ whose dependencies are all ✅. Then open that milestone's block in **§12** and
 follow *preconditions → where → how → done-when*.
 
 **Do not trust a "✅ done" at face value — verify it against the real data
-first.** As of 2026-07-03, M0–M6 are all marked done or partial in §11, but two
-of those claims turned out to be wrong when checked against the underlying
-data instead of the checkmark:
+first.** The scorecard has been wrong **three times**, each caught only by
+re-deriving the claim from the data instead of reading the checkmark:
 - a register/speech-level inferrer that read a word's *example sentence*
-  instead of the word itself (fixed in #50 — see `HANDOVER.md`)
-- an inflated "805 senses" count that included 67 accidental duplicate rows
-  (fixed in #51 — true count is 738, and the audit now catches this class of
-  duplicate automatically)
+  instead of the word itself (fixed in #50)
+- a senses count inflated by 67 accidental duplicate rows (fixed in #51,
+  audit now catches that class)
+- 74 duplicates disguised as polysemy via fabricated `senseKey`s that
+  exploited a loophole in the #51 audit fix (fixed in #54, loophole closed —
+  and the standing lesson: **a `senseKey` is not proof of a real sense; read
+  the meanings**)
 
 So before starting or reporting further progress on any milestone: run
 `node scripts/audit-words-data.mjs --strict` and read its **Annotation
 sources** output, spot-check a few rows/lessons in a `node -e` one-liner or a
-browser reload, and only then trust the number. See `HANDOVER.md` → "Words
-section planning" for the current honest gap list (volume, sense-split
-coverage, explicit-vs-inferred counts per axis).
+browser reload, and only then trust the number. The current honest remaining
+work is the teaching spec's **§9 finalization checklist**; `HANDOVER.md` →
+"Words section planning" summarizes it.
 
 If the user named a specific task, do that instead.
 

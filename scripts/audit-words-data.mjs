@@ -200,7 +200,7 @@ for (const word of words || []) {
 // means distinct senses get distinct keys. Two rows sharing the identical
 // senseKey (or where only one row in the pair is tagged) are not exempt: that
 // pattern previously let accidental re-adds hide behind a copy-pasted or
-// one-sided senseKey instead of being merged. (See #53 cleanup: 74 rows were
+// one-sided senseKey instead of being merged. (See #54 cleanup: 74 rows were
 // disguised duplicates, not real senses, caught only by removing this
 // blanket exemption.)
 for (const [key, group] of byKoreanPos) {
