@@ -118,7 +118,7 @@
       title: "Food and drink",
       subtitle: "Eating essentials",
       goal: "Order water, talk about meals, eat and drink.",
-      newWordIds: ["w0501_mul", "w0502_bap", "w0503_eumsik", "w0509_meokda", "w0510_masida"],
+      newWordIds: ["w0501_mul", "w0502_bap", "w0503_eumsik", "w0509_meokda", "w0510_masida", "w_m6_2995_chada_full"],
     }),
     defineLesson({
       id: "w5-food-drink-02",
@@ -150,7 +150,7 @@
       title: "Core actions",
       subtitle: "Do, have, see, speak",
       goal: "Learn the verbs Korean sentences are built on.",
-      newWordIds: ["w0701_hada", "w0702_itda", "w0703_eopda", "w0704_boda", "w0705_malhada", "w_m6_2974_deulda_hold"],
+      newWordIds: ["w0701_hada", "w0702_itda", "w0703_eopda", "w0704_boda", "w0705_malhada", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
     }),
     defineLesson({
       id: "w7-core-actions-02",
@@ -158,7 +158,7 @@
       title: "Core actions II",
       subtitle: "Daily-life verbs",
       goal: "Buy, meet, sleep, get up, and like.",
-      newWordIds: ["w0706_sada", "w0707_mannada", "w0708_jada", "w0709_ireonada", "w0710_joahada", "w_m6_2982_seoda_stand"],
+      newWordIds: ["w0706_sada", "w0707_mannada", "w0708_jada", "w0709_ireonada", "w0710_joahada", "w_m6_2982_seoda_stand", "w_m6_2993_jjada_plan"],
     }),
     defineLesson({
       id: "w8-feelings-descriptions-01",
@@ -166,7 +166,7 @@
       title: "Feelings and descriptions",
       subtitle: "Good, bad, big, small",
       goal: "Describe things and say what you like.",
-      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w0804_jakda", "w0809_masitda"],
+      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w0804_jakda", "w0809_masitda", "w_m6_2991_jaeda_hesitant"],
     }),
     defineLesson({
       id: "w8-feelings-descriptions-02",
@@ -268,7 +268,7 @@
       title: "Home and routine IV",
       subtitle: "Open, close, on, off",
       goal: "Control the things around your house.",
-      newWordIds: ["w1214_siktak", "w1217_yeolda", "w1218_datda", "w1219_kyeoda", "w1220_kkeuda"],
+      newWordIds: ["w1214_siktak", "w1217_yeolda", "w1218_datda", "w1219_kyeoda", "w1220_kkeuda", "w_m6_2998_butda_stick"],
     }),
 
     defineLesson({
@@ -622,9 +622,9 @@
       id: "w27-theme-24",
       stage: "W27",
       title: "Food and taste Part 24",
-      subtitle: "Learn 4 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for food and taste.",
-      newWordIds: ["w_m5_133_banchan",  "w_m5_135_yachae",  "w_m5_137_uyu",  "w_m5_139_gyeran"]
+      newWordIds: ["w_m5_133_banchan", "w_m5_135_yachae", "w_m5_137_uyu", "w_m5_139_gyeran", "w_m6_2992_jjada_salty"]
     }),
     defineLesson({
       id: "w27-theme-25",
@@ -830,9 +830,9 @@
       id: "w32-theme-57",
       stage: "W32",
       title: "Study and class life Part 57",
-      subtitle: "Learn 4 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for study and class life.",
-      newWordIds: ["w_m5_417_sinmun", "w_m5_418_jilmun_sino", "w_m5_425_hoehwa", "w_m5_429_hwalldong"]
+      newWordIds: ["w_m5_417_sinmun", "w_m5_418_jilmun_sino", "w_m5_425_hoehwa", "w_m5_429_hwalldong", "w_m6_2997_ppajida_omit"]
     }),
         defineLesson({
       id: "w33-theme-59",
@@ -910,9 +910,9 @@
       id: "w36-theme-71",
       stage: "W36",
       title: "Everyday actions Part 71",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your thematic vocabulary for everyday actions.",
-      newWordIds: ["w_m5_292_ppallaehada", "w_m5_295_gidarida", "w_m5_296_baeuda", "w_m5_286_mandeulda", "w_m6_2971_ttwida_jump", "w_m6_2984_chida_hit"]
+      newWordIds: ["w_m5_292_ppallaehada", "w_m5_295_gidarida", "w_m5_296_baeuda", "w_m5_286_mandeulda", "w_m6_2971_ttwida_jump", "w_m6_2984_chida_hit", "w_m6_2996_ppajida_fall"]
     }),
     defineLesson({
       id: "w36-theme-72",
@@ -1534,9 +1534,9 @@
       id: "w105-theme-151",
       stage: "W105",
       title: "clothing",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for clothing.",
-      newWordIds: ["w_m6_1201_gabangkkeun", "w_m6_1202_jigapkkeun", "w_m6_1203_seuweteo", "w_m6_1204_wonpiseu", "w_m6_1205_taekwondo", "w_m6_1206_sihap", "w_m6_1207_tim"]
+      newWordIds: ["w_m6_1201_gabangkkeun", "w_m6_1202_jigapkkeun", "w_m6_1203_seuweteo", "w_m6_1204_wonpiseu", "w_m6_1205_taekwondo", "w_m6_1206_sihap", "w_m6_1207_tim", "w_m6_2994_chada_kick"]
     }),
     defineLesson({
       id: "w106-theme-152",
@@ -2438,9 +2438,9 @@
       id: "w218-theme-264",
       stage: "W218",
       title: "School and study",
-      subtitle: "Learn 4 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your vocabulary for school and study.",
-      newWordIds: ["w_m6_2962_jibjung", "w_m6_2963_teugjing", "w_m6_2964_haengjeong", "w_m6_2987_pulda_solve"]
+      newWordIds: ["w_m6_2962_jibjung", "w_m6_2963_teugjing", "w_m6_2964_haengjeong", "w_m6_2987_pulda_solve", "w_m6_2999_butda_pass"]
     }),
   ];
 })();
