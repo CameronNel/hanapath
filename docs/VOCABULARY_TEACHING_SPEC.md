@@ -339,8 +339,11 @@ audit-backed.
    of fake polysemy that had been tagged purely to dodge the duplicate check).
 2. **Curriculum polish after the dedupe passes.** As of PR #54 there are
    **54 lessons whose subtitle ("Learn N common words") doesn't match the
-   actual word count** and **11 thin lessons with only 1–2 words**
-   (run `scripts/` audit or count `newWordIds` to regenerate the list).
+   actual word count** and **11 thin lessons with only 1–2 words**. No audit
+   check exists for this yet (adding one is part of this task); regenerate
+   the current list by loading the data files in a Node `vm` sandbox (the
+   pattern at the top of `scripts/audit-words-data.mjs`) and comparing each
+   lesson's `subtitle` number against `newWordIds.length`.
    Fold thin lessons into same-stage siblings, derive subtitles from the
    actual count instead of hand-writing them, and extend
    `audit-words-data.mjs` to fail on subtitle/count mismatch and warn on

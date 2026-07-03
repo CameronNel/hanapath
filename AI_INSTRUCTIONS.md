@@ -41,9 +41,18 @@ The implementation-level plan is
 
 ## Step 2 — Pick the next task
 
-From **§11**: choose the lowest-numbered milestone whose status is **not ✅** and
-whose dependencies are all ✅. Then open that milestone's block in **§12** and
-follow *preconditions → where → how → done-when*.
+Work the teaching spec's **§9 finalization checklist top-down**: take the
+first item that isn't finished and do the next small, audit-backed batch of
+it. Two special cases:
+
+- **§9 item 1 (M2 sense split):** follow the M2 block in **§12.3**
+  (*preconditions → where → how → done-when*).
+- **§9 item 5 (pronunciation scoring):** owner-gated — do **not** start it
+  unless the owner has explicitly decided the approach. Skip to nothing
+  rather than attempting it silently.
+
+If every §9 item is done or blocked on the owner, say so and stop — do not
+invent new scope.
 
 **Do not trust a "✅ done" at face value — verify it against the real data
 first.** The scorecard has been wrong **three times**, each caught only by
@@ -95,5 +104,6 @@ ready and squash-merges.
 
 ## Before you finish
 
-If a milestone advanced, **update §8 and §11 status** in the teaching spec in the
-same PR, so the next AI session picks up cleanly from an honest scoreboard.
+If any work advanced, **update the teaching spec's §9 checklist (and §8/§11 if
+a milestone moved)** in the same PR, so the next AI session picks up cleanly
+from an honest scoreboard. Only claim numbers you re-derived from the data.

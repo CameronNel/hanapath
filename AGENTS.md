@@ -10,13 +10,17 @@ plain browser script loaded via `<script defer>`.
 runbook for continuing this project: orient → find the next task → build →
 verify → ship. If the user says "continue the project," follow it top to bottom.
 
-The **Words (vocabulary) section** is being built toward the target defined in
+The **Words (vocabulary) section** is built toward the target defined in
 [`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md) — the north
-star. Read its **§8 status scorecard** (what's done vs missing), **§11 milestone
-reference sheet** (the backlog), and **§12 dependency & implementation order**
-(when / where / how to build each piece). Do not assume the spec describes
-current behavior — check the scorecard. The **alphabet section is complete and
-protected** — do not regress it.
+star. Most of it has shipped; the live remaining-work list is its
+**§9 finalization checklist** — work it top-down (item 5, pronunciation
+scoring, is owner-gated: don't start it without an explicit owner decision).
+**§8** is the status scorecard, **§11** the milestone sheet, **§12** the
+how-to for the one open milestone (M2). Do not trust a "✅ done" at face
+value — the scorecard has been wrong three times (PRs #50, #51, #54);
+verify claims against the actual data (`node scripts/audit-words-data.mjs
+--strict`, spot-check rows) before building on them. The **alphabet section
+is complete and protected** — do not regress it.
 
 ## Hard rules
 
@@ -25,7 +29,9 @@ protected** — do not regress it.
 2. **Additive, backward-compatible** changes to the Words data schema. Existing
    curated rows and lessons must keep passing the audit.
 3. **Run the audits** after touching Words data: `node scripts/audit-words-data.mjs --strict`
-   and `node scripts/audit-alphabet-audio.mjs --strict`; `node --check` any JS you edit.
+   and `node scripts/audit-alphabet-audio.mjs --strict`; run
+   `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
+   any loaded asset version; `node --check` any JS you edit.
 4. **Bump caches** when you change `app.js`, `styles.css`, or any loaded data
    file: update `CACHE_NAME` in `sw.js` **and** the `?v=...` query strings in
    both `index.html` and `sw.js`.
