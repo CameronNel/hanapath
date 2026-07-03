@@ -168,6 +168,51 @@ for (const word of words || []) {
   }
 }
 
+// Duplicate-content check: two curated rows with the same Korean surface form,
+// the same POS, and (near-)identical meaning are almost certainly an
+// accidental re-add (e.g. a later authoring batch re-teaching an existing
+// word), not real polysemy. Real polysemy must be marked with `senseKey`, so
+// any row carrying one is exempt from this check entirely.
+function normalizeMeaningForDupeCheck(meaning) {
+  return String(meaning || "")
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/[\/,;]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t && !["to", "be", "a", "an", "the", "and", "up", "or"].includes(t));
+}
+function meaningJaccard(a, b) {
+  const setA = new Set(a);
+  const setB = new Set(b);
+  const inter = [...setA].filter((t) => setB.has(t)).length;
+  const union = new Set([...setA, ...setB]).size;
+  return union === 0 ? 0 : inter / union;
+}
+const byKoreanPos = new Map();
+for (const word of words || []) {
+  if (!word || !word.korean || !word.pos) continue;
+  const key = `${word.korean}|${word.pos}`;
+  if (!byKoreanPos.has(key)) byKoreanPos.set(key, []);
+  byKoreanPos.get(key).push(word);
+}
+for (const [key, group] of byKoreanPos) {
+  if (group.length < 2 || group.some((w) => w.senseKey)) continue;
+  for (let i = 0; i < group.length; i += 1) {
+    for (let j = i + 1; j < group.length; j += 1) {
+      const a = group[i];
+      const b = group[j];
+      const tokensA = normalizeMeaningForDupeCheck(a.meaning);
+      const tokensB = normalizeMeaningForDupeCheck(b.meaning);
+      const sim = meaningJaccard(tokensA, tokensB);
+      if (sim >= 0.99) {
+        errors.push(`duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) and an identical meaning ("${a.meaning}" / "${b.meaning}"). Remove one, or add distinct senseKey/senseNo if this is intentional polysemy.`);
+      } else if (sim >= 0.4) {
+        warnings.push(`possible duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) with similar meanings ("${a.meaning}" / "${b.meaning}"). Review: merge, or add senseKey/senseNo if this is intentional polysemy.`);
+      }
+    }
+  }
+}
+
 const lessonIds = new Set();
 for (const lesson of lessons || []) {
   const label = lesson.id || lesson.title || "(unknown lesson)";
