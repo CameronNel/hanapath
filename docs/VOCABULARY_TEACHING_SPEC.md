@@ -296,7 +296,7 @@ Grounded in the shipped code (main) as of 2026-07-04. Legend: ✅ solid ·
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
-| **Sense-level polysemy** | 🟡 | 94 lemmas carry genuine multi-sense rows with distinct `senseKey`/`senseNo` (쓰다 write/wear/use, 시장 market/mayor/hunger, 배 stomach/pear/boat, 말 speech/horse, 타다 ride/burn, 내리다 get-off/fall, 일어나다 wake/stand, 것 independent/bound noun, modifier `(으)ㄴ`, 하다 do/say, 보다 see/try, 나다 occur/sprout, 눈 snow/eye, 다리 bridge/leg, 밤 night/chestnut, 차 tea/car, 맞다 correct/get-hit, 사과 apple/apology, 뛰다 run/jump, 가다 go/time-passing, 싸다 cheap/pack, 들다 hold/cost, 걸리다 take-time/catch-illness, 지다 lose/sunset, 걸다 hang/call, 서다 stand/stop, 치다 hit/play-instrument, 풀다 untie/solve, 돌다 turn/go-around, plus five more added 2026-07-04 — 재다 measure/be-calculating, 짜다 salty/make-a-plan, 차다 kick/be-full, 빠지다 fall-into/be-omitted, 붙다 stick/pass-an-exam; plus five early noun splits in the previous batch — 밥 meal/rice, 시간 time/hour, 아침 morning/breakfast, 점심 lunch/noon, 저녁 evening/dinner; plus four more in the previous batch — 검사 examination/prosecutor, 감독 director/supervisor, 가정 household/assumption, 문구 stationery/phrase; plus two more in the previous batch 3 — 과정 process/course, 인상 impression/price increase; plus four more in the previous batch — 시계 clock/watch, 머리 head/hair, 목 throat/neck, 가슴 heart/chest; plus three new split lemmas in the current batch — 분 minute/honorific counter, 새 bird/new, 통화 phone call/currency; plus one extra sense in the already-split 배 belly/pear/boat trio; plus three more in batch 8 ? itda have/exist, eopda not-have/not-exist, bonaeda send/spend time; plus four more in the current batch ? dol first birthday, ilsik solar eclipse, jungsik lunch, jeongri cleanup/organization; plus four more in the newest batch — 구조 structure/rescue, 조직 organization/tissue, 모델 fashion/prototype, 코드 programming/dress code; plus three more in the newest batch — 대기 atmosphere/waiting, 시점 point in time/viewpoint, 차례 turn/ancestral rites/table of contents). **Correction (PR #54, 2026-07-03):** the previously reported "128 rows / 94 lemmas" figure was wrong — 74 of those rows were accidental duplicate content disguised as polysemy (a second copy of the same word/meaning tagged with a fabricated `senseKey` like `"small"`/`"busy"`/`"hobby"` purely to dodge the duplicate-content audit, which fully exempted a whole same-surface group the moment *any* row in it had a `senseKey`). Removed; the audit's exemption logic is now closed (a shared/identical `senseKey` across rows is a hard error) so this can't silently recur. Most polysemous lemmas remain untagged; real M2 authoring continues per §9 |
+| **Sense-level polysemy** | ✅ | 98 lemmas carry genuine multi-sense rows with distinct `senseKey`/`senseNo` (Track B is complete: 바람 wind/wish, 밝다 bright/cheerful-personality, 세다 strong/count, 두다 put-keep/leave-behind; 피다 declined because the fire meaning belongs to 피우다/태우다) |
 | **Word-origin tagging (native/Sino/loan)** | 🟡 | every row has effective `originType`; `annotationSource` distinguishes verified vs inferred labels, and Hanja is retained only when verified |
 | **Register as a data axis** | 🟡 | `register`/`speechLevel` now inferred from **structured** signals (POS, lessonGroup, curated tags), not by scanning the example sentence — so everyday nouns (물, 책, 시간…) are no longer mislabeled polite/honorific. High-contrast lexemes (저 vs 나, 무엇 vs 뭐, 와/과 vs 하고, formal set-phrases, honorifics) are hand-verified `explicit`; the rest are correct-by-rule and flagged for review in the curation queue |
 | **Morph tags (Sejong/UD)** | 🟡 | every row has a validated effective `morphTag`; broad inferred tags are tracked separately from explicit hand-curated tags |
@@ -304,11 +304,11 @@ Grounded in the shipped code (main) as of 2026-07-04. Legend: ✅ solid ·
 | **Pronunciation scoring (segmental + prosodic)** | 🟡 | browser SpeechRecognition scoring stub compares transcript accuracy and speaking duration; not acoustic phoneme-level scoring |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
-| Vocabulary volume | ✅ | 2,015 unique curated senses (1,918 post-#54, +97 across seventeen M2 batches), slightly above the Core 1000 / Core 2000 target band, with every curated row assigned to a lesson |
+| Vocabulary volume | ✅ | 2,021 unique curated senses (1,918 post-#54, +103 across eighteen M2 batches), slightly above the Core 1000 / Core 2000 target band, with every curated row assigned to a lesson |
 
 **Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS,
 retrieval, inflection engine, volume) are done. The remaining gaps are
-**genuine sense-splitting (M2)**, **curation of inferred labels**,
+**curation of inferred labels**,
 **curriculum polish after the dedupe passes**, and a **decision on
 pronunciation scoring** — the concrete checklist is §9.
 
@@ -330,8 +330,8 @@ small coding model can execute safely) is
 **[`WORDS_FINAL_ROADMAP.md`](WORDS_FINAL_ROADMAP.md)**; this section stays the
 source of truth for *what*, that file for *how and in which order*.
 
-1. **M2 sense split (the one open milestone — real authoring, not tagging).**
-   94 lemmas have genuine multi-sense rows (§8). Seventeen batches so far:
+1. **M2 sense split (done — Track B is resolved).**
+   98 lemmas have genuine multi-sense rows (§8). Eighteen batches so far:
    2026-07-03 (눈/다리/밤/차/맞다, slotted into thin lessons to help §9 item 2
    too; also fixed a bug where 부르다's verb row wrongly bundled the
    adjective sense's gloss into its own meaning); 2026-07-04 batch 1
@@ -343,6 +343,7 @@ source of truth for *what*, that file for *how and in which order*.
    salty/make-a-plan, 차다 kick/be-full, 빠지다 fall-into/be-omitted, 붙다
    stick/pass-an-exam); 2026-07-04 batch 4 (사고 accident/thinking, 연기 acting/smoke,
    전기 electricity/biography, 이사 moving/director, 소식 news/eating-light); 2026-07-04 batch 5 (과정 process/course, 인상 impression/price increase); 2026-07-04 batch 9 (구조 structure/rescue, 조직 organization/tissue, 모델 fashion/prototype, 코드 programming/dress code, slotted into body-health, daily-objects-tech, and clothing lessons); 2026-07-04 batch 10 (...); 2026-07-04 batch 11 (tteoreojida fall/drop, oreuda climb/rise-increase, naoda come-out/appear-media, nohda put/place/let-go, seuda stand-upright/stop-vehicle).
+   2026-07-04 batch 12 (바람 wind/wish, 밝다 bright/cheerful-personality, 세다 strong/count, 두다 put-keep/leave-behind; 피다 declined because the fire meaning belongs to 피우다/태우다).
    **Reviewed and declined:** 안다 and 물다 were on the
    candidate list but don't have a second sense clean enough for beginner
    level (안다 is just "to embrace" — the earlier note confused it with the
@@ -392,7 +393,7 @@ polish on the existing ~1,900 senses beats adding more flat words.
 
 | Risk | Why likely | Mitigation (status) |
 |---|---|---|
-| Flat English↔Korean mapping teaches wrong usage | Register/origin-sensitive alternatives | multiple senses per gloss + scenario labels — **open**, this is the M2 work in §9. A new risk surfaced here in practice: duplicates disguised as senses to satisfy the audit (see #54); mitigated by hardened audit + read-the-meanings rule |
+| Flat English↔Korean mapping teaches wrong usage | Register/origin-sensitive alternatives | multiple senses per gloss + scenario labels — Track B is complete; remaining singleton senseKeys are handled in Track C. A new risk surfaced here in practice: duplicates disguised as senses to satisfy the audit (see #54); mitigated by hardened audit + read-the-meanings rule |
 | Romanization becomes a crutch | English speakers over-trust Roman letters | Hangul-first UI, fade romanization (✅ done) |
 | Recognize-but-can't-produce | Korean needs form generation | retrieval + inflection practice from day one (✅ done — M3 engine) |
 | Pronunciation ignored until later | Phonology affects lexical identity early | minimal-pair work from week one (✅ done — M4 drills; scoring depth still open, §9 item 5) |
@@ -403,8 +404,7 @@ polish on the existing ~1,900 senses beats adding more flat words.
 
 ## 11. Milestone reference sheet
 
-At-a-glance map of the whole build. Everything is shipped except **M2** — the
-live finalization work is listed in §9. Effort is a rough band, not a schedule.
+At-a-glance map of the whole build. Everything is shipped; the graph is now history and the live finalization work is listed in §9. Effort is a rough band, not a schedule.
 Status is honest as of 2026-07-04 (post-#54).
 
 | ID | Milestone | Depends on | Primary files | Ships when (acceptance) | Effort | Status |
@@ -412,10 +412,10 @@ Status is honest as of 2026-07-04 (post-#54).
 | **M0** | Shipped baseline: script course, Leitner SRS, Word Bank, W0–W16 lessons | — | `app.js`, `words_curated_core.js`, `words_lesson_plan.js`, `alphabet_*` | (already live) | — | ✅ done |
 | **M0.5** | W17–W19 grammar-mechanics track (endings/register, negation, connectives, modifiers, honorifics, irregulars) | M0 | `words_curated_core.js`, `words_lesson_plan.js` | 6 lessons render; strict audit clean | S | ✅ done (#42) |
 | **M1** | **Data axes** — additive `senseKey`/`register`/`speechLevel`/`originType`/`hanja`/`irregularFamily`/`morphTag` + audit enums | M0 | `words_curated_core.js` (`defineWord`), `scripts/audit-words-data.mjs` | fields optional; enums validated when present; all existing rows still pass strict | S–M | ✅ done |
-| **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | 🟡 partial — 94 lemmas genuinely split (see §8; 눈/다리/밤/차/맞다 added 2026-07-03, twenty-two more — 사과/뛰다/가다/싸다/들다/걸리다/지다/걸다/서다/치다/풀다/돌다/재다/짜다/차다/빠지다/붙다/사고/연기/전기/이사/소식 — added 2026-07-04; plus five early noun splits in the previous batch — 밥/시간/아침/점심/저녁; plus four more in the previous batch — 검사/감독/가정/문구; plus two more in the previous batch 3 — 과정/인상; plus four more in the previous batch — 시계/머리/목/가슴; plus three new split lemmas in the current batch — 분/새/통화; plus one extra sense in the already-split 배 trio; plus three more in batch 8 ? itda have/exist, eopda not-have/not-exist, bonaeda send/spend time; plus four more in the current batch ? dol first birthday, ilsik solar eclipse, jungsik lunch, jeongri cleanup/organization). The "128 rows / 94 lemmas" figure previously reported here was wrong (74 disguised-duplicate rows, corrected in #54) and has been removed. Most polysemous lemmas remain untagged; real work continues per §9 item 1 |
+| **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | ✅ done — 98 lemmas genuinely split; B1–B5 resolved and the remaining singleton senseKeys are now Track C |
 | **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ✅ done |
 | **M4** | **Pronunciation layer** — minimal-pair drills, spelling/sounds-like, segmental+prosodic scoring stub | M0 (audio); M1 optional | `app.js`, `audio/` + `generate_assets.py`, new drill data | drills exist for the §6.2 pitfall sets; every card shows both layers | M | ✅ done |
-| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done — 1,995 unique curated senses (corrected to 1,918 post-#54 after 74 disguised duplicates were removed, see §8; +77 across fifteen M2 batches); strict audit clean; no orphan words |
+| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done — 2,021 unique curated senses (1,918 post-#54 after 74 disguised duplicates were removed, see §8; +103 across eighteen M2 batches); strict audit clean; no orphan words |
 | **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ✅ done |
 
 Guiding rule: **depth before breadth.** M1→M3 (correct, register-aware,
@@ -460,10 +460,10 @@ see git history (PRs #40–#53) if you need the how. What shipped, in one line
 each: M1 data axes live on every row with `annotationSource` provenance; M3
 `words_inflect.js` generator/recognizer is gold-set-verified in the audit; M4
 minimal-pair drills + spelling/sounds-like layers + a SpeechRecognition scoring
-stub; M5 ~1,900 curated senses with every row in a lesson; M6 per-item review
+stub; M5 2,021 curated senses with every row in a lesson; M6 per-item review
 events feeding a metrics view.
 
-**M2 — Sense split (open; the only unfinished milestone).**
+**M2 — Sense split (done; recipe retained for reference).**
 - *Preconditions:* none — M1 is shipped.
 - *Where:* `words_curated_core.js` (data); Word Bank + lesson renderers in
   `app.js` already display senses correctly (verified with 말/쓰다).

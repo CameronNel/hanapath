@@ -10539,5 +10539,20 @@ window.AUDIO_MAP = {
   "or list.": "./audio/3d05e149af0e37eaa3700c9a3e501eca.mp3",
   "exampleEn: \"I wash my hair.\"": "./audio/df0d4ddc6f0d4a1a657e7ad4c966e40d.mp3",
   "남다": "./audio/84d3935e705b257913b7b423736b1e84.mp3",
-  "Distinct sense from 빼다 (to subtract) — used for taking something out of a bag, box, socket, or list.": "./audio/9e96ae89942650bde16742c94e31f228.mp3"
+  "Distinct sense from 빼다 (to subtract) — used for taking something out of a bag, box, socket, or list.": "./audio/9e96ae89942650bde16742c94e31f228.mp3",
+  "or a place being bright. 성격이 밝다 is a different sense.": "./audio/d795bc3a2cb4b647de2de5a8fee7df37.mp3",
+  "하나, 둘, 셋을 세어요.": "./audio/2ebbb1365756ccae62ddaaaaa705d659.mp3",
+  "바람이 세요.": "./audio/c31bd964df3bd0fe7212df3fbce87ec2.mp3",
+  "그 친구는 성격이 밝아요.": "./audio/ab907f3633e3f7ee49d04a5272591e33.mp3",
+  "성격이 밝다": "./audio/afada9667a9c8316689316e81a7ae936.mp3",
+  "셋을 세어요.": "./audio/ee66973ea0ad19bd1fa337ff0d1d6934.mp3",
+  "두다": "./audio/d4c91343c58989a01d53e2bd44525b45.mp3",
+  "방이 밝아요.": "./audio/54c10b37deced93cf92c2ca041a30221.mp3",
+  "우산을 집에 두고 왔어요.": "./audio/0adf93bd169d7f58c96490e294f61f96.mp3",
+  "Used for light, colors, or a place being bright. 성격이 밝다 is a different sense.": "./audio/482b8ad35d1ded464d4536ff3a80ba1a.mp3",
+  "책을 책상 위에 두어요.": "./audio/2a3ee154d32ffd8e5b587c6e7ceecac9.mp3",
+  "colors": "./audio/62848e3ce5804aa985513a7922ff87b2.mp3",
+  "세다": "./audio/1d50a83601ce3fffbc42a77a3e1b118e.mp3",
+  "Used for light": "./audio/85e980f7c01036d7320e0ad338ccd837.mp3",
+  "그의 바람은 세계 여행이에요.": "./audio/8d0e0c8433dde5005d64bbd57f1bd217.mp3"
 };
