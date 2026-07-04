@@ -168,11 +168,15 @@ for (const word of words || []) {
   }
 }
 
-// Duplicate-content check: two curated rows with the same Korean surface form,
-// the same POS, and (near-)identical meaning are almost certainly an
-// accidental re-add (e.g. a later authoring batch re-teaching an existing
-// word), not real polysemy. Real polysemy must be marked with `senseKey`, so
-// any row carrying one is exempt from this check entirely.
+// Duplicate-content check: two curated rows with the same Korean surface form
+// and (near-)identical meaning are almost certainly an accidental re-add
+// (e.g. a later authoring batch re-teaching an existing word), not real
+// polysemy. Pairs are compared across the whole same-surface group — POS is
+// NOT part of the grouping key, because a duplicate previously escaped by
+// carrying a different POS label for the same meaning (언제 adverb+pronoun
+// "when", 거나 ending+particle "or"). Likewise, distinct senseKeys do NOT
+// exempt a pair whose core gloss is identical — a fabricated key pair
+// ("stomach"/"belly") previously disguised the same sense as polysemy.
 function normalizeMeaningForDupeCheck(meaning) {
   return String(meaning || "")
     .toLowerCase()
@@ -188,29 +192,47 @@ function meaningJaccard(a, b) {
   const union = new Set([...setA, ...setB]).size;
   return union === 0 ? 0 : inter / union;
 }
-const byKoreanPos = new Map();
+// Core gloss: the short meaning with parentheticals and punctuation noise
+// stripped. Two rows for the same surface whose core glosses are identical
+// teach the same sense — no senseKey or POS relabel makes them two senses.
+function coreGlossForDupeCheck(word) {
+  return String(word.meaningShort || word.meaning || "")
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/[\/,;.!?]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+const byKorean = new Map();
 for (const word of words || []) {
-  if (!word || !word.korean || !word.pos) continue;
-  const key = `${word.korean}|${word.pos}`;
-  if (!byKoreanPos.has(key)) byKoreanPos.set(key, []);
-  byKoreanPos.get(key).push(word);
+  if (!word || !word.korean) continue;
+  if (!byKorean.has(word.korean)) byKorean.set(word.korean, []);
+  byKorean.get(word.korean).push(word);
 }
 // A `senseKey` only exempts a PAIR from the duplicate-content check when both
-// rows carry one AND the two keys are genuinely different — real polysemy
-// means distinct senses get distinct keys. Two rows sharing the identical
-// senseKey (or where only one row in the pair is tagged) are not exempt: that
-// pattern previously let accidental re-adds hide behind a copy-pasted or
-// one-sided senseKey instead of being merged. (See #54 cleanup: 74 rows were
-// disguised duplicates, not real senses, caught only by removing this
-// blanket exemption.)
-for (const [key, group] of byKoreanPos) {
+// rows carry one, the two keys are genuinely different, AND the core glosses
+// differ — real polysemy means distinct senses get distinct keys and distinct
+// meanings. Two rows sharing the identical senseKey, or where only one row in
+// the pair is tagged, or whose glosses are identical despite different keys,
+// are not exempt: those patterns previously let accidental re-adds hide
+// behind a copy-pasted, one-sided, or fabricated senseKey instead of being
+// merged. (See #54 cleanup: 74 rows were disguised duplicates; a later pass
+// caught 4 more that had slipped through the POS grouping and the
+// distinct-senseKey blanket exemption.)
+for (const [korean, group] of byKorean) {
   if (group.length < 2) continue;
   for (let i = 0; i < group.length; i += 1) {
     for (let j = i + 1; j < group.length; j += 1) {
       const a = group[i];
       const b = group[j];
       if (a.senseKey && b.senseKey && a.senseKey === b.senseKey) {
-        errors.push(`duplicate senseKey: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) and the identical senseKey "${a.senseKey}" — this is disguised duplicate content, not two senses. Merge the rows or give them genuinely distinct senseKeys.`);
+        errors.push(`duplicate senseKey: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}/${b.pos}) and the identical senseKey "${a.senseKey}" — this is disguised duplicate content, not two senses. Merge the rows or give them genuinely distinct senseKeys.`);
+        continue;
+      }
+      const glossA = coreGlossForDupeCheck(a);
+      const glossB = coreGlossForDupeCheck(b);
+      if (glossA && glossA === glossB) {
+        errors.push(`duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}/${b.pos}) and the identical core gloss "${glossA}" — distinct senseKeys or POS labels do not make one sense two. Merge the rows.`);
         continue;
       }
       if (a.senseKey && b.senseKey && a.senseKey !== b.senseKey) continue; // genuinely distinct declared senses
@@ -218,8 +240,8 @@ for (const [key, group] of byKoreanPos) {
       const tokensB = normalizeMeaningForDupeCheck(b.meaning);
       const sim = meaningJaccard(tokensA, tokensB);
       if (sim >= 0.99) {
-        errors.push(`duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) and an identical meaning ("${a.meaning}" / "${b.meaning}"). Remove one, or add distinct senseKey/senseNo to both if this is intentional polysemy.`);
-      } else if (sim >= 0.4) {
+        errors.push(`duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}/${b.pos}) and an identical meaning ("${a.meaning}" / "${b.meaning}"). Remove one, or add distinct senseKey/senseNo to both if this is intentional polysemy.`);
+      } else if (sim >= 0.4 && a.pos === b.pos) {
         warnings.push(`possible duplicate content: ${a.id} and ${b.id} share korean "${a.korean}" (${a.pos}) with similar meanings ("${a.meaning}" / "${b.meaning}"). Review: merge, or add distinct senseKey/senseNo to both if this is intentional polysemy.`);
       }
     }
