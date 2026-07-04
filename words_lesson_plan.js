@@ -142,7 +142,7 @@
       title: "Time and daily rhythm II",
       subtitle: "Morning to evening",
       goal: "Talk about the parts of the day.",
-      newWordIds: ["w0605_sigan", "w_m6_3006_sigan_hour", "w0606_achim", "w_m6_3007_achim_breakfast", "w0607_jeomsim", "w_m6_3008_jeomsim_noon", "w0608_jeonyeok", "w_m6_3009_jeonyeok_dinner", "w0609_nal", "w_m6_2976_geollida_time"],
+      newWordIds: ["w0605_sigan", "w_m6_3006_sigan_hour", "w0606_achim", "w_m6_3007_achim_breakfast", "w0607_jeomsim", "w_m6_3008_jeomsim_noon", "w_m6_3032_jungsik_lunch", "w0608_jeonyeok", "w_m6_3009_jeonyeok_dinner", "w0609_nal", "w_m6_2976_geollida_time"],
     }),
     defineLesson({
       id: "w7-core-actions-01",
@@ -750,9 +750,9 @@
       id: "w30-theme-45",
       stage: "W30",
       title: "Nature and landscape Part 45",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for nature and landscape.",
-      newWordIds: [ "w_m5_206_hae_sun", "w_m5_207_gureum",  "w_m5_209_ondo", "w_m5_210_san", "w_m5_211_gang"]
+      newWordIds: [ "w_m5_206_hae_sun", "w_m6_3031_ilsik_eclipse", "w_m5_207_gureum",  "w_m5_209_ondo", "w_m5_210_san", "w_m5_211_gang"]
     }),
     defineLesson({
       id: "w30-theme-46",
@@ -790,9 +790,9 @@
       id: "w31-theme-51",
       stage: "W31",
       title: "Time and calendar Part 51",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your thematic vocabulary for time and calendar.",
-      newWordIds: ["w_m5_231_gonghyuil", "w_m5_232_hyuga", "w_m5_386_saengil", "w_m5_387_insaeng", "w_m5_420_hwayoil", "w_m5_530_banghak_break"]
+      newWordIds: ["w_m5_231_gonghyuil", "w_m5_232_hyuga", "w_m5_386_saengil", "w_m6_3030_dol_birthday", "w_m5_387_insaeng", "w_m5_420_hwayoil", "w_m5_530_banghak_break"]
     }),
         defineLesson({
       id: "w32-theme-53",
@@ -1934,9 +1934,9 @@
       id: "w155-theme-201",
       stage: "W155",
       title: "Sports and physical recreation",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for sports and physical recreation.",
-      newWordIds: ["w_m6_2053_sijeon", "w_m6_2054_idong", "w_m6_2055_jeongri", "w_m6_2056_jeil", "w_m6_2057_jugeum", "w_m6_2058_kaerikteo", "w_m6_2059_geuttae"]
+      newWordIds: ["w_m6_2053_sijeon", "w_m6_2054_idong", "w_m6_2055_jeongri", "w_m6_3033_jeongri_organization", "w_m6_2056_jeil", "w_m6_2057_jugeum", "w_m6_2058_kaerikteo", "w_m6_2059_geuttae"]
     }),
     defineLesson({
       id: "w156-theme-202",

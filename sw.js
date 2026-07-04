@@ -1,15 +1,15 @@
 // [2026-07-04] Cache bumped to v143: M2 sense-split batch 4 — new multi-sense
 // 사고/연기/전기/이사/소식.
-const CACHE_NAME = "hanapath-shell-v151";
+const CACHE_NAME = "hanapath-shell-v152";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260703a",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260704l",
-  "./words_curated_core.js?v=20260704l",
+  "./audio_map.js?v=20260704m",
+  "./words_curated_core.js?v=20260704m",
   "./words_inflect.js?v=20260703b",
-  "./words_lesson_plan.js?v=20260704l",
+  "./words_lesson_plan.js?v=20260704m",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260703p",
   "./alphabet_skill_srs.js?v=20260630a",
