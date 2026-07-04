@@ -150,7 +150,7 @@
       title: "Core actions",
       subtitle: "Do, have, see, speak",
       goal: "Learn the verbs Korean sentences are built on.",
-      newWordIds: ["w0701_hada", "w0702_itda", "w0703_eopda", "w0704_boda", "w0705_malhada", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
+      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
     }),
     defineLesson({
       id: "w7-core-actions-02",
@@ -918,9 +918,9 @@
       id: "w36-theme-72",
       stage: "W36",
       title: "Everyday actions Part 72",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your thematic vocabulary for everyday actions.",
-      newWordIds: ["w_m5_297_gareuchida", "w_m5_298_saenggakhada", "w_m5_299_mureoboda", "w_m5_300_iyagihada", "w_m5_301_jeonhwahada", "w_m5_302_bonaeda", "w_m5_303_batda"]
+      newWordIds: ["w_m5_297_gareuchida", "w_m5_298_saenggakhada", "w_m5_299_mureoboda", "w_m5_300_iyagihada", "w_m5_301_jeonhwahada", "w_m5_302_bonaeda", "w_m6_3029_bonaeda_spend", "w_m5_303_batda"]
     }),
     defineLesson({
       id: "w36-theme-73",

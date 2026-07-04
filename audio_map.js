@@ -10310,5 +10310,17 @@ window.AUDIO_MAP = {
   "Money/currency sense; distinct from 통화 (phone call).": "./audio/20520bc6b70508086aefab7a188efba2.mp3",
   "새 책": "./audio/440bf04db67ccabee1e14c26d3f5a777.mp3",
   "달콤한 배를 먹어요.": "./audio/fa555c4e90090ee3aaeb966a4306ce1b.mp3",
-  "새 책을 샀어요.": "./audio/c66b8996d9161fd1317231df41afdf41.mp3"
+  "새 책을 샀어요.": "./audio/c66b8996d9161fd1317231df41afdf41.mp3",
+  "there are\" — see its own sense card. Polite form: 있어요.": "./audio/425193977cf10dd9e99eafe53b7d0591.mp3",
+  "Also means \"there is / there are\" — see its own sense card. Polite form: 있어요.": "./audio/60ea7e2d87cd8b687f682209643ffd7f.mp3",
+  "Existence sense; distinct from 있다 (to have).": "./audio/2ed0fcf1f4bd4bc4efcb94a563c59df8.mp3",
+  "Also means \"there is none / nothing is there\" — see its own sense card. Polite form: 없어요.": "./audio/bab506dbe29af218ba1ea22cc741190d.mp3",
+  "교실에 아무도 없어요.": "./audio/c53013d018a8165cca0099809e6d3cb2.mp3",
+  "여기에 책이 있어요.": "./audio/d9036ce9bd59d0c9fa80204721e725c6.mp3",
+  "주말을 가족과 보내요.": "./audio/a8cd4d5b7087f43e9e8a0210db6360fb.mp3",
+  "nothing is there\" — see its own sense card. Polite form: 없어요.": "./audio/11eeafaf46e5f2b5554da738aeb3418d.mp3",
+  "Absence sense; distinct from 없다 (to not have).": "./audio/684070e8a5c4977c21c4bc7761dd9449.mp3",
+  "Also means \"there is": "./audio/17848eaff2559d2e6ea6862e0f7fc093.mp3",
+  "Also means \"there is none": "./audio/5be6adaeb52f4c32c31d944ed4694451.mp3",
+  "Time-spending sense; distinct from 보내다 (to send).": "./audio/920d2a126cdcee5f2519848136816a97.mp3"
 };
