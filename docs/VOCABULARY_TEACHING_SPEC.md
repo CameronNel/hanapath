@@ -367,9 +367,9 @@ source of truth for *what*, that file for *how and in which order*.
    hard-fails a subtitle/count mismatch and warns on any lesson under 4 words
    that *has* a foldable same-stage sibling, so this can't silently drift
    again.
-3. **Curation queue burn-down.** 667 rows still carry at least one `inferred`
-   axis: `register` 657 · `speechLevel` 664 · `morphTag` 652 · `originType`
-   235; 647 rows are inferred on `register`+`speechLevel`+`morphTag`
+3. **Curation queue burn-down.** 621 rows still carry at least one `inferred`
+   axis: `register` 611 · `speechLevel` 618 · `morphTag` 614 · `originType`
+   213; 609 rows are inferred on `register`+`speechLevel`+`morphTag`
    simultaneously. Use the Word Bank's **Needs curation** filter +
    **Curation priority** sort to verify in batches; re-run the audit and read
    its **Annotation sources** line for current counts.
