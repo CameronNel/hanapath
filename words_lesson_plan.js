@@ -1534,9 +1534,9 @@
       id: "w105-theme-151",
       stage: "W105",
       title: "clothing",
-      subtitle: "Learn 8 common words",
+      subtitle: "Learn 9 common words",
       goal: "Expand your vocabulary for clothing.",
-      newWordIds: ["w_m6_1201_gabangkkeun", "w_m6_1202_jigapkkeun", "w_m6_1203_seuweteo", "w_m6_1204_wonpiseu", "w_m6_1205_taekwondo", "w_m6_1206_sihap", "w_m6_1207_tim", "w_m6_2994_chada_kick"]
+      newWordIds: ["w_m6_1201_gabangkkeun", "w_m6_1202_jigapkkeun", "w_m6_1203_seuweteo", "w_m6_1204_wonpiseu", "w_m6_1205_taekwondo", "w_m6_1206_sihap", "w_m6_1207_tim", "w_m6_2994_chada_kick", "w_m6_3037_kodeu_dress"]
     }),
     defineLesson({
       id: "w106-theme-152",
@@ -1598,9 +1598,9 @@
       id: "w113-theme-159",
       stage: "W113",
       title: "Feelings and descriptions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for feelings and descriptions.",
-      newWordIds: ["w_m6_1272_gyeongheom", "w_m6_1273_gongsik", "w_m6_1274_gwanryeon", "w_m6_1275_gwanri", "w_m6_1276_gwanjeom", "w_m6_1277_gujo", "w_m6_1278_gwonri"]
+      newWordIds: ["w_m6_1272_gyeongheom", "w_m6_1273_gongsik", "w_m6_1274_gwanryeon", "w_m6_1275_gwanri", "w_m6_1276_gwanjeom", "w_m6_1277_gujo", "w_m6_1278_gwonri", "w_m6_3034_gujo_rescue"]
     }),
     defineLesson({
       id: "w114-theme-160",
@@ -1886,9 +1886,9 @@
       id: "w149-theme-195",
       stage: "W149",
       title: "occupations",
-      subtitle: "Learn 8 common words",
+      subtitle: "Learn 9 common words",
       goal: "Expand your vocabulary for occupations.",
-      newWordIds: ["w_m6_2011_gamdok", "w_m6_3014_gamdok_supervisor", "w_m6_2012_byeongyeong", "w_m6_2013_jeongchaek", "w_m6_2014_jojik", "w_m6_2015_sangdae", "w_m6_2016_yeangeo", "w_m6_2017_wonrae"]
+      newWordIds: ["w_m6_2011_gamdok", "w_m6_3014_gamdok_supervisor", "w_m6_2012_byeongyeong", "w_m6_2013_jeongchaek", "w_m6_2014_jojik", "w_m6_2015_sangdae", "w_m6_2016_yeangeo", "w_m6_2017_wonrae", "w_m6_3035_jojik_tissue"]
     }),
     defineLesson({
       id: "w150-theme-196",
@@ -1926,9 +1926,9 @@
       id: "w154-theme-200",
       stage: "W154",
       title: "Hobbies and leisure",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for hobbies and leisure.",
-      newWordIds: ["w_m6_2046_yesul", "w_m6_2047_yojeum", "w_m6_2048_jedo", "w_m6_2049_kodeu", "w_m6_2050_hugi", "w_m6_2051_baneung", "w_m6_2052_beojeon"]
+      newWordIds: ["w_m6_2046_yesul", "w_m6_2047_yojeum", "w_m6_2048_jedo", "w_m6_2049_kodeu", "w_m6_2050_hugi", "w_m6_2051_baneung", "w_m6_2052_beojeon", "w_m6_3036_model_prototype"]
     }),
     defineLesson({
       id: "w155-theme-201",
@@ -2206,9 +2206,9 @@
       id: "w189-theme-235",
       stage: "W189",
       title: "Body and health",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for body and health.",
-      newWordIds: ["w_m6_2344_angwa", "w_m6_2345_annae", "w_m6_2346_anbu", "w_m6_2347_ansaeg", "w_m6_2348_anjeong", "w_m6_2349_anju", "w_m6_2350_anpakk"]
+      newWordIds: ["w_m6_2344_angwa", "w_m6_2345_annae", "w_m6_2346_anbu", "w_m6_2347_ansaeg", "w_m6_2348_anjeong", "w_m6_2349_anju", "w_m6_2350_anpakk", "w_m6_3034_gujo_rescue"]
     }),
     defineLesson({
       id: "w190-theme-236",
@@ -2270,9 +2270,9 @@
       id: "w197-theme-243",
       stage: "W197",
       title: "Body and health",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for body and health.",
-      newWordIds: ["w_m6_2400_oenson", "w_m6_2401_yoso", "w_m6_2402_yoyag", "w_m6_2403_yocheong", "w_m6_2404_yongdo", "w_m6_2405_yongeo", "w_m6_2406_yongpum"]
+      newWordIds: ["w_m6_2400_oenson", "w_m6_2401_yoso", "w_m6_2402_yoyag", "w_m6_2403_yocheong", "w_m6_2404_yongdo", "w_m6_2405_yongeo", "w_m6_2406_yongpum", "w_m6_3035_jojik_tissue"]
     }),
     defineLesson({
       id: "w198-theme-244",
