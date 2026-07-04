@@ -1398,9 +1398,9 @@
       id: "w88-theme-134",
       stage: "W88",
       title: "Core actions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for core actions.",
-      newWordIds: ["w_m6_1082_gaebal", "w_m6_1083_seontaek", "w_m6_1084_kkeutnaeda", "w_m6_1085_bakkuda", "w_m6_1086_deonjida", "w_m6_1087_japda", "w_m6_1088_milda"]
+      newWordIds: ["w_m6_1082_gaebal", "w_m6_1083_seontaek", "w_m6_1084_kkeutnaeda", "w_m6_1085_bakkuda", "w_m6_1086_deonjida", "w_m6_1087_japda", "w_m2_japda_set_arrange", "w_m6_1088_milda"]
     }),
     defineLesson({
       id: "w89-theme-135",
