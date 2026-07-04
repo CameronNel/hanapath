@@ -10360,5 +10360,16 @@ window.AUDIO_MAP = {
   "Body tissue sense; distinct from 조직 (organization).": "./audio/e7d4444234a4abb82b388f3822f917a9.mp3",
   "Computer/programming code; distinct from 코드 (dress code).": "./audio/d861b06c0c95f0065cb6ab53d93001ae.mp3",
   "Computer": "./audio/181900dad960beccb34f53c4e0ff4647.mp3",
-  "문장의 구조를 배워요.": "./audio/f6ac5cbe0bab163ea1e41c24cffc19da.mp3"
+  "문장의 구조를 배워요.": "./audio/f6ac5cbe0bab163ea1e41c24cffc19da.mp3",
+  "오늘 대기가 맑아요.": "./audio/329e9f6c1e7a9d12d65faa09473c5085.mp3",
+  "Distinct sense from 시점 (point in time) — a viewpoint or perspective.": "./audio/ca0299cbef356e9bf89bb4746d200368.mp3",
+  "sequence).": "./audio/23f395d26178f803bbe19792cb7af2e1.mp3",
+  "회의 전 대기 시간이 길었어요.": "./audio/e47c341fae41aadc322ec87f05404eba.mp3",
+  "Distinct sense from 대기 (atmosphere) — waiting or standby time.": "./audio/32c865a3c50df2f53bd15ab3277c9c5d.mp3",
+  "Atmosphere sense; distinct from 대기 (waiting).": "./audio/abb74001215a20711cf44c284a4a8df5.mp3",
+  "이 문제를 다른 시점에서 보면 답이 달라져요.": "./audio/80d43ad61ee1d65fad0a279784426ac3.mp3",
+  "책 차례를 먼저 봐요.": "./audio/afc4af8edf26c5d02bfabee49318db9e.mp3",
+  "Distinct sense from 차례 (turn": "./audio/265dc335fd890a6277bb38c58cfe08a2.mp3",
+  "설날에 차례를 지내요.": "./audio/667ee4398c3b9475eabae3bf7d1dc988.mp3",
+  "Distinct sense from 차례 (turn / sequence).": "./audio/9025d4b1eebb1cc2e5613dd72dd49dbe.mp3"
 };

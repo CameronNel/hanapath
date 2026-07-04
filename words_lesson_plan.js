@@ -1654,9 +1654,9 @@
       id: "w120-theme-166",
       stage: "W120",
       title: "Time and daily rhythm",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for time and daily rhythm.",
-      newWordIds: ["w_m6_1321_neutda", "w_m6_1322_dareuge", "w_m6_1323_dayang", "w_m6_1324_datuda", "w_m6_1325_dahaenghi", "w_m6_1326_dangye", "w_m6_1327_dansun"]
+      newWordIds: ["w_m6_1321_neutda", "w_m6_1322_dareuge", "w_m6_1323_dayang", "w_m6_1324_datuda", "w_m6_1325_dahaenghi", "w_m6_1326_dangye", "w_m6_1327_dansun", "w_m6_3038_daegi_waiting"]
     }),
     defineLesson({
       id: "w121-theme-167",
@@ -2430,17 +2430,17 @@
       id: "w217-theme-263",
       stage: "W217",
       title: "People and family",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your vocabulary for people and family.",
-      newWordIds: ["w_m6_2956_sonyeo", "w_m6_2957_eonjena", "w_m6_2958_jangmyeon", "w_m6_2959_jeongui", "w_m6_2960_jean", "w_m6_2961_jinsim"]
+      newWordIds: ["w_m6_2956_sonyeo", "w_m6_2957_eonjena", "w_m6_2958_jangmyeon", "w_m6_2959_jeongui", "w_m6_2960_jean", "w_m6_2961_jinsim", "w_m6_3040_charye_rites"]
     }),
     defineLesson({
       id: "w218-theme-264",
       stage: "W218",
       title: "School and study",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 9 common words",
       goal: "Expand your vocabulary for school and study.",
-      newWordIds: ["w_m6_2962_jibjung", "w_m6_2963_teugjing", "w_m6_2964_haengjeong", "w_m6_2987_pulda_solve", "w_m6_2999_butda_pass", "w_m6_3000_sago_thinking", "w_m6_3002_jeongi_biography"]
+      newWordIds: ["w_m6_2962_jibjung", "w_m6_2963_teugjing", "w_m6_2964_haengjeong", "w_m6_2987_pulda_solve", "w_m6_2999_butda_pass", "w_m6_3000_sago_thinking", "w_m6_3002_jeongi_biography", "w_m6_3039_sijeom_viewpoint", "w_m6_3041_charye_contents"]
     }),
   ];
 })();
