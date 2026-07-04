@@ -39,6 +39,28 @@ The original research spec, verbatim, is
 The implementation-level plan is
 [`docs/WORDS_SECTION_MASTER_SPEC.md`](docs/WORDS_SECTION_MASTER_SPEC.md).
 
+## Model allocation (who does what kind of task)
+
+Route work by its shape, not its size:
+
+- **Codex 5.4 — easy work that is bulky.** High-volume, low-judgment,
+  recipe-driven batches where this runbook or the roadmap spells out the
+  exact per-row decision: curation-style axis pinning, dropping flagged
+  keys/fields from an enumerated list, applying a decision table row by row,
+  subtitle/count sync, mechanical doc/count refreshes. One checkbox = one
+  small PR; the audits are the safety net.
+- **High intelligence model — everything else.** Anything needing judgment
+  or synthesis: authoring new senses/example sentences, semantic calls
+  ("is this real polysemy?"), schema or audit changes, anything touching
+  `app.js`, merge/integration work, post-merge verification (see the
+  roadmap's §0 warning — a bad merge once silently destroyed merged work),
+  reconciling docs against re-derived data, and reviewing/landing the bulky
+  batches Codex 5.4 produced.
+
+When in doubt, or when a "bulky" task turns out to require a semantic
+decision mid-batch, stop and hand it to the high intelligence model rather
+than guessing.
+
 ## Step 2 — Pick the next task
 
 The §9 checklist has a **batch-by-batch execution queue**:

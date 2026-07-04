@@ -17,19 +17,28 @@
 
 The Words section is **feature-complete**. All engines, screens, and content
 systems are shipped and the app smoke-tests clean (no console errors; Word
-Bank, lesson flow, SRS review all render). What remains is **data finishing
-work** — exactly the kind of high-volume, low-risk editing a small model can
-grind through with this playbook.
+Bank, lesson flow, SRS review all render). Tracks A, B, and C — the entire
+agent-executable data-finishing queue — are **done**; what remains (Tracks
+D/E, §8) is gated on owner decisions.
 
 | Fact | Verified value |
 |---|---|
-| Curated senses | **2,021** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
+| Curated senses | **2,028** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
 | Lessons | **298** across stages W0–W19 |
-| Genuinely multi-sense lemmas | **98** lemmas with 2+ sense rows (219 rows carry a `senseKey` across 116 lemmas) |
-| Leftover singleton `senseKey`s | **18** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **0** rows have ?1 `inferred` axis ? register 0 ? speechLevel 0 ? morphTag 0 ? originType 0 |
-| `hanja` | explicit on only 2 rows; 2,019 absent (owner-gated, §Track E) |
+| Genuinely multi-sense lemmas | **105** lemmas with 2+ sense rows (215 rows carry a `senseKey`, all across those 105 lemmas) |
+| Leftover singleton `senseKey`s | **0** (Track C closed 2026-07-04) |
+| Curation queue | **0** rows have ≥1 `inferred` axis — register 0, speechLevel 0, morphTag 0, originType 0 |
+| `hanja` | explicit on only 2 rows; 2,026 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
+
+> **A fourth way the scoreboard lied (2026-07-04):** a bad integration merge
+> (`b385e77`) silently dropped the already-merged Track B2 content (PR #67)
+> and reverted 17 curated values from the A7–A9 batches, then a bulk
+> "finalize" commit pinned the reverted values as `explicit` — so the strict
+> audit stayed green on wrong data. Both were restored the same day. Lesson:
+> after any merge that touched `words_curated_core.js`, diff the merged
+> branch tips against `main` at the **row/field level** (not just `git log
+> --oneline`) before trusting the result.
 
 ### 0.1 How to re-derive (run these, don't trust the table)
 
@@ -56,9 +65,9 @@ The section is **final** when every box below is ticked. Tracks A–C are
 mini-model-friendly. Track D needs a design decision first. Track E is
 owner-only — **never attempt E items autonomously.**
 
-- [x] **Track A** ? Curation burn-down: 0 rows with an `inferred` annotation axis
+- [x] **Track A** — Curation burn-down: 0 rows with an `inferred` annotation axis
 - [x] **Track B** — M2 sense split: candidate list in §4 fully worked (each lemma either split or explicitly declined with a reason written into §4)
-- [ ] **Track C** — 18 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
+- [x] **Track C** — 18 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
 - [ ] **Track D** — Honorific axis encoded per the owner-approved design
 - [ ] **Track E** — Owner decisions recorded (pronunciation scoring; hanja policy; 하다-verb originType convention)
 - [ ] **Final gate** — `TEST_UNLOCK_ALL_STAGES` in `app.js` set back to `false`; full cold-learner smoke test of the real progression; caches bumped; all three audits green
@@ -91,7 +100,7 @@ owner-only — **never attempt E items autonomously.**
 
 ---
 
-## 3. Track A ? Curation burn-down (done)
+## 3. Track A — Curation burn-down (done)
 
 **What it is.** The curation burn-down is complete; every row now has explicit values on all axes and the queue is empty.
 
@@ -144,27 +153,27 @@ right — pin it unless a clear exception applies: proper nouns (한국, 서울)
 `NNP`; bound nouns (것, 수, 데) → `NNB`; auxiliary verbs → `VX`; conjunctive
 adverbs (그리고, 하지만) → `MAJ`; copula 이다 → `VCP`.
 
-### 3.2 Batch queue (tick as you go; one PR = 1?2 groups, keep ? ~60 rows/PR)
+### 3.2 Batch queue (tick as you go; one PR = 1–2 groups, keep ≤ ~60 rows/PR)
 
 Row counts = rows with inferred register in that group (close proxy for the
-full queue; the listing command in ?3 is authoritative).
+full queue; the listing command in §3 is authoritative).
 
-- [x] A1 ? `travel-city` (65)
-- [x] A2 ? `core-actions` (61)
-- [x] A3 ? `home-routine` (43) + `honorifics` (1)
-- [x] A4 ? `feelings-descriptions` (42) + `endings-register` (3)
-- [x] A5 ? `food-drink` (42) + `tense-negation` (5)
-- [x] A6 ? `weather-nature` (38) + `connectives` (7)
-- [x] A7 ? `survival-core` (35) + `noun-modification` (5)
-- [x] A8 ? `time-daily` (32) + `irregular-families` (8)
-- [x] A9 ? `study-school` (30) + `question-words` (13)
-- [x] A10 ? `post-hangul-bridge` (26) + `people-pronouns` (9) + `function-words-1` (9)
-- [x] A11 ? `occupations` (26) + `family-people` (22)
-- [x] A12 ? `body-health` (22) + `body-parts` (12)
-- [x] A13 ? `shopping-money` (21) + `daily-objects-tech` (21)
-- [x] A14 ? `animals` (19) + `clothing` (17)
-- [x] A15 ? `hobbies-leisure` (16) + `sports` (12) + `colors` (12)
-- [x] A16 ? `places-movement` (13) + `things-demonstratives` (10) ? final sweep complete: the audit's Annotation sources line now shows "inferred":0 for register, speechLevel, morphTag, and originType
+- [x] A1 — `travel-city` (65)
+- [x] A2 — `core-actions` (61)
+- [x] A3 — `home-routine` (43) + `honorifics` (1)
+- [x] A4 — `feelings-descriptions` (42) + `endings-register` (3)
+- [x] A5 — `food-drink` (42) + `tense-negation` (5)
+- [x] A6 — `weather-nature` (38) + `connectives` (7)
+- [x] A7 — `survival-core` (35) + `noun-modification` (5)
+- [x] A8 — `time-daily` (32) + `irregular-families` (8)
+- [x] A9 — `study-school` (30) + `question-words` (13)
+- [x] A10 — `post-hangul-bridge` (26) + `people-pronouns` (9) + `function-words-1` (9)
+- [x] A11 — `occupations` (26) + `family-people` (22)
+- [x] A12 — `body-health` (22) + `body-parts` (12)
+- [x] A13 — `shopping-money` (21) + `daily-objects-tech` (21)
+- [x] A14 — `animals` (19) + `clothing` (17)
+- [x] A15 — `hobbies-leisure` (16) + `sports` (12) + `colors` (12)
+- [x] A16 — `places-movement` (13) + `things-demonstratives` (10) — final sweep complete: the audit's Annotation sources line now shows "inferred":0 for register, speechLevel, morphTag, and originType
 
 **Per-PR acceptance:** strict audit passes; the "Annotation sources" inferred
 counts drop by ≈ the batch size; no `meaning`/`exampleKo`/`id` changed; caches
@@ -206,12 +215,14 @@ verify each against a dictionary sense you can express at beginner level.
   - [x] 잡다 (`w_m6_1087_japda` → `grab-catch`; new `w_m2_japda_set_arrange` → `set-arrange`)
   - [x] 길 (`w1309_gil` → `road`; new `w_m2_gil_way_method` → `way-method`)
   - [x] 크다 (`w0803_keuda` adjective → `big`; new verb `w_m2_keuda_grow_up` → `grow-up`)
-- [ ] **B2 — author second senses for existing single rows**:
-  - 쉬다 (`w1206_swida`, already `sk:rest`) — add `breathe` (숨을 쉬다)
-  - 열다 (`w1217_yeolda`) — `open` vs `hold-event` (파티를 열다)
-  - 짓다 (`w1913_jitda`) — `build` vs `make-prepare` (밥을 짓다, 이름을 짓다)
-  - 살다 (`w1916_salda`) — `live-reside` vs `be-alive`
-  - 초 (`w_m5_217_cho`, no senseKey yet) — `second-time` vs `candle` (생일 초)
+- [x] **B2 — author second senses for existing single rows** (shipped in
+  PR #67 on 2026-07-04, then silently lost in integration merge `b385e77`
+  and **restored** later the same day — see the §0 warning box):
+  - [x] 쉬다 (`w1206_swida` `sk:rest`) + new `w_m2_swida_breathe` → `breathe` (숨을 쉬다)
+  - [x] 열다 (`w1217_yeolda` → `open`) + new `w_m2_yeolda_hold_event` → `hold-event` (파티를 열다)
+  - [x] 짓다 (`w1913_jitda` → `build`) + new `w_m2_jitda_make_prepare` → `make-prepare` (밥을 짓다)
+  - [x] 살다 (`w1916_salda` → `live-reside`) + new `w_m2_salda_be_alive` → `be-alive`
+  - [x] 초 (`w_m5_217_cho` → `second-time`) + new `w_m2_cho_candle` → `candle` (생일 초)
 - [x] **B3 — new multi-sense lemmas (not yet in data)**:
   - 떨어지다 — `fall-drop` vs `run-out` (다 떨어졌어요)
   - 오르다 — `climb` vs `rise-increase` (값이 오르다)
@@ -240,34 +251,39 @@ visible in the Word Bank with distinct senses, strict audit green.
 
 ---
 
-## 5. Track C — Singleton senseKey cleanup (one small PR)
+## 5. Track C — Singleton senseKey cleanup (done 2026-07-04)
 
-16 rows carry a `senseKey` with no sibling sense row. Most are leftovers from
-the #54 dedupe (the deleted twin took the other key). Resolve each; **never
-change the row's `id`** (SRS state in users' localStorage keys off it).
+18 rows carried a `senseKey` with no sibling sense row (this table originally
+listed 16 — re-deriving found two more the table missed, both leftovers from
+the #65 dedupe: `w0610_eonje` 언제 and `fw1803_geona` 거나). All 18 resolved;
+no row `id` changed (SRS state in users' localStorage keys off it).
 
-| Row | Current key | Action |
+| Row | Key | Resolution |
 |---|---|---|
-| `w1206_swida` 쉬다 | `rest` | keep — second sense authored in **B2** |
-| `w_m5_206_hae_sun` 해 | `sun` | **author** `year` sense (올해, 한 해) — genuine homograph, beginner-common |
-| `w_m5_520_pul_grass` 풀 | `grass` | **author** `glue` sense (school context) or drop key with reason |
-| `fw1806_ttaemune` 때문에 | `because-of` | drop key (no second beginner sense planned) |
-| `w_m5_218_ju_week` 주 | `week` | drop key |
-| `w_m5_253_gita_instrument` 기타 | `instrument` | drop key (기타 "et cetera" is written-register, not beginner) |
-| `w_m5_260_suyeong_sport` 수영 | `sport` | drop key |
-| `w_m5_335_hangahada` 한가하다 | `free-unbusy` | drop key (fabricated, pre-#54) |
-| `w_m5_382_gukga` 국가 | `nation-state` | drop key |
-| `w_m5_383_gungnae` 국내 | `domestic` | drop key |
-| `w_m5_415_munseo` 문서 | `document` | drop key |
-| `w_m5_418_jilmun_sino` 질문 | `sino` | drop key (fabricated) |
-| `w_m5_467_norae_hobby` 노래 | `hobby` | drop key (fabricated) |
-| `w_m5_488_nappuda_bad` 나쁘다 | `bad` | drop key (fabricated) |
-| `w_m5_514_kape_cafe` 카페 | `cafe` | drop key (fabricated) |
-| `w_m5_530_banghak_break` 방학 | `break` | drop key (fabricated) |
+| `w1206_swida` 쉬다 | `rest` | kept — second sense `breathe` authored in **B2** |
+| `w_m5_206_hae_sun` 해 | `sun` | **authored** `year` sense (`w_m2_hae_year`, senseNo 1; 한 해, 새해) — genuine homograph |
+| `w_m5_520_pul_grass` 풀 | `grass` | **authored** `glue` sense (`w_m2_pul_glue`, school-supplies context) |
+| `fw1806_ttaemune` 때문에 | `because-of` | key dropped (no second beginner sense planned) |
+| `w_m5_218_ju_week` 주 | `week` | key dropped |
+| `w_m5_253_gita_instrument` 기타 | `instrument` | key dropped (기타 "et cetera" is written-register, not beginner) |
+| `w_m5_260_suyeong_sport` 수영 | `sport` | key dropped |
+| `w_m5_335_hangahada` 한가하다 | `free-unbusy` | key dropped (fabricated, pre-#54) |
+| `w_m5_382_gukga` 국가 | `nation-state` | key dropped |
+| `w_m5_383_gungnae` 국내 | `domestic` | key dropped |
+| `w_m5_415_munseo` 문서 | `document` | key dropped |
+| `w_m5_418_jilmun_sino` 질문 | `sino` | key dropped (fabricated) |
+| `w_m5_467_norae_hobby` 노래 | `hobby` | key dropped (fabricated) |
+| `w_m5_488_nappuda_bad` 나쁘다 | `bad` | key dropped (fabricated) |
+| `w_m5_514_kape_cafe` 카페 | `cafe` | key dropped (fabricated) |
+| `w_m5_530_banghak_break` 방학 | `break` | key dropped (fabricated) |
+| `w0610_eonje` 언제 | `when-question` | key dropped (#65 dedupe leftover; not in the original table) |
+| `fw1803_geona` 거나 | `or-choice` | key dropped (#65 dedupe leftover; not in the original table) |
 
-- [ ] **C1** — apply the table above (drop = remove `senseKey` and `senseNo`
-  from the entry; author = follow the Track B recipe). Re-run the §0.1
-  singleton count — it must land at 0 (excluding lemmas mid-split in B).
+- [x] **C1** — table applied (drop = `senseKey`/`senseNo` removed; author =
+  Track B recipe, all four axes explicit). §0.1 singleton count re-derived:
+  **0**. Audio for the two new example sentences still needs
+  `python generate_assets.py` (blocked in the authoring environment —
+  egress policy).
 
 ---
 
@@ -309,10 +325,14 @@ optional field `honorificRole: "subject" | "listener" | "humble"` +
 
 ## 8. Suggested execution order
 
-Tracks are independent — safe to interleave. Highest-leverage order for a
-small model grinding solo:
+Tracks A, B, and C are **done**. Everything that remains is gated on the
+owner:
 
-1. **C1** (tiny, cleans the senseKey landscape before B touches it)
-2. **A1…A16** (the bulk; pure data pinning, zero audio work)
-3. **B1 → B5** (needs audio regen + more judgment; do after warming up on A)
-4. **D2** once the owner clears D1; **E4** last.
+1. **D1** — owner approves (or amends) the honorific-axis design in §6
+2. **D2** — schema + audit enum + backfill (~40 rows) once D1 is decided
+3. **E1–E3** — owner decisions (pronunciation scoring, hanja policy,
+   하다-verb originType convention)
+4. **E4** — final gate, last: flip `TEST_UNLOCK_ALL_STAGES` back to `false`,
+   cold-learner smoke test, cache bump, all audits green
+5. Owner also needs one `python generate_assets.py` run for the two Track C
+   sentences authored without audio (see §5)
