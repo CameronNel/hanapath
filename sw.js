@@ -1,14 +1,14 @@
-// [2026-07-04] Cache bumped to v161: Track A8 curation batch — time-daily + irregular-families.
-const CACHE_NAME = "hanapath-shell-v161";
+// [2026-07-04] Cache bumped to v162: Track A9 curation batch — study-school + question-words.
+const CACHE_NAME = "hanapath-shell-v162";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260703a",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260704v",
-  "./words_curated_core.js?v=20260704v",
+  "./audio_map.js?v=20260704w",
+  "./words_curated_core.js?v=20260704w",
   "./words_inflect.js?v=20260703b",
-  "./words_lesson_plan.js?v=20260704v",
+  "./words_lesson_plan.js?v=20260704w",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260703p",
   "./alphabet_skill_srs.js?v=20260630a",
