@@ -212,12 +212,14 @@ verify each against a dictionary sense you can express at beginner level.
   - [x] 잡다 (`w_m6_1087_japda` → `grab-catch`; new `w_m2_japda_set_arrange` → `set-arrange`)
   - [x] 길 (`w1309_gil` → `road`; new `w_m2_gil_way_method` → `way-method`)
   - [x] 크다 (`w0803_keuda` adjective → `big`; new verb `w_m2_keuda_grow_up` → `grow-up`)
-- [ ] **B2 — author second senses for existing single rows**:
-  - 쉬다 (`w1206_swida`, already `sk:rest`) — add `breathe` (숨을 쉬다)
-  - 열다 (`w1217_yeolda`) — `open` vs `hold-event` (파티를 열다)
-  - 짓다 (`w1913_jitda`) — `build` vs `make-prepare` (밥을 짓다, 이름을 짓다)
-  - 살다 (`w1916_salda`) — `live-reside` vs `be-alive`
-  - 초 (`w_m5_217_cho`, no senseKey yet) — `second-time` vs `candle` (생일 초)
+- [x] **B2 — author second senses for existing single rows** (done 2026-07-04;
+  each new sense placed in the same lesson as its sense-1 row, mirroring the
+  precedent already set by 나다's two senses sharing `w19-irregular-families-01`):
+  - [x] 쉬다 (`w1206_swida` → `rest`; new `w_m2_swida_breathe` → `breathe`, 숨을 쉬다)
+  - [x] 열다 (`w1217_yeolda` → `open`; new `w_m2_yeolda_hold_event` → `hold-event`, 파티를 열다)
+  - [x] 짓다 (`w1913_jitda` → `build`; new `w_m2_jitda_make_prepare` → `make-prepare`, 밥을 짓다)
+  - [x] 살다 (`w1916_salda` → `live-reside`; new `w_m2_salda_be_alive` → `be-alive`)
+  - [x] 초 (`w_m5_217_cho` → `second-time`; new `w_m2_cho_candle` → `candle`, 생일 초)
 - [ ] **B3 — new multi-sense lemmas (not yet in data)**:
   - 떨어지다 — `fall-drop` vs `run-out` (다 떨어졌어요)
   - 오르다 — `climb` vs `rise-increase` (값이 오르다)
