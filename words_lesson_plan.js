@@ -174,7 +174,7 @@
       title: "Feelings and descriptions II",
       subtitle: "Many, few, fun, tired",
       goal: "Describe amounts and how you feel.",
-      newWordIds: ["w0805_manta", "w0806_jeokda", "w0807_jaemiitda", "w0808_pigonhada", "w0810_yeppeuda"],
+      newWordIds: ["w0805_manta", "w0806_jeokda", "w0807_jaemiitda", "w0808_pigonhada", "w0810_yeppeuda", "w_m2_keuda_grow_up"],
     }),
     defineLesson({
       id: "w9-question-words-01",
@@ -260,7 +260,7 @@
       title: "Home and routine III",
       subtitle: "Your daily habits",
       goal: "Talk about cleaning, washing, and resting at home.",
-      newWordIds: ["w1204_cheongsohada", "w1205_ssitda", "w1206_swida", "w1207_yorihada", "w1208_syawohada", "w_m6_3058_gamda_wash_hair", "w_m6_2980_geolda_hang"],
+      newWordIds: ["w1204_cheongsohada", "w1205_ssitda", "w1206_swida", "w1207_yorihada", "w1208_syawohada", "w_m6_3058_gamda_wash_hair", "w_m6_2980_geolda_hang", "w_m2_swida_breathe"],
     }),
     defineLesson({
       id: "w12-home-routine-04",
@@ -268,7 +268,7 @@
       title: "Home and routine IV",
       subtitle: "Open, close, on, off",
       goal: "Control the things around your house.",
-      newWordIds: ["w1214_siktak", "w1217_yeolda", "w1218_datda", "w1219_kyeoda", "w1220_kkeuda", "w_m6_3060_dalda_hang", "w_m6_2998_butda_stick"],
+      newWordIds: ["w1214_siktak", "w1217_yeolda", "w1218_datda", "w1219_kyeoda", "w1220_kkeuda", "w_m6_3060_dalda_hang", "w_m6_2998_butda_stick", "w_m2_yeolda_hold_event"],
     }),
 
     defineLesson({
@@ -277,7 +277,7 @@
       title: "Travel and city",
       subtitle: "Getting around",
       goal: "Name common ways to travel.",
-      newWordIds: ["w1301_gonghang", "w1302_gicha", "w1303_beoseu", "w1304_jihacheol", "w1305_taeksi"],
+      newWordIds: ["w1301_gonghang", "w1302_gicha", "w1303_beoseu", "w1304_jihacheol", "w1305_taeksi", "w_m2_geori_street"],
     }),
     defineLesson({
       id: "w13-travel-city-02",
@@ -285,7 +285,7 @@
       title: "Travel and city II",
       subtitle: "Planning a trip",
       goal: "Talk about hotels, tickets, and trips.",
-      newWordIds: ["w1306_hotel", "w1307_yeohaeng", "w1308_pyo", "w1311_yeogwon", "w1312_jim"],
+      newWordIds: ["w1306_hotel", "w1307_yeohaeng", "w1308_pyo", "w1311_yeogwon", "w1312_jim", "w_m2_gil_way_method"],
     }),
     defineLesson({
       id: "w13-travel-city-03",
@@ -462,7 +462,7 @@
       title: "Irregular families",
       subtitle: "Trigger-based sound changes",
       goal: "Treat irregular predicates as predictable trigger families.",
-      newWordIds: ["w1911_geotda", "w1912_maepda", "w1913_jitda", "w1914_ppalgata", "w1915_ppareuda", "w1916_salda", "w1917_nada_occur", "w1918_nada_sprout"],
+      newWordIds: ["w1911_geotda", "w1912_maepda", "w1913_jitda", "w1914_ppalgata", "w1915_ppareuda", "w1916_salda", "w1917_nada_occur", "w1918_nada_sprout", "w_m2_jitda_make_prepare", "w_m2_salda_be_alive"],
       checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
@@ -774,9 +774,9 @@
       id: "w31-theme-49",
       stage: "W31",
       title: "Time and calendar Part 49",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your thematic vocabulary for time and calendar.",
-      newWordIds: ["w_m5_217_cho", "w_m5_218_ju_week", "w_m5_219_saebyeok", "w_m5_220_ojeon", "w_m5_221_ohu", "w_m5_222_haru", "w_m5_223_maeil"]
+      newWordIds: ["w_m5_217_cho", "w_m5_218_ju_week", "w_m5_219_saebyeok", "w_m5_220_ojeon", "w_m5_221_ohu", "w_m5_222_haru", "w_m5_223_maeil", "w_m2_cho_candle"]
     }),
     defineLesson({
       id: "w31-theme-50",
@@ -1150,9 +1150,9 @@
       id: "w57-theme-103",
       stage: "W57",
       title: "Time and daily rhythm",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for time and daily rhythm.",
-      newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil"]
+      newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil", "w_m2_japda_set_arrange"]
     }),
     defineLesson({
       id: "w58-theme-104",
