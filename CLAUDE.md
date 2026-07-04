@@ -21,7 +21,10 @@ otherwise.
 
 Most of the spec is now built (script course, SRS, inflection engine,
 pronunciation drills, ~1,900 curated senses, analytics). What remains to
-finalize the Words section is listed in the spec's **§9 roadmap** — do not
+finalize the Words section is listed in the spec's **§9 roadmap**, and the
+batch-by-batch execution queue for it is
+**[`docs/WORDS_FINAL_ROADMAP.md`](docs/WORDS_FINAL_ROADMAP.md)** (one unchecked
+box = one PR) — do not
 assume either "done" or "not done" from memory; **check the scorecard, then
 verify its claims against the actual data** (the scorecard has been wrong
 three times: PRs #50, #51, #54).
@@ -31,6 +34,7 @@ three times: PRs #50, #51, #54).
 | Doc | Purpose |
 |---|---|
 | **`docs/VOCABULARY_TEACHING_SPEC.md`** | Words **north star**: linguistics + pedagogy, status scorecard, roadmap, milestone sheet, dependency/implementation order |
+| **`docs/WORDS_FINAL_ROADMAP.md`** | Words **execution queue**: checkbox batches, per-PR recipes, curation decision guides — take the next unchecked box |
 | `docs/VOCABULARY_TEACHING_SPEC_SOURCE.md` | The original research spec, **verbatim** (source of record) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words **implementation** plan (schema, SRS, lesson flow, screens); §25 reconciles it with the north star |
 | `HANDOVER.md` | Repo snapshot + conventions for the next contributor |
