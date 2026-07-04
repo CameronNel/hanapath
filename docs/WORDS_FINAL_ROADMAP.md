@@ -13,7 +13,7 @@
 
 ---
 
-## 0. Verified status snapshot (2026-07-03)
+## 0. Verified status snapshot (2026-07-04, post-B1–B4 merge)
 
 The Words section is **feature-complete**. All engines, screens, and content
 systems are shipped and the app smoke-tests clean (no console errors; Word
@@ -23,12 +23,12 @@ grind through with this playbook.
 
 | Fact | Verified value |
 |---|---|
-| Curated senses | **1,953** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
+| Curated senses | **2,020** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
 | Lessons | **298** across stages W0–W19 |
-| Genuinely multi-sense lemmas | **44** lemmas with 2+ sense rows (107 rows carry a `senseKey` across 60 lemmas) |
-| Leftover singleton `senseKey`s | **16** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **711** rows have ≥1 `inferred` axis — register 697 · speechLevel 705 · morphTag 696 · originType 266; 687 rows are inferred on register+speechLevel+morphTag simultaneously |
-| `hanja` | explicit on only 2 rows; 1,951 absent (owner-gated, §Track E) |
+| Genuinely multi-sense lemmas | **99** lemmas with 2+ sense rows sharing a distinct `senseKey` per row |
+| Leftover singleton `senseKey`s | **17** rows have a `senseKey` but no sibling sense (§Track C) |
+| Curation queue | **708** rows have ≥1 `inferred` axis — register 695 · speechLevel 702 · morphTag 693 · originType 249; 685 rows are inferred on register+speechLevel+morphTag simultaneously |
+| `hanja` | explicit on only 2 rows; 2,018 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
 ### 0.1 How to re-derive (run these, don't trust the table)
@@ -220,18 +220,18 @@ verify each against a dictionary sense you can express at beginner level.
   - [x] 짓다 (`w1913_jitda` → `build`; new `w_m2_jitda_make_prepare` → `make-prepare`, 밥을 짓다)
   - [x] 살다 (`w1916_salda` → `live-reside`; new `w_m2_salda_be_alive` → `be-alive`)
   - [x] 초 (`w_m5_217_cho` → `second-time`; new `w_m2_cho_candle` → `candle`, 생일 초)
-- [ ] **B3 — new multi-sense lemmas (not yet in data)**:
+- [x] **B3 — new multi-sense lemmas (not yet in data)**:
   - 떨어지다 — `fall-drop` vs `run-out` (다 떨어졌어요)
   - 오르다 — `climb` vs `rise-increase` (값이 오르다)
   - 나오다 — `come-out` vs `appear-in-media` (TV에 나오다)
   - 놓다 — `put-place` vs `let-go-release`
   - 세우다 — `stand-up-erect` vs `stop-a-vehicle` (차를 세우다)
-- [ ] **B4 — new multi-sense lemmas, second wave**:
-  - 끊다 — `cut-off` vs `quit` (담배를 끊다)
-  - 빼다 — `remove-take-out` vs `subtract`
-  - 남다 — `remain-be-left` vs `be-left-over` (음식이 남다) — **judgment: if these two can't be cleanly distinguished at beginner level, author as one row, no senseKey**
-  - 감다 — `close-eyes` vs `wash-hair`
-  - 달다 — `sweet` (adj) vs `attach-hang` (verb) — homograph pair, two POS
+- [x] **B4 — new multi-sense lemmas, second wave** (2026-07-04; kkeunhda split, ppaeda split, namda kept as one row/no senseKey, gamda split, dalda split):
+  - 끊다 — `cut-off` vs `quit` (beginner-distinct; split)
+  - 빼다 — `remove-take-out` vs `subtract` (beginner-distinct; split)
+  - 남다 — `remain-be-left` vs `be-left-over` (음식이 남다) — **judgment: kept as one row, no senseKey; the beginner distinction was too thin**
+  - 감다 — `close-eyes` vs `wash-hair` (split)
+  - 달다 — `sweet` (adj) vs `attach-hang` (verb) — homograph pair, two POS (split)
 - [ ] **B5 — judgment batch** (verify each is beginner-teachable before authoring; decline in writing if not):
   - 바람 — `wind` vs `wish-hope`
   - 밝다 — `bright` vs `cheerful-personality` (성격이 밝다)
