@@ -7,7 +7,7 @@
 > tick a checkbox, do exactly that PR, nothing else. If this file and the audit
 > output ever disagree, trust the audit and fix this file in the same PR.
 >
-> Every number below was **re-derived from the data on 2026-07-03** (commands in
+> Every number below was **re-derived from the data on 2026-07-04** (commands in
 > §0.1), not copied from a scorecard. Re-derive before trusting: the scorecard
 > has been wrong three times (PRs #50, #51, #54).
 
@@ -27,7 +27,7 @@ grind through with this playbook.
 | Lessons | **298** across stages W0–W19 |
 | Genuinely multi-sense lemmas | **44** lemmas with 2+ sense rows (107 rows carry a `senseKey` across 60 lemmas) |
 | Leftover singleton `senseKey`s | **16** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **667** rows have ≥1 `inferred` axis — register 657 · speechLevel 664 · morphTag 652 · originType 235; 647 rows are inferred on register+speechLevel+morphTag simultaneously |
+| Curation queue | **621** rows have ≥1 `inferred` axis — register 611 · speechLevel 618 · morphTag 614 · originType 213; 609 rows are inferred on register+speechLevel+morphTag simultaneously |
 | `hanja` | explicit on only 2 rows; 1,951 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
@@ -162,7 +162,7 @@ full queue; the listing command in §3 is authoritative).
 - [ ] A5 — `food-drink` (42) + `tense-negation` (5)
 - [ ] A6 — `weather-nature` (38) + `connectives` (7)
 - [x] A7 — `survival-core` (35) + `noun-modification` (5) — done 2026-07-04; 41 rows pinned and lesson-linked
-- [ ] A8 — `time-daily` (32) + `irregular-families` (8)
+- [x] A8 — `time-daily` (38) + `irregular-families` (8) — done 2026-07-04; 46 rows pinned and lesson-linked
 - [ ] A9 — `study-school` (30) + `question-words` (13)
 - [ ] A10 — `post-hangul-bridge` (26) + `people-pronouns` (9) + `function-words-1` (9)
 - [ ] A11 — `occupations` (26) + `family-people` (22)
