@@ -7,20 +7,19 @@
 > tick a checkbox, do exactly that PR, nothing else. If this file and the audit
 > output ever disagree, trust the audit and fix this file in the same PR.
 >
-> Every number below was **re-derived from the data on 2026-07-04** (commands in
+> Every number below was **re-derived from the data on 2026-07-05** (commands in
 > §0.1), not copied from a scorecard. Re-derive before trusting: the scorecard
 > has been wrong three times (PRs #50, #51, #54).
 
 ---
 
-## 0. Verified status snapshot (2026-07-04)
+## 0. Verified status snapshot (2026-07-05)
 
 The Words section is **final** (§1 definition of done: all boxes ticked as
-of 2026-07-04). All engines, screens, and content systems are shipped, the
-app smoke-tests clean, every track (A–E) is closed, and the real gated
-progression is live (`TEST_UNLOCK_ALL_STAGES` is `false`). The only open
-follow-up is one `python generate_assets.py` run for two pending sentences
-(§5, tracked by the audit's audio-coverage allowlist).
+of 2026-07-05). All engines, screens, and content systems are shipped, the
+app smoke-tests clean, every track (A–E) is closed, generated audio coverage
+is complete, and the real gated progression is live (`TEST_UNLOCK_ALL_STAGES`
+is `false`).
 
 | Fact | Verified value |
 |---|---|
@@ -30,7 +29,7 @@ follow-up is one `python generate_assets.py` run for two pending sentences
 | Leftover singleton `senseKey`s | **0** (Track C closed 2026-07-04) |
 | Curation queue | **0** rows have ≥1 `inferred` axis — register 0, speechLevel 0, morphTag 0, originType 0 |
 | `hanja` | explicit on only 2 rows; 2,026 absent (owner-gated, §Track E) |
-| Honorific axis | `honorificRole` on 26 rows (9 subject / 14 listener / 3 humble) + 10 bidirectional `contrastWith` pairs |
+| Honorific axis | `honorificRole` on 26 rows (9 subject / 14 listener / 3 humble) + 10 bidirectional `contrastWith` pairs, rendered in the Word Bank detail view and lesson cards |
 | 하다-verbs | 0 `hybrid` (root-origin rule, §7 E3): 35 Sino-Korean, 19 native, 2 loanword |
 | Progression | `TEST_UNLOCK_ALL_STAGES` = `false` — real gated progression verified cold |
 | Audits | `audit-words-data --strict` (now incl. audio-map coverage), `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
@@ -72,9 +71,9 @@ owner-only — **never attempt E items autonomously.**
 - [x] **Track A** — Curation burn-down: 0 rows with an `inferred` annotation axis
 - [x] **Track B** — M2 sense split: candidate list in §4 fully worked (each lemma either split or explicitly declined with a reason written into §4)
 - [x] **Track C** — 18 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
-- [x] **Track D** — Honorific axis encoded (`honorificRole` + `contrastWith` pairs, §6)
+- [x] **Track D** — Honorific axis encoded and surfaced in the UI (`honorificRole` + `contrastWith` pairs, §6)
 - [x] **Track E** — Owner decisions recorded (§7: stub accepted, hanja stays absent, root-origin rule applied)
-- [x] **Final gate** — `TEST_UNLOCK_ALL_STAGES` set back to `false`; scripted cold-learner test of the real gated progression passed; caches bumped; all audits green (2026-07-04)
+- [x] **Final gate** — `TEST_UNLOCK_ALL_STAGES` set back to `false`; scripted cold-learner test of the real gated progression passed; caches bumped; all audits green (2026-07-05)
 
 ---
 
@@ -285,9 +284,8 @@ no row `id` changed (SRS state in users' localStorage keys off it).
 
 - [x] **C1** — table applied (drop = `senseKey`/`senseNo` removed; author =
   Track B recipe, all four axes explicit). §0.1 singleton count re-derived:
-  **0**. Audio for the two new example sentences still needs
-  `python generate_assets.py` (blocked in the authoring environment —
-  egress policy).
+  **0**. Audio for the two authored example sentences was generated on
+  2026-07-05, and the audit allowlist is empty.
 
 ---
 
@@ -312,6 +310,8 @@ enum and the `contrastWith` shape.
   있다↔계시다, 먹다↔드시다, 자다↔주무시다, 주다↔드리다, 말↔말씀, 나↔저,
   우리↔저희, 이름↔성함, 나이↔연세, 명↔분. Also fixed three register values the
   Track A batches missed (말씀/드리다 → `honorific`, 저희 → `polite`).
+- [x] **D3** — UI surface: the Word Bank detail view and lesson word cards render
+  the honorific axis and contrast label when `honorificRole` is present.
 
 ---
 
@@ -344,8 +344,6 @@ if the owner wants the other option.
 
 ## 8. Suggested execution order
 
-**Every track (A–E) is done.** The Words section is final per §1. The only
-outstanding item is not a track: one `python generate_assets.py` run for the
-two Track C sentences authored without audio (see §5) — the words audit's
-audio-coverage check tracks them via its `AUDIO_PENDING_ALLOWED` list and
-will fail strict if new text ships without audio.
+**Every track (A–E) is done.** The Words section is final per §1. There are
+no outstanding roadmap items; generated-audio coverage is enforced by the
+words audit, and the `AUDIO_PENDING_ALLOWED` list is currently empty.

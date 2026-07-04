@@ -3078,6 +3078,30 @@ li { margin-bottom: 4px; }
 .word-card-forms { text-align: center; font-size: .85rem; color: var(--muted); margin-bottom: 8px; }
 .word-card-forms span { color: var(--text); font-weight: 700; }
 
+.word-honorific-strip {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px auto 10px;
+  max-width: 520px;
+  padding: 8px 10px;
+  border: 1px solid rgba(91, 157, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(91, 157, 255, 0.07);
+  color: var(--muted-2);
+  font-size: .78rem;
+  line-height: 1.35;
+}
+.word-honorific-strip span {
+  color: var(--accent);
+  font-weight: 800;
+}
+.word-honorific-strip strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
 .word-example {
   margin: 12px 0; padding: 12px; border-radius: 12px;
   background: rgba(255,255,255,.04); border: 1px solid var(--line);

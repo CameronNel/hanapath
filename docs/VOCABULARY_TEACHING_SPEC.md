@@ -1,6 +1,6 @@
 # HanaPath Vocabulary Teaching Spec (pedagogy & linguistics north star)
 
-Date: 2026-07-04
+Date: 2026-07-05
 Repo: `CameronNel/hanapath`
 Status: **governing spec for *what* and *how* the Words section teaches.**
 
@@ -282,7 +282,7 @@ spec builds on.
 
 ## 8. Current status vs this spec
 
-Grounded in the shipped code (main) as of 2026-07-04. Legend: ✅ solid ·
+Grounded in the shipped code (main) as of 2026-07-05. Legend: ✅ solid ·
 🟡 partial · ❌ missing.
 
 | Spec pillar | Status | Where it stands |
@@ -292,7 +292,7 @@ Grounded in the shipped code (main) as of 2026-07-04. Legend: ✅ solid ·
 | Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + checkpoint ladder + W17–W19 grammar track (merged) |
 | Lexeme + forms, not flat pairs | ✅ | `forms`/`grammarRole`/`pattern`/`formNote` exist; `words_inflect.js` now provides generator + recognizer coverage |
 | Particles & endings first-class | ✅ | Function-word entries with forms/grammarRole/contrastWith/pattern |
-| Honorifics (subject vs listener) | ✅ | Honorific verb table + W19 lesson, plus the Track D axis (2026-07-04): `honorificRole: subject|listener|humble` on 26 rows and 10 bidirectional plain↔honorific `contrastWith` pairs |
+| Honorifics (subject vs listener) | ✅ | Honorific verb table + W19 lesson, plus the Track D axis (2026-07-04): `honorificRole: subject|listener|humble` on 26 rows and 10 bidirectional plain↔honorific `contrastWith` pairs, rendered in the Word Bank detail view and lesson cards |
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
@@ -306,7 +306,7 @@ Grounded in the shipped code (main) as of 2026-07-04. Legend: ✅ solid ·
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
 | Vocabulary volume | ✅ | 2,028 unique curated senses (1,918 post-#54, +110 across the M2/Track-C batches), slightly above the Core 1000 / Core 2000 target band, with every curated row assigned to a lesson |
 
-**Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS, retrieval, inflection engine, volume) are done. Tracks A–C are closed; the only remaining gaps are the owner-gated Track D/E decisions — the concrete checklist is §9.
+**Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS, retrieval, inflection engine, volume) are done. Tracks A–E are closed; §9 is retained as the audit-backed historical checklist.
 
 The Word Bank still has a **Needs curation** filter and **Curation priority** sort driven by `annotationSource` for future data edits, but the current curation queue is empty.
 
@@ -314,7 +314,7 @@ The Word Bank still has a **Needs curation** filter and **Curation priority** so
 
 ## 9. What remains to finalize the Words section
 
-The original six-PR roadmap (data axes → sense split → inflection engine → pronunciation layer → Core 1000 authoring → analytics) has **shipped**; Track C cleanup is also done (2026-07-04), so the live finalization work is only the owner-gated Track D/E decisions — see §11 for per-milestone status. This section is now the finalization checklist, ordered by leverage. Each item is small, additive, and audit-backed. The batch-by-batch execution queue for these items (per-PR recipes, vetted M2 candidate list, curation decision guides — written so a small coding model can execute safely) is
+The original six-PR roadmap (data axes → sense split → inflection engine → pronunciation layer → Core 1000 authoring → analytics) has **shipped**; Track C cleanup and the owner-gated Track D/E decisions are also done. This section is now the historical finalization checklist, ordered by leverage. Each item was kept small, additive, and audit-backed. The batch-by-batch execution queue for these items (per-PR recipes, vetted M2 candidate list, curation decision guides — written so a small coding model can execute safely) is
 **[`WORDS_FINAL_ROADMAP.md`](WORDS_FINAL_ROADMAP.md)**; this section stays the source of truth for *what*, that file for *how and in which order*.
 
 1. **M2 sense split (done — Track B is resolved).**
@@ -363,15 +363,16 @@ The original six-PR roadmap (data axes → sense split → inflection engine →
    values as explicit; restored 2026-07-04. Also done the same day:
    **singleton senseKey cleanup (roadmap Track C)** — all 18 leftover
    singleton `senseKey`s resolved (two real second senses authored: 해
-   `year`, 풀 `glue` — their audio regen is still owed by the owner; 16
-   leftover keys dropped). Re-derived: 0 singletons, 105 multi-sense lemmas.
+   `year`, 풀 `glue`; audio generated 2026-07-05; 16 leftover keys dropped).
+   Re-derived: 0 singletons, 105 multi-sense lemmas.
 4. **Honorifics as a systematic register axis — done (2026-07-04, roadmap
    Track D).** Optional `honorificRole: subject | listener | humble` is now
    encoded on the 26 honorific/humble/listener-politeness rows, with 10
    bidirectional plain↔honorific `contrastWith` pairs (있다↔계시다,
    먹다↔드시다, 자다↔주무시다, 주다↔드리다, 말↔말씀, 나↔저, 우리↔저희,
    이름↔성함, 나이↔연세, 명↔분); the audit validates the enum. Additive and
-   owner-amendable.
+   owner-amendable. The Word Bank detail view and lesson word cards now render
+   the axis and contrast label when present.
 5. **Pronunciation scoring — decision recorded (2026-07-04, roadmap Track
    E1): the transcript-match + duration stub is accepted as final** for the
    static/no-backend architecture. Phoneme-level scoring stays out of scope
@@ -399,7 +400,7 @@ on the existing ~2,000 senses beats adding more flat words.
 ## 11. Milestone reference sheet
 
 At-a-glance map of the whole build. Everything is shipped; the graph is now history and the live finalization work is listed in §9. Effort is a rough band, not a schedule.
-Status is honest as of 2026-07-04 (post-#54).
+Status is honest as of 2026-07-05.
 
 | ID | Milestone | Depends on | Primary files | Ships when (acceptance) | Effort | Status |
 |---|---|---|---|---|---|---|

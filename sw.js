@@ -1,16 +1,16 @@
-// [2026-07-04] Cache bumped to v159: M2 sense-split batch 12 — 바람/밝다/세다/두다; 피다 declined.
-const CACHE_NAME = "hanapath-shell-v162";
+// [2026-07-05] Cache bumped to v164: generated audio and honorific-axis UI.
+const CACHE_NAME = "hanapath-shell-v164";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260703a",
+  "./styles.css?v=20260705c",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260704u",
-  "./words_curated_core.js?v=20260704w",
+  "./audio_map.js?v=20260705c",
+  "./words_curated_core.js?v=20260705c",
   "./words_inflect.js?v=20260703b",
-  "./words_lesson_plan.js?v=20260704v",
+  "./words_lesson_plan.js?v=20260705c",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260704w",
+  "./app.js?v=20260705c",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
