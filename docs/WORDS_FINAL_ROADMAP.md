@@ -214,7 +214,7 @@ verify each against a dictionary sense you can express at beginner level.
   - 짓다 (`w1913_jitda`) — `build` vs `make-prepare` (밥을 짓다, 이름을 짓다)
   - 살다 (`w1916_salda`) — `live-reside` vs `be-alive`
   - 초 (`w_m5_217_cho`, no senseKey yet) — `second-time` vs `candle` (생일 초)
-- [ ] **B3 — new multi-sense lemmas (not yet in data)**:
+- [x] **B3 — new multi-sense lemmas (not yet in data)**:
   - 떨어지다 — `fall-drop` vs `run-out` (다 떨어졌어요)
   - 오르다 — `climb` vs `rise-increase` (값이 오르다)
   - 나오다 — `come-out` vs `appear-in-media` (TV에 나오다)

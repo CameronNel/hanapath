@@ -102,7 +102,7 @@
       title: "Places and movement",
       subtitle: "Here, there, home",
       goal: "Name the places around you.",
-      newWordIds: ["w0401_yeogi", "w0402_geogi", "w0403_jeogi", "w0404_jip", "w0405_hakgyo", "w_m6_2983_seoda_stop"],
+      newWordIds: ["w0401_yeogi", "w0402_geogi", "w0403_jeogi", "w0404_jip", "w0405_hakgyo", "w_m6_2983_seoda_stop", "w_m6_3051_seuda_stop"],
     }),
     defineLesson({
       id: "w4-places-movement-02",
@@ -110,7 +110,7 @@
       title: "Places and movement II",
       subtitle: "Going and coming",
       goal: "Find the bathroom, find the station, go and come.",
-      newWordIds: ["w0406_hoesa", "w0407_hwajangsil", "w0408_yeok", "w0409_gada", "w0410_oda", "w_m6_2988_dolda_turn"],
+      newWordIds: ["w0406_hoesa", "w0407_hwajangsil", "w0408_yeok", "w0409_gada", "w0410_oda", "w_m6_3046_naoda_exit", "w_m6_2988_dolda_turn"],
     }),
     defineLesson({
       id: "w5-food-drink-01",
@@ -158,7 +158,7 @@
       title: "Core actions II",
       subtitle: "Daily-life verbs",
       goal: "Buy, meet, sleep, get up, and like.",
-      newWordIds: ["w0706_sada", "w0707_mannada", "w0708_jada", "w0709_ireonada", "w0710_joahada", "w_m6_2982_seoda_stand", "w_m6_2993_jjada_plan"],
+      newWordIds: ["w0706_sada", "w0707_mannada", "w0708_jada", "w0709_ireonada", "w0710_joahada", "w_m6_2982_seoda_stand", "w_m6_3049_nohda_release", "w_m6_3050_seuda_erect", "w_m6_2993_jjada_plan"],
     }),
     defineLesson({
       id: "w8-feelings-descriptions-01",
@@ -227,7 +227,7 @@
       title: "Daily objects and technology III",
       subtitle: "Screens and devices",
       goal: "Talk about computers, phones, and photos.",
-      newWordIds: ["w1108_keompyuteo", "w1109_tellebijeon", "w1110_kamera", "w1118_inteonet", "w1120_sajin"],
+      newWordIds: ["w1108_keompyuteo", "w1109_tellebijeon", "w_m6_3047_naoda_media", "w1110_kamera", "w1118_inteonet", "w1120_sajin"],
     }),
     defineLesson({
       id: "w11-daily-objects-tech-04",
@@ -252,7 +252,7 @@
       title: "Home and routine II",
       subtitle: "Furniture and fixtures",
       goal: "Name more household objects.",
-      newWordIds: ["w1209_otjang", "w1210_changmun", "w1211_mun", "w1213_naengjanggo", "w1216_chaeksang", "w_m6_2973_ssada_pack"],
+      newWordIds: ["w1209_otjang", "w1210_changmun", "w1211_mun", "w1213_naengjanggo", "w1216_chaeksang", "w_m6_3048_nohda_put", "w_m6_2973_ssada_pack"],
     }),
     defineLesson({
       id: "w12-home-routine-03",
@@ -310,7 +310,7 @@
       title: "Shopping and money",
       subtitle: "Paying for things",
       goal: "Talk about money, price, and payment.",
-      newWordIds: ["w1401_don", "w1402_gagyeok", "w1403_kadeu", "w1404_hyeongeum", "w1409_gyesanhada", "w_m6_2975_deulda_cost", "w_m6_3026_tonghwa_currency"],
+      newWordIds: ["w1401_don", "w1402_gagyeok", "w1403_kadeu", "w1404_hyeongeum", "w1409_gyesanhada", "w_m6_2975_deulda_cost", "w_m6_3026_tonghwa_currency", "w_m6_3043_tteoreojida_runout"],
     }),
     defineLesson({
       id: "w14-shopping-money-02",
@@ -326,7 +326,7 @@
       title: "Shopping and money III",
       subtitle: "Cheap, expensive, and clerks",
       goal: "Describe price and talk with store staff.",
-      newWordIds: ["w1407_ssada", "w1408_bissada", "w1414_sonnim", "w1415_jeomwon", "w1416_palda"],
+      newWordIds: ["w1407_ssada", "w1408_bissada", "w_m6_3045_oreuda_rise", "w1414_sonnim", "w1415_jeomwon", "w1416_palda"],
     }),
     defineLesson({
       id: "w14-shopping-money-04",
@@ -750,9 +750,9 @@
       id: "w30-theme-45",
       stage: "W30",
       title: "Nature and landscape Part 45",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your thematic vocabulary for nature and landscape.",
-      newWordIds: [ "w_m5_206_hae_sun", "w_m6_3031_ilsik_eclipse", "w_m5_207_gureum",  "w_m5_209_ondo", "w_m5_210_san", "w_m5_211_gang"]
+      newWordIds: [ "w_m5_206_hae_sun", "w_m6_3031_ilsik_eclipse", "w_m5_207_gureum",  "w_m5_209_ondo", "w_m5_210_san", "w_m6_3044_oreuda_climb", "w_m5_211_gang"]
     }),
     defineLesson({
       id: "w30-theme-46",
@@ -766,9 +766,9 @@
       id: "w30-theme-47",
       stage: "W30",
       title: "Nature and landscape Part 47",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for nature and landscape.",
-      newWordIds: ["w_m5_423_byeonhwa", "w_m5_431_dongjjok", "w_m5_479_naerida_fall", "w_m5_520_pul_grass", "w_m5_525_namunnip"]
+      newWordIds: ["w_m5_423_byeonhwa", "w_m5_431_dongjjok", "w_m5_479_naerida_fall", "w_m6_3042_tteoreojida_fall", "w_m5_520_pul_grass", "w_m5_525_namunnip"]
     }),
         defineLesson({
       id: "w31-theme-49",
