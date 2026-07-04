@@ -134,7 +134,7 @@
       title: "Time and daily rhythm",
       subtitle: "Yesterday, today, tomorrow",
       goal: "Anchor events in time.",
-      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje", "w_m6_2972_gada_time"],
+      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje", "w_m2_japda_set_arrange", "w_m6_2972_gada_time"],
     }),
     defineLesson({
       id: "w6-time-daily-02",
@@ -166,7 +166,7 @@
       title: "Feelings and descriptions",
       subtitle: "Good, bad, big, small",
       goal: "Describe things and say what you like.",
-      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w0804_jakda", "w0809_masitda", "w_m6_2991_jaeda_hesitant"],
+      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w_m2_keuda_grow_up", "w0804_jakda", "w0809_masitda", "w_m6_2991_jaeda_hesitant"],
     }),
     defineLesson({
       id: "w8-feelings-descriptions-02",
@@ -293,7 +293,7 @@
       title: "Travel and city III",
       subtitle: "Finding your way",
       goal: "Ask directions and read a map.",
-      newWordIds: ["w1309_gil", "w1310_jido", "w1316_gongwon", "w1317_dari", "w1320_geori"],
+      newWordIds: ["w1309_gil", "w_m2_gil_way_method", "w1310_jido", "w1316_gongwon", "w1317_dari", "w1320_geori", "w_m2_geori_street"],
     }),
     defineLesson({
       id: "w13-travel-city-04",

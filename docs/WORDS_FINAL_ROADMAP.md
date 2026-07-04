@@ -7,7 +7,7 @@
 > tick a checkbox, do exactly that PR, nothing else. If this file and the audit
 > output ever disagree, trust the audit and fix this file in the same PR.
 >
-> Every number below was **re-derived from the data on 2026-07-03** (commands in
+> Every number below was **re-derived from the data on 2026-07-04** (commands in
 > §0.1), not copied from a scorecard. Re-derive before trusting: the scorecard
 > has been wrong three times (PRs #50, #51, #54).
 
@@ -27,7 +27,7 @@ grind through with this playbook.
 | Lessons | **298** across stages W0–W19 |
 | Genuinely multi-sense lemmas | **99** lemmas with 2+ sense rows sharing a distinct `senseKey` per row |
 | Leftover singleton `senseKey`s | **17** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **708** rows have ≥1 `inferred` axis — register 695 · speechLevel 702 · morphTag 693 · originType 249; 685 rows are inferred on register+speechLevel+morphTag simultaneously |
+| Curation queue | **575** rows have ≥1 `inferred` axis — register 566 · speechLevel 572 · morphTag 568 · originType 205; 564 rows are inferred on register+speechLevel+morphTag simultaneously (down from 708 pre-Track-A7–A9) |
 | `hanja` | explicit on only 2 rows; 2,018 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
@@ -91,10 +91,11 @@ owner-only — **never attempt E items autonomously.**
 
 ---
 
-## 3. Track A — Curation burn-down (~711 rows; the bulk of the easy work)
+## 3. Track A — Curation burn-down (~575 rows remaining as of A7–A9; the bulk of the easy work)
 
-**What it is.** Every row already has effective values on all axes, but on 711
-rows some values are machine-`inferred`. Curation = a human-quality pass that
+**What it is.** Every row already has effective values on all axes, but on ~575
+rows some values are machine-`inferred` (re-run §0.1 for the live count — A7–A9
+already brought this down from 711). Curation = a human-quality pass that
 **pins** each value as explicit: add `register:`, `speechLevel:`,
 `originType:`, `morphTag:` fields to the row's `defineWord({...})` entry in
 `words_curated_core.js`. `annotationSource` flips to `explicit` automatically
@@ -161,9 +162,9 @@ full queue; the listing command in §3 is authoritative).
 - [ ] A4 — `feelings-descriptions` (42) + `endings-register` (3)
 - [ ] A5 — `food-drink` (42) + `tense-negation` (5)
 - [ ] A6 — `weather-nature` (38) + `connectives` (7)
-- [ ] A7 — `survival-core` (35) + `noun-modification` (5)
-- [ ] A8 — `time-daily` (32) + `irregular-families` (8)
-- [ ] A9 — `study-school` (30) + `question-words` (13)
+- [x] A7 — `survival-core` (35) + `noun-modification` (5) — done 2026-07-04; 41 rows pinned and lesson-linked
+- [x] A8 — `time-daily` (38) + `irregular-families` (8) — done 2026-07-04; 46 rows pinned and lesson-linked
+- [x] A9 — `study-school` (30) + `question-words` (13) — done 2026-07-04; 46 rows pinned and lesson-linked
 - [ ] A10 — `post-hangul-bridge` (26) + `people-pronouns` (9) + `function-words-1` (9)
 - [ ] A11 — `occupations` (26) + `family-people` (22)
 - [ ] A12 — `body-health` (22) + `body-parts` (12)

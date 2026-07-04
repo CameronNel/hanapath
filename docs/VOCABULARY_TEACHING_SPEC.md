@@ -363,10 +363,10 @@ source of truth for *what*, that file for *how and in which order*.
    hard-fails a subtitle/count mismatch and warns on any lesson under 4 words
    that *has* a foldable same-stage sibling, so this can't silently drift
    again.
-3. **Curation queue burn-down.** Every row has effective values on every axis,
-   but roughly a third are `inferred`, not hand-verified (~660 rows each for
-   `register`/`speechLevel`/`morphTag`, ~260 for `originType`; `hanja` is
-   explicit on only 2 rows). Use the Word Bank's **Needs curation** filter +
+3. **Curation queue burn-down.** 575 rows still carry at least one `inferred`
+   axis: `register` 566 · `speechLevel` 572 · `morphTag` 568 · `originType`
+   205; 564 rows are inferred on `register`+`speechLevel`+`morphTag`
+   simultaneously. Use the Word Bank's **Needs curation** filter +
    **Curation priority** sort to verify in batches; re-run the audit and read
    its **Annotation sources** line for current counts.
 4. **Honorifics as a systematic register axis.** The honorific verb table and
