@@ -566,9 +566,9 @@
       id: "w24-theme-16",
       stage: "W24",
       title: "Human body Part 16",
-      subtitle: "Learn 8 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your thematic vocabulary for human body.",
-      newWordIds: ["w_m5_090_bae", "w_m5_091_songarak", "w_m5_092_balgarak", "w_m5_093_ippal", "w_m5_094_pibu", "w_m5_079_ko", "w_m5_080_ip", "w_m5_081_gwi"]
+      newWordIds: ["w_m5_091_songarak", "w_m5_092_balgarak", "w_m5_093_ippal", "w_m5_094_pibu", "w_m5_079_ko", "w_m5_080_ip", "w_m5_081_gwi"]
     }),
     defineLesson({
       id: "w25-theme-17",
@@ -998,9 +998,9 @@
       id: "w38-theme-83",
       stage: "W38",
       title: "Asking questions Part 83",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your thematic vocabulary for asking questions.",
-      newWordIds: ["w_m5_357_eonje", "w_m5_360_mueot", "w_m5_361_eoneu", "w_m5_362_igeot", "w_m5_363_geugeot", "w_m5_364_jeogeot"]
+      newWordIds: ["w_m5_360_mueot", "w_m5_361_eoneu", "w_m5_362_igeot", "w_m5_363_geugeot", "w_m5_364_jeogeot"]
     }),
         defineLesson({
       id: "w39-theme-85",
@@ -1294,9 +1294,9 @@
       id: "w75-theme-121",
       stage: "W75",
       title: "Connectives and clause chaining",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your vocabulary for connectives and clause chaining.",
-      newWordIds: ["w_m5_857_jiman", "w_m5_858_myeonseo", "w_m5_859_geona", "w_m5_860_dorok", "w_m5_861_ryeogo", "w_m5_863_chigo"]
+      newWordIds: ["w_m5_857_jiman", "w_m5_858_myeonseo", "w_m5_860_dorok", "w_m5_861_ryeogo", "w_m5_863_chigo"]
     }),
     defineLesson({
       id: "w76-theme-122",
@@ -1934,9 +1934,9 @@
       id: "w155-theme-201",
       stage: "W155",
       title: "Sports and physical recreation",
-      subtitle: "Learn 8 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your vocabulary for sports and physical recreation.",
-      newWordIds: ["w_m6_2053_sijeon", "w_m6_2054_idong", "w_m6_2055_jeongri", "w_m6_3033_jeongri_organization", "w_m6_2056_jeil", "w_m6_2057_jugeum", "w_m6_2058_kaerikteo", "w_m6_2059_geuttae"]
+      newWordIds: ["w_m6_2053_sijeon", "w_m6_2054_idong", "w_m6_2055_jeongri", "w_m6_2056_jeil", "w_m6_2057_jugeum", "w_m6_2058_kaerikteo", "w_m6_2059_geuttae"]
     }),
     defineLesson({
       id: "w156-theme-202",
