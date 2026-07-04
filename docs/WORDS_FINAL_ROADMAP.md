@@ -13,7 +13,7 @@
 
 ---
 
-## 0. Verified status snapshot (2026-07-03)
+## 0. Verified status snapshot (2026-07-04)
 
 The Words section is **feature-complete**. All engines, screens, and content
 systems are shipped and the app smoke-tests clean (no console errors; Word
@@ -23,12 +23,12 @@ grind through with this playbook.
 
 | Fact | Verified value |
 |---|---|
-| Curated senses | **1,953** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
+| Curated senses | **2,021** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
 | Lessons | **298** across stages W0–W19 |
-| Genuinely multi-sense lemmas | **44** lemmas with 2+ sense rows (107 rows carry a `senseKey` across 60 lemmas) |
-| Leftover singleton `senseKey`s | **16** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **575** rows have ≥1 `inferred` axis — register 566 · speechLevel 572 · morphTag 568 · originType 205; 564 rows are inferred on register+speechLevel+morphTag simultaneously |
-| `hanja` | explicit on only 2 rows; 1,951 absent (owner-gated, §Track E) |
+| Genuinely multi-sense lemmas | **98** lemmas with 2+ sense rows (219 rows carry a `senseKey` across 116 lemmas) |
+| Leftover singleton `senseKey`s | **18** rows have a `senseKey` but no sibling sense (§Track C) |
+| Curation queue | **706** rows have ≥1 `inferred` axis — register 693 · speechLevel 700 · morphTag 691 · originType 248; 683 rows are inferred on register+speechLevel+morphTag simultaneously |
+| `hanja` | explicit on only 2 rows; 2,019 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
 ### 0.1 How to re-derive (run these, don't trust the table)
@@ -57,8 +57,8 @@ mini-model-friendly. Track D needs a design decision first. Track E is
 owner-only — **never attempt E items autonomously.**
 
 - [ ] **Track A** — Curation burn-down: 0 rows with an `inferred` annotation axis
-- [ ] **Track B** — M2 sense split: candidate list in §4 fully worked (each lemma either split or explicitly declined with a reason written into §4)
-- [ ] **Track C** — 16 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
+- [x] **Track B** — M2 sense split: candidate list in §4 fully worked (each lemma either split or explicitly declined with a reason written into §4)
+- [ ] **Track C** — 18 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
 - [ ] **Track D** — Honorific axis encoded per the owner-approved design
 - [ ] **Track E** — Owner decisions recorded (pronunciation scoring; hanja policy; 하다-verb originType convention)
 - [ ] **Final gate** — `TEST_UNLOCK_ALL_STAGES` in `app.js` set back to `false`; full cold-learner smoke test of the real progression; caches bumped; all three audits green
@@ -91,7 +91,7 @@ owner-only — **never attempt E items autonomously.**
 
 ---
 
-## 3. Track A — Curation burn-down (~711 rows; the bulk of the easy work)
+## 3. Track A — Curation burn-down (~706 rows; the bulk of the easy work)
 
 **What it is.** Every row already has effective values on all axes, but on 711
 rows some values are machine-`inferred`. Curation = a human-quality pass that
@@ -161,9 +161,9 @@ full queue; the listing command in §3 is authoritative).
 - [ ] A4 — `feelings-descriptions` (42) + `endings-register` (3)
 - [ ] A5 — `food-drink` (42) + `tense-negation` (5)
 - [ ] A6 — `weather-nature` (38) + `connectives` (7)
-- [x] A7 — `survival-core` (35) + `noun-modification` (5) — done 2026-07-04; 41 rows pinned and lesson-linked
-- [x] A8 — `time-daily` (38) + `irregular-families` (8) — done 2026-07-04; 46 rows pinned and lesson-linked
-- [x] A9 — `study-school` (30) + `question-words` (13) — done 2026-07-04; 46 rows pinned and lesson-linked
+- [ ] A7 — `survival-core` (35) + `noun-modification` (5)
+- [ ] A8 — `time-daily` (32) + `irregular-families` (8)
+- [ ] A9 — `study-school` (30) + `question-words` (13)
 - [ ] A10 — `post-hangul-bridge` (26) + `people-pronouns` (9) + `function-words-1` (9)
 - [ ] A11 — `occupations` (26) + `family-people` (22)
 - [ ] A12 — `body-health` (22) + `body-parts` (12)
@@ -179,7 +179,7 @@ curation" — treated rows must no longer appear).
 
 ---
 
-## 4. Track B — M2 sense split (the one open milestone)
+## 4. Track B — M2 sense split (resolved; kept here for reference)
 
 **Recipe per lemma** (spec §12.3 has the full version):
 1. Each real sense gets its **own row** in `words_curated_core.js`: unique `id`
@@ -230,12 +230,12 @@ verify each against a dictionary sense you can express at beginner level.
   - 남다 — `remain-be-left` vs `be-left-over` (음식이 남다) — **judgment: kept as one row, no senseKey; the beginner distinction was too thin**
   - 감다 — `close-eyes` vs `wash-hair` (split)
   - 달다 — `sweet` (adj) vs `attach-hang` (verb) — homograph pair, two POS (split)
-- [ ] **B5 — judgment batch** (verify each is beginner-teachable before authoring; decline in writing if not):
-  - 바람 — `wind` vs `wish-hope`
-  - 밝다 — `bright` vs `cheerful-personality` (성격이 밝다)
-  - 세다 — `strong` (adj) vs `count` (verb) — homograph
-  - 피다 — `bloom` vs `light-a-fire` (transitive is 피우다 — check before authoring)
-  - 두다 — `put-keep` vs `leave-behind`
+- [x] **B5 — judgment batch** (verified beginner-teachable splits; one decline recorded in writing):
+  - 바람 — `wind` vs `wish-hope` (split)
+  - 밝다 — `bright` vs `cheerful-personality` (성격이 밝다) (split)
+  - 세다 — `strong` (adj) vs `count` (verb) — homograph (split)
+  - 피다 — declined: the fire meaning belongs to `피우다` / `태우다`; the remaining `bloom` sense is the only clean beginner meaning, so no split
+  - 두다 — `put-keep` vs `leave-behind` (split)
 
 **Declined (do not re-add without a better second sense):** 안다 (only
 "embrace"; earlier note confused it with unrelated 알다), 물다 ("pay/be liable"

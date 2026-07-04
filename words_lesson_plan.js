@@ -134,7 +134,7 @@
       title: "Time and daily rhythm",
       subtitle: "Yesterday, today, tomorrow",
       goal: "Anchor events in time.",
-      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje", "w_m2_japda_set_arrange", "w_m6_2972_gada_time"],
+      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje", "w_m6_2972_gada_time"],
     }),
     defineLesson({
       id: "w6-time-daily-02",
@@ -150,7 +150,7 @@
       title: "Core actions",
       subtitle: "Do, have, see, speak",
       goal: "Learn the verbs Korean sentences are built on.",
-      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
+      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m2_japda_set_arrange", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure", "w_m6_3064_seda_count"],
     }),
     defineLesson({
       id: "w7-core-actions-02",
@@ -252,7 +252,7 @@
       title: "Home and routine II",
       subtitle: "Furniture and fixtures",
       goal: "Name more household objects.",
-      newWordIds: ["w1209_otjang", "w1210_changmun", "w1211_mun", "w1213_naengjanggo", "w1216_chaeksang", "w_m6_3048_nohda_put", "w_m6_2973_ssada_pack"],
+      newWordIds: ["w1209_otjang", "w1210_changmun", "w1211_mun", "w1213_naengjanggo", "w1216_chaeksang", "w_m6_3048_nohda_put", "w_m6_3065_duda_put", "w_m6_3066_duda_leave", "w_m6_2973_ssada_pack"],
     }),
     defineLesson({
       id: "w12-home-routine-03",
@@ -376,7 +376,7 @@
       title: "Weather and nature",
       subtitle: "Rain or shine",
       goal: "Talk about today's weather.",
-      newWordIds: ["w1601_nalssi", "w_m6_3011_ilgi_weather", "w1602_bi", "w1603_baram", "w1604_deopda", "w1605_chupda", "w_m6_2979_jida_sunset"],
+      newWordIds: ["w1601_nalssi", "w_m6_3011_ilgi_weather", "w1602_bi", "w1603_baram", "w1604_deopda", "w1605_chupda", "w_m6_3063_seda_strong", "w_m6_2979_jida_sunset"],
     }),
     defineLesson({
       id: "w16-weather-nature-02",
@@ -974,9 +974,9 @@
       id: "w37-theme-79",
       stage: "W37",
       title: "Descriptions and feelings Part 79",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your thematic vocabulary for descriptions and feelings.",
-      newWordIds: ["w_m5_339_eodupda", "w_m5_340_bakda", "w_m5_341_kkaekkeuthada", "w_m5_342_deoreopda", "w_m5_343_gwiyeopda", "w_m5_344_pyeonhada", "w_m5_345_bulpyeonhada"]
+      newWordIds: ["w_m5_339_eodupda", "w_m5_340_bakda", "w_m6_3062_bakda_cheerful", "w_m5_341_kkaekkeuthada", "w_m5_342_deoreopda", "w_m5_343_gwiyeopda", "w_m5_344_pyeonhada", "w_m5_345_bulpyeonhada"]
     }),
     defineLesson({
       id: "w37-theme-80",
@@ -1342,9 +1342,9 @@
       id: "w81-theme-127",
       stage: "W81",
       title: "Feelings and descriptions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for feelings and descriptions.",
-      newWordIds: ["w_m6_1033_majimak", "w_m6_1034_bubun", "w_m6_1035_imi", "w_m6_1036_hangsang", "w_m6_1037_jayu", "w_m6_1038_pyeonghwa", "w_m6_1039_huimang"]
+      newWordIds: ["w_m6_1033_majimak", "w_m6_1034_bubun", "w_m6_1035_imi", "w_m6_1036_hangsang", "w_m6_1037_jayu", "w_m6_1038_pyeonghwa", "w_m6_1039_huimang", "w_m6_3061_baram_wish"]
     }),
     defineLesson({
       id: "w82-theme-128",
