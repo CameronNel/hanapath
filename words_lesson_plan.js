@@ -798,9 +798,9 @@
       id: "w32-theme-53",
       stage: "W32",
       title: "Study and class life Part 53",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for study and class life.",
-      newWordIds: ["w_m5_233_gongchaek",   "w_m5_236_sukje", "w_m5_237_chilpan", "w_m5_238_seongjeok", "w_m5_239_gyosil"]
+      newWordIds: ["w_m5_233_gongchaek",   "w_m5_236_sukje", "w_m5_237_chilpan", "w_m5_238_seongjeok", "w_m5_239_gyosil", "w_m2_pul_glue"]
     }),
     defineLesson({
       id: "w32-theme-54",
@@ -1150,9 +1150,9 @@
       id: "w57-theme-103",
       stage: "W57",
       title: "Time and daily rhythm",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for time and daily rhythm.",
-      newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil"]
+      newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil", "w_m2_hae_year"]
     }),
     defineLesson({
       id: "w58-theme-104",
