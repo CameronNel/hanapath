@@ -25,7 +25,7 @@ const strict = process.argv.includes("--strict");
 
 const sandbox = { window: {} };
 vm.createContext(sandbox);
-for (const file of ["words_curated_core.js", "words_inflect.js", "words_lesson_plan.js"]) {
+for (const file of ["words_curated_core.js", "words_inflect.js", "words_lesson_plan.js", "audio_map.js"]) {
   vm.runInContext(readFileSync(join(root, file), "utf8"), sandbox, { filename: file });
 }
 
@@ -347,6 +347,42 @@ if (!Inflect) {
       errors.push(`Inflection engine fail: recognize("들어요") expected 듣다 only, got ${JSON.stringify(recognizedIds)}`);
     }
   }
+}
+
+// ── Audio-map coverage ─────────────────────────────────────────────────────
+// Every voiceText/exampleVoiceText the app can speak should resolve in
+// window.AUDIO_MAP the same way speak() resolves it: exact trimmed key, or —
+// for comma/slash/interpunct-separated sequences — every split part present.
+// A miss falls back to robotic speechSynthesis, so it is a warning (fails
+// --strict) unless the sentence is on the explicit allow list below, which
+// records text that is knowingly awaiting a `python generate_assets.py` run.
+const AUDIO_PENDING_ALLOWED = new Set([
+  "한 해가 빨리 지나갔어요.", // w_m2_hae_year — authoring env could not reach edge-tts
+  "풀로 종이를 붙여요.",       // w_m2_pul_glue — authoring env could not reach edge-tts
+]);
+const audioMap = sandbox.window.AUDIO_MAP;
+if (!audioMap || typeof audioMap !== "object") {
+  errors.push("window.AUDIO_MAP is missing or not an object");
+} else {
+  const hasKey = (text) => {
+    const t = String(text || "").trim();
+    if (!t) return true;
+    if (audioMap[t] || audioMap[t.normalize("NFC")]) return true;
+    const parts = t.split(/[,\u3001\/·|]+/).map((x) => x.trim()).filter(Boolean);
+    return parts.length > 1 && parts.every((x) => audioMap[x] || audioMap[x.normalize("NFC")]);
+  };
+  let audioMisses = 0;
+  for (const word of words || []) {
+    for (const field of ["voiceText", "exampleVoiceText"]) {
+      const text = word[field];
+      if (!text || !HANGUL_RE.test(text)) continue;
+      if (hasKey(text)) continue;
+      if (AUDIO_PENDING_ALLOWED.has(String(text).trim())) continue;
+      audioMisses += 1;
+      warnings.push(`${word.id}: ${field} has no audio_map entry: ${JSON.stringify(text)} (run generate_assets.py or add to AUDIO_PENDING_ALLOWED with a reason)`);
+    }
+  }
+  console.log(`Audio coverage: ${audioMisses} unexpected miss(es); ${AUDIO_PENDING_ALLOWED.size} knowingly pending`);
 }
 
 console.log(`Curated words: ${(words || []).length}`);
