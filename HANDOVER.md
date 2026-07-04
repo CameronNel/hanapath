@@ -18,13 +18,12 @@ Snapshot for the next contributor (human or agent) picking up this project.
   - `scripts/audit-words-data.mjs`, `scripts/audit-alphabet-audio.mjs`, `scripts/audit-app-shell.mjs` — the audit suite (this repo's "tests")
 - **Run it:** serve the folder over static HTTP and open `index.html` (e.g. `python3 -m http.server`). State persists in `localStorage` under key `hanapath-v1`.
 
-## ⚠️ Active test override — remember to revert
-`TEST_UNLOCK_ALL_STAGES` in `app.js` (~line 3212) is currently **`true`** at the
-owner's explicit request (2026-07-03), so every alphabet stage and every Words
-lesson is reachable immediately, bypassing normal unlock order and the
-"finish the alphabet first" gate — for testing convenience only. This is
-**not** intended to ship to real learners. Flip it back to `false` (and bump
-the cache in `sw.js`/`index.html`) when the owner is done testing.
+## Test override — reverted (final gate closed 2026-07-04)
+`TEST_UNLOCK_ALL_STAGES` in `app.js` is back to **`false`** (roadmap Track E4):
+real gated progression is live — a cold learner gets alphabet stage 1 only,
+Words unlocks after the alphabet completes, then lesson-by-lesson. A scripted
+cold-learner test verified the chain. Flip to `true` locally (plus a cache
+bump) only for testing convenience; do not ship it enabled.
 
 ## Alphabet section — complete and protected
 Finished (progression, quiz-pool safety, audio normalization, accessibility,
@@ -60,8 +59,8 @@ below.
   1. **M2 sense split** — 105 lemmas are genuinely split; B1–B5 and Track C are resolved (0 singleton senseKeys). The B2 batch was silently lost in integration merge b385e77 after PR #67 merged and was restored on 2026-07-04. `피다` was declined in writing because the fire meaning belongs to `피우다`/`태우다`.
   2. **Curriculum polish** — done (2026-07-03). All 51 subtitle/count mismatches were corrected to the real `newWordIds.length`, and all 14 thin lessons (down to 1 genuinely unfoldable single-lesson stage, `w218-theme-264`, left alone since it has no same-stage sibling) were folded into same-stage siblings — 312 → 298 lessons.
   3. **Curation burn-down** — done (2026-07-04). All rows now have explicit values on all axes; the curation queue is empty.
-  4. **Honorifics as a systematic register axis** (partially encoded today).
-  5. **Pronunciation scoring** — transcript-match stub; phoneme-level scoring needs an owner decision (not feasible client-side/no-backend). Don't attempt it silently.
+  4. **Honorifics as a systematic register axis** — done (2026-07-04): `honorificRole: subject|listener|humble` on 26 rows + 10 plain↔honorific `contrastWith` pairs, audit-validated.
+  5. **Pronunciation scoring** — decision recorded (2026-07-04): the transcript-match stub is accepted as final for the static/no-backend architecture (reversible policy record; see roadmap §7 E1).
 
 ## Open / optional (intentionally not done)
 1. **Modularization:** extract alphabet/Words logic into `src/*` modules. Needs a build step first (the app is one static script by design), so deferred unless the owner asks.

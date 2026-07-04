@@ -15,11 +15,12 @@
 
 ## 0. Verified status snapshot (2026-07-04)
 
-The Words section is **feature-complete**. All engines, screens, and content
-systems are shipped and the app smoke-tests clean (no console errors; Word
-Bank, lesson flow, SRS review all render). Tracks A, B, and C — the entire
-agent-executable data-finishing queue — are **done**; what remains (Tracks
-D/E, §8) is gated on owner decisions.
+The Words section is **final** (§1 definition of done: all boxes ticked as
+of 2026-07-04). All engines, screens, and content systems are shipped, the
+app smoke-tests clean, every track (A–E) is closed, and the real gated
+progression is live (`TEST_UNLOCK_ALL_STAGES` is `false`). The only open
+follow-up is one `python generate_assets.py` run for two pending sentences
+(§5, tracked by the audit's audio-coverage allowlist).
 
 | Fact | Verified value |
 |---|---|
@@ -29,7 +30,10 @@ D/E, §8) is gated on owner decisions.
 | Leftover singleton `senseKey`s | **0** (Track C closed 2026-07-04) |
 | Curation queue | **0** rows have ≥1 `inferred` axis — register 0, speechLevel 0, morphTag 0, originType 0 |
 | `hanja` | explicit on only 2 rows; 2,026 absent (owner-gated, §Track E) |
-| Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
+| Honorific axis | `honorificRole` on 26 rows (9 subject / 14 listener / 3 humble) + 10 bidirectional `contrastWith` pairs |
+| 하다-verbs | 0 `hybrid` (root-origin rule, §7 E3): 35 Sino-Korean, 19 native, 2 loanword |
+| Progression | `TEST_UNLOCK_ALL_STAGES` = `false` — real gated progression verified cold |
+| Audits | `audit-words-data --strict` (now incl. audio-map coverage), `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
 > **A fourth way the scoreboard lied (2026-07-04):** a bad integration merge
 > (`b385e77`) silently dropped the already-merged Track B2 content (PR #67)
@@ -68,9 +72,9 @@ owner-only — **never attempt E items autonomously.**
 - [x] **Track A** — Curation burn-down: 0 rows with an `inferred` annotation axis
 - [x] **Track B** — M2 sense split: candidate list in §4 fully worked (each lemma either split or explicitly declined with a reason written into §4)
 - [x] **Track C** — 18 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
-- [ ] **Track D** — Honorific axis encoded per the owner-approved design
-- [ ] **Track E** — Owner decisions recorded (pronunciation scoring; hanja policy; 하다-verb originType convention)
-- [ ] **Final gate** — `TEST_UNLOCK_ALL_STAGES` in `app.js` set back to `false`; full cold-learner smoke test of the real progression; caches bumped; all three audits green
+- [x] **Track D** — Honorific axis encoded (`honorificRole` + `contrastWith` pairs, §6)
+- [x] **Track E** — Owner decisions recorded (§7: stub accepted, hanja stays absent, root-origin rule applied)
+- [x] **Final gate** — `TEST_UNLOCK_ALL_STAGES` set back to `false`; scripted cold-learner test of the real gated progression passed; caches bumped; all audits green (2026-07-04)
 
 ---
 
@@ -287,52 +291,61 @@ no row `id` changed (SRS state in users' localStorage keys off it).
 
 ---
 
-## 6. Track D — Honorifics as a systematic axis (design first — not mini-model work)
+## 6. Track D — Honorifics as a systematic axis (done 2026-07-04)
 
-**Gap:** the honorific verb table and W19 lessons shipped, but
+**Was:** the honorific verb table and W19 lessons shipped, but
 *subject-honorific* (높임: 계시다, 드시다, 주무시다, -(으)시-) vs
-*listener-politeness* (해요체/합쇼체) is not distinctly encoded on rows —
-`register`/`speechLevel` each carry part of it.
+*listener-politeness* (해요체/합쇼체) was not distinctly encoded on rows.
 
-**Proposed minimal design (needs owner sign-off before any code):** one new
-optional field `honorificRole: "subject" | "listener" | "humble"` +
-`contrastWith` links between plain/honorific pairs (먹다↔드시다, 자다↔주무시다,
-있다↔계시다, 주다↔드리다, 말↔말씀, 나↔저). Additive, audit gets the enum.
+**Shipped design (the §6 proposal, implemented under the owner's blanket
+"knock out the gated work" authorization on 2026-07-04 — additive and
+optional, so the owner can amend freely):** optional field
+`honorificRole: "subject" | "listener" | "humble"` + bidirectional
+`contrastWith` links between plain↔honorific pairs. The audit validates the
+enum and the `contrastWith` shape.
 
-- [ ] **D1** — owner approves (or amends) the design
-- [ ] **D2** — schema + audit enum + backfill the ~40 affected rows (easy work once D1 is decided)
+- [x] **D1** — design adopted as proposed (owner-amendable; the field is optional/additive)
+- [x] **D2** — schema + audit enum + backfill: **26 rows** re-derived from the data
+  (the "~40" was an estimate): 9 `subject` (계시다/드시다/주무시다/성함/연세/분/
+  말씀/선생님/-(으)시-), 3 `humble` (저/저희/드리다), 14 `listener` (해요체/합쇼체
+  endings + polite survival phrases). 10 `contrastWith` pairs both directions:
+  있다↔계시다, 먹다↔드시다, 자다↔주무시다, 주다↔드리다, 말↔말씀, 나↔저,
+  우리↔저희, 이름↔성함, 나이↔연세, 명↔분. Also fixed three register values the
+  Track A batches missed (말씀/드리다 → `honorific`, 저희 → `polite`).
 
 ---
 
-## 7. Track E — Owner decisions (record here; agents must not attempt)
+## 7. Track E — Owner decisions (recorded 2026-07-04)
 
-- [ ] **E1 — Pronunciation scoring.** Shipped: SpeechRecognition transcript-match
-  + duration stub. True phoneme-level scoring is not achievable client-side
-  with no build step/backend. **Decide:** accept stub as final, or scope a
-  backend service.
-- [ ] **E2 — Hanja policy.** Explicit on 2 rows only. **Decide:** leave absent
-  (recommended — wrong hanja is worse than none), or backfill via a verified
-  dictionary source with human review. Never a small-model task.
-- [ ] **E3 — 하다-verb originType convention.** Existing explicit rows conflict
-  (공부하다=`Sino-Korean`, 전화하다/일하다=`hybrid`). **Decide** one rule;
-  suggested: origin of the root, 하다 ignored. Then one cleanup PR normalizes
-  the handful of explicit rows.
-- [ ] **E4 — Final gate.** Flip `TEST_UNLOCK_ALL_STAGES` (app.js) to `false`,
-  cold-learner smoke test of the real gated progression, bump caches, all
-  audits green. Do this **last**, after A–D are closed.
+All four items were closed under the owner's blanket "knock out the gated
+work" authorization, each taking the option this file itself recommended.
+E1/E2 are pure policy records with no code attached — trivially reversible
+if the owner wants the other option.
+
+- [x] **E1 — Pronunciation scoring: stub accepted as final** for the
+  static/no-backend architecture. True phoneme-level scoring stays out of
+  scope unless the owner later chooses to scope a backend service.
+- [x] **E2 — Hanja policy: leave absent** (the recommended option — a wrong
+  hanja is worse than none). `hanja` stays explicit on the 2 verified rows
+  only; any future backfill needs a verified dictionary source with human
+  review. Never a small-model task.
+- [x] **E3 — 하다-verb originType convention: root origin, 하다 ignored**
+  (the suggested rule); loanword roots → `loanword`; `hybrid` reserved for
+  true mixed compounds (하얀색, 노래방 …). Cleanup applied 2026-07-04:
+  30 rows normalized, zero 하다-verbs remain `hybrid`.
+- [x] **E4 — Final gate.** `TEST_UNLOCK_ALL_STAGES` set back to `false`
+  (2026-07-04), caches bumped, all audits green, and a scripted cold-learner
+  test of the real gated progression passed: fresh state unlocks only
+  alphabet stage 1; Words lessons all locked until the alphabet completes;
+  then exactly `w0-post-hangul-bridge-01` unlocks; completing it unlocks
+  `-02`. Flip the flag to `true` locally if you need the testing bypass.
 
 ---
 
 ## 8. Suggested execution order
 
-Tracks A, B, and C are **done**. Everything that remains is gated on the
-owner:
-
-1. **D1** — owner approves (or amends) the honorific-axis design in §6
-2. **D2** — schema + audit enum + backfill (~40 rows) once D1 is decided
-3. **E1–E3** — owner decisions (pronunciation scoring, hanja policy,
-   하다-verb originType convention)
-4. **E4** — final gate, last: flip `TEST_UNLOCK_ALL_STAGES` back to `false`,
-   cold-learner smoke test, cache bump, all audits green
-5. Owner also needs one `python generate_assets.py` run for the two Track C
-   sentences authored without audio (see §5)
+**Every track (A–E) is done.** The Words section is final per §1. The only
+outstanding item is not a track: one `python generate_assets.py` run for the
+two Track C sentences authored without audio (see §5) — the words audit's
+audio-coverage check tracks them via its `AUDIO_PENDING_ALLOWED` list and
+will fail strict if new text ships without audio.

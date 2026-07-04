@@ -3213,16 +3213,16 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // ██████████████████████████████████████████████████████████████████████████
 // ███ TEMPORARY TEST OVERRIDE — REMEMBER TO FLIP THIS BACK TO `false` ███████
 // ██████████████████████████████████████████████████████████████████████████
-// Owner request (2026-07-03): make every alphabet stage AND every Words
-// lesson immediately reachable, bypassing normal unlock order and the
-// "finish the alphabet first" gate, for testing convenience. This is NOT
-// intended to ship to real learners — normal progression (locked stages,
-// gated Words lessons until Phase One is complete) is the real product
-// behavior. Progress bars/counts stay honest (this only bypasses the
-// access gate, not the completion tracking) — see isLessonUnlocked() below
-// and isWordLessonUnlocked() further down for the two places this is
-// consumed. Set back to `false` when the owner is done testing.
-const TEST_UNLOCK_ALL_STAGES = true;
+// Testing escape hatch (owner request 2026-07-03; set back to false at the
+// roadmap's E4 final gate on 2026-07-04): when true, every alphabet stage
+// AND every Words lesson is immediately reachable, bypassing normal unlock
+// order and the "finish the alphabet first" gate. NOT for real learners —
+// normal progression (locked stages, gated Words lessons until Phase One is
+// complete) is the real product behavior. Progress bars/counts stay honest
+// (this only bypasses the access gate, not completion tracking) — see
+// isLessonUnlocked() below and isWordLessonUnlocked() further down for the
+// two places this is consumed. Flip to true only for local testing.
+const TEST_UNLOCK_ALL_STAGES = false;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
