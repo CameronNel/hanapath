@@ -95,6 +95,14 @@ for (const word of words || []) {
   if (word.irregularFamily !== undefined && !VALID_IRREGULAR_FAMILIES.has(word.irregularFamily)) {
     errors.push(`${label}: invalid irregularFamily "${word.irregularFamily}"`);
   }
+  // Track D honorific axis (optional, additive)
+  const VALID_HONORIFIC_ROLES = new Set(['subject', 'listener', 'humble']);
+  if (word.honorificRole !== undefined && !VALID_HONORIFIC_ROLES.has(word.honorificRole)) {
+    errors.push(`${label}: invalid honorificRole "${word.honorificRole}"`);
+  }
+  if (word.contrastWith !== undefined && (!Array.isArray(word.contrastWith) || word.contrastWith.some((x) => typeof x !== 'string' || !x.trim()))) {
+    errors.push(`${label}: contrastWith must be an array of non-empty strings`);
+  }
   if (!word.morphTag) {
     errors.push(`${label}: missing effective morphTag`);
   } else if (!VALID_MORPH_TAGS.has(word.morphTag)) {
