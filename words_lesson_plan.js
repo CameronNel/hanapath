@@ -310,7 +310,7 @@
       title: "Shopping and money",
       subtitle: "Paying for things",
       goal: "Talk about money, price, and payment.",
-      newWordIds: ["w1401_don", "w1402_gagyeok", "w1403_kadeu", "w1404_hyeongeum", "w1409_gyesanhada", "w_m6_2975_deulda_cost"],
+      newWordIds: ["w1401_don", "w1402_gagyeok", "w1403_kadeu", "w1404_hyeongeum", "w1409_gyesanhada", "w_m6_2975_deulda_cost", "w_m6_3026_tonghwa_currency"],
     }),
     defineLesson({
       id: "w14-shopping-money-02",
@@ -442,7 +442,7 @@
       title: "Noun modification",
       subtitle: "Forms that sit before a noun",
       goal: "Recognize present, past, future, and adjective modifier forms.",
-      newWordIds: ["fw1811_neun_mod", "fw1812_eun_verb", "fw1813_eul_prosp", "fw1814_eun_adj", "fw1815_geot"],
+      newWordIds: ["fw1811_neun_mod", "fw1812_eun_verb", "fw1813_eul_prosp", "fw1814_eun_adj", "fw1815_geot", "w_m6_3025_sae_new"],
       checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
@@ -452,7 +452,7 @@
       title: "Honorifics",
       subtitle: "Respect the subject, not just the listener",
       goal: "Separate the subject honorific marker from listener politeness.",
-      newWordIds: ["fw1901_si", "w1902_gyesida", "w1903_deusida", "w1904_jumusida", "w1905_seongham", "w1906_yeonse"],
+      newWordIds: ["fw1901_si", "w1902_gyesida", "w1903_deusida", "w1904_jumusida", "w1905_seongham", "w1906_yeonse", "w_m6_3023_bun_honorific"],
       checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
@@ -1430,9 +1430,9 @@
       id: "w92-theme-138",
       stage: "W92",
       title: "Food and drink",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for food and drink.",
-      newWordIds: ["w_m6_1110_sagwa", "w_m6_1111_banana", "w_m6_1112_guksu", "w_m6_1113_mandu", "w_m6_1114_husik", "w_m6_1115_gwageo", "w_m6_1116_mirae"]
+      newWordIds: ["w_m6_1110_sagwa", "w_m6_1111_banana", "w_m6_1112_guksu", "w_m6_1113_mandu", "w_m6_1114_husik", "w_m6_1115_gwageo", "w_m6_1116_mirae", "w_m6_3024_bae_pear"]
     }),
     defineLesson({
       id: "w93-theme-139",

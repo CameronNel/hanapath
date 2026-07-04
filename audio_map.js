@@ -10298,5 +10298,17 @@ window.AUDIO_MAP = {
   "Literal chest sense; distinct from 가슴 (heart).": "./audio/edaa54b558df7b904aa934b32b7a2b98.mp3",
   "Throat sense; distinct from 목 (neck).": "./audio/46ddf48cac937ee54ff434ebee291368.mp3",
   "Emotional": "./audio/1745a9fe281909d4335ea83cf8e87393.mp3",
-  "Emotional/figurative heart sense; distinct from 가슴 (chest).": "./audio/e63475ca9d51bd4a1d584abd8486e293.mp3"
+  "Emotional/figurative heart sense; distinct from 가슴 (chest).": "./audio/e63475ca9d51bd4a1d584abd8486e293.mp3",
+  "Goes before a noun: 새 책 (new book). Distinct from 새 (bird).": "./audio/0b88ac9d60a72237279ede31af285e73.mp3",
+  "Money": "./audio/a93312829ec4c71aac461cec296faa0e.mp3",
+  "손님 두 분이 오셨어요.": "./audio/8395ae736d1fb1ce52f48d35b6d2a4ce.mp3",
+  "이 앱은 여러 나라 통화를 지원해요.": "./audio/9ed1d54d32586ca8ac59f97e48343429.mp3",
+  "currency sense; distinct from 통화 (phone call).": "./audio/41958391e5e3ac9957b7e2ecf2c58e89.mp3",
+  "Phone conversation sense; distinct from 통화 (currency).": "./audio/41ea071cd323c0a6c36a8ecb4b2e788a.mp3",
+  "Fruit sense; distinct from 배 (stomach) and 배 (boat).": "./audio/d61e06701a00d9bc1e7b62ce9c1b7087.mp3",
+  "Polite counter for people; distinct from 분 (minute counter).": "./audio/f339e18a629fa48cee4066f43234d925.mp3",
+  "Money/currency sense; distinct from 통화 (phone call).": "./audio/20520bc6b70508086aefab7a188efba2.mp3",
+  "새 책": "./audio/440bf04db67ccabee1e14c26d3f5a777.mp3",
+  "달콤한 배를 먹어요.": "./audio/fa555c4e90090ee3aaeb966a4306ce1b.mp3",
+  "새 책을 샀어요.": "./audio/c66b8996d9161fd1317231df41afdf41.mp3"
 };
