@@ -202,12 +202,16 @@ curation" — treated rows must no longer appear).
 **Batch size: ~5 lemmas per PR.** Proposed senses below are vetted suggestions;
 verify each against a dictionary sense you can express at beginner level.
 
-- [ ] **B1 — un-bundle existing rows** (meanings currently squashed into one row):
-  - 거리 (`w1320_geori`) — `street` vs `distance`
-  - 불 (`w_m5_728_bul`) — `fire` vs `light` (전깃불, 불을 켜다)
-  - 잡다 (`w_m6_1087_japda`) — `grab-catch` vs `set-arrange` (약속을 잡다)
-  - 길 (`w1309_gil`) — `road` vs `way-method` (가는 길 / 방법 sense)
-  - 크다 (`w0803_keuda`) — adjective `big` vs verb `grow-up` (키가 크다 / 아이가 크다)
+- [x] **B1 — un-bundle existing rows** (done 2026-07-04; each existing row was
+  retrofitted with `lemma`/`senseKey`/`senseNo: 1` + a narrowed meaning, and the
+  second sense authored as a new `w_m2_*` row with its own example, usage note,
+  and explicit axes. Also fixed a typo in 불's example: 꿨어요 → 껐어요. New
+  example sentences need `python generate_assets.py` — flagged in the PR):
+  - [x] 거리 (`w1320_geori` → `distance`; new `w_m2_geori_street` → `street`)
+  - [x] 불 (`w_m5_728_bul` → `light`; new `w_m2_bul_fire` → `fire`)
+  - [x] 잡다 (`w_m6_1087_japda` → `grab-catch`; new `w_m2_japda_set_arrange` → `set-arrange`)
+  - [x] 길 (`w1309_gil` → `road`; new `w_m2_gil_way_method` → `way-method`)
+  - [x] 크다 (`w0803_keuda` adjective → `big`; new verb `w_m2_keuda_grow_up` → `grow-up`)
 - [ ] **B2 — author second senses for existing single rows**:
   - 쉬다 (`w1206_swida`, already `sk:rest`) — add `breathe` (숨을 쉬다)
   - 열다 (`w1217_yeolda`) — `open` vs `hold-event` (파티를 열다)
