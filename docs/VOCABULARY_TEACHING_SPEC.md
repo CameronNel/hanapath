@@ -298,37 +298,24 @@ Grounded in the shipped code (main) as of 2026-07-04. Legend: ✅ solid ·
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
 | **Sense-level polysemy** | ✅ | 98 lemmas carry genuine multi-sense rows with distinct `senseKey`/`senseNo` (Track B is complete: 바람 wind/wish, 밝다 bright/cheerful-personality, 세다 strong/count, 두다 put-keep/leave-behind; 피다 declined because the fire meaning belongs to 피우다/태우다) |
 | **Word-origin tagging (native/Sino/loan)** | 🟡 | every row has effective `originType`; `annotationSource` distinguishes verified vs inferred labels, and Hanja is retained only when verified |
-| **Register as a data axis** | 🟡 | `register`/`speechLevel` now inferred from **structured** signals (POS, lessonGroup, curated tags), not by scanning the example sentence — so everyday nouns (물, 책, 시간…) are no longer mislabeled polite/honorific. High-contrast lexemes (저 vs 나, 무엇 vs 뭐, 와/과 vs 하고, formal set-phrases, honorifics) are hand-verified `explicit`; the rest are correct-by-rule and flagged for review in the curation queue |
-| **Morph tags (Sejong/UD)** | 🟡 | every row has a validated effective `morphTag`; broad inferred tags are tracked separately from explicit hand-curated tags |
+| **Register as a data axis** | ? | `register`/`speechLevel` pinned explicit from structured signals (POS, lessonGroup, curated tags); the curation queue is empty |
+| **Morph tags (Sejong/UD)** | ? | every row has a validated explicit `morphTag`; there are no inferred rows left |
 | **Pronunciation training (minimal pairs, 3-way stops)** | ✅ | Vocab minimal-pair drill exists; every curated word card shows spelling vs sounds-like layers |
 | **Pronunciation scoring (segmental + prosodic)** | 🟡 | browser SpeechRecognition scoring stub compares transcript accuracy and speaking duration; not acoustic phoneme-level scoring |
 | Rich review-event analytics | ✅ | per-item latency/error-type events persist and feed the metrics view |
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
 | Vocabulary volume | ✅ | 2,021 unique curated senses (1,918 post-#54, +103 across eighteen M2 batches), slightly above the Core 1000 / Core 2000 target band, with every curated row assigned to a lesson |
 
-**Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS,
-retrieval, inflection engine, volume) are done. The remaining gaps are
-**curation of inferred labels**,
-**curriculum polish after the dedupe passes**, and a **decision on
-pronunciation scoring** — the concrete checklist is §9.
+**Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS, retrieval, inflection engine, volume) are done. The remaining gaps are Track C cleanup and the owner-gated Track D/E decisions ? the concrete checklist is ?9.
 
-The Word Bank now has a **Needs curation** filter and **Curation priority** sort
-driven by `annotationSource`, so inferred register/origin/morph labels can be
-reviewed in batches instead of hiding behind effective fallback values.
+The Word Bank still has a **Needs curation** filter and **Curation priority** sort driven by `annotationSource` for future data edits, but the current curation queue is empty.
 
 ---
 
 ## 9. What remains to finalize the Words section
 
-The original six-PR roadmap (data axes → sense split → inflection engine →
-pronunciation layer → Core 1000 authoring → analytics) has **shipped except for
-the sense split** — see §11 for per-milestone status. This section is now the
-finalization checklist, ordered by leverage. Each item is small, additive, and
-audit-backed. The batch-by-batch execution queue for these items (per-PR
-recipes, vetted M2 candidate list, curation decision guides — written so a
-small coding model can execute safely) is
-**[`WORDS_FINAL_ROADMAP.md`](WORDS_FINAL_ROADMAP.md)**; this section stays the
-source of truth for *what*, that file for *how and in which order*.
+The original six-PR roadmap (data axes ? sense split ? inflection engine ? pronunciation layer ? Core 1000 authoring ? analytics) has **shipped**; the live finalization work is now Track C cleanup and the owner-gated Track D/E decisions ? see ?11 for per-milestone status. This section is now the finalization checklist, ordered by leverage. Each item is small, additive, and audit-backed. The batch-by-batch execution queue for these items (per-PR recipes, vetted M2 candidate list, curation decision guides ? written so a small coding model can execute safely) is
+**[`WORDS_FINAL_ROADMAP.md`](WORDS_FINAL_ROADMAP.md)**; this section stays the source of truth for *what*, that file for *how and in which order*.
 
 1. **M2 sense split (done — Track B is resolved).**
    98 lemmas have genuine multi-sense rows (§8). Eighteen batches so far:
@@ -368,12 +355,7 @@ source of truth for *what*, that file for *how and in which order*.
    hard-fails a subtitle/count mismatch and warns on any lesson under 4 words
    that *has* a foldable same-stage sibling, so this can't silently drift
    again.
-3. **Curation queue burn-down.** Every row has effective values on every axis,
-   but roughly a third are `inferred`, not hand-verified (~660 rows each for
-   `register`/`speechLevel`/`morphTag`, ~260 for `originType`; `hanja` is
-   explicit on only 2 rows). Use the Word Bank's **Needs curation** filter +
-   **Curation priority** sort to verify in batches; re-run the audit and read
-   its **Annotation sources** line for current counts.
+3. **Curation queue burn-down ? done (2026-07-04).** Every row now has explicit values on all axes; the curation queue is empty.
 4. **Honorifics as a systematic register axis.** The honorific verb table and
    W19 lesson shipped, but subject-honorific vs listener-politeness is not yet
    consistently encoded on rows (`register`/`speechLevel` carry part of it).
@@ -384,7 +366,7 @@ source of truth for *what*, that file for *how and in which order*.
    architecture or explicitly scope a backend/service. Do not silently attempt
    it.
 
-Ship **depth before breadth**: finishing sense-split, curation, and curriculum
+Ship **depth before breadth**: keep the now-complete curation burn-down clean, finish Track C, and close owner decisions before adding more flat words.
 polish on the existing ~1,900 senses beats adding more flat words.
 
 ---
@@ -415,7 +397,7 @@ Status is honest as of 2026-07-04 (post-#54).
 | **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | ✅ done — 98 lemmas genuinely split; B1–B5 resolved and the remaining singleton senseKeys are now Track C |
 | **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ✅ done |
 | **M4** | **Pronunciation layer** — minimal-pair drills, spelling/sounds-like, segmental+prosodic scoring stub | M0 (audio); M1 optional | `app.js`, `audio/` + `generate_assets.py`, new drill data | drills exist for the §6.2 pitfall sets; every card shows both layers | M | ✅ done |
-| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done — 2,021 unique curated senses (1,918 post-#54 after 74 disguised duplicates were removed, see §8; +103 across eighteen M2 batches); strict audit clean; no orphan words |
+| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done — 2,021 unique curated senses (1,918 post-#54 after 74 disguised duplicates were removed, see §8; +103 across eighteen M2 batches); strict audit clean; no orphan words; all four main axes explicit |
 | **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ✅ done |
 
 Guiding rule: **depth before breadth.** M1→M3 (correct, register-aware,

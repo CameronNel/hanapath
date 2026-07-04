@@ -27,7 +27,7 @@ grind through with this playbook.
 | Lessons | **298** across stages W0–W19 |
 | Genuinely multi-sense lemmas | **98** lemmas with 2+ sense rows (219 rows carry a `senseKey` across 116 lemmas) |
 | Leftover singleton `senseKey`s | **18** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **706** rows have ≥1 `inferred` axis — register 693 · speechLevel 700 · morphTag 691 · originType 248; 683 rows are inferred on register+speechLevel+morphTag simultaneously |
+| Curation queue | **0** rows have ?1 `inferred` axis ? register 0 ? speechLevel 0 ? morphTag 0 ? originType 0 |
 | `hanja` | explicit on only 2 rows; 2,019 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
@@ -56,7 +56,7 @@ The section is **final** when every box below is ticked. Tracks A–C are
 mini-model-friendly. Track D needs a design decision first. Track E is
 owner-only — **never attempt E items autonomously.**
 
-- [ ] **Track A** — Curation burn-down: 0 rows with an `inferred` annotation axis
+- [x] **Track A** ? Curation burn-down: 0 rows with an `inferred` annotation axis
 - [x] **Track B** — M2 sense split: candidate list in §4 fully worked (each lemma either split or explicitly declined with a reason written into §4)
 - [ ] **Track C** — 18 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
 - [ ] **Track D** — Honorific axis encoded per the owner-approved design
@@ -91,15 +91,9 @@ owner-only — **never attempt E items autonomously.**
 
 ---
 
-## 3. Track A — Curation burn-down (~706 rows; the bulk of the easy work)
+## 3. Track A ? Curation burn-down (done)
 
-**What it is.** Every row already has effective values on all axes, but on 711
-rows some values are machine-`inferred`. Curation = a human-quality pass that
-**pins** each value as explicit: add `register:`, `speechLevel:`,
-`originType:`, `morphTag:` fields to the row's `defineWord({...})` entry in
-`words_curated_core.js`. `annotationSource` flips to `explicit` automatically
-(see `defineWord`, ~line 141). Usually the inferred value is already correct —
-the job is *verify then pin*, fixing the minority that are wrong.
+**What it is.** The curation burn-down is complete; every row now has explicit values on all axes and the queue is empty.
 
 **List the rows for a batch** (replace the group name):
 
@@ -150,27 +144,27 @@ right — pin it unless a clear exception applies: proper nouns (한국, 서울)
 `NNP`; bound nouns (것, 수, 데) → `NNB`; auxiliary verbs → `VX`; conjunctive
 adverbs (그리고, 하지만) → `MAJ`; copula 이다 → `VCP`.
 
-### 3.2 Batch queue (tick as you go; one PR = 1–2 groups, keep ≤ ~60 rows/PR)
+### 3.2 Batch queue (tick as you go; one PR = 1?2 groups, keep ? ~60 rows/PR)
 
 Row counts = rows with inferred register in that group (close proxy for the
-full queue; the listing command in §3 is authoritative).
+full queue; the listing command in ?3 is authoritative).
 
-- [ ] A1 — `travel-city` (65)
-- [ ] A2 — `core-actions` (61)
-- [ ] A3 — `home-routine` (43) + `honorifics` (1)
-- [ ] A4 — `feelings-descriptions` (42) + `endings-register` (3)
-- [ ] A5 — `food-drink` (42) + `tense-negation` (5)
-- [ ] A6 — `weather-nature` (38) + `connectives` (7)
-- [ ] A7 — `survival-core` (35) + `noun-modification` (5)
-- [ ] A8 — `time-daily` (32) + `irregular-families` (8)
-- [ ] A9 — `study-school` (30) + `question-words` (13)
-- [ ] A10 — `post-hangul-bridge` (26) + `people-pronouns` (9) + `function-words-1` (9)
-- [ ] A11 — `occupations` (26) + `family-people` (22)
-- [ ] A12 — `body-health` (22) + `body-parts` (12)
-- [ ] A13 — `shopping-money` (21) + `daily-objects-tech` (21)
-- [ ] A14 — `animals` (19) + `clothing` (17)
-- [ ] A15 — `hobbies-leisure` (16) + `sports` (12) + `colors` (12)
-- [ ] A16 — `places-movement` (13) + `things-demonstratives` (10) — final sweep: after this, the audit's Annotation sources line must show `"inferred":0` for register, speechLevel, morphTag, and originType
+- [x] A1 ? `travel-city` (65)
+- [x] A2 ? `core-actions` (61)
+- [x] A3 ? `home-routine` (43) + `honorifics` (1)
+- [x] A4 ? `feelings-descriptions` (42) + `endings-register` (3)
+- [x] A5 ? `food-drink` (42) + `tense-negation` (5)
+- [x] A6 ? `weather-nature` (38) + `connectives` (7)
+- [x] A7 ? `survival-core` (35) + `noun-modification` (5)
+- [x] A8 ? `time-daily` (32) + `irregular-families` (8)
+- [x] A9 ? `study-school` (30) + `question-words` (13)
+- [x] A10 ? `post-hangul-bridge` (26) + `people-pronouns` (9) + `function-words-1` (9)
+- [x] A11 ? `occupations` (26) + `family-people` (22)
+- [x] A12 ? `body-health` (22) + `body-parts` (12)
+- [x] A13 ? `shopping-money` (21) + `daily-objects-tech` (21)
+- [x] A14 ? `animals` (19) + `clothing` (17)
+- [x] A15 ? `hobbies-leisure` (16) + `sports` (12) + `colors` (12)
+- [x] A16 ? `places-movement` (13) + `things-demonstratives` (10) ? final sweep complete: the audit's Annotation sources line now shows "inferred":0 for register, speechLevel, morphTag, and originType
 
 **Per-PR acceptance:** strict audit passes; the "Annotation sources" inferred
 counts drop by ≈ the batch size; no `meaning`/`exampleKo`/`id` changed; caches
