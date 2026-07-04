@@ -1,15 +1,15 @@
-// [2026-07-04] Cache bumped to v155: dedupe cleanup — merged 배/언제/거나/정리
-// duplicate rows left by the M2 batches.
-const CACHE_NAME = "hanapath-shell-v155";
+// [2026-07-04] Cache bumped to v156: M2 Track B1 — un-bundled 거리/불/잡다/길/크다
+// into per-sense rows.
+const CACHE_NAME = "hanapath-shell-v156";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260703a",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260704o",
-  "./words_curated_core.js?v=20260704p",
+  "./audio_map.js?v=20260704q",
+  "./words_curated_core.js?v=20260704q",
   "./words_inflect.js?v=20260703b",
-  "./words_lesson_plan.js?v=20260704p",
+  "./words_lesson_plan.js?v=20260704q",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260703p",
   "./alphabet_skill_srs.js?v=20260630a",

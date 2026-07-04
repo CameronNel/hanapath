@@ -174,7 +174,7 @@
       title: "Feelings and descriptions II",
       subtitle: "Many, few, fun, tired",
       goal: "Describe amounts and how you feel.",
-      newWordIds: ["w0805_manta", "w0806_jeokda", "w0807_jaemiitda", "w0808_pigonhada", "w0810_yeppeuda"],
+      newWordIds: ["w0805_manta", "w0806_jeokda", "w0807_jaemiitda", "w0808_pigonhada", "w0810_yeppeuda", "w_m2_keuda_grow_up"],
     }),
     defineLesson({
       id: "w9-question-words-01",
@@ -277,7 +277,7 @@
       title: "Travel and city",
       subtitle: "Getting around",
       goal: "Name common ways to travel.",
-      newWordIds: ["w1301_gonghang", "w1302_gicha", "w1303_beoseu", "w1304_jihacheol", "w1305_taeksi"],
+      newWordIds: ["w1301_gonghang", "w1302_gicha", "w1303_beoseu", "w1304_jihacheol", "w1305_taeksi", "w_m2_geori_street"],
     }),
     defineLesson({
       id: "w13-travel-city-02",
@@ -285,7 +285,7 @@
       title: "Travel and city II",
       subtitle: "Planning a trip",
       goal: "Talk about hotels, tickets, and trips.",
-      newWordIds: ["w1306_hotel", "w1307_yeohaeng", "w1308_pyo", "w1311_yeogwon", "w1312_jim"],
+      newWordIds: ["w1306_hotel", "w1307_yeohaeng", "w1308_pyo", "w1311_yeogwon", "w1312_jim", "w_m2_gil_way_method"],
     }),
     defineLesson({
       id: "w13-travel-city-03",
@@ -766,9 +766,9 @@
       id: "w30-theme-47",
       stage: "W30",
       title: "Nature and landscape Part 47",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your thematic vocabulary for nature and landscape.",
-      newWordIds: ["w_m5_423_byeonhwa", "w_m5_431_dongjjok", "w_m5_479_naerida_fall", "w_m5_520_pul_grass", "w_m5_525_namunnip"]
+      newWordIds: ["w_m5_423_byeonhwa", "w_m5_431_dongjjok", "w_m5_479_naerida_fall", "w_m5_520_pul_grass", "w_m5_525_namunnip", "w_m2_bul_fire"]
     }),
         defineLesson({
       id: "w31-theme-49",
@@ -1150,9 +1150,9 @@
       id: "w57-theme-103",
       stage: "W57",
       title: "Time and daily rhythm",
-      subtitle: "Learn 5 common words",
+      subtitle: "Learn 6 common words",
       goal: "Expand your vocabulary for time and daily rhythm.",
-      newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil"]
+      newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil", "w_m2_japda_set_arrange"]
     }),
     defineLesson({
       id: "w58-theme-104",
