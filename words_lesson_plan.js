@@ -150,7 +150,7 @@
       title: "Core actions",
       subtitle: "Do, have, see, speak",
       goal: "Learn the verbs Korean sentences are built on.",
-      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
+      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m2_japda_set_arrange", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
     }),
     defineLesson({
       id: "w7-core-actions-02",
