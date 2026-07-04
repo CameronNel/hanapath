@@ -27,7 +27,7 @@ grind through with this playbook.
 | Lessons | **298** across stages W0–W19 |
 | Genuinely multi-sense lemmas | **44** lemmas with 2+ sense rows (107 rows carry a `senseKey` across 60 lemmas) |
 | Leftover singleton `senseKey`s | **16** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **621** rows have ≥1 `inferred` axis — register 611 · speechLevel 618 · morphTag 614 · originType 213; 609 rows are inferred on register+speechLevel+morphTag simultaneously |
+| Curation queue | **575** rows have ≥1 `inferred` axis — register 566 · speechLevel 572 · morphTag 568 · originType 205; 564 rows are inferred on register+speechLevel+morphTag simultaneously |
 | `hanja` | explicit on only 2 rows; 1,951 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
@@ -163,7 +163,7 @@ full queue; the listing command in §3 is authoritative).
 - [ ] A6 — `weather-nature` (38) + `connectives` (7)
 - [x] A7 — `survival-core` (35) + `noun-modification` (5) — done 2026-07-04; 41 rows pinned and lesson-linked
 - [x] A8 — `time-daily` (38) + `irregular-families` (8) — done 2026-07-04; 46 rows pinned and lesson-linked
-- [ ] A9 — `study-school` (30) + `question-words` (13)
+- [x] A9 — `study-school` (30) + `question-words` (13) — done 2026-07-04; 46 rows pinned and lesson-linked
 - [ ] A10 — `post-hangul-bridge` (26) + `people-pronouns` (9) + `function-words-1` (9)
 - [ ] A11 — `occupations` (26) + `family-people` (22)
 - [ ] A12 — `body-health` (22) + `body-parts` (12)
