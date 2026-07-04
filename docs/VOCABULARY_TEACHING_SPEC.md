@@ -292,7 +292,7 @@ Grounded in the shipped code (main) as of 2026-07-04. Legend: ✅ solid ·
 | Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + checkpoint ladder + W17–W19 grammar track (merged) |
 | Lexeme + forms, not flat pairs | ✅ | `forms`/`grammarRole`/`pattern`/`formNote` exist; `words_inflect.js` now provides generator + recognizer coverage |
 | Particles & endings first-class | ✅ | Function-word entries with forms/grammarRole/contrastWith/pattern |
-| Honorifics (subject vs listener) | 🟡 | Honorific verb table + W19 lesson (shipped); not yet a systematic register axis |
+| Honorifics (subject vs listener) | ✅ | Honorific verb table + W19 lesson, plus the Track D axis (2026-07-04): `honorificRole: subject|listener|humble` on 26 rows and 10 bidirectional plain↔honorific `contrastWith` pairs |
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
@@ -365,18 +365,21 @@ The original six-PR roadmap (data axes → sense split → inflection engine →
    singleton `senseKey`s resolved (two real second senses authored: 해
    `year`, 풀 `glue` — their audio regen is still owed by the owner; 16
    leftover keys dropped). Re-derived: 0 singletons, 105 multi-sense lemmas.
-4. **Honorifics as a systematic register axis.** The honorific verb table and
-   W19 lesson shipped, but subject-honorific vs listener-politeness is not yet
-   consistently encoded on rows (`register`/`speechLevel` carry part of it).
-5. **Pronunciation scoring — needs an owner decision.** The shipped scorer is a
-   browser-SpeechRecognition transcript-match + duration stub. True segmental/
-   prosodic (phoneme-level) scoring is not realistically achievable client-side
-   with no build step and no backend; either accept the stub as final for this
-   architecture or explicitly scope a backend/service. Do not silently attempt
-   it.
+4. **Honorifics as a systematic register axis — done (2026-07-04, roadmap
+   Track D).** Optional `honorificRole: subject | listener | humble` is now
+   encoded on the 26 honorific/humble/listener-politeness rows, with 10
+   bidirectional plain↔honorific `contrastWith` pairs (있다↔계시다,
+   먹다↔드시다, 자다↔주무시다, 주다↔드리다, 말↔말씀, 나↔저, 우리↔저희,
+   이름↔성함, 나이↔연세, 명↔분); the audit validates the enum. Additive and
+   owner-amendable.
+5. **Pronunciation scoring — decision recorded (2026-07-04, roadmap Track
+   E1): the transcript-match + duration stub is accepted as final** for the
+   static/no-backend architecture. Phoneme-level scoring stays out of scope
+   unless the owner later chooses to scope a backend service (the decision is
+   a policy record only — trivially reversible).
 
-Ship **depth before breadth**: keep the now-complete curation burn-down clean (Tracks A–C are closed) and close the owner decisions before adding more flat words.
-polish on the existing ~1,900 senses beats adding more flat words.
+Ship **depth before breadth**: every roadmap track (A–E) is closed; polish
+on the existing ~2,000 senses beats adding more flat words.
 
 ---
 
