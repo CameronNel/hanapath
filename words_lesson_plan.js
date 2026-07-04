@@ -134,7 +134,7 @@
       title: "Time and daily rhythm",
       subtitle: "Yesterday, today, tomorrow",
       goal: "Anchor events in time.",
-      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje", "w_m2_japda_set_arrange", "w_m6_2972_gada_time"],
+      newWordIds: ["w0601_oneul", "w0602_naeil", "w0603_eoje", "w0604_jigeum", "w0610_eonje", "w_m6_2972_gada_time"],
     }),
     defineLesson({
       id: "w6-time-daily-02",
@@ -150,7 +150,7 @@
       title: "Core actions",
       subtitle: "Do, have, see, speak",
       goal: "Learn the verbs Korean sentences are built on.",
-      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m2_japda_set_arrange", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
+      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m2_japda_set_arrange", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure", "w_m6_3064_seda_count"],
     }),
     defineLesson({
       id: "w7-core-actions-02",
@@ -174,7 +174,7 @@
       title: "Feelings and descriptions II",
       subtitle: "Many, few, fun, tired",
       goal: "Describe amounts and how you feel.",
-      newWordIds: ["w0805_manta", "w0806_jeokda", "w0807_jaemiitda", "w0808_pigonhada", "w0810_yeppeuda", "w_m2_keuda_grow_up"],
+      newWordIds: ["w0805_manta", "w0806_jeokda", "w0807_jaemiitda", "w0808_pigonhada", "w0810_yeppeuda"],
     }),
     defineLesson({
       id: "w9-question-words-01",
@@ -252,7 +252,7 @@
       title: "Home and routine II",
       subtitle: "Furniture and fixtures",
       goal: "Name more household objects.",
-      newWordIds: ["w1209_otjang", "w1210_changmun", "w1211_mun", "w1213_naengjanggo", "w1216_chaeksang", "w_m6_3048_nohda_put", "w_m6_2973_ssada_pack"],
+      newWordIds: ["w1209_otjang", "w1210_changmun", "w1211_mun", "w1213_naengjanggo", "w1216_chaeksang", "w_m6_3048_nohda_put", "w_m6_3065_duda_put", "w_m6_3066_duda_leave", "w_m6_2973_ssada_pack"],
     }),
     defineLesson({
       id: "w12-home-routine-03",
@@ -260,7 +260,7 @@
       title: "Home and routine III",
       subtitle: "Your daily habits",
       goal: "Talk about cleaning, washing, and resting at home.",
-      newWordIds: ["w1204_cheongsohada", "w1205_ssitda", "w1206_swida", "w1207_yorihada", "w1208_syawohada", "w_m6_3058_gamda_wash_hair", "w_m6_2980_geolda_hang", "w_m2_swida_breathe"],
+      newWordIds: ["w1204_cheongsohada", "w1205_ssitda", "w1206_swida", "w1207_yorihada", "w1208_syawohada", "w_m6_3058_gamda_wash_hair", "w_m6_2980_geolda_hang"],
     }),
     defineLesson({
       id: "w12-home-routine-04",
@@ -268,7 +268,7 @@
       title: "Home and routine IV",
       subtitle: "Open, close, on, off",
       goal: "Control the things around your house.",
-      newWordIds: ["w1214_siktak", "w1217_yeolda", "w1218_datda", "w1219_kyeoda", "w1220_kkeuda", "w_m6_3060_dalda_hang", "w_m6_2998_butda_stick", "w_m2_yeolda_hold_event"],
+      newWordIds: ["w1214_siktak", "w1217_yeolda", "w1218_datda", "w1219_kyeoda", "w1220_kkeuda", "w_m6_3060_dalda_hang", "w_m6_2998_butda_stick"],
     }),
 
     defineLesson({
@@ -277,7 +277,7 @@
       title: "Travel and city",
       subtitle: "Getting around",
       goal: "Name common ways to travel.",
-      newWordIds: ["w1301_gonghang", "w1302_gicha", "w1303_beoseu", "w1304_jihacheol", "w1305_taeksi", "w_m2_geori_street"],
+      newWordIds: ["w1301_gonghang", "w1302_gicha", "w1303_beoseu", "w1304_jihacheol", "w1305_taeksi"],
     }),
     defineLesson({
       id: "w13-travel-city-02",
@@ -285,7 +285,7 @@
       title: "Travel and city II",
       subtitle: "Planning a trip",
       goal: "Talk about hotels, tickets, and trips.",
-      newWordIds: ["w1306_hotel", "w1307_yeohaeng", "w1308_pyo", "w1311_yeogwon", "w1312_jim", "w_m2_gil_way_method"],
+      newWordIds: ["w1306_hotel", "w1307_yeohaeng", "w1308_pyo", "w1311_yeogwon", "w1312_jim"],
     }),
     defineLesson({
       id: "w13-travel-city-03",
@@ -376,7 +376,7 @@
       title: "Weather and nature",
       subtitle: "Rain or shine",
       goal: "Talk about today's weather.",
-      newWordIds: ["w1601_nalssi", "w_m6_3011_ilgi_weather", "w1602_bi", "w1603_baram", "w1604_deopda", "w1605_chupda", "w_m6_2979_jida_sunset"],
+      newWordIds: ["w1601_nalssi", "w_m6_3011_ilgi_weather", "w1602_bi", "w1603_baram", "w1604_deopda", "w1605_chupda", "w_m6_3063_seda_strong", "w_m6_2979_jida_sunset"],
     }),
     defineLesson({
       id: "w16-weather-nature-02",
@@ -462,7 +462,7 @@
       title: "Irregular families",
       subtitle: "Trigger-based sound changes",
       goal: "Treat irregular predicates as predictable trigger families.",
-      newWordIds: ["w1911_geotda", "w1912_maepda", "w1913_jitda", "w1914_ppalgata", "w1915_ppareuda", "w1916_salda", "w1917_nada_occur", "w1918_nada_sprout", "w_m2_jitda_make_prepare", "w_m2_salda_be_alive"],
+      newWordIds: ["w1911_geotda", "w1912_maepda", "w1913_jitda", "w1914_ppalgata", "w1915_ppareuda", "w1916_salda", "w1917_nada_occur", "w1918_nada_sprout"],
       checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
@@ -774,9 +774,9 @@
       id: "w31-theme-49",
       stage: "W31",
       title: "Time and calendar Part 49",
-      subtitle: "Learn 8 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your thematic vocabulary for time and calendar.",
-      newWordIds: ["w_m5_217_cho", "w_m5_218_ju_week", "w_m5_219_saebyeok", "w_m5_220_ojeon", "w_m5_221_ohu", "w_m5_222_haru", "w_m5_223_maeil", "w_m2_cho_candle"]
+      newWordIds: ["w_m5_217_cho", "w_m5_218_ju_week", "w_m5_219_saebyeok", "w_m5_220_ojeon", "w_m5_221_ohu", "w_m5_222_haru", "w_m5_223_maeil"]
     }),
     defineLesson({
       id: "w31-theme-50",
@@ -974,9 +974,9 @@
       id: "w37-theme-79",
       stage: "W37",
       title: "Descriptions and feelings Part 79",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your thematic vocabulary for descriptions and feelings.",
-      newWordIds: ["w_m5_339_eodupda", "w_m5_340_bakda", "w_m5_341_kkaekkeuthada", "w_m5_342_deoreopda", "w_m5_343_gwiyeopda", "w_m5_344_pyeonhada", "w_m5_345_bulpyeonhada"]
+      newWordIds: ["w_m5_339_eodupda", "w_m5_340_bakda", "w_m6_3062_bakda_cheerful", "w_m5_341_kkaekkeuthada", "w_m5_342_deoreopda", "w_m5_343_gwiyeopda", "w_m5_344_pyeonhada", "w_m5_345_bulpyeonhada"]
     }),
     defineLesson({
       id: "w37-theme-80",
@@ -1150,9 +1150,9 @@
       id: "w57-theme-103",
       stage: "W57",
       title: "Time and daily rhythm",
-      subtitle: "Learn 6 common words",
+      subtitle: "Learn 5 common words",
       goal: "Expand your vocabulary for time and daily rhythm.",
-      newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil", "w_m2_japda_set_arrange"]
+      newWordIds: ["w_m5_726_jangnyeon", "w_m5_727_bam", "w_m5_728_bul", "w_m5_730_jumal", "w_m5_732_hyuil"]
     }),
     defineLesson({
       id: "w58-theme-104",
@@ -1342,9 +1342,9 @@
       id: "w81-theme-127",
       stage: "W81",
       title: "Feelings and descriptions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for feelings and descriptions.",
-      newWordIds: ["w_m6_1033_majimak", "w_m6_1034_bubun", "w_m6_1035_imi", "w_m6_1036_hangsang", "w_m6_1037_jayu", "w_m6_1038_pyeonghwa", "w_m6_1039_huimang"]
+      newWordIds: ["w_m6_1033_majimak", "w_m6_1034_bubun", "w_m6_1035_imi", "w_m6_1036_hangsang", "w_m6_1037_jayu", "w_m6_1038_pyeonghwa", "w_m6_1039_huimang", "w_m6_3061_baram_wish"]
     }),
     defineLesson({
       id: "w82-theme-128",
@@ -1398,9 +1398,9 @@
       id: "w88-theme-134",
       stage: "W88",
       title: "Core actions",
-      subtitle: "Learn 8 common words",
+      subtitle: "Learn 7 common words",
       goal: "Expand your vocabulary for core actions.",
-      newWordIds: ["w_m6_1082_gaebal", "w_m6_1083_seontaek", "w_m6_1084_kkeutnaeda", "w_m6_1085_bakkuda", "w_m6_1086_deonjida", "w_m6_1087_japda", "w_m2_japda_set_arrange", "w_m6_1088_milda"]
+      newWordIds: ["w_m6_1082_gaebal", "w_m6_1083_seontaek", "w_m6_1084_kkeutnaeda", "w_m6_1085_bakkuda", "w_m6_1086_deonjida", "w_m6_1087_japda", "w_m6_1088_milda"]
     }),
     defineLesson({
       id: "w89-theme-135",
