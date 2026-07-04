@@ -4516,6 +4516,7 @@ function buildWordReferenceRows() {
       row.lessonTitle, row.frequencyBand, row.rank, row.tokenNote,
       (word.tags || []).join(" "), (word.forms || []).join(" "),
       word.register, word.speechLevel, word.originType, word.hanja, word.morphTag,
+      word.honorificRole, (word.contrastWith || []).join(" "),
       ...Object.values(word.annotationSource || {}),
     ].filter((value) => value !== null && value !== undefined && value !== "").join(" ")
       .normalize("NFKC").toLowerCase();
@@ -5327,6 +5328,7 @@ function wordLessonStudyHtml(lesson, view) {
         <div class="word-card-meta">${escapeHtml(word.pos)} · ${escapeHtml(word.pronunciation)}</div>
         ${pronunciationLayer ? `<div class="word-card-meta">${escapeHtml(pronunciationLayer)}</div>` : ""}
         ${formsHtml}
+        ${wordHonorificCardHtml(word)}
         <div class="word-example">
           <button class="word-example-ko" type="button" lang="ko" data-speak="${escapeHtml(word.exampleVoiceText || word.exampleKo)}" aria-label="Hear example sentence">${escapeHtml(word.exampleKo)}</button>
           <div class="word-example-en">${escapeHtml(word.exampleEn)}</div>
@@ -5386,6 +5388,7 @@ function wordLessonStudyHtml(lesson, view) {
       <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}">${escapeHtml(display)}</button>
       <div class="word-card-meta">${escapeHtml(word.pronunciation)} · ${escapeHtml(word.meaningShort)}</div>
       ${pronunciationLayer ? `<div class="word-card-meta">${escapeHtml(pronunciationLayer)}</div>` : ""}
+      ${wordHonorificCardHtml(word)}
       <div class="screen-sub" style="margin:12px 0;">Tap Hear, say it out loud once, then continue. Nobody is grading your accent.</div>
       <div class="word-card-actions">
         <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear</button>
@@ -6015,6 +6018,65 @@ function wordAnnotationValueHtml(word, key, value) {
   return `${escapeHtml(value || "—")}${label ? `<span class="fs-xs text-muted-2"> (${label})</span>` : ""}`;
 }
 
+const WORD_HONORIFIC_ROLE_LABELS = {
+  subject: "Subject honorific",
+  listener: "Listener politeness",
+  humble: "Humble speaker",
+};
+
+function wordHonorificRoleLabel(role) {
+  return WORD_HONORIFIC_ROLE_LABELS[role] || "";
+}
+
+function wordContrastLabel(token, sourceWord = null) {
+  const value = String(token || "").trim();
+  if (!value) return "";
+  const direct = curatedWordsById.get(value);
+  const matches = direct ? [direct] : getCuratedWords().filter((word) =>
+    word.id === value
+    || word.korean === value
+    || word.display === value
+    || (Array.isArray(word.forms) && word.forms.includes(value)));
+  const sourceKeys = sourceWord
+    ? [sourceWord.id, sourceWord.korean, sourceWord.display].filter(Boolean)
+    : [];
+  const target = matches.find((word) =>
+    Array.isArray(word.contrastWith)
+    && word.contrastWith.some((contrast) => sourceKeys.includes(contrast)))
+    || matches[0];
+  if (!target) return value;
+  const label = target.display || target.korean;
+  const gloss = target.meaningShort || target.meaning;
+  return `${label} (${gloss})`;
+}
+
+function wordHonorificContrastText(word) {
+  if (!word || !Array.isArray(word.contrastWith) || !word.contrastWith.length) return "";
+  return word.contrastWith.map((contrast) => wordContrastLabel(contrast, word)).filter(Boolean).join(" / ");
+}
+
+function wordHonorificMetaBoxesHtml(word) {
+  const roleLabel = wordHonorificRoleLabel(word && word.honorificRole);
+  if (!roleLabel) return "";
+  const contrastText = wordHonorificContrastText(word);
+  return `
+    <div class="vocab-meta-box"><span>Honorific axis</span><strong>${escapeHtml(roleLabel)}</strong></div>
+    ${contrastText ? `<div class="vocab-meta-box"><span>Contrast</span><strong>${escapeHtml(contrastText)}</strong></div>` : ""}
+  `;
+}
+
+function wordHonorificCardHtml(word) {
+  const roleLabel = wordHonorificRoleLabel(word && word.honorificRole);
+  if (!roleLabel) return "";
+  const contrastText = wordHonorificContrastText(word);
+  return `
+    <div class="word-honorific-strip">
+      <span>${escapeHtml(roleLabel)}</span>
+      ${contrastText ? `<strong>${escapeHtml(contrastText)}</strong>` : ""}
+    </div>
+  `;
+}
+
 function wordDetailNoteHtml(label, body, extraClass = "") {
   if (!body) return "";
   return `
@@ -6115,6 +6177,7 @@ function wordBankDetailHtml(row) {
         <div class="vocab-meta-box"><span>Lesson group</span><strong>${escapeHtml(word.lessonTitle || word.lessonGroup)}</strong></div>
         <div class="vocab-meta-box"><span>Register</span><strong>${wordAnnotationValueHtml(word, "register", word.register)}</strong></div>
         <div class="vocab-meta-box"><span>Speech level</span><strong>${wordAnnotationValueHtml(word, "speechLevel", word.speechLevel)}</strong></div>
+        ${wordHonorificMetaBoxesHtml(word)}
         <div class="vocab-meta-box"><span>Origin</span><strong>${wordAnnotationValueHtml(word, "originType", word.originType)}</strong></div>
         <div class="vocab-meta-box"><span>Hanja</span><strong>${wordAnnotationValueHtml(word, "hanja", word.hanja)}</strong></div>
         <div class="vocab-meta-box"><span>Morph tag</span><strong>${wordAnnotationValueHtml(word, "morphTag", word.morphTag)}</strong></div>

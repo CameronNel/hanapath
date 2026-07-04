@@ -71,6 +71,7 @@ for (const word of words || []) {
   const VALID_ORIGIN_TYPES = new Set(['native', 'Sino-Korean', 'loanword', 'hybrid']);
   const VALID_ANNOTATION_SOURCES = new Set(['explicit', 'inferred', 'absent']);
   const VALID_IRREGULAR_FAMILIES = new Set(['ㄷ', 'ㅂ', 'ㅅ', 'ㅎ', '르', '러', 'ㄹ-deletion']);
+  const VALID_HONORIFIC_ROLES = new Set(['subject', 'listener', 'humble']);
   const VALID_MORPH_TAGS = new Set([
     'NNG', 'NNB', 'XR', 'NNP', 'NP', 'NR', 'VV', 'VX', 'VCP', 'VCN', 'VA', 'MAG', 'MAJ', 'MM',
     'JKS', 'JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC',
@@ -96,7 +97,6 @@ for (const word of words || []) {
     errors.push(`${label}: invalid irregularFamily "${word.irregularFamily}"`);
   }
   // Track D honorific axis (optional, additive)
-  const VALID_HONORIFIC_ROLES = new Set(['subject', 'listener', 'humble']);
   if (word.honorificRole !== undefined && !VALID_HONORIFIC_ROLES.has(word.honorificRole)) {
     errors.push(`${label}: invalid honorificRole "${word.honorificRole}"`);
   }
@@ -130,6 +130,9 @@ for (const word of words || []) {
   }
   if (word.senseNo !== undefined && (!Number.isInteger(word.senseNo) || word.senseNo < 1)) {
     errors.push(`${label}: senseNo must be a positive integer`);
+  }
+  if (word.honorificRole !== undefined && !VALID_HONORIFIC_ROLES.has(word.honorificRole)) {
+    errors.push(`${label}: invalid honorificRole "${word.honorificRole}"`);
   }
   if (word.hanja !== undefined) {
     if (typeof word.hanja !== 'string') {
@@ -354,12 +357,9 @@ if (!Inflect) {
 // window.AUDIO_MAP the same way speak() resolves it: exact trimmed key, or —
 // for comma/slash/interpunct-separated sequences — every split part present.
 // A miss falls back to robotic speechSynthesis, so it is a warning (fails
-// --strict) unless the sentence is on the explicit allow list below, which
-// records text that is knowingly awaiting a `python generate_assets.py` run.
-const AUDIO_PENDING_ALLOWED = new Set([
-  "한 해가 빨리 지나갔어요.", // w_m2_hae_year — authoring env could not reach edge-tts
-  "풀로 종이를 붙여요.",       // w_m2_pul_glue — authoring env could not reach edge-tts
-]);
+  // --strict) unless the sentence is on the explicit allow list below, which
+  // records text that is knowingly awaiting a `python generate_assets.py` run.
+  const AUDIO_PENDING_ALLOWED = new Set([]);
 const audioMap = sandbox.window.AUDIO_MAP;
 if (!audioMap || typeof audioMap !== "object") {
   errors.push("window.AUDIO_MAP is missing or not an object");
