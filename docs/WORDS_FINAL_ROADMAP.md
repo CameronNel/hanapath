@@ -224,12 +224,12 @@ verify each against a dictionary sense you can express at beginner level.
   - 나오다 — `come-out` vs `appear-in-media` (TV에 나오다)
   - 놓다 — `put-place` vs `let-go-release`
   - 세우다 — `stand-up-erect` vs `stop-a-vehicle` (차를 세우다)
-- [ ] **B4 — new multi-sense lemmas, second wave**:
-  - 끊다 — `cut-off` vs `quit` (담배를 끊다)
-  - 빼다 — `remove-take-out` vs `subtract`
-  - 남다 — `remain-be-left` vs `be-left-over` (음식이 남다) — **judgment: if these two can't be cleanly distinguished at beginner level, author as one row, no senseKey**
-  - 감다 — `close-eyes` vs `wash-hair`
-  - 달다 — `sweet` (adj) vs `attach-hang` (verb) — homograph pair, two POS
+- [x] **B4 — new multi-sense lemmas, second wave** (2026-07-04; kkeunhda split, ppaeda split, namda kept as one row/no senseKey, gamda split, dalda split):
+  - 끊다 — `cut-off` vs `quit` (beginner-distinct; split)
+  - 빼다 — `remove-take-out` vs `subtract` (beginner-distinct; split)
+  - 남다 — `remain-be-left` vs `be-left-over` (음식이 남다) — **judgment: kept as one row, no senseKey; the beginner distinction was too thin**
+  - 감다 — `close-eyes` vs `wash-hair` (split)
+  - 달다 — `sweet` (adj) vs `attach-hang` (verb) — homograph pair, two POS (split)
 - [ ] **B5 — judgment batch** (verify each is beginner-teachable before authoring; decline in writing if not):
   - 바람 — `wind` vs `wish-hope`
   - 밝다 — `bright` vs `cheerful-personality` (성격이 밝다)
