@@ -150,7 +150,7 @@
       title: "Core actions",
       subtitle: "Do, have, see, speak",
       goal: "Learn the verbs Korean sentences are built on.",
-      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
+      newWordIds: ["w0701_hada", "w0702_itda", "w_m6_3027_itda_exist", "w0703_eopda", "w_m6_3028_eopda_absent", "w0704_boda", "w0705_malhada", "w_m2_japda_set_arrange", "w_m6_2974_deulda_hold", "w_m6_2990_jaeda_measure"],
     }),
     defineLesson({
       id: "w7-core-actions-02",
@@ -166,7 +166,7 @@
       title: "Feelings and descriptions",
       subtitle: "Good, bad, big, small",
       goal: "Describe things and say what you like.",
-      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w0804_jakda", "w0809_masitda", "w_m6_2991_jaeda_hesitant"],
+      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w_m2_keuda_grow_up", "w0804_jakda", "w0809_masitda", "w_m6_2991_jaeda_hesitant"],
     }),
     defineLesson({
       id: "w8-feelings-descriptions-02",
@@ -293,7 +293,7 @@
       title: "Travel and city III",
       subtitle: "Finding your way",
       goal: "Ask directions and read a map.",
-      newWordIds: ["w1309_gil", "w1310_jido", "w1316_gongwon", "w1317_dari", "w1320_geori"],
+      newWordIds: ["w1309_gil", "w_m2_gil_way_method", "w1310_jido", "w1316_gongwon", "w1317_dari", "w1320_geori", "w_m2_geori_street"],
     }),
     defineLesson({
       id: "w13-travel-city-04",

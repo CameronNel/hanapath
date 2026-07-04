@@ -7,13 +7,13 @@
 > tick a checkbox, do exactly that PR, nothing else. If this file and the audit
 > output ever disagree, trust the audit and fix this file in the same PR.
 >
-> Every number below was **re-derived from the data on 2026-07-03** (commands in
+> Every number below was **re-derived from the data on 2026-07-04** (commands in
 > §0.1), not copied from a scorecard. Re-derive before trusting: the scorecard
 > has been wrong three times (PRs #50, #51, #54).
 
 ---
 
-## 0. Verified status snapshot (2026-07-03)
+## 0. Verified status snapshot (2026-07-04)
 
 The Words section is **feature-complete**. All engines, screens, and content
 systems are shipped and the app smoke-tests clean (no console errors; Word
@@ -23,11 +23,11 @@ grind through with this playbook.
 
 | Fact | Verified value |
 |---|---|
-| Curated senses | **1,953** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
+| Curated senses | **2,015** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
 | Lessons | **298** across stages W0–W19 |
-| Genuinely multi-sense lemmas | **44** lemmas with 2+ sense rows (107 rows carry a `senseKey` across 60 lemmas) |
-| Leftover singleton `senseKey`s | **16** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **711** rows have ≥1 `inferred` axis — register 697 · speechLevel 705 · morphTag 696 · originType 266; 687 rows are inferred on register+speechLevel+morphTag simultaneously |
+| Genuinely multi-sense lemmas | **94** lemmas with 2+ sense rows (211 rows carry a `senseKey` across 112 lemmas) |
+| Leftover singleton `senseKey`s | **18** rows have a `senseKey` but no sibling sense (§Track C) |
+| Curation queue | **531** rows have ≥1 `inferred` axis — register 523 · speechLevel 525 · morphTag 521 · originType 191; 513 rows are inferred on register+speechLevel+morphTag simultaneously |
 | `hanja` | explicit on only 2 rows; 1,951 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
@@ -91,9 +91,9 @@ owner-only — **never attempt E items autonomously.**
 
 ---
 
-## 3. Track A — Curation burn-down (~711 rows; the bulk of the easy work)
+## 3. Track A ? Curation burn-down (~531 rows; the bulk of the easy work)
 
-**What it is.** Every row already has effective values on all axes, but on 711
+**What it is.** Every row already has effective values on all axes, but on 531
 rows some values are machine-`inferred`. Curation = a human-quality pass that
 **pins** each value as explicit: add `register:`, `speechLevel:`,
 `originType:`, `morphTag:` fields to the row's `defineWord({...})` entry in
@@ -130,7 +130,7 @@ Phrases ending in -습니다/-ㅂ니다 → `polite formal`.
 
 **`originType`** — one of `native | Sino-Korean | loanword | hybrid`.
 This is the axis where inference is weakest (it defaults to `native`), so
-**expect real corrections here** (~266 rows). Sino-Korean: words built from
+**expect real corrections here** (~191 rows). Sino-Korean: words built from
 Chinese roots — most 2-syllable abstract/institutional nouns (시간, 운동, 여행,
 가족), numbers 일/이/삼…, anything you could write in hanja. Loanword: modern
 borrowings (버스, 카페, 컴퓨터). Native: 한글 core stock (물, 손, 가다, 예쁘다).
@@ -155,9 +155,9 @@ adverbs (그리고, 하지만) → `MAJ`; copula 이다 → `VCP`.
 Row counts = rows with inferred register in that group (close proxy for the
 full queue; the listing command in §3 is authoritative).
 
-- [ ] A1 — `travel-city` (65)
-- [ ] A2 — `core-actions` (61)
-- [ ] A3 — `home-routine` (43) + `honorifics` (1)
+- [x] A1 — `travel-city` (65)
+- [x] A2 — `core-actions` (61)
+- [x] A3 — `home-routine` (43) + `honorifics` (1)
 - [ ] A4 — `feelings-descriptions` (42) + `endings-register` (3)
 - [ ] A5 — `food-drink` (42) + `tense-negation` (5)
 - [ ] A6 — `weather-nature` (38) + `connectives` (7)
@@ -248,7 +248,7 @@ visible in the Word Bank with distinct senses, strict audit green.
 
 ## 5. Track C — Singleton senseKey cleanup (one small PR)
 
-16 rows carry a `senseKey` with no sibling sense row. Most are leftovers from
+18 rows carry a `senseKey` with no sibling sense row. Most are leftovers from
 the #54 dedupe (the deleted twin took the other key). Resolve each; **never
 change the row's `id`** (SRS state in users' localStorage keys off it).
 
