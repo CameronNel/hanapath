@@ -166,7 +166,7 @@
       title: "Feelings and descriptions",
       subtitle: "Good, bad, big, small",
       goal: "Describe things and say what you like.",
-      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w0804_jakda", "w0809_masitda", "w_m6_2991_jaeda_hesitant"],
+      newWordIds: ["w0801_jota", "w0802_silta", "w0803_keuda", "w_m2_keuda_grow_up", "w0804_jakda", "w0809_masitda", "w_m6_2991_jaeda_hesitant"],
     }),
     defineLesson({
       id: "w8-feelings-descriptions-02",
@@ -293,7 +293,7 @@
       title: "Travel and city III",
       subtitle: "Finding your way",
       goal: "Ask directions and read a map.",
-      newWordIds: ["w1309_gil", "w1310_jido", "w1316_gongwon", "w1317_dari", "w1320_geori"],
+      newWordIds: ["w1309_gil", "w_m2_gil_way_method", "w1310_jido", "w1316_gongwon", "w1317_dari", "w1320_geori", "w_m2_geori_street"],
     }),
     defineLesson({
       id: "w13-travel-city-04",
@@ -1398,9 +1398,9 @@
       id: "w88-theme-134",
       stage: "W88",
       title: "Core actions",
-      subtitle: "Learn 7 common words",
+      subtitle: "Learn 8 common words",
       goal: "Expand your vocabulary for core actions.",
-      newWordIds: ["w_m6_1082_gaebal", "w_m6_1083_seontaek", "w_m6_1084_kkeutnaeda", "w_m6_1085_bakkuda", "w_m6_1086_deonjida", "w_m6_1087_japda", "w_m6_1088_milda"]
+      newWordIds: ["w_m6_1082_gaebal", "w_m6_1083_seontaek", "w_m6_1084_kkeutnaeda", "w_m6_1085_bakkuda", "w_m6_1086_deonjida", "w_m6_1087_japda", "w_m2_japda_set_arrange", "w_m6_1088_milda"]
     }),
     defineLesson({
       id: "w89-theme-135",

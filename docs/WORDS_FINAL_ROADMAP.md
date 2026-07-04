@@ -23,12 +23,12 @@ grind through with this playbook.
 
 | Fact | Verified value |
 |---|---|
-| Curated senses | **1,953** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
+| Curated senses | **2,015** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
 | Lessons | **298** across stages W0–W19 |
-| Genuinely multi-sense lemmas | **44** lemmas with 2+ sense rows (107 rows carry a `senseKey` across 60 lemmas) |
-| Leftover singleton `senseKey`s | **16** rows have a `senseKey` but no sibling sense (§Track C) |
-| Curation queue | **711** rows have ≥1 `inferred` axis — register 697 · speechLevel 705 · morphTag 696 · originType 266; 687 rows are inferred on register+speechLevel+morphTag simultaneously |
-| `hanja` | explicit on only 2 rows; 1,951 absent (owner-gated, §Track E) |
+| Genuinely multi-sense lemmas | **94** lemmas with 2+ sense rows (211 rows carry a `senseKey` across 112 lemmas with any `senseKey`) |
+| Leftover singleton `senseKey`s | **18** rows have a `senseKey` but no sibling sense (§Track C) |
+| Curation queue | **575** rows have ≥1 `inferred` axis — register 565 · speechLevel 572 · morphTag 562 · originType 201; 557 rows are inferred on register+speechLevel+morphTag simultaneously |
+| `hanja` | explicit on only 2 rows; 2,013 absent (owner-gated, §Track E) |
 | Audits | `audit-words-data --strict`, `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
 
 ### 0.1 How to re-derive (run these, don't trust the table)
@@ -58,7 +58,7 @@ owner-only — **never attempt E items autonomously.**
 
 - [ ] **Track A** — Curation burn-down: 0 rows with an `inferred` annotation axis
 - [ ] **Track B** — M2 sense split: candidate list in §4 fully worked (each lemma either split or explicitly declined with a reason written into §4)
-- [ ] **Track C** — 16 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
+- [ ] **Track C** — 18 singleton `senseKey`s remain (real second sense authored, or leftover key removed)
 - [ ] **Track D** — Honorific axis encoded per the owner-approved design
 - [ ] **Track E** — Owner decisions recorded (pronunciation scoring; hanja policy; 하다-verb originType convention)
 - [ ] **Final gate** — `TEST_UNLOCK_ALL_STAGES` in `app.js` set back to `false`; full cold-learner smoke test of the real progression; caches bumped; all three audits green
@@ -158,9 +158,9 @@ full queue; the listing command in §3 is authoritative).
 - [ ] A1 — `travel-city` (65)
 - [ ] A2 — `core-actions` (61)
 - [ ] A3 — `home-routine` (43) + `honorifics` (1)
-- [ ] A4 — `feelings-descriptions` (42) + `endings-register` (3)
-- [ ] A5 — `food-drink` (42) + `tense-negation` (5)
-- [ ] A6 — `weather-nature` (38) + `connectives` (7)
+- [x] A4 - `feelings-descriptions` (42) + `endings-register` (6) - done 2026-07-04; 48 rows made explicit and slotted
+- [x] A5 - `food-drink` (33) + `tense-negation` (5) - done 2026-07-04; 38 rows made explicit and slotted
+- [x] A6 - `weather-nature` (40) + `connectives` (7) - done 2026-07-04; 47 rows made explicit and slotted
 - [ ] A7 — `survival-core` (35) + `noun-modification` (5)
 - [ ] A8 — `time-daily` (32) + `irregular-families` (8)
 - [ ] A9 — `study-school` (30) + `question-words` (13)
@@ -322,3 +322,4 @@ small model grinding solo:
 2. **A1…A16** (the bulk; pure data pinning, zero audio work)
 3. **B1 → B5** (needs audio regen + more judgment; do after warming up on A)
 4. **D2** once the owner clears D1; **E4** last.
+

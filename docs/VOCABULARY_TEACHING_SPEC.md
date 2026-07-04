@@ -367,11 +367,10 @@ source of truth for *what*, that file for *how and in which order*.
    hard-fails a subtitle/count mismatch and warns on any lesson under 4 words
    that *has* a foldable same-stage sibling, so this can't silently drift
    again.
-3. **Curation queue burn-down.** Every row has effective values on every axis,
-   but roughly a third are `inferred`, not hand-verified (~660 rows each for
-   `register`/`speechLevel`/`morphTag`, ~260 for `originType`; `hanja` is
-   explicit on only 2 rows). Use the Word Bank's **Needs curation** filter +
-   **Curation priority** sort to verify in batches; re-run the audit and read
+3. **Curation queue burn-down.** 575 rows still carry at least one inferred
+   axis (register 565, speechLevel 572, morphTag 562, originType 201; hanja
+   is explicit on only 2 rows). Use the Word Bank's **Needs curation** filter
+   + **Curation priority** sort to verify in batches; re-run the audit and read
    its **Annotation sources** line for current counts.
 4. **Honorifics as a systematic register axis.** The honorific verb table and
    W19 lesson shipped, but subject-honorific vs listener-politeness is not yet
@@ -415,7 +414,7 @@ Status is honest as of 2026-07-04 (post-#54).
 | **M2** | **Sense split** — per-sense rows for polysemous lexemes (보다, 하다, 나다…) | M1 | `words_curated_core.js`, `app.js` (Word Bank + lesson render) | high-freq polysemes split; sense shown in bank + lessons | M | 🟡 partial — 94 lemmas genuinely split (see §8; 눈/다리/밤/차/맞다 added 2026-07-03, twenty-two more — 사과/뛰다/가다/싸다/들다/걸리다/지다/걸다/서다/치다/풀다/돌다/재다/짜다/차다/빠지다/붙다/사고/연기/전기/이사/소식 — added 2026-07-04; plus five early noun splits in the previous batch — 밥/시간/아침/점심/저녁; plus four more in the previous batch — 검사/감독/가정/문구; plus two more in the previous batch 3 — 과정/인상; plus four more in the previous batch — 시계/머리/목/가슴; plus three new split lemmas in the current batch — 분/새/통화; plus one extra sense in the already-split 배 trio; plus three more in batch 8 ? itda have/exist, eopda not-have/not-exist, bonaeda send/spend time; plus four more in the current batch ? dol first birthday, ilsik solar eclipse, jungsik lunch, jeongri cleanup/organization). The "128 rows / 94 lemmas" figure previously reported here was wrong (74 disguised-duplicate rows, corrected in #54) and has been removed. Most polysemous lemmas remain untagged; real work continues per §9 item 1 |
 | **M3** | **Inflection engine** — stem→form generator + recognizer | M1 | new `words_inflect.js`, `app.js` (`buildWordLessonQuestions`, form checkpoints) | engine output matches authored forms for a test set; drives `form-production`/`form-recognition` | M–L | ✅ done |
 | **M4** | **Pronunciation layer** — minimal-pair drills, spelling/sounds-like, segmental+prosodic scoring stub | M0 (audio); M1 optional | `app.js`, `audio/` + `generate_assets.py`, new drill data | drills exist for the §6.2 pitfall sets; every card shows both layers | M | ✅ done |
-| **M5** | **Authoring to Core 1000** — grow ~230 → 800–1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | ≥800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | ✅ done — 1,995 unique curated senses (corrected to 1,918 post-#54 after 74 disguised duplicates were removed, see §8; +77 across fifteen M2 batches); strict audit clean; no orphan words |
+| **M5** | **Authoring to Core 1000** - grow ~230 -> 800-1,000 senses vs official level-1 list | M1 (schema); M3 (leverage) | `words_curated_core.js`, `words_lesson_plan.js` | >=800 senses; numbers/counters + Sino-Korean families as explicit themes | L (ongoing) | done - 2,015 unique curated senses (corrected to 1,918 post-#54 after 74 disguised duplicates were removed, see section 8; +97 across seventeen M2 batches); strict audit clean; no orphan words |
 | **M6** | **Assessment & analytics** — per-item review events, mastery model, retention metrics | M0 (SRS); M2 | `app.js` (state + review-event log), new metrics view | latency + error-type logged per item; 1-week/1-month retention surfaced | M | ✅ done |
 
 Guiding rule: **depth before breadth.** M1→M3 (correct, register-aware,
@@ -491,3 +490,4 @@ and 국제 통용 한국어 표준 교육과정 (graded vocabulary).
 
 **Pedagogy:** spacing meta-analysis (*Language Learning*); Karpicke & Roediger
 (retrieval practice); Nation, *The Four Strands*.
+

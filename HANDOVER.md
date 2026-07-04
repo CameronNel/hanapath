@@ -59,7 +59,7 @@ below.
 - **What remains to finalize the Words section** — the authoritative, ordered checklist is **teaching spec §9**. Summary:
   1. **M2 sense split** -- continue the high-frequency polyseme list in spec section 9. Recent batches shipped: exam/prosecutor, director/supervisor, household/assumption, stationery/phrase; process/course, impression/price increase; clock/watch, head/hair, throat/neck, heart/chest; minute/honorific counter, bird/new, phone call/currency, and the missing pear sense; current batch of tteoreojida fall/drop, oreuda climb/rise-increase, naoda come-out/appear-media, nohda put/place/let-go, seuda stand-upright/stop-vehicle.
   2. **Curriculum polish** — done (2026-07-03). All 51 subtitle/count mismatches were corrected to the real `newWordIds.length`, and all 14 thin lessons (down to 1 genuinely unfoldable single-lesson stage, `w218-theme-264`, left alone since it has no same-stage sibling) were folded into same-stage siblings — 312 → 298 lessons.
-  3. **Curation burn-down** — every row has effective axis values but a large minority are `inferred`, not hand-verified; use the Word Bank "Needs curation" filter. Re-run the audit's **Annotation sources** line for live counts — that JSON is ground truth, never trust a cached number.
+  3. **Curation burn-down** - 575 rows still have at least one inferred axis (register 565, speechLevel 572, morphTag 562, originType 201); use the Word Bank "Needs curation" filter + "Curation priority" sort. Re-run the audit's **Annotation sources** line for live counts - that JSON is ground truth, never trust a cached number.
   4. **Honorifics as a systematic register axis** (partially encoded today).
   5. **Pronunciation scoring** — transcript-match stub; phoneme-level scoring needs an owner decision (not feasible client-side/no-backend). Don't attempt it silently.
 
@@ -68,3 +68,4 @@ below.
 
 ## Workflow
 Branch off `main`, open a **draft** PR, keep it small and single-purpose. The owner marks ready and squash-merges.
+
