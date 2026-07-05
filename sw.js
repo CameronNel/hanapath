@@ -1,12 +1,12 @@
-// [2026-07-05] Cache bumped to v169: dead lesson checkpoints removed (Track F3).
-const CACHE_NAME = "hanapath-shell-v169";
+// [2026-07-05] Cache bumped to v170: 12 M5 particles get full function-word treatment (Track F1).
+const CACHE_NAME = "hanapath-shell-v170";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260705f",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705c",
-  "./words_curated_core.js?v=20260705c",
+  "./words_curated_core.js?v=20260705d",
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260705d",
   "./raw_word_meanings.js?v=20260703a",
