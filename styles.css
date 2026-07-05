@@ -431,6 +431,19 @@ input, textarea { cursor: text; }
   transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 .study-row:hover { background: rgba(255,255,255,.04); }
+.word-metrics-row {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.word-metrics-row:focus-visible {
+  outline: 2px solid rgba(91,157,255,.55);
+  outline-offset: 2px;
+  background: rgba(91,157,255,.08);
+}
 .study-row.active {
   background: rgba(91, 157, 255,.08);
   border: 1px solid rgba(91, 157, 255,.2);
