@@ -144,6 +144,15 @@ const BATCHIM_GROUPS = [
   { group: "p", letters: ["ㅂ", "ㅍ", "ㅄ", "ㄿ"] },
   { group: "ng", letters: ["ㅇ"] },
 ];
+const BATCHIM_GROUP_SOUND_SPEAK = {
+  k: "\uC545",
+  n: "\uC548",
+  t: "\uC54B",
+  l: "\uC54C",
+  m: "\uC554",
+  p: "\uC555",
+  ng: "\uC559",
+};
 
 // [2026-06-29] Romanization standardized to Revised Romanization (single
 // initials) so the atlas matches LETTER_SOUND; fixes the "g / k" vs "g" drift.
@@ -10149,6 +10158,7 @@ function makeLetterDrillQuestion(forceLetter) {
     options: shuffle([sound, ...distract]), answer: sound,
     explanation: `${letter} sounds like “${sound}”.`,
     voiceText: HANGUL_JAMO_SPEAK[letter] || letter, weakKey: letter,
+    drillWholeLabel: "Letter",
   };
 }
 // Short romanization hint for a build prompt. Initial ㅇ is a silent seat; final
@@ -10177,6 +10187,8 @@ function makeBuildTileDrillQuestion(pools) {
     prompt: `Build the block that sounds like “${sound}”`,
     detail: `Tap the letters in order — consonant, then vowel${final ? ", then the final consonant" : ""}.`,
     target, seq, tray, voiceText: target, weakKey: initial,
+    drillWholeLabel: "Syllable",
+    drillPartLabel: "Letters",
     explanation: `${seq.join(" + ")} = ${target}.`,
   };
 }
@@ -10196,6 +10208,37 @@ function makeDrillQuestion(mode) {
   else if (m === "batchim") { q = { ...generateBatchimQuestion(pools) }; }
   else { q = makeLetterDrillQuestion(); }
   return q;
+}
+
+function getDrillWholeAudioText(question) {
+  if (!question) return "";
+  return question.voiceText || question.target || question.answer || "";
+}
+
+function getDrillPartAudioText(question) {
+  if (!question || question.interaction === "build") return "";
+  if (question.drillPartVoiceText) return speakableForChunk(question.drillPartVoiceText);
+  if (question.kind === "Batchim sound" && BATCHIM_GROUP_SOUND_SPEAK[question.answer]) {
+    return BATCHIM_GROUP_SOUND_SPEAK[question.answer];
+  }
+  return question.answer ? speakableForClickableText(question.answer, { preferSoundLabels: true }) : "";
+}
+
+function renderDrillAudioButtons(question) {
+  const wholeText = getDrillWholeAudioText(question);
+  const wholeLabel = question?.drillWholeLabel || "Hear";
+  const partLabel = question?.drillPartLabel || "";
+  const hasPartAudio = question?.interaction === "build"
+    ? Array.isArray(question.seq) && question.seq.length > 0
+    : Boolean(getDrillPartAudioText(question));
+  return [
+    wholeText
+      ? `<button class="button secondary compact" type="button" id="drillHearWholeBtn">▶ ${escapeHtml(wholeLabel)}</button>`
+      : "",
+    partLabel && hasPartAudio
+      ? `<button class="button secondary compact" type="button" id="drillHearPartBtn">▶ ${escapeHtml(partLabel)}</button>`
+      : "",
+  ].join("");
 }
 
 function renderAlphabetDrillLab() {
@@ -10285,8 +10328,7 @@ function renderDrillQuestion() {
       <div class="lesson-step-row"><span>${escapeHtml(modeLabel)} · ${progress}</span><strong>${s.correct} correct · streak ${s.streak}</strong></div>
       ${q.visual ? `<div class="quiz-visual" style="text-align:center;margin:10px 0;">${q.visual}</div>` : ""}
       <div class="drill-audio-row">
-        <button class="button secondary compact" type="button" id="drillHearBtn">▶ Hear</button>
-        ${isBuild ? '<button class="button secondary compact" type="button" id="drillHearBlocksBtn">▶ Blocks</button>' : ""}
+        ${renderDrillAudioButtons(q)}
         ${phaseOneReferenceButtonHtml()}
       </div>
       <h3 class="screen-title" style="font-size:1.05rem;margin-bottom:4px;">${escapeHtml(q.prompt)}</h3>
@@ -10298,12 +10340,16 @@ function renderDrillQuestion() {
         <button class="button primary compact" type="button" id="drillNextBtn" disabled>Next</button>
       </div>
     </div>`;
-  const hear = document.getElementById("drillHearBtn");
-  if (hear) hear.addEventListener("click", () => void speak(q.voiceText || q.answer || q.target || ""));
+  const hearWhole = document.getElementById("drillHearWholeBtn");
+  if (hearWhole) hearWhole.addEventListener("click", () => void speak(getDrillWholeAudioText(q)));
   bindAlphabetReferenceButtons(el);
-  const hearBlocks = document.getElementById("drillHearBlocksBtn");
-  if (hearBlocks) {
-    hearBlocks.addEventListener("click", async () => {
+  const hearPart = document.getElementById("drillHearPartBtn");
+  if (hearPart) {
+    hearPart.addEventListener("click", async () => {
+      if (!isBuild) {
+        void speak(getDrillPartAudioText(q));
+        return;
+      }
       for (const part of q.seq || []) {
         await speak(speakableForChunk(part), { preserveSequence: true });
         await new Promise((resolve) => window.setTimeout(resolve, 180));
@@ -10374,12 +10420,21 @@ function answerDrillBuild(jamo, tile) {
   }
 }
 
+function speakDrillChoice(choice, question) {
+  const label = String(choice || "").trim().toLowerCase();
+  if (question?.kind === "Batchim sound" && BATCHIM_GROUP_SOUND_SPEAK[label]) {
+    void speak(BATCHIM_GROUP_SOUND_SPEAK[label]);
+    return;
+  }
+  speakClickableText(choice, { preferSoundLabels: true });
+}
+
 function answerDrill(choice, button) {
   const s = drillSession;
   if (!s || s.answered) return;
   const q = s.current;
   const feedback = document.getElementById("drillFeedback");
-  speakClickableText(choice, { preferSoundLabels: true });
+  speakDrillChoice(choice, q);
   if (choice !== q.answer) {
     button.classList.add("wrong");
     button.disabled = true;
@@ -10562,6 +10617,9 @@ function generateDecomposeQuestion(pools) {
     answer,
     explanation: `The block ${syllable} breaks into ${initial} + ${medial} + ${normalizeFinal(final)}.`,
     voiceText: syllable,
+    drillWholeLabel: "Syllable",
+    drillPartLabel: target === "medial" ? "Vowel" : target === "final" ? "Final" : "Consonant",
+    drillPartVoiceText: answer,
   };
 }
 
@@ -11066,6 +11124,9 @@ function generateBatchimQuestion(pools) {
     answer,
     explanation: `${letter} usually closes as ${answer}. Batchim practice makes real Korean reading much easier.`,
     voiceText: sample,
+    drillWholeLabel: "Sample",
+    drillPartLabel: "Closing sound",
+    drillPartVoiceText: BATCHIM_GROUP_SOUND_SPEAK[answer] || "",
   };
 }
 
