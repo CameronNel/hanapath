@@ -24,6 +24,7 @@ const REQUIRED_VERSIONED_INDEX_ASSETS = new Set([
   "./words_inflect.js",
   "./words_lesson_plan.js",
   "./raw_word_meanings.js",
+  "./sentences_core.js",
   "./app.js",
   "./alphabet_skill_srs.js",
 ]);

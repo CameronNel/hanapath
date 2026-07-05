@@ -100,7 +100,7 @@ console.log("by source:",JSON.stringify(s.reduce((a,r)=>(a[r.source]=(a[r.source
 ## 3. Track A — Bank foundation
 
 ### A1 — Extractor + seed bank [high]
-- [ ] **A1** Build `scripts/build-sentence-bank.mjs` and commit the generated `sentences_core.js`.
+- [x] **A1** Build `scripts/build-sentence-bank.mjs` and commit the generated `sentences_core.js`.
 
 **Recipe:** The extractor loads `words_curated_core.js` (Node `vm`/`eval`
 pattern used by the existing audits), takes every row's
@@ -138,7 +138,7 @@ rerunning the extractor is idempotent (zero diff); a spot-check of 10 random
 rows reads correctly (do it, paste it in the PR).
 
 ### A2 — Strict audit [high]
-- [ ] **A2** Create `scripts/audit-sentences-data.mjs` (+`--strict`).
+- [x] **A2** Create `scripts/audit-sentences-data.mjs` (+`--strict`).
 
 **Recipe:** Mirror `audit-words-data.mjs` structure. Enforce every §3 rule:
 unique/stable ids, non-empty korean/english/voiceText, Korean-only voiceText,
@@ -154,7 +154,7 @@ exactly like the words audit so §2.1 re-derivation works.
 one row of each class makes it fail (show one example in the PR).
 
 ### A3 — App-shell wiring [high]
-- [ ] **A3** Load the bank in the app (zero behavior change).
+- [x] **A3** Load the bank in the app (zero behavior change).
 
 **Recipe:** Add `<script defer src="./sentences_core.js?v=...">` before
 `app.js` in `index.html`; precache in `sw.js`; bump `CACHE_NAME` and all `?v=`
@@ -367,4 +367,4 @@ them. One PR per box; browser-play each unit before shipping.
 
 | Date | Box | PR | Notes |
 |---|---|---|---|
-| _(append one row per merged box)_ | | | |
+| 2026-07-05 | A1-A3 | PR #98 | Extracted the 2,007-row sentence bank from `words_curated_core.js`, added the strict audit, and wired the bank into the app shell. |
