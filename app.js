@@ -6210,6 +6210,91 @@ function wordSrsPanelHtml(row, status) {
   `;
 }
 
+function getWordRecentReviewEvents(wordId, limit = 4) {
+  if (!wordId) return [];
+  return getVocabReviewEvents()
+    .filter((event) => event && event.wordId === wordId)
+    .sort((a, b) => Number(b.at || 0) - Number(a.at || 0))
+    .slice(0, limit);
+}
+
+function vocabAttemptResultLabel(result) {
+  if (result === "correct") return "Correct";
+  if (result === "skipped") return "Skipped";
+  return "Missed";
+}
+
+function vocabAttemptResultClass(result) {
+  if (result === "correct") return "green";
+  if (result === "skipped") return "muted";
+  return "accent";
+}
+
+function vocabAttemptDirectionLabel(direction) {
+  const labels = {
+    koToMeaning: "Korean to meaning",
+    meaningToKo: "Meaning to Korean",
+    audioToMeaning: "Audio to meaning",
+    audioToKo: "Audio to Korean",
+    typeKo: "Typed Korean",
+    context: "Context",
+    functionUsage: "Function word",
+    formRecognition: "Form recognition",
+    formProduction: "Form production",
+  };
+  return labels[direction] || direction || "Review";
+}
+
+function vocabAttemptSourceLabel(event) {
+  const source = String(event?.source || "quiz").toLowerCase();
+  const sourceLabel = source === "lesson" ? "Lesson" : source === "review" ? "Review" : "Quiz";
+  if (event?.lessonId) {
+    const lesson = getWordLessonById(event.lessonId);
+    return lesson?.title ? `${sourceLabel}: ${lesson.title}` : `${sourceLabel}: ${event.lessonId}`;
+  }
+  return sourceLabel;
+}
+
+function wordAttemptTrailHtml(row) {
+  if (!row || !row.word) return "";
+  const events = getWordRecentReviewEvents(row.id, 4);
+  const rows = events.length
+    ? events.map((event) => {
+      const resultLabel = vocabAttemptResultLabel(event.result);
+      const resultClass = vocabAttemptResultClass(event.result);
+      const meta = [
+        vocabAttemptDirectionLabel(event.direction),
+        vocabAttemptSourceLabel(event),
+        formatVocabLatencyMs(event.latencyMs),
+        `conf ${formatVocabRatio(event.confidence)}`,
+      ].filter(Boolean).join(" / ");
+      return `
+        <div class="word-attempt-row">
+          <div class="word-attempt-top">
+            <strong class="pill ${resultClass}">${escapeHtml(resultLabel)}</strong>
+            <span>${formatVocabRelativeTime(event.at)}</span>
+          </div>
+          <div class="word-attempt-meta">${escapeHtml(meta)}</div>
+          ${event.errorType ? `<div class="word-attempt-meta">Error type: ${escapeHtml(event.errorType)}</div>` : ""}
+        </div>
+      `;
+    }).join("")
+    : `
+      <div class="word-attempt-empty">
+        No graded attempts yet. Answer this word in a lesson, review, or quiz to build a trail.
+      </div>
+    `;
+  return `
+    <div class="word-attempt-trail">
+      <div class="word-attempt-head">
+        <span>Recent attempts</span>
+        <strong class="pill muted">${events.length}</strong>
+      </div>
+      <div class="word-attempt-list">${rows}</div>
+    </div>
+  `;
+}
+
 function wordDetailNoteHtml(label, body, extraClass = "") {
   if (!body) return "";
   return `
@@ -6317,6 +6402,7 @@ function wordBankDetailHtml(row) {
         <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>
       </div>
       ${wordSrsPanelHtml(row, status)}
+      ${wordAttemptTrailHtml(row)}
       <div class="word-card-actions">
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.voiceText || word.korean)}">▶ Hear word</button>
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.exampleVoiceText || word.exampleKo)}">▶ Hear example</button>
