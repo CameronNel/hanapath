@@ -418,7 +418,19 @@ moved to F3 for checkpoint removal); all audits green; cache bumped;
 browser smoke: a W7 core-actions lesson now serves context questions with
 conjugated answer + conjugated distractors.
 
-- [ ] **F2** implemented and verified
+- [x] **F2** implemented and verified (2026-07-05). `makeWordSentenceBlank`
+  now falls through to `makeConjugatedSentenceBlank`: engine forms
+  (past/honorific/formal/polite/attributive) + the bare -아/어 infinitive +
+  stem+고/지/서/면, longest-first, 2+ chars, token-start only. Context
+  distractors are conjugated into the same shape via
+  `makeConjugatedDistractor` (grammatical: -서 attaches to the infinitive,
+  -(으)면 respects batchim), with a ≥3-unique-pool guard falling back to the
+  citation pool (`makeTextChoices` loops forever on a starved pool).
+  **Re-derived after:** unblankable rows 280 → **44** (untagged irregulars
+  like 눕다/오르다, contracted forms like 두어요, honorific 계세요, and
+  parenthesized ending citations — an optional follow-up is tagging
+  `irregularFamily` on the untagged irregular verbs); dead checkpoints
+  24 → **6**, all structural (the F3 list); 6,173 questions, 0 malformed.
 
 ### F3 — Remove checkpoints that are still dead after F1+F2
 *(data-only, mechanical once the list is re-derived)*
@@ -442,8 +454,9 @@ each lesson's `checkpoints` array in `words_lesson_plan.js`:
   `form-production` (same: modifier endings + bound nouns)
 - `w19-irregular-families-01` — remove `function-usage` (the lesson contains
   zero function words)
-- `w19-honorifics-01` — remove `function-usage` **only if still dead after
-  F2** (its one function word, (으)시, may become blankable)
+- `w19-honorifics-01` — remove `function-usage` (confirmed still dead after
+  F2: its one function word, (으)시, has a parenthesized citation form that
+  never appears literally in its example)
 
 **Done when:** the console command returns `[]`; audits green; cache bumped
 (`words_lesson_plan.js` changed).

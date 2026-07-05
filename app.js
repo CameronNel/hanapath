@@ -4976,7 +4976,72 @@ function makeWordSentenceBlank(word) {
       return { blanked: word.exampleKo.replace(form, "____"), answer: form };
     }
   }
+  return makeConjugatedSentenceBlank(word);
+}
+
+// Verbs/adjectives usually appear conjugated in their example sentence
+// (가다 → 학교에 가요), which the citation-form scan above can never match —
+// before this path existed, 280 rows could not produce a context question and
+// 18 lessons had a dead sentence-blank checkpoint. Ask the inflection engine
+// for the word's generated forms plus the bare -아/어 infinitive and common
+// stem+connective shapes, and blank the one the sentence actually contains;
+// the conjugated surface form is the answer, so the learner completes the
+// sentence they are reading. `conj` tells the context distractor pool to
+// conjugate its candidates into the same shape.
+const VOCAB_BLANK_FORM_NAMES = ["past", "honorific", "formal", "polite", "attributive"];
+const VOCAB_BLANK_STEM_ENDINGS = ["고", "지", "서", "면"];
+function makeConjugatedSentenceBlank(word) {
+  const inflect = window.HANAPATH_INFLECT;
+  if (!inflect || (word.pos !== "verb" && word.pos !== "adjective")) return null;
+  const example = word.exampleKo;
+  const candidates = [];
+  for (const formName of VOCAB_BLANK_FORM_NAMES) {
+    const form = inflect.conjugate(word.korean, word.pos, word.irregularFamily, formName);
+    if (form && form !== word.korean) candidates.push({ form, conj: { formName } });
+  }
+  const polite = candidates.find((c) => c.conj.formName === "polite");
+  if (polite && polite.form.endsWith("요")) {
+    candidates.push({ form: polite.form.slice(0, -1), conj: { formName: "polite", trim: true } });
+  }
+  const stem = inflect.getStem(word.korean);
+  if (stem && stem !== word.korean) {
+    VOCAB_BLANK_STEM_ENDINGS.forEach((ending) => candidates.push({ form: stem + ending, conj: { ending } }));
+  }
+  candidates.sort((a, b) => b.form.length - a.form.length);
+  for (const { form, conj } of candidates) {
+    // Short conjugated fragments match inside unrelated words (서 in 에서),
+    // so require 2+ syllables and a token-start position.
+    if (form.length < 2) continue;
+    const at = example.indexOf(form);
+    if (at < 0) continue;
+    if (at > 0 && !/[\s"“”‘’(【[]/.test(example[at - 1])) continue;
+    return { blanked: example.replace(form, "____"), answer: form, conj };
+  }
   return null;
+}
+
+// Build a distractor in the same conjugated shape as a blank's answer.
+// A target-word candidate that never matches its example is a harmless no-op,
+// but a distractor is *shown* to the learner, so it must be grammatical:
+// -서 is really -아/어서 (attach to the infinitive, not the stem), and -(으)면
+// needs 으 after a closed syllable. -고/-지 attach to any stem as-is.
+function makeConjugatedDistractor(inflect, other, conj) {
+  if (!conj.ending) {
+    let form = inflect.conjugate(other.korean, other.pos, other.irregularFamily, conj.formName);
+    if (form && conj.trim && form.endsWith("요")) form = form.slice(0, -1);
+    return form && form !== other.korean ? form : null;
+  }
+  const stem = inflect.getStem(other.korean);
+  if (!stem || stem === other.korean) return null;
+  if (conj.ending === "서") {
+    const politeForm = inflect.conjugate(other.korean, other.pos, other.irregularFamily, "polite");
+    return politeForm && politeForm.endsWith("요") ? politeForm.slice(0, -1) + "서" : null;
+  }
+  if (conj.ending === "면") {
+    const last = inflect.decompose(stem[stem.length - 1]);
+    return stem + (last && last.jong ? "으면" : "면");
+  }
+  return stem + conj.ending;
 }
 
 // Generate one word question. Directions: koToMeaning, audioToMeaning,
@@ -5060,10 +5125,25 @@ function generateWordQuestionFor(word, direction) {
     const blank = makeWordSentenceBlank(word);
     if (!blank) return null;
     const answer = blank.answer;
-    const pool = getCuratedWords()
-      .filter((other) => other.id !== word.id)
-      .map((other) => getWordTypeTarget(other))
-      .filter((text) => text !== answer);
+    // When the blank is a conjugated form, distractors must share its shape —
+    // citation-form distractors would make the one conjugated option a
+    // giveaway. Fall back to the plain pool only if too few candidates
+    // conjugate (makeTextChoices loops forever on a starved pool).
+    let pool = null;
+    if (blank.conj) {
+      const inflect = window.HANAPATH_INFLECT;
+      pool = getCuratedWords()
+        .filter((other) => other.id !== word.id && other.pos === word.pos && other.korean !== word.korean)
+        .map((other) => makeConjugatedDistractor(inflect, other, blank.conj))
+        .filter((text) => text && text.length >= 2 && text !== answer);
+      if (new Set(pool).size < 3) pool = null;
+    }
+    if (!pool) {
+      pool = getCuratedWords()
+        .filter((other) => other.id !== word.id)
+        .map((other) => getWordTypeTarget(other))
+        .filter((text) => text !== answer);
+    }
     return {
       ...base,
       mode: "Complete the sentence",

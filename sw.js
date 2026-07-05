@@ -1,5 +1,5 @@
-// [2026-07-05] Cache bumped to v167: Insights rows open Word Bank details.
-const CACHE_NAME = "hanapath-shell-v167";
+// [2026-07-05] Cache bumped to v168: inflection-aware sentence blanks (Track F2).
+const CACHE_NAME = "hanapath-shell-v168";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260705c",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260705f",
+  "./app.js?v=20260705g",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
