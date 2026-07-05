@@ -33,6 +33,8 @@ This file covers only the audio pipeline. For the project as a whole, read
   section (linguistics + pedagogy, status scorecard, roadmap, milestone sheet,
   and the dependency/implementation order that tells you when/where/how to build
   each piece).
-- `../docs/VOCABULARY_TEACHING_SPEC_SOURCE.md` — the original research spec, verbatim.
+- `../docs/SENTENCES_TEACHING_SPEC.md` + `../docs/SENTENCES_FINAL_ROADMAP.md` — the
+  Sentences section north star + execution queue (current active work).
+- `../docs/archive/VOCABULARY_TEACHING_SPEC_SOURCE.md` — the original Words research spec, verbatim (archived).
 - `../docs/WORDS_SECTION_MASTER_SPEC.md` — the Words implementation plan.
 - `../HANDOVER.md` — repo snapshot and conventions.

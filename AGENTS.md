@@ -10,28 +10,34 @@ plain browser script loaded via `<script defer>`.
 runbook for continuing this project: orient → find the next task → build →
 verify → ship. If the user says "continue the project," follow it top to bottom.
 
-The **Words (vocabulary) section** is built toward the target defined in
-[`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md) — the north
-star. Most of it has shipped; the live remaining-work list is its
-**§9 finalization checklist**, and the **batch-by-batch execution queue** for
-that checklist is **[`docs/WORDS_FINAL_ROADMAP.md`](docs/WORDS_FINAL_ROADMAP.md)**
-— if you were asked to "do the next task" or "work the roadmap," open that
-file, read its §2 runbook, and take the next unchecked box (one box = one PR;
-Tracks D/E are gated — don't touch them without an explicit owner decision).
-**§8** is the status scorecard, **§11** the milestone sheet, **§12** the
-how-to for the one open milestone (M2). Do not trust a "✅ done" at face
-value — the scorecard has been wrong three times (PRs #50, #51, #54);
-verify claims against the actual data (`node scripts/audit-words-data.mjs
---strict`, spot-check rows) before building on them. The **alphabet section
-is complete and protected** — do not regress it.
+**The current active work is the Sentences section**, built toward the target
+defined in [`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)
+— the north star (§3–§7 are the design contract, §8 the status scorecard, §9
+the milestone sheet). The **batch-by-batch execution queue** is
+**[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)** — if
+you were asked to "do the next task" or "work the roadmap," open that file,
+read its §0 ground rules and §2 runbook, and take the next unchecked box in
+dependency order (one box = one PR; each box is routed **[codex]** or
+**[high]**; Track H is owner-gated 🔒). The flagship feature, built right
+after the data foundation, is **Translate & Type**: an English sentence is
+shown and the learner types the Korean in Hangul, with a tip → word-bank →
+next-chunk → reveal helper ladder.
+
+Do not trust a "✅ done" at face value — the Words scorecard was wrong four
+times (PRs #50, #51, #54, merge `b385e77`); verify claims against the actual
+data (strict audits + spot-checked rows) before building on them. The
+**alphabet and Words sections are complete and protected** — do not regress
+them (the closed Words queue is archived at
+`docs/archive/WORDS_FINAL_ROADMAP.md`).
 
 ## Hard rules
 
 1. **Stay vanilla/static.** No framework, bundler, or build step. Data files are
    plain browser globals loaded before `app.js`.
-2. **Additive, backward-compatible** changes to the Words data schema. Existing
-   curated rows and lessons must keep passing the audit.
-3. **Run the audits** after touching Words data: `node scripts/audit-words-data.mjs --strict`
+2. **Additive, backward-compatible** changes to the Words and Sentences data
+   schemas. Existing curated rows and lessons must keep passing the audits.
+3. **Run the audits** after touching learning data: `node scripts/audit-words-data.mjs --strict`,
+   `node scripts/audit-sentences-data.mjs --strict` (once it exists),
    and `node scripts/audit-alphabet-audio.mjs --strict`; run
    `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
    any loaded asset version; `node --check` any JS you edit.
@@ -51,10 +57,12 @@ is complete and protected** — do not regress it.
 |---|---|
 | **`AI_INSTRUCTIONS.md`** | The "continue the project" runbook — **start here** |
 | `CLAUDE.md` | Same rules + doc map (Claude Code entry point) |
-| **`docs/VOCABULARY_TEACHING_SPEC.md`** | Words **north star**: pedagogy/linguistics, status scorecard, milestone sheet, dependency/implementation order |
-| **`docs/WORDS_FINAL_ROADMAP.md`** | Words **execution queue**: checkbox batches, per-PR recipes, curation decision guides — take the next unchecked box |
-| `docs/VOCABULARY_TEACHING_SPEC_SOURCE.md` | The original research spec, verbatim (source of record) |
-| `docs/WORDS_SECTION_MASTER_SPEC.md` | Words **implementation** plan (schema, SRS, lesson flow); §25 reconciles it with the north star |
+| **`docs/SENTENCES_TEACHING_SPEC.md`** | Sentences **north star**: pedagogy, bank schema, pattern tags, bands, drills, scorecard, milestone sheet |
+| **`docs/SENTENCES_FINAL_ROADMAP.md`** | Sentences **execution queue**: checkbox batches, per-PR recipes, model routing — take the next unchecked box |
+| `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, verbatim (source of record) |
+| `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; pedagogy + data-axes reference) |
+| `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — engines Sentences reuses) |
+| `docs/archive/` | Superseded plans (closed Words roadmap, original blueprint, Words research source) — never work from these |
 | `HANDOVER.md` | Repo snapshot + conventions |
 | `.agents/AGENTS.md` | Offline audio-generation pipeline rules |
 | `README.md` | Product overview + run instructions |

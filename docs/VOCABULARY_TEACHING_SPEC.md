@@ -14,8 +14,8 @@ Status: **governing spec for *what* and *how* the Words section teaches.**
   implementation that must be brought toward it (see §8–§9 below).
 
 The original research spec is reproduced **verbatim** in
-[`VOCABULARY_TEACHING_SPEC_SOURCE.md`](VOCABULARY_TEACHING_SPEC_SOURCE.md) (source
-of record); this doc is its repo-actionable adaptation.
+[`archive/VOCABULARY_TEACHING_SPEC_SOURCE.md`](archive/VOCABULARY_TEACHING_SPEC_SOURCE.md)
+(source of record, archived); this doc is its repo-actionable adaptation.
 
 **If you are an AI/agent about to build Words features:** read §8 (status), then
 §11 (milestone reference sheet) and §12 (dependency & implementation order).
@@ -328,7 +328,7 @@ The Word Bank still has a **Needs curation** filter and **Curation priority** so
 ## 9. What remains to finalize the Words section
 
 The original six-PR roadmap (data axes → sense split → inflection engine → pronunciation layer → Core 1000 authoring → analytics) has **shipped**; Track C cleanup and the owner-gated Track D/E decisions are also done. This section is now the historical finalization checklist, ordered by leverage. Each item was kept small, additive, and audit-backed. The batch-by-batch execution queue for these items (per-PR recipes, vetted M2 candidate list, curation decision guides — written so a small coding model can execute safely) is
-**[`WORDS_FINAL_ROADMAP.md`](WORDS_FINAL_ROADMAP.md)**; this section stays the source of truth for *what*, that file for *how and in which order*.
+**[`archive/WORDS_FINAL_ROADMAP.md`](archive/WORDS_FINAL_ROADMAP.md)** (fully executed and archived 2026-07-05); this section stays the source of truth for *what*, that file for *how and in which order*.
 
 1. **M2 sense split (done — Track B is resolved).**
    105 lemmas have genuine multi-sense rows (§8). Note: the B2 batch (쉬다/열다/짓다/살다/초) was merged in PR #67, silently lost in integration merge b385e77, and restored on 2026-07-04. Batches so far:
