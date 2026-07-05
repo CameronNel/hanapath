@@ -12907,58 +12907,6 @@ function renderLearnComplete(index) {
   if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
 }
 
-// Temporary voice-comparison screen (owner request) — remove after testing.
-// Three words absent from every word list, one per voice engine:
-//   만화경 (kaleidoscope)   — edge-tts "ko-KR-SunHiNeural" (the app's generated voice)
-//   기상학자 (meteorologist) — Piper "kss-korean" (the unused model in the repo)
-//   회오리바람 (whirlwind)    — window.speechSynthesis (the app's runtime fallback)
-function renderVoiceTest() {
-  stopSpeech();
-  activeHub = "voicetest";
-  setNavActive("voicetest");
-  hideDetailBar();
-  const el = showScreen("menu");
-  if (!el) return;
-  const rows = [
-    { ko: "만화경", en: "kaleidoscope", engine: "Neural (edge-tts SunHiNeural) — the app's generated voice", src: "./audio/test_voice_neural.mp3" },
-    { ko: "기상학자", en: "meteorologist", engine: "Piper (kss-korean) — the unused model in the repo", src: "./audio/test_voice_piper.wav" },
-    { ko: "회오리바람", en: "whirlwind", engine: "Device TTS (speechSynthesis) — the runtime fallback", src: "" },
-  ];
-  el.innerHTML = `
-    <div class="hub-header">
-      <div class="eyebrow">Temporary</div>
-      <h2 class="screen-title" style="margin-bottom:6px;">Voice comparison test</h2>
-      <div class="screen-sub" style="margin-bottom:0;">Three words that are in none of the word lists — one per voice engine. Tap to hear.</div>
-    </div>
-    <div class="hub-tiles">
-      ${rows.map((row, index) => `
-        <button class="hub-tile" type="button" data-voice-test="${index}">
-          <span class="hub-tile-icon">🔊</span>
-          <span class="hub-tile-text">
-            <strong lang="ko">${escapeHtml(row.ko)} · ${escapeHtml(row.en)}</strong>
-            <small>${escapeHtml(row.engine)}</small>
-          </span>
-          <span class="hub-tile-go" aria-hidden="true">▶</span>
-        </button>
-      `).join("")}
-    </div>
-  `;
-  el.querySelectorAll("[data-voice-test]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      stopSpeech();
-      const row = rows[Number(btn.dataset.voiceTest)];
-      if (!row) return;
-      if (row.src) {
-        new Audio(row.src).play();
-        return;
-      }
-      const utterance = new SpeechSynthesisUtterance(row.ko);
-      utterance.lang = "ko-KR";
-      window.speechSynthesis.speak(utterance);
-    });
-  });
-}
-
 function goHub(hub) {
   refreshProgressionState();
   if (!HUBS.includes(hub)) hub = "learn";
@@ -14399,7 +14347,6 @@ async function init() {
   document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.dataset.nav === "learn") tapLearnTab();
-      else if (btn.dataset.nav === "voicetest") renderVoiceTest();
       else goHub(btn.dataset.nav);
     });
   });
