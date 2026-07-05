@@ -1,11 +1,11 @@
 // [2026-07-05] Cache bumped to v180: supplementary 15k word list + temporary voice test tab.
-const CACHE_NAME = "hanapath-shell-v181";
+const CACHE_NAME = "hanapath-shell-v182";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260705l",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260705c",
+  "./audio_map.js?v=20260705d",
   "./words_curated_core.js?v=20260705d",
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260705d",

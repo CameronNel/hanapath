@@ -5,16 +5,16 @@ This project uses a custom, offline audio generation pipeline to ensure high-qua
 **CRITICAL RULES FOR ALL AGENTS:**
 
 1. **How the Audio System Works**:
-   - The app stores generated `.mp3` files in the `audio/` directory.
-   - The mapping between Korean text strings (including single Jamo letters, words, and full sentences) and their respective `.mp3` files is stored in `audio_map.js` as a global dictionary: `window.AUDIO_MAP`.
-   - The `speak(text)` function in `app.js` first looks up `window.AUDIO_MAP[text]`. If an exact match is found, it plays the `.mp3`. If it misses, it falls back to `window.speechSynthesis`.
+   - The app stores generated audio as **Opus 24 kbps mono `.ogg`** files in the `audio/` directory (requires iOS/Safari 18.4+; Chrome/Android/Firefox have always played it). A handful of legacy zero-byte `.mp3` files remain for tokens edge-tts cannot pronounce (isolated jamo clusters) — leave them alone.
+   - The mapping between Korean text strings (including single Jamo letters, words, and full sentences) and their audio files is stored in `audio_map.js` as a global dictionary: `window.AUDIO_MAP`.
+   - The `speak(text)` function in `app.js` first looks up `window.AUDIO_MAP[text]`. If an exact match is found, it plays the file at the mapped path. If it misses, it falls back to `window.speechSynthesis`.
 
 2. **When Adding New Vocabulary / Text**:
    - If you add new Korean words, sentences, or characters **anywhere the app speaks them** — `words_curated_core.js` (including example sentences and `voiceText`/`exampleVoiceText`), `words_lesson_plan.js`, `korean_5000_claude_ready.csv`, or inside `app.js` — **you MUST regenerate the audio assets**.
    
 3. **How to Regenerate Assets**:
-   - Run the Python script: `python generate_assets.py`
-   - The script is smart: it uses `edge-tts` to generate neural TTS *only* for the brand new phrases. It skips existing phrases instantly.
+   - Run the Python script: `python generate_assets.py` (needs `edge-tts` **and** `ffmpeg` on PATH — or point the `FFMPEG` env var at a binary).
+   - The script is smart: it uses `edge-tts` to generate neural TTS *only* for the brand new phrases (as a temp mp3, immediately re-encoded to Opus `.ogg`). It skips existing phrases instantly.
    - Once finished, the script automatically rewrites `audio_map.js` to include the new mappings.
    - Do NOT try to manually edit `audio_map.js`.
 
