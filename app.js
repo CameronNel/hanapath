@@ -6075,6 +6075,14 @@ function applyWordBankFilter(rows, filter, knownSet, hardSet, now) {
   return rows;
 }
 
+function getWordBankFilterCounts(knownSet, hardSet, now) {
+  const counts = {};
+  for (const filter of WORD_BANK_FILTERS) {
+    counts[filter.id] = applyWordBankFilter(wordReferenceRows, filter.id, knownSet, hardSet, now).length;
+  }
+  return counts;
+}
+
 function sortWordBankRows(rows, sort, knownSet, hardSet, now) {
   const sorted = [...rows];
   if (sort === "frequency") {
@@ -6594,8 +6602,15 @@ function renderWordBankContent() {
   const knownCount = getVocabKnownSet().size + getKnownCuratedWordCount();
   const dueCount = getVocabDueCount();
 
+  const knownSet = getVocabKnownSet();
+  const hardSet = getVocabHardSet();
+  const now = Date.now();
+  const filterCounts = getWordBankFilterCounts(knownSet, hardSet, now);
   const filterChips = WORD_BANK_FILTERS
-    .map((f) => `<button class="filter-chip ${state.wordBankFilter === f.id ? "active" : ""}" type="button" data-word-filter="${f.id}">${f.label}</button>`)
+    .map((f) => {
+      const count = filterCounts[f.id] ?? 0;
+      return `<button class="filter-chip word-bank-filter-chip ${state.wordBankFilter === f.id ? "active" : ""}" type="button" data-word-filter="${f.id}"><span>${f.label}</span><span class="word-bank-filter-count">${count.toLocaleString()}</span></button>`;
+    })
     .join("");
   const sortChips = WORD_BANK_SORTS
     .map((s) => `<button class="filter-chip ${state.wordBankSort === s.id ? "active" : ""}" type="button" data-word-sort="${s.id}">${s.label}</button>`)

@@ -3155,6 +3155,25 @@ li { margin-bottom: 4px; }
 
 .word-bank-panel .vocab-filters { margin-bottom: 8px; }
 .word-bank-sort-row { gap: 6px; }
+.word-bank-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.word-bank-filter-count {
+  min-width: 1.5em;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  color: var(--muted-2);
+  font-size: .72rem;
+  line-height: 1.35;
+  text-align: center;
+}
+.word-bank-filter-chip.active .word-bank-filter-count {
+  background: rgba(255,255,255,.18);
+  color: var(--text);
+}
 .word-bank-example { opacity: .85; }
 .word-bank-refonly { font-size: .72rem; color: var(--muted); }
 .word-refonly-note {

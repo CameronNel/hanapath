@@ -1,16 +1,16 @@
-// [2026-07-05] Cache bumped to v170: 12 M5 particles get full function-word treatment (Track F1).
-const CACHE_NAME = "hanapath-shell-v170";
+// [2026-07-05] Cache bumped to v171: Word Bank filter count polish.
+const CACHE_NAME = "hanapath-shell-v171";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260705f",
+  "./styles.css?v=20260705g",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705c",
   "./words_curated_core.js?v=20260705d",
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260705d",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260705g",
+  "./app.js?v=20260705h",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
