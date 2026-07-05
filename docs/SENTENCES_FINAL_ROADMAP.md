@@ -367,4 +367,4 @@ them. One PR per box; browser-play each unit before shipping.
 
 | Date | Box | PR | Notes |
 |---|---|---|---|
-| 2026-07-05 | A1-A3 | draft PR | Extracted the 2,007-row sentence bank from `words_curated_core.js`, added the strict audit, and wired the bank into the app shell. |
+| 2026-07-05 | A1-A3 | PR #98 | Extracted the 2,007-row sentence bank from `words_curated_core.js`, added the strict audit, and wired the bank into the app shell. |
