@@ -423,7 +423,7 @@
       subtitle: "Not, cannot, and the past",
       goal: "Build basic time and negative sentence meanings.",
       newWordIds: ["fw1711_an", "fw1712_mot", "fw1713_ji_anta", "fw1714_ji_mothada", "fw1715_asseoyo"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
     defineLesson({
@@ -443,7 +443,7 @@
       subtitle: "Forms that sit before a noun",
       goal: "Recognize present, past, future, and adjective modifier forms.",
       newWordIds: ["fw1811_neun_mod", "fw1812_eun_verb", "fw1813_eul_prosp", "fw1814_eun_adj", "fw1815_geot", "w_m6_3025_sae_new"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
     defineLesson({
@@ -453,7 +453,7 @@
       subtitle: "Respect the subject, not just the listener",
       goal: "Separate the subject honorific marker from listener politeness.",
       newWordIds: ["fw1901_si", "w1902_gyesida", "w1903_deusida", "w1904_jumusida", "w1905_seongham", "w1906_yeonse", "w_m6_3023_bun_honorific"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
     defineLesson({
@@ -463,7 +463,7 @@
       subtitle: "Trigger-based sound changes",
       goal: "Treat irregular predicates as predictable trigger families.",
       newWordIds: ["w1911_geotda", "w1912_maepda", "w1913_jitda", "w1914_ppalgata", "w1915_ppareuda", "w1916_salda", "w1917_nada_occur", "w1918_nada_sprout", "w_m2_jitda_make_prepare", "w_m2_salda_be_alive"],
-      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "function-usage", "form-recognition", "form-production"],
+      checkpoints: ["ko-to-meaning", "meaning-to-ko", "sentence-blank", "form-recognition", "form-production"],
       pass: { minFirstTryPct: 60, requireTypedAttempt: false },
     }),
       defineLesson({

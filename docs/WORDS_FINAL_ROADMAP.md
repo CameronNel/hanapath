@@ -461,7 +461,10 @@ each lesson's `checkpoints` array in `words_lesson_plan.js`:
 **Done when:** the console command returns `[]`; audits green; cache bumped
 (`words_lesson_plan.js` changed).
 
-- [ ] **F3** dead checkpoints removed, list re-derived empty
+- [x] **F3** dead checkpoints removed (2026-07-05): the four lessons above
+  lost exactly the named entries; the re-derivation command returns `[]`
+  and the total question count is unchanged at 6,173 (the removed
+  checkpoints were generating nothing, so nothing was lost).
 
 ### F4 — Audit hardening: a declared checkpoint must be generatable
 *(scripts/audit-words-data.mjs — needs judgment to mirror app logic; not a

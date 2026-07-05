@@ -1,5 +1,5 @@
-// [2026-07-05] Cache bumped to v168: inflection-aware sentence blanks (Track F2).
-const CACHE_NAME = "hanapath-shell-v168";
+// [2026-07-05] Cache bumped to v169: dead lesson checkpoints removed (Track F3).
+const CACHE_NAME = "hanapath-shell-v169";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,7 +8,7 @@ const APP_SHELL = [
   "./audio_map.js?v=20260705c",
   "./words_curated_core.js?v=20260705c",
   "./words_inflect.js?v=20260703b",
-  "./words_lesson_plan.js?v=20260705c",
+  "./words_lesson_plan.js?v=20260705d",
   "./raw_word_meanings.js?v=20260703a",
   "./app.js?v=20260705g",
   "./alphabet_skill_srs.js?v=20260630a",
