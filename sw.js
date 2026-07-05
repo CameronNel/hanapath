@@ -1,11 +1,11 @@
-// [2026-07-05] Cache bumped to v185: Drill Lab split audio controls.
-const CACHE_NAME = "hanapath-shell-v185";
+// [2026-07-05] Cache bumped to v186: Supplementary 15k audio.
+const CACHE_NAME = "hanapath-shell-v186";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260705l",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260705d",
+  "./audio_map.js?v=20260705e",
   "./words_curated_core.js?v=20260705d",
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260705d",
