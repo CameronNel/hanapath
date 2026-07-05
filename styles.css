@@ -3151,21 +3151,24 @@ li { margin-bottom: 4px; }
 .word-bank-detail > .button { margin-bottom: 4px; }
 .vocab-status.due { background: rgba(251,191,36,.15); color: #fbbf24; }
 .vocab-status.learning { background: rgba(91,157,255,.15); color: var(--accent); }
-.word-srs-panel {
+.word-srs-panel,
+.word-attempt-trail {
   margin: 12px 0;
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: rgba(255,255,255,.035);
 }
-.word-srs-head {
+.word-srs-head,
+.word-attempt-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 10px;
 }
-.word-srs-head > span {
+.word-srs-head > span,
+.word-attempt-head > span {
   color: var(--muted-2);
   font-size: .72rem;
   font-weight: 800;
@@ -3196,6 +3199,31 @@ li { margin-bottom: 4px; }
   font-size: .86rem;
 }
 .word-srs-foot { margin-top: 8px; }
+.word-attempt-list {
+  display: grid;
+  gap: 8px;
+}
+.word-attempt-row,
+.word-attempt-empty {
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(0,0,0,.12);
+}
+.word-attempt-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.word-attempt-top > span,
+.word-attempt-meta,
+.word-attempt-empty {
+  color: var(--muted-2);
+  font-size: .72rem;
+}
+.word-attempt-meta + .word-attempt-meta { margin-top: 2px; }
 .word-review-mini-stats .stat-box { padding: 10px; }
 .word-review-mini-stats .sv { font-size: 1.25rem; }
 
