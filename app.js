@@ -3543,8 +3543,9 @@ function isFreshProfile() {
 
 const VOCAB_CSV_URL = "./korean_5000_claude_ready.csv";
 // Supplementary long-tail frequency list (source ranks 5,194+). Reference and
-// search only — never part of lessons, quizzes, or curation. Audio falls back
-// to speechSynthesis by design (no generated assets for this tier).
+// search only — never part of lessons, quizzes, or curation. Words in this
+// tier get generated Opus audio like everything else (generate_assets.py
+// reads this CSV); speak() falls back to speechSynthesis for any gaps.
 const SUPPLEMENTARY_CSV_URL = "./korean_supplementary_15k.csv";
 const VOCAB_PAGE_SIZE = 40;
 const VOCAB_BANDS = ["1-500", "501-1000", "1001-1500", "1501-2000", "2001-2500", "2501-3000", "3001-3500", "3501-4000", "4001-4500", "4501-5000"];

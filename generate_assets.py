@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -21,16 +22,17 @@ FFMPEG = os.environ.get("FFMPEG") or shutil.which("ffmpeg")
 def extract_korean_text():
     phrases = set()
     
-    # 1. Extract from CSV
-    try:
-        with open("korean_5000_claude_ready.csv", "r", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            next(reader, None) # skip header
-            for row in reader:
-                if len(row) > 1:
-                    phrases.add(row[1].strip())
-    except Exception as e:
-        print("Could not read CSV:", e)
+    # 1. Extract from the word-list CSVs (korean spelling is column 2 in both)
+    for csv_file in ["korean_5000_claude_ready.csv", "korean_supplementary_15k.csv"]:
+        try:
+            with open(csv_file, "r", encoding="utf-8") as f:
+                reader = csv.reader(f)
+                next(reader, None) # skip header
+                for row in reader:
+                    if len(row) > 1:
+                        phrases.add(row[1].strip())
+        except Exception as e:
+            print(f"Could not read {csv_file}:", e)
 
     # 2. Extract from JS files (Match any string literal containing Korean Jamo or Syllables)
     for filename in ["app.js", "words_curated_core.js", "words_lesson_plan.js"]:
@@ -62,83 +64,121 @@ def extract_korean_text():
         except Exception as e:
             print(f"Could not read {filename}:", e)
         
-    return list(phrases)
+    # Drop extraction noise: strings with runs of latin letters are JS-literal
+    # fragments or English usage notes the app never speaks (the Korean voice
+    # shouldn't read English anyway). Single stray letters are tolerated.
+    return [p for p in phrases if not re.search(r"[A-Za-z]{2,}", p)]
+
+def generate_one(text, md5_hash):
+    """Generate one phrase: edge-tts -> temp mp3 -> Opus .ogg.
+
+    Returns the map value ("./audio/<hash>.ogg" or the empty legacy
+    "./audio/<hash>.mp3") on success, or None for a transient failure that
+    should be retried on the next run.
+    """
+    out_ogg = os.path.join(OUTPUT_DIR, f"{md5_hash}.ogg")
+    tmp_mp3 = os.path.join(OUTPUT_DIR, f"{md5_hash}.tmp.mp3")
+    legacy_mp3 = os.path.join(OUTPUT_DIR, f"{md5_hash}.mp3")
+
+    tts = subprocess.run(
+        # --text=... (not '--text', text): a phrase starting with '-' would
+        # otherwise be parsed as an option by edge-tts's argparse.
+        ['edge-tts', '--voice', VOICE, f'--text={text}', '--write-media', tmp_mp3],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+
+    if tts.returncode != 0:
+        # Transient failure (network, throttling) — no map entry, retried
+        # on the next run.
+        print(f"  ERROR: edge-tts failed for: {text}")
+        if os.path.exists(tmp_mp3):
+            os.remove(tmp_mp3)
+        return None
+
+    if not os.path.exists(tmp_mp3) or os.path.getsize(tmp_mp3) == 0:
+        # edge-tts succeeded but produced no speech (unpronounceable token,
+        # e.g. an isolated jamo cluster). Keep the documented empty-.mp3
+        # convention so audits and the map stay consistent.
+        print(f"  WARNING: edge-tts produced no audio for: {text}")
+        if os.path.exists(tmp_mp3):
+            os.remove(tmp_mp3)
+        open(legacy_mp3, "a").close()
+        return f"./audio/{md5_hash}.mp3"
+
+    result = subprocess.run(
+        [FFMPEG, '-nostdin', '-v', 'error', '-y', '-i', tmp_mp3,
+         '-c:a', 'libopus', '-b:a', OPUS_BITRATE, '-ac', '1', out_ogg],
+        capture_output=True, text=True
+    )
+    os.remove(tmp_mp3)
+    if result.returncode != 0 or not os.path.exists(out_ogg) or os.path.getsize(out_ogg) == 0:
+        print(f"  ERROR: opus encode failed for: {text}\n  {result.stderr.strip()}")
+        if os.path.exists(out_ogg):
+            os.remove(out_ogg)
+        return None
+
+    return f"./audio/{md5_hash}.ogg"
 
 def generate_audio(phrases):
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
-    total = len(phrases)
-    print(f"Found {total} unique Korean phrases (including Jamo).")
+    print(f"Found {len(phrases)} unique Korean phrases (including Jamo).")
 
     audio_map = load_existing_audio_map()
-    
-    for i, text in enumerate(phrases):
-        if not text: continue
 
+    # Work out what actually needs generating. Legacy .mp3 entries (edge-tts
+    # produced empty audio for them, e.g. isolated jamo clusters) are kept
+    # as-is rather than retried forever.
+    todo = []
+    for text in phrases:
+        if not text:
+            continue
         md5_hash = hashlib.md5(text.encode('utf-8')).hexdigest()
-        out_ogg = os.path.join(OUTPUT_DIR, f"{md5_hash}.ogg")
-        tmp_mp3 = os.path.join(OUTPUT_DIR, f"{md5_hash}.tmp.mp3")
-        legacy_mp3 = os.path.join(OUTPUT_DIR, f"{md5_hash}.mp3")
-
-        # Skip anything whose mapped asset already exists. Legacy .mp3 entries
-        # (edge-tts produced empty audio for them, e.g. isolated jamo
-        # clusters) are kept as-is rather than retried forever.
         existing = audio_map.get(text, "")
         if existing and os.path.exists(existing[2:] if existing.startswith("./") else existing):
             continue
+        out_ogg = os.path.join(OUTPUT_DIR, f"{md5_hash}.ogg")
         if os.path.exists(out_ogg):
             audio_map[text] = f"./audio/{md5_hash}.ogg"
             continue
+        todo.append((text, md5_hash))
 
-        print(f"[{i+1}/{total}] Generating: {text}")
+    total = len(todo)
+    print(f"{total} new phrases to generate.")
 
-        try:
-            tts = subprocess.run(
-                ['edge-tts', '--voice', VOICE, '--text', text, '--write-media', tmp_mp3],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
-            )
-        except FileNotFoundError:
-            print("ERROR: edge-tts command not found.")
-            break
+    if total and not shutil.which("edge-tts"):
+        print("ERROR: edge-tts command not found.")
+        todo = []
+    if total and todo and not FFMPEG:
+        print("ERROR: ffmpeg not found (install it or set the FFMPEG env var).")
+        todo = []
 
-        if tts.returncode != 0:
-            # Transient failure (network etc.) — no map entry, retried next run.
-            print(f"  ERROR: edge-tts failed for: {text}")
-            if os.path.exists(tmp_mp3):
-                os.remove(tmp_mp3)
-            continue
+    failures = 0
+    if todo:
+        workers = max(1, int(os.environ.get("TTS_WORKERS", "4")))
+        print(f"Generating with {workers} parallel workers (set TTS_WORKERS to change).")
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(generate_one, text, md5): text for text, md5 in todo}
+            done = 0
+            for future in as_completed(futures):
+                text = futures[future]
+                try:
+                    mapped = future.result()
+                except Exception as e:
+                    print(f"  ERROR: unexpected failure for: {text} ({e})")
+                    mapped = None
+                done += 1
+                if mapped:
+                    audio_map[text] = mapped
+                else:
+                    failures += 1
+                if done % 200 == 0 or done == total:
+                    print(f"[{done}/{total}] generated ({failures} failed)")
 
-        if not os.path.exists(tmp_mp3) or os.path.getsize(tmp_mp3) == 0:
-            # edge-tts succeeded but produced no speech (unpronounceable
-            # token, e.g. an isolated jamo cluster). Keep the documented
-            # empty-.mp3 convention so audits and the map stay consistent.
-            print(f"  WARNING: edge-tts produced no audio for: {text}")
-            if os.path.exists(tmp_mp3):
-                os.remove(tmp_mp3)
-            open(legacy_mp3, "a").close()
-            audio_map[text] = f"./audio/{md5_hash}.mp3"
-            continue
-
-        if not FFMPEG:
-            print("ERROR: ffmpeg not found (install it or set the FFMPEG env var).")
-            os.remove(tmp_mp3)
-            break
-
-        result = subprocess.run(
-            [FFMPEG, '-nostdin', '-v', 'error', '-y', '-i', tmp_mp3,
-             '-c:a', 'libopus', '-b:a', OPUS_BITRATE, '-ac', '1', out_ogg],
-            capture_output=True, text=True
-        )
-        os.remove(tmp_mp3)
-        if result.returncode != 0 or not os.path.exists(out_ogg) or os.path.getsize(out_ogg) == 0:
-            print(f"  ERROR: opus encode failed for: {text}\n  {result.stderr.strip()}")
-            if os.path.exists(out_ogg):
-                os.remove(out_ogg)
-            continue
-
-        audio_map[text] = f"./audio/{md5_hash}.ogg"
+    if failures:
+        print(f"WARNING: {failures} phrases failed — rerun the script to retry them.")
 
     # Write the audio_map.js file
     print("Writing audio_map.js...")
