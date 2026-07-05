@@ -13,23 +13,25 @@
 
 ---
 
-## 0. Verified status snapshot (2026-07-05)
+## 0. Verified status snapshot (2026-07-05, re-verified by the cold-learner pass later the same day)
 
-The Words section is **final** (§1 definition of done: all boxes ticked as
-of 2026-07-05). All engines, screens, and content systems are shipped, the
-app smoke-tests clean, every track (A–E) is closed, generated audio coverage
-is complete, and the real gated progression is live (`TEST_UNLOCK_ALL_STAGES`
-is `false`).
+Tracks A–E are closed and all engines, screens, and content systems are
+shipped; the app smoke-tests clean, generated audio coverage is complete, and
+the real gated progression is live (`TEST_UNLOCK_ALL_STAGES` is `false`).
+A full cold-learner verification on 2026-07-05 (scorecard re-derivation +
+scripted Chromium walkthrough; see spec §8/§9 item 6) confirmed every closed
+track's numbers and opened **Track F (§7.5)** with three real gaps the audits
+could not see. The section is final when Track F is also done.
 
 | Fact | Verified value |
 |---|---|
 | Curated senses | **2,028** rows, every one referenced by a lesson (audit: 0 errors, 0 warnings) |
-| Lessons | **298** across stages W0–W19 |
+| Lessons | **298** across **219 stages, W0–W218** (W0–W19 core curriculum + W20–W218 theme stages; earlier versions of this table wrongly said "W0–W19") — unlock chain is strictly linear and verified unbroken |
 | Genuinely multi-sense lemmas | **105** lemmas with 2+ sense rows (215 rows carry a `senseKey`, all across those 105 lemmas) |
 | Leftover singleton `senseKey`s | **0** (Track C closed 2026-07-04) |
 | Curation queue | **0** rows have ≥1 `inferred` axis — register 0, speechLevel 0, morphTag 0, originType 0 |
 | `hanja` | explicit on only 2 rows; 2,026 absent (owner-gated, §Track E) |
-| Honorific axis | `honorificRole` on 26 rows (9 subject / 14 listener / 3 humble) + 10 bidirectional `contrastWith` pairs, rendered in the Word Bank detail view and lesson cards |
+| Honorific axis | `honorificRole` on 26 rows (9 subject / 14 listener / 3 humble) + **11** bidirectional `contrastWith` pairs (the 10 lexical pairs + 아/어↔아요/어요; earlier counts said 10), rendered in the Word Bank detail view and lesson cards |
 | 하다-verbs | 0 `hybrid` (root-origin rule, §7 E3): 35 Sino-Korean, 19 native, 2 loanword |
 | Progression | `TEST_UNLOCK_ALL_STAGES` = `false` — real gated progression verified cold |
 | Audits | `audit-words-data --strict` (now incl. audio-map coverage), `audit-alphabet-audio --strict`, `audit-app-shell` all pass |
@@ -73,6 +75,7 @@ owner-only — **never attempt E items autonomously.**
 - [x] **Track C** — 18 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
 - [x] **Track D** — Honorific axis encoded and surfaced in the UI (`honorificRole` + `contrastWith` pairs, §6)
 - [x] **Track E** — Owner decisions recorded (§7: stub accepted, hanja stays absent, root-origin rule applied)
+- [ ] **Track F** — Cold-learner verification follow-ups (§7.5): 12 particles get full function-word treatment, sentence-blank works for conjugated examples, dead checkpoints removed, audit hardened against silent checkpoints
 - [x] **Final gate** — `TEST_UNLOCK_ALL_STAGES` set back to `false`; scripted cold-learner test of the real gated progression passed; caches bumped; all audits green (2026-07-05)
 
 ---
@@ -342,8 +345,137 @@ if the owner wants the other option.
 
 ---
 
+## 7.5 Track F — Cold-learner verification follow-ups (opened 2026-07-05)
+
+Found by the full verification pass (spec §9 item 6): re-derivation of every
+scorecard number plus a scripted Chromium walkthrough of the real learner
+path. All three gaps predate Track A–E work and survived every green audit
+run because nothing audits them — which is why F4 exists.
+
+**Order matters: F1 → F2 → F3 → F4.** F1 and F2 revive some of the dead
+checkpoints; F3 removes only what is *still* dead after them, and F4 locks
+the invariant in. Re-derive the dead-checkpoint list between steps (command
+in F3).
+
+### F1 — Give the 12 M5 particles full function-word treatment
+*(data-only, mechanical: every value is specified below — good for a small
+model; no meaning/exampleKo changes, so no audio work)*
+
+In `words_curated_core.js`, add to each row below: `isFunctionWord: true`
+plus the listed fields. Do not change `id`, `pos`, `morphTag`, `meaning`,
+`exampleKo`, or any axis value. Where `forms` is given, keep the citation
+form **first** (it's the typing target); the alternates become accepted
+typed answers and can make the row sentence-blankable. `contrastWith` must
+be an array of strings (audit-enforced).
+
+| Row | Add |
+|---|---|
+| `w_m5_852_euro` 으로 | `grammarRole: "direction-means"`, `forms: ["으로", "로"]`, `pattern: "[noun] + (으)로"`, `contrastWith: ["에"]`, `usageNote: "Direction or means: 학교로 (toward school), 버스로 (by bus). Use 로 after a vowel or ㄹ, 으로 after other consonants."` |
+| `w_m5_853_ege` 에게 | `grammarRole: "recipient"`, `pattern: "[person] + 에게"`, `contrastWith: ["한테"]`, `usageNote: "To a person or animal: 친구에게 편지를 보내요. Neutral/written; 한테 is the casual spoken version."` |
+| `w_m5_854_hante` 한테 | `grammarRole: "recipient"`, `pattern: "[person] + 한테"`, `contrastWith: ["에게"]`, `usageNote: "To a person — casual spoken form of 에게: 누구한테 줬어요?"` |
+| `w_m5_855_kkaji` 까지 | `grammarRole: "limit"`, `pattern: "[place/time] + 까지"`, `contrastWith: ["부터"]`, `usageNote: "Up to / until: 서울까지 (as far as Seoul), 다섯 시까지 (until five o'clock). Often pairs with 부터."` |
+| `w_m5_856_buteo` 부터 | `grammarRole: "start-point"`, `pattern: "[time/place] + 부터"`, `contrastWith: ["까지"]`, `usageNote: "From / starting at: 아침부터 (from the morning). Often pairs with 까지."` |
+| `w_m5_857_jiman` 지만 | `grammarRole: "connective"`, `pattern: "[stem] + 지만"`, `usageNote: "But / although — attaches directly to a verb or adjective stem: 비싸지만 맛있어요 (expensive but tasty)."` |
+| `w_m5_858_myeonseo` 면서 | `grammarRole: "connective"`, `forms: ["면서", "으면서"]`, `pattern: "[stem] + (으)면서"`, `usageNote: "While — two actions at once: 음악을 들으면서 공부해요. Use 으면서 after a consonant."` |
+| `w_m5_860_dorok` 도록 | `grammarRole: "connective"`, `pattern: "[stem] + 도록"`, `usageNote: "So that / to the point of: 늦지 않도록 일찍 출발해요 (leave early so as not to be late)."` |
+| `w_m5_861_ryeogo` 려고 | `grammarRole: "purpose"`, `forms: ["려고", "으려고"]`, `pattern: "[stem] + (으)려고"`, `usageNote: "Intending to: 한국어를 배우려고 책을 샀어요. Use 으려고 after a consonant."` |
+| `w_m5_863_chigo` 치고 | `grammarRole: "comparison"`, `pattern: "[noun] + 치고"`, `usageNote: "For a / considering: 겨울치고 따뜻해요 (warm for winter — warmer than you'd expect)."` |
+| `w_m5_864_jocha` 조차 | `grammarRole: "emphasis"`, `pattern: "[noun] + 조차"`, `contrastWith: ["마저"]`, `usageNote: "Even — an unexpected extreme, usually in negative sentences: 물조차 없었어요 (there wasn't even water)."` |
+| `w_m5_865_majeo` 마저 | `grammarRole: "emphasis"`, `pattern: "[noun] + 마저"`, `contrastWith: ["조차"]`, `usageNote: "Even the last one / on top of everything: 너마저 가면 어떡해요 (what do I do if even you leave)."` |
+
+**Done when:** strict audit green (these rows now pass through its
+function-word gate — that's the point); the Word Bank "Function words"
+filter shows 41 rows (was 29); the 12 rows show their usage note in the
+detail drawer; caches bumped (`words_curated_core.js` changed).
+
+- [ ] **F1** applied as specified above
+
+### F2 — Make `makeWordSentenceBlank` inflection-aware
+*(app.js change — high-intelligence-model task per `AI_INSTRUCTIONS.md`)*
+
+**Problem:** `makeWordSentenceBlank(word)` (app.js) only substring-matches
+`getWordAcceptedAnswers(word)` — citation form, `forms`, `display` — against
+`exampleKo`. 280 of 2,028 rows (200 verbs, 68 adjectives, 12 others) have
+examples containing only a conjugated form (가다 → 학교에 가요), so `context`
+and `functionUsage` questions silently never generate for them, and in 18
+lessons the whole declared `sentence-blank` checkpoint is dead.
+
+**Fix shape:** when no accepted answer matches, consult the inflection
+engine (`window.HANAPATH_INFLECT`: `conjugate`, `inflect`, `getStem`) for the
+word's generated forms (polite/past/formal/honorific/attributive…) and try
+those, longest first; blank the matched conjugated form and use **it** as the
+answer (the learner fills in what the sentence actually contains). Distractor
+pools for `context` questions must then also offer conjugated forms of the
+same shape, or the right answer becomes trivially the only conjugated option
+— check `generateWordQuestionFor`'s `context` branch and conjugate the pool
+words with the same form name. Only verbs/adjectives (`pos` verb/adjective)
+should take this path. Re-run the F3 derivation command after: expect the
+18 sentence-blank rows to drop to near zero.
+
+**Done when:** the F3 command reports no lesson whose `sentence-blank`
+checkpoint yields zero questions (or the residue is explicitly listed and
+moved to F3 for checkpoint removal); all audits green; cache bumped;
+browser smoke: a W7 core-actions lesson now serves context questions with
+conjugated answer + conjugated distractors.
+
+- [ ] **F2** implemented and verified
+
+### F3 — Remove checkpoints that are still dead after F1+F2
+*(data-only, mechanical once the list is re-derived)*
+
+Re-derive the dead list in a browser console (serve statically, open the
+app):
+
+```js
+const CP={"ko-to-meaning":"koToMeaning","audio-to-meaning":"audioToMeaning","meaning-to-ko":"meaningToKo","type-ko":"typeKo","sentence-blank":"context","function-usage":"functionUsage","form-recognition":"formRecognition","form-production":"formProduction"};
+getWordLessons().flatMap(l=>{const dirs=new Set(buildWordLessonQuestions(l,getWordLessonWords(l)).map(q=>q.direction));return (l.checkpoints||[]).filter(c=>CP[c]&&!dirs.has(CP[c])).map(c=>l.id+": "+c);});
+```
+
+As of 2026-07-05 (before F1/F2) the list is 24 entries; these four are
+structural and will stay dead regardless — remove the named checkpoint from
+each lesson's `checkpoints` array in `words_lesson_plan.js`:
+
+- `w17-tense-negation-01` — remove `form-recognition` and `form-production`
+  (the lesson teaches negation adverbs and endings; there is no conjugable
+  stem to inflect)
+- `w18-noun-modification-01` — remove `form-recognition` and
+  `form-production` (same: modifier endings + bound nouns)
+- `w19-irregular-families-01` — remove `function-usage` (the lesson contains
+  zero function words)
+- `w19-honorifics-01` — remove `function-usage` **only if still dead after
+  F2** (its one function word, (으)시, may become blankable)
+
+**Done when:** the console command returns `[]`; audits green; cache bumped
+(`words_lesson_plan.js` changed).
+
+- [ ] **F3** dead checkpoints removed, list re-derived empty
+
+### F4 — Audit hardening: a declared checkpoint must be generatable
+*(scripts/audit-words-data.mjs — needs judgment to mirror app logic; not a
+small-model task)*
+
+Add a check: for every lesson, every entry in `checkpoints` must be able to
+produce ≥1 question from that lesson's words. The audit already loads all
+data files in a vm sandbox; reimplement the three cheap predicates
+Node-side — blankability (accepted answers ∪ inflection-engine forms vs
+`exampleKo` — `words_inflect.js` is already loaded in the sandbox),
+`isFunctionWord` presence for `function-usage`, and conjugability
+(pos verb/adjective) for `form-*`. Hard-fail on a dead checkpoint. This is
+what would have caught F2 and half of F1 years of green runs ago.
+
+**Done when:** audit fails if you re-add a dead checkpoint (test by
+temporarily re-adding `function-usage` to `w19-irregular-families-01`),
+passes on the real data, and `--strict` stays green on main.
+
+- [ ] **F4** audit check added with the temporary-regression test performed
+
+---
+
 ## 8. Suggested execution order
 
-**Every track (A–E) is done.** The Words section is final per §1. There are
-no outstanding roadmap items; generated-audio coverage is enforced by the
-words audit, and the `AUDIO_PENDING_ALLOWED` list is currently empty.
+Tracks A–E are done. **Track F is the only open work**, in order
+F1 → F2 → F3 → F4 (F1/F3 are small-model-friendly with the recipes above;
+F2/F4 need the high-intelligence model per `AI_INSTRUCTIONS.md`). One
+checkbox = one PR, §2 rules apply unchanged. Generated-audio coverage is
+enforced by the words audit and the `AUDIO_PENDING_ALLOWED` list is
+currently empty — Track F adds no Korean text, so no audio work is expected.
