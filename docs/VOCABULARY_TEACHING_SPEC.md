@@ -289,12 +289,13 @@ Grounded in the shipped code (main) as of 2026-07-05. Legend: ✅ solid ·
 |---|---|---|
 | Hangul-first, romanization secondary | ✅ | UX is Hangul-primary; romanization is a support layer |
 | Script → block → batchim course | ✅ | Full alphabet module (drill lab, skill-SRS, 72 audio tokens, batchim) |
-| Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + checkpoint ladder + W17–W19 grammar track (merged) |
+| Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + per-lesson checkpoint ladder + W17–W19 grammar track, then W20–W218 theme stages from the Core-2000 expansion (219 stages / 298 lessons total, strict linear unlock chain — verified intact end to end 2026-07-05) |
 | Lexeme + forms, not flat pairs | ✅ | `forms`/`grammarRole`/`pattern`/`formNote` exist; `words_inflect.js` now provides generator + recognizer coverage |
-| Particles & endings first-class | ✅ | Function-word entries with forms/grammarRole/contrastWith/pattern |
-| Honorifics (subject vs listener) | ✅ | Honorific verb table + W19 lesson, plus the Track D axis (2026-07-04): `honorificRole: subject|listener|humble` on 26 rows and 10 bidirectional plain↔honorific `contrastWith` pairs, rendered in the Word Bank detail view and lesson cards |
+| Particles & endings first-class | 🟡 | The 29 `fw1xxx` rows are fully first-class (forms/grammarRole/contrastWith/pattern/`isFunctionWord`); **12 M5-era particle/connective rows (으로, 에게, 한테, 까지, 부터, 지만, 면서, 도록, 려고, 치고, 조차, 마저) lack the `isFunctionWord` flag and all function-word fields**, so they're taught as plain vocab and skip the function-usage drill, the Word Bank function filter, and the audit's function-word gate (roadmap Track F1) |
+| Honorifics (subject vs listener) | ✅ | Honorific verb table + W19 lesson, plus the Track D axis (2026-07-04): `honorificRole: subject|listener|humble` on 26 rows and 11 bidirectional plain↔honorific/polite `contrastWith` pairs (the 10 lexical pairs plus 아/어↔아요/어요 — re-derived 2026-07-05; earlier counts said 10), rendered in the Word Bank detail view and lesson cards |
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
-| Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio |
+| Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio — all 8 directions generate, and all 6,105 questions across all 298 lessons passed an answer/options integrity sweep (2026-07-05) |
+| **Declared checkpoints all generatable** | 🟡 | **24 lesson-checkpoint combinations silently yield zero questions** (found 2026-07-05): 18 lessons where `sentence-blank` produces nothing because every word's example only contains a conjugated form (280 of 2,028 rows are unblankable — 268 of them verbs/adjectives; lessons in W7, W8, W12, W19, W36–W37, W89–W90), `form-recognition`+`form-production` dead in w17-tense-negation-01 and w18-noun-modification-01 (they teach endings, not conjugable stems), and `function-usage` dead in w19-honorifics-01 and w19-irregular-families-01. Nothing crashes — learners just quietly get fewer exercise types (roadmap Track F2–F4) |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
 | **Sense-level polysemy** | ✅ | 105 lemmas carry genuine multi-sense rows with distinct `senseKey`/`senseNo` (Track B is complete: 바람 wind/wish, 밝다 bright/cheerful-personality, 세다 strong/count, 두다 put-keep/leave-behind; 피다 declined because the fire meaning belongs to 피우다/태우다) |
 | **Word-origin tagging (native/Sino/loan)** | 🟡 | every row has effective `originType`; `annotationSource` distinguishes verified vs inferred labels, and Hanja is retained only when verified |
@@ -306,7 +307,18 @@ Grounded in the shipped code (main) as of 2026-07-05. Legend: ✅ solid ·
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
 | Vocabulary volume | ✅ | 2,028 unique curated senses (1,918 post-#54, +110 across the M2/Track-C batches), slightly above the Core 1000 / Core 2000 target band, with every curated row assigned to a lesson |
 
-**Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS, retrieval, inflection engine, volume) are done. Tracks A–E are closed; §9 is retained as the audit-backed historical checklist.
+**Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS, retrieval, inflection engine, volume) are done. Tracks A–E are closed; §9 is retained as the audit-backed historical checklist. **Track F (the 2026-07-05 verification follow-ups) is open** — see the roadmap.
+
+**Cold-learner verification (2026-07-05).** Every ✅ above was re-derived from
+the shipped data and exercised in a scripted browser walkthrough, not taken
+from prior claims: volume/lesson/sense/axis/honorific/audio counts recomputed
+from the data files; question generation run for all 298 lessons (6,105
+questions integrity-checked); the alphabet gate, single-lesson unlock, a full
+real-UI play-through of lesson 1 (SRS records + review events written), the
+W17 grammar-track form questions, the final lesson (w218-theme-264), sense
+badges, and the honorific detail view all verified in Chromium with zero
+console errors. The two 🟡 rows above are the only gaps found; they are
+queued as roadmap **Track F**.
 
 The Word Bank still has a **Needs curation** filter and **Curation priority** sort driven by `annotationSource` for future data edits, but the current curation queue is empty.
 
@@ -379,8 +391,21 @@ The original six-PR roadmap (data axes → sense split → inflection engine →
    unless the owner later chooses to scope a backend service (the decision is
    a policy record only — trivially reversible).
 
+6. **Cold-learner verification pass — done (2026-07-05), three gaps queued as
+   roadmap Track F.** A full re-derivation of the §8 scorecard from data plus
+   a scripted Chromium walkthrough (gate → lesson 1 played through the real
+   UI → deep-lesson spot checks → Word Bank semantics) confirmed every closed
+   track's numbers and found: (a) 12 M5-era particles missing `isFunctionWord`
+   and all function-word fields — **F1**; (b) 24 declared lesson checkpoints
+   that silently generate zero questions, rooted in 280 rows whose examples
+   only contain conjugated forms `makeWordSentenceBlank` can't match — **F2/F3**;
+   (c) no audit coverage for either, which is how both survived every green
+   audit run — **F4**. Also corrected here: the honorific pair count is 11,
+   not 10, and the curriculum spans 219 stages (W0–W218), not W0–W19.
+
 Ship **depth before breadth**: every roadmap track (A–E) is closed; polish
-on the existing ~2,000 senses beats adding more flat words.
+on the existing ~2,000 senses beats adding more flat words. Track F is
+exactly that kind of polish — finish it before any new content.
 
 ---
 
