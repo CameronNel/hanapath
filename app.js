@@ -5968,6 +5968,7 @@ function returnToWordLessonCheckpoint(view) {
 function answerWordLessonChoice(view, choice) {
   const question = getWordLessonQuestion(view);
   if (!question || view.answered) return;
+  speakClickableText(choice);
   const isCorrect = choice === question.answer;
   view.answered = true;
   view.selectedChoice = choice;
@@ -6122,7 +6123,9 @@ function bindWordLessonRoot(root) {
     }
     const tileBtn = event.target.closest("[data-word-tile]");
     if (tileBtn && !tileBtn.disabled) {
-      view.typedValue = String(view.typedValue || "") + (tileBtn.dataset.wordTile || "");
+      const tileText = tileBtn.dataset.wordTile || "";
+      speakClickableText(tileText);
+      view.typedValue = String(view.typedValue || "") + tileText;
       const input = root.querySelector("#wordTypeInput");
       if (input) input.value = view.typedValue;
       return;
@@ -8219,6 +8222,82 @@ function speakableForChunk(chunk) {
   return text;
 }
 
+const CLICKABLE_SOUND_LABEL_SPEAK = {
+  a: "\uC544",
+  ae: "\uC560",
+  ya: "\uC57C",
+  yae: "\uC598",
+  eo: "\uC5B4",
+  e: "\uC5D0",
+  yeo: "\uC5EC",
+  ye: "\uC608",
+  o: "\uC624",
+  wa: "\uC640",
+  wae: "\uC65C",
+  oe: "\uC678",
+  yo: "\uC694",
+  u: "\uC6B0",
+  wo: "\uC6CC",
+  we: "\uC6E8",
+  wi: "\uC704",
+  yu: "\uC720",
+  eu: "\uC73C",
+  ui: "\uC758",
+  i: "\uC774",
+  g: "\uAC00",
+  kk: "\uAE4C",
+  n: "\uB098",
+  d: "\uB2E4",
+  tt: "\uB530",
+  r: "\uB77C",
+  m: "\uB9C8",
+  b: "\uBC14",
+  pp: "\uBE60",
+  s: "\uC0AC",
+  ss: "\uC2F8",
+  j: "\uC790",
+  jj: "\uC9DC",
+  ch: "\uCC28",
+  k: "\uCE74",
+  t: "\uD0C0",
+  p: "\uD30C",
+  h: "\uD558",
+  ng: "\uC559",
+  "silent (ng)": "\uC544",
+};
+
+function speakableForClickableText(text, options = {}) {
+  const raw = String(text || "").trim();
+  if (!raw) return "";
+
+  if (options.preferSoundLabels) {
+    const label = raw.toLowerCase();
+    if (CLICKABLE_SOUND_LABEL_SPEAK[label]) {
+      return CLICKABLE_SOUND_LABEL_SPEAK[label];
+    }
+  }
+
+  if (/^[\uAC00-\uD7A3]+$/u.test(raw) || /^[\u3131-\u318E]+$/u.test(raw)) {
+    return speakableForChunk(raw);
+  }
+
+  const hangulChunks = raw.match(/[\u3131-\u318E\uAC00-\uD7A3]+/gu) || [];
+  if (
+    hangulChunks.length > 1 &&
+    /^[\u3131-\u318E\uAC00-\uD7A3\s+.,/\u00B7|:;()\-\u2013\u2014\u2192\u2190]+$/u.test(raw)
+  ) {
+    if (typeof lookupAudioUrl === "function" && lookupAudioUrl(raw)) return raw;
+    return hangulChunks.map((chunk) => speakableForChunk(chunk)).join(" ");
+  }
+
+  return raw;
+}
+
+function speakClickableText(text, options = {}) {
+  const speechText = speakableForClickableText(text, options);
+  if (speechText) void speak(speechText);
+}
+
 // ── HANGUL LETTER SRS ──────────────────────────────────────────────
 // A lightweight Leitner system so individual letters resurface over days
 // until they are truly memorised. Only stages that introduce new jamo enroll
@@ -8994,7 +9073,7 @@ function bindCheckpointAudioHelpers(container, lesson) {
       e.stopPropagation();
       checkpointPlaybackId += 1;
       const text = btn.getAttribute("data-speak-option") || "";
-      void speak(text);
+      speakClickableText(text, { preferSoundLabels: true });
     });
   });
 }
@@ -9282,6 +9361,7 @@ function answerPhaseOneQuestion(choice, button) {
   const question = lesson.questions[phaseOneView.questionIndex];
   const feedback = document.getElementById("phaseOneFeedback");
   const buttons = [...els.phaseOneStage.querySelectorAll(".lesson-option")];
+  speakClickableText(choice, { preferSoundLabels: true });
 
   if (choice !== question.answer) {
     phaseOneView.hadMistake = true;
@@ -9427,9 +9507,9 @@ function answerPhaseOneBuild(jamo, tile) {
   const roleLabel = (role) =>
     role === "vowel" ? "vowel" : role === "batchim" ? "final consonant" : "consonant";
   const slotName = roleLabel(roles[slotIndex]);
+  speakClickableText(jamo, { preferSoundLabels: true });
 
   if (jamo !== seq[slotIndex]) {
-    void speak(speakableForChunk(jamo));
     phaseOneView.hadMistake = true;
     tile.classList.add("wrong");
     setTimeout(() => tile.classList.remove("wrong"), 600);
@@ -9470,10 +9550,8 @@ function answerPhaseOneBuild(jamo, tile) {
     showCorrectToast();
     els.phaseOneActionButton.disabled = false;
     refreshPhaseOneHearLabel();
-    void speak(question.target);
   } else {
     feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + roleLabel(roles[filled.length]) + ".");
-    void speak(speakableForChunk(jamo));
   }
 }
 
@@ -10252,8 +10330,8 @@ function answerDrillBuild(jamo, tile) {
   const filled = s.buildFilled || (s.buildFilled = []);
   const idx = filled.length;
   const seatName = idx === 0 ? "first consonant" : idx === 1 ? "vowel" : "final consonant";
+  speakClickableText(jamo, { preferSoundLabels: true });
   if (jamo !== q.seq[idx]) {
-    void speak(speakableForChunk(jamo));
     tile.classList.add("wrong");
     setTimeout(() => tile.classList.remove("wrong"), 500);
     if (q.weakKey) { recordWeakSpot(q.weakKey); s.missed[q.weakKey] = (s.missed[q.weakKey] || 0) + 1; }
@@ -10291,10 +10369,8 @@ function answerDrillBuild(jamo, tile) {
     if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(q.explanation || "");
     const next = document.getElementById("drillNextBtn");
     if (next) { next.disabled = false; next.textContent = s.total !== Infinity && s.asked + 1 >= s.total ? "See result" : "Next"; }
-    void speak(q.target);
   } else {
     if (feedback) feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + (filled.length === 1 ? "vowel" : "final consonant") + ".");
-    void speak(speakableForChunk(jamo));
   }
 }
 
@@ -10303,6 +10379,7 @@ function answerDrill(choice, button) {
   if (!s || s.answered) return;
   const q = s.current;
   const feedback = document.getElementById("drillFeedback");
+  speakClickableText(choice, { preferSoundLabels: true });
   if (choice !== q.answer) {
     button.classList.add("wrong");
     button.disabled = true;
@@ -10322,7 +10399,6 @@ function answerDrill(choice, button) {
   if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(q.explanation || "");
   const next = document.getElementById("drillNextBtn");
   if (next) { next.disabled = false; next.textContent = s.total !== Infinity && s.asked + 1 >= s.total ? "See result" : "Next"; }
-  void speak(q.voiceText || q.answer || "");
 }
 
 function renderDrillResult() {
@@ -11408,7 +11484,10 @@ function renderChoiceQuestion(question, quizOptions) {
   if (currentAnswered) return;
 
   quizOptions.querySelectorAll(".option").forEach((button) => {
-    button.addEventListener("click", () => chooseAnswer(button.dataset.option || ""));
+    button.addEventListener("click", () => {
+      speakClickableText(button.dataset.option || "", { preferSoundLabels: getCurrentQuizScope() === "alphabet" });
+      chooseAnswer(button.dataset.option || "");
+    });
   });
 }
 
@@ -11416,6 +11495,8 @@ function placeBuildToken(question, tokenId, slotIndex = null) {
   if (!question?.response || currentAnswered) return;
 
   const response = question.response;
+  const token = getTokenById(question, tokenId);
+  if (token) speakClickableText(token.text);
   const slots = response.slots || [];
   const currentIndex = slots.indexOf(tokenId);
   if (currentIndex >= 0) {
@@ -11443,6 +11524,8 @@ function clearBuildSlot(question, slotIndex) {
     return;
   }
 
+  const token = getTokenById(question, response.slots[slotIndex]);
+  if (token) speakClickableText(token.text);
   response.slots[slotIndex] = null;
   response.noticeHtml = "";
   renderQuestion(question, { preserveState: true, scope: getCurrentQuizScope() });
@@ -11653,6 +11736,7 @@ function renderTypeQuestion(question, quizOptions) {
         const char = isShift && btn.dataset.shift ? btn.dataset.shift : btn.dataset.key;
         currentJamos.push(char);
         updateInputFromJamo(currentJamos);
+        speakClickableText(char, { preferSoundLabels: true });
         if (isShift) {
            isShift = false;
            vkShift.classList.remove("active");
@@ -13189,6 +13273,7 @@ window.speakPronDrillTarget = function() {
 
 window.submitPronDrillAnswer = function(text) {
   if (pronDrillState.answered) return;
+  speakClickableText(text);
   const set = pronDrillState.activePairSet;
   const opt = set.items.find((item) => item.text === text);
   pronDrillState.selectedOption = opt;
@@ -13309,6 +13394,7 @@ function renderLetterReview() {
 function answerLetterReview(button, letter, correctSound) {
   if (letterReview.answered) return;
   letterReview.answered = true;
+  speakClickableText(button.dataset.sound || "", { preferSoundLabels: true });
   const correct = (button.dataset.sound || "") === correctSound;
   [...document.querySelectorAll("#letterReviewOptions .option")].forEach((b) => {
     b.disabled = true;
