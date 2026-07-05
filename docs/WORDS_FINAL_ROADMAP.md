@@ -483,15 +483,25 @@ what would have caught F2 and half of F1 years of green runs ago.
 temporarily re-adding `function-usage` to `w19-irregular-families-01`),
 passes on the real data, and `--strict` stays green on main.
 
-- [ ] **F4** audit check added with the temporary-regression test performed
+- [x] **F4** audit check added (2026-07-05). `audit-words-data.mjs` now
+  hard-fails any declared checkpoint that cannot generate a question,
+  with Node-side predicates mirroring the app (blankability incl. the F2
+  inflection fallback, `isFunctionWord` + blankable for function-usage,
+  conjugation + recognizer round-trip for form drills). Regression test
+  performed: temporarily re-adding `function-usage` to
+  w19-irregular-families-01 produced exactly one audit error; reverted;
+  `--strict` green on the real data. If app.js changes its generator
+  rules, update the audit predicates in the same PR.
 
 ---
 
 ## 8. Suggested execution order
 
-Tracks A–E are done. **Track F is the only open work**, in order
-F1 → F2 → F3 → F4 (F1/F3 are small-model-friendly with the recipes above;
-F2/F4 need the high-intelligence model per `AI_INSTRUCTIONS.md`). One
-checkbox = one PR, §2 rules apply unchanged. Generated-audio coverage is
-enforced by the words audit and the `AUDIO_PENDING_ALLOWED` list is
-currently empty — Track F adds no Korean text, so no audio work is expected.
+Tracks A–E are done, and F2/F3/F4 shipped 2026-07-05. **The only open box
+is F1** (give the 12 M5 particles full function-word treatment) — it is
+fully recipe-specified above and small-model-friendly. One checkbox = one
+PR, §2 rules apply unchanged. Generated-audio coverage is enforced by the
+words audit and the `AUDIO_PENDING_ALLOWED` list is currently empty —
+Track F adds no Korean text, so no audio work is expected. Note for F1:
+the F4 audit now hard-fails a flagged function word with neither forms
+nor usageNote, so apply the full per-row recipe, not just the flag.
