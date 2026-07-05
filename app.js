@@ -4310,7 +4310,7 @@ function buildVocabMetricsView() {
         dueLabel,
       ].filter(Boolean).join(" / ");
       return `
-        <div class="study-row">
+        <div class="study-row word-metrics-row" role="button" tabindex="0" data-metrics-word-open="${escapeHtml(word.id)}">
           <div>
             <div class="study-row-ko" lang="ko">${escapeHtml(word.display || word.korean)}</div>
             <div class="study-row-sub">${escapeHtml(meta)}</div>
@@ -4332,7 +4332,7 @@ function buildVocabMetricsView() {
       const word = summary.word;
       const masteryClass = summary.mastery >= 80 ? "green" : summary.mastery >= 60 ? "accent" : "muted";
       return `
-        <div class="study-row">
+        <div class="study-row word-metrics-row" role="button" tabindex="0" data-metrics-word-open="${escapeHtml(word.id)}">
           <div>
             <div class="study-row-ko" lang="ko">${escapeHtml(word.display || word.korean)}</div>
             <div class="study-row-sub">${escapeHtml(word.meaningShort || word.meaning || "")} · ${summary.total} events · ${summary.correct}/${summary.total} correct · ${formatVocabLatencyMs(summary.avgLatencyMs)} avg</div>
@@ -4359,8 +4359,11 @@ function buildVocabMetricsView() {
       const word = curatedWordsById.get(event.wordId);
       const label = event.result === "correct" ? "Correct" : event.result === "skipped" ? "Skipped" : "Missed";
       const masteryClass = event.result === "correct" ? "green" : event.result === "skipped" ? "muted" : "accent";
+      const rowAttrs = word
+        ? `class="study-row word-metrics-row" role="button" tabindex="0" data-metrics-word-open="${escapeHtml(word.id)}"`
+        : `class="study-row"`;
       return `
-        <div class="study-row">
+        <div ${rowAttrs}>
           <div>
             <div class="study-row-ko" lang="ko">${escapeHtml(word?.display || word?.korean || event.wordId)}</div>
             <div class="study-row-sub">${escapeHtml(label)} · ${escapeHtml(event.direction)} · ${formatVocabLatencyMs(event.latencyMs)} · conf ${formatVocabRatio(event.confidence)} · ${escapeHtml(event.errorType || "none")}</div>
@@ -4504,6 +4507,7 @@ let wordReferenceFilteredCache = null;
 let wordReferenceCacheKey = "";
 let wordBankStatusVersion = 0;
 let wordBankDetailId = null;
+let wordBankReturnTarget = null;
 let wordBankSearchTimer = null;
 // Volatile view state for the active guided word lesson / review session,
 // mirroring the alphabet's phaseOneView pattern. Survives in-page navigation
@@ -5326,7 +5330,28 @@ function openWordBankQuickRef() {
   openEntireWordBank();
 }
 
+function getWordBankReturnLabel() {
+  if (wordBankReturnTarget?.type === "metrics") return "Insights";
+  if (state.wordQuickRefActive) return wordLessonView && wordLessonView.isReview ? "review" : "lesson";
+  return "";
+}
+
+function wordBankReturnButtonHtml() {
+  const label = getWordBankReturnLabel();
+  return label
+    ? `<div style="margin-bottom:4px;"><button class="button primary compact" type="button" data-word-bank-return>Return to ${escapeHtml(label)}</button></div>`
+    : "";
+}
+
 function returnFromWordBank() {
+  const target = wordBankReturnTarget;
+  wordBankReturnTarget = null;
+  if (target?.type === "metrics") {
+    state.vocabView = "metrics";
+    saveState();
+    openWordsHome();
+    return;
+  }
   state.wordQuickRefActive = false;
   state.wordQuickRefReturn = null;
   saveState();
@@ -5337,7 +5362,37 @@ function returnFromWordBank() {
   openWordsHome();
 }
 
+function openWordBankDetailFromMetrics(wordId) {
+  const row = wordReferenceById.get(wordId);
+  if (!row || !row.word) return;
+  state.vocabView = "metrics";
+  saveState();
+  openEntireWordBank({
+    detailId: row.id,
+    returnTarget: { type: "metrics" },
+  });
+}
+
 // ── Guided word lesson renderer ──────────────────────────────────────────────
+
+function bindVocabMetricsRows(root) {
+  if (!root) return;
+  root.querySelectorAll("[data-metrics-word-open]").forEach((row) => {
+    const openWord = () => openWordBankDetailFromMetrics(row.dataset.metricsWordOpen);
+    row.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest("[data-speak]")) return;
+      openWord();
+    });
+    row.addEventListener("keydown", (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest("[data-speak]")) return;
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openWord();
+    });
+  });
+}
 
 function renderWordLesson() {
   const view = wordLessonView;
@@ -6442,10 +6497,13 @@ function renderWordBankContent() {
     ? `<div style="margin-bottom:4px;"><button class="button primary compact" type="button" data-word-bank-return>🔙 Return to ${wordLessonView && wordLessonView.isReview ? "review" : "lesson"}</button></div>`
     : "";
 
+  const metricsReturnBtnHtml = wordBankReturnTarget ? wordBankReturnButtonHtml() : "";
+  const activeReturnBtnHtml = metricsReturnBtnHtml || returnBtnHtml;
+
   if (wordBankDetailId) {
     const row = wordReferenceById.get(wordBankDetailId);
     if (row) {
-      root.innerHTML = `${returnBtnHtml}${wordBankDetailHtml(row)}`;
+      root.innerHTML = `${activeReturnBtnHtml}${wordBankDetailHtml(row)}`;
       return;
     }
     wordBankDetailId = null;
@@ -6468,7 +6526,7 @@ function renderWordBankContent() {
       <div class="eyebrow">Reference · Word bank</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Entire Korean Word Bank</h2>
       <div class="screen-sub" style="margin-bottom:12px;">Search every curated beginner word and the 5,000-word frequency list. Curated entries have meanings and examples; raw entries are reference only.</div>
-      ${returnBtnHtml}
+      ${activeReturnBtnHtml}
       <div class="vocab-summary">${rawCount.toLocaleString()} raw · ${curatedCount} curated · ${knownCount} known · ${dueCount} due</div>
     </div>
     <div class="card vocab-panel word-bank-panel">
@@ -6571,20 +6629,21 @@ function handleWordBankClick(event) {
   }
 }
 
-function openEntireWordBank() {
+function openEntireWordBank(options = {}) {
   stopSpeech();
   currentQuizScope = "vocabulary";
   state.studio = "vocab";
   activeHub = "learn";
   setNavActive("learn");
-  wordBankDetailId = null;
+  wordBankReturnTarget = options.returnTarget || null;
+  wordBankDetailId = typeof options.detailId === "string" ? options.detailId : null;
   const el = showScreen("detail");
   if (!el) return;
 
   showDetailBarWithBack("learn", "Entire Korean Word Bank", () => {
-    if (state.wordQuickRefActive) { returnFromWordBank(); return; }
+    if (wordBankReturnTarget || state.wordQuickRefActive) { returnFromWordBank(); return; }
     openWordsHome();
-  }, "Words");
+  }, getWordBankReturnLabel() || "Words");
 
   el.innerHTML = `<div id="wordBankRoot"></div>`;
   const root = el.querySelector("#wordBankRoot");
@@ -13525,6 +13584,7 @@ function renderVocabulary() {
     const startReviewBtn = el.querySelector("[data-words-start-review]");
     if (startReviewBtn) startReviewBtn.addEventListener("click", () => openWordReview());
   }
+  if (activeView === "metrics") bindVocabMetricsRows(el);
   bindLevelRail(el, "vocabulary", renderVocabulary);
   el.querySelectorAll("[data-vocab-view]").forEach((btn) => {
     btn.addEventListener("click", () => {

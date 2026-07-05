@@ -1,16 +1,16 @@
-// [2026-07-05] Cache bumped to v166: Word Bank per-word attempt trail.
-const CACHE_NAME = "hanapath-shell-v166";
+// [2026-07-05] Cache bumped to v167: Insights rows open Word Bank details.
+const CACHE_NAME = "hanapath-shell-v167";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260705e",
+  "./styles.css?v=20260705f",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705c",
   "./words_curated_core.js?v=20260705c",
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260705c",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260705e",
+  "./app.js?v=20260705f",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
