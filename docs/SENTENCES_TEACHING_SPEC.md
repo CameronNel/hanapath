@@ -222,8 +222,8 @@ be re-derived from data, not copied forward.**
 
 | # | Piece | Status (2026-07-05) |
 |---|---|---|
-| 1 | Sentence bank `sentences_core.js` + extractor | ❌ not started |
-| 2 | Sentence audit `scripts/audit-sentences-data.mjs` | ❌ not started |
+| 1 | Sentence bank `sentences_core.js` + extractor | ✅ done |
+| 2 | Sentence audit `scripts/audit-sentences-data.mjs` | ✅ done |
 | 3 | Translate & Type drill (Eng → typed Hangul + helper ladder) | ❌ not started |
 | 4 | Practice hub rebuild (due/new/free session flow) | ❌ not started (legacy `renderPracticeView` level-rail shell live) |
 | 5 | Sentence SRS (`state.sentenceSrs`) | ❌ not started |

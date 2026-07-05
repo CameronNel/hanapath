@@ -1,17 +1,18 @@
-// [2026-07-05] Cache bumped to v186: Supplementary 15k audio.
-const CACHE_NAME = "hanapath-shell-v186";
+// [2026-07-05] Cache bumped to v187: Sentences bank foundation.
+const CACHE_NAME = "hanapath-shell-v187";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260705l",
+  "./styles.css?v=20260705m",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260705e",
-  "./words_curated_core.js?v=20260705d",
-  "./words_inflect.js?v=20260703b",
-  "./words_lesson_plan.js?v=20260705d",
-  "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260705t",
-  "./alphabet_skill_srs.js?v=20260630a",
+  "./audio_map.js?v=20260705f",
+  "./words_curated_core.js?v=20260705e",
+  "./words_inflect.js?v=20260703c",
+  "./words_lesson_plan.js?v=20260705e",
+  "./raw_word_meanings.js?v=20260703b",
+  "./sentences_core.js?v=20260705a",
+  "./app.js?v=20260705u",
+  "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
   "./korean_supplementary_15k.csv",
