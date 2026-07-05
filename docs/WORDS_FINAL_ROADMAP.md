@@ -385,10 +385,10 @@ be an array of strings (audit-enforced).
 
 **Done when:** strict audit green (these rows now pass through its
 function-word gate — that's the point); the Word Bank "Function words"
-filter shows 41 rows (was 29); the 12 rows show their usage note in the
+filter shows 43 rows (was 31); the 12 rows show their usage note in the
 detail drawer; caches bumped (`words_curated_core.js` changed).
 
-- [ ] **F1** applied as specified above
+- [x] **F1** applied as specified above (2026-07-05, 43 function-word rows re-derived)
 
 ### F2 — Make `makeWordSentenceBlank` inflection-aware
 *(app.js change — high-intelligence-model task per `AI_INSTRUCTIONS.md`)*
