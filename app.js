@@ -3222,7 +3222,7 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // (this only bypasses the access gate, not completion tracking) — see
 // isLessonUnlocked() below and isWordLessonUnlocked() further down for the
 // two places this is consumed. Flip to true only for local testing.
-const TEST_UNLOCK_ALL_STAGES = false;
+const TEST_UNLOCK_ALL_STAGES = true;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -3346,6 +3346,8 @@ function loadState() {
     vocabLessonCompleted: [],
     vocabLessonActive: null,
     vocabDailyNewTarget: 5,
+    wordPathCategory: "",
+    wordPathLevel: "all",
     wordBankQuery: "",
     wordBankFilter: "all",
     wordBankSort: "curriculum",
@@ -3540,6 +3542,10 @@ function isFreshProfile() {
 }
 
 const VOCAB_CSV_URL = "./korean_5000_claude_ready.csv";
+// Supplementary long-tail frequency list (source ranks 5,194+). Reference and
+// search only — never part of lessons, quizzes, or curation. Audio falls back
+// to speechSynthesis by design (no generated assets for this tier).
+const SUPPLEMENTARY_CSV_URL = "./korean_supplementary_15k.csv";
 const VOCAB_PAGE_SIZE = 40;
 const VOCAB_BANDS = ["1-500", "501-1000", "1001-1500", "1501-2000", "2001-2500", "2501-3000", "3001-3500", "3501-4000", "4001-4500", "4501-5000"];
 const VOCAB_VIEWS = [
@@ -3715,6 +3721,46 @@ async function loadVocabBank() {
   })();
 
   return vocabBankLoading;
+}
+
+let supplementaryBank = [];
+let supplementaryBankLoading = null;
+
+async function loadSupplementaryBank() {
+  if (supplementaryBankLoading) return supplementaryBankLoading;
+
+  supplementaryBankLoading = (async () => {
+    try {
+      const response = await fetch(SUPPLEMENTARY_CSV_URL, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Failed to load supplementary CSV (${response.status})`);
+      }
+
+      const parsed = parseCSV(await response.text());
+      const [header, ...rows] = parsed;
+      if (!header || header.length < 4) {
+        throw new Error("Supplementary CSV header is missing");
+      }
+
+      supplementaryBank = rows
+        .map((row) => {
+          const record = {};
+          header.forEach((key, index) => {
+            record[key] = row[index] || "";
+          });
+          return normalizeVocabEntry(record);
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.rank - b.rank);
+      return supplementaryBank;
+    } catch (error) {
+      // Non-fatal: the app works without the supplementary tier.
+      supplementaryBank = [];
+      return supplementaryBank;
+    }
+  })();
+
+  return supplementaryBankLoading;
 }
 
 function getVocabKnownSet() {
@@ -4483,6 +4529,7 @@ const WORD_BANK_FILTERS = [
   { id: "adjective", label: "Adjectives" },
   { id: "phrase", label: "Phrases" },
   { id: "raw", label: "Raw frequency" },
+  { id: "supplementary", label: "Supplementary" },
   { id: "known", label: "Known" },
   { id: "hard", label: "Hard" },
   { id: "due", label: "Due" },
@@ -4497,6 +4544,17 @@ const WORD_BANK_SORTS = [
 ];
 
 const WORD_BANK_PAGE_SIZE = 50;
+
+const WORD_PATH_LEVEL_FILTERS = [
+  { id: "all", label: "All learning levels" },
+  { id: "ready", label: "Ready / learning" },
+  { id: "active", label: "In progress" },
+  { id: "completed", label: "Completed" },
+  { id: "locked", label: "Locked" },
+  { id: "hard", label: "Has hard words" },
+  { id: "due", label: "Due for review" },
+  { id: "known", label: "Has known words" },
+];
 
 let curatedWordsById = new Map();
 let curatedWordsByKorean = new Map();
@@ -4545,6 +4603,11 @@ function migrateVocabState() {
   state.vocabLessonCompleted = [...new Set(state.vocabLessonCompleted.filter((id) => typeof id === "string"))];
   if (typeof state.vocabLessonActive !== "string") state.vocabLessonActive = null;
   if (!Number.isInteger(state.vocabDailyNewTarget) || state.vocabDailyNewTarget <= 0) state.vocabDailyNewTarget = 5;
+  state.wordPathCategory = typeof state.wordPathCategory === "string" ? state.wordPathCategory : "";
+  state.wordPathLevel = typeof state.wordPathLevel === "string" ? state.wordPathLevel : "all";
+  const wordPathCategories = new Set(getWordLessons().map((lesson) => getWordLessonCategoryId(lesson)).filter(Boolean));
+  if (state.wordPathCategory && state.wordPathCategory !== "all" && !wordPathCategories.has(state.wordPathCategory)) state.wordPathCategory = "";
+  if (!WORD_PATH_LEVEL_FILTERS.some((filter) => filter.id === state.wordPathLevel)) state.wordPathLevel = "all";
   state.wordBankQuery = typeof state.wordBankQuery === "string" ? state.wordBankQuery : "";
   if (!WORD_BANK_FILTERS.some((f) => f.id === state.wordBankFilter)) state.wordBankFilter = "all";
   if (!WORD_BANK_SORTS.some((s) => s.id === state.wordBankSort)) state.wordBankSort = "curriculum";
@@ -4650,6 +4713,37 @@ function buildWordReferenceRows() {
       raw: entry,
     };
     row._search = [entry._koreanLower, entry._englishLower, entry._pronLower, entry._bandLower, entry._noteLower, entry._rankStr, meaning.toLowerCase()]
+      .filter(Boolean).join(" ");
+    rows.push(row);
+  });
+
+  // Supplementary long-tail entries (ranks 5,194+): searchable reference rows
+  // only, distinct from the learning course. Skip anything already covered by
+  // a curated form or the 5,000 list so the bank never shows duplicates.
+  const knownKorean = new Set(rows.map((row) => row.korean));
+  supplementaryBank.forEach((entry) => {
+    if (knownKorean.has(entry.korean) || curatedWordsByKorean.has(entry.korean)) return;
+    const row = {
+      id: `supp-${entry.rank}`,
+      source: "supplementary",
+      korean: entry.korean,
+      display: entry.korean,
+      meaning: "",
+      pos: "",
+      pronunciation: entry.pronunciation || entry.englishSpelling,
+      exampleKo: "",
+      exampleEn: "",
+      usageNote: "",
+      lessonGroup: "",
+      lessonTitle: "",
+      rank: entry.rank,
+      frequencyBand: entry.frequencyBand,
+      tokenNote: entry.tokenNote,
+      curriculumIndex: Number.MAX_SAFE_INTEGER,
+      word: null,
+      raw: entry,
+    };
+    row._search = [entry._koreanLower, entry._englishLower, entry._pronLower, entry._bandLower, entry._noteLower, entry._rankStr]
       .filter(Boolean).join(" ");
     rows.push(row);
   });
@@ -5638,11 +5732,27 @@ function getWordLessonQuestion(view) {
   return view.questions[view.questionIndex] || null;
 }
 
+function renderWordQuestionVisual(question) {
+  const visual = String(question?.visual || "");
+  const match = visual.match(/^<div class="big-glyph"(?: lang="ko")?>([^<]+)<\/div>$/);
+  if (!match) return visual;
+
+  const text = match[1].trim();
+  if (!text || !/^[\u3131-\u318E\uAC00-\uD7A3\s]+$/u.test(text)) return visual;
+
+  const safeText = escapeHtml(text);
+  return `<button class="big-glyph word-checkpoint-audio" type="button" lang="ko" data-speak="${safeText}" aria-label="Hear ${safeText}" title="Tap to hear">${safeText}</button>`;
+}
+
 function wordLessonCheckHtml(lesson, view) {
   const question = getWordLessonQuestion(view);
   if (!question) return "";
   const progress = `Question ${view.questionIndex + 1} of ${view.questions.length}`;
   const eyebrow = view.isReview ? "Review" : `Checkpoint · ${escapeHtml(lesson.title)}`;
+  const visualHtml = renderWordQuestionVisual(question);
+  const feedbackClasses = ["word-type-feedback", "quiz-feedback"];
+  if (view.answered && view.checkCorrect === true) feedbackClasses.push("correct");
+  if (view.answered && view.checkCorrect === false) feedbackClasses.push("wrong");
 
   let interactionHtml = "";
   if (question.interaction === "type") {
@@ -5664,9 +5774,9 @@ function wordLessonCheckHtml(lesson, view) {
     `;
   } else {
     interactionHtml = `
-      <div class="lesson-options">
+      <div class="quiz-options word-checkpoint-options">
         ${(question.options || []).map((option) => {
-          const classes = ["lesson-option"];
+          const classes = ["option"];
           if (view.answered) {
             if (option === question.answer) classes.push("correct");
             else if (option === view.selectedChoice) classes.push("wrong");
@@ -5681,13 +5791,13 @@ function wordLessonCheckHtml(lesson, view) {
     <div class="card word-card">
       <div class="eyebrow">${eyebrow}</div>
       <div class="fs-xs text-muted-2" style="margin-bottom:8px;">${escapeHtml(progress)}</div>
-      <div class="quiz-visual">${question.visual || ""}</div>
+      <div class="quiz-visual">${visualHtml}</div>
       <div class="quiz-prompt">${escapeHtml(question.prompt)}</div>
       <div class="quiz-detail">${escapeHtml(question.detail || "")}</div>
       ${question.voiceText ? `<div class="word-card-actions"><button class="button secondary compact" type="button" data-speak="${escapeHtml(question.voiceText)}">▶ Hear</button></div>` : ""}
       ${!view.isReview ? '<div class="word-card-actions"><button class="button secondary compact" type="button" data-word-review-study>Review words</button></div>' : ""}
       ${interactionHtml}
-      <div class="word-type-feedback quiz-feedback" role="status" aria-live="polite">${view.answered ? view.checkFeedback || "" : ""}</div>
+      <div class="${feedbackClasses.join(" ")}" role="status" aria-live="polite">${view.answered ? view.checkFeedback || "" : ""}</div>
       ${view.answered ? `<div class="word-card-actions"><button class="button primary compact" type="button" data-word-lesson-next>${view.questionIndex + 1 >= view.questions.length ? "See results →" : "Next question →"}</button></div>` : ""}
       ${wordReferenceButtonHtml()}
     </div>
@@ -5813,6 +5923,7 @@ function advanceWordLessonStudy(view) {
     view.questionIndex = 0;
     view.answered = false;
     view.selectedChoice = "";
+    view.checkCorrect = null;
     startWordLessonQuestionTimer(view);
   } else {
     view.mode = "result";
@@ -5826,6 +5937,7 @@ function advanceWordLessonCheck(view) {
   view.typedFeedback = "";
   view.answered = false;
   view.selectedChoice = "";
+  view.checkCorrect = null;
   view.checkFeedback = "";
   view.typeTiles = null;
   view.typeTilesWordId = null;
@@ -5859,6 +5971,7 @@ function answerWordLessonChoice(view, choice) {
   const isCorrect = choice === question.answer;
   view.answered = true;
   view.selectedChoice = choice;
+  view.checkCorrect = isCorrect;
   view.results.push({ wordId: question.wordId, direction: question.direction, correct: isCorrect });
   view.checkFeedback = isCorrect
     ? `<strong>Correct.</strong> ${escapeHtml(question.explanation)}`
@@ -5886,6 +5999,7 @@ function answerWordLessonTyped(view) {
   }
   const isCorrect = isWordTypedCorrect(typed, word);
   view.answered = true;
+  view.checkCorrect = isCorrect;
   view.results.push({ wordId: question.wordId, direction: question.direction, correct: isCorrect });
   view.typedAttempts[question.wordId] = isCorrect;
   view.checkFeedback = isCorrect
@@ -6051,6 +6165,7 @@ function getWordBankCacheKey() {
     state.wordBankFilter,
     state.wordBankSort,
     vocabBank.length,
+    supplementaryBank.length,
     getCuratedWords().length,
     (state.vocabKnownRanks || []).length,
     (state.vocabHardRanks || []).length,
@@ -6068,11 +6183,20 @@ function applyWordBankFilter(rows, filter, knownSet, hardSet, now) {
   if (filter === "verb") return rows.filter((row) => row.pos === "verb");
   if (filter === "adjective") return rows.filter((row) => row.pos === "adjective");
   if (filter === "phrase") return rows.filter((row) => row.word && row.word.isPhrase);
-  if (filter === "raw") return rows.filter((row) => !row.word);
+  if (filter === "raw") return rows.filter((row) => row.source === "raw");
+  if (filter === "supplementary") return rows.filter((row) => row.source === "supplementary");
   if (filter === "known") return rows.filter((row) => getWordRowStatus(row, knownSet, hardSet, now) === "known");
   if (filter === "hard") return rows.filter((row) => getWordRowStatus(row, knownSet, hardSet, now) === "hard");
   if (filter === "due") return rows.filter((row) => isWordRowDue(row, now));
   return rows;
+}
+
+function getWordBankFilterCounts(knownSet, hardSet, now) {
+  const counts = {};
+  for (const filter of WORD_BANK_FILTERS) {
+    counts[filter.id] = applyWordBankFilter(wordReferenceRows, filter.id, knownSet, hardSet, now).length;
+  }
+  return counts;
 }
 
 function sortWordBankRows(rows, sort, knownSet, hardSet, now) {
@@ -6132,7 +6256,7 @@ function wordBankRowHtml(row, knownSet, hardSet, now) {
     ? escapeHtml(row.meaning)
     : row.meaning
       ? `${escapeHtml(row.meaning)} <span class="word-bank-refonly">· no example yet</span>`
-      : `${escapeHtml(row.pronunciation || "")} <span class="word-bank-refonly">· reference only</span>`;
+      : `${escapeHtml(row.pronunciation || "")} <span class="word-bank-refonly">· ${row.source === "supplementary" ? "supplementary" : "reference only"}</span>`;
   const metaParts = [];
   if (row.pos) metaParts.push(escapeHtml(row.pos));
   if (row.word && row.pronunciation) metaParts.push(escapeHtml(row.pronunciation));
@@ -6460,9 +6584,11 @@ function wordBankDetailHtml(row) {
           <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>
         </div>
         ${row.tokenNote ? `<div class="vocab-note">${escapeHtml(row.tokenNote)}</div>` : ""}
-        <div class="word-refonly-note">${hasMeaning
-          ? "This entry comes from the raw 5,000 frequency list. The meaning above is real, but there is no curated example sentence, audio-checked pronunciation, or usage note yet."
-          : "Reference only — this entry comes from the raw 5,000 frequency list and has no curated meaning yet. HanaPath won't guess at meanings."}</div>
+        <div class="word-refonly-note">${row.source === "supplementary"
+          ? "Supplementary — this entry comes from the long-tail frequency list (beyond the core 5,000). It is searchable for reference but is not part of the learning course, and has no curated meaning yet. HanaPath won't guess at meanings."
+          : hasMeaning
+            ? "This entry comes from the raw 5,000 frequency list. The meaning above is real, but there is no curated example sentence, audio-checked pronunciation, or usage note yet."
+            : "Reference only — this entry comes from the raw 5,000 frequency list and has no curated meaning yet. HanaPath won't guess at meanings."}</div>
         <div class="word-card-actions">
           <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(row.korean)}">▶ Hear</button>
           <button class="button ${status === "hard" ? "primary" : "secondary"} compact" type="button" data-word-detail-hard="${escapeHtml(row.id)}">${status === "hard" ? "Marked for later ✓" : "Mark for later"}</button>
@@ -6594,8 +6720,15 @@ function renderWordBankContent() {
   const knownCount = getVocabKnownSet().size + getKnownCuratedWordCount();
   const dueCount = getVocabDueCount();
 
+  const knownSet = getVocabKnownSet();
+  const hardSet = getVocabHardSet();
+  const now = Date.now();
+  const filterCounts = getWordBankFilterCounts(knownSet, hardSet, now);
   const filterChips = WORD_BANK_FILTERS
-    .map((f) => `<button class="filter-chip ${state.wordBankFilter === f.id ? "active" : ""}" type="button" data-word-filter="${f.id}">${f.label}</button>`)
+    .map((f) => {
+      const count = filterCounts[f.id] ?? 0;
+      return `<button class="filter-chip word-bank-filter-chip ${state.wordBankFilter === f.id ? "active" : ""}" type="button" data-word-filter="${f.id}"><span>${f.label}</span><span class="word-bank-filter-count">${count.toLocaleString()}</span></button>`;
+    })
     .join("");
   const sortChips = WORD_BANK_SORTS
     .map((s) => `<button class="filter-chip ${state.wordBankSort === s.id ? "active" : ""}" type="button" data-word-sort="${s.id}">${s.label}</button>`)
@@ -6761,7 +6894,7 @@ function wordBankEntryCardHtml() {
       <div class="alpha-board-entry-main">
         <div class="eyebrow">Reference</div>
         <div class="study-row-ko">Entire Korean Word Bank</div>
-        <div class="screen-sub" style="margin-bottom:0;">Curated beginner words plus the 5,000 frequency list — search Korean, English, pronunciation, or lesson group.</div>
+        <div class="screen-sub" style="margin-bottom:0;">Curated beginner words, the 5,000 frequency list, and the supplementary long-tail list — search Korean, English, pronunciation, or lesson group.</div>
       </div>
       <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">단어</span>
     </button>`;
@@ -6770,6 +6903,183 @@ function wordBankEntryCardHtml() {
 function bindWordBankEntryCard(el) {
   const btn = el.querySelector("#openEntireWordBank");
   if (btn) btn.addEventListener("click", () => openEntireWordBank());
+}
+
+function formatWordLessonCategoryLabel(category) {
+  return String(category || "")
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function getWordLessonCategoryId(lesson) {
+  const fallbackWordsById = curatedWordsById.size
+    ? null
+    : new Map(getCuratedWords().map((word) => [word.id, word]));
+  const words = (lesson?.newWordIds || [])
+    .map((id) => curatedWordsById.get(id) || fallbackWordsById?.get(id))
+    .filter(Boolean);
+  const group = words.find((word) => word.lessonGroup)?.lessonGroup;
+  return String(group || lesson?.stage || "uncategorized").trim();
+}
+
+function getWordLessonCategoryOptions(lessons) {
+  const seen = new Set();
+  const options = [];
+  lessons.forEach((lesson) => {
+    const id = getWordLessonCategoryId(lesson);
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    options.push({
+      id,
+      label: formatWordLessonCategoryLabel(id) || id,
+    });
+  });
+  return options.sort((a, b) => a.label.localeCompare(b.label));
+}
+
+function getWordLessonPathMeta(lesson, now = Date.now()) {
+  const completed = isWordLessonCompleted(lesson.id);
+  const unlocked = isWordLessonUnlocked(lesson);
+  const active = state.vocabLessonActive === lesson.id;
+  const words = (lesson.newWordIds || []).map((id) => curatedWordsById.get(id)).filter(Boolean);
+  let hardCount = 0;
+  let knownCount = 0;
+  let dueCount = 0;
+
+  words.forEach((word) => {
+    const record = getVocabSrsRecord(word.id);
+    if (!record) return;
+    if (record.isHard) hardCount += 1;
+    if (record.isKnown) knownCount += 1;
+    if (!record.isKnown && Number(record.due) > 0 && Number(record.due) <= now) dueCount += 1;
+  });
+
+  return {
+    completed,
+    unlocked,
+    active,
+    current: !completed && unlocked,
+    hardCount,
+    knownCount,
+    dueCount,
+  };
+}
+
+function wordLessonMatchesLevel(meta, level) {
+  if (level === "ready") return meta.current;
+  if (level === "active") return meta.active;
+  if (level === "completed") return meta.completed;
+  if (level === "locked") return !meta.unlocked;
+  if (level === "hard") return meta.hardCount > 0;
+  if (level === "due") return meta.dueCount > 0;
+  if (level === "known") return meta.knownCount > 0;
+  return true;
+}
+
+function wordPathLessonPanelHtml() {
+  const lessons = getWordLessons();
+  if (!lessons.length) return "";
+
+  const next = getNextWordLesson();
+  const completedCount = (state.vocabLessonCompleted || []).length;
+  const categoryOptions = getWordLessonCategoryOptions(lessons);
+  const categoryIds = new Set(categoryOptions.map((option) => option.id));
+  const nextCategory = next ? getWordLessonCategoryId(next) : "";
+  const defaultCategory = nextCategory && categoryIds.has(nextCategory) ? nextCategory : "all";
+  const categoryFilter = state.wordPathCategory && (state.wordPathCategory === "all" || categoryIds.has(state.wordPathCategory))
+    ? state.wordPathCategory
+    : defaultCategory;
+  const levelFilter = WORD_PATH_LEVEL_FILTERS.some((filter) => filter.id === state.wordPathLevel)
+    ? state.wordPathLevel
+    : "all";
+  const categoryOptionHtml = [
+    { id: "all", label: `All categories (${lessons.length})` },
+    ...categoryOptions.map((option) => ({
+      ...option,
+      label: `${option.label} (${lessons.filter((lesson) => getWordLessonCategoryId(lesson) === option.id).length})`,
+    })),
+  ].map((option) => `<option value="${escapeHtml(option.id)}" ${categoryFilter === option.id ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("");
+  const levelOptionHtml = WORD_PATH_LEVEL_FILTERS
+    .map((filter) => `<option value="${escapeHtml(filter.id)}" ${levelFilter === filter.id ? "selected" : ""}>${escapeHtml(filter.label)}</option>`)
+    .join("");
+  const visibleLessons = lessons
+    .map((lesson) => ({ lesson, meta: getWordLessonPathMeta(lesson) }))
+    .filter(({ lesson, meta }) => (categoryFilter === "all" || getWordLessonCategoryId(lesson) === categoryFilter) && wordLessonMatchesLevel(meta, levelFilter));
+  const lessonRows = visibleLessons.map(({ lesson, meta }) => {
+    const completed = meta.completed;
+    const current = meta.current;
+    const unlocked = meta.unlocked;
+    const dotClass = completed ? "done" : current ? "next" : "lock";
+    const pill = completed ? `<span class="pill green">Done</span>` : current ? `<span class="pill accent">Ready</span>` : `<span class="pill muted">Locked</span>`;
+    const progressBits = [
+      `${lesson.newWordIds.length} words`,
+      meta.hardCount ? `${meta.hardCount} hard` : "",
+      meta.dueCount ? `${meta.dueCount} due` : "",
+      meta.knownCount ? `${meta.knownCount} known` : "",
+    ].filter(Boolean).join(" · ");
+    return `
+      <button class="study-row stage-row ${completed ? "complete" : current ? "current" : "locked"}" type="button" data-words-open-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : `data-words-locked="1"`}>
+        <span class="unit-dot ${dotClass}">${completed ? "✓" : escapeHtml(lesson.stage)}</span>
+        <div>
+          <div class="study-row-ko">${escapeHtml(lesson.title)}</div>
+          <div class="study-row-sub">${escapeHtml(lesson.subtitle || "")} · ${escapeHtml(progressBits)}</div>
+        </div>
+        ${pill}
+      </button>
+    `;
+  }).join("");
+  const listSummary = visibleLessons.length === lessons.length
+    ? `${lessons.length} lessons shown`
+    : `${visibleLessons.length} of ${lessons.length} lessons shown`;
+
+  return `
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Word lessons</div>
+          <div class="screen-sub" style="margin-bottom:0;">Browse guided lessons by category and learning level.</div>
+        </div>
+        <span class="pill accent" style="white-space:nowrap;">${completedCount}/${lessons.length}</span>
+      </div>
+      <div class="word-path-controls">
+        <label class="word-path-field">
+          <span>Category</span>
+          <select class="alphabet-stage-select word-path-select" data-word-path-category>
+            ${categoryOptionHtml}
+          </select>
+        </label>
+        <label class="word-path-field">
+          <span>Learning level</span>
+          <select class="alphabet-stage-select word-path-select" data-word-path-level>
+            ${levelOptionHtml}
+          </select>
+        </label>
+      </div>
+      <div class="word-path-summary">${escapeHtml(listSummary)}</div>
+      <div class="study-list">${lessonRows || '<div class="study-row"><div><div class="study-row-ko">No lessons match those filters</div><div class="study-row-sub">Choose a different category or learning level.</div></div></div>'}</div>
+    </div>
+  `;
+}
+
+function bindWordPathControls(el, rerender) {
+  const categorySelect = el.querySelector("[data-word-path-category]");
+  if (categorySelect) {
+    categorySelect.addEventListener("change", () => {
+      state.wordPathCategory = categorySelect.value || "all";
+      saveState();
+      rerender();
+    });
+  }
+  const levelSelect = el.querySelector("[data-word-path-level]");
+  if (levelSelect) {
+    levelSelect.addEventListener("change", () => {
+      state.wordPathLevel = levelSelect.value || "all";
+      saveState();
+      rerender();
+    });
+  }
 }
 
 // Words home content (the "learn" view of the vocabulary section): continue
@@ -6789,6 +7099,26 @@ function wordsHomeContentHtml() {
   const next = getNextWordLesson();
   const dueCount = getVocabDueCount();
   const completedCount = (state.vocabLessonCompleted || []).length;
+  const categoryOptions = getWordLessonCategoryOptions(lessons);
+  const categoryIds = new Set(categoryOptions.map((option) => option.id));
+  const nextCategory = next ? getWordLessonCategoryId(next) : "";
+  const defaultCategory = nextCategory && categoryIds.has(nextCategory) ? nextCategory : "all";
+  const categoryFilter = state.wordPathCategory && (state.wordPathCategory === "all" || categoryIds.has(state.wordPathCategory))
+    ? state.wordPathCategory
+    : defaultCategory;
+  const levelFilter = WORD_PATH_LEVEL_FILTERS.some((filter) => filter.id === state.wordPathLevel)
+    ? state.wordPathLevel
+    : "all";
+  const categoryOptionHtml = [
+    { id: "all", label: `All categories (${lessons.length})` },
+    ...categoryOptions.map((option) => ({
+      ...option,
+      label: `${option.label} (${lessons.filter((lesson) => getWordLessonCategoryId(lesson) === option.id).length})`,
+    })),
+  ].map((option) => `<option value="${escapeHtml(option.id)}" ${categoryFilter === option.id ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("");
+  const levelOptionHtml = WORD_PATH_LEVEL_FILTERS
+    .map((filter) => `<option value="${escapeHtml(filter.id)}" ${levelFilter === filter.id ? "selected" : ""}>${escapeHtml(filter.label)}</option>`)
+    .join("");
 
   const continueCard = alphabetDone
     ? (next
@@ -6829,10 +7159,19 @@ function wordsHomeContentHtml() {
       </div>
     </div>`;
 
-  const lessonRows = lessons.map((lesson) => {
-    const completed = isWordLessonCompleted(lesson.id);
-    const unlocked = isWordLessonUnlocked(lesson);
-    const current = !completed && unlocked;
+  const visibleLessons = lessons
+    .map((lesson) => ({ lesson, meta: getWordLessonPathMeta(lesson) }))
+    .filter(({ lesson, meta }) => (categoryFilter === "all" || getWordLessonCategoryId(lesson) === categoryFilter) && wordLessonMatchesLevel(meta, levelFilter));
+  const lessonRows = visibleLessons.map(({ lesson, meta }) => {
+    const completed = meta.completed;
+    const unlocked = meta.unlocked;
+    const current = meta.current;
+    const progressBits = [
+      `${lesson.newWordIds.length} words`,
+      meta.hardCount ? `${meta.hardCount} hard` : "",
+      meta.dueCount ? `${meta.dueCount} due` : "",
+      meta.knownCount ? `${meta.knownCount} known` : "",
+    ].filter(Boolean).join(" Â· ");
     const dotClass = completed ? "done" : current ? "next" : "lock";
     const pill = completed ? `<span class="pill green">Done</span>` : current ? `<span class="pill accent">Ready</span>` : `<span class="pill muted">Locked</span>`;
     return `
@@ -6840,12 +7179,15 @@ function wordsHomeContentHtml() {
         <span class="unit-dot ${dotClass}">${completed ? "✓" : escapeHtml(lesson.stage)}</span>
         <div>
           <div class="study-row-ko">${escapeHtml(lesson.title)}</div>
-          <div class="study-row-sub">${escapeHtml(lesson.subtitle || "")} · ${lesson.newWordIds.length} words</div>
+          <div class="study-row-sub">${escapeHtml(lesson.subtitle || "")} · ${escapeHtml(progressBits)}</div>
         </div>
         ${pill}
       </button>
     `;
   }).join("");
+  const listSummary = visibleLessons.length === lessons.length
+    ? `${lessons.length} lessons shown`
+    : `${visibleLessons.length} of ${lessons.length} lessons shown`;
 
   return `
     ${continueCard}
@@ -6858,12 +7200,43 @@ function wordsHomeContentHtml() {
         </div>
         <span class="pill accent" style="white-space:nowrap;">${completedCount}/${lessons.length}</span>
       </div>
-      <div class="study-list">${lessonRows}</div>
+      <div class="word-path-controls">
+        <label class="word-path-field">
+          <span>Category</span>
+          <select class="alphabet-stage-select word-path-select" data-word-path-category>
+            ${categoryOptionHtml}
+          </select>
+        </label>
+        <label class="word-path-field">
+          <span>Learning level</span>
+          <select class="alphabet-stage-select word-path-select" data-word-path-level>
+            ${levelOptionHtml}
+          </select>
+        </label>
+      </div>
+      <div class="word-path-summary">${escapeHtml(listSummary)}</div>
+      <div class="study-list">${lessonRows || '<div class="study-row"><div><div class="study-row-ko">No lessons match those filters</div><div class="study-row-sub">Choose a different category or learning level.</div></div></div>'}</div>
     </div>
   `;
 }
 
 function bindWordsHomeContent(el) {
+  const categorySelect = el.querySelector("[data-word-path-category]");
+  if (categorySelect) {
+    categorySelect.addEventListener("change", () => {
+      state.wordPathCategory = categorySelect.value || "all";
+      saveState();
+      renderVocabulary();
+    });
+  }
+  const levelSelect = el.querySelector("[data-word-path-level]");
+  if (levelSelect) {
+    levelSelect.addEventListener("change", () => {
+      state.wordPathLevel = levelSelect.value || "all";
+      saveState();
+      renderVocabulary();
+    });
+  }
   el.querySelectorAll("[data-words-open-lesson]").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.dataset.wordsLocked) {
@@ -11996,6 +12369,7 @@ function renderLearnStageMenu(itemId) {
       </div>
     </div>`
     : "";
+  const wordPathHtml = itemId === "vocabulary" ? wordPathLessonPanelHtml() : "";
 
   // Alphabet Drill Lab: permanent, unlocked once the mastery test is done.
   const drillLabHtml = itemId === "alphabet" && (progress.complete || TEST_UNLOCK_ALL_STAGES)
@@ -12033,6 +12407,7 @@ function renderLearnStageMenu(itemId) {
     ${wordBankHtml}
     ${wordLessonHtml}
     ${wordReviewHtml}
+    ${wordPathHtml}
     ${drillLabHtml}
     ${letterReviewHtml}
     <div class="card">
@@ -12067,6 +12442,20 @@ function renderLearnStageMenu(itemId) {
   const drillLabBtn = document.getElementById("openDrillLab");
   if (drillLabBtn) drillLabBtn.addEventListener("click", () => openAlphabetDrillLab());
   bindWordBankEntryCard(el);
+  if (itemId === "vocabulary") {
+    bindWordPathControls(el, () => renderLearnStageMenu(itemId));
+    el.querySelectorAll("[data-words-open-lesson]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (btn.dataset.wordsLocked) {
+          showRetryToast(getAlphabetProgress().complete
+            ? "Finish the previous word lesson to unlock this one."
+            : "Finish the Hangul stages to unlock word lessons.");
+          return;
+        }
+        openWordLesson(btn.dataset.wordsOpenLesson, { resume: state.vocabLessonActive === btn.dataset.wordsOpenLesson });
+      });
+    });
+  }
   const stageWordLessonBtn = document.getElementById("stageOpenWordLesson");
   if (stageWordLessonBtn && nextWordLesson) {
     stageWordLessonBtn.addEventListener("click", () => openWordLesson(nextWordLesson.id, { resume: state.vocabLessonActive === nextWordLesson.id }));
@@ -12516,6 +12905,58 @@ function renderLearnComplete(index) {
   `;
   const nextBtn = document.getElementById("learnNextBtn");
   if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
+}
+
+// Temporary voice-comparison screen (owner request) — remove after testing.
+// Three words absent from every word list, one per voice engine:
+//   만화경 (kaleidoscope)   — edge-tts "ko-KR-SunHiNeural" (the app's generated voice)
+//   기상학자 (meteorologist) — Piper "kss-korean" (the unused model in the repo)
+//   회오리바람 (whirlwind)    — window.speechSynthesis (the app's runtime fallback)
+function renderVoiceTest() {
+  stopSpeech();
+  activeHub = "voicetest";
+  setNavActive("voicetest");
+  hideDetailBar();
+  const el = showScreen("menu");
+  if (!el) return;
+  const rows = [
+    { ko: "만화경", en: "kaleidoscope", engine: "Neural (edge-tts SunHiNeural) — the app's generated voice", src: "./audio/test_voice_neural.mp3" },
+    { ko: "기상학자", en: "meteorologist", engine: "Piper (kss-korean) — the unused model in the repo", src: "./audio/test_voice_piper.wav" },
+    { ko: "회오리바람", en: "whirlwind", engine: "Device TTS (speechSynthesis) — the runtime fallback", src: "" },
+  ];
+  el.innerHTML = `
+    <div class="hub-header">
+      <div class="eyebrow">Temporary</div>
+      <h2 class="screen-title" style="margin-bottom:6px;">Voice comparison test</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Three words that are in none of the word lists — one per voice engine. Tap to hear.</div>
+    </div>
+    <div class="hub-tiles">
+      ${rows.map((row, index) => `
+        <button class="hub-tile" type="button" data-voice-test="${index}">
+          <span class="hub-tile-icon">🔊</span>
+          <span class="hub-tile-text">
+            <strong lang="ko">${escapeHtml(row.ko)} · ${escapeHtml(row.en)}</strong>
+            <small>${escapeHtml(row.engine)}</small>
+          </span>
+          <span class="hub-tile-go" aria-hidden="true">▶</span>
+        </button>
+      `).join("")}
+    </div>
+  `;
+  el.querySelectorAll("[data-voice-test]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      stopSpeech();
+      const row = rows[Number(btn.dataset.voiceTest)];
+      if (!row) return;
+      if (row.src) {
+        new Audio(row.src).play();
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(row.ko);
+      utterance.lang = "ko-KR";
+      window.speechSynthesis.speak(utterance);
+    });
+  });
 }
 
 function goHub(hub) {
@@ -13931,7 +14372,7 @@ async function init() {
     saveState();
   }
 
-  await loadVocabBank();
+  await Promise.all([loadVocabBank(), loadSupplementaryBank()]);
   initWordBanks();
   updateVocabSkill();
   refreshProgressionState();
@@ -13958,6 +14399,7 @@ async function init() {
   document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.dataset.nav === "learn") tapLearnTab();
+      else if (btn.dataset.nav === "voicetest") renderVoiceTest();
       else goHub(btn.dataset.nav);
     });
   });
