@@ -14,6 +14,10 @@
 //   - function words carry forms or a usage note
 //   - lessons reference only existing word IDs and have non-empty newWordIds
 //   - lesson unlock chain references existing lessons
+//   - every declared lesson checkpoint can generate at least one question
+//     (mirrors app.js makeWordSentenceBlank incl. the inflection fallback,
+//     the isFunctionWord gate, and the form-drill conjugation requirements —
+//     Track F4; dead checkpoints shipped silently for months before this)
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -298,6 +302,87 @@ for (const lesson of lessons || []) {
   const prev = lesson.unlock && lesson.unlock.previousLessonId;
   if (prev && !lessonIds.has(prev)) {
     errors.push(`${lesson.id}: unlock.previousLessonId references missing lesson ${prev}`);
+  }
+}
+
+// ── Checkpoint generatability (Track F4) ────────────────────────────────────
+// A lesson may declare a checkpoint its words can never satisfy; the app's
+// question builder silently skips it and learners just get fewer exercise
+// types. 24 such dead checkpoints shipped unnoticed (found by the 2026-07-05
+// cold-learner verification) because nothing audited the invariant. The
+// predicates below mirror the app's generators; if app.js changes its rules
+// (makeWordSentenceBlank / makeConjugatedSentenceBlank, the functionUsage
+// gate, or the form-drill target selection), update them together.
+const inflect = sandbox.window.HANAPATH_INFLECT;
+const wordsById = new Map((words || []).map((w) => [w.id, w]));
+
+const BLANK_FORM_NAMES = ["past", "honorific", "formal", "polite", "attributive"];
+const BLANK_STEM_ENDINGS = ["고", "지", "서", "면"];
+function acceptedAnswers(word) {
+  const answers = [];
+  if (Array.isArray(word.forms) && word.forms.length) answers.push(...word.forms);
+  answers.push(word.korean);
+  if (word.display && word.display !== word.korean) answers.push(word.display);
+  return answers;
+}
+function isBlankable(word) {
+  if (!word.exampleKo) return false;
+  for (const form of acceptedAnswers(word)) {
+    if (form && word.exampleKo.includes(form)) return true;
+  }
+  if (!inflect || (word.pos !== "verb" && word.pos !== "adjective")) return false;
+  const candidates = [];
+  for (const formName of BLANK_FORM_NAMES) {
+    const form = inflect.conjugate(word.korean, word.pos, word.irregularFamily, formName);
+    if (form && form !== word.korean) candidates.push(form);
+  }
+  const polite = inflect.conjugate(word.korean, word.pos, word.irregularFamily, "polite");
+  if (polite && polite.endsWith("요")) candidates.push(polite.slice(0, -1));
+  const stem = inflect.getStem(word.korean);
+  if (stem && stem !== word.korean) {
+    for (const ending of BLANK_STEM_ENDINGS) candidates.push(stem + ending);
+  }
+  for (const form of candidates) {
+    if (form.length < 2) continue;
+    const at = word.exampleKo.indexOf(form);
+    if (at < 0) continue;
+    if (at > 0 && !/[\s"“”‘’(【[]/.test(word.exampleKo[at - 1])) continue;
+    return true;
+  }
+  return false;
+}
+function formDrillTarget(word, production) {
+  if (word.lessonGroup === "honorifics" || word.lessonGroup === "irregular-families") return "honorific";
+  if (word.lessonGroup === "noun-modification") return "attributive";
+  if (production && (word.lessonGroup === "past-tense" || word.lessonGroup === "past-tense-negation")) return "past";
+  return "polite";
+}
+function canFormDrill(word, recognition) {
+  if (!inflect || (word.pos !== "verb" && word.pos !== "adjective")) return false;
+  const target = formDrillTarget(word, !recognition);
+  const form = inflect.conjugate(word.korean, word.pos, word.irregularFamily, target);
+  if (!form || form === word.korean) return false;
+  if (recognition) return inflect.recognize(form, [word], [target]).length > 0;
+  return true;
+}
+const CHECKPOINT_PREDICATES = {
+  "sentence-blank": (word) => isBlankable(word),
+  "function-usage": (word) => Boolean(word.isFunctionWord) && isBlankable(word),
+  "form-recognition": (word) => canFormDrill(word, true),
+  "form-production": (word) => canFormDrill(word, false),
+  // The remaining checkpoint types (ko-to-meaning, audio-to-meaning,
+  // meaning-to-ko, type-ko) generate for any resolvable word.
+};
+for (const lesson of lessons || []) {
+  if (!Array.isArray(lesson.checkpoints) || !Array.isArray(lesson.newWordIds)) continue;
+  const lessonWords = lesson.newWordIds.map((id) => wordsById.get(id)).filter(Boolean);
+  if (!lessonWords.length) continue; // missing ids already reported above
+  for (const checkpoint of lesson.checkpoints) {
+    const predicate = CHECKPOINT_PREDICATES[checkpoint];
+    if (!predicate) continue;
+    if (!lessonWords.some(predicate)) {
+      errors.push(`${lesson.id}: checkpoint "${checkpoint}" cannot generate a single question from this lesson's words — drop it or fix the words`);
+    }
   }
 }
 
