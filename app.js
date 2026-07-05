@@ -4113,6 +4113,18 @@ function formatVocabRelativeTime(at) {
   return new Date(at).toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
+function formatVocabDueTime(due, now = Date.now()) {
+  const safeDue = Number(due || 0);
+  if (!safeDue || !Number.isFinite(safeDue)) return "Not scheduled";
+  const delta = safeDue - now;
+  if (delta <= 0) return "Due now";
+  if (delta < 60000) return "in <1m";
+  if (delta < 3600000) return `in ${Math.max(1, Math.round(delta / 60000))}m`;
+  if (delta < VOCAB_ANALYTICS_DAY_MS) return `in ${Math.max(1, Math.round(delta / 3600000))}h`;
+  if (delta < 30 * VOCAB_ANALYTICS_DAY_MS) return `in ${Math.max(1, Math.round(delta / VOCAB_ANALYTICS_DAY_MS))}d`;
+  return new Date(safeDue).toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
 function formatVocabPercent(value) {
   return Number.isFinite(value) ? `${Math.round(value)}%` : "—";
 }
@@ -4248,10 +4260,73 @@ function getVocabAnalyticsSnapshot() {
   };
 }
 
+function getVocabReviewQueueSnapshot(limit = 6) {
+  const now = Date.now();
+  const srs = state.vocabSrs || {};
+  const dueItems = getDueVocabReviews(limit);
+  const allDue = getDueVocabReviews(Infinity);
+  const scheduled = [];
+  let studiedCount = 0;
+  let learningCount = 0;
+  let knownCount = 0;
+  let hardCount = 0;
+
+  Object.keys(srs).forEach((wordId) => {
+    const record = srs[wordId];
+    const word = curatedWordsById.get(wordId);
+    if (!word || !record || record.seen <= 0) return;
+    studiedCount += 1;
+    if (record.isKnown) knownCount += 1;
+    if (record.isHard) hardCount += 1;
+    if (!record.isKnown) learningCount += 1;
+    if (record.due > now) scheduled.push({ word, record });
+  });
+
+  scheduled.sort((a, b) => a.record.due - b.record.due);
+  return {
+    dueItems,
+    dueTotal: allDue.length,
+    hardDue: allDue.filter(({ record }) => record.isHard).length,
+    nextItems: scheduled.slice(0, limit),
+    studiedCount,
+    learningCount,
+    knownCount,
+    hardCount,
+  };
+}
+
 function buildVocabMetricsView() {
   const stats = getVocabAnalyticsSnapshot();
+  const queue = getVocabReviewQueueSnapshot(6);
   const retention1wLabel = stats.retention1w.samples ? formatVocabRatio(stats.retention1w.pct) : "collecting";
   const retention1mLabel = stats.retention1m.samples ? formatVocabRatio(stats.retention1m.pct) : "collecting";
+  const queueItems = queue.dueItems.length ? queue.dueItems : queue.nextItems;
+  const queueRows = queueItems.length
+    ? queueItems.map(({ word, record }) => {
+      const dueLabel = formatVocabDueTime(record.due);
+      const meta = [
+        word.meaningShort || word.meaning || "",
+        record.isHard ? "hard" : record.isKnown ? "known" : "learning",
+        dueLabel,
+      ].filter(Boolean).join(" / ");
+      return `
+        <div class="study-row">
+          <div>
+            <div class="study-row-ko" lang="ko">${escapeHtml(word.display || word.korean)}</div>
+            <div class="study-row-sub">${escapeHtml(meta)}</div>
+          </div>
+          ${hearIconButton(word.voiceText || word.korean, "data-speak")}
+        </div>
+      `;
+    }).join("")
+    : `
+      <div class="study-row">
+        <div>
+          <div class="study-row-ko">No scheduled word reviews yet</div>
+          <div class="study-row-sub">Add words from lessons or the Word Bank to build a review queue.</div>
+        </div>
+      </div>
+    `;
   const weakRows = stats.weakWords.length
     ? stats.weakWords.map((summary) => {
       const word = summary.word;
@@ -4331,6 +4406,23 @@ function buildVocabMetricsView() {
       <div class="stat-box"><span class="sv">${retention1mLabel}</span><span class="sl">1-month retention</span></div>
       <div class="stat-box"><span class="sv">${stats.avgConfidencePct}%</span><span class="sl">Confidence</span></div>
       <div class="stat-box"><span class="sv">${stats.reviewedWords}</span><span class="sl">Tracked words</span></div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Review queue</div>
+          <div class="screen-sub" style="margin-bottom:0;">Due words first, then the next scheduled items.</div>
+        </div>
+        <button class="button ${queue.dueTotal ? "primary" : "secondary"} compact" type="button" data-words-start-review ${queue.dueTotal ? "" : "disabled"}>Review (${queue.dueTotal})</button>
+      </div>
+      <div class="stats-grid word-review-mini-stats">
+        <div class="stat-box"><span class="sv">${queue.dueTotal}</span><span class="sl">Due now</span></div>
+        <div class="stat-box"><span class="sv">${queue.hardDue}</span><span class="sl">Hard due</span></div>
+        <div class="stat-box"><span class="sv">${queue.learningCount}</span><span class="sl">Learning</span></div>
+        <div class="stat-box"><span class="sv">${queue.knownCount}</span><span class="sl">Known</span></div>
+      </div>
+      <div class="study-list">${queueRows}</div>
     </div>
 
     <div class="card">
@@ -4778,6 +4870,12 @@ function getVocabDueCount() {
 function getKnownCuratedWordCount() {
   const srs = state.vocabSrs || {};
   return Object.keys(srs).filter((id) => srs[id] && srs[id].isKnown && curatedWordsById.has(id)).length;
+}
+
+function isWordRowDue(row, now = Date.now()) {
+  if (!row || !row.word) return false;
+  const record = (state.vocabSrs || {})[row.id];
+  return Boolean(record && record.seen > 0 && record.due <= now);
 }
 
 function getWordRowStatus(row, knownSet, hardSet, now = Date.now()) {
@@ -5838,7 +5936,7 @@ function applyWordBankFilter(rows, filter, knownSet, hardSet, now) {
   if (filter === "raw") return rows.filter((row) => !row.word);
   if (filter === "known") return rows.filter((row) => getWordRowStatus(row, knownSet, hardSet, now) === "known");
   if (filter === "hard") return rows.filter((row) => getWordRowStatus(row, knownSet, hardSet, now) === "hard");
-  if (filter === "due") return rows.filter((row) => getWordRowStatus(row, knownSet, hardSet, now) === "due");
+  if (filter === "due") return rows.filter((row) => isWordRowDue(row, now));
   return rows;
 }
 
@@ -6077,6 +6175,41 @@ function wordHonorificCardHtml(word) {
   `;
 }
 
+function wordSrsStatusLabel(status) {
+  if (status === "known") return "Known";
+  if (status === "hard") return "Hard";
+  if (status === "due") return "Due now";
+  if (status === "learning") return "Learning";
+  return "Fresh";
+}
+
+function wordSrsPanelHtml(row, status) {
+  if (!row || !row.word) return "";
+  const record = getVocabSrsRecord(row.id, false);
+  const answerTotal = record ? (Number(record.correct) || 0) + (Number(record.missed) || 0) : 0;
+  const seen = record ? Number(record.seen) || 0 : 0;
+  const accuracy = answerTotal ? `${Math.round(((Number(record.correct) || 0) / answerTotal) * 100)}%` : "Not enough data";
+  const dueLabel = record && seen > 0 ? formatVocabDueTime(record.due) : "Not scheduled";
+  const boxLabel = record && seen > 0 ? `Box ${Math.max(1, (Number(record.box) || 0) + 1)}` : "New";
+  const lastSeen = record && record.lastSeen ? formatVocabRelativeTime(record.lastSeen) : "No answers yet";
+  const statusClass = status === "known" ? "green" : status === "hard" || status === "due" ? "accent" : "muted";
+  return `
+    <div class="word-srs-panel">
+      <div class="word-srs-head">
+        <span>Review timing</span>
+        <strong class="pill ${statusClass}">${escapeHtml(wordSrsStatusLabel(status))}</strong>
+      </div>
+      <div class="word-srs-grid">
+        <div><span>Next review</span><strong>${escapeHtml(dueLabel)}</strong></div>
+        <div><span>Attempts</span><strong>${seen}</strong></div>
+        <div><span>Accuracy</span><strong>${escapeHtml(accuracy)}</strong></div>
+        <div><span>Schedule</span><strong>${escapeHtml(boxLabel)}</strong></div>
+      </div>
+      <div class="word-srs-foot">Last answer: ${escapeHtml(lastSeen)}</div>
+    </div>
+  `;
+}
+
 function wordDetailNoteHtml(label, body, extraClass = "") {
   if (!body) return "";
   return `
@@ -6183,6 +6316,7 @@ function wordBankDetailHtml(row) {
         <div class="vocab-meta-box"><span>Morph tag</span><strong>${wordAnnotationValueHtml(word, "morphTag", word.morphTag)}</strong></div>
         <div class="vocab-meta-box"><span>Status</span><strong>${escapeHtml(statusLabel)}</strong></div>
       </div>
+      ${wordSrsPanelHtml(row, status)}
       <div class="word-card-actions">
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.voiceText || word.korean)}">▶ Hear word</button>
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.exampleVoiceText || word.exampleKo)}">▶ Hear example</button>
