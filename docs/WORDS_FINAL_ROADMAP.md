@@ -15,13 +15,14 @@
 
 ## 0. Verified status snapshot (2026-07-05, re-verified by the cold-learner pass later the same day)
 
-Tracks A–E are closed and all engines, screens, and content systems are
+Tracks A–F are closed and all engines, screens, and content systems are
 shipped; the app smoke-tests clean, generated audio coverage is complete, and
 the real gated progression is live (`TEST_UNLOCK_ALL_STAGES` is `false`).
 A full cold-learner verification on 2026-07-05 (scorecard re-derivation +
 scripted Chromium walkthrough; see spec §8/§9 item 6) confirmed every closed
-track's numbers and opened **Track F (§7.5)** with three real gaps the audits
-could not see. The section is final when Track F is also done.
+track's numbers and found three real gaps the audits could not see; those gaps
+were resolved by Track F. The Words section finalization queue has no
+remaining open boxes.
 
 | Fact | Verified value |
 |---|---|
@@ -75,7 +76,7 @@ owner-only — **never attempt E items autonomously.**
 - [x] **Track C** — 18 singleton `senseKey`s resolved (real second sense authored, or leftover key removed)
 - [x] **Track D** — Honorific axis encoded and surfaced in the UI (`honorificRole` + `contrastWith` pairs, §6)
 - [x] **Track E** — Owner decisions recorded (§7: stub accepted, hanja stays absent, root-origin rule applied)
-- [ ] **Track F** — Cold-learner verification follow-ups (§7.5): 12 particles get full function-word treatment, sentence-blank works for conjugated examples, dead checkpoints removed, audit hardened against silent checkpoints
+- [x] **Track F** — Cold-learner verification follow-ups (§7.5): 12 particles get full function-word treatment, sentence-blank works for conjugated examples, dead checkpoints removed, audit hardened against silent checkpoints
 - [x] **Final gate** — `TEST_UNLOCK_ALL_STAGES` set back to `false`; scripted cold-learner test of the real gated progression passed; caches bumped; all audits green (2026-07-05)
 
 ---
@@ -345,7 +346,7 @@ if the owner wants the other option.
 
 ---
 
-## 7.5 Track F — Cold-learner verification follow-ups (opened 2026-07-05)
+## 7.5 Track F — Cold-learner verification follow-ups (closed 2026-07-05)
 
 Found by the full verification pass (spec §9 item 6): re-derivation of every
 scorecard number plus a scripted Chromium walkthrough of the real learner
@@ -497,11 +498,7 @@ passes on the real data, and `--strict` stays green on main.
 
 ## 8. Suggested execution order
 
-Tracks A–E are done, and F2/F3/F4 shipped 2026-07-05. **The only open box
-is F1** (give the 12 M5 particles full function-word treatment) — it is
-fully recipe-specified above and small-model-friendly. One checkbox = one
-PR, §2 rules apply unchanged. Generated-audio coverage is enforced by the
-words audit and the `AUDIO_PENDING_ALLOWED` list is currently empty —
-Track F adds no Korean text, so no audio work is expected. Note for F1:
-the F4 audit now hard-fails a flagged function word with neither forms
-nor usageNote, so apply the full per-row recipe, not just the flag.
+Tracks A–F are done. The Words finalization queue has no remaining open
+boxes; future work should come from an explicit owner decision, not from this
+roadmap. Generated-audio coverage is enforced by the words audit and the
+`AUDIO_PENDING_ALLOWED` list is currently empty.

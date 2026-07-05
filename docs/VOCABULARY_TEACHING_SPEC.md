@@ -291,7 +291,7 @@ Grounded in the shipped code (main) as of 2026-07-05. Legend: ✅ solid ·
 | Script → block → batchim course | ✅ | Full alphabet module (drill lab, skill-SRS, 72 audio tokens, batchim) |
 | Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + per-lesson checkpoint ladder + W17–W19 grammar track, then W20–W218 theme stages from the Core-2000 expansion (219 stages / 298 lessons total, strict linear unlock chain — verified intact end to end 2026-07-05) |
 | Lexeme + forms, not flat pairs | ✅ | `forms`/`grammarRole`/`pattern`/`formNote` exist; `words_inflect.js` now provides generator + recognizer coverage |
-| Particles & endings first-class | 🟡 | The 29 `fw1xxx` rows are fully first-class (forms/grammarRole/contrastWith/pattern/`isFunctionWord`); **12 M5-era particle/connective rows (으로, 에게, 한테, 까지, 부터, 지만, 면서, 도록, 려고, 치고, 조차, 마저) lack the `isFunctionWord` flag and all function-word fields**, so they're taught as plain vocab and skip the function-usage drill, the Word Bank function filter, and the audit's function-word gate (roadmap Track F1) |
+| Particles & endings first-class | ✅ | 43 rows are first-class function words, including the 12 M5-era particle/connective rows completed in Track F1 (으로, 에게, 한테, 까지, 부터, 지만, 면서, 도록, 려고, 치고, 조차, 마저); they carry `isFunctionWord`, `grammarRole`, `pattern`, usage notes, and `forms`/`contrastWith` where applicable, so they participate in the Word Bank function filter, function-usage drills, and the audit's function-word gate |
 | Honorifics (subject vs listener) | ✅ | Honorific verb table + W19 lesson, plus the Track D axis (2026-07-04): `honorificRole: subject|listener|humble` on 26 rows and 11 bidirectional plain↔honorific/polite `contrastWith` pairs (the 10 lexical pairs plus 아/어↔아요/어요 — re-derived 2026-07-05; earlier counts said 10), rendered in the Word Bank detail view and lesson cards |
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
 | Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio — all 8 directions generate, and all 6,105 questions across all 298 lessons passed an answer/options integrity sweep (2026-07-05) |
@@ -307,7 +307,7 @@ Grounded in the shipped code (main) as of 2026-07-05. Legend: ✅ solid ·
 | Numbers / counters / native-vs-Sino | ✅ | Sino/Native numbers and counters thematic sets + lessons |
 | Vocabulary volume | ✅ | 2,028 unique curated senses (1,918 post-#54, +110 across the M2/Track-C batches), slightly above the Core 1000 / Core 2000 target band, with every curated row assigned to a lesson |
 
-**Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS, retrieval, inflection engine, volume) are done. Tracks A–E are closed; §9 is retained as the audit-backed historical checklist. **Track F (the 2026-07-05 verification follow-ups) is open** — see the roadmap.
+**Read:** the hardest-to-retrofit parts (script course, Hangul-first UX, SRS, retrieval, inflection engine, volume) are done. Tracks A–F are closed; §9 is retained as the audit-backed historical checklist, and the roadmap has no remaining open boxes.
 
 **Cold-learner verification (2026-07-05).** Every ✅ above was re-derived from
 the shipped data and exercised in a scripted browser walkthrough, not taken
@@ -317,8 +317,9 @@ questions integrity-checked); the alphabet gate, single-lesson unlock, a full
 real-UI play-through of lesson 1 (SRS records + review events written), the
 W17 grammar-track form questions, the final lesson (w218-theme-264), sense
 badges, and the honorific detail view all verified in Chromium with zero
-console errors. The two 🟡 rows above are the only gaps found; they are
-queued as roadmap **Track F**.
+console errors. The remaining 🟡 rows above are accepted scope boundaries
+(owner-gated Hanja depth and static-only pronunciation scoring), not open
+roadmap work.
 
 The Word Bank still has a **Needs curation** filter and **Curation priority** sort driven by `annotationSource` for future data edits, but the current curation queue is empty.
 
@@ -391,7 +392,7 @@ The original six-PR roadmap (data axes → sense split → inflection engine →
    unless the owner later chooses to scope a backend service (the decision is
    a policy record only — trivially reversible).
 
-6. **Cold-learner verification pass — done (2026-07-05), three gaps queued as
+6. **Cold-learner verification pass — done (2026-07-05), three gaps resolved as
    roadmap Track F.** A full re-derivation of the §8 scorecard from data plus
    a scripted Chromium walkthrough (gate → lesson 1 played through the real
    UI → deep-lesson spot checks → Word Bank semantics) confirmed every closed
@@ -400,12 +401,13 @@ The original six-PR roadmap (data axes → sense split → inflection engine →
    that silently generate zero questions, rooted in 280 rows whose examples
    only contain conjugated forms `makeWordSentenceBlank` can't match — **F2/F3**;
    (c) no audit coverage for either, which is how both survived every green
-   audit run — **F4**. Also corrected here: the honorific pair count is 11,
-   not 10, and the curriculum spans 219 stages (W0–W218), not W0–W19.
+   audit run — **F4**. F1–F4 are now closed. Also corrected here: the
+   honorific pair count is 11, not 10, and the curriculum spans 219 stages
+   (W0–W218), not W0–W19.
 
-Ship **depth before breadth**: every roadmap track (A–E) is closed; polish
-on the existing ~2,000 senses beats adding more flat words. Track F is
-exactly that kind of polish — finish it before any new content.
+Ship **depth before breadth**: every roadmap track (A–F) is closed; future
+content or capability work should come from an explicit owner decision, not
+from this completed finalization checklist.
 
 ---
 
