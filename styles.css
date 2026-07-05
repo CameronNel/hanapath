@@ -1531,6 +1531,10 @@ button.bd-assembled:hover {
   flex-direction: column;
   gap: 0;
 }
+.word-checkpoint-options {
+  grid-template-columns: 1fr;
+  margin-top: 18px;
+}
 
 .option {
   padding: 13px 10px;
@@ -1587,6 +1591,16 @@ button.bd-assembled:hover {
   line-height: 1.45;
 }
 .quiz-feedback:not(:empty) { background: rgba(255,255,255,.05); margin-bottom: 12px; }
+.quiz-feedback.correct:not(:empty) {
+  background: rgba(45, 212, 191, .12);
+  border: 1.5px solid var(--good);
+  color: var(--good);
+}
+.quiz-feedback.wrong:not(:empty) {
+  background: rgba(248, 113, 113, .1);
+  border: 1.5px solid var(--bad);
+  color: var(--bad);
+}
 
 .sentence-builder {
   display: flex;
@@ -2385,6 +2399,27 @@ button.bd-assembled:hover {
   text-align: center;
   padding: 8px;
 }
+.word-checkpoint-audio {
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 1.1;
+  margin: 0;
+  transition: background var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-spring), text-shadow var(--dur-2) var(--ease-out);
+}
+.word-checkpoint-audio:hover {
+  background: rgba(91, 157, 255, .14);
+  text-shadow: 0 0 16px rgba(91, 157, 255, .5);
+  transform: translateY(-1px);
+}
+.word-checkpoint-audio:active {
+  transform: scale(.96);
+}
+.word-checkpoint-audio:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+  outline: none;
+}
 .syllable-stack {
   display: flex;
   align-items: center;
@@ -3152,6 +3187,33 @@ li { margin-bottom: 4px; }
 }
 .word-result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; }
 @media (min-width: 560px) { .word-result-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.word-path-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 10px 0 8px;
+}
+.word-path-field {
+  display: grid;
+  gap: 5px;
+}
+.word-path-field span,
+.word-path-summary {
+  color: var(--muted-2);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.word-path-summary {
+  margin: 6px 0 10px;
+}
+@media (max-width: 640px) {
+  .word-path-controls {
+    grid-template-columns: 1fr;
+  }
+}
 
 .word-bank-panel .vocab-filters { margin-bottom: 8px; }
 .word-bank-sort-row { gap: 6px; }

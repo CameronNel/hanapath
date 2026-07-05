@@ -1,19 +1,20 @@
-// [2026-07-05] Cache bumped to v171: Word Bank filter count polish.
-const CACHE_NAME = "hanapath-shell-v171";
+// [2026-07-05] Cache bumped to v180: supplementary 15k word list + temporary voice test tab.
+const CACHE_NAME = "hanapath-shell-v180";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260705g",
+  "./styles.css?v=20260705l",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705c",
   "./words_curated_core.js?v=20260705d",
   "./words_inflect.js?v=20260703b",
   "./words_lesson_plan.js?v=20260705d",
   "./raw_word_meanings.js?v=20260703a",
-  "./app.js?v=20260705h",
+  "./app.js?v=20260705p",
   "./alphabet_skill_srs.js?v=20260630a",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
+  "./korean_supplementary_15k.csv",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];
