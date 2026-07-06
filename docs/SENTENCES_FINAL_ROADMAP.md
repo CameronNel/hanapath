@@ -64,7 +64,7 @@ Each box below carries its routing: **[codex]** or **[high]**.
 - [ ] **Track F** — Shadow & speak modes
 - [ ] **Track G** — Transform drill (inflection engine)
 - [ ] **Track H** — 🔒 Authored expansion batches (owner sets volume/themes)
-- [ ] **Track I** — Legacy mini-bank migration + dead-code removal
+- [x] **Track I** — Legacy mini-bank migration + dead-code removal
 - [ ] **Track J** — Close-out: analytics, honest docs, scripted cold-learner test
 
 Dependency order: **A → B → C → (D ∥ E after D1) → F/G → H (after D) → I → J.**
@@ -414,15 +414,15 @@ them. One PR per box; browser-play each unit before shipping.
 
 **Precondition:** owner approves themes + batch count. Coverage first:
 
-- [ ] **H1** [high] Gap report: extend the audit (or a sibling script) to print a patternTags × band coverage matrix and the list of §4 tags with <10 sentences; propose batch contents from it. No data change — the PR is the report + proposal in `docs/`.
+- [x] **H1** [high] Gap report: extend the audit (or a sibling script) to print a patternTags × band coverage matrix and the list of §4 tags with <10 sentences; propose batch contents from it. No data change — the PR is the report + proposal in `docs/`.
 - [ ] **H2…Hn** [high authors, codex applies audio steps] Batches of ~40–60 **original** sentences filling the thinnest cells (expected thin: clause linkers, future, formal register, honorific-si). Rules: copyright-safe original text only (K-pop/fan-life *theming* welcome — practice rooms, schedules, encouragement — verbatim lyrics/subtitles never); every new row needs `grammarTip`, explicit axes, `acceptAlso` where a natural variant exists; **audio must be generated** (`python generate_assets.py`) and `audit-alphabet-audio --strict` + the sentences audit green; ids continue the frozen sequence with `source: "authored"`.
 
 ---
 
 ## 11. Track I — Legacy consolidation
 
-- [ ] **I1** [high] Migrate the app.js mini-banks (`grammarSentenceBank`, `verbSentenceBank`, `conversationLineBank`, `survivalPhrases`, and the rest aggregated in `getSentenceStudyBank()` ≈2442) into `sentences_core.js` with `source: "legacy-app"`, real ids, tags, and dedupe against existing rows (many overlap the words examples — the audit's duplicate check decides). Sentences that only make sense in their original drill (cloze prompts, role-ID items) stay put — migrate only actual sentences; list the keep-in-place items in the PR.
-- [ ] **I2** [high] Point `getSentenceStudyBank()` (and the listening deck's sentence sources) at the bank; delete now-dead bank constants and any orphaned deck code; re-verify the Listening tab still works (it shares these banks — check `makeSentenceListenQuestion` and the conversation drills before deleting anything they still use).
+- [x] **I1** [high] Migrate the app.js mini-banks (`grammarSentenceBank`, `verbSentenceBank`, `conversationLineBank`, `survivalPhrases`, and the rest aggregated in `getSentenceStudyBank()` ≈2442) into `sentences_core.js` with `source: "legacy-app"`, real ids, tags, and dedupe against existing rows (many overlap the words examples — the audit's duplicate check decides). Sentences that only make sense in their original drill (cloze prompts, role-ID items) stay put — migrate only actual sentences; list the keep-in-place items in the PR.
+- [x] **I2** [high] Point `getSentenceStudyBank()` (and the listening deck's sentence sources) at the bank; delete now-dead bank constants and any orphaned deck code; re-verify the Listening tab still works (it shares these banks — check `makeSentenceListenQuestion` and the conversation drills before deleting anything they still use).
 
 ---
 

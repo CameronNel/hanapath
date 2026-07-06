@@ -1433,97 +1433,30 @@ const survivalDeck = [
 ];
 
 const survivalPhrases = [
-  {
-    phrase: "안녕하세요",
-    meaning: "Hello / Hi",
-    situation: "Use this to greet someone politely.",
-    voiceText: "안녕하세요",
-  },
-  {
-    phrase: "감사합니다",
-    meaning: "Thank you",
-    situation: "Use this after someone helps you or gives you something.",
-    voiceText: "감사합니다",
-  },
-  {
-    phrase: "죄송합니다",
-    meaning: "I'm sorry",
-    situation: "Use this when you need to apologize.",
-    voiceText: "죄송합니다",
-  },
-  {
-    phrase: "실례합니다",
-    meaning: "Excuse me",
-    situation: "Use this to get someone's attention politely.",
-    voiceText: "실례합니다",
-  },
-  {
-    phrase: "물 주세요",
-    meaning: "Water, please",
-    situation: "Use this when ordering water.",
-    voiceText: "물 주세요",
-  },
-  {
-    phrase: "커피 주세요",
-    meaning: "Coffee, please",
-    situation: "Use this when ordering coffee.",
-    voiceText: "커피 주세요",
-  },
-  {
-    phrase: "이거 주세요",
-    meaning: "This one, please",
-    situation: "Use this when pointing to something you want.",
-    voiceText: "이거 주세요",
-  },
-  {
-    phrase: "얼마예요?",
-    meaning: "How much is it?",
-    situation: "Use this when asking the price.",
-    voiceText: "얼마예요?",
-  },
-  {
-    phrase: "화장실 어디예요?",
-    meaning: "Where is the bathroom?",
-    situation: "Use this when asking for the restroom.",
-    voiceText: "화장실 어디예요?",
-  },
-  {
-    phrase: "도와주세요",
-    meaning: "Please help me",
-    situation: "Use this when you need help.",
-    voiceText: "도와주세요",
-  },
-  {
-    phrase: "영어 할 수 있어요?",
-    meaning: "Can you speak English?",
-    situation: "Use this when you need English help.",
-    voiceText: "영어 할 수 있어요?",
-  },
-  {
-    phrase: "한국어 조금 해요",
-    meaning: "I speak a little Korean",
-    situation: "Use this when explaining your level.",
-    voiceText: "한국어 조금 해요",
-  },
-  {
-    phrase: "괜찮아요",
-    meaning: "It's okay / I'm fine",
-    situation: "Use this to reassure someone or say you're okay.",
-    voiceText: "괜찮아요",
-  },
-  {
-    phrase: "네",
-    meaning: "Yes",
-    situation: "Use this to answer yes.",
-    voiceText: "네",
-  },
-  {
-    phrase: "아니요",
-    meaning: "No",
-    situation: "Use this to answer no.",
-    voiceText: "아니요",
-  },
-];
+  { phrase: "안녕하세요", situation: "Use this to greet someone politely." },
+  { phrase: "감사합니다", situation: "Use this after someone helps you or gives you something." },
+  { phrase: "죄송합니다", situation: "Use this when you need to apologize." },
+  { phrase: "실례합니다", situation: "Use this to get someone's attention politely." },
+  { phrase: "물 주세요", situation: "Use this when ordering water." },
+  { phrase: "커피 주세요", situation: "Use this when ordering coffee." },
+  { phrase: "이거 주세요", situation: "Use this when pointing to something you want." },
+  { phrase: "얼마예요?", situation: "Use this when asking the price." },
+  { phrase: "화장실 어디예요?", situation: "Use this when asking for the restroom." },
+  { phrase: "도와주세요", situation: "Use this when you need help." },
+  { phrase: "영어 할 수 있어요?", situation: "Use this when you need English help." },
+  { phrase: "한국어 조금 해요", situation: "Use this when explaining your level." },
+  { phrase: "괜찮아요", situation: "Use this to reassure someone or say you're okay." },
+  { phrase: "네", situation: "Use this to answer yes." },
+  { phrase: "아니요", situation: "Use this to answer no." }
+].map(x => {
+  const row = window.HANAPATH_SENTENCES.find(r => r.korean === x.phrase || r.korean.replace(/[.?]$/, "") === x.phrase.replace(/[.?]$/, ""));
+  return {
+    phrase: x.phrase,
+    meaning: row ? row.english : "",
+    situation: x.situation,
+    voiceText: x.phrase
+  };
+});
 
 const survivalCloze = [
   {
@@ -1700,91 +1633,29 @@ const grammarRoleBank = [
 ];
 
 const grammarSentenceBank = [
-  {
-    korean: "저는 학생이에요.",
-    meaning: "I am a student.",
-    explanation: "Topic + noun + copula.",
-    voiceText: "저는 학생이에요.",
-  },
-  {
-    korean: "친구가 와요.",
-    meaning: "A friend is coming.",
-    explanation: "Subject + verb.",
-    voiceText: "친구가 와요.",
-  },
-  {
-    korean: "저는 커피를 마셔요.",
-    meaning: "I drink coffee.",
-    explanation: "Topic + object + verb.",
-    voiceText: "저는 커피를 마셔요.",
-  },
-  {
-    korean: "책을 읽어요.",
-    meaning: "I read a book.",
-    explanation: "Object + verb.",
-    voiceText: "책을 읽어요.",
-  },
-  {
-    korean: "오늘은 날씨가 좋아요.",
-    meaning: "The weather is good today.",
-    explanation: "Topic + subject + descriptive verb.",
-    voiceText: "오늘은 날씨가 좋아요.",
-  },
-  {
-    korean: "사과를 먹어요.",
-    meaning: "I eat an apple.",
-    explanation: "Object + verb.",
-    voiceText: "사과를 먹어요.",
-  },
-  {
-    korean: "저는 한국어를 공부해요.",
-    meaning: "I study Korean.",
-    explanation: "Topic + object + verb.",
-    voiceText: "저는 한국어를 공부해요.",
-  },
-  {
-    korean: "버스를 타요.",
-    meaning: "I take the bus.",
-    explanation: "Object + verb.",
-    voiceText: "버스를 타요.",
-  },
-  {
-    korean: "저는 학생이 아니에요.",
-    meaning: "I am not a student.",
-    explanation: "Negative copula.",
-    voiceText: "저는 학생이 아니에요.",
-  },
-  {
-    korean: "우리 집은 가까워요.",
-    meaning: "Our house is close.",
-    explanation: "Topic + descriptive verb.",
-    voiceText: "우리 집은 가까워요.",
-  },
-  {
-    korean: "물이 있어요.",
-    meaning: "There is water.",
-    explanation: "Subject + 있다.",
-    voiceText: "물이 있어요.",
-  },
-  {
-    korean: "이것은 책이에요.",
-    meaning: "This is a book.",
-    explanation: "Topic + noun + copula.",
-    voiceText: "이것은 책이에요.",
-  },
-  {
-    korean: "저는 시간이 있어요.",
-    meaning: "I have time.",
-    explanation: "Topic + subject + 있다.",
-    voiceText: "저는 시간이 있어요.",
-  },
-  {
-    korean: "한국어가 재미있어요.",
-    meaning: "Korean is fun.",
-    explanation: "Subject + descriptive verb.",
-    voiceText: "한국어가 재미있어요.",
-  },
-];
+  { korean: "저는 학생이에요.", explanation: "Topic + noun + copula." },
+  { korean: "친구가 와요.", explanation: "Subject + verb." },
+  { korean: "저는 커피를 마셔요.", explanation: "Topic + object + verb." },
+  { korean: "책을 읽어요.", explanation: "Object + verb." },
+  { korean: "오늘은 날씨가 좋아요.", explanation: "Topic + subject + descriptive verb." },
+  { korean: "사과를 먹어요.", explanation: "Object + verb." },
+  { korean: "저는 한국어를 공부해요.", explanation: "Topic + object + verb." },
+  { korean: "버스를 타요.", explanation: "Object + verb." },
+  { korean: "저는 학생이 아니에요.", explanation: "Negative copula." },
+  { korean: "우리 집은 가까워요.", explanation: "Topic + descriptive verb." },
+  { korean: "물이 있어요.", explanation: "Subject + 있다." },
+  { korean: "이것은 책이에요.", explanation: "Topic + noun + copula." },
+  { korean: "저는 시간이 있어요.", explanation: "Topic + subject + 있다." },
+  { korean: "한국어가 재미있어요.", explanation: "Subject + descriptive verb." }
+].map(x => {
+  const row = window.HANAPATH_SENTENCES.find(r => r.korean === x.korean || r.korean.replace(/[.?]$/, "") === x.korean.replace(/[.?]$/, ""));
+  return {
+    korean: x.korean,
+    meaning: row ? row.english : "",
+    explanation: x.explanation,
+    voiceText: x.korean
+  };
+});
 
 const verbDeck = [
   "conjugate",
@@ -1921,124 +1792,45 @@ const verbBank = [
 ];
 
 const verbSentenceBank = [
-  {
-    korean: "저는 학교에 가요.",
-    meaning: "I go to school.",
-    tense: "present",
-    voiceText: "저는 학교에 가요.",
-  },
-  {
-    korean: "어제 책을 읽었어요.",
-    meaning: "I read a book yesterday.",
-    tense: "past",
-    voiceText: "어제 책을 읽었어요.",
-  },
-  {
-    korean: "내일 친구를 만날 거예요.",
-    meaning: "I will meet a friend tomorrow.",
-    tense: "future",
-    voiceText: "내일 친구를 만날 거예요.",
-  },
-  {
-    korean: "지금 커피를 마셔요.",
-    meaning: "I am drinking coffee now.",
-    tense: "present",
-    voiceText: "지금 커피를 마셔요.",
-  },
-  {
-    korean: "저는 한국어를 배워요.",
-    meaning: "I learn Korean.",
-    tense: "present",
-    voiceText: "저는 한국어를 배워요.",
-  },
-  {
-    korean: "친구가 와요.",
-    meaning: "A friend is coming.",
-    tense: "present",
-    voiceText: "친구가 와요.",
-  },
-  {
-    korean: "저는 집에 갈 거예요.",
-    meaning: "I will go home.",
-    tense: "future",
-    voiceText: "저는 집에 갈 거예요.",
-  },
-  {
-    korean: "저는 어제 운동했어요.",
-    meaning: "I exercised yesterday.",
-    tense: "past",
-    voiceText: "저는 어제 운동했어요.",
-  },
-  {
-    korean: "할머니가 오세요.",
-    meaning: "Grandmother is coming.",
-    tense: "honorific",
-    voiceText: "할머니가 오세요.",
-  },
-  {
-    korean: "선생님이 계세요.",
-    meaning: "The teacher is here.",
-    tense: "honorific",
-    voiceText: "선생님이 계세요.",
-  },
-  {
-    korean: "저는 친구를 도와요.",
-    meaning: "I help a friend.",
-    tense: "present",
-    voiceText: "저는 친구를 도와요.",
-  },
-  {
-    korean: "우리는 영화를 봐요.",
-    meaning: "We watch a movie.",
-    tense: "present",
-    voiceText: "우리는 영화를 봐요.",
-  },
-  {
-    korean: "저는 매일 일해요.",
-    meaning: "I work every day.",
-    tense: "present",
-    voiceText: "저는 매일 일해요.",
-  },
-  {
-    korean: "오늘은 쉬어요.",
-    meaning: "I rest today.",
-    tense: "present",
-    voiceText: "오늘은 쉬어요.",
-  },
-];
+  { korean: "저는 학교에 가요.", tense: "present" },
+  { korean: "어제 책을 읽었어요.", tense: "past" },
+  { korean: "내일 친구를 만날 거예요.", tense: "future" },
+  { korean: "지금 커피를 마셔요.", tense: "present" },
+  { korean: "저는 한국어를 배워요.", tense: "present" },
+  { korean: "친구가 와요.", tense: "present" },
+  { korean: "저는 집에 갈 거예요.", tense: "future" },
+  { korean: "저는 어제 운동했어요.", tense: "past" },
+  { korean: "할머니가 오세요.", tense: "honorific" },
+  { korean: "선생님이 계세요.", tense: "honorific" },
+  { korean: "저는 친구를 도와요.", tense: "present" },
+  { korean: "우리는 영화를 봐요.", tense: "present" },
+  { korean: "저는 매일 일해요.", tense: "present" },
+  { korean: "오늘은 쉬어요.", tense: "present" }
+].map(x => {
+  const row = window.HANAPATH_SENTENCES.find(r => r.korean === x.korean || r.korean.replace(/[.?]$/, "") === x.korean.replace(/[.?]$/, ""));
+  return {
+    korean: x.korean,
+    meaning: row ? row.english : "",
+    tense: x.tense,
+    voiceText: x.korean
+  };
+});
 
 const verbHonorificBank = [
-  {
-    plain: "선생님이 와요.",
-    honorific: "선생님이 오세요.",
-    meaning: "The teacher is coming.",
-    cue: "Respectful speech for coming.",
-  },
-  {
-    plain: "할머니가 자요.",
-    honorific: "할머니가 주무세요.",
-    meaning: "Grandmother is sleeping.",
-    cue: "Respectful speech for sleeping.",
-  },
-  {
-    plain: "사장님이 있어요.",
-    honorific: "사장님이 계세요.",
-    meaning: "The boss is here.",
-    cue: "Honorific 있다 -> 계시다.",
-  },
-  {
-    plain: "교수님이 말해요.",
-    honorific: "교수님이 말씀하세요.",
-    meaning: "The professor speaks.",
-    cue: "Respectful speech for speaking.",
-  },
-  {
-    plain: "어머니가 먹어요.",
-    honorific: "어머니가 드세요.",
-    meaning: "Mother eats.",
-    cue: "Respectful speech for eating.",
-  },
-];
+  { plain: "선생님이 와요.", honorific: "선생님이 오세요.", cue: "Respectful speech for coming." },
+  { plain: "할머니가 자요.", honorific: "할머니가 주무세요.", cue: "Respectful speech for sleeping." },
+  { plain: "사장님이 있어요.", honorific: "사장님이 계세요.", cue: "Honorific 있다 -> 계시다." },
+  { plain: "교수님이 말해요.", honorific: "교수님이 말씀하세요.", cue: "Respectful speech for speaking." },
+  { plain: "어머니가 먹어요.", honorific: "어머니가 드세요.", cue: "Respectful speech for eating." }
+].map(x => {
+  const row = window.HANAPATH_SENTENCES.find(r => r.korean === x.honorific || r.korean.replace(/[.?]$/, "") === x.honorific.replace(/[.?]$/, ""));
+  return {
+    plain: x.plain,
+    honorific: x.honorific,
+    meaning: row ? row.english : "",
+    cue: x.cue
+  };
+});
 
 const conversationDeck = [
   "meaning",
@@ -2115,133 +1907,36 @@ function getListenDeckForLevel(level = getTrackLevel("listening")) {
 }
 
 const conversationLineBank = [
-  {
-    korean: "안녕하세요.",
-    meaning: "Hello.",
-    cue: "Use this to open a conversation politely.",
-    voiceText: "안녕하세요.",
-  },
-  {
-    korean: "처음 뵙겠습니다.",
-    meaning: "Nice to meet you.",
-    cue: "Use this when you meet someone for the first time.",
-    voiceText: "처음 뵙겠습니다.",
-  },
-  {
-    korean: "감사합니다.",
-    meaning: "Thank you.",
-    cue: "Use this after someone helps you or gives you something.",
-    voiceText: "감사합니다.",
-  },
-  {
-    korean: "괜찮아요.",
-    meaning: "It's okay.",
-    cue: "Use this to reassure someone or say you are fine.",
-    voiceText: "괜찮아요.",
-  },
-  {
-    korean: "네.",
-    meaning: "Yes.",
-    cue: "Use this to answer yes.",
-    voiceText: "네.",
-  },
-  {
-    korean: "아니요.",
-    meaning: "No.",
-    cue: "Use this to answer no.",
-    voiceText: "아니요.",
-  },
-  {
-    korean: "물 주세요.",
-    meaning: "Water, please.",
-    cue: "Use this when ordering water.",
-    voiceText: "물 주세요.",
-  },
-  {
-    korean: "이거 주세요.",
-    meaning: "This one, please.",
-    cue: "Use this when pointing to the item you want.",
-    voiceText: "이거 주세요.",
-  },
-  {
-    korean: "화장실이 어디예요?",
-    meaning: "Where is the bathroom?",
-    cue: "Use this when asking for the restroom.",
-    voiceText: "화장실이 어디예요?",
-  },
-  {
-    korean: "잠시만요.",
-    meaning: "One moment, please.",
-    cue: "Use this to buy a little time.",
-    voiceText: "잠시만요.",
-  },
-  {
-    korean: "잘 모르겠어요.",
-    meaning: "I don't understand.",
-    cue: "Use this when you missed the meaning.",
-    voiceText: "잘 모르겠어요.",
-  },
-  {
-    korean: "도와주세요.",
-    meaning: "Please help me.",
-    cue: "Use this when you need help.",
-    voiceText: "도와주세요.",
-  },
-  {
-    korean: "다시 말씀해 주세요.",
-    meaning: "Please say it again.",
-    cue: "Use this when you did not catch the sentence.",
-    voiceText: "다시 말씀해 주세요.",
-  },
-  {
-    korean: "천천히 말씀해 주세요.",
-    meaning: "Please speak slowly.",
-    cue: "Use this when the speech is too fast.",
-    voiceText: "천천히 말씀해 주세요.",
-  },
-  {
-    korean: "무슨 뜻이에요?",
-    meaning: "What does it mean?",
-    cue: "Use this when a word is unfamiliar.",
-    voiceText: "무슨 뜻이에요?",
-  },
-  {
-    korean: "한국어 조금 해요.",
-    meaning: "I speak a little Korean.",
-    cue: "Use this when explaining your level.",
-    voiceText: "한국어 조금 해요.",
-  },
-  {
-    korean: "네, 다시 말씀드릴게요.",
-    meaning: "Yes, I will say it again.",
-    cue: "Use this when someone asks you to repeat yourself.",
-    voiceText: "네, 다시 말씀드릴게요.",
-  },
-  {
-    korean: "네, 천천히 말할게요.",
-    meaning: "Yes, I will speak slowly.",
-    cue: "Use this when someone asks you to slow down.",
-    voiceText: "네, 천천히 말할게요.",
-  },
-  {
-    korean: "저쪽이에요.",
-    meaning: "It's over there.",
-    cue: "Use this when giving a simple direction.",
-    voiceText: "저쪽이에요.",
-  },
-  {
-    korean: "네, 여기요.",
-    meaning: "Yes, here you go.",
-    cue: "Use this when handing something over.",
-    voiceText: "네, 여기요.",
-  },
-  {
-    korean: "알겠습니다.",
-    meaning: "Understood.",
-    cue: "Use this to confirm you understood.",
-    voiceText: "알겠습니다.",
-  },
-];
+  { korean: "안녕하세요.", cue: "Use this to open a conversation politely." },
+  { korean: "처음 뵙겠습니다.", cue: "Use this when you meet someone for the first time." },
+  { korean: "감사합니다.", cue: "Use this after someone helps you or gives you something." },
+  { korean: "괜찮아요.", cue: "Use this to reassure someone or say you are fine." },
+  { korean: "네.", cue: "Use this to answer yes." },
+  { korean: "아니요.", cue: "Use this to answer no." },
+  { korean: "물 주세요.", cue: "Use this when ordering water." },
+  { korean: "이거 주세요.", cue: "Use this when pointing to the item you want." },
+  { korean: "화장실이 어디예요?", cue: "Use this when asking for the restroom." },
+  { korean: "잠시만요.", cue: "Use this to buy a little time." },
+  { korean: "잘 모르겠어요.", cue: "Use this when you missed the meaning." },
+  { korean: "도와주세요.", cue: "Use this when you need help." },
+  { korean: "다시 말씀해 주세요.", cue: "Use this when you did not catch the sentence." },
+  { korean: "천천히 말씀해 주세요.", cue: "Use this when the speech is too fast." },
+  { korean: "무슨 뜻이에요?", cue: "Use this when a word is unfamiliar." },
+  { korean: "한국어 조금 해요.", cue: "Use this when explaining your level." },
+  { korean: "네, 다시 말씀드릴게요.", cue: "Use this when someone asks you to repeat yourself." },
+  { korean: "네, 천천히 말할게요.", cue: "Use this when someone asks you to slow down." },
+  { korean: "저쪽이에요.", cue: "Use this when giving a simple direction." },
+  { korean: "네, 여기요.", cue: "Use this when handing something over." },
+  { korean: "알겠습니다.", cue: "Use this to confirm you understood." }
+].map(x => {
+  const row = window.HANAPATH_SENTENCES.find(r => r.korean === x.korean || r.korean.replace(/[.?]$/, "") === x.korean.replace(/[.?]$/, ""));
+  return {
+    korean: x.korean,
+    meaning: row ? row.english : "",
+    cue: x.cue,
+    voiceText: x.korean
+  };
+});
 
 const conversationRepairBank = [
   {
@@ -2447,12 +2142,14 @@ function getSentenceStudyBank() {
   const items = [];
   const seen = new Set();
 
-  grammarSentenceBank.forEach((item) => {
+  const bankRows = getSentenceBankRows();
+  const legacyRows = bankRows.filter(row => row.source === "legacy-app");
+  legacyRows.forEach((row) => {
     pushSentenceStudyItem(items, seen, {
-      korean: item.korean,
-      meaning: item.meaning,
-      voiceText: item.voiceText,
-      source: "Grammar",
+      korean: row.korean,
+      meaning: row.english,
+      voiceText: row.voiceText || row.korean,
+      source: "Legacy Bank",
     });
   });
 
@@ -2474,15 +2171,6 @@ function getSentenceStudyBank() {
     });
   });
 
-  survivalPhrases.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.phrase,
-      meaning: item.meaning,
-      voiceText: item.voiceText,
-      source: "Survival",
-    });
-  });
-
   survivalCloze.forEach((item) => {
     pushSentenceStudyItem(items, seen, {
       korean: item.voiceText || item.prompt || "",
@@ -2492,54 +2180,12 @@ function getSentenceStudyBank() {
     });
   });
 
-  verbSentenceBank.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.korean,
-      meaning: item.meaning,
-      voiceText: item.voiceText,
-      source: "Verb",
-    });
-  });
-
-  verbHonorificBank.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.honorific,
-      meaning: item.meaning,
-      voiceText: item.honorific,
-      source: "Honorific",
-    });
-  });
-
-  conversationLineBank.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.korean,
-      meaning: item.meaning,
-      voiceText: item.voiceText,
-      source: "Conversation",
-    });
-  });
-
   conversationRepairBank.forEach((item) => {
     pushSentenceStudyItem(items, seen, {
       korean: item.phrase,
       meaning: item.meaning,
       voiceText: item.voiceText,
       source: "Repair",
-    });
-  });
-
-  conversationDialogueBank.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.starter,
-      meaning: item.cue,
-      voiceText: item.starter,
-      source: "Dialogue starter",
-    });
-    pushSentenceStudyItem(items, seen, {
-      korean: item.reply,
-      meaning: item.explanation || item.cue,
-      voiceText: item.reply,
-      source: "Dialogue reply",
     });
   });
 
@@ -2818,49 +2464,25 @@ function makeListenStudioQuestion(type, level = getTrackLevel("listening")) {
 }
 
 const conversationDialogueBank = [
-  {
-    starter: "안녕하세요.",
-    reply: "안녕하세요.",
-    cue: "A polite greeting usually gets the same greeting back.",
-    explanation: "Mirroring the greeting keeps the exchange natural.",
-    voiceText: "안녕하세요.",
-  },
-  {
-    starter: "감사합니다.",
-    reply: "괜찮아요.",
-    cue: "A natural response to thanks.",
-    explanation: "괜찮아요 is a friendly reply to thanks.",
-    voiceText: "괜찮아요.",
-  },
-  {
-    starter: "다시 말씀해 주세요.",
-    reply: "네, 다시 말씀드릴게요.",
-    cue: "If someone asks for a repeat, confirm that you will repeat it.",
-    explanation: "This keeps the conversation moving.",
-    voiceText: "네, 다시 말씀드릴게요.",
-  },
-  {
-    starter: "천천히 말씀해 주세요.",
-    reply: "네, 천천히 말할게요.",
-    cue: "If someone asks you to slow down, acknowledge it politely.",
-    explanation: "This is a calm and polite confirmation.",
-    voiceText: "네, 천천히 말할게요.",
-  },
-  {
-    starter: "화장실이 어디예요?",
-    reply: "저쪽이에요.",
-    cue: "A direction question gets a short directional reply.",
-    explanation: "Simple directions are often enough in real conversation.",
-    voiceText: "저쪽이에요.",
-  },
-  {
-    starter: "도와주세요.",
-    reply: "네, 여기요.",
-    cue: "When someone asks for help, an immediate acknowledgement helps.",
-    explanation: "This reply sounds direct and helpful.",
-    voiceText: "네, 여기요.",
-  },
-];
+  { starter: "안녕하세요.", reply: "안녕하세요.", cue: "A polite greeting usually gets the same greeting back.", explanation: "Mirroring the greeting keeps the exchange natural." },
+  { starter: "감사합니다.", reply: "괜찮아요.", cue: "A natural response to thanks.", explanation: "괜찮아요 is a friendly reply to thanks." },
+  { starter: "다시 말씀해 주세요.", reply: "네, 다시 말씀드릴게요.", cue: "If someone asks for a repeat, confirm that you will repeat it.", explanation: "This keeps the conversation moving." },
+  { starter: "천천히 말씀해 주세요.", reply: "네, 천천히 말할게요.", cue: "If someone asks you to slow down, acknowledge it politely.", explanation: "This is a calm and polite confirmation." },
+  { starter: "화장실이 어디예요?", reply: "저쪽이에요.", cue: "A direction question gets a short directional reply.", explanation: "Simple directions are often enough in real conversation." },
+  { starter: "도와주세요.", reply: "네, 여기요.", cue: "When someone asks for help, an immediate acknowledgement helps.", explanation: "This reply sounds direct and helpful." }
+].map(x => {
+  const row = window.HANAPATH_SENTENCES.find(r => r.korean === x.starter || r.korean.replace(/[.?]$/, "") === x.starter.replace(/[.?]$/, ""));
+  const rowReply = window.HANAPATH_SENTENCES.find(r => r.korean === x.reply || r.korean.replace(/[.?]$/, "") === x.reply.replace(/[.?]$/, ""));
+  return {
+    starter: x.starter,
+    reply: x.reply,
+    cue: x.cue,
+    explanation: x.explanation,
+    voiceText: x.reply,
+    starterMeaning: row ? row.english : "",
+    replyMeaning: rowReply ? rowReply.english : ""
+  };
+});
 
 const STORAGE_KEY = "hanapath-v1";
 
