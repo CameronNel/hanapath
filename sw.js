@@ -1,5 +1,5 @@
-// [2026-07-06] Cache bumped to v243: Track H/I legacy sentence consolidation (+53 rows) on top of Track B/C/D.
-const CACHE_NAME = "hanapath-shell-v243";
+// [2026-07-06] Cache bumped to v251: sentence tag accuracy batch 006 data refresh.
+const CACHE_NAME = "hanapath-shell-v251";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260706d",
+  "./sentences_core.js?v=20260706l",
   "./app.js?v=20260706d",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
