@@ -185,6 +185,16 @@ mode-key into the deck-selection and rendering switch (≈2790).
 paths both render feedback; `node --check app.js`; browser test typing both a
 correct and wrong answer.
 
+**B1 scope fence — do exactly this, nothing more.** Field mapping:
+`row.english` → prompt, `row.korean` (+ `row.acceptAlso`, which is empty on
+every row today — matching it costs one array check, the *meaningful*
+acceptAlso work is B3) → expected answer, `row.voiceText` → success audio,
+`row.band` → level filter. Do **not** implement in B1: the helper ladder
+(B2), the token diff / near-miss tolerance (B3), SRS (C3), i+1 gating (C2),
+the hub redesign (C1), pattern-tag display, or any `sentences_core.js` data
+edits. B1 must be boring, small, and mergeable — a fresh agent should be
+able to review the whole diff in one sitting.
+
 ### B2 — Helper ladder [high]
 - [ ] **B2** Tip → Word bank → Next chunk → Reveal, with helper-usage tracking.
 
@@ -202,6 +212,17 @@ correct and wrong answer.
 Track helpers used on the active question (e.g. `question.helpersUsed`) — it
 feeds SRS grading (C3) and analytics (J1). Keyboard users must be able to
 ignore helpers entirely.
+
+**Inferred-tag caution for the Tip helper:** until Track D closes, every
+row's `patternTags` is `annotationSource: "inferred"` and contains confirmed
+errors (verified 2026-07-05: `s1490` carries `subject-i-ga` from the final
+syllable of 강가 — no subject particle present — and `present-polite` while
+missing `past-polite` on 누웠어요). While a row's tags are still inferred,
+phrase tips as *things to check for* ("Does the sentence need an object?
+Mark it with 을/를") rather than assertions about *this* sentence ("this
+sentence uses the subject marker") — a wrong tip teaches wrong grammar.
+Assertive per-sentence tips unlock per row as Track D flips it to
+`explicit`.
 
 **Acceptance:** all four helpers work on touch + keyboard; helper state resets
 between questions; tiles honor `aria-label` rules (HANDOVER conventions).
@@ -280,8 +301,10 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
      shape? Adjust if not. A sentence with a clause linker is never band ≤2;
      a 2–3-token copula sentence is never band ≥3.
    - **patternTags:** verify each inferred tag against the actual sentence
-     (the regexes have known false positives: 에 inside a word is not
-     `location-e`; 은/는 as a modifier ending is not `topic-neun`). Remove
+     (the regexes have known false positives — confirmed in the shipped bank:
+     `s1490` tags `subject-i-ga` off the final syllable of 강가 and misses
+     `past-polite` on 누웠어요; likewise 에 inside a word is not
+     `location-e`, and 은/는 as a modifier ending is not `topic-neun`). Remove
      wrong tags, add missing tags **from the §4 closed list only**. If the
      sentence needs a tag outside the list, **stop and hand to [high]** — tag
      vocabulary changes are schema changes.
