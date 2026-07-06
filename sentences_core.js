@@ -41754,7 +41754,6 @@
     "patternTags": [
       "subject-i-ga",
       "location-e",
-      "direction-euro",
       "imperative-seyo",
       "honorific-si"
     ],
@@ -41770,8 +41769,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -41791,8 +41790,9 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "question-polite",
-      "neg-mot"
+      "because-aseo",
+      "neg-mot",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_1283_geudongan"
@@ -41806,8 +41806,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -41842,8 +41842,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -41864,7 +41864,6 @@
       "object-eul-reul",
       "location-eseo",
       "imperative-seyo",
-      "if-myeon",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -41879,8 +41878,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -41901,7 +41900,7 @@
     "patternTags": [
       "subject-i-ga",
       "direction-euro",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_1286_geupgyeok"
@@ -41915,8 +41914,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -41935,6 +41934,7 @@
     "band": 4,
     "patternTags": [
       "object-eul-reul",
+      "location-eseo",
       "also-do",
       "present-polite"
     ],
@@ -41950,8 +41950,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -41970,8 +41970,7 @@
     "patternTags": [
       "topic-neun",
       "possessive-ui",
-      "copula-ieyo",
-      "counter-phrase"
+      "copula-ieyo"
     ],
     "focusWordIds": [
       "w_m6_1288_gibon"
@@ -41985,8 +41984,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42007,7 +42006,6 @@
       "object-eul-reul",
       "location-e",
       "possessive-ui",
-      "present-polite",
       "past-polite"
     ],
     "focusWordIds": [
@@ -42022,8 +42020,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42058,8 +42056,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42078,11 +42076,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "topic-neun",
       "subject-i-ga",
       "object-eul-reul",
-      "present-polite",
-      "can-su-itda"
+      "can-su-itda",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_1291_gihoe"
@@ -42096,8 +42093,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42133,8 +42130,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42153,7 +42150,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "subject-i-ga",
       "object-eul-reul",
       "present-polite"
     ],
@@ -42169,8 +42165,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42191,11 +42187,8 @@
     "patternTags": [
       "subject-i-ga",
       "location-e",
-      "with-hago-wa",
-      "present-polite",
-      "past-polite",
-      "and-go",
-      "because-aseo"
+      "because-aseo",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_1294_kkeopjil"
@@ -42209,8 +42202,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42229,7 +42222,7 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "and-go"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_1295_kkori"
@@ -42243,8 +42236,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42266,7 +42259,8 @@
       "subject-i-ga",
       "object-eul-reul",
       "if-myeon",
-      "time-expression"
+      "time-expression",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_1296_kkujunhi"
@@ -42280,8 +42274,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42303,10 +42297,10 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "present-polite",
       "and-go",
       "when-ttae",
-      "want-go-sipda"
+      "want-go-sipda",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_1297_kkum"
@@ -42320,8 +42314,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42340,7 +42334,6 @@
     "band": 4,
     "patternTags": [
       "topic-neun",
-      "subject-i-ga",
       "location-e",
       "present-polite"
     ],
@@ -42356,8 +42349,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42375,11 +42368,9 @@
     ],
     "band": 4,
     "patternTags": [
-      "present-polite",
-      "past-polite",
-      "neg-an",
       "neg-ji-anta",
-      "and-go"
+      "and-go",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_1299_kkeutnae"
@@ -42393,8 +42384,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42416,7 +42407,8 @@
       "topic-neun",
       "location-eseo",
       "present-polite",
-      "and-go"
+      "and-go",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m6_1300_nai"
@@ -42430,8 +42422,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42451,7 +42443,7 @@
     "patternTags": [
       "subject-i-ga",
       "location-eseo",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_1301_natanada"
@@ -42465,8 +42457,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42485,11 +42477,9 @@
     "band": 4,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
-      "past-polite",
-      "neg-an",
       "neg-ji-anta",
-      "and-go"
+      "and-go",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_1302_namgida"
@@ -42503,8 +42493,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42539,8 +42529,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42560,7 +42550,6 @@
     "patternTags": [
       "object-eul-reul",
       "direction-euro",
-      "present-polite",
       "past-polite"
     ],
     "focusWordIds": [
@@ -42575,8 +42564,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42596,7 +42585,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "object-eul-reul"
+      "object-eul-reul",
+      "time-expression",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_1305_nangbi"
@@ -42610,8 +42601,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42647,8 +42638,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42668,7 +42659,6 @@
     "patternTags": [
       "object-eul-reul",
       "possessive-ui",
-      "present-polite",
       "past-polite"
     ],
     "focusWordIds": [
@@ -42683,8 +42673,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42706,7 +42696,8 @@
       "subject-i-ga",
       "object-eul-reul",
       "location-e",
-      "present-polite"
+      "because-aseo",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_1308_neomchida"
@@ -42720,8 +42711,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42743,7 +42734,8 @@
       "subject-i-ga",
       "object-eul-reul",
       "location-eseo",
-      "direction-euro"
+      "direction-euro",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_1309_nodong"
@@ -42757,8 +42749,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42778,7 +42770,6 @@
     "patternTags": [
       "object-eul-reul",
       "direction-euro",
-      "present-polite",
       "past-polite"
     ],
     "focusWordIds": [
@@ -42793,8 +42784,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
@@ -42831,8 +42822,8 @@
     "grammarTip": "",
     "acceptAlso": [],
     "annotationSource": {
-      "band": "inferred",
-      "patternTags": "inferred"
+      "band": "explicit",
+      "patternTags": "explicit"
     }
   },
   {
