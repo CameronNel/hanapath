@@ -57,8 +57,8 @@ Each box below carries its routing: **[codex]** or **[high]**.
 ## 1. Definition of DONE for the whole Sentences section
 
 - [x] **Track A** — Bank foundation: `sentences_core.js` + strict audit + app-shell wiring (PR #98)
-- [~] **Track B** — Translate & Type: **B1 core drill + B2 helper ladder shipped** in the Sentence Studio foundation; B3 answer alignment remains
-- [~] **Track C** — Practice hub + sentence SRS + i+1 gating: **C1 hub shipped** (Sentence Studio) + per-sentence progress foundation; C2 i+1 gating + C3 full SRS remain
+- [x] **Track B** — Translate & Type: Shipped B1 core drill, B2 helper ladder, and B3 token-diff feedback
+- [x] **Track C** — Practice hub + sentence SRS + i+1 gating: Shipped C1 hub, C2 i+1 gating, C3 sentence SRS, and C4 today-screen surfacing
 - [x] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis (all 2,007 rows explicit on both `band` and `patternTags`)
 - [ ] **Track E** — Pattern micro-lessons: 12 units playable
 - [ ] **Track F** — Shadow & speak modes
@@ -281,7 +281,7 @@ Assertive per-sentence tips unlock per row as Track D flips it to
 between questions; tiles honor `aria-label` rules (HANDOVER conventions).
 
 ### B3 — Token diff feedback + acceptAlso [high]
-- [ ] **B3** Per-token diff on wrong answers; `acceptAlso` honored.
+- [x] **B3** Per-token diff on wrong answers; `acceptAlso` honored.
 
 **Recipe:** On incorrect Check, align typed tokens vs target tokens
 (normalized comparison, simple LCS or positional match is fine) and render the
@@ -303,7 +303,7 @@ punctuation) is accepted; browser-verified.
 - [x] **C1** Replace the `renderPracticeView` level-rail shell with a session hub. **Shipped in the Sentence Studio (§3.5):** hub with stats, band selector, mode cards, and an up-next preview; a 5-question session runner; a summary screen. The old band-slice "Learn/Repeat" cards and the level rail are gone.
 
 ### C2 — i+1 gating [high]
-- [ ] **C2** New-sentence queue restricted to known words. **Extend the foundation** — the marker is in `getSentenceRowsForBand` (`EXTENSION (roadmap C2)`).
+- [x] **C2** New-sentence queue restricted to known words. **Extend the foundation** — the marker is in `getSentenceRowsForBand` (`EXTENSION (roadmap C2)`).
 
 **Recipe:** "Met words" = union of word ids in completed word lessons
 (`HANAPATH_WORD_LESSONS` + lesson-completion state) and `state.vocabSrs` keys.
@@ -316,7 +316,7 @@ whose focus words sit in the first Words lessons (W0–W2) — verify with a col
 `localStorage` browser run.
 
 ### C3 — Sentence SRS [high]
-- [ ] **C3** Leitner scheduling over `state.sentencesProgress`. **Extend the foundation** — markers in `pickSentenceSessionRows` and `recordSentenceResult` (`EXTENSION (roadmap C3)`).
+- [x] **C3** Leitner scheduling over `state.sentencesProgress`. **Extend the foundation** — markers in `pickSentenceSessionRows` and `recordSentenceResult` (`EXTENSION (roadmap C3)`).
 
 **Recipe:** The foundation already persists per-sentence records
 (`state.sentencesProgress.results[id]` = `{seen, correct, streak, last}`) and
@@ -331,7 +331,7 @@ new/day (default 5, stored in state). Surface a real "Due" count in the hub.
 confirm it surfaces.
 
 ### C4 — Today-screen surfacing [high]
-- [ ] **C4** Due-sentence count on the Today/home surface next to the existing word-review affordance (see `wordReviewHtml`, app.js ≈12506). Small PR.
+- [x] **C4** Due-sentence count on the Today/home surface next to the existing word-review affordance (see `wordReviewHtml`, app.js ≈12506). Small PR.
 
 ---
 

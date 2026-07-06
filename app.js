@@ -12519,6 +12519,19 @@ function renderLearnStageMenu(itemId) {
       </div>
     </div>`
     : "";
+  const sentenceDueCount = getTotalDueSentencesCount();
+  const sentenceReviewHtml = itemId === "vocabulary" && sentenceDueCount > 0
+    ? `
+    <div class="card letter-review-banner">
+      <div class="flex-between" style="gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div class="eyebrow">Make it stick · Sentences</div>
+          <div class="screen-sub" style="margin-bottom:0;">${sentenceDueCount} sentence${sentenceDueCount === 1 ? "" : "s"} ready for spaced review.</div>
+        </div>
+        <button class="button primary compact" type="button" id="stageSentenceReviewBtn" style="white-space:nowrap;flex-shrink:0;">Review (${sentenceDueCount})</button>
+      </div>
+    </div>`
+    : "";
   const wordPathHtml = itemId === "vocabulary" ? wordPathLessonPanelHtml() : "";
 
   // Alphabet Drill Lab: permanent, unlocked once the mastery test is done.
@@ -12557,6 +12570,7 @@ function renderLearnStageMenu(itemId) {
     ${wordBankHtml}
     ${wordLessonHtml}
     ${wordReviewHtml}
+    ${sentenceReviewHtml}
     ${wordPathHtml}
     ${drillLabHtml}
     ${letterReviewHtml}
@@ -12612,6 +12626,8 @@ function renderLearnStageMenu(itemId) {
   }
   const stageWordReviewBtn = document.getElementById("stageWordReviewBtn");
   if (stageWordReviewBtn) stageWordReviewBtn.addEventListener("click", () => openWordReview());
+  const stageSentenceReviewBtn = document.getElementById("stageSentenceReviewBtn");
+  if (stageSentenceReviewBtn) stageSentenceReviewBtn.addEventListener("click", () => showTab("practice"));
 }
 
 function openLearnStageMenu(itemId) {
@@ -13735,6 +13751,20 @@ function renderTodayView() {
     ? `Unlocked through ${escapeHtml(state.level)}`
     : `${hangulPct}% through Hangul`;
 
+  const sentenceDueCount = getTotalDueSentencesCount();
+  const sentenceReviewCardHtml = hangulDone && sentenceDueCount > 0
+    ? `
+    <div class="card">
+      <div class="flex-between">
+        <div>
+          <div class="eyebrow">Sentence reviews due</div>
+          <div class="screen-sub" style="margin-bottom:0;">${sentenceDueCount} sentence${sentenceDueCount === 1 ? "" : "s"} ready for spaced review.</div>
+        </div>
+        <button class="button secondary compact" type="button" id="continueSentenceReviewBtn">Review</button>
+      </div>
+    </div>`
+    : "";
+
   el.innerHTML = `
     <div class="eyebrow">Continue</div>
     <h2 class="screen-title" style="margin-bottom:16px;">Pick up where you left off</h2>
@@ -13758,6 +13788,7 @@ function renderTodayView() {
         <button class="button secondary compact" type="button" id="continueReviewBtn">Review</button>
       </div>
     </div>
+    ${sentenceReviewCardHtml}
 
     ${hangulDone ? `
     <div class="card">
@@ -13790,6 +13821,12 @@ function renderTodayView() {
   if (reviewBtn) {
     reviewBtn.addEventListener("click", () => {
       if (hangulDone && getVocabDueCount()) { openWordReview(); return; }
+      showTab("practice");
+    });
+  }
+  const sentenceReviewBtn = document.getElementById("continueSentenceReviewBtn");
+  if (sentenceReviewBtn) {
+    sentenceReviewBtn.addEventListener("click", () => {
       showTab("practice");
     });
   }
@@ -14034,7 +14071,46 @@ function getSentencesProgress() {
   p.band = Math.min(SENTENCE_BAND_COUNT, Math.max(1, Number(p.band) || 1));
   if (!p.results || typeof p.results !== "object") p.results = {};
   p.sessionsDone = Number(p.sessionsDone) || 0;
+  if (p.newPerDay === undefined) p.newPerDay = 5;
   return p;
+}
+
+// 'Met words' = union of word ids in completed word lessons and state.vocabSrs keys.
+function getMetWords() {
+  const metWords = new Set();
+  const completedLessonIds = state.vocabLessonCompleted || [];
+  const lessons = Array.isArray(window.HANAPATH_WORD_LESSONS) ? window.HANAPATH_WORD_LESSONS : [];
+  for (const lesson of lessons) {
+    if (completedLessonIds.includes(lesson.id)) {
+      if (Array.isArray(lesson.newWordIds)) {
+        for (const wId of lesson.newWordIds) {
+          metWords.add(wId);
+        }
+      }
+    }
+  }
+  if (state.vocabSrs && typeof state.vocabSrs === "object") {
+    for (const wId in state.vocabSrs) {
+      metWords.add(wId);
+    }
+  }
+  return metWords;
+}
+
+function isSentenceAvailable(row, metWords) {
+  if (!Array.isArray(row.focusWordIds) || row.focusWordIds.length === 0) return true;
+  return row.focusWordIds.every(wId => {
+    if (metWords.has(wId)) return true;
+    if (row.band === 1) {
+      const lessons = Array.isArray(window.HANAPATH_WORD_LESSONS) ? window.HANAPATH_WORD_LESSONS : [];
+      const inW0ToW2 = lessons.some(l => 
+        (l.stage === "W0" || l.stage === "W1" || l.stage === "W2") && 
+        Array.isArray(l.newWordIds) && l.newWordIds.includes(wId)
+      );
+      if (inW0ToW2) return true;
+    }
+    return false;
+  });
 }
 
 // Candidate rows for a session at the chosen band: rows AT the band first,
@@ -14042,20 +14118,143 @@ function getSentencesProgress() {
 // EXTENSION (roadmap C2): filter by focusWordIds ⊆ words the learner has met.
 function getSentenceRowsForBand(band) {
   const rows = getSentenceBankRows();
-  const atBand = rows.filter((row) => row.band === band);
+  const metWords = getMetWords();
+  const available = rows.filter((row) => isSentenceAvailable(row, metWords));
+  const atBand = available.filter((row) => row.band === band);
   if (atBand.length >= SENTENCE_SESSION_LENGTH) return atBand;
-  return atBand.concat(rows.filter((row) => row.band < band));
+  return atBand.concat(available.filter((row) => row.band < band));
+}
+
+function getUnmetFocusWordsCountForBand(band) {
+  const rows = getSentenceBankRows();
+  const metWords = getMetWords();
+  const bandRows = rows.filter(row => row.band === band);
+  
+  const unmetWords = new Set();
+  for (const row of bandRows) {
+    if (Array.isArray(row.focusWordIds)) {
+      for (const wId of row.focusWordIds) {
+        if (!metWords.has(wId)) {
+          if (band === 1) {
+            const lessons = Array.isArray(window.HANAPATH_WORD_LESSONS) ? window.HANAPATH_WORD_LESSONS : [];
+            const inW0ToW2 = lessons.some(l => 
+              (l.stage === "W0" || l.stage === "W1" || l.stage === "W2") && 
+              Array.isArray(l.newWordIds) && l.newWordIds.includes(wId)
+            );
+            if (inW0ToW2) continue;
+          }
+          unmetWords.add(wId);
+        }
+      }
+    }
+  }
+  return unmetWords.size;
+}
+
+function getNewSentencesCountToday() {
+  const results = getSentencesProgress().results;
+  const now = Date.now();
+  const oneDayAgo = now - 24 * 60 * 60 * 1000;
+  let count = 0;
+  for (const id in results) {
+    const record = results[id];
+    if (record.firstSeen && record.firstSeen >= oneDayAgo) {
+      count++;
+    }
+  }
+  return count;
+}
+
+function getTotalDueSentencesCount() {
+  const rows = getSentenceBankRows();
+  const metWords = getMetWords();
+  const available = rows.filter(row => isSentenceAvailable(row, metWords));
+  const results = getSentencesProgress().results;
+  const now = Date.now();
+  let count = 0;
+  for (const row of available) {
+    const record = results[row.id];
+    if (record && record.seen && (record.due || 0) <= now) {
+      count++;
+    }
+  }
+  return count;
+}
+
+function getDueSentenceCountForBand(band) {
+  const candidates = getSentenceRowsForBand(band);
+  const results = getSentencesProgress().results;
+  const now = Date.now();
+  let count = 0;
+  for (const row of candidates) {
+    const record = results[row.id];
+    if (record && record.seen && (record.due || 0) <= now) {
+      count++;
+    }
+  }
+  return count;
 }
 
 // Least-practiced-first selection with random tie-breaking.
 // EXTENSION (roadmap C3): replace with the sentence SRS due queue.
 function pickSentenceSessionRows(band, count = SENTENCE_SESSION_LENGTH) {
-  const results = getSentencesProgress().results;
-  return getSentenceRowsForBand(band)
-    .map((row) => ({ row, seen: results[row.id] ? results[row.id].seen : 0, rnd: Math.random() }))
-    .sort((a, b) => a.seen - b.seen || a.rnd - b.rnd)
-    .slice(0, count)
-    .map((entry) => entry.row);
+  const progress = getSentencesProgress();
+  const results = progress.results;
+  const now = Date.now();
+  
+  const candidates = getSentenceRowsForBand(band);
+  
+  const due = [];
+  const unseen = [];
+  const seenNotDue = [];
+  
+  for (const row of candidates) {
+    const record = results[row.id];
+    if (!record || !record.seen) {
+      unseen.push({ row, rnd: Math.random() });
+    } else {
+      const isDue = (record.due || 0) <= now;
+      if (isDue) {
+        due.push({ row, due: record.due || 0, rnd: Math.random() });
+      } else {
+        seenNotDue.push({ row, due: record.due || 0, rnd: Math.random() });
+      }
+    }
+  }
+  
+  due.sort((a, b) => a.due - b.due || a.rnd - b.rnd);
+  unseen.sort((a, b) => a.rnd - b.rnd);
+  seenNotDue.sort((a, b) => a.due - b.due || a.rnd - b.rnd);
+  
+  const selected = [];
+  
+  for (const item of due) {
+    if (selected.length >= count) break;
+    selected.push(item.row);
+  }
+  
+  const newQuota = Math.max(0, (progress.newPerDay !== undefined ? progress.newPerDay : 5) - getNewSentencesCountToday());
+  let newDrawn = 0;
+  for (const item of unseen) {
+    if (selected.length >= count) break;
+    if (newDrawn >= newQuota) break;
+    selected.push(item.row);
+    newDrawn++;
+  }
+  
+  for (const item of seenNotDue) {
+    if (selected.length >= count) break;
+    selected.push(item.row);
+  }
+  
+  for (const item of unseen) {
+    if (selected.length >= count) break;
+    if (!selected.includes(item.row)) {
+      selected.push(item.row);
+    }
+  }
+  
+  return selected;
 }
 
 // A typed/built attempt is correct when it normalizes to the target sentence
@@ -14071,11 +14270,50 @@ function checkSentenceAnswer(row, typed) {
 // Cheap per-token feedback for a wrong attempt: mark which target tokens the
 // learner's attempt already contains. EXTENSION (roadmap B3): real alignment.
 function sentenceTokenDiffHtml(row, typed) {
-  const guess = normalizeKoreanAnswer(typed, { ignoreSpaces: true });
-  return (row.tokens || [])
-    .map((tok) => {
-      const clean = normalizeKoreanAnswer(tok, { ignoreSpaces: true });
-      const ok = clean && guess.includes(clean);
+  const targetTokens = row.tokens || [];
+  const typedTokens = String(typed || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(t => t.replace(/[.,!?;:"'`~(){}\[\]<>\/·-]+$/g, "").trim())
+    .filter(Boolean);
+  
+  const m = targetTokens.length;
+  const n = typedTokens.length;
+  
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  
+  for (let i = 1; i <= m; i++) {
+    const tClean = normalizeKoreanAnswer(targetTokens[i - 1], { ignoreSpaces: true });
+    for (let j = 1; j <= n; j++) {
+      const gClean = normalizeKoreanAnswer(typedTokens[j - 1], { ignoreSpaces: true });
+      if (tClean === gClean) {
+        dp[i][j] = dp[i - 1][j - 1] + 1;
+      } else {
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+  }
+  
+  const matchedTargetIndices = new Set();
+  let i = m, j = n;
+  while (i > 0 && j > 0) {
+    const tClean = normalizeKoreanAnswer(targetTokens[i - 1], { ignoreSpaces: true });
+    const gClean = normalizeKoreanAnswer(typedTokens[j - 1], { ignoreSpaces: true });
+    if (tClean === gClean) {
+      matchedTargetIndices.add(i - 1);
+      i--;
+      j--;
+    } else if (dp[i - 1][j] >= dp[i][j - 1]) {
+      i--;
+    } else {
+      j--;
+    }
+  }
+  
+  return targetTokens
+    .map((tok, idx) => {
+      const ok = matchedTargetIndices.has(idx);
       return `<span class="ss-tok ${ok ? "ss-tok-ok" : "ss-tok-miss"}" lang="ko">${escapeHtml(tok)}</span>`;
     })
     .join(" ");
@@ -14162,16 +14400,33 @@ function markSentenceHelperUsed(name) {
 // EXTENSION (roadmap C3): also (re)schedule the row's SRS card here.
 // EXTENSION (roadmap J1): also emit a review-event for the analytics view.
 function recordSentenceResult(row, correct, revealed) {
-  const results = getSentencesProgress().results;
-  const record = results[row.id] || (results[row.id] = { seen: 0, correct: 0, streak: 0, last: 0 });
+  const progress = getSentencesProgress();
+  const results = progress.results;
+  const record = results[row.id] || (results[row.id] = { seen: 0, correct: 0, streak: 0, last: 0, box: 0, due: 0, lapses: 0 });
+  
   record.seen += 1;
+  record.last = Date.now();
+  if (!record.firstSeen) {
+    record.firstSeen = record.last;
+  }
+  
   if (correct) {
     record.correct += 1;
     record.streak += 1;
+    
+    const hasHelpers = sentenceStudioSession.helperUsed.length > 0;
+    if (!hasHelpers) {
+      record.box = Math.min((record.box || 0) + 1, VOCAB_SRS_INTERVALS.length - 1);
+    } else {
+      record.box = record.box || 0;
+    }
   } else {
     record.streak = 0;
+    record.box = 0;
+    record.lapses = (record.lapses || 0) + 1;
   }
-  record.last = Date.now();
+  record.due = record.last + VOCAB_SRS_INTERVALS[record.box];
+  
   sentenceStudioSession.results.push({
     id: row.id,
     mode: sentenceQuestionMode(),
@@ -14246,37 +14501,76 @@ function sentenceStudioHubHtml() {
     seenTotal += progress.results[id].seen;
     correctTotal += progress.results[id].correct;
   });
-  const accuracy = seenTotal ? Math.round((correctTotal / seenTotal) * 100) : 0;
+  
+  const dueCount = getTotalDueSentencesCount();
 
   const bandChips = Array.from({ length: SENTENCE_BAND_COUNT }, (_, i) => i + 1)
     .map((band) => {
       const count = rows.filter((row) => row.band === band).length;
       if (!count) return "";
-      return `<button class="filter-chip ${progress.band === band ? "active" : ""}" type="button" data-ss-band="${band}">Band ${band} · ${count}</button>`;
+      const isBandLocked = getSentenceRowsForBand(band).length < SENTENCE_SESSION_LENGTH;
+      const label = isBandLocked ? `Band ${band} 🔒` : `Band ${band} · ${count}`;
+      return `<button class="filter-chip ${progress.band === band ? "active" : ""}" type="button" data-ss-band="${band}">${label}</button>`;
     })
     .join("");
 
-  const modeCards = SENTENCE_MODES.map((mode) => `
-    <button class="study-row ss-mode" type="button" data-ss-start="${mode.id}">
-      <div>
-        <div class="study-row-ko">${escapeHtml(mode.label)}</div>
-        <div class="study-row-sub">${escapeHtml(mode.sub)}</div>
-      </div>
-      <span class="pill muted">${escapeHtml(mode.tag)}</span>
-    </button>
-  `).join("");
+  const isLocked = getSentenceRowsForBand(progress.band).length < SENTENCE_SESSION_LENGTH;
+  const unmetCount = getUnmetFocusWordsCountForBand(progress.band);
 
-  const preview = pickSentenceSessionRows(progress.band, 3)
-    .map((row) => `
-      <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
-        <div>
-          <div class="study-row-ko" lang="ko">${escapeHtml(row.korean)}</div>
-          <div class="study-row-sub">${escapeHtml(row.english)}</div>
+  let modeCardsHtml = "";
+  if (isLocked) {
+    modeCardsHtml = `
+      <div class="locked-card text-center" style="padding: 24px; border: 1px dashed var(--bad); border-radius: 8px; background: rgba(248,113,113,.04);">
+        <div class="lock-icon" style="font-size: 32px; margin-bottom: 12px; filter: grayscale(1);">🔒</div>
+        <div class="eyebrow" style="color: var(--bad); margin-bottom: 6px;">Band ${progress.band} is Locked</div>
+        <div class="screen-sub" style="margin-bottom: 16px;">
+          To unlock, learn more vocabulary. This band requires focus words you haven't studied yet.
         </div>
-        <span class="pill muted">▶</span>
+        <button class="button primary compact" type="button" data-ss-goto="vocab">
+          Learn ${unmetCount} more word${unmetCount === 1 ? "" : "s"}
+        </button>
       </div>
-    `)
-    .join("");
+    `;
+  } else {
+    modeCardsHtml = `
+      <div class="study-list">
+        ${SENTENCE_MODES.map((mode) => `
+          <button class="study-row ss-mode" type="button" data-ss-start="${mode.id}">
+            <div>
+              <div class="study-row-ko">${escapeHtml(mode.label)}</div>
+              <div class="study-row-sub">${escapeHtml(mode.sub)}</div>
+            </div>
+            <span class="pill muted">${escapeHtml(mode.tag)}</span>
+          </button>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  let previewHtml = "";
+  if (!isLocked) {
+    const preview = pickSentenceSessionRows(progress.band, 3)
+      .map((row) => `
+        <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
+          <div>
+            <div class="study-row-ko" lang="ko">${escapeHtml(row.korean)}</div>
+            <div class="study-row-sub">${escapeHtml(row.english)}</div>
+          </div>
+          <span class="pill muted">▶</span>
+        </div>
+      `)
+      .join("");
+      
+    previewHtml = `
+      <div class="card">
+        <div class="flex-between mb-12">
+          <div class="eyebrow">Up next in band ${progress.band}</div>
+          <span class="pill muted">Tap to hear</span>
+        </div>
+        <div class="study-list">${preview}</div>
+      </div>
+    `;
+  }
 
   return `
     <div class="card">
@@ -14285,7 +14579,7 @@ function sentenceStudioHubHtml() {
       <div class="screen-sub" style="margin-bottom:12px;">Short sessions of real sentence production: type it, build it, hear it. Five sentences per run.</div>
       <div class="ss-stats">
         <div class="stat-box"><span class="sv">${resultIds.length}</span><span class="sl">Sentences practiced</span></div>
-        <div class="stat-box"><span class="sv">${seenTotal ? `${accuracy}%` : "—"}</span><span class="sl">Correct answers</span></div>
+        <div class="stat-box"><span class="sv" style="${dueCount > 0 ? "color: var(--warning-color);" : ""}">${dueCount}</span><span class="sl">Reviews due</span></div>
         <div class="stat-box"><span class="sv">${progress.sessionsDone}</span><span class="sl">Sessions done</span></div>
       </div>
     </div>
@@ -14293,21 +14587,15 @@ function sentenceStudioHubHtml() {
     <div class="card">
       <div class="eyebrow mb-12">Difficulty band</div>
       <div class="ss-band-row">${bandChips}</div>
-      <div class="fs-xs text-muted-2" style="margin-top:8px;">Band 1 is short frames; band 5 is long multi-clause sentences. Sessions favor sentences you have practiced least.</div>
+      <div class="fs-xs text-muted-2" style="margin-top:8px;">Band 1 is short frames; band 5 is long multi-clause sentences. Sessions favor sentences you have practiced least or are due.</div>
     </div>
 
     <div class="card">
       <div class="eyebrow mb-12">Start a session</div>
-      <div class="study-list">${modeCards}</div>
+      ${modeCardsHtml}
     </div>
 
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div class="eyebrow">Up next in band ${progress.band}</div>
-        <span class="pill muted">Tap to hear</span>
-      </div>
-      <div class="study-list">${preview}</div>
-    </div>
+    ${previewHtml}
   `;
 }
 
