@@ -59,7 +59,7 @@ Each box below carries its routing: **[codex]** or **[high]**.
 - [x] **Track A** — Bank foundation: `sentences_core.js` + strict audit + app-shell wiring (PR #98)
 - [~] **Track B** — Translate & Type: **B1 core drill + B2 helper ladder shipped** in the Sentence Studio foundation; B3 answer alignment remains
 - [~] **Track C** — Practice hub + sentence SRS + i+1 gating: **C1 hub shipped** (Sentence Studio) + per-sentence progress foundation; C2 i+1 gating + C3 full SRS remain
-- [ ] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis
+- [x] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis
 - [ ] **Track E** — Pattern micro-lessons: 12 units playable
 - [ ] **Track F** — Shadow & speak modes
 - [ ] **Track G** — Transform drill (inflection engine)
@@ -361,10 +361,10 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
 3. Flip only the verified axes to `explicit`. Run the audit. One PR.
 
 - [x] **D1** rows batch 1 (~250)
-- [ ] **D2** rows batch 2
-- [ ] **D3** rows batch 3
-- [ ] **D4** rows batch 4
-- [ ] **D5** rows batch 5
+- [x] **D2** rows batch 2
+- [x] **D3** rows batch 3
+- [x] **D4** rows batch 4
+- [x] **D5** rows batch 5
 - [ ] **D6** rows batch 6
 - [ ] **D7** rows batch 7
 - [ ] **D8** rows batch 8 + final zero-inferred verification (paste §2.1 output)
