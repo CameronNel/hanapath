@@ -220,22 +220,32 @@ All modes draw from the bank and grade into the sentence SRS.
 Update this table in the same PR as the work it describes. **Claims here must
 be re-derived from data, not copied forward.**
 
-| # | Piece | Status (2026-07-05) |
+| # | Piece | Status (2026-07-06) |
 |---|---|---|
 | 1 | Sentence bank `sentences_core.js` + extractor | ✅ done |
 | 2 | Sentence audit `scripts/audit-sentences-data.mjs` | ✅ done |
-| 3 | Translate & Type drill (Eng → typed Hangul + helper ladder) | ❌ not started |
-| 4 | Practice hub rebuild (due/new/free session flow) | ❌ not started (legacy `renderPracticeView` level-rail shell live) |
-| 5 | Sentence SRS (`state.sentenceSrs`) | ❌ not started |
-| 6 | i+1 gating via `focusWordIds` | ❌ not started |
+| 3 | Translate & Type drill (Eng → typed Hangul + helper ladder) | 🟡 **core done** — the Translate mode is live in the Sentence Studio (English → typed Hangul, spacing/punctuation-tolerant check, audio on success); the **helper ladder (B2)** and **real answer alignment (B3)** are not built yet — code extension points marked `EXTENSION (roadmap B2/B3)` |
+| 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the legacy level-rail shell is gone; `renderPracticeView` is now the self-contained **Sentence Studio** (hub → session → summary) reading from the bank. "Due" ordering is least-practiced-first, not SRS yet (see #5) |
+| 5 | Sentence SRS (`state.sentencesProgress`) | 🟡 **foundation done** — per-sentence records (seen/correct/streak/last) persist and drive session selection; full Leitner scheduling + due dates (C3) not built — extension point marked `EXTENSION (roadmap C3)` |
+| 6 | i+1 gating via `focusWordIds` | ❌ not started — extension point marked `EXTENSION (roadmap C2)` in `getSentenceRowsForBand` |
 | 7 | Pattern-tag curation (inferred → explicit) | ❌ not started |
 | 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ❌ not started |
-| 9 | Shadow mode + speech-stub wiring for sentences | ❌ not started |
+| 9 | Shadow mode + speech-stub wiring for sentences | ❌ not started (Dictation mode ships as a related listening drill) |
 | 10 | Transform drill (inflection engine) | ❌ not started |
 | 11 | Authored expansion batches (gap-driven) | ❌ not started (owner-gated volume) |
-| 12 | Legacy mini-bank migration + dead-code removal | ❌ not started |
-| 13 | Sentence analytics events + metrics view | ❌ not started |
+| 12 | Legacy mini-bank migration + dead-code removal | 🟡 **partial** — the Sentences tab no longer uses `getSentenceStudyBank()`/`makeSentence*`; those remain only because the **Listening** tab still shares them (full removal is Track I) |
+| 13 | Sentence analytics events + metrics view | ❌ not started — extension point marked `EXTENSION (roadmap J1)` in `recordSentenceResult` |
 | 14 | Close-out: docs honest, cold-learner browser test | ❌ not started |
+
+> **Foundation note (2026-07-06):** the Sentences section was rebuilt from
+> scratch as its own subsystem — **Sentence Studio** — instead of routing
+> through the shared quiz engine like every other tab. It ships three
+> production-first drills (Translate & Type, Word Builder, Dictation) over a
+> hub → 5-question session → summary flow, with per-sentence progress and a
+> band selector. The remaining roadmap boxes now **build on this foundation**:
+> every one has a labelled `EXTENSION (roadmap <box>)` comment in `app.js`
+> marking exactly where the new code plugs in. A small model should extend the
+> studio, not rebuild it. See `docs/SENTENCES_FINAL_ROADMAP.md` §3.5.
 
 ## §9 Milestone reference sheet
 
