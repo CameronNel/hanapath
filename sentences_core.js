@@ -8140,7 +8140,6 @@
     ],
     "band": 2,
     "patternTags": [
-      "subject-i-ga",
       "object-eul-reul",
       "present-polite"
     ],
@@ -8593,7 +8592,8 @@
     ],
     "band": 1,
     "patternTags": [
-      "question-polite"
+      "question-polite",
+      "propositive-eyo"
     ],
     "focusWordIds": [
       "fw1705_lkkayo"
@@ -8657,7 +8657,8 @@
     "patternTags": [
       "topic-neun",
       "neg-mot",
-      "time-expression"
+      "time-expression",
+      "present-polite"
     ],
     "focusWordIds": [
       "fw1712_mot"
@@ -8692,7 +8693,6 @@
       "topic-neun",
       "object-eul-reul",
       "present-polite",
-      "neg-an",
       "neg-ji-anta"
     ],
     "focusWordIds": [
@@ -8883,7 +8883,7 @@
     "band": 3,
     "patternTags": [
       "location-e",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "fw1804_jamaja"
@@ -8914,10 +8914,9 @@
     ],
     "band": 3,
     "patternTags": [
-      "subject-i-ga",
       "object-eul-reul",
       "location-e",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "fw1805_daga"
@@ -8949,7 +8948,6 @@
     "band": 3,
     "patternTags": [
       "neg-an",
-      "when-ttae",
       "past-polite"
     ],
     "focusWordIds": [
@@ -9011,7 +9009,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "topic-neun",
       "subject-i-ga",
       "copula-ieyo"
     ],
@@ -9043,7 +9040,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "object-eul-reul",
       "copula-ieyo",
       "time-expression"
     ],
@@ -9074,7 +9070,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "topic-neun",
       "copula-ieyo"
     ],
     "focusWordIds": [
@@ -9136,7 +9131,8 @@
     ],
     "band": 5,
     "patternTags": [
-      "imperative-seyo",
+      "subject-i-ga",
+      "present-polite",
       "honorific-si",
       "time-expression"
     ],
@@ -9168,9 +9164,11 @@
     ],
     "band": 5,
     "patternTags": [
+      "subject-i-ga",
       "location-e",
-      "imperative-seyo",
-      "honorific-si"
+      "present-polite",
+      "honorific-si",
+      "existence-itda"
     ],
     "focusWordIds": [
       "w1902_gyesida"
@@ -9200,8 +9198,9 @@
     ],
     "band": 5,
     "patternTags": [
+      "subject-i-ga",
       "object-eul-reul",
-      "imperative-seyo",
+      "present-polite",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -9231,7 +9230,8 @@
     ],
     "band": 5,
     "patternTags": [
-      "imperative-seyo",
+      "subject-i-ga",
+      "present-polite",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -9264,7 +9264,7 @@
     "patternTags": [
       "subject-i-ga",
       "question-polite",
-      "imperative-seyo",
+      "present-polite",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -9297,6 +9297,7 @@
     "patternTags": [
       "subject-i-ga",
       "question-polite",
+      "present-polite",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -9667,7 +9668,6 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "time-expression",
       "present-polite"
     ],
@@ -9733,7 +9733,8 @@
     "band": 1,
     "patternTags": [
       "location-e",
-      "present-polite"
+      "present-polite",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_002_i"
@@ -9765,7 +9766,6 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "time-expression",
       "present-polite"
     ],
@@ -9799,7 +9799,8 @@
     "band": 2,
     "patternTags": [
       "time-expression",
-      "past-polite"
+      "past-polite",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_004_sa"
@@ -9831,8 +9832,8 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "only-man",
-      "past-polite"
+      "past-polite",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_005_o"
@@ -9865,7 +9866,6 @@
     "band": 3,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "time-expression",
       "present-polite"
     ],
@@ -9900,7 +9900,8 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "past-polite"
+      "present-polite",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_007_chil"
@@ -9967,7 +9968,8 @@
       "subject-i-ga",
       "location-e",
       "present-polite",
-      "existence-itda"
+      "existence-itda",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_009_gu"
@@ -10061,7 +10063,8 @@
     ],
     "band": 1,
     "patternTags": [
-      "copula-ieyo"
+      "copula-ieyo",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_012_cheon"
@@ -10092,8 +10095,8 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "only-man",
-      "past-polite"
+      "past-polite",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_013_man"
@@ -10283,7 +10286,6 @@
     ],
     "band": 2,
     "patternTags": [
-      "location-e",
       "time-expression",
       "present-polite",
       "counter-phrase"
@@ -10382,7 +10384,6 @@
     "band": 3,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "present-polite",
       "counter-phrase",
       "time-expression",
@@ -10449,7 +10450,8 @@
     ],
     "band": 1,
     "patternTags": [
-      "copula-ieyo"
+      "copula-ieyo",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_024_seumul"
@@ -10479,9 +10481,9 @@
     ],
     "band": 3,
     "patternTags": [
-      "location-e",
       "time-expression",
-      "past-polite"
+      "past-polite",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_025_seoreun"
@@ -10544,7 +10546,8 @@
     "band": 1,
     "patternTags": [
       "possessive-ui",
-      "copula-ieyo"
+      "copula-ieyo",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_027_swin"
@@ -10674,7 +10677,9 @@
     "band": 1,
     "patternTags": [
       "topic-neun",
-      "copula-ieyo"
+      "copula-ieyo",
+      "formal-nida",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_031_sal"
@@ -10706,8 +10711,8 @@
     "band": 2,
     "patternTags": [
       "topic-neun",
-      "subject-i-ga",
-      "copula-ieyo"
+      "copula-ieyo",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_032_won"
@@ -10770,7 +10775,6 @@
     ],
     "band": 3,
     "patternTags": [
-      "location-e",
       "time-expression",
       "present-polite",
       "counter-phrase"
@@ -10972,7 +10976,6 @@
     ],
     "band": 3,
     "patternTags": [
-      "and-go",
       "counter-phrase",
       "present-polite",
       "want-go-sipda"
@@ -11623,7 +11626,7 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_059_samchon"
@@ -12253,7 +12256,8 @@
     ],
     "band": 1,
     "patternTags": [
-      "object-eul-reul"
+      "object-eul-reul",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_085_pal"
@@ -12411,7 +12415,8 @@
       "subject-i-ga",
       "because-aseo",
       "present-polite",
-      "existence-itda"
+      "existence-itda",
+      "can-su-itda"
     ],
     "focusWordIds": [
       "w_m5_092_balgarak"
