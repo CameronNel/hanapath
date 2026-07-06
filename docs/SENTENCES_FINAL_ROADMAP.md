@@ -57,9 +57,9 @@ Each box below carries its routing: **[codex]** or **[high]**.
 ## 1. Definition of DONE for the whole Sentences section
 
 - [x] **Track A** — Bank foundation: `sentences_core.js` + strict audit + app-shell wiring (PR #98)
-- [x] **Track B** — Translate & Type: Shipped B1 core drill, B2 helper ladder, and B3 token diff feedback + acceptAlso
+- [x] **Track B** — Translate & Type: Shipped B1 core drill, B2 helper ladder, and B3 token-diff feedback
 - [x] **Track C** — Practice hub + sentence SRS + i+1 gating: Shipped C1 hub, C2 i+1 gating, C3 sentence SRS, and C4 today-screen surfacing
-- [ ] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis
+- [x] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis (all 2,007 rows explicit on both `band` and `patternTags`)
 - [ ] **Track E** — Pattern micro-lessons: 12 units playable
 - [ ] **Track F** — Shadow & speak modes
 - [ ] **Track G** — Transform drill (inflection engine)
@@ -361,13 +361,19 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
 3. Flip only the verified axes to `explicit`. Run the audit. One PR.
 
 - [x] **D1** rows batch 1 (~250)
-- [ ] **D2** rows batch 2
-- [ ] **D3** rows batch 3
-- [ ] **D4** rows batch 4
-- [ ] **D5** rows batch 5
-- [ ] **D6** rows batch 6
-- [ ] **D7** rows batch 7
-- [ ] **D8** rows batch 8 + final zero-inferred verification (paste §2.1 output)
+- [x] **D2** rows batch 2
+- [x] **D3** rows batch 3
+- [x] **D4** rows batch 4
+- [x] **D5** rows batch 5
+- [x] **D6** rows batch 6
+- [x] **D7** rows batch 7
+- [x] **D8** rows batch 8 + final zero-inferred verification — audit reports `band` 2007 explicit / 0 inferred, `patternTags` 2007 explicit / 0 inferred
+
+> **Quality caveat (2026-07-06):** all rows are explicit, but a review pass found
+> the `counter-phrase` tag was over-applied during D2–D6 (tagged on sentences with
+> no number). 75 zero-number rows were corrected (tag removed); ~40 rows that
+> contain a number but a debatable head noun (e.g. `두 부서`) were left as-is and
+> still need a careful linguistic verification pass. See §"Track D accuracy pass".
 
 ---
 
