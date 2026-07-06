@@ -59,7 +59,7 @@ Each box below carries its routing: **[codex]** or **[high]**.
 - [x] **Track A** — Bank foundation: `sentences_core.js` + strict audit + app-shell wiring (PR #98)
 - [x] **Track B** — Translate & Type: Shipped B1 core drill, B2 helper ladder, and B3 token-diff feedback
 - [x] **Track C** — Practice hub + sentence SRS + i+1 gating: Shipped C1 hub, C2 i+1 gating, C3 sentence SRS, and C4 today-screen surfacing
-- [x] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis (all 2,007 rows explicit on both `band` and `patternTags`)
+- [x] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis (all 2,060 rows explicit on both `band` and `patternTags`)
 - [ ] **Track E** — Pattern micro-lessons: 12 units playable
 - [ ] **Track F** — Shadow & speak modes
 - [ ] **Track G** — Transform drill (inflection engine)
@@ -368,6 +368,7 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
 - [x] **D6** rows batch 6
 - [x] **D7** rows batch 7
 - [x] **D8** rows batch 8 + final zero-inferred verification — audit reports `band` 2007 explicit / 0 inferred, `patternTags` 2007 explicit / 0 inferred
+- [x] **D9** legacy-app rows s2008–s2060 — audit reports `band` 2060 explicit / 0 inferred, `patternTags` 2060 explicit / 0 inferred
 
 > **Quality caveat (2026-07-06):** all rows are explicit, but a review pass found
 > the `counter-phrase` tag was over-applied during D2–D6 (tagged on sentences with
@@ -444,6 +445,7 @@ them. One PR per box; browser-play each unit before shipping.
 
 | Date | Box | PR | Notes |
 |---|---|---|---|
+| 2026-07-06 | D9 legacy-app tags (s2008-s2060) | this PR | Curated the 53 legacy-app rows from Track I, corrected inferred tag false positives/missing supported tags, and flipped `patternTags` to explicit; strict audit reports `band` 2060 explicit / 0 inferred and `patternTags` 2060 explicit / 0 inferred. |
 | 2026-07-05 | A1-A3 | PR #98 | Extracted the 2,007-row sentence bank from `words_curated_core.js`, added the strict audit, and wired the bank into the app shell. |
 | 2026-07-06 | Foundation (B1 + C1) | — | Rebuilt the Sentences section from scratch as the **Sentence Studio** (§3.5): hub → 5-question session → summary, three drills (Translate & Type, Word Builder, Dictation) reading `HANAPATH_SENTENCES`, `state.sentencesProgress` per-sentence records, band selector, `.ss-*` styles. Replaced the old `renderPracticeView` level-rail shell. Labelled extension points left for B2/B3/C2/C3/J1. Verified: `node --check`, all three audits `--strict`, and a 28-assertion vm logic test (session flow, tolerance, tile pool, mixed run). |
 | 2026-07-06 | B2 | local branch | Added the Translate & Type helper ladder inside Sentence Studio: inferred-safe tag tips, word-bank tiles with erase, next-chunk prefix hints, reveal handling, and per-question `helpersUsed` tracking for later SRS/analytics work. |

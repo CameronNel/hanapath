@@ -12,27 +12,25 @@ won't have tonight's machine. **One task = one branch off `main` = one draft PR,
 pushed to `origin`.** Never leave work only local, never commit to `main`, never
 stack unrelated work. After each PR, confirm it exists on GitHub (`gh pr view`).
 
-## Current state (main tip `0fadee79`, PR #109)
-- Bank `sentences_core.js` = **2,060 rows**. Cache **`v243`** / `?v=20260706d`.
+## Current state (after the s2008–s2060 curation PR)
+- Bank `sentences_core.js` = **2,060 rows**. Cache **`v244`** / `?v=20260706e`.
 - `band`: explicit on all 2,060 / 0 inferred.
-- `patternTags`: explicit on 2,007 / **inferred on 53** (new rows **s2008–s2060**).
+- `patternTags`: explicit on all 2,060 / 0 inferred.
 - Tracks **A, B, C, D** done; **H/I** legacy consolidation landed.
 - All audits pass `--strict`.
 
 ## Tasks (priority order — each its own pushed draft PR)
-1. **Finish Track D on s2008–s2060.** Flip their `patternTags` inferred→explicit
-   per spec §4 closed set / §5 table. Goal: `patternTags` back to 0 inferred.
-2. **Pattern-tag accuracy pass (hard).** `counter-phrase` was over-applied; 75
+1. **Pattern-tag accuracy pass (hard).** `counter-phrase` was over-applied; 75
    zero-number rows already corrected. ~40 rows remain where a number is present
    but the head noun is debatable (`두 부서`, `두 사람`) — set a consistent policy
    (§4 = "number **plus counter**"), document it, apply uniformly. Then sweep the
    other tags (highest-risk: `location-e`/`location-eseo`/dative 에, connectives,
    `time-expression`). ~200-row batches, one PR each, with an accuracy report.
-3. **Runtime-verify the Listening / survival-phrases tab.** #109 removed legacy
+2. **Runtime-verify the Listening / survival-phrases tab.** #109 removed legacy
    mini-banks from `app.js`; static audits pass but it was not browser-tested.
    Serve (`python -m http.server 8000`), open that tab, confirm render/playback.
    Fix in a PR if broken.
-4. **Track E — pattern micro-lessons** (`app.js`, judgment work) — only after 1–3.
+3. **Track E — pattern micro-lessons** (`app.js`, judgment work) — only after 1–2.
 
 ## Rules (every PR)
 - Vanilla/static; additive; never reuse/renumber `id`s or touch
