@@ -366,7 +366,7 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
 - [ ] **D4** rows batch 4
 - [ ] **D5** rows batch 5
 - [ ] **D6** rows batch 6
-- [ ] **D7** rows batch 7
+- [x] **D7** rows batch 7
 - [ ] **D8** rows batch 8 + final zero-inferred verification (paste §2.1 output)
 
 ---
