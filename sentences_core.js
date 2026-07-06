@@ -563,8 +563,7 @@
     ],
     "band": 1,
     "patternTags": [
-      "present-polite",
-      "future-geoyeyo"
+      "present-polite"
     ],
     "focusWordIds": [
       "w0109_jamsimanyo"
@@ -624,8 +623,7 @@
     ],
     "band": 1,
     "patternTags": [
-      "present-polite",
-      "future-geoyeyo"
+      "present-polite"
     ],
     "focusWordIds": [
       "w0111_algesseoyo"
@@ -717,8 +715,7 @@
     ],
     "band": 1,
     "patternTags": [
-      "topic-neun",
-      "question-polite"
+      "topic-neun"
     ],
     "focusWordIds": [
       "w0203_neo"
@@ -1643,7 +1640,9 @@
     "patternTags": [
       "subject-i-ga",
       "until-kkaji",
-      "present-polite"
+      "present-polite",
+      "time-expression",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m6_2976_geollida_time"
@@ -1735,7 +1734,6 @@
     "band": 4,
     "patternTags": [
       "subject-i-ga",
-      "and-go",
       "present-polite"
     ],
     "focusWordIds": [
@@ -2140,7 +2138,6 @@
     "band": 3,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
       "past-polite",
       "counter-phrase"
     ],
@@ -2532,8 +2529,7 @@
     "patternTags": [
       "subject-i-ga",
       "location-eseo",
-      "present-polite",
-      "and-go"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_3001_yeongi_smoke"
@@ -2638,11 +2634,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "topic-neun",
       "subject-i-ga",
       "object-eul-reul",
-      "formal-nida",
-      "because-aseo"
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_3004_sosig_eating"
@@ -2735,7 +2729,6 @@
     ],
     "band": 3,
     "patternTags": [
-      "present-polite",
       "past-polite",
       "question-polite"
     ],
@@ -3203,7 +3196,8 @@
     "patternTags": [
       "subject-i-ga",
       "present-polite",
-      "counter-phrase"
+      "counter-phrase",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_3006_sigan_hour"
@@ -3265,9 +3259,7 @@
     "band": 3,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
-      "past-polite",
-      "time-expression"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_3007_achim_breakfast"
@@ -3296,10 +3288,8 @@
     ],
     "band": 3,
     "patternTags": [
-      "present-polite",
       "past-polite",
-      "question-polite",
-      "time-expression"
+      "question-polite"
     ],
     "focusWordIds": [
       "w0607_jeomsim"
@@ -3328,7 +3318,6 @@
     ],
     "band": 1,
     "patternTags": [
-      "location-e",
       "present-polite",
       "time-expression"
     ],
@@ -3359,7 +3348,6 @@
     ],
     "band": 1,
     "patternTags": [
-      "location-e",
       "present-polite",
       "time-expression"
     ],
@@ -3391,9 +3379,7 @@
     "band": 3,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
-      "past-polite",
-      "time-expression"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_3009_jeonyeok_dinner"
@@ -3422,7 +3408,6 @@
     ],
     "band": 1,
     "patternTags": [
-      "topic-neun",
       "copula-ieyo"
     ],
     "focusWordIds": [
@@ -3917,7 +3902,6 @@
     "band": 3,
     "patternTags": [
       "subject-i-ga",
-      "present-polite",
       "past-polite"
     ],
     "focusWordIds": [
@@ -4072,7 +4056,6 @@
     "band": 1,
     "patternTags": [
       "topic-neun",
-      "subject-i-ga",
       "present-polite"
     ],
     "focusWordIds": [
@@ -4135,6 +4118,7 @@
     "band": 1,
     "patternTags": [
       "location-e",
+      "present-polite",
       "question-polite"
     ],
     "focusWordIds": [
@@ -4165,6 +4149,7 @@
     ],
     "band": 1,
     "patternTags": [
+      "present-polite",
       "question-polite",
       "neg-an"
     ],
@@ -4195,6 +4180,7 @@
     ],
     "band": 1,
     "patternTags": [
+      "present-polite",
       "question-polite"
     ],
     "focusWordIds": [
@@ -4319,6 +4305,7 @@
     "band": 1,
     "patternTags": [
       "object-eul-reul",
+      "present-polite",
       "question-polite"
     ],
     "focusWordIds": [
@@ -4348,6 +4335,7 @@
     ],
     "band": 2,
     "patternTags": [
+      "present-polite",
       "question-polite",
       "time-expression"
     ],
@@ -4468,7 +4456,8 @@
     ],
     "band": 2,
     "patternTags": [
-      "with-hago-wa"
+      "with-hago-wa",
+      "present-polite"
     ],
     "focusWordIds": [
       "fw1008_wa_gwa"
@@ -4500,7 +4489,6 @@
     "patternTags": [
       "with-hago-wa",
       "imperative-seyo",
-      "and-go",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -5421,8 +5409,7 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
-      "time-expression"
+      "present-polite"
     ],
     "focusWordIds": [
       "w1207_yorihada"
@@ -5451,7 +5438,6 @@
     ],
     "band": 2,
     "patternTags": [
-      "location-e",
       "present-polite",
       "time-expression"
     ],
@@ -5802,7 +5788,6 @@
     "patternTags": [
       "object-eul-reul",
       "location-e",
-      "and-go",
       "past-polite"
     ],
     "focusWordIds": [

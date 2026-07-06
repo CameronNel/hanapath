@@ -444,6 +444,7 @@ them. One PR per box; browser-play each unit before shipping.
 
 | Date | Box | PR | Notes |
 |---|---|---|---|
+| 2026-07-06 | Track D accuracy batch 001 (s0001-s0200) | this PR | Reviewed the first 200 sentence rows for high-risk pattern tags; corrected 28 rows across tense/politeness, temporal `에`, `and-go`, `time-expression`, and counter-unit tagging. See `docs/SENTENCES_TAG_ACCURACY_BATCH_001.md`. |
 | 2026-07-05 | A1-A3 | PR #98 | Extracted the 2,007-row sentence bank from `words_curated_core.js`, added the strict audit, and wired the bank into the app shell. |
 | 2026-07-06 | Foundation (B1 + C1) | — | Rebuilt the Sentences section from scratch as the **Sentence Studio** (§3.5): hub → 5-question session → summary, three drills (Translate & Type, Word Builder, Dictation) reading `HANAPATH_SENTENCES`, `state.sentencesProgress` per-sentence records, band selector, `.ss-*` styles. Replaced the old `renderPracticeView` level-rail shell. Labelled extension points left for B2/B3/C2/C3/J1. Verified: `node --check`, all three audits `--strict`, and a 28-assertion vm logic test (session flow, tolerance, tile pool, mixed run). |
 | 2026-07-06 | B2 | local branch | Added the Translate & Type helper ladder inside Sentence Studio: inferred-safe tag tips, word-bank tiles with erase, next-chunk prefix hints, reveal handling, and per-question `helpersUsed` tracking for later SRS/analytics work. |
