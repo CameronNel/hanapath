@@ -1,17 +1,17 @@
-// [2026-07-05] Cache bumped to v187: Sentences bank foundation.
-const CACHE_NAME = "hanapath-shell-v188";
+// [2026-07-06] Cache bumped to v194: Sentence curation batch s0201-s0250.
+const CACHE_NAME = "hanapath-shell-v240";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260706a",
+  "./styles.css?v=20260706b",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705f",
   "./words_curated_core.js?v=20260705e",
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260705a",
-  "./app.js?v=20260706a",
+  "./sentences_core.js?v=20260706ba",
+  "./app.js?v=20260706b",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

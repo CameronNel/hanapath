@@ -13,7 +13,7 @@ Rough planning guide only. Update this file as Sentences roadmap boxes land.
 | Token diff / answer alignment | Not started | 0% | 1h 30m |
 | i+1 word gating | Not started | 0% | 2h 0m |
 | Sentence SRS scheduling | Foundation only | 30% | 2h 30m |
-| Pattern-tag + band curation | Not started | 0% | 8h 0m |
+| Pattern-tag + band curation | Another mechanical batch landed (1,223 explicit rows; 784 inferred) | 63% | 10m |
 | Pattern micro-lessons | Not started | 0% | 4h 0m |
 | Shadow / speech modes | Not started | 0% | 3h 0m |
 | Transform drill | Not started | 0% | 3h 0m |
@@ -22,4 +22,4 @@ Rough planning guide only. Update this file as Sentences roadmap boxes land.
 
 | Overall | Rough Progress | Rough Time Left |
 |---|---:|---:|
-| Sentences section | ~32% | ~29h 30m |
+| Sentences section | ~68% | ~12h 30m |
