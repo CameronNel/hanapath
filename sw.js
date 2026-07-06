@@ -1,4 +1,4 @@
-// [2026-07-06] Cache bumped to v194: Sentence curation batch s0201-s0250.
+// [2026-07-06] Cache bumped to v240: Sentence Studio helper ladder (B2) + Track D tag/band curation.
 const CACHE_NAME = "hanapath-shell-v240";
 const APP_SHELL = [
   "./",

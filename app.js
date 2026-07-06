@@ -14322,9 +14322,15 @@ function sentenceSessionDotsHtml(session) {
     .join("")}</div>`;
 }
 
-function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "") {
+function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "", includeReveal = true) {
   const prefix = session.lockedPrefix
     ? `<div class="ss-locked-prefix" lang="ko"><span>Hinted start</span>${escapeHtml(session.lockedPrefix)}</div>`
+    : "";
+  // In translate mode the helper ladder already ends in a "Reveal" rung, so the
+  // generic "Show answer" button is suppressed there to avoid two identical
+  // reveal controls; dictation (no ladder) keeps it.
+  const revealButton = includeReveal
+    ? `<button class="button secondary compact" type="button" data-ss-reveal>Show answer</button>`
     : "";
   return `
     <div class="word-type-box">
@@ -14332,13 +14338,13 @@ function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "") {
       <input class="sentence-input" id="ssTypedInput" type="text" autocomplete="off" autocapitalize="off"
         spellcheck="false" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(session.typed)}" lang="ko" />
       <div class="word-type-feedback" role="status" aria-live="polite">${session.attempts
-        ? `<strong>Not yet.</strong> Try again, or show the answer. <span class="fs-xs">(Spacing and punctuation don't count against you.)</span>`
+        ? `<strong>Not yet.</strong> Try again, or reveal it. <span class="fs-xs">(Spacing and punctuation don't count against you.)</span>`
         : ""}</div>
     </div>
     ${helperHtml}
     <div class="word-card-actions">
       <button class="button primary compact" type="button" data-ss-check>Check</button>
-      <button class="button secondary compact" type="button" data-ss-reveal>Show answer</button>
+      ${revealButton}
     </div>
   `;
 }
@@ -14420,7 +14426,7 @@ function sentenceQuestionHtml(session) {
         <div class="eyebrow">Translate &amp; Type · ${step}</div>
         <div class="ss-prompt">${escapeHtml(row.english)}</div>
         <div class="screen-sub" style="margin-bottom:4px;">Type the Korean sentence.</div>
-        ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요", sentenceHelperLadderHtml(session, row))}
+        ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요", sentenceHelperLadderHtml(session, row), false)}
       </div>
     `;
   }
