@@ -19254,8 +19254,7 @@
     "band": 2,
     "patternTags": [
       "topic-neun",
-      "subject-i-ga",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_350_teunteunhada"
@@ -19444,7 +19443,9 @@
     "band": 1,
     "patternTags": [
       "topic-neun",
-      "question-polite"
+      "formal-nida",
+      "question-polite",
+      "copula-ieyo"
     ],
     "focusWordIds": [
       "w_m5_360_mueot"
@@ -19665,9 +19666,7 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
-      "and-go",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_370_gwahak"
@@ -20401,7 +20400,8 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "copula-ieyo"
+      "copula-ieyo",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m5_393_balsaeng"
@@ -20790,7 +20790,8 @@
     "band": 3,
     "patternTags": [
       "topic-neun",
-      "copula-ieyo"
+      "copula-ieyo",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_402_sikgu"
@@ -20852,7 +20853,6 @@
     "band": 1,
     "patternTags": [
       "subject-i-ga",
-      "because-aseo",
       "present-polite"
     ],
     "focusWordIds": [
@@ -21039,7 +21039,6 @@
     ],
     "band": 1,
     "patternTags": [
-      "location-e",
       "present-polite"
     ],
     "focusWordIds": [
@@ -22293,7 +22292,6 @@
     "band": 1,
     "patternTags": [
       "location-e",
-      "and-go",
       "present-polite"
     ],
     "focusWordIds": [
@@ -22523,7 +22521,6 @@
     "patternTags": [
       "object-eul-reul",
       "location-e",
-      "and-go",
       "past-polite"
     ],
     "focusWordIds": [
@@ -22972,7 +22969,7 @@
       "subject-i-ga",
       "object-eul-reul",
       "because-aseo",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_482_bureuda_full"
@@ -23037,6 +23034,7 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
+      "because-aseo",
       "present-polite"
     ],
     "focusWordIds": [
@@ -23201,7 +23199,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_514_kape_cafe"
@@ -23234,7 +23232,6 @@
     "patternTags": [
       "object-eul-reul",
       "location-e",
-      "and-go",
       "present-polite"
     ],
     "focusWordIds": [
@@ -23365,7 +23362,6 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "when-ttae",
       "past-polite"
     ],
     "focusWordIds": [
@@ -23570,7 +23566,6 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "because-aseo",
       "present-polite"
     ],
@@ -23604,10 +23599,7 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "with-hago-wa",
-      "present-polite",
-      "and-go",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_607_daehak"
@@ -23942,7 +23934,7 @@
     "band": 3,
     "patternTags": [
       "object-eul-reul",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_617_junbi"
@@ -24009,6 +24001,7 @@
     "patternTags": [
       "topic-neun",
       "possessive-ui",
+      "copula-ieyo",
       "question-polite"
     ],
     "focusWordIds": [
@@ -24042,9 +24035,7 @@
     "patternTags": [
       "object-eul-reul",
       "present-polite",
-      "and-go",
-      "time-expression",
-      "existence-itda"
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m5_620_gyehoek"
@@ -24242,9 +24233,7 @@
     "band": 4,
     "patternTags": [
       "subject-i-ga",
-      "present-polite",
-      "and-go",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_626_unyeong"
@@ -24276,7 +24265,6 @@
     "band": 2,
     "patternTags": [
       "topic-neun",
-      "subject-i-ga",
       "from-buteo",
       "present-polite",
       "time-expression"
@@ -24444,6 +24432,7 @@
     ],
     "band": 1,
     "patternTags": [
+      "location-eseo",
       "topic-neun",
       "subject-i-ga",
       "copula-ieyo"
@@ -24580,9 +24569,7 @@
     "patternTags": [
       "subject-i-ga",
       "location-eseo",
-      "present-polite",
-      "and-go",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_637_ai"
@@ -24613,7 +24600,6 @@
     "band": 1,
     "patternTags": [
       "topic-neun",
-      "subject-i-ga",
       "copula-ieyo"
     ],
     "focusWordIds": [
@@ -24680,7 +24666,6 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "and-go",
       "formal-nida",
       "honorific-si"
     ],
@@ -24748,7 +24733,6 @@
       "object-eul-reul",
       "direction-euro",
       "present-polite",
-      "and-go",
       "want-go-sipda"
     ],
     "focusWordIds": [
@@ -24880,7 +24864,8 @@
     "patternTags": [
       "topic-neun",
       "subject-i-ga",
-      "formal-nida"
+      "formal-nida",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_646_jiyeok"
@@ -24915,6 +24900,7 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
+      "past-polite",
       "present-polite"
     ],
     "focusWordIds": [
@@ -24946,7 +24932,7 @@
     "band": 1,
     "patternTags": [
       "object-eul-reul",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_648_busan"
@@ -25012,7 +24998,7 @@
       "subject-i-ga",
       "object-eul-reul",
       "possessive-ui",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_650_maeum"
@@ -25044,6 +25030,7 @@
     ],
     "band": 3,
     "patternTags": [
+      "location-e",
       "topic-neun",
       "subject-i-ga",
       "present-polite"
@@ -25111,12 +25098,9 @@
     ],
     "band": 3,
     "patternTags": [
-      "topic-neun",
       "subject-i-ga",
       "object-eul-reul",
-      "present-polite",
-      "and-go",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_653_iyu"
@@ -25216,9 +25200,7 @@
     "patternTags": [
       "topic-neun",
       "location-e",
-      "present-polite",
-      "and-go",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_656_sahoe"
