@@ -57,7 +57,7 @@ Each box below carries its routing: **[codex]** or **[high]**.
 ## 1. Definition of DONE for the whole Sentences section
 
 - [x] **Track A** — Bank foundation: `sentences_core.js` + strict audit + app-shell wiring (PR #98)
-- [~] **Track B** — Translate & Type: **B1 core drill shipped** in the Sentence Studio foundation (§3.5); B2 helper ladder + B3 answer alignment remain
+- [~] **Track B** — Translate & Type: **B1 core drill + B2 helper ladder shipped** in the Sentence Studio foundation; B3 answer alignment remains
 - [~] **Track C** — Practice hub + sentence SRS + i+1 gating: **C1 hub shipped** (Sentence Studio) + per-sentence progress foundation; C2 i+1 gating + C3 full SRS remain
 - [ ] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis
 - [ ] **Track E** — Pattern micro-lessons: 12 units playable
@@ -196,7 +196,7 @@ styles in `styles.css`, and the default in `loadState`.
 marker; don't re-architect:
 | Box | Marker location | What to add |
 |---|---|---|
-| **B2** helper ladder | `sentenceQuestionHtml`, translate branch | tip / word-bank tiles / next-chunk / reveal between prompt and answer box |
+| **B2** helper ladder | `sentenceAnswerBoxHtml` + `sentenceHelperLadderHtml` | shipped: tip / word-bank tiles / next-chunk / reveal, with helper usage recorded on session results |
 | **B3** answer alignment | `checkSentenceAnswer` + `sentenceTokenDiffHtml` | positional token alignment + real near-miss diff |
 | **C2** i+1 gating | `getSentenceRowsForBand` | filter to rows whose `focusWordIds` ⊆ met words |
 | **C3** sentence SRS | `pickSentenceSessionRows` + `recordSentenceResult` | Leitner boxes + due dates over `state.sentencesProgress` |
@@ -249,7 +249,7 @@ edits. B1 must be boring, small, and mergeable — a fresh agent should be
 able to review the whole diff in one sitting.
 
 ### B2 — Helper ladder [high]
-- [ ] **B2** Tip → Word bank → Next chunk → Reveal, with helper-usage tracking.
+- [x] **B2** Tip → Word bank → Next chunk → Reveal, with helper-usage tracking.
 
 **Recipe:** Per spec §6.1. Buttons under the input, escalating:
 1. **Tip:** static `PATTERN_TAG_INFO` map (tag → 1-line English explanation
@@ -360,7 +360,7 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
      otherwise (H authors tips deliberately).
 3. Flip only the verified axes to `explicit`. Run the audit. One PR.
 
-- [ ] **D1** rows batch 1 (~250)
+- [x] **D1** rows batch 1 (~250)
 - [ ] **D2** rows batch 2
 - [ ] **D3** rows batch 3
 - [ ] **D4** rows batch 4
@@ -440,3 +440,50 @@ them. One PR per box; browser-play each unit before shipping.
 |---|---|---|---|
 | 2026-07-05 | A1-A3 | PR #98 | Extracted the 2,007-row sentence bank from `words_curated_core.js`, added the strict audit, and wired the bank into the app shell. |
 | 2026-07-06 | Foundation (B1 + C1) | — | Rebuilt the Sentences section from scratch as the **Sentence Studio** (§3.5): hub → 5-question session → summary, three drills (Translate & Type, Word Builder, Dictation) reading `HANAPATH_SENTENCES`, `state.sentencesProgress` per-sentence records, band selector, `.ss-*` styles. Replaced the old `renderPracticeView` level-rail shell. Labelled extension points left for B2/B3/C2/C3/J1. Verified: `node --check`, all three audits `--strict`, and a 28-assertion vm logic test (session flow, tolerance, tile pool, mixed run). |
+| 2026-07-06 | B2 | local branch | Added the Translate & Type helper ladder inside Sentence Studio: inferred-safe tag tips, word-bank tiles with erase, next-chunk prefix hints, reveal handling, and per-question `helpersUsed` tracking for later SRS/analytics work. |
+| 2026-07-06 | D1 complete (s0001-s0250) | local branch | Curated the first 250 sentence rows across the first Track D batch: corrected obvious tag false positives/missing present-polite/past-polite cases, flipped both annotation axes to explicit on those rows, and kept the audits green. 1,757 rows remain inferred. |
+| 2026-07-06 | D2 partial (s0251-s0300) | local branch | Curated the next 48 sentence rows in id order, corrected obvious band/tag issues, and left s0288-s0289 inferred because the closed tag list has no direct connective tag for `-자마자` / `-다가`. 1,709 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0469-s0556) | local branch | Curated another 85 sentence rows across the next Track D stretch, corrected obvious band/tag issues, and kept the batch mechanical; 1,472 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0557-s0621) | local branch | Curated the next 65 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 600 rows are explicit on both axes and 1,407 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0622-s0638) | local branch | Curated the next 17 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 617 rows are explicit on both axes and 1,390 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0639-s0655) | local branch | Curated the next 17 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 634 rows are explicit on both axes and 1,373 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0656-s0670) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 649 rows are explicit on both axes and 1,358 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0671-s0685) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 664 rows are explicit on both axes and 1,343 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0686-s0705) | local branch | Curated the next 20 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 684 rows are explicit on both axes and 1,323 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0706-s0720) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 699 rows are explicit on both axes and 1,308 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0721-s0735) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 714 rows are explicit on both axes and 1,293 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0736-s0750) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 729 rows are explicit on both axes and 1,278 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0751-s0765) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 744 rows are explicit on both axes and 1,263 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0766-s0780) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 759 rows are explicit on both axes and 1,248 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0781-s0795) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 774 rows are explicit on both axes and 1,233 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0796-s0810) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 789 rows are explicit on both axes and 1,218 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0811-s0825) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 804 rows are explicit on both axes and 1,203 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0826-s0840) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 819 rows are explicit on both axes and 1,188 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0841-s0855) | local branch | Curated the next 7 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 826 rows are explicit on both axes and 1,181 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0856-s0870) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 841 rows are explicit on both axes and 1,166 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0871-s0885) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 856 rows are explicit on both axes and 1,151 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0886-s0900) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 862 rows are explicit on both axes and 1,145 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0901-s0915) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 876 rows are explicit on both axes and 1,131 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0916-s0930) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 891 rows are explicit on both axes and 1,116 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0931-s0945) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 909 rows are explicit on both axes and 1,098 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0946-s0960) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 924 rows are explicit on both axes and 1,083 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0961-s0975) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 940 rows are explicit on both axes and 1,067 rows remain inferred. |
+| 2026-07-06 | D2 partial (s0977-s0990) | local branch | Curated the next 13 safe sentence rows in id order, corrected obvious band/tag issues, and left s0986 inferred because the closed tag list has no clean tag for `-치고`; 953 rows are explicit on both axes and 1,054 rows remain inferred. |
+| 2026-07-06 | D2 continued (s0991-s1005) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 968 rows are explicit on both axes and 1,039 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1006-s1020) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 983 rows are explicit on both axes and 1,024 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1021-s1035) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 998 rows are explicit on both axes and 1,009 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1036-s1050) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,013 rows are explicit on both axes and 994 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1051-s1065) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,028 rows are explicit on both axes and 979 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1066-s1080) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,043 rows are explicit on both axes and 964 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1081-s1095) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,058 rows are explicit on both axes and 949 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1096-s1110) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,073 rows are explicit on both axes and 934 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1111-s1125) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,088 rows are explicit on both axes and 919 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1126-s1140) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,103 rows are explicit on both axes and 904 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1141-s1155) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,118 rows are explicit on both axes and 889 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1156-s1170) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,133 rows are explicit on both axes and 874 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1171-s1185) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,148 rows are explicit on both axes and 859 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1186-s1200) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,163 rows are explicit on both axes and 844 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1201-s1215) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,178 rows are explicit on both axes and 829 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1216-s1230) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,193 rows are explicit on both axes and 814 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1231-s1245) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,208 rows are explicit on both axes and 799 rows remain inferred. |
+| 2026-07-06 | D2 continued (s1246-s1260) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,223 rows are explicit on both axes and 784 rows remain inferred. |

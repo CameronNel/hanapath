@@ -13965,8 +13965,8 @@ function openPathLesson(index) {
 //
 // Per-sentence results persist in state.sentencesProgress so later roadmap
 // boxes have data to build on. Extension points for open roadmap boxes are
-// marked "EXTENSION (roadmap <box>)": B2 helper ladder, B3 answer alignment,
-// C2 i+1 gating, C3 sentence SRS, J1 analytics.
+// marked "EXTENSION (roadmap <box>)": B3 answer alignment, C2 i+1 gating,
+// C3 sentence SRS, J1 analytics.
 
 const SENTENCE_SESSION_LENGTH = 5;
 const SENTENCE_BAND_COUNT = 5;
@@ -13976,6 +13976,45 @@ const SENTENCE_MODES = [
   { id: "listen", label: "Dictation", sub: "Hear the sentence, then type what you heard.", tag: "Listening" },
   { id: "mixed", label: "Mixed session", sub: "All three drills in one run.", tag: "Variety" },
 ];
+const PATTERN_TAG_INFO = {
+  "topic-neun": "Check whether the sentence sets a topic with eun/neun.",
+  "subject-i-ga": "Look for the subject marker i/ga after the noun doing or being something.",
+  "object-eul-reul": "Check whether the verb needs an object marked with eul/reul.",
+  "location-e": "Look for e marking a destination, time, or where something is.",
+  "location-eseo": "Look for eseo marking where an action happens.",
+  "direction-euro": "Check whether euro marks direction, path, or means.",
+  "possessive-ui": "Look for ui connecting an owner to what is owned.",
+  "with-hago-wa": "Check whether hago/wa links people or things together.",
+  "only-man": "Look for man limiting the meaning to only that item.",
+  "also-do": "Look for do adding also/too to the marked word.",
+  "from-buteo": "Check whether buteo marks the starting point.",
+  "until-kkaji": "Check whether kkaji marks the endpoint.",
+  "present-polite": "Look for a polite present-style ending like ayo/eoyo.",
+  "past-polite": "Check whether the action is in the past with a polite ending.",
+  "future-geoyeyo": "Look for a future meaning like will/going to.",
+  "formal-nida": "Check whether the sentence uses the formal nida style.",
+  "copula-ieyo": "Look for ieyo/yeyo connecting a noun to is/am/are.",
+  "copula-negative-anieyo": "Check whether the sentence says is not/am not with anieyo.",
+  "question-polite": "Look for polite question phrasing or punctuation.",
+  "imperative-seyo": "Check whether the sentence asks someone to do something with seyo.",
+  "propositive-eyo": "Look for a polite let's suggestion.",
+  "neg-an": "Check whether an appears before the verb for not.",
+  "neg-mot": "Look for mot showing cannot or was unable to.",
+  "neg-ji-anta": "Check whether ji anta is used for not doing something.",
+  "and-go": "Look for go linking actions or clauses like and.",
+  "but-jiman": "Check whether jiman links a contrast like but.",
+  "because-aseo": "Look for aseo/eoseo giving a reason or sequence.",
+  "if-myeon": "Check whether myeon creates an if/when condition.",
+  "when-ttae": "Look for ttae marking when something happens.",
+  "want-go-sipda": "Check whether go sipda expresses want to.",
+  "can-su-itda": "Look for su itda expressing can or be able to.",
+  "must-ya-dwaeda": "Check whether ya dwaeda expresses must or have to.",
+  "honorific-si": "Look for si showing respect toward the subject.",
+  "counter-phrase": "Check for a number plus counter phrase.",
+  "time-expression": "Look for a time word or time phrase anchoring the sentence.",
+  "comparison-boda": "Check whether boda compares one thing with another.",
+  "existence-itda": "Look for itda/eopda meaning exists, has, or does not have."
+};
 
 // Live session (module-level, like the word-lesson view). Null = show the hub.
 let sentenceStudioSession = null;
@@ -14075,10 +14114,15 @@ function startSentenceStudioSession(modeId) {
     phase: "question", // question | feedback | summary
     typed: "",
     attempts: 0,
+    helperLevel: 0,
+    helperUsed: [],
+    helperTilePool: [],
+    revealedTokenCount: 0,
+    lockedPrefix: "",
     builtTiles: [],
     tilePool: [],
     autoPlayed: false,
-    results: [], // { id, mode, correct, revealed }
+    results: [], // { id, mode, correct, revealed, helpersUsed }
   };
   prepareSentenceQuestion();
   renderPracticeView();
@@ -14094,6 +14138,11 @@ function prepareSentenceQuestion() {
   session.phase = "question";
   session.typed = "";
   session.attempts = 0;
+  session.helperLevel = 0;
+  session.helperUsed = [];
+  session.helperTilePool = [];
+  session.revealedTokenCount = 0;
+  session.lockedPrefix = "";
   session.autoPlayed = false;
   session.builtTiles = [];
   session.tilePool = [];
@@ -14101,6 +14150,12 @@ function prepareSentenceQuestion() {
     const row = session.rows[session.index];
     session.tilePool = makeSentenceTilePool(row, getSentenceRowsForBand(getSentencesProgress().band));
   }
+}
+
+function markSentenceHelperUsed(name) {
+  const session = sentenceStudioSession;
+  if (!session) return;
+  if (!session.helperUsed.includes(name)) session.helperUsed.push(name);
 }
 
 // Persist one outcome per question into the durable per-sentence record.
@@ -14117,13 +14172,20 @@ function recordSentenceResult(row, correct, revealed) {
     record.streak = 0;
   }
   record.last = Date.now();
-  sentenceStudioSession.results.push({ id: row.id, mode: sentenceQuestionMode(), correct, revealed });
+  sentenceStudioSession.results.push({
+    id: row.id,
+    mode: sentenceQuestionMode(),
+    correct,
+    revealed,
+    helpersUsed: sentenceStudioSession.helperUsed.slice(),
+  });
   saveState();
 }
 
 function finishSentenceQuestion(correct, revealed = false) {
   const session = sentenceStudioSession;
   const row = session.rows[session.index];
+  if (revealed) markSentenceHelperUsed("reveal");
   recordSentenceResult(row, correct, revealed);
   session.phase = "feedback";
   if (correct) speak(row.voiceText || row.korean);
@@ -14260,18 +14322,94 @@ function sentenceSessionDotsHtml(session) {
     .join("")}</div>`;
 }
 
-function sentenceAnswerBoxHtml(session, placeholder) {
+function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "", includeReveal = true) {
+  const prefix = session.lockedPrefix
+    ? `<div class="ss-locked-prefix" lang="ko"><span>Hinted start</span>${escapeHtml(session.lockedPrefix)}</div>`
+    : "";
+  // In translate mode the helper ladder already ends in a "Reveal" rung, so the
+  // generic "Show answer" button is suppressed there to avoid two identical
+  // reveal controls; dictation (no ladder) keeps it.
+  const revealButton = includeReveal
+    ? `<button class="button secondary compact" type="button" data-ss-reveal>Show answer</button>`
+    : "";
   return `
     <div class="word-type-box">
+      ${prefix}
       <input class="sentence-input" id="ssTypedInput" type="text" autocomplete="off" autocapitalize="off"
         spellcheck="false" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(session.typed)}" lang="ko" />
       <div class="word-type-feedback" role="status" aria-live="polite">${session.attempts
-        ? `<strong>Not yet.</strong> Try again, or show the answer. <span class="fs-xs">(Spacing and punctuation don't count against you.)</span>`
+        ? `<strong>Not yet.</strong> Try again, or reveal it. <span class="fs-xs">(Spacing and punctuation don't count against you.)</span>`
         : ""}</div>
     </div>
+    ${helperHtml}
     <div class="word-card-actions">
       <button class="button primary compact" type="button" data-ss-check>Check</button>
-      <button class="button secondary compact" type="button" data-ss-reveal>Show answer</button>
+      ${revealButton}
+    </div>
+  `;
+}
+
+function sentenceHelperTipHtml(row) {
+  const tags = Array.isArray(row.patternTags) ? row.patternTags : [];
+  const tagTips = tags
+    .map((tag) => PATTERN_TAG_INFO[tag])
+    .filter(Boolean)
+    .slice(0, 4)
+    .map((tip) => `<li>${escapeHtml(tip)}</li>`)
+    .join("");
+  const grammarTip = row.grammarTip
+    ? `<li>${escapeHtml(row.grammarTip)}</li>`
+    : "";
+  const sourceNote = row.annotationSource && row.annotationSource.patternTags === "explicit"
+    ? ""
+    : `<div class="fs-xs text-muted-2" style="margin-top:6px;">These are things to check for while the sentence tags are still being curated.</div>`;
+  return `
+    <div class="ss-helper-panel">
+      <div class="ss-helper-title">Tip</div>
+      <ul class="ss-tip-list">${tagTips || grammarTip ? tagTips + grammarTip : "<li>Start with the main noun, then find the ending that makes the sentence polite.</li>"}</ul>
+      ${sourceNote}
+    </div>
+  `;
+}
+
+function getSentenceHelperTilePool(session, row) {
+  if (!session.helperTilePool.length) {
+    session.helperTilePool = makeSentenceTokenPool(row.tokens || tokenizeSentence(row.korean), 5)
+      .map((tile) => tile.text)
+      .filter(Boolean);
+  }
+  return session.helperTilePool;
+}
+
+function sentenceWordBankHelperHtml(session, row) {
+  const tiles = getSentenceHelperTilePool(session, row)
+    .map((tile) => `<button class="word-tile" type="button" data-ss-helper-tile="${escapeHtml(tile)}" lang="ko">${escapeHtml(tile)}</button>`)
+    .join("");
+  return `
+    <div class="ss-helper-panel">
+      <div class="ss-helper-title">Word bank</div>
+      <div class="word-tile-row">${tiles}
+        <button class="word-tile word-tile-erase" type="button" data-ss-helper-erase aria-label="Delete last Korean block">⌫</button>
+      </div>
+    </div>
+  `;
+}
+
+function sentenceHelperLadderHtml(session, row) {
+  if (sentenceQuestionMode(session) !== "translate") return "";
+  const helperButtons = [
+    { id: "tip", label: "Tip", disabled: session.helperLevel >= 1 },
+    { id: "wordBank", label: "Word bank", disabled: session.helperLevel >= 2 },
+    { id: "nextChunk", label: "Next chunk", disabled: session.revealedTokenCount >= (row.tokens || []).length },
+    { id: "reveal", label: "Reveal", disabled: false },
+  ].map((helper) => `
+    <button class="button secondary compact" type="button" data-ss-helper="${helper.id}" ${helper.disabled ? "disabled" : ""}>${escapeHtml(helper.label)}</button>
+  `).join("");
+  return `
+    <div class="ss-helper-ladder" aria-label="Translate helpers">
+      <div class="word-card-actions ss-helper-actions">${helperButtons}</div>
+      ${session.helperLevel >= 1 ? sentenceHelperTipHtml(row) : ""}
+      ${session.helperLevel >= 2 ? sentenceWordBankHelperHtml(session, row) : ""}
     </div>
   `;
 }
@@ -14288,11 +14426,9 @@ function sentenceQuestionHtml(session) {
         <div class="eyebrow">Translate &amp; Type · ${step}</div>
         <div class="ss-prompt">${escapeHtml(row.english)}</div>
         <div class="screen-sub" style="margin-bottom:4px;">Type the Korean sentence.</div>
-        ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요")}
+        ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요", sentenceHelperLadderHtml(session, row), false)}
       </div>
     `;
-    // EXTENSION (roadmap B2): tip / word-bank / next-chunk helpers mount here,
-    // between the prompt and the answer box.
   }
 
   if (mode === "build") {
@@ -14446,6 +14582,48 @@ function submitSentenceAnswer() {
   }
 }
 
+function appendSentenceTypedToken(session, token) {
+  const clean = String(token || "").trim();
+  if (!clean) return;
+  const current = String(session.typed || "").trimEnd();
+  session.typed = current ? `${current} ${clean}` : clean;
+}
+
+function updateSentenceLockedPrefix(session) {
+  const row = session.rows[session.index];
+  const tokens = row.tokens || tokenizeSentence(row.korean);
+  const shown = tokens.slice(0, session.revealedTokenCount).join(" ");
+  session.lockedPrefix = shown && session.revealedTokenCount < tokens.length ? `${shown} ` : shown;
+  if (session.lockedPrefix && !String(session.typed || "").startsWith(session.lockedPrefix)) {
+    session.typed = session.lockedPrefix;
+  }
+}
+
+function useSentenceHelper(helper) {
+  const session = sentenceStudioSession;
+  if (!session || session.phase !== "question" || sentenceQuestionMode(session) !== "translate") return;
+  const row = session.rows[session.index];
+  if (helper === "tip") {
+    session.helperLevel = Math.max(session.helperLevel, 1);
+    markSentenceHelperUsed("tip");
+  } else if (helper === "wordBank") {
+    session.helperLevel = Math.max(session.helperLevel, 2);
+    markSentenceHelperUsed("wordBank");
+  } else if (helper === "nextChunk") {
+    const tokens = row.tokens || tokenizeSentence(row.korean);
+    if (session.revealedTokenCount < tokens.length) {
+      session.helperLevel = Math.max(session.helperLevel, 3);
+      session.revealedTokenCount += 1;
+      updateSentenceLockedPrefix(session);
+      markSentenceHelperUsed("nextChunk");
+    }
+  } else if (helper === "reveal") {
+    finishSentenceQuestion(false, true);
+    return;
+  }
+  renderPracticeView();
+}
+
 function bindSentenceStudioEvents(el) {
   el.querySelectorAll("[data-ss-goto]").forEach((btn) => {
     btn.addEventListener("click", () => showTab(btn.dataset.ssGoto));
@@ -14469,7 +14647,13 @@ function bindSentenceStudioEvents(el) {
 
   const input = el.querySelector("#ssTypedInput");
   if (input) {
-    input.addEventListener("input", () => { session.typed = input.value; });
+    input.addEventListener("input", () => {
+      if (session.lockedPrefix && !input.value.startsWith(session.lockedPrefix)) {
+        const suffix = input.value.replace(session.lockedPrefix, "");
+        input.value = session.lockedPrefix + suffix;
+      }
+      session.typed = input.value;
+    });
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
@@ -14487,6 +14671,26 @@ function bindSentenceStudioEvents(el) {
   el.querySelectorAll("[data-ss-built]").forEach((btn) => {
     btn.addEventListener("click", () => {
       session.builtTiles.splice(Number(btn.dataset.ssBuilt), 1);
+      renderPracticeView();
+    });
+  });
+  el.querySelectorAll("[data-ss-helper]").forEach((btn) => {
+    btn.addEventListener("click", () => useSentenceHelper(btn.dataset.ssHelper));
+  });
+  el.querySelectorAll("[data-ss-helper-tile]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      markSentenceHelperUsed("wordBank");
+      appendSentenceTypedToken(session, btn.dataset.ssHelperTile || "");
+      renderPracticeView();
+    });
+  });
+  el.querySelectorAll("[data-ss-helper-erase]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const prefix = session.lockedPrefix || "";
+      const tail = String(session.typed || "").slice(prefix.length).trimEnd();
+      const parts = tail ? tail.split(/\s+/) : [];
+      parts.pop();
+      session.typed = prefix + parts.join(" ");
       renderPracticeView();
     });
   });
