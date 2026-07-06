@@ -1,5 +1,5 @@
-// [2026-07-06] Cache bumped to v242: Track B3/C2/C3/C4 sentence gating and SRS (on top of Track D curation).
-const CACHE_NAME = "hanapath-shell-v242";
+// [2026-07-06] Cache bumped to v243: Track H/I legacy sentence consolidation (+53 rows) on top of Track B/C/D.
+const CACHE_NAME = "hanapath-shell-v243";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,8 +10,8 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260706c",
-  "./app.js?v=20260706c",
+  "./sentences_core.js?v=20260706d",
+  "./app.js?v=20260706d",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

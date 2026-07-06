@@ -69032,7 +69032,1068 @@
       "band": "explicit",
       "patternTags": "explicit"
     }
+  },
+  {
+    "id": "s2008",
+    "korean": "저는 커피를 마셔요.",
+    "english": "I drink coffee.",
+    "voiceText": "저는 커피를 마셔요.",
+    "tokens": ["저는","커피를","마셔요"],
+    "band": 2,
+    "patternTags": ["topic-neun","object-eul-reul","present-polite","honorific-si"],
+    "focusWordIds": ["w0303_jeo_that_over","w0504_keopi"],
+    "sourceWordIds": ["w0303_jeo_that_over","w0504_keopi"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2009",
+    "korean": "오늘은 날씨가 좋아요.",
+    "english": "The weather is good today.",
+    "voiceText": "오늘은 날씨가 좋아요.",
+    "tokens": ["오늘은","날씨가","좋아요"],
+    "band": 2,
+    "patternTags": ["topic-neun","subject-i-ga","present-polite"],
+    "focusWordIds": ["w0601_oneul","w1601_nalssi"],
+    "sourceWordIds": ["w0601_oneul","w1601_nalssi"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2010",
+    "korean": "사과를 먹어요.",
+    "english": "I eat an apple.",
+    "voiceText": "사과를 먹어요.",
+    "tokens": ["사과를","먹어요"],
+    "band": 1,
+    "patternTags": ["object-eul-reul","with-hago-wa","present-polite"],
+    "focusWordIds": ["w_m6_2970_sagwa_apology"],
+    "sourceWordIds": ["w_m6_2970_sagwa_apology"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2011",
+    "korean": "버스를 타요.",
+    "english": "I take the bus.",
+    "voiceText": "버스를 타요.",
+    "tokens": ["버스를","타요"],
+    "band": 1,
+    "patternTags": ["object-eul-reul","present-polite"],
+    "focusWordIds": ["w1303_beoseu"],
+    "sourceWordIds": ["w1303_beoseu"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2012",
+    "korean": "저는 학생이 아니에요.",
+    "english": "I am not a student.",
+    "voiceText": "저는 학생이 아니에요.",
+    "tokens": ["저는","학생이","아니에요"],
+    "band": 2,
+    "patternTags": ["topic-neun","subject-i-ga","location-e","present-polite","copula-negative-anieyo"],
+    "focusWordIds": ["w0303_jeo_that_over","w0207_haksaeng"],
+    "sourceWordIds": ["w0303_jeo_that_over","w0207_haksaeng"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2013",
+    "korean": "우리 집은 가까워요.",
+    "english": "Our house is close.",
+    "voiceText": "우리 집은 가까워요.",
+    "tokens": ["우리","집은","가까워요"],
+    "band": 2,
+    "patternTags": ["topic-neun","subject-i-ga","present-polite"],
+    "focusWordIds": ["w0204_uri","w0404_jip"],
+    "sourceWordIds": ["w0204_uri","w0404_jip"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2014",
+    "korean": "물이 있어요.",
+    "english": "There is water.",
+    "voiceText": "물이 있어요.",
+    "tokens": ["물이","있어요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","present-polite","existence-itda"],
+    "focusWordIds": ["w0501_mul"],
+    "sourceWordIds": ["w0501_mul"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2015",
+    "korean": "이것은 책이에요.",
+    "english": "This is a book.",
+    "voiceText": "이것은 책이에요.",
+    "tokens": ["이것은","책이에요"],
+    "band": 1,
+    "patternTags": ["topic-neun","subject-i-ga","location-e","copula-ieyo"],
+    "focusWordIds": ["w_m5_362_igeot"],
+    "sourceWordIds": ["w_m5_362_igeot"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2016",
+    "korean": "저는 시간이 있어요.",
+    "english": "I have time.",
+    "voiceText": "저는 시간이 있어요.",
+    "tokens": ["저는","시간이","있어요"],
+    "band": 2,
+    "patternTags": ["topic-neun","subject-i-ga","present-polite","honorific-si","existence-itda"],
+    "focusWordIds": ["w0303_jeo_that_over","w_m6_3006_sigan_hour"],
+    "sourceWordIds": ["w0303_jeo_that_over","w_m6_3006_sigan_hour"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2017",
+    "korean": "한국어가 재미있어요.",
+    "english": "Korean is fun.",
+    "voiceText": "한국어가 재미있어요.",
+    "tokens": ["한국어가","재미있어요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","present-polite","existence-itda"],
+    "focusWordIds": ["w0002_hangugeo"],
+    "sourceWordIds": ["w0002_hangugeo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2018",
+    "korean": "저는 학교에 가요.",
+    "english": "I go to school.",
+    "voiceText": "저는 학교에 가요.",
+    "tokens": ["저는","학교에","가요"],
+    "band": 2,
+    "patternTags": ["topic-neun","subject-i-ga","location-e","present-polite"],
+    "focusWordIds": ["w0303_jeo_that_over","w0405_hakgyo"],
+    "sourceWordIds": ["w0303_jeo_that_over","w0405_hakgyo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2019",
+    "korean": "어제 책을 읽었어요.",
+    "english": "I read a book yesterday.",
+    "voiceText": "어제 책을 읽었어요.",
+    "tokens": ["어제","책을","읽었어요"],
+    "band": 2,
+    "patternTags": ["object-eul-reul","present-polite","past-polite"],
+    "focusWordIds": ["w0603_eoje","w0309_chaek"],
+    "sourceWordIds": ["w0603_eoje","w0309_chaek"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2020",
+    "korean": "내일 친구를 만날 거예요.",
+    "english": "I will meet a friend tomorrow.",
+    "voiceText": "내일 친구를 만날 거예요.",
+    "tokens": ["내일","친구를","만날","거예요"],
+    "band": 2,
+    "patternTags": ["object-eul-reul","only-man","future-geoyeyo","copula-ieyo"],
+    "focusWordIds": ["w0602_naeil","w0206_chingu"],
+    "sourceWordIds": ["w0602_naeil","w0206_chingu"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2021",
+    "korean": "지금 커피를 마셔요.",
+    "english": "I am drinking coffee now.",
+    "voiceText": "지금 커피를 마셔요.",
+    "tokens": ["지금","커피를","마셔요"],
+    "band": 2,
+    "patternTags": ["object-eul-reul","present-polite","honorific-si"],
+    "focusWordIds": ["w0604_jigeum","w0504_keopi"],
+    "sourceWordIds": ["w0604_jigeum","w0504_keopi"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2022",
+    "korean": "저는 한국어를 배워요.",
+    "english": "I learn Korean.",
+    "voiceText": "저는 한국어를 배워요.",
+    "tokens": ["저는","한국어를","배워요"],
+    "band": 2,
+    "patternTags": ["topic-neun","object-eul-reul"],
+    "focusWordIds": ["w0303_jeo_that_over","w0002_hangugeo"],
+    "sourceWordIds": ["w0303_jeo_that_over","w0002_hangugeo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2023",
+    "korean": "저는 집에 갈 거예요.",
+    "english": "I will go home.",
+    "voiceText": "저는 집에 갈 거예요.",
+    "tokens": ["저는","집에","갈","거예요"],
+    "band": 2,
+    "patternTags": ["topic-neun","location-e","future-geoyeyo","copula-ieyo"],
+    "focusWordIds": ["w0303_jeo_that_over","w0404_jip"],
+    "sourceWordIds": ["w0303_jeo_that_over","w0404_jip"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2024",
+    "korean": "저는 어제 운동했어요.",
+    "english": "I exercised yesterday.",
+    "voiceText": "저는 어제 운동했어요.",
+    "tokens": ["저는","어제","운동했어요"],
+    "band": 2,
+    "patternTags": ["topic-neun","present-polite","past-polite"],
+    "focusWordIds": ["w0303_jeo_that_over","w0603_eoje"],
+    "sourceWordIds": ["w0303_jeo_that_over","w0603_eoje"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2025",
+    "korean": "할머니가 오세요.",
+    "english": "Grandmother is coming.",
+    "voiceText": "할머니가 오세요.",
+    "tokens": ["할머니가","오세요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","honorific-si"],
+    "focusWordIds": ["w_m5_058_halmeoni"],
+    "sourceWordIds": ["w_m5_058_halmeoni"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2026",
+    "korean": "선생님이 계세요.",
+    "english": "The teacher is here.",
+    "voiceText": "선생님이 계세요.",
+    "tokens": ["선생님이","계세요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","honorific-si"],
+    "focusWordIds": ["w0208_seonsaengnim","w1902_gyesida"],
+    "sourceWordIds": ["w0208_seonsaengnim","w1902_gyesida"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2027",
+    "korean": "저는 친구를 도와요.",
+    "english": "I help a friend.",
+    "voiceText": "저는 친구를 도와요.",
+    "tokens": ["저는","친구를","도와요"],
+    "band": 2,
+    "patternTags": ["topic-neun","object-eul-reul","with-hago-wa","also-do","present-polite"],
+    "focusWordIds": ["w0303_jeo_that_over","w0206_chingu"],
+    "sourceWordIds": ["w0303_jeo_that_over","w0206_chingu"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2028",
+    "korean": "우리는 영화를 봐요.",
+    "english": "We watch a movie.",
+    "voiceText": "우리는 영화를 봐요.",
+    "tokens": ["우리는","영화를","봐요"],
+    "band": 2,
+    "patternTags": ["topic-neun","object-eul-reul","present-polite"],
+    "focusWordIds": ["w0204_uri","w_m5_424_yeonghwa"],
+    "sourceWordIds": ["w0204_uri","w_m5_424_yeonghwa"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2029",
+    "korean": "저는 매일 일해요.",
+    "english": "I work every day.",
+    "voiceText": "저는 매일 일해요.",
+    "tokens": ["저는","매일","일해요"],
+    "band": 2,
+    "patternTags": ["topic-neun","present-polite"],
+    "focusWordIds": ["w0303_jeo_that_over","w_m5_223_maeil"],
+    "sourceWordIds": ["w0303_jeo_that_over","w_m5_223_maeil"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2030",
+    "korean": "오늘은 쉬어요.",
+    "english": "I rest today.",
+    "voiceText": "오늘은 쉬어요.",
+    "tokens": ["오늘은","쉬어요"],
+    "band": 1,
+    "patternTags": ["topic-neun","present-polite"],
+    "focusWordIds": ["w0601_oneul"],
+    "sourceWordIds": ["w0601_oneul"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2031",
+    "korean": "안녕하세요.",
+    "english": "Hello.",
+    "voiceText": "안녕하세요.",
+    "tokens": ["안녕하세요"],
+    "band": 1,
+    "patternTags": ["honorific-si"],
+    "focusWordIds": ["w0101_annyeonghaseyo"],
+    "sourceWordIds": ["w0101_annyeonghaseyo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2032",
+    "korean": "처음 뵙겠습니다.",
+    "english": "Nice to meet you.",
+    "voiceText": "처음 뵙겠습니다.",
+    "tokens": ["처음","뵙겠습니다"],
+    "band": 1,
+    "patternTags": ["formal-nida"],
+    "focusWordIds": ["w_m5_647_cheoeum"],
+    "sourceWordIds": ["w_m5_647_cheoeum"],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2033",
+    "korean": "감사합니다.",
+    "english": "Thank you.",
+    "voiceText": "감사합니다.",
+    "tokens": ["감사합니다"],
+    "band": 1,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0102_gamsahamnida"],
+    "sourceWordIds": ["w0102_gamsahamnida"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2034",
+    "korean": "괜찮아요.",
+    "english": "It's okay.",
+    "voiceText": "괜찮아요.",
+    "tokens": ["괜찮아요"],
+    "band": 1,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0107_gwaenchanayo"],
+    "sourceWordIds": ["w0107_gwaenchanayo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2035",
+    "korean": "네.",
+    "english": "Yes.",
+    "voiceText": "네.",
+    "tokens": ["네"],
+    "band": 1,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0103_ne"],
+    "sourceWordIds": ["w0103_ne"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2036",
+    "korean": "아니요.",
+    "english": "No.",
+    "voiceText": "아니요.",
+    "tokens": ["아니요"],
+    "band": 1,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0104_aniyo"],
+    "sourceWordIds": ["w0104_aniyo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2037",
+    "korean": "이거 주세요.",
+    "english": "This one, please.",
+    "voiceText": "이거 주세요.",
+    "tokens": ["이거","주세요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","honorific-si"],
+    "focusWordIds": ["w0304_igeo","w0105_juseyo"],
+    "sourceWordIds": ["w0304_igeo","w0105_juseyo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2038",
+    "korean": "잠시만요.",
+    "english": "One moment, please.",
+    "voiceText": "잠시만요.",
+    "tokens": ["잠시만요"],
+    "band": 1,
+    "patternTags": ["only-man","honorific-si"],
+    "focusWordIds": ["w0109_jamsimanyo"],
+    "sourceWordIds": ["w0109_jamsimanyo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2039",
+    "korean": "잘 모르겠어요.",
+    "english": "I don't understand.",
+    "voiceText": "잘 모르겠어요.",
+    "tokens": ["잘","모르겠어요"],
+    "band": 1,
+    "patternTags": ["present-polite","future-geoyeyo"],
+    "focusWordIds": ["w_m5_848_jal"],
+    "sourceWordIds": ["w_m5_848_jal"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2040",
+    "korean": "도와주세요.",
+    "english": "Please help me.",
+    "voiceText": "도와주세요.",
+    "tokens": ["도와주세요"],
+    "band": 1,
+    "patternTags": ["with-hago-wa","also-do","honorific-si"],
+    "focusWordIds": ["w0108_dowajuseyo"],
+    "sourceWordIds": ["w0108_dowajuseyo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2041",
+    "korean": "다시 말씀해 주세요.",
+    "english": "Please say it again.",
+    "voiceText": "다시 말씀해 주세요.",
+    "tokens": ["다시","말씀해","주세요"],
+    "band": 2,
+    "patternTags": ["honorific-si"],
+    "focusWordIds": ["w_m5_829_dasi","w0105_juseyo","w_m6_1512_malsseum"],
+    "sourceWordIds": ["w_m5_829_dasi","w0105_juseyo","w_m6_1512_malsseum"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2042",
+    "korean": "천천히 말씀해 주세요.",
+    "english": "Please speak slowly.",
+    "voiceText": "천천히 말씀해 주세요.",
+    "tokens": ["천천히","말씀해","주세요"],
+    "band": 2,
+    "patternTags": ["honorific-si"],
+    "focusWordIds": ["w0105_juseyo","w_m6_1512_malsseum"],
+    "sourceWordIds": ["w0105_juseyo","w_m6_1512_malsseum"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2043",
+    "korean": "무슨 뜻이에요?",
+    "english": "What does it mean?",
+    "voiceText": "무슨 뜻이에요?",
+    "tokens": ["무슨","뜻이에요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","location-e","copula-ieyo"],
+    "focusWordIds": ["w0906_museun"],
+    "sourceWordIds": ["w0906_museun"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2044",
+    "korean": "한국어 조금 해요.",
+    "english": "I speak a little Korean.",
+    "voiceText": "한국어 조금 해요.",
+    "tokens": ["한국어","조금","해요"],
+    "band": 2,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0002_hangugeo","w_m6_1031_jogeum"],
+    "sourceWordIds": ["w0002_hangugeo","w_m6_1031_jogeum"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2045",
+    "korean": "네, 다시 말씀드릴게요.",
+    "english": "Yes, I will say it again.",
+    "voiceText": "네, 다시 말씀드릴게요.",
+    "tokens": ["네","다시","말씀드릴게요"],
+    "band": 2,
+    "patternTags": ["honorific-si"],
+    "focusWordIds": ["w0103_ne","w_m5_829_dasi","w_m6_1512_malsseum"],
+    "sourceWordIds": ["w0103_ne","w_m5_829_dasi","w_m6_1512_malsseum"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2046",
+    "korean": "네, 천천히 말할게요.",
+    "english": "Yes, I will speak slowly.",
+    "voiceText": "네, 천천히 말할게요.",
+    "tokens": ["네","천천히","말할게요"],
+    "band": 2,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0103_ne"],
+    "sourceWordIds": ["w0103_ne"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2047",
+    "korean": "저쪽이에요.",
+    "english": "It's over there.",
+    "voiceText": "저쪽이에요.",
+    "tokens": ["저쪽이에요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","location-e","copula-ieyo"],
+    "focusWordIds": ["w0303_jeo_that_over"],
+    "sourceWordIds": ["w0303_jeo_that_over"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2048",
+    "korean": "네, 여기요.",
+    "english": "Yes, here you go.",
+    "voiceText": "네, 여기요.",
+    "tokens": ["네","여기요"],
+    "band": 1,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0103_ne"],
+    "sourceWordIds": ["w0103_ne"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2049",
+    "korean": "알겠습니다.",
+    "english": "Understood.",
+    "voiceText": "알겠습니다.",
+    "tokens": ["알겠습니다"],
+    "band": 1,
+    "patternTags": ["formal-nida"],
+    "focusWordIds": ["w0111_algesseoyo"],
+    "sourceWordIds": ["w0111_algesseoyo"],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2050",
+    "korean": "죄송합니다",
+    "english": "I'm sorry",
+    "voiceText": "죄송합니다",
+    "tokens": ["죄송합니다"],
+    "band": 1,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0106_joesonghamnida"],
+    "sourceWordIds": ["w0106_joesonghamnida"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2051",
+    "korean": "실례합니다",
+    "english": "Excuse me",
+    "voiceText": "실례합니다",
+    "tokens": ["실례합니다"],
+    "band": 1,
+    "patternTags": ["present-polite"],
+    "focusWordIds": ["w0106_joesonghamnida"],
+    "sourceWordIds": ["w0106_joesonghamnida"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2052",
+    "korean": "커피 주세요",
+    "english": "Coffee, please",
+    "voiceText": "커피 주세요",
+    "tokens": ["커피","주세요"],
+    "band": 1,
+    "patternTags": ["honorific-si"],
+    "focusWordIds": ["w0504_keopi","w0105_juseyo"],
+    "sourceWordIds": ["w0504_keopi","w0105_juseyo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2053",
+    "korean": "얼마예요?",
+    "english": "How much is it?",
+    "voiceText": "얼마예요?",
+    "tokens": ["얼마예요"],
+    "band": 1,
+    "patternTags": ["copula-ieyo"],
+    "focusWordIds": ["w0904_eolma"],
+    "sourceWordIds": ["w0904_eolma"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2054",
+    "korean": "화장실 어디예요?",
+    "english": "Where is the bathroom?",
+    "voiceText": "화장실 어디예요?",
+    "tokens": ["화장실","어디예요"],
+    "band": 1,
+    "patternTags": ["copula-ieyo"],
+    "focusWordIds": ["w0407_hwajangsil"],
+    "sourceWordIds": ["w0407_hwajangsil"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2055",
+    "korean": "영어 할 수 있어요?",
+    "english": "Can you speak English?",
+    "voiceText": "영어 할 수 있어요?",
+    "tokens": ["영어","할","수","있어요"],
+    "band": 2,
+    "patternTags": ["present-polite","existence-itda"],
+    "focusWordIds": ["w_m6_2016_yeangeo"],
+    "sourceWordIds": ["w_m6_2016_yeangeo"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2056",
+    "korean": "선생님이 오세요.",
+    "english": "The teacher is coming.",
+    "voiceText": "선생님이 오세요.",
+    "tokens": ["선생님이","오세요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","honorific-si"],
+    "focusWordIds": ["w0208_seonsaengnim"],
+    "sourceWordIds": ["w0208_seonsaengnim"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2057",
+    "korean": "할머니가 주무세요.",
+    "english": "Grandmother is sleeping.",
+    "voiceText": "할머니가 주무세요.",
+    "tokens": ["할머니가","주무세요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","honorific-si"],
+    "focusWordIds": ["w_m5_058_halmeoni"],
+    "sourceWordIds": ["w_m5_058_halmeoni"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2058",
+    "korean": "사장님이 계세요.",
+    "english": "The boss is here.",
+    "voiceText": "사장님이 계세요.",
+    "tokens": ["사장님이","계세요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","honorific-si"],
+    "focusWordIds": ["w1902_gyesida"],
+    "sourceWordIds": ["w1902_gyesida"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2059",
+    "korean": "교수님이 말씀하세요.",
+    "english": "The professor speaks.",
+    "voiceText": "교수님이 말씀하세요.",
+    "tokens": ["교수님이","말씀하세요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","honorific-si"],
+    "focusWordIds": ["w_m6_1512_malsseum"],
+    "sourceWordIds": ["w_m6_1512_malsseum"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
+  },
+  {
+    "id": "s2060",
+    "korean": "어머니가 드세요.",
+    "english": "Mother eats.",
+    "voiceText": "어머니가 드세요.",
+    "tokens": ["어머니가","드세요"],
+    "band": 1,
+    "patternTags": ["subject-i-ga","honorific-si"],
+    "focusWordIds": ["w_m5_641_eomeoni"],
+    "sourceWordIds": ["w_m5_641_eomeoni"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "inferred"
+    },
+    "source": "legacy-app"
   }
+
 ];
 })();
 
