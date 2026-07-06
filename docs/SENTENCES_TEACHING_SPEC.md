@@ -153,7 +153,10 @@ update. Initial vocabulary (~30 tags):
 - **Negation:** `neg-an`, `neg-mot`, `neg-ji-anta`
 - **Clause linkers:** `and-go`, `but-jiman`, `because-aseo`, `if-myeon`,
   `when-ttae`, `want-go-sipda`, `can-su-itda`, `must-ya-dwaeda`
-- **Other:** `honorific-si`, `counter-phrase`, `time-expression`,
+- **Other:** `honorific-si`, `counter-phrase` (numeral + Korean counter,
+  classifier, or measurable unit such as `개`, `명`, `잔`, `시`, `분`, `번`,
+  `년`, `달`, `원`, `퍼센트`; not bare numeral + ordinary noun phrases like
+  `두 사람`/`두 부서`), `time-expression`,
   `comparison-boda`, `existence-itda`
 
 ## §5 Bands and curriculum shape

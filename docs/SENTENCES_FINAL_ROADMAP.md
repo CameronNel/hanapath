@@ -371,9 +371,11 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
 
 > **Quality caveat (2026-07-06):** all rows are explicit, but a review pass found
 > the `counter-phrase` tag was over-applied during D2–D6 (tagged on sentences with
-> no number). 75 zero-number rows were corrected (tag removed); ~40 rows that
-> contain a number but a debatable head noun (e.g. `두 부서`) were left as-is and
-> still need a careful linguistic verification pass. See §"Track D accuracy pass".
+> no number). 75 zero-number rows were corrected (tag removed). A later policy pass
+> defines `counter-phrase` as numeral + Korean counter/classifier/measurable unit
+> and removes it from bare numeral + ordinary noun phrases such as `두 부서` and
+> `두 사람`. Continue the broader Track D accuracy pass with particles,
+> connectives, and `time-expression`.
 
 ---
 
