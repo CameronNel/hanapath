@@ -1,5 +1,5 @@
-// [2026-07-06] Cache bumped to v240: Sentence Studio helper ladder (B2) + Track D tag/band curation.
-const CACHE_NAME = "hanapath-shell-v240";
+// [2026-07-06] Cache bumped to v241: Track D curation s1551-s1780.
+const CACHE_NAME = "hanapath-shell-v241";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260706ba",
+  "./sentences_core.js?v=20260706f",
   "./app.js?v=20260706b",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
