@@ -3355,3 +3355,47 @@ li { margin-bottom: 4px; }
   margin-bottom: 2px;
   color: var(--accent-2);
 }
+
+/* ── SENTENCE STUDIO (Practice · Sentences) ───────────────────────────────
+   The Sentences section's own surface (docs/SENTENCES_TEACHING_SPEC.md).
+   Reuses .card / .study-row / .word-tile / .stat-box / .filter-chip; the
+   pieces below are specific to the studio hub, session runner, and feedback. */
+.ss-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ss-band-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.ss-mode { width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit; }
+.ss-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 12px; }
+.ss-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--line-strong);
+  transition: transform .18s var(--ease, ease), background .18s ease;
+}
+.ss-dot.current { background: var(--accent); transform: scale(1.35); }
+.ss-dot.correct { background: var(--good); }
+.ss-dot.wrong { background: var(--bad); }
+.ss-prompt {
+  font-size: 1.3rem; font-weight: 800; line-height: 1.35;
+  color: var(--text); margin: 6px 0 12px;
+}
+.ss-prompt .big-glyph { font-size: 2.4rem; }
+.ss-build-answer {
+  min-height: 52px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 12px; margin: 4px 0 12px;
+  border: 1px dashed var(--line-strong); border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.02);
+}
+.ss-build-answer .word-tile { pointer-events: auto; }
+.ss-result { font-size: 1.05rem; font-weight: 800; margin: 4px 0 8px; }
+.ss-result-good { color: var(--good); }
+.ss-result-bad { color: var(--muted); }
+.ss-sentence {
+  font-size: 1.4rem; font-weight: 800; line-height: 1.4;
+  color: var(--text); margin-bottom: 6px;
+}
+.ss-diff { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.ss-tok {
+  padding: 3px 9px; border-radius: var(--radius-xs);
+  font-size: .95rem; font-weight: 700;
+  border: 1.5px solid var(--line-strong);
+}
+.ss-tok-ok { border-color: var(--good); color: var(--good); background: rgba(45,212,191,.12); }
+.ss-tok-miss { border-color: var(--bad); color: var(--bad); background: rgba(248,113,113,.10); }

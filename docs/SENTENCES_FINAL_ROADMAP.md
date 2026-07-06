@@ -56,9 +56,9 @@ Each box below carries its routing: **[codex]** or **[high]**.
 
 ## 1. Definition of DONE for the whole Sentences section
 
-- [ ] **Track A** — Bank foundation: `sentences_core.js` + strict audit + app-shell wiring
-- [ ] **Track B** — Translate & Type: English → typed-Hangul drill with the full helper ladder *(owner's #1 feature)*
-- [ ] **Track C** — Practice hub + sentence SRS + i+1 gating
+- [x] **Track A** — Bank foundation: `sentences_core.js` + strict audit + app-shell wiring (PR #98)
+- [~] **Track B** — Translate & Type: **B1 core drill shipped** in the Sentence Studio foundation (§3.5); B2 helper ladder + B3 answer alignment remain
+- [~] **Track C** — Practice hub + sentence SRS + i+1 gating: **C1 hub shipped** (Sentence Studio) + per-sentence progress foundation; C2 i+1 gating + C3 full SRS remain
 - [ ] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis
 - [ ] **Track E** — Pattern micro-lessons: 12 units playable
 - [ ] **Track F** — Shadow & speak modes
@@ -164,10 +164,63 @@ beyond an optional dev-console log. Browser smoke test: console clean,
 
 ---
 
+## 3.5 The Sentence Studio foundation (shipped 2026-07-06) — READ THIS FIRST
+
+The Sentences section was **rebuilt from scratch as its own subsystem** rather
+than routing through the shared quiz engine (`generateQuestion` /
+`renderQuizCard` / level rails) the way every other tab does. The owner's
+brief: the section was "too similar and boiler-heavy" and "not its own thing."
+It now is. **Do not resurrect the old pattern.** The pre-2026-07-06 B1/C1
+recipes below (which said "add a question type to the shared deck") are
+**superseded** — the studio already contains that behavior. Build on the
+studio instead.
+
+**Where it lives:** one contiguous block in `app.js` under
+`// --- PRACTICE: SENTENCE STUDIO`, replacing the old `renderPracticeView`.
+Plus `state.sentencesProgress` (see `getSentencesProgress()`), the `.ss-*`
+styles in `styles.css`, and the default in `loadState`.
+
+**Architecture (hub → session → summary), all reading `HANAPATH_SENTENCES`:**
+- `renderPracticeView()` — the single entry point; dispatches on
+  `sentenceStudioSession` (null = hub) and `.phase` (`question`/`feedback`/`summary`).
+- `sentenceStudioHubHtml()` — stats, band selector, mode cards, up-next preview.
+- Session runner — a 5-question run in one of four modes:
+  `translate` (English → typed Hangul, **the flagship B1**), `build` (tap
+  tokens into order), `listen` (dictation), `mixed` (rotates the three).
+- `checkSentenceAnswer()` — normalized, spacing/punctuation-tolerant, honors
+  `acceptAlso`. `recordSentenceResult()` — persists per-sentence
+  seen/correct/streak/last.
+
+**Extension points — each open box has a labelled comment in the code.** Grep
+`EXTENSION (roadmap` in `app.js`. When you build a box, replace/extend at its
+marker; don't re-architect:
+| Box | Marker location | What to add |
+|---|---|---|
+| **B2** helper ladder | `sentenceQuestionHtml`, translate branch | tip / word-bank tiles / next-chunk / reveal between prompt and answer box |
+| **B3** answer alignment | `checkSentenceAnswer` + `sentenceTokenDiffHtml` | positional token alignment + real near-miss diff |
+| **C2** i+1 gating | `getSentenceRowsForBand` | filter to rows whose `focusWordIds` ⊆ met words |
+| **C3** sentence SRS | `pickSentenceSessionRows` + `recordSentenceResult` | Leitner boxes + due dates over `state.sentencesProgress` |
+| **J1** analytics | `recordSentenceResult` | emit a review-event into the analytics store |
+
+**What it deliberately does NOT do yet:** helper ladder, real SRS scheduling,
+i+1 gating, pattern-tag-driven tips, shadow/speech scoring, transform drill,
+analytics events. Those stay their own boxes.
+
+**Legacy:** the studio does not touch `getSentenceStudyBank()` or the
+`makeSentence*` generators. They remain **only** because the Listening tab
+still shares them — see Track I for their removal (verify Listening first).
+
+---
+
 ## 4. Track B — Translate & Type (owner's requested feature)
 
+> **B1 core shipped in the foundation (§3.5).** The recipe below is the
+> original shared-deck plan and is **superseded** — the Translate mode already
+> exists in the Sentence Studio. B2/B3 remain; build them at the extension
+> markers, not on the old deck.
+
 ### B1 — Core drill [high]
-- [ ] **B1** New question type `translate-type`: English prompt → typed Hangul answer.
+- [x] **B1** English prompt → typed Hangul answer. **Shipped in the Sentence Studio (§3.5)** as the `translate` mode, not as a shared-deck question type.
 
 **Recipe:** Add `makeSentenceTranslateQuestion(level)` beside the existing
 generators (app.js ≈2629–2750): prompt = `english`, expected = `korean` +
@@ -247,38 +300,33 @@ punctuation) is accepted; browser-verified.
 ## 5. Track C — Practice hub, SRS, gating
 
 ### C1 — Practice hub rebuild [high]
-- [ ] **C1** Replace the `renderPracticeView` level-rail shell with a session hub.
-
-**Recipe:** Rebuild `renderPracticeView()` (app.js ≈13949): a session card
-(Due reviews → New sentences → Free drill), mode chips (Translate / Build /
-Dictation / Listen), and a browse list of the learner's available sentences
-(reuse the existing study-row rendering). Keep `currentQuizScope="sentences"`
-plumbing. Until C3 lands, "Due" can show the new-sentence queue only — do not
-fake SRS numbers. Remove the old band-slice "Learn/Repeat" cards; keep the
-level rail only if it still drives deck difficulty (it does, via
-`getTrackLevel("sentences")` — keep, but demote visually).
+- [x] **C1** Replace the `renderPracticeView` level-rail shell with a session hub. **Shipped in the Sentence Studio (§3.5):** hub with stats, band selector, mode cards, and an up-next preview; a 5-question session runner; a summary screen. The old band-slice "Learn/Repeat" cards and the level rail are gone.
 
 ### C2 — i+1 gating [high]
-- [ ] **C2** New-sentence queue restricted to known words.
+- [ ] **C2** New-sentence queue restricted to known words. **Extend the foundation** — the marker is in `getSentenceRowsForBand` (`EXTENSION (roadmap C2)`).
 
 **Recipe:** "Met words" = union of word ids in completed word lessons
 (`HANAPATH_WORD_LESSONS` + lesson-completion state) and `state.vocabSrs` keys.
 A sentence is *available* when every `focusWordIds` entry is met (empty
-`focusWordIds` ⇒ available). Sort available by `band`, then token count. Show
-a "locked — learn N more words" affordance linking to the Words tab for the
-next locked band. Guard the cold-start: a learner with zero Words progress
-still gets band-1 sentences whose focus words sit in the first Words lessons
-(W0–W2) — verify with a cold `localStorage` browser run.
+`focusWordIds` ⇒ available). Filter `getSentenceRowsForBand` by availability
+(keep the existing band + least-practiced sort after it). Show a "locked —
+learn N more words" affordance in the hub linking to the Words tab. Guard the
+cold-start: a learner with zero Words progress still gets band-1 sentences
+whose focus words sit in the first Words lessons (W0–W2) — verify with a cold
+`localStorage` browser run.
 
 ### C3 — Sentence SRS [high]
-- [ ] **C3** `state.sentenceSrs` Leitner + due queue + grading.
+- [ ] **C3** Leitner scheduling over `state.sentencesProgress`. **Extend the foundation** — markers in `pickSentenceSessionRows` and `recordSentenceResult` (`EXTENSION (roadmap C3)`).
 
-**Recipe:** Mirror `state.vocabSrs` (see word SRS usage app.js ≈4321/4958 and
-the letter Leitner ≈8312–8390): `{ box, due, lapses, lastSeen, isKnown }` per
-sentence id, normalized on state load like other state slices. Grading:
-correct with no helpers → promote; correct with helpers → hold; wrong/reveal →
-demote + lapse. All Track B/legacy drills that draw a bank row report into it.
-Hub "Due" section now real; cap new/day (default 5, stored in state).
+**Recipe:** The foundation already persists per-sentence records
+(`state.sentencesProgress.results[id]` = `{seen, correct, streak, last}`) and
+selects least-practiced-first. Upgrade that to real spacing: add
+`{ box, due, lapses }` to each record (mirror `state.vocabSrs`, app.js
+≈4321/4958, and the letter Leitner ≈8312–8390). Grading in
+`recordSentenceResult`: correct with no helpers → promote; correct with
+helpers (once B2 lands) → hold; wrong/reveal → demote + lapse. Change
+`pickSentenceSessionRows` to draw due cards first, then unseen, capped at
+new/day (default 5, stored in state). Surface a real "Due" count in the hub.
 **Clock-shift test:** set a card's `due` into the past via console, reload,
 confirm it surfaces.
 
@@ -391,3 +439,4 @@ them. One PR per box; browser-play each unit before shipping.
 | Date | Box | PR | Notes |
 |---|---|---|---|
 | 2026-07-05 | A1-A3 | PR #98 | Extracted the 2,007-row sentence bank from `words_curated_core.js`, added the strict audit, and wired the bank into the app shell. |
+| 2026-07-06 | Foundation (B1 + C1) | — | Rebuilt the Sentences section from scratch as the **Sentence Studio** (§3.5): hub → 5-question session → summary, three drills (Translate & Type, Word Builder, Dictation) reading `HANAPATH_SENTENCES`, `state.sentencesProgress` per-sentence records, band selector, `.ss-*` styles. Replaced the old `renderPracticeView` level-rail shell. Labelled extension points left for B2/B3/C2/C3/J1. Verified: `node --check`, all three audits `--strict`, and a 28-assertion vm logic test (session flow, tolerance, tile pool, mixed run). |

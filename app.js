@@ -3365,6 +3365,10 @@ function loadState() {
     wordQuickRefActive: false,
     wordQuickRefReturn: null,
     letterSrs: {},
+    // Sentences section (docs/SENTENCES_TEACHING_SPEC.md): chosen difficulty
+    // band, per-sentence practice records, and a session counter. Additive —
+    // older saved states get the defaults via getSentencesProgress().
+    sentencesProgress: { band: 1, results: {}, sessionsDone: 0 },
     speakDone: false,
     resetArmed: false,
   };
@@ -13946,143 +13950,567 @@ function openPathLesson(index) {
 
 // --- PRACTICE / LIBRARY SCREENS ---------------------------------------------
 
+// --- PRACTICE: SENTENCE STUDIO ----------------------------------------------
+// The Sentences practice surface, rebuilt from scratch on the curated
+// sentence bank (window.HANAPATH_SENTENCES — see docs/SENTENCES_TEACHING_SPEC.md
+// §3 and docs/SENTENCES_FINAL_ROADMAP.md). Unlike the old surface (a generic
+// quiz deck shared with every other tab), this is its own subsystem:
+//
+//   hub (renderPracticeView) → session runner → summary
+//
+// Three modes, all production-first (retrieval, not recognition):
+//   translate — English prompt → learner types the Korean (flagship, B1)
+//   build     — tap the Korean tokens into order
+//   listen    — hear the sentence, type what you heard (dictation)
+//
+// Per-sentence results persist in state.sentencesProgress so later roadmap
+// boxes have data to build on. Extension points for open roadmap boxes are
+// marked "EXTENSION (roadmap <box>)": B2 helper ladder, B3 answer alignment,
+// C2 i+1 gating, C3 sentence SRS, J1 analytics.
+
+const SENTENCE_SESSION_LENGTH = 5;
+const SENTENCE_BAND_COUNT = 5;
+const SENTENCE_MODES = [
+  { id: "translate", label: "Translate & Type", sub: "See the English, type the Korean.", tag: "Flagship" },
+  { id: "build", label: "Word Builder", sub: "Tap the Korean words into the right order.", tag: "No keyboard needed" },
+  { id: "listen", label: "Dictation", sub: "Hear the sentence, then type what you heard.", tag: "Listening" },
+  { id: "mixed", label: "Mixed session", sub: "All three drills in one run.", tag: "Variety" },
+];
+
+// Live session (module-level, like the word-lesson view). Null = show the hub.
+let sentenceStudioSession = null;
+
+function getSentenceBankRows() {
+  const bank = window.HANAPATH_SENTENCES;
+  return Array.isArray(bank) ? bank : [];
+}
+
+// Normalized accessor for the Sentences state slice (additive; older saved
+// states simply get the defaults).
+function getSentencesProgress() {
+  if (!state.sentencesProgress || typeof state.sentencesProgress !== "object") {
+    state.sentencesProgress = {};
+  }
+  const p = state.sentencesProgress;
+  p.band = Math.min(SENTENCE_BAND_COUNT, Math.max(1, Number(p.band) || 1));
+  if (!p.results || typeof p.results !== "object") p.results = {};
+  p.sessionsDone = Number(p.sessionsDone) || 0;
+  return p;
+}
+
+// Candidate rows for a session at the chosen band: rows AT the band first,
+// padded with easier rows when the band is thin.
+// EXTENSION (roadmap C2): filter by focusWordIds ⊆ words the learner has met.
+function getSentenceRowsForBand(band) {
+  const rows = getSentenceBankRows();
+  const atBand = rows.filter((row) => row.band === band);
+  if (atBand.length >= SENTENCE_SESSION_LENGTH) return atBand;
+  return atBand.concat(rows.filter((row) => row.band < band));
+}
+
+// Least-practiced-first selection with random tie-breaking.
+// EXTENSION (roadmap C3): replace with the sentence SRS due queue.
+function pickSentenceSessionRows(band, count = SENTENCE_SESSION_LENGTH) {
+  const results = getSentencesProgress().results;
+  return getSentenceRowsForBand(band)
+    .map((row) => ({ row, seen: results[row.id] ? results[row.id].seen : 0, rnd: Math.random() }))
+    .sort((a, b) => a.seen - b.seen || a.rnd - b.rnd)
+    .slice(0, count)
+    .map((entry) => entry.row);
+}
+
+// A typed/built attempt is correct when it normalizes to the target sentence
+// or any curated alternative. Spacing and punctuation never count against
+// the learner. EXTENSION (roadmap B3): positional alignment + near-miss diff.
+function checkSentenceAnswer(row, typed) {
+  const guess = normalizeKoreanAnswer(typed, { ignoreSpaces: true });
+  if (!guess) return false;
+  const targets = [row.korean].concat(Array.isArray(row.acceptAlso) ? row.acceptAlso : []);
+  return targets.some((t) => normalizeKoreanAnswer(t, { ignoreSpaces: true }) === guess);
+}
+
+// Cheap per-token feedback for a wrong attempt: mark which target tokens the
+// learner's attempt already contains. EXTENSION (roadmap B3): real alignment.
+function sentenceTokenDiffHtml(row, typed) {
+  const guess = normalizeKoreanAnswer(typed, { ignoreSpaces: true });
+  return (row.tokens || [])
+    .map((tok) => {
+      const clean = normalizeKoreanAnswer(tok, { ignoreSpaces: true });
+      const ok = clean && guess.includes(clean);
+      return `<span class="ss-tok ${ok ? "ss-tok-ok" : "ss-tok-miss"}" lang="ko">${escapeHtml(tok)}</span>`;
+    })
+    .join(" ");
+}
+
+// Build-mode tile pool: the answer tokens plus two same-band distractors,
+// all shown without trailing punctuation so the final tile isn't given away.
+function makeSentenceTilePool(row, bandRows) {
+  const stripEnd = (tok) => String(tok).replace(/[.!?…,~]+$/, "");
+  const tiles = (row.tokens || []).map(stripEnd).filter(Boolean);
+  const used = new Set(tiles.map((t) => normalizeKoreanAnswer(t, { ignoreSpaces: true })));
+  const distractors = [];
+  for (const other of shuffle(bandRows.filter((r) => r.id !== row.id))) {
+    for (const tok of other.tokens || []) {
+      const clean = stripEnd(tok);
+      const key = normalizeKoreanAnswer(clean, { ignoreSpaces: true });
+      if (!clean || !key || used.has(key)) continue;
+      used.add(key);
+      distractors.push(clean);
+      break;
+    }
+    if (distractors.length >= 2) break;
+  }
+  return shuffle(tiles.concat(distractors));
+}
+
+function startSentenceStudioSession(modeId) {
+  stopSpeech();
+  const progress = getSentencesProgress();
+  const rows = pickSentenceSessionRows(progress.band);
+  if (!rows.length) return;
+  sentenceStudioSession = {
+    modeId,
+    rows,
+    index: 0,
+    phase: "question", // question | feedback | summary
+    typed: "",
+    attempts: 0,
+    builtTiles: [],
+    tilePool: [],
+    autoPlayed: false,
+    results: [], // { id, mode, correct, revealed }
+  };
+  prepareSentenceQuestion();
+  renderPracticeView();
+}
+
+function sentenceQuestionMode(session = sentenceStudioSession) {
+  if (session.modeId !== "mixed") return session.modeId;
+  return ["translate", "build", "listen"][session.index % 3];
+}
+
+function prepareSentenceQuestion() {
+  const session = sentenceStudioSession;
+  session.phase = "question";
+  session.typed = "";
+  session.attempts = 0;
+  session.autoPlayed = false;
+  session.builtTiles = [];
+  session.tilePool = [];
+  if (sentenceQuestionMode() === "build") {
+    const row = session.rows[session.index];
+    session.tilePool = makeSentenceTilePool(row, getSentenceRowsForBand(getSentencesProgress().band));
+  }
+}
+
+// Persist one outcome per question into the durable per-sentence record.
+// EXTENSION (roadmap C3): also (re)schedule the row's SRS card here.
+// EXTENSION (roadmap J1): also emit a review-event for the analytics view.
+function recordSentenceResult(row, correct, revealed) {
+  const results = getSentencesProgress().results;
+  const record = results[row.id] || (results[row.id] = { seen: 0, correct: 0, streak: 0, last: 0 });
+  record.seen += 1;
+  if (correct) {
+    record.correct += 1;
+    record.streak += 1;
+  } else {
+    record.streak = 0;
+  }
+  record.last = Date.now();
+  sentenceStudioSession.results.push({ id: row.id, mode: sentenceQuestionMode(), correct, revealed });
+  saveState();
+}
+
+function finishSentenceQuestion(correct, revealed = false) {
+  const session = sentenceStudioSession;
+  const row = session.rows[session.index];
+  recordSentenceResult(row, correct, revealed);
+  session.phase = "feedback";
+  if (correct) speak(row.voiceText || row.korean);
+  renderPracticeView();
+}
+
+function advanceSentenceSession() {
+  const session = sentenceStudioSession;
+  stopSpeech();
+  if (session.index + 1 >= session.rows.length) {
+    session.phase = "summary";
+    const progress = getSentencesProgress();
+    progress.sessionsDone += 1;
+    saveState();
+  } else {
+    session.index += 1;
+    prepareSentenceQuestion();
+  }
+  renderPracticeView();
+}
+
+function exitSentenceStudioSession() {
+  stopSpeech();
+  sentenceStudioSession = null;
+  renderPracticeView();
+}
+
+// --- Sentence Studio: HTML pieces -------------------------------------------
+
+function sentenceStudioLockedHtml() {
+  return `
+    <div class="card">
+      <div class="eyebrow">Practice · Sentences</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Sentence Studio</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">Sentences unlock after you finish the alphabet and meet your first words. Every drill here reuses words you already know.</div>
+      <button class="button primary compact" type="button" data-ss-goto="today">Continue the alphabet</button>
+    </div>
+  `;
+}
+
+function sentenceStudioHubHtml() {
+  const rows = getSentenceBankRows();
+  if (!rows.length) {
+    return `
+      <div class="card">
+        <div class="eyebrow">Practice · Sentences</div>
+        <h2 class="screen-title" style="margin-bottom:8px;">Sentence Studio</h2>
+        <div class="screen-sub" style="margin-bottom:0;">The sentence bank failed to load. Reload the app to try again.</div>
+      </div>
+    `;
+  }
+
+  const progress = getSentencesProgress();
+  const resultIds = Object.keys(progress.results);
+  let seenTotal = 0;
+  let correctTotal = 0;
+  resultIds.forEach((id) => {
+    seenTotal += progress.results[id].seen;
+    correctTotal += progress.results[id].correct;
+  });
+  const accuracy = seenTotal ? Math.round((correctTotal / seenTotal) * 100) : 0;
+
+  const bandChips = Array.from({ length: SENTENCE_BAND_COUNT }, (_, i) => i + 1)
+    .map((band) => {
+      const count = rows.filter((row) => row.band === band).length;
+      if (!count) return "";
+      return `<button class="filter-chip ${progress.band === band ? "active" : ""}" type="button" data-ss-band="${band}">Band ${band} · ${count}</button>`;
+    })
+    .join("");
+
+  const modeCards = SENTENCE_MODES.map((mode) => `
+    <button class="study-row ss-mode" type="button" data-ss-start="${mode.id}">
+      <div>
+        <div class="study-row-ko">${escapeHtml(mode.label)}</div>
+        <div class="study-row-sub">${escapeHtml(mode.sub)}</div>
+      </div>
+      <span class="pill muted">${escapeHtml(mode.tag)}</span>
+    </button>
+  `).join("");
+
+  const preview = pickSentenceSessionRows(progress.band, 3)
+    .map((row) => `
+      <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
+        <div>
+          <div class="study-row-ko" lang="ko">${escapeHtml(row.korean)}</div>
+          <div class="study-row-sub">${escapeHtml(row.english)}</div>
+        </div>
+        <span class="pill muted">▶</span>
+      </div>
+    `)
+    .join("");
+
+  return `
+    <div class="card">
+      <div class="eyebrow">Practice · Sentences</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Sentence Studio</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">Short sessions of real sentence production: type it, build it, hear it. Five sentences per run.</div>
+      <div class="ss-stats">
+        <div class="stat-box"><span class="sv">${resultIds.length}</span><span class="sl">Sentences practiced</span></div>
+        <div class="stat-box"><span class="sv">${seenTotal ? `${accuracy}%` : "—"}</span><span class="sl">Correct answers</span></div>
+        <div class="stat-box"><span class="sv">${progress.sessionsDone}</span><span class="sl">Sessions done</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Difficulty band</div>
+      <div class="ss-band-row">${bandChips}</div>
+      <div class="fs-xs text-muted-2" style="margin-top:8px;">Band 1 is short frames; band 5 is long multi-clause sentences. Sessions favor sentences you have practiced least.</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Start a session</div>
+      <div class="study-list">${modeCards}</div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div class="eyebrow">Up next in band ${progress.band}</div>
+        <span class="pill muted">Tap to hear</span>
+      </div>
+      <div class="study-list">${preview}</div>
+    </div>
+  `;
+}
+
+function sentenceSessionDotsHtml(session) {
+  return `<div class="ss-dots">${session.rows
+    .map((row, i) => {
+      if (i < session.results.length) {
+        return `<span class="ss-dot ${session.results[i].correct ? "correct" : "wrong"}"></span>`;
+      }
+      return `<span class="ss-dot ${i === session.index ? "current" : ""}"></span>`;
+    })
+    .join("")}</div>`;
+}
+
+function sentenceAnswerBoxHtml(session, placeholder) {
+  return `
+    <div class="word-type-box">
+      <input class="sentence-input" id="ssTypedInput" type="text" autocomplete="off" autocapitalize="off"
+        spellcheck="false" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(session.typed)}" lang="ko" />
+      <div class="word-type-feedback" role="status" aria-live="polite">${session.attempts
+        ? `<strong>Not yet.</strong> Try again, or show the answer. <span class="fs-xs">(Spacing and punctuation don't count against you.)</span>`
+        : ""}</div>
+    </div>
+    <div class="word-card-actions">
+      <button class="button primary compact" type="button" data-ss-check>Check</button>
+      <button class="button secondary compact" type="button" data-ss-reveal>Show answer</button>
+    </div>
+  `;
+}
+
+function sentenceQuestionHtml(session) {
+  const row = session.rows[session.index];
+  const mode = sentenceQuestionMode(session);
+  const step = `${session.index + 1} of ${session.rows.length}`;
+
+  if (mode === "translate") {
+    return `
+      <div class="card">
+        ${sentenceSessionDotsHtml(session)}
+        <div class="eyebrow">Translate &amp; Type · ${step}</div>
+        <div class="ss-prompt">${escapeHtml(row.english)}</div>
+        <div class="screen-sub" style="margin-bottom:4px;">Type the Korean sentence.</div>
+        ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요")}
+      </div>
+    `;
+    // EXTENSION (roadmap B2): tip / word-bank / next-chunk helpers mount here,
+    // between the prompt and the answer box.
+  }
+
+  if (mode === "build") {
+    const built = session.builtTiles
+      .map((poolIndex, orderIndex) =>
+        `<button class="word-tile" type="button" data-ss-built="${orderIndex}" lang="ko">${escapeHtml(session.tilePool[poolIndex])}</button>`)
+      .join("");
+    const pool = session.tilePool
+      .map((tile, poolIndex) => {
+        const usedAlready = session.builtTiles.includes(poolIndex);
+        return `<button class="word-tile" type="button" data-ss-tile="${poolIndex}" lang="ko" ${usedAlready ? "disabled" : ""}>${escapeHtml(tile)}</button>`;
+      })
+      .join("");
+    return `
+      <div class="card">
+        ${sentenceSessionDotsHtml(session)}
+        <div class="eyebrow">Word Builder · ${step}</div>
+        <div class="ss-prompt">${escapeHtml(row.english)}</div>
+        <div class="screen-sub" style="margin-bottom:4px;">Tap the Korean words in order. Two tiles don't belong.</div>
+        <div class="ss-build-answer">${built || `<span class="fs-xs text-muted-2">Your sentence appears here</span>`}</div>
+        <div class="word-tile-row">${pool}</div>
+        <div class="word-type-feedback" role="status" aria-live="polite">${session.attempts
+          ? "<strong>Not yet.</strong> Check the word order — tap a placed word to remove it."
+          : ""}</div>
+        <div class="word-card-actions">
+          <button class="button primary compact" type="button" data-ss-check ${session.builtTiles.length ? "" : "disabled"}>Check</button>
+          <button class="button secondary compact" type="button" data-ss-reveal>Show answer</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // listen (dictation)
+  return `
+    <div class="card">
+      ${sentenceSessionDotsHtml(session)}
+      <div class="eyebrow">Dictation · ${step}</div>
+      <div class="ss-prompt"><span class="big-glyph">♪</span></div>
+      <div class="screen-sub" style="margin-bottom:4px;">Listen, then type the Korean sentence you heard.</div>
+      <div class="word-card-actions" style="margin-bottom:4px;">
+        <button class="button secondary compact" type="button" data-ss-play>▶ Play sentence</button>
+      </div>
+      ${sentenceAnswerBoxHtml(session, "들리는 대로 써 보세요")}
+    </div>
+  `;
+}
+
+function sentenceFeedbackHtml(session) {
+  const row = session.rows[session.index];
+  const result = session.results[session.index];
+  const attempt = session.typed;
+  const diff = !result.correct && attempt && sentenceQuestionMode(session) !== "build"
+    ? `<div class="fs-xs text-muted-2" style="margin:10px 0 4px;">You typed: <span lang="ko">${escapeHtml(attempt)}</span></div>
+       <div class="ss-diff">${sentenceTokenDiffHtml(row, attempt)}</div>`
+    : "";
+  return `
+    <div class="card">
+      ${sentenceSessionDotsHtml(session)}
+      <div class="eyebrow">${result.correct ? "Correct" : "The answer"}</div>
+      <div class="ss-result ${result.correct ? "ss-result-good" : "ss-result-bad"}">${result.correct ? "잘했어요! Nice." : "Here's the sentence:"}</div>
+      <div class="ss-sentence" lang="ko">${escapeHtml(row.korean)}</div>
+      <div class="screen-sub" style="margin-bottom:4px;">${escapeHtml(row.english)}</div>
+      ${diff}
+      <div class="word-card-actions">
+        <button class="button secondary compact" type="button" data-ss-hear>▶ Hear it</button>
+        <button class="button primary compact" type="button" data-ss-next>${session.index + 1 >= session.rows.length ? "Finish" : "Next"}</button>
+      </div>
+    </div>
+  `;
+}
+
+function sentenceSummaryHtml(session) {
+  const correct = session.results.filter((r) => r.correct).length;
+  const rowsHtml = session.rows
+    .map((row, i) => `
+      <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
+        <div>
+          <div class="study-row-ko" lang="ko">${escapeHtml(row.korean)}</div>
+          <div class="study-row-sub">${escapeHtml(row.english)}</div>
+        </div>
+        <span class="pill ${session.results[i].correct ? "accent" : "muted"}">${session.results[i].correct ? "✓" : "✗"}</span>
+      </div>
+    `)
+    .join("");
+  return `
+    <div class="card">
+      <div class="eyebrow">Session complete</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">${correct} of ${session.rows.length} correct</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">${correct === session.rows.length
+        ? "Perfect run. These sentences will come back less often."
+        : "Missed sentences come back sooner in your next sessions."}</div>
+      <div class="study-list">${rowsHtml}</div>
+      <div class="word-card-actions" style="margin-top:12px;">
+        <button class="button primary compact" type="button" data-ss-again>Practice again</button>
+        <button class="button secondary compact" type="button" data-ss-exit>Back to Sentence Studio</button>
+      </div>
+    </div>
+  `;
+}
+
+// --- Sentence Studio: render + events ---------------------------------------
+
 function renderPracticeView() {
   const el = document.getElementById("screen-speak");
   if (!el) return;
   refreshProgressionState();
-
   currentQuizScope = "sentences";
   state.studio = "sentences";
 
-  const level = getActiveLearnLevel("sentences");
-  const sentenceBank = getSentenceStudyBank()
-    .filter((item) => item.tokenCount >= 2)
-    .sort((a, b) => a.tokenCount - b.tokenCount);
-  const currentSlice = getCurrentBandSlice(sentenceBank, level, 10);
-  const repeatSlice = getRepeatBandSlice(sentenceBank, level, 10);
-  const bandLabel = level <= 2
-    ? "Basic sentence frames"
-    : level <= 4
-      ? "Simple sentence order"
-      : level <= 6
-        ? "Type and build"
-        : level <= 8
-          ? "Longer sentences"
-          : "Mixed review";
-  const practiceExample = currentSlice[0] || repeatSlice[0] || null;
-  const practiceTitle = state.speakingAnxiety === "high"
-    ? "Shadow first"
-    : state.goal === "travel"
-      ? "Say it in context"
-      : "Build and speak";
-  const practiceCue = state.speakingAnxiety === "high"
-    ? "Listen once, then copy the rhythm."
-    : state.goal === "travel"
-      ? "Use this phrase in a real situation."
-      : "Order the words, then read them aloud.";
-
-  const showStudy = currentFocus !== "practice";
-  const showQuiz = currentFocus !== "learn";
-
-  el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">${showQuiz && !showStudy ? "Practice · Sentences" : "Learn · Sentences"}</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(practiceTitle)}</h2>
-      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(practiceCue)}</div>
-      <div class="text-muted-2 fs-sm" style="margin-bottom:12px;">Stage ${String(level).padStart(2, "0")} of 10 Â· ${escapeHtml(bandLabel)}</div>
-      <div class="speak-actions">
-        <button class="button secondary compact" type="button" id="practiceHearTask">Replay example</button>
-        <button class="button secondary compact" type="button" id="practiceReviewWords">Review words</button>
-        <button class="button secondary compact" type="button" id="practiceListenBtn">Listen</button>
-      </div>
-      ${practiceExample ? `<div class="speak-example mt-12" lang="ko">${escapeHtml(practiceExample.korean || practiceExample.meaning || "")}</div>` : ""}
-    </div>
-
-    ${renderLevelRail("sentences", level)}
-
-    ${showStudy ? `
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Learn</div>
-          <div class="screen-sub" style="margin-bottom:0;">Current sentence band</div>
-        </div>
-        <span class="pill accent">${currentSlice.length} items</span>
-      </div>
-      ${currentSlice.length
-        ? `<div class="study-list">${renderSentenceRows(currentSlice, 5)}</div>`
-        : `<div class="screen-sub" style="margin-bottom:0;">Sentence items will appear once the bank is ready.</div>`}
-    </div>
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Repeat</div>
-          <div class="screen-sub" style="margin-bottom:0;">Everything up to this level stays active.</div>
-        </div>
-        <span class="pill muted">${repeatSlice.length} review items</span>
-      </div>
-      ${repeatSlice.length
-        ? `<div class="study-list">${renderSentenceRows(repeatSlice.slice(-5), 5)}</div>`
-        : `<div class="screen-sub" style="margin-bottom:0;">Your repeat stack will fill as you move forward.</div>`}
-    </div>
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">More</div>
-          <div class="screen-sub" style="margin-bottom:0;">Drag words into order or type the whole sentence from audio.</div>
-        </div>
-        <span class="pill muted">Build + type</span>
-      </div>
-      <div class="study-list">
-        <div class="study-row" style="pointer-events: none;">
-          <div>
-            <div class="study-row-ko">Drag-and-drop</div>
-            <div class="study-row-sub">Put the Korean words into the right order.</div>
-          </div>
-        </div>
-        <div class="study-row" style="pointer-events: none;">
-          <div>
-            <div class="study-row-ko">Dictation</div>
-            <div class="study-row-sub">Hear a sentence and type it out.</div>
-          </div>
-        </div>
-        <div class="study-row" style="pointer-events: none;">
-          <div>
-            <div class="study-row-ko">Replay</div>
-            <div class="study-row-sub">Tap Replay sound whenever you need it.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    ` : ""}
-
-    ${showQuiz ? renderQuizCard("sentences") : ""}
-  `;
-
-  bindLevelRail(el, "sentences", renderPracticeView);
-  const practiceHearTask = document.getElementById("practiceHearTask");
-  if (practiceHearTask) {
-    practiceHearTask.addEventListener("click", () => speak(practiceExample?.korean || practiceExample?.voiceText || practiceExample?.meaning || ""));
+  if (!isStudioUnlocked("sentences")) {
+    sentenceStudioSession = null;
+    el.innerHTML = sentenceStudioLockedHtml();
+  } else if (!sentenceStudioSession) {
+    el.innerHTML = sentenceStudioHubHtml();
+  } else if (sentenceStudioSession.phase === "question") {
+    el.innerHTML = sentenceQuestionHtml(sentenceStudioSession);
+  } else if (sentenceStudioSession.phase === "feedback") {
+    el.innerHTML = sentenceFeedbackHtml(sentenceStudioSession);
+  } else {
+    el.innerHTML = sentenceSummaryHtml(sentenceStudioSession);
   }
-  const practiceReviewWords = document.getElementById("practiceReviewWords");
-  if (practiceReviewWords) {
-    practiceReviewWords.addEventListener("click", () => {
-      state.vocabView = "review";
-      saveState();
-      showTab("library");
-    });
+
+  bindSentenceStudioEvents(el);
+
+  const session = sentenceStudioSession;
+  if (session && session.phase === "question" && sentenceQuestionMode(session) === "listen" && !session.autoPlayed) {
+    session.autoPlayed = true;
+    const row = session.rows[session.index];
+    speak(row.voiceText || row.korean);
   }
-  const practiceListenBtn = document.getElementById("practiceListenBtn");
-  if (practiceListenBtn) {
-    practiceListenBtn.addEventListener("click", () => showTab("listening"));
+}
+
+function submitSentenceAnswer() {
+  const session = sentenceStudioSession;
+  if (!session || session.phase !== "question") return;
+  const row = session.rows[session.index];
+  const mode = sentenceQuestionMode(session);
+
+  let attempt = session.typed;
+  if (mode === "build") {
+    attempt = session.builtTiles.map((poolIndex) => session.tilePool[poolIndex]).join(" ");
+    session.typed = attempt; // so feedback can echo it
   }
-  el.querySelectorAll("[data-speak]").forEach((btn) => {
-    btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
+  if (!normalizeKoreanAnswer(attempt, { ignoreSpaces: true })) return;
+
+  if (checkSentenceAnswer(row, attempt)) {
+    finishSentenceQuestion(true);
+  } else {
+    session.attempts += 1;
+    renderPracticeView();
+  }
+}
+
+function bindSentenceStudioEvents(el) {
+  el.querySelectorAll("[data-ss-goto]").forEach((btn) => {
+    btn.addEventListener("click", () => showTab(btn.dataset.ssGoto));
   });
-  if (showQuiz) renderScopedQuestion("sentences");
-  showTapHint("sentences");
+  el.querySelectorAll("[data-ss-band]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      getSentencesProgress().band = Number(btn.dataset.ssBand) || 1;
+      saveState();
+      renderPracticeView();
+    });
+  });
+  el.querySelectorAll("[data-ss-start]").forEach((btn) => {
+    btn.addEventListener("click", () => startSentenceStudioSession(btn.dataset.ssStart));
+  });
+  el.querySelectorAll("[data-ss-preview-speak]").forEach((rowEl) => {
+    rowEl.addEventListener("click", () => speak(rowEl.dataset.ssPreviewSpeak || ""));
+  });
+
+  const session = sentenceStudioSession;
+  if (!session) return;
+
+  const input = el.querySelector("#ssTypedInput");
+  if (input) {
+    input.addEventListener("input", () => { session.typed = input.value; });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitSentenceAnswer();
+      }
+    });
+    if (session.phase === "question" && !session.attempts) input.focus();
+  }
+  el.querySelectorAll("[data-ss-tile]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      session.builtTiles.push(Number(btn.dataset.ssTile));
+      renderPracticeView();
+    });
+  });
+  el.querySelectorAll("[data-ss-built]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      session.builtTiles.splice(Number(btn.dataset.ssBuilt), 1);
+      renderPracticeView();
+    });
+  });
+  el.querySelectorAll("[data-ss-check]").forEach((btn) => {
+    btn.addEventListener("click", submitSentenceAnswer);
+  });
+  el.querySelectorAll("[data-ss-reveal]").forEach((btn) => {
+    btn.addEventListener("click", () => finishSentenceQuestion(false, true));
+  });
+  el.querySelectorAll("[data-ss-play], [data-ss-hear]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const row = session.rows[session.index];
+      speak(row.voiceText || row.korean);
+    });
+  });
+  el.querySelectorAll("[data-ss-next]").forEach((btn) => {
+    btn.addEventListener("click", advanceSentenceSession);
+  });
+  el.querySelectorAll("[data-ss-again]").forEach((btn) => {
+    btn.addEventListener("click", () => startSentenceStudioSession(session.modeId));
+  });
+  el.querySelectorAll("[data-ss-exit]").forEach((btn) => {
+    btn.addEventListener("click", exitSentenceStudioSession);
+  });
 }
 
 function renderVocabulary() {
