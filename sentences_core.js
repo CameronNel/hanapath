@@ -43509,7 +43509,7 @@
       "대단히",
       "감사합니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "because-aseo",
       "formal-nida",
