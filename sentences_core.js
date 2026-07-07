@@ -25482,7 +25482,7 @@
       "등산화를",
       "신으세요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -25648,7 +25648,7 @@
       "할인해서",
       "팔아요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
@@ -25682,7 +25682,7 @@
       "굳게",
       "닫으세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "possessive-ui",
@@ -26262,7 +26262,7 @@
       "읽어",
       "줍니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
@@ -26468,7 +26468,7 @@
       "되고",
       "싶어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "present-polite",
@@ -26814,7 +26814,7 @@
       "기운이",
       "없어요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "present-polite",
@@ -27798,7 +27798,7 @@
       "문을",
       "닫았어요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
@@ -28986,7 +28986,7 @@
       "공부하고",
       "싶어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "location-e",
       "present-polite",
@@ -29638,7 +29638,7 @@
       "살고",
       "싶어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "with-hago-wa",
       "location-eseo",
@@ -29879,7 +29879,7 @@
       "시청에서",
       "열립니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "location-eseo",
@@ -30416,7 +30416,7 @@
       "하지",
       "마세요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -31173,7 +31173,7 @@
       "더",
       "주세요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "counter-phrase",
@@ -31276,7 +31276,7 @@
       "가까워서",
       "걸어가요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "location-eseo",
@@ -31647,7 +31647,7 @@
       "해야",
       "해요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "but-jiman",
@@ -31751,7 +31751,7 @@
       "책을",
       "폈어요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "and-go",
@@ -32098,7 +32098,7 @@
       "말을",
       "기억하세요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
