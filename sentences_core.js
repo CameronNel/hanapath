@@ -56965,7 +56965,7 @@
       "과장님께",
       "있습니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "possessive-ui",
       "topic-neun",
