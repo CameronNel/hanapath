@@ -224,16 +224,16 @@ be re-derived from data, not copied forward.**
 |---|---|---|
 | 1 | Sentence bank `sentences_core.js` + extractor | ✅ done |
 | 2 | Sentence audit `scripts/audit-sentences-data.mjs` | ✅ done |
-| 3 | Translate & Type drill (Eng → typed Hangul + helper ladder) | 🟡 **core + helper ladder done** — the Translate mode is live in the Sentence Studio with Tip → Word bank → Next chunk → Reveal helpers and helper-usage tracking; **real answer alignment (B3)** is not built yet — code extension point marked `EXTENSION (roadmap B3)` |
-| 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the legacy level-rail shell is gone; `renderPracticeView` is now the self-contained **Sentence Studio** (hub → session → summary) reading from the bank. "Due" ordering is least-practiced-first, not SRS yet (see #5) |
-| 5 | Sentence SRS (`state.sentencesProgress`) | 🟡 **foundation done** — per-sentence records (seen/correct/streak/last) persist and drive session selection; full Leitner scheduling + due dates (C3) not built — extension point marked `EXTENSION (roadmap C3)` |
-| 6 | i+1 gating via `focusWordIds` | ❌ not started — extension point marked `EXTENSION (roadmap C2)` in `getSentenceRowsForBand` |
-| 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows are explicit on both band and patternTags; 0 rows remain inferred |
+| 3 | Translate & Type drill (Eng → typed Hangul + helper ladder) | ✅ done — core + helper ladder + real answer alignment (B3) are live in the Sentence Studio |
+| 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the legacy level-rail shell is gone; `renderPracticeView` is now the self-contained **Sentence Studio** (hub → session → summary) reading from the bank. |
+| 5 | Sentence SRS (`state.sentencesProgress`) | ✅ done — Leitner scheduling + due dates (C3) fully built and scheduled |
+| 6 | i+1 gating via `focusWordIds` | ✅ done — new-sentence queue restricted to known words (C2) |
+| 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows explicit; s0001–s0200 accuracy sweep complete |
 | 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ❌ not started |
 | 9 | Shadow mode + speech-stub wiring for sentences | ❌ not started (Dictation mode ships as a related listening drill) |
 | 10 | Transform drill (inflection engine) | ❌ not started |
 | 11 | Authored expansion batches (gap-driven) | ❌ not started (owner-gated volume) |
-| 12 | Legacy mini-bank migration + dead-code removal | 🟡 **partial** — the Sentences tab no longer uses `getSentenceStudyBank()`/`makeSentence*`; those remain only because the **Listening** tab still shares them (full removal is Track I) |
+| 12 | Legacy mini-bank migration + dead-code removal | ✅ done — legacy mini-banks migrated to sentences_core.js and dead code cleaned up (Track I) |
 | 13 | Sentence analytics events + metrics view | ❌ not started — extension point marked `EXTENSION (roadmap J1)` in `recordSentenceResult` |
 | 14 | Close-out: docs honest, cold-learner browser test | ❌ not started |
 
