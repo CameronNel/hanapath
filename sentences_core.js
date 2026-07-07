@@ -9135,7 +9135,7 @@
     ],
     "band": 5,
     "patternTags": [
-      "imperative-seyo",
+      "present-polite",
       "honorific-si",
       "time-expression"
     ],
@@ -9168,7 +9168,7 @@
     "band": 5,
     "patternTags": [
       "location-e",
-      "imperative-seyo",
+      "present-polite",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -9200,7 +9200,7 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "imperative-seyo",
+      "present-polite",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -9230,7 +9230,7 @@
     ],
     "band": 5,
     "patternTags": [
-      "imperative-seyo",
+      "present-polite",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -9263,7 +9263,7 @@
     "patternTags": [
       "subject-i-ga",
       "question-polite",
-      "imperative-seyo",
+      "present-polite",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -9831,7 +9831,6 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "only-man",
       "past-polite"
     ],
     "focusWordIds": [
@@ -9900,7 +9899,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "past-polite"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_007_chil"
@@ -10092,7 +10091,6 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "only-man",
       "past-polite"
     ],
     "focusWordIds": [
@@ -10282,7 +10280,6 @@
     ],
     "band": 2,
     "patternTags": [
-      "location-e",
       "time-expression",
       "present-polite",
       "counter-phrase"
@@ -10381,7 +10378,6 @@
     "band": 3,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "present-polite",
       "counter-phrase",
       "time-expression",
