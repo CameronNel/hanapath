@@ -13143,7 +13143,7 @@
       "닭이",
       "울어요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "subject-i-ga",
       "time-expression",
@@ -13565,7 +13565,7 @@
       "골고루",
       "먹으세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -13796,7 +13796,7 @@
       "아주",
       "고소해요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "present-polite",
@@ -14409,7 +14409,7 @@
       "베고",
       "자요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "and-go"
@@ -14441,7 +14441,7 @@
       "덮고",
       "자요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "and-go"
@@ -14536,7 +14536,7 @@
       "씻으면",
       "깨끗해요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "direction-euro",
@@ -14696,7 +14696,7 @@
       "한국에",
       "가요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "location-e",
@@ -14857,7 +14857,7 @@
       "운전을",
       "하세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
@@ -15373,7 +15373,7 @@
       "오늘",
       "돌이에요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "subject-i-ga",
       "copula-ieyo",
@@ -15930,7 +15930,7 @@
       "목표는",
       "여행이에요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "topic-neun",
       "copula-ieyo",
@@ -16159,7 +16159,7 @@
       "칠판에",
       "쓰세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "location-e",
@@ -16258,7 +16258,7 @@
       "교과서를",
       "펴세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -16626,7 +16626,7 @@
       "피아노를",
       "배웠어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "past-polite",
@@ -17422,7 +17422,7 @@
       "방으로",
       "들어오세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "direction-euro",
       "imperative-seyo",
@@ -17578,7 +17578,7 @@
       "조심히",
       "내려가세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -18077,7 +18077,7 @@
       "아침마다",
       "면도해요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "time-expression",
       "present-polite",
@@ -18205,7 +18205,7 @@
       "친구와",
       "놀아요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "with-hago-wa",
       "time-expression",
@@ -18336,7 +18336,7 @@
       "내려야",
       "해요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "location-eseo",
       "must-ya-dwaeda",
@@ -18784,7 +18784,7 @@
       "보통",
       "한가해요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "topic-neun",
       "time-expression",
