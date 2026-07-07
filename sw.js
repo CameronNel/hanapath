@@ -1,5 +1,5 @@
-// [2026-07-07] Cache bumped to v263: batch A11 band sweep.
-const CACHE_NAME = "hanapath-shell-v263";
+// [2026-07-07] Cache bumped to v264: add sentences_lesson_plan.js data.
+const CACHE_NAME = "hanapath-shell-v264";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,6 +11,7 @@ const APP_SHELL = [
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707t",
+  "./sentences_lesson_plan.js?v=20260707a",
   "./app.js?v=20260707a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
