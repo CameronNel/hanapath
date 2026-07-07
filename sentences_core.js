@@ -33280,7 +33280,7 @@
       "잃지",
       "마세요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "also-do",
@@ -33630,7 +33630,7 @@
       "마음이",
       "편안해졌어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "location-e",
@@ -34123,7 +34123,7 @@
       "부끄러움이",
       "앞섰어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
@@ -34157,7 +34157,7 @@
       "버려야",
       "편안해집니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "possessive-ui",
@@ -35105,7 +35105,7 @@
       "열리니",
       "당기세요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -36854,7 +36854,7 @@
       "속도는",
       "엄청납니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "possessive-ui",
