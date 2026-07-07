@@ -59,7 +59,7 @@ Each box below carries its routing: **[codex]** or **[high]**.
 - [x] **Track A** — Bank foundation: `sentences_core.js` + strict audit + app-shell wiring (PR #98)
 - [x] **Track B** — Translate & Type: Shipped B1 core drill, B2 helper ladder, and B3 token-diff feedback
 - [x] **Track C** — Practice hub + sentence SRS + i+1 gating: Shipped C1 hub, C2 i+1 gating, C3 sentence SRS, and C4 today-screen surfacing
-- [x] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis (all 2,007 rows explicit on both `band` and `patternTags`)
+- [x] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis (all 2,060 rows explicit on both `band` and `patternTags`)
 - [ ] **Track E** — Pattern micro-lessons: 12 units playable
 - [ ] **Track F** — Shadow & speak modes
 - [ ] **Track G** — Transform drill (inflection engine)
@@ -367,7 +367,7 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
 - [x] **D5** rows batch 5
 - [x] **D6** rows batch 6
 - [x] **D7** rows batch 7
-- [x] **D8** rows batch 8 + final zero-inferred verification — audit reports `band` 2007 explicit / 0 inferred, `patternTags` 2007 explicit / 0 inferred
+- [x] **D8** rows batch 8 + final zero-inferred verification — audit reports `band` 2060 explicit / 0 inferred, `patternTags` 2060 explicit / 0 inferred
 
 > **Quality note (2026-07-07):** The counter-phrase accuracy pass has been completed.
 > A consistent policy of "number plus classifier/counter noun" has been set and applied
@@ -493,3 +493,6 @@ them. One PR per box; browser-play each unit before shipping.
 | 2026-07-06 | D2 continued (s1216-s1230) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,193 rows are explicit on both axes and 814 rows remain inferred. |
 | 2026-07-06 | D2 continued (s1231-s1245) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,208 rows are explicit on both axes and 799 rows remain inferred. |
 | 2026-07-06 | D2 continued (s1246-s1260) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,223 rows are explicit on both axes and 784 rows remain inferred. |
+| 2026-07-07 | D8 finish (s2008-s2060) | local branch | Curated the remaining 53 sentence rows (s2008-s2060) in id order, corrected band/tag issues, and flipped all annotation axes to explicit; all 2,060 rows are now explicit. |
+| 2026-07-07 | D8 review fix (s2025/s2026/s2056-s2060) | integration | Review of the D8 finish caught 7 honorific declaratives (오세요/계세요/주무세요/드세요/말씀하세요 with a 3rd-person 가/이 subject) mistagged `imperative-seyo` off the surface `-세요`; removed it, leaving `honorific-si`. These are statements, not commands. |
+

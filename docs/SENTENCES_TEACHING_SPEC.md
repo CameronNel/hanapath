@@ -228,7 +228,7 @@ be re-derived from data, not copied forward.**
 | 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the legacy level-rail shell is gone; `renderPracticeView` is now the self-contained **Sentence Studio** (hub → session → summary) reading from the bank. "Due" ordering is least-practiced-first, not SRS yet (see #5) |
 | 5 | Sentence SRS (`state.sentencesProgress`) | 🟡 **foundation done** — per-sentence records (seen/correct/streak/last) persist and drive session selection; full Leitner scheduling + due dates (C3) not built — extension point marked `EXTENSION (roadmap C3)` |
 | 6 | i+1 gating via `focusWordIds` | ❌ not started — extension point marked `EXTENSION (roadmap C2)` in `getSentenceRowsForBand` |
-| 7 | Pattern-tag curation (inferred → explicit) | 🟡 partial — 1,223 rows are explicit on both band and patternTags; 784 rows remain inferred |
+| 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows are explicit on both band and patternTags; 0 rows remain inferred |
 | 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ❌ not started |
 | 9 | Shadow mode + speech-stub wiring for sentences | ❌ not started (Dictation mode ships as a related listening drill) |
 | 10 | Transform drill (inflection engine) | ❌ not started |
@@ -247,8 +247,8 @@ be re-derived from data, not copied forward.**
 > marking exactly where the new code plugs in. A small model should extend the
 > studio, not rebuild it. See `docs/SENTENCES_FINAL_ROADMAP.md` §3.5.
 
-> **Verified curation note (2026-07-06):** the strict sentences audit
-> reports 1,223 explicit rows and 784 inferred rows for both `band` and
+> **Verified curation note (2026-07-07):** the strict sentences audit
+> reports 2,060 explicit rows and 0 inferred rows for both `band` and
 > `patternTags`.
 
 ## §9 Milestone reference sheet
