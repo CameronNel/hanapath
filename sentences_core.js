@@ -6777,7 +6777,7 @@
       "영수증",
       "주세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -7225,7 +7225,7 @@
       "환불해",
       "주세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -7926,7 +7926,7 @@
       "오늘",
       "더워요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "time-expression",
       "present-polite"
@@ -7956,7 +7956,7 @@
       "오늘",
       "추워요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "time-expression",
       "present-polite"
@@ -8530,7 +8530,7 @@
       "지금",
       "갑니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "time-expression",
       "formal-nida"
@@ -8847,7 +8847,7 @@
       "자거나",
       "쉬어요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "topic-neun",
       "present-polite",
@@ -8945,7 +8945,7 @@
       "안",
       "갔어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "neg-an",
       "when-ttae",
@@ -8977,7 +8977,7 @@
       "먹는",
       "사람이에요."
     ],
-    "band": 5,
+    "band": 1,
     "patternTags": [
       "copula-ieyo",
       "time-expression"
@@ -9008,7 +9008,7 @@
       "먹은",
       "밥이에요."
     ],
-    "band": 5,
+    "band": 1,
     "patternTags": [
       "topic-neun",
       "subject-i-ga",
@@ -9040,7 +9040,7 @@
       "먹을",
       "밥이에요."
     ],
-    "band": 5,
+    "band": 2,
     "patternTags": [
       "object-eul-reul",
       "copula-ieyo",
@@ -9071,7 +9071,7 @@
       "좋은",
       "사람이에요."
     ],
-    "band": 5,
+    "band": 1,
     "patternTags": [
       "topic-neun",
       "copula-ieyo"
@@ -9102,7 +9102,7 @@
       "산",
       "것이에요."
     ],
-    "band": 3,
+    "band": 1,
     "patternTags": [
       "subject-i-ga",
       "copula-ieyo"
@@ -10116,7 +10116,7 @@
       "하나",
       "주세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -10630,7 +10630,7 @@
       "해",
       "보세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si",
@@ -10792,7 +10792,7 @@
       "분이",
       "오셨어요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "past-polite",
@@ -10893,7 +10893,7 @@
       "병",
       "주세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si",
@@ -10960,7 +10960,7 @@
       "먹고",
       "싶어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "and-go",
       "counter-phrase",
@@ -11545,7 +11545,7 @@
       "신문을",
       "보세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
@@ -11643,7 +11643,7 @@
       "해",
       "주셨어요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
@@ -12178,7 +12178,7 @@
       "\uD06C\uAC8C",
       "\uBC8C\uB9AC\uC138\uC694."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
