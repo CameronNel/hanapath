@@ -19200,7 +19200,7 @@
       "아주",
       "건강하세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "present-polite",
@@ -19516,7 +19516,7 @@
       "저에게",
       "주세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -19994,7 +19994,7 @@
       "배우면",
       "유용해요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "present-polite",
@@ -20829,7 +20829,7 @@
       "되어서",
       "신나요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "because-aseo",
@@ -21278,7 +21278,7 @@
       "질문을",
       "하세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -21633,7 +21633,7 @@
       "조심히",
       "하세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -22270,7 +22270,7 @@
       "헬스장에",
       "가요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "location-e",
       "and-go",
@@ -22819,7 +22819,7 @@
       "집이",
       "타요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "because-aseo",
@@ -23142,7 +23142,7 @@
       "버려",
       "주세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "location-e",
@@ -23340,7 +23340,7 @@
       "두통이",
       "생겼어요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "when-ttae",
@@ -23374,7 +23374,7 @@
       "가야",
       "해요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "location-e",
@@ -23442,7 +23442,7 @@
       "내과에",
       "가요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "location-e",
@@ -23545,7 +23545,7 @@
       "콧물이",
       "나요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "location-e",
@@ -23948,7 +23948,7 @@
       "해",
       "주세요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -24080,7 +24080,7 @@
       "늘려야",
       "해요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "present-polite",
@@ -24315,7 +24315,7 @@
       "몸은",
       "괜찮아요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "present-polite",
@@ -24646,7 +24646,7 @@
       "읽고",
       "계십니다."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
@@ -24713,7 +24713,7 @@
       "가고",
       "싶어요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "direction-euro",
@@ -24846,7 +24846,7 @@
       "바다가",
       "가깝습니다."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "subject-i-ga",

@@ -1,5 +1,5 @@
-// [2026-07-07] Cache bumped to v255: batch A3 band sweep.
-const CACHE_NAME = "hanapath-shell-v255";
+// [2026-07-07] Cache bumped to v256: batch A4 band sweep.
+const CACHE_NAME = "hanapath-shell-v256";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260707l",
+  "./sentences_core.js?v=20260707m",
   "./app.js?v=20260707a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
