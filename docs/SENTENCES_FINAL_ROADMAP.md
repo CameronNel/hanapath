@@ -64,7 +64,7 @@ Each box below carries its routing: **[codex]** or **[high]**.
 - [ ] **Track F** — Shadow & speak modes
 - [ ] **Track G** — Transform drill (inflection engine)
 - [ ] **Track H** — 🔒 Authored expansion batches (owner sets volume/themes)
-- [x] **Track I** — Legacy mini-bank migration + dead-code removal
+- [~] **Track I** — Legacy mini-bank migration done (#109); **dead-code removal still pending** (`getSentenceStudyBank()`/`makeSentence*` remain in `app.js` — Listening tab still uses them)
 - [ ] **Track J** — Close-out: analytics, honest docs, scripted cold-learner test
 
 Dependency order: **A → B → C → (D ∥ E after D1) → F/G → H (after D) → I → J.**

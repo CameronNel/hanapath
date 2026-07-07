@@ -224,7 +224,7 @@ be re-derived from data, not copied forward.**
 |---|---|---|
 | 1 | Sentence bank `sentences_core.js` + extractor | ✅ done |
 | 2 | Sentence audit `scripts/audit-sentences-data.mjs` | ✅ done |
-| 3 | Translate & Type drill (Eng → typed Hangul + helper ladder) | ✅ done — core + helper ladder + real answer alignment (B3) are live in the Sentence Studio |
+| 3 | Translate & Type drill (Eng → typed Hangul + helper ladder) | 🟡 **core + helper ladder done; B3 partial** — Translate mode is live with the Tip → Word bank → Next chunk → Reveal helpers and helper tracking, and #108 shipped LCS token-diff feedback; **real positional alignment + near-miss diff (B3)** is still an extension — markers `EXTENSION (roadmap B3)` remain in `app.js` |
 | 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the legacy level-rail shell is gone; `renderPracticeView` is now the self-contained **Sentence Studio** (hub → session → summary) reading from the bank. |
 | 5 | Sentence SRS (`state.sentencesProgress`) | ✅ done — Leitner scheduling + due dates (C3) fully built and scheduled |
 | 6 | i+1 gating via `focusWordIds` | ✅ done — new-sentence queue restricted to known words (C2) |
@@ -233,7 +233,7 @@ be re-derived from data, not copied forward.**
 | 9 | Shadow mode + speech-stub wiring for sentences | ❌ not started (Dictation mode ships as a related listening drill) |
 | 10 | Transform drill (inflection engine) | ❌ not started |
 | 11 | Authored expansion batches (gap-driven) | ❌ not started (owner-gated volume) |
-| 12 | Legacy mini-bank migration + dead-code removal | ✅ done — legacy mini-banks migrated to sentences_core.js and dead code cleaned up (Track I) |
+| 12 | Legacy mini-bank migration + dead-code removal | 🟡 **partial** — mini-bank data was migrated into `sentences_core.js` (#109), but the **dead-code removal is not done**: `getSentenceStudyBank()`/`makeSentence*` still live in `app.js` (≈2137+) because the **Listening** tab still calls them. Full removal is the rest of Track I |
 | 13 | Sentence analytics events + metrics view | ❌ not started — extension point marked `EXTENSION (roadmap J1)` in `recordSentenceResult` |
 | 14 | Close-out: docs honest, cold-learner browser test | ❌ not started |
 
@@ -250,6 +250,14 @@ be re-derived from data, not copied forward.**
 > **Verified curation note (2026-07-07):** the strict sentences audit
 > reports 2,060 explicit rows and 0 inferred rows for both `band` and
 > `patternTags`.
+
+> **Scorecard honesty correction (2026-07-07):** rows 5 (C2 gating) and 6
+> (C3 SRS) were corrected to ✅ because #108 genuinely shipped them (the
+> earlier ❌/🟡 was stale). Rows 3 (B3) and 12 (Track I) were briefly flipped
+> to ✅ but that was an over-claim and has been reverted to 🟡: B3's *real
+> positional/near-miss alignment* and Track I's *dead-code removal* both still
+> have live `EXTENSION`/legacy code in `app.js`. Re-derive status from the
+> code, not from a prior checkmark.
 
 ## §9 Milestone reference sheet
 
