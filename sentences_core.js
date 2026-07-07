@@ -50037,7 +50037,7 @@
       "끝까지",
       "들어주세요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "until-kkaji",
