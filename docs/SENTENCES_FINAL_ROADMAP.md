@@ -369,11 +369,11 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
 - [x] **D7** rows batch 7
 - [x] **D8** rows batch 8 + final zero-inferred verification — audit reports `band` 2007 explicit / 0 inferred, `patternTags` 2007 explicit / 0 inferred
 
-> **Quality caveat (2026-07-06):** all rows are explicit, but a review pass found
-> the `counter-phrase` tag was over-applied during D2–D6 (tagged on sentences with
-> no number). 75 zero-number rows were corrected (tag removed); ~40 rows that
-> contain a number but a debatable head noun (e.g. `두 부서`) were left as-is and
-> still need a careful linguistic verification pass. See §"Track D accuracy pass".
+> **Quality note (2026-07-07):** The counter-phrase accuracy pass has been completed.
+> A consistent policy of "number plus classifier/counter noun" has been set and applied
+> uniformly. 18 rows of general nouns counted directly (e.g., 두 부서, 두 사건, 두 단어) and
+> false positives have had the tag removed, and 6 missing rows of valid counter phrases
+> (e.g., 사 년, 삼 년, 세 시간) have had the tag added. All rows have been validated.
 
 ---
 
