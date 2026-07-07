@@ -68611,7 +68611,7 @@
     "band": 1,
     "patternTags": [
       "object-eul-reul",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_3054_ppaeda_remove"
@@ -69730,7 +69730,7 @@
     "voiceText": "영어 할 수 있어요?",
     "tokens": ["영어","할","수","있어요"],
     "band": 2,
-    "patternTags": ["can-su-itda","existence-itda","present-polite","question-polite"],
+    "patternTags": ["can-su-itda","present-polite","question-polite"],
     "focusWordIds": ["w_m6_2016_yeangeo"],
     "sourceWordIds": ["w_m6_2016_yeangeo"],
     "speechLevel": "polite informal",
