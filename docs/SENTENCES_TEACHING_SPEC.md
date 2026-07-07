@@ -228,8 +228,8 @@ be re-derived from data, not copied forward.**
 | 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the legacy level-rail shell is gone; `renderPracticeView` is now the self-contained **Sentence Studio** (hub → session → summary) reading from the bank. |
 | 5 | Sentence SRS (`state.sentencesProgress`) | ✅ done — Leitner scheduling + due dates (C3) fully built and scheduled |
 | 6 | i+1 gating via `focusWordIds` | ✅ done — new-sentence queue restricted to known words (C2) |
-| 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows explicit; **accuracy sweep complete for all s0001–s2060** (finished 2026-07-07). |
-| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ❌ not started |
+| 7 | Pattern-tag & band curation | ✅ **done** — 2,060 rows explicit; **patternTag accuracy sweep and band accuracy sweep complete for all s0001–s2060** (finished 2026-07-07). |
+| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | 🟡 **data file done** — authored `sentences_lesson_plan.js` containing 12 units of pattern-tag clustered sentences (4-5 low-band sentences each); loaded in index.html + sw.js; player wiring is pending. |
 | 9 | Shadow mode + speech-stub wiring for sentences | ❌ not started (Dictation mode ships as a related listening drill) |
 | 10 | Transform drill (inflection engine) | ❌ not started |
 | 11 | Authored expansion batches (gap-driven) | ❌ not started (owner-gated volume) |
