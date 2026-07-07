@@ -14148,7 +14148,7 @@ function sentenceStudioHubHtml() {
         <div class="screen-sub" style="margin-bottom: 16px;">
           To unlock, learn more vocabulary. This band requires focus words you haven't studied yet.
         </div>
-        <button class="button primary compact" type="button" data-ss-goto="vocab">
+        <button class="button primary compact" type="button" data-ss-goto="vocabulary">
           Learn ${unmetCount} more word${unmetCount === 1 ? "" : "s"}
         </button>
       </div>
@@ -14201,7 +14201,7 @@ function sentenceStudioHubHtml() {
       <div class="screen-sub" style="margin-bottom:12px;">Short sessions of real sentence production: type it, build it, hear it. Five sentences per run.</div>
       <div class="ss-stats">
         <div class="stat-box"><span class="sv">${resultIds.length}</span><span class="sl">Sentences practiced</span></div>
-        <div class="stat-box"><span class="sv" style="${dueCount > 0 ? "color: var(--warning-color);" : ""}">${dueCount}</span><span class="sl">Reviews due</span></div>
+        <div class="stat-box"><span class="sv" style="${dueCount > 0 ? "color: var(--warn);" : ""}">${dueCount}</span><span class="sl">Reviews due</span></div>
         <div class="stat-box"><span class="sv">${progress.sessionsDone}</span><span class="sl">Sessions done</span></div>
       </div>
     </div>

@@ -1,5 +1,5 @@
-// [2026-07-06] Cache bumped to v243: Track H/I legacy sentence consolidation (+53 rows) on top of Track B/C/D.
-const CACHE_NAME = "hanapath-shell-v243";
+// [2026-07-07] Cache bumped to v244: fix locked-band CTA nav target + Reviews-due stat color var.
+const CACHE_NAME = "hanapath-shell-v244";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,7 +11,7 @@ const APP_SHELL = [
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260706d",
-  "./app.js?v=20260706d",
+  "./app.js?v=20260707a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
