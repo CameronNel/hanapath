@@ -12138,13 +12138,13 @@
   },
   {
     "id": "s0390",
-    "korean": "\uCD94\uC6CC\uC11C \uCF54\uAC00 \uBE68\uAC1C\uC694.",
+    "korean": "추워서 코가 빨개요.",
     "english": "It's cold so my nose is red.",
-    "voiceText": "\uCD94\uC6CC\uC11C \uCF54\uAC00 \uBE68\uAC1C\uC694.",
+    "voiceText": "추워서 코가 빨개요.",
     "tokens": [
-      "\uCD94\uC6CC\uC11C",
-      "\uCF54\uAC00",
-      "\uBE68\uAC1C\uC694."
+      "추워서",
+      "코가",
+      "빨개요."
     ],
     "band": 4,
     "patternTags": [
@@ -12170,13 +12170,13 @@
   },
   {
     "id": "s0391",
-    "korean": "\uC785\uC744 \uD06C\uAC8C \uBC8C\uB9AC\uC138\uC694.",
+    "korean": "입을 크게 벌리세요.",
     "english": "Open your mouth wide.",
-    "voiceText": "\uC785\uC744 \uD06C\uAC8C \uBC8C\uB9AC\uC138\uC694.",
+    "voiceText": "입을 크게 벌리세요.",
     "tokens": [
-      "\uC785\uC744",
-      "\uD06C\uAC8C",
-      "\uBC8C\uB9AC\uC138\uC694."
+      "입을",
+      "크게",
+      "벌리세요."
     ],
     "band": 1,
     "patternTags": [
@@ -12202,13 +12202,13 @@
   },
   {
     "id": "s0392",
-    "korean": "\uCD94\uC6CC\uC11C \uADC0\uAC00 \uC544\uD30C\uC694.",
+    "korean": "추워서 귀가 아파요.",
     "english": "It's cold so my ears hurt.",
-    "voiceText": "\uCD94\uC6CC\uC11C \uADC0\uAC00 \uC544\uD30C\uC694.",
+    "voiceText": "추워서 귀가 아파요.",
     "tokens": [
-      "\uCD94\uC6CC\uC11C",
-      "\uADC0\uAC00",
-      "\uC544\uD30C\uC694."
+      "추워서",
+      "귀가",
+      "아파요."
     ],
     "band": 4,
     "patternTags": [
@@ -12231,7 +12231,8 @@
       "band": "explicit",
       "patternTags": "explicit"
     }
-  },  {
+  },
+  {
     "id": "s0393",
     "korean": "팔을 굽혔다 펴요.",
     "english": "Bend and stretch your arm.",
@@ -14732,7 +14733,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_185_jajeongeo"
@@ -14764,7 +14765,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_187_jeongryujang"
@@ -14796,7 +14797,7 @@
     "patternTags": [
       "subject-i-ga",
       "location-e",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_190_otobai"
@@ -14829,7 +14830,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_191_bae_boat"
@@ -14862,7 +14863,7 @@
       "subject-i-ga",
       "object-eul-reul",
       "present-polite",
-      "honorific-si",
+      "honorific-si"
     ],
     "focusWordIds": [
       "w_m5_193_unjeon"
@@ -15019,7 +15020,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_201_ucheguk",
@@ -15053,7 +15054,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_202_seojeom"
@@ -15085,7 +15086,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_203_geukjang"
@@ -15117,7 +15118,7 @@
     "patternTags": [
       "subject-i-ga",
       "location-eseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_206_hae_sun"
@@ -15150,7 +15151,7 @@
     "patternTags": [
       "subject-i-ga",
       "counter-phrase",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m2_hae_year"
@@ -15184,7 +15185,7 @@
     "patternTags": [
       "subject-i-ga",
       "present-polite",
-      "existence-itda",
+      "existence-itda"
     ],
     "focusWordIds": [
       "w_m5_207_gureum"
@@ -15250,7 +15251,7 @@
     "patternTags": [
       "location-e",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_210_san"
@@ -15280,7 +15281,7 @@
     "band": 3,
     "patternTags": [
       "location-e",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_3044_oreuda_climb"
@@ -15345,7 +15346,7 @@
       "subject-i-ga",
       "location-e",
       "present-polite",
-      "existence-itda",
+      "existence-itda"
     ],
     "focusWordIds": [
       "w_m5_212_dol"
@@ -15377,7 +15378,7 @@
     "patternTags": [
       "subject-i-ga",
       "copula-ieyo",
-      "time-expression",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_3030_dol_birthday"
@@ -15505,7 +15506,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-e",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_216_ssiat"
@@ -15540,7 +15541,7 @@
       "present-polite",
       "existence-itda",
       "can-su-itda",
-      "counter-phrase",
+      "counter-phrase"
     ],
     "focusWordIds": [
       "w_m5_217_cho"
@@ -15573,7 +15574,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-e",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m2_cho_candle"
@@ -15609,7 +15610,7 @@
       "object-eul-reul",
       "time-expression",
       "counter-phrase",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_218_ju_week"
@@ -15642,7 +15643,7 @@
     "patternTags": [
       "location-eseo",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_219_saebyeok"
@@ -15713,7 +15714,7 @@
     "patternTags": [
       "object-eul-reul",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_221_ohu"
@@ -15777,7 +15778,7 @@
     "patternTags": [
       "object-eul-reul",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_223_maeil"
@@ -15808,7 +15809,7 @@
     "band": 3,
     "patternTags": [
       "topic-neun",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_224_ibeon"
@@ -15840,7 +15841,7 @@
     "patternTags": [
       "object-eul-reul",
       "time-expression",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_225_jinan"
@@ -15872,7 +15873,7 @@
     "band": 3,
     "patternTags": [
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_226_daeum"
@@ -15904,7 +15905,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-e",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_227_dallyeok"
@@ -15936,7 +15937,7 @@
     "patternTags": [
       "topic-neun",
       "copula-ieyo",
-      "time-expression",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m5_228_olhae"
@@ -15969,7 +15970,7 @@
     "patternTags": [
       "location-e",
       "future-geoyeyo",
-      "time-expression",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m5_229_naenyeon"
@@ -16003,7 +16004,7 @@
       "topic-neun",
       "location-e",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_230_pyeongil"
@@ -16068,7 +16069,7 @@
     "patternTags": [
       "object-eul-reul",
       "direction-euro",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_232_hyuga"
@@ -16100,7 +16101,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-e",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_233_gongchaek"
@@ -16133,7 +16134,7 @@
     "patternTags": [
       "object-eul-reul",
       "time-expression",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_236_sukje"
@@ -16199,7 +16200,7 @@
     "patternTags": [
       "subject-i-ga",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_238_seongjeok"
@@ -16333,7 +16334,7 @@
     "patternTags": [
       "object-eul-reul",
       "direction-euro",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_242_jiugae"
@@ -16397,7 +16398,7 @@
     "patternTags": [
       "object-eul-reul",
       "direction-euro",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_244_dokseo"
@@ -16429,7 +16430,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-eseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_246_yori"
@@ -16464,7 +16465,7 @@
       "location-e",
       "direction-euro",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_247_naksi"
@@ -16499,7 +16500,7 @@
       "subject-i-ga",
       "location-e",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_248_deungsan"
@@ -16568,7 +16569,7 @@
     "patternTags": [
       "object-eul-reul",
       "location-e",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_250_geurim"
@@ -17558,7 +17559,7 @@
     "band": 1,
     "patternTags": [
       "direction-euro",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_281_ollagada"
@@ -17622,7 +17623,7 @@
     "patternTags": [
       "object-eul-reul",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_286_mandeulda"
@@ -17750,7 +17751,7 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_297_gareuchida"
@@ -17781,7 +17782,7 @@
     ],
     "band": 2,
     "patternTags": [
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_298_saenggakhada"
@@ -17812,7 +17813,7 @@
     "band": 1,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_299_mureoboda"
@@ -17842,7 +17843,7 @@
     "band": 1,
     "patternTags": [
       "with-hago-wa",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_300_iyagihada"
@@ -17904,7 +17905,7 @@
       "object-eul-reul",
       "with-hago-wa",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_3029_bonaeda_spend"
@@ -17935,7 +17936,7 @@
     "band": 3,
     "patternTags": [
       "object-eul-reul",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_303_batda"
@@ -17966,7 +17967,7 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_304_dowajuda"
@@ -18027,7 +18028,7 @@
     "band": 4,
     "patternTags": [
       "and-go",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_307_yangchihada"
@@ -18088,7 +18089,7 @@
     "band": 3,
     "patternTags": [
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_309_myeondohada"
@@ -18121,7 +18122,7 @@
     "patternTags": [
       "direction-euro",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_310_chulgeunhada"
@@ -18153,7 +18154,7 @@
     "band": 3,
     "patternTags": [
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_311_toegeunhada"
@@ -18185,7 +18186,7 @@
     "band": 3,
     "patternTags": [
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_312_ilhada"
@@ -18217,7 +18218,7 @@
     "patternTags": [
       "with-hago-wa",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_313_nolda"
@@ -18250,7 +18251,7 @@
     "patternTags": [
       "object-eul-reul",
       "and-go",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_314_utda"
@@ -18282,7 +18283,7 @@
     "patternTags": [
       "subject-i-ga",
       "because-aseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_315_ulda"
@@ -18348,7 +18349,7 @@
     "patternTags": [
       "location-eseo",
       "must-ya-dwaeda",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_317_naerida"
@@ -18381,7 +18382,7 @@
     "patternTags": [
       "topic-neun",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_318_sijakhada"
@@ -18509,7 +18510,7 @@
     "band": 2,
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_323_chukhahada"
@@ -18604,7 +18605,7 @@
     "patternTags": [
       "subject-i-ga",
       "because-aseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_326_jopda"
@@ -18731,7 +18732,7 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_331_oraedoeda"
@@ -18764,7 +18765,7 @@
     "patternTags": [
       "topic-neun",
       "and-go",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_332_madeopda"
@@ -18796,7 +18797,7 @@
     "patternTags": [
       "topic-neun",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_335_hangahada"
@@ -18828,7 +18829,7 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_336_neurida"
@@ -18986,7 +18987,7 @@
     "patternTags": [
       "subject-i-ga",
       "because-aseo",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_342_deoreopda"
@@ -19081,7 +19082,7 @@
     "patternTags": [
       "subject-i-ga",
       "because-aseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_345_bulpyeonhada"
@@ -19114,7 +19115,7 @@
     "patternTags": [
       "object-eul-reul",
       "because-aseo",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_346_gippeuda"
@@ -19147,7 +19148,7 @@
     "patternTags": [
       "subject-i-ga",
       "because-aseo",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_347_seulpeuda"
@@ -19180,7 +19181,7 @@
     "patternTags": [
       "topic-neun",
       "time-expression",
-      "present-polite",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m5_348_haengbokhada"
@@ -19212,7 +19213,7 @@
     "patternTags": [
       "subject-i-ga",
       "present-polite",
-      "honorific-si",
+      "honorific-si"
     ],
     "focusWordIds": [
       "w_m5_349_geonganghada"
@@ -19279,7 +19280,7 @@
       "subject-i-ga",
       "object-eul-reul",
       "because-aseo",
-      "past-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m5_351_yakhada"
@@ -31396,8 +31397,8 @@
     ],
     "band": 3,
     "patternTags": [
-      "comparison-boda"
-      ,"topic-neun",
+      "comparison-boda",
+      "topic-neun",
       "present-polite"
     ],
     "focusWordIds": [
@@ -38078,8 +38079,7 @@
     "patternTags": [
       "subject-i-ga",
       "location-eseo",
-      "past-polite"
-      ,
+      "past-polite",
       "time-expression"
     ],
     "focusWordIds": [
@@ -54092,11 +54092,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "location-eseo",
       "subject-i-ga",
-      "counter-phrase",
-      "time-expression"
+      "time-expression",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2103_hoeui"
@@ -54167,7 +54166,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "subject-i-ga",
       "present-polite",
       "can-su-itda",
@@ -54247,10 +54245,9 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "topic-neun",
-      "direction-euro",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2107_gakja"
@@ -54285,10 +54282,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
       "present-polite",
-      "existence-itda"
+      "existence-itda",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2108_gamgak"
@@ -54324,7 +54321,6 @@
     "patternTags": [
       "subject-i-ga",
       "location-e",
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -54513,7 +54509,6 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -54623,7 +54618,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -54698,7 +54692,6 @@
     "band": 5,
     "patternTags": [
       "possessive-ui",
-      "location-e",
       "object-eul-reul",
       "present-polite"
     ],
@@ -54773,7 +54766,6 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "object-eul-reul",
       "present-polite",
       "because-aseo"
@@ -54880,9 +54872,7 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "location-eseo",
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -55256,7 +55246,8 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "location-e"
+      "location-e",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2134_goksik"
@@ -55288,7 +55279,6 @@
     ],
     "band": 3,
     "patternTags": [
-      "location-e",
       "past-polite",
       "because-aseo"
     ],
@@ -55364,7 +55354,8 @@
     "band": 5,
     "patternTags": [
       "location-eseo",
-      "subject-i-ga"
+      "subject-i-ga",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2137_gongsa"
@@ -55471,7 +55462,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "present-polite",
       "time-expression"
@@ -55582,9 +55572,11 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "present-polite",
-      "and-go"
+      "and-go",
+      "past-polite",
+      "location-e",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2143_gwiga"
@@ -55731,7 +55723,6 @@
     "band": 5,
     "patternTags": [
       "possessive-ui",
-      "location-e",
       "object-eul-reul",
       "present-polite",
       "must-ya-dwaeda"
@@ -55805,7 +55796,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -56021,7 +56011,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "subject-i-ga",
       "past-polite"
@@ -56060,7 +56049,8 @@
     "patternTags": [
       "subject-i-ga",
       "location-e",
-      "if-myeon"
+      "if-myeon",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2156_gaeulcheol"
@@ -56165,7 +56155,6 @@
     "band": 3,
     "patternTags": [
       "also-do",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -56201,7 +56190,6 @@
     "patternTags": [
       "possessive-ui",
       "subject-i-ga",
-      "location-e",
       "past-polite"
     ],
     "focusWordIds": [
@@ -56233,11 +56221,10 @@
       "최선을",
       "다합니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "possessive-ui",
-      "location-e",
       "object-eul-reul",
       "formal-nida"
     ],
@@ -56480,10 +56467,8 @@
       "강풍에",
       "주의하세요."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
-      "direction-euro",
-      "location-e",
       "imperative-seyo",
       "honorific-si",
       "time-expression"
@@ -56773,7 +56758,6 @@
     "patternTags": [
       "topic-neun",
       "possessive-ui",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -56985,7 +56969,6 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "direction-euro",
       "past-polite",
       "time-expression"
     ],
@@ -57089,11 +57072,11 @@
       "주말에",
       "열립니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
-      "time-expression"
+      "time-expression",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2184_gyeolsungjeon"
@@ -57197,7 +57180,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -57230,11 +57212,12 @@
       "관리를",
       "하십니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "honorific-si"
+      "honorific-si",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2188_gyeongbiwon"
@@ -57269,7 +57252,8 @@
     "patternTags": [
       "topic-neun",
       "location-eseo",
-      "object-eul-reul"
+      "object-eul-reul",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2189_gyeongyeonghak"
@@ -57379,7 +57363,6 @@
     "patternTags": [
       "location-eseo",
       "subject-i-ga",
-      "direction-euro",
       "object-eul-reul",
       "present-polite"
     ],
@@ -57453,7 +57436,6 @@
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -57527,7 +57509,8 @@
       "location-e",
       "subject-i-ga",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2196_gohyangjip"
@@ -57668,7 +57651,8 @@
     "band": 4,
     "patternTags": [
       "location-eseo",
-      "subject-i-ga"
+      "subject-i-ga",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2200_gongsapan"
@@ -57699,7 +57683,7 @@
       "공식력이",
       "보장합니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "possessive-ui",
@@ -57737,9 +57721,9 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "past-polite"
+      "past-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2202_gongyeonjang"
@@ -57878,11 +57862,11 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "topic-neun",
       "subject-i-ga",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2206_gwangwanggaek"
@@ -58091,11 +58075,10 @@
       "교수법을",
       "강의하셔요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "imperative-seyo",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -58165,9 +58148,9 @@
     "band": 4,
     "patternTags": [
       "topic-neun",
-      "location-e",
       "object-eul-reul",
-      "present-polite"
+      "present-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2214_gyoyukbeop"
@@ -58236,7 +58219,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "direction-euro",
       "subject-i-ga",
       "past-polite"
     ],
@@ -58451,7 +58433,7 @@
       "지닌",
       "문서입니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
@@ -58490,7 +58472,6 @@
     "band": 4,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "object-eul-reul",
       "past-polite"
     ],
@@ -58603,7 +58584,6 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
       "past-polite",
       "because-aseo"
     ],
@@ -58672,7 +58652,7 @@
       "이상적인",
       "군인상입니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "with-hago-wa",
@@ -58748,7 +58728,6 @@
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -59115,9 +59094,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "present-polite"
+      "present-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2240_geumyeonbeop"
@@ -59191,10 +59170,7 @@
       "location-eseo",
       "subject-i-ga",
       "object-eul-reul",
-      "with-hago-wa",
-      "present-polite",
-      "and-go",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2242_gigyegong"
@@ -59228,10 +59204,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "possessive-ui",
       "object-eul-reul",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2243_ginyeomgwan"
@@ -59339,7 +59315,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "past-polite"
     ],
@@ -59377,7 +59352,6 @@
     "patternTags": [
       "topic-neun",
       "subject-i-ga",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -59480,14 +59454,14 @@
       "말을",
       "기억하세요."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "topic-neun",
       "object-eul-reul",
-      "imperative-seyo",
       "copula-ieyo",
-      "honorific-si"
+      "honorific-si",
+      "imperative-seyo"
     ],
     "focusWordIds": [
       "w_m6_2303_sogdam"
@@ -59699,10 +59673,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "direction-euro",
       "past-polite",
-      "because-aseo"
+      "because-aseo",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2309_sugso"
@@ -59738,7 +59712,6 @@
     "patternTags": [
       "possessive-ui",
       "subject-i-ga",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -59850,7 +59823,6 @@
     "patternTags": [
       "subject-i-ga",
       "possessive-ui",
-      "location-e",
       "present-polite",
       "because-aseo"
     ],
@@ -59889,9 +59861,9 @@
     "patternTags": [
       "possessive-ui",
       "topic-neun",
-      "location-e",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2314_seungri"
@@ -59998,10 +59970,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "possessive-ui",
       "subject-i-ga",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2317_sigmul"
@@ -60036,8 +60008,8 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
-      "past-polite"
+      "past-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2318_singo"
@@ -60073,7 +60045,6 @@
     "patternTags": [
       "topic-neun",
       "subject-i-ga",
-      "location-e",
       "present-polite",
       "because-aseo"
     ],
@@ -60256,9 +60227,9 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "past-polite"
+      "past-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2324_sinseol"
@@ -60366,10 +60337,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
       "past-polite",
-      "time-expression"
+      "time-expression",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2327_sinib"
@@ -60518,7 +60489,6 @@
     "band": 5,
     "patternTags": [
       "also-do",
-      "only-man",
       "subject-i-ga",
       "present-polite",
       "but-jiman"
@@ -60632,7 +60602,6 @@
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -60742,7 +60711,6 @@
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -60780,7 +60748,6 @@
     "patternTags": [
       "object-eul-reul",
       "topic-neun",
-      "direction-euro",
       "present-polite",
       "comparison-boda",
       "existence-itda"
@@ -60854,9 +60821,9 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "location-e",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2340_silhyeon"
@@ -60995,9 +60962,9 @@
     "band": 4,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "past-polite",
-      "and-go"
+      "and-go",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2344_angwa"
@@ -61070,8 +61037,8 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2346_anbu"
@@ -61107,7 +61074,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "subject-i-ga",
       "present-polite",
       "neg-ji-anta",
@@ -61147,7 +61113,6 @@
     "band": 5,
     "patternTags": [
       "possessive-ui",
-      "location-e",
       "subject-i-ga",
       "object-eul-reul",
       "past-polite"
@@ -61185,7 +61150,6 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "direction-euro",
       "past-polite",
       "when-ttae"
     ],
@@ -61222,9 +61186,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2350_anpakk"
@@ -61331,10 +61295,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "present-polite",
-      "and-go"
+      "and-go",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2353_yangnyeom"
@@ -61371,7 +61335,6 @@
     "patternTags": [
       "topic-neun",
       "possessive-ui",
-      "location-e",
       "object-eul-reul",
       "present-polite",
       "neg-ji-anta"
@@ -69015,11 +68978,25 @@
     "korean": "저는 커피를 마셔요.",
     "english": "I drink coffee.",
     "voiceText": "저는 커피를 마셔요.",
-    "tokens": ["저는","커피를","마셔요"],
+    "tokens": [
+      "저는",
+      "커피를",
+      "마셔요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","object-eul-reul","present-polite"],
-    "focusWordIds": ["w0303_jeo_that_over","w0504_keopi"],
-    "sourceWordIds": ["w0303_jeo_that_over","w0504_keopi"],
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w0504_keopi"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w0504_keopi"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69035,11 +69012,26 @@
     "korean": "오늘은 날씨가 좋아요.",
     "english": "The weather is good today.",
     "voiceText": "오늘은 날씨가 좋아요.",
-    "tokens": ["오늘은","날씨가","좋아요"],
+    "tokens": [
+      "오늘은",
+      "날씨가",
+      "좋아요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","subject-i-ga","present-polite","time-expression"],
-    "focusWordIds": ["w0601_oneul","w1601_nalssi"],
-    "sourceWordIds": ["w0601_oneul","w1601_nalssi"],
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0601_oneul",
+      "w1601_nalssi"
+    ],
+    "sourceWordIds": [
+      "w0601_oneul",
+      "w1601_nalssi"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69055,11 +69047,21 @@
     "korean": "사과를 먹어요.",
     "english": "I eat an apple.",
     "voiceText": "사과를 먹어요.",
-    "tokens": ["사과를","먹어요"],
+    "tokens": [
+      "사과를",
+      "먹어요"
+    ],
     "band": 1,
-    "patternTags": ["object-eul-reul","present-polite"],
-    "focusWordIds": ["w_m6_2970_sagwa_apology"],
-    "sourceWordIds": ["w_m6_2970_sagwa_apology"],
+    "patternTags": [
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2970_sagwa_apology"
+    ],
+    "sourceWordIds": [
+      "w_m6_2970_sagwa_apology"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69075,11 +69077,21 @@
     "korean": "버스를 타요.",
     "english": "I take the bus.",
     "voiceText": "버스를 타요.",
-    "tokens": ["버스를","타요"],
+    "tokens": [
+      "버스를",
+      "타요"
+    ],
     "band": 1,
-    "patternTags": ["object-eul-reul","present-polite"],
-    "focusWordIds": ["w1303_beoseu"],
-    "sourceWordIds": ["w1303_beoseu"],
+    "patternTags": [
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1303_beoseu"
+    ],
+    "sourceWordIds": [
+      "w1303_beoseu"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69095,11 +69107,25 @@
     "korean": "저는 학생이 아니에요.",
     "english": "I am not a student.",
     "voiceText": "저는 학생이 아니에요.",
-    "tokens": ["저는","학생이","아니에요"],
+    "tokens": [
+      "저는",
+      "학생이",
+      "아니에요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","subject-i-ga","copula-negative-anieyo"],
-    "focusWordIds": ["w0303_jeo_that_over","w0207_haksaeng"],
-    "sourceWordIds": ["w0303_jeo_that_over","w0207_haksaeng"],
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "copula-negative-anieyo"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w0207_haksaeng"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w0207_haksaeng"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69115,11 +69141,24 @@
     "korean": "우리 집은 가까워요.",
     "english": "Our house is close.",
     "voiceText": "우리 집은 가까워요.",
-    "tokens": ["우리","집은","가까워요"],
+    "tokens": [
+      "우리",
+      "집은",
+      "가까워요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","present-polite"],
-    "focusWordIds": ["w0204_uri","w0404_jip"],
-    "sourceWordIds": ["w0204_uri","w0404_jip"],
+    "patternTags": [
+      "topic-neun",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0204_uri",
+      "w0404_jip"
+    ],
+    "sourceWordIds": [
+      "w0204_uri",
+      "w0404_jip"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69135,11 +69174,22 @@
     "korean": "물이 있어요.",
     "english": "There is water.",
     "voiceText": "물이 있어요.",
-    "tokens": ["물이","있어요"],
+    "tokens": [
+      "물이",
+      "있어요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","present-polite","existence-itda"],
-    "focusWordIds": ["w0501_mul"],
-    "sourceWordIds": ["w0501_mul"],
+    "patternTags": [
+      "subject-i-ga",
+      "present-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w0501_mul"
+    ],
+    "sourceWordIds": [
+      "w0501_mul"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69155,11 +69205,21 @@
     "korean": "이것은 책이에요.",
     "english": "This is a book.",
     "voiceText": "이것은 책이에요.",
-    "tokens": ["이것은","책이에요"],
+    "tokens": [
+      "이것은",
+      "책이에요"
+    ],
     "band": 1,
-    "patternTags": ["topic-neun","copula-ieyo"],
-    "focusWordIds": ["w_m5_362_igeot"],
-    "sourceWordIds": ["w_m5_362_igeot"],
+    "patternTags": [
+      "topic-neun",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w_m5_362_igeot"
+    ],
+    "sourceWordIds": [
+      "w_m5_362_igeot"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69175,11 +69235,26 @@
     "korean": "저는 시간이 있어요.",
     "english": "I have time.",
     "voiceText": "저는 시간이 있어요.",
-    "tokens": ["저는","시간이","있어요"],
+    "tokens": [
+      "저는",
+      "시간이",
+      "있어요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","subject-i-ga","present-polite","existence-itda"],
-    "focusWordIds": ["w0303_jeo_that_over","w_m6_3006_sigan_hour"],
-    "sourceWordIds": ["w0303_jeo_that_over","w_m6_3006_sigan_hour"],
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "present-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w_m6_3006_sigan_hour"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w_m6_3006_sigan_hour"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69195,11 +69270,21 @@
     "korean": "한국어가 재미있어요.",
     "english": "Korean is fun.",
     "voiceText": "한국어가 재미있어요.",
-    "tokens": ["한국어가","재미있어요"],
+    "tokens": [
+      "한국어가",
+      "재미있어요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","present-polite"],
-    "focusWordIds": ["w0002_hangugeo"],
-    "sourceWordIds": ["w0002_hangugeo"],
+    "patternTags": [
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0002_hangugeo"
+    ],
+    "sourceWordIds": [
+      "w0002_hangugeo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69215,11 +69300,25 @@
     "korean": "저는 학교에 가요.",
     "english": "I go to school.",
     "voiceText": "저는 학교에 가요.",
-    "tokens": ["저는","학교에","가요"],
+    "tokens": [
+      "저는",
+      "학교에",
+      "가요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","location-e","present-polite"],
-    "focusWordIds": ["w0303_jeo_that_over","w0405_hakgyo"],
-    "sourceWordIds": ["w0303_jeo_that_over","w0405_hakgyo"],
+    "patternTags": [
+      "topic-neun",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w0405_hakgyo"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w0405_hakgyo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69235,11 +69334,25 @@
     "korean": "어제 책을 읽었어요.",
     "english": "I read a book yesterday.",
     "voiceText": "어제 책을 읽었어요.",
-    "tokens": ["어제","책을","읽었어요"],
+    "tokens": [
+      "어제",
+      "책을",
+      "읽었어요"
+    ],
     "band": 2,
-    "patternTags": ["object-eul-reul","past-polite","time-expression"],
-    "focusWordIds": ["w0603_eoje","w0309_chaek"],
-    "sourceWordIds": ["w0603_eoje","w0309_chaek"],
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0603_eoje",
+      "w0309_chaek"
+    ],
+    "sourceWordIds": [
+      "w0603_eoje",
+      "w0309_chaek"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69255,11 +69368,26 @@
     "korean": "내일 친구를 만날 거예요.",
     "english": "I will meet a friend tomorrow.",
     "voiceText": "내일 친구를 만날 거예요.",
-    "tokens": ["내일","친구를","만날","거예요"],
+    "tokens": [
+      "내일",
+      "친구를",
+      "만날",
+      "거예요"
+    ],
     "band": 2,
-    "patternTags": ["object-eul-reul","future-geoyeyo","time-expression"],
-    "focusWordIds": ["w0602_naeil","w0206_chingu"],
-    "sourceWordIds": ["w0602_naeil","w0206_chingu"],
+    "patternTags": [
+      "object-eul-reul",
+      "future-geoyeyo",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0602_naeil",
+      "w0206_chingu"
+    ],
+    "sourceWordIds": [
+      "w0602_naeil",
+      "w0206_chingu"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69275,11 +69403,25 @@
     "korean": "지금 커피를 마셔요.",
     "english": "I am drinking coffee now.",
     "voiceText": "지금 커피를 마셔요.",
-    "tokens": ["지금","커피를","마셔요"],
+    "tokens": [
+      "지금",
+      "커피를",
+      "마셔요"
+    ],
     "band": 2,
-    "patternTags": ["object-eul-reul","present-polite","time-expression"],
-    "focusWordIds": ["w0604_jigeum","w0504_keopi"],
-    "sourceWordIds": ["w0604_jigeum","w0504_keopi"],
+    "patternTags": [
+      "object-eul-reul",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0604_jigeum",
+      "w0504_keopi"
+    ],
+    "sourceWordIds": [
+      "w0604_jigeum",
+      "w0504_keopi"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69295,11 +69437,25 @@
     "korean": "저는 한국어를 배워요.",
     "english": "I learn Korean.",
     "voiceText": "저는 한국어를 배워요.",
-    "tokens": ["저는","한국어를","배워요"],
+    "tokens": [
+      "저는",
+      "한국어를",
+      "배워요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","object-eul-reul","present-polite"],
-    "focusWordIds": ["w0303_jeo_that_over","w0002_hangugeo"],
-    "sourceWordIds": ["w0303_jeo_that_over","w0002_hangugeo"],
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w0002_hangugeo"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w0002_hangugeo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69315,11 +69471,26 @@
     "korean": "저는 집에 갈 거예요.",
     "english": "I will go home.",
     "voiceText": "저는 집에 갈 거예요.",
-    "tokens": ["저는","집에","갈","거예요"],
+    "tokens": [
+      "저는",
+      "집에",
+      "갈",
+      "거예요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","location-e","future-geoyeyo"],
-    "focusWordIds": ["w0303_jeo_that_over","w0404_jip"],
-    "sourceWordIds": ["w0303_jeo_that_over","w0404_jip"],
+    "patternTags": [
+      "topic-neun",
+      "location-e",
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w0404_jip"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w0404_jip"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69335,11 +69506,25 @@
     "korean": "저는 어제 운동했어요.",
     "english": "I exercised yesterday.",
     "voiceText": "저는 어제 운동했어요.",
-    "tokens": ["저는","어제","운동했어요"],
+    "tokens": [
+      "저는",
+      "어제",
+      "운동했어요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","past-polite","time-expression"],
-    "focusWordIds": ["w0303_jeo_that_over","w0603_eoje"],
-    "sourceWordIds": ["w0303_jeo_that_over","w0603_eoje"],
+    "patternTags": [
+      "topic-neun",
+      "past-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w0603_eoje"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w0603_eoje"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69355,11 +69540,21 @@
     "korean": "할머니가 오세요.",
     "english": "Grandmother is coming.",
     "voiceText": "할머니가 오세요.",
-    "tokens": ["할머니가","오세요"],
+    "tokens": [
+      "할머니가",
+      "오세요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","honorific-si"],
-    "focusWordIds": ["w_m5_058_halmeoni"],
-    "sourceWordIds": ["w_m5_058_halmeoni"],
+    "patternTags": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m5_058_halmeoni"
+    ],
+    "sourceWordIds": [
+      "w_m5_058_halmeoni"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69375,11 +69570,23 @@
     "korean": "선생님이 계세요.",
     "english": "The teacher is here.",
     "voiceText": "선생님이 계세요.",
-    "tokens": ["선생님이","계세요"],
+    "tokens": [
+      "선생님이",
+      "계세요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","honorific-si"],
-    "focusWordIds": ["w0208_seonsaengnim","w1902_gyesida"],
-    "sourceWordIds": ["w0208_seonsaengnim","w1902_gyesida"],
+    "patternTags": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w0208_seonsaengnim",
+      "w1902_gyesida"
+    ],
+    "sourceWordIds": [
+      "w0208_seonsaengnim",
+      "w1902_gyesida"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69395,11 +69602,25 @@
     "korean": "저는 친구를 도와요.",
     "english": "I help a friend.",
     "voiceText": "저는 친구를 도와요.",
-    "tokens": ["저는","친구를","도와요"],
+    "tokens": [
+      "저는",
+      "친구를",
+      "도와요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","object-eul-reul","present-polite"],
-    "focusWordIds": ["w0303_jeo_that_over","w0206_chingu"],
-    "sourceWordIds": ["w0303_jeo_that_over","w0206_chingu"],
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w0206_chingu"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w0206_chingu"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69415,11 +69636,25 @@
     "korean": "우리는 영화를 봐요.",
     "english": "We watch a movie.",
     "voiceText": "우리는 영화를 봐요.",
-    "tokens": ["우리는","영화를","봐요"],
+    "tokens": [
+      "우리는",
+      "영화를",
+      "봐요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","object-eul-reul","present-polite"],
-    "focusWordIds": ["w0204_uri","w_m5_424_yeonghwa"],
-    "sourceWordIds": ["w0204_uri","w_m5_424_yeonghwa"],
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0204_uri",
+      "w_m5_424_yeonghwa"
+    ],
+    "sourceWordIds": [
+      "w0204_uri",
+      "w_m5_424_yeonghwa"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69435,11 +69670,25 @@
     "korean": "저는 매일 일해요.",
     "english": "I work every day.",
     "voiceText": "저는 매일 일해요.",
-    "tokens": ["저는","매일","일해요"],
+    "tokens": [
+      "저는",
+      "매일",
+      "일해요"
+    ],
     "band": 2,
-    "patternTags": ["topic-neun","present-polite","time-expression"],
-    "focusWordIds": ["w0303_jeo_that_over","w_m5_223_maeil"],
-    "sourceWordIds": ["w0303_jeo_that_over","w_m5_223_maeil"],
+    "patternTags": [
+      "topic-neun",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over",
+      "w_m5_223_maeil"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over",
+      "w_m5_223_maeil"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69455,11 +69704,22 @@
     "korean": "오늘은 쉬어요.",
     "english": "I rest today.",
     "voiceText": "오늘은 쉬어요.",
-    "tokens": ["오늘은","쉬어요"],
+    "tokens": [
+      "오늘은",
+      "쉬어요"
+    ],
     "band": 1,
-    "patternTags": ["topic-neun","present-polite","time-expression"],
-    "focusWordIds": ["w0601_oneul"],
-    "sourceWordIds": ["w0601_oneul"],
+    "patternTags": [
+      "topic-neun",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0601_oneul"
+    ],
+    "sourceWordIds": [
+      "w0601_oneul"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69475,11 +69735,19 @@
     "korean": "안녕하세요.",
     "english": "Hello.",
     "voiceText": "안녕하세요.",
-    "tokens": ["안녕하세요"],
+    "tokens": [
+      "안녕하세요"
+    ],
     "band": 1,
-    "patternTags": ["honorific-si"],
-    "focusWordIds": ["w0101_annyeonghaseyo"],
-    "sourceWordIds": ["w0101_annyeonghaseyo"],
+    "patternTags": [
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w0101_annyeonghaseyo"
+    ],
+    "sourceWordIds": [
+      "w0101_annyeonghaseyo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69495,11 +69763,20 @@
     "korean": "처음 뵙겠습니다.",
     "english": "Nice to meet you.",
     "voiceText": "처음 뵙겠습니다.",
-    "tokens": ["처음","뵙겠습니다"],
+    "tokens": [
+      "처음",
+      "뵙겠습니다"
+    ],
     "band": 1,
-    "patternTags": ["formal-nida"],
-    "focusWordIds": ["w_m5_647_cheoeum"],
-    "sourceWordIds": ["w_m5_647_cheoeum"],
+    "patternTags": [
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m5_647_cheoeum"
+    ],
+    "sourceWordIds": [
+      "w_m5_647_cheoeum"
+    ],
     "speechLevel": "polite formal",
     "register": "formal",
     "grammarTip": "",
@@ -69515,11 +69792,19 @@
     "korean": "감사합니다.",
     "english": "Thank you.",
     "voiceText": "감사합니다.",
-    "tokens": ["감사합니다"],
+    "tokens": [
+      "감사합니다"
+    ],
     "band": 1,
-    "patternTags": ["formal-nida"],
-    "focusWordIds": ["w0102_gamsahamnida"],
-    "sourceWordIds": ["w0102_gamsahamnida"],
+    "patternTags": [
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w0102_gamsahamnida"
+    ],
+    "sourceWordIds": [
+      "w0102_gamsahamnida"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69535,11 +69820,19 @@
     "korean": "괜찮아요.",
     "english": "It's okay.",
     "voiceText": "괜찮아요.",
-    "tokens": ["괜찮아요"],
+    "tokens": [
+      "괜찮아요"
+    ],
     "band": 1,
-    "patternTags": ["present-polite"],
-    "focusWordIds": ["w0107_gwaenchanayo"],
-    "sourceWordIds": ["w0107_gwaenchanayo"],
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0107_gwaenchanayo"
+    ],
+    "sourceWordIds": [
+      "w0107_gwaenchanayo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69555,11 +69848,19 @@
     "korean": "네.",
     "english": "Yes.",
     "voiceText": "네.",
-    "tokens": ["네"],
+    "tokens": [
+      "네"
+    ],
     "band": 1,
-    "patternTags": ["present-polite"],
-    "focusWordIds": ["w0103_ne"],
-    "sourceWordIds": ["w0103_ne"],
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0103_ne"
+    ],
+    "sourceWordIds": [
+      "w0103_ne"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69575,11 +69876,19 @@
     "korean": "아니요.",
     "english": "No.",
     "voiceText": "아니요.",
-    "tokens": ["아니요"],
+    "tokens": [
+      "아니요"
+    ],
     "band": 1,
-    "patternTags": ["present-polite"],
-    "focusWordIds": ["w0104_aniyo"],
-    "sourceWordIds": ["w0104_aniyo"],
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0104_aniyo"
+    ],
+    "sourceWordIds": [
+      "w0104_aniyo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69595,11 +69904,23 @@
     "korean": "이거 주세요.",
     "english": "This one, please.",
     "voiceText": "이거 주세요.",
-    "tokens": ["이거","주세요"],
+    "tokens": [
+      "이거",
+      "주세요"
+    ],
     "band": 1,
-    "patternTags": ["imperative-seyo","honorific-si"],
-    "focusWordIds": ["w0304_igeo","w0105_juseyo"],
-    "sourceWordIds": ["w0304_igeo","w0105_juseyo"],
+    "patternTags": [
+      "imperative-seyo",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w0304_igeo",
+      "w0105_juseyo"
+    ],
+    "sourceWordIds": [
+      "w0304_igeo",
+      "w0105_juseyo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69615,11 +69936,20 @@
     "korean": "잠시만요.",
     "english": "One moment, please.",
     "voiceText": "잠시만요.",
-    "tokens": ["잠시만요"],
+    "tokens": [
+      "잠시만요"
+    ],
     "band": 1,
-    "patternTags": ["only-man","present-polite"],
-    "focusWordIds": ["w0109_jamsimanyo"],
-    "sourceWordIds": ["w0109_jamsimanyo"],
+    "patternTags": [
+      "only-man",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0109_jamsimanyo"
+    ],
+    "sourceWordIds": [
+      "w0109_jamsimanyo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69635,11 +69965,20 @@
     "korean": "잘 모르겠어요.",
     "english": "I don't understand.",
     "voiceText": "잘 모르겠어요.",
-    "tokens": ["잘","모르겠어요"],
+    "tokens": [
+      "잘",
+      "모르겠어요"
+    ],
     "band": 1,
-    "patternTags": ["present-polite"],
-    "focusWordIds": ["w_m5_848_jal"],
-    "sourceWordIds": ["w_m5_848_jal"],
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_848_jal"
+    ],
+    "sourceWordIds": [
+      "w_m5_848_jal"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69655,11 +69994,20 @@
     "korean": "도와주세요.",
     "english": "Please help me.",
     "voiceText": "도와주세요.",
-    "tokens": ["도와주세요"],
+    "tokens": [
+      "도와주세요"
+    ],
     "band": 1,
-    "patternTags": ["imperative-seyo","honorific-si"],
-    "focusWordIds": ["w0108_dowajuseyo"],
-    "sourceWordIds": ["w0108_dowajuseyo"],
+    "patternTags": [
+      "imperative-seyo",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w0108_dowajuseyo"
+    ],
+    "sourceWordIds": [
+      "w0108_dowajuseyo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69675,11 +70023,26 @@
     "korean": "다시 말씀해 주세요.",
     "english": "Please say it again.",
     "voiceText": "다시 말씀해 주세요.",
-    "tokens": ["다시","말씀해","주세요"],
+    "tokens": [
+      "다시",
+      "말씀해",
+      "주세요"
+    ],
     "band": 2,
-    "patternTags": ["imperative-seyo","honorific-si"],
-    "focusWordIds": ["w_m5_829_dasi","w0105_juseyo","w_m6_1512_malsseum"],
-    "sourceWordIds": ["w_m5_829_dasi","w0105_juseyo","w_m6_1512_malsseum"],
+    "patternTags": [
+      "imperative-seyo",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m5_829_dasi",
+      "w0105_juseyo",
+      "w_m6_1512_malsseum"
+    ],
+    "sourceWordIds": [
+      "w_m5_829_dasi",
+      "w0105_juseyo",
+      "w_m6_1512_malsseum"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69695,11 +70058,24 @@
     "korean": "천천히 말씀해 주세요.",
     "english": "Please speak slowly.",
     "voiceText": "천천히 말씀해 주세요.",
-    "tokens": ["천천히","말씀해","주세요"],
+    "tokens": [
+      "천천히",
+      "말씀해",
+      "주세요"
+    ],
     "band": 2,
-    "patternTags": ["imperative-seyo","honorific-si"],
-    "focusWordIds": ["w0105_juseyo","w_m6_1512_malsseum"],
-    "sourceWordIds": ["w0105_juseyo","w_m6_1512_malsseum"],
+    "patternTags": [
+      "imperative-seyo",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w0105_juseyo",
+      "w_m6_1512_malsseum"
+    ],
+    "sourceWordIds": [
+      "w0105_juseyo",
+      "w_m6_1512_malsseum"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69715,11 +70091,21 @@
     "korean": "무슨 뜻이에요?",
     "english": "What does it mean?",
     "voiceText": "무슨 뜻이에요?",
-    "tokens": ["무슨","뜻이에요"],
+    "tokens": [
+      "무슨",
+      "뜻이에요"
+    ],
     "band": 1,
-    "patternTags": ["copula-ieyo","question-polite"],
-    "focusWordIds": ["w0906_museun"],
-    "sourceWordIds": ["w0906_museun"],
+    "patternTags": [
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w0906_museun"
+    ],
+    "sourceWordIds": [
+      "w0906_museun"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69735,11 +70121,23 @@
     "korean": "한국어 조금 해요.",
     "english": "I speak a little Korean.",
     "voiceText": "한국어 조금 해요.",
-    "tokens": ["한국어","조금","해요"],
+    "tokens": [
+      "한국어",
+      "조금",
+      "해요"
+    ],
     "band": 2,
-    "patternTags": ["present-polite"],
-    "focusWordIds": ["w0002_hangugeo","w_m6_1031_jogeum"],
-    "sourceWordIds": ["w0002_hangugeo","w_m6_1031_jogeum"],
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0002_hangugeo",
+      "w_m6_1031_jogeum"
+    ],
+    "sourceWordIds": [
+      "w0002_hangugeo",
+      "w_m6_1031_jogeum"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69755,11 +70153,25 @@
     "korean": "네, 다시 말씀드릴게요.",
     "english": "Yes, I will say it again.",
     "voiceText": "네, 다시 말씀드릴게요.",
-    "tokens": ["네","다시","말씀드릴게요"],
+    "tokens": [
+      "네",
+      "다시",
+      "말씀드릴게요"
+    ],
     "band": 2,
-    "patternTags": ["future-geoyeyo"],
-    "focusWordIds": ["w0103_ne","w_m5_829_dasi","w_m6_1512_malsseum"],
-    "sourceWordIds": ["w0103_ne","w_m5_829_dasi","w_m6_1512_malsseum"],
+    "patternTags": [
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w0103_ne",
+      "w_m5_829_dasi",
+      "w_m6_1512_malsseum"
+    ],
+    "sourceWordIds": [
+      "w0103_ne",
+      "w_m5_829_dasi",
+      "w_m6_1512_malsseum"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69775,11 +70187,21 @@
     "korean": "네, 천천히 말할게요.",
     "english": "Yes, I will speak slowly.",
     "voiceText": "네, 천천히 말할게요.",
-    "tokens": ["네","천천히","말할게요"],
+    "tokens": [
+      "네",
+      "천천히",
+      "말할게요"
+    ],
     "band": 2,
-    "patternTags": ["future-geoyeyo"],
-    "focusWordIds": ["w0103_ne"],
-    "sourceWordIds": ["w0103_ne"],
+    "patternTags": [
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w0103_ne"
+    ],
+    "sourceWordIds": [
+      "w0103_ne"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69795,11 +70217,19 @@
     "korean": "저쪽이에요.",
     "english": "It's over there.",
     "voiceText": "저쪽이에요.",
-    "tokens": ["저쪽이에요"],
+    "tokens": [
+      "저쪽이에요"
+    ],
     "band": 1,
-    "patternTags": ["copula-ieyo"],
-    "focusWordIds": ["w0303_jeo_that_over"],
-    "sourceWordIds": ["w0303_jeo_that_over"],
+    "patternTags": [
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w0303_jeo_that_over"
+    ],
+    "sourceWordIds": [
+      "w0303_jeo_that_over"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69815,11 +70245,20 @@
     "korean": "네, 여기요.",
     "english": "Yes, here you go.",
     "voiceText": "네, 여기요.",
-    "tokens": ["네","여기요"],
+    "tokens": [
+      "네",
+      "여기요"
+    ],
     "band": 1,
-    "patternTags": ["present-polite"],
-    "focusWordIds": ["w0103_ne"],
-    "sourceWordIds": ["w0103_ne"],
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0103_ne"
+    ],
+    "sourceWordIds": [
+      "w0103_ne"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69835,11 +70274,19 @@
     "korean": "알겠습니다.",
     "english": "Understood.",
     "voiceText": "알겠습니다.",
-    "tokens": ["알겠습니다"],
+    "tokens": [
+      "알겠습니다"
+    ],
     "band": 1,
-    "patternTags": ["formal-nida"],
-    "focusWordIds": ["w0111_algesseoyo"],
-    "sourceWordIds": ["w0111_algesseoyo"],
+    "patternTags": [
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w0111_algesseoyo"
+    ],
+    "sourceWordIds": [
+      "w0111_algesseoyo"
+    ],
     "speechLevel": "polite formal",
     "register": "formal",
     "grammarTip": "",
@@ -69855,11 +70302,19 @@
     "korean": "죄송합니다",
     "english": "I'm sorry",
     "voiceText": "죄송합니다",
-    "tokens": ["죄송합니다"],
+    "tokens": [
+      "죄송합니다"
+    ],
     "band": 1,
-    "patternTags": ["formal-nida"],
-    "focusWordIds": ["w0106_joesonghamnida"],
-    "sourceWordIds": ["w0106_joesonghamnida"],
+    "patternTags": [
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w0106_joesonghamnida"
+    ],
+    "sourceWordIds": [
+      "w0106_joesonghamnida"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69875,11 +70330,19 @@
     "korean": "실례합니다",
     "english": "Excuse me",
     "voiceText": "실례합니다",
-    "tokens": ["실례합니다"],
+    "tokens": [
+      "실례합니다"
+    ],
     "band": 1,
-    "patternTags": ["formal-nida"],
-    "focusWordIds": ["w0106_joesonghamnida"],
-    "sourceWordIds": ["w0106_joesonghamnida"],
+    "patternTags": [
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w0106_joesonghamnida"
+    ],
+    "sourceWordIds": [
+      "w0106_joesonghamnida"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69895,11 +70358,23 @@
     "korean": "커피 주세요",
     "english": "Coffee, please",
     "voiceText": "커피 주세요",
-    "tokens": ["커피","주세요"],
+    "tokens": [
+      "커피",
+      "주세요"
+    ],
     "band": 1,
-    "patternTags": ["imperative-seyo","honorific-si"],
-    "focusWordIds": ["w0504_keopi","w0105_juseyo"],
-    "sourceWordIds": ["w0504_keopi","w0105_juseyo"],
+    "patternTags": [
+      "imperative-seyo",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w0504_keopi",
+      "w0105_juseyo"
+    ],
+    "sourceWordIds": [
+      "w0504_keopi",
+      "w0105_juseyo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69915,11 +70390,20 @@
     "korean": "얼마예요?",
     "english": "How much is it?",
     "voiceText": "얼마예요?",
-    "tokens": ["얼마예요"],
+    "tokens": [
+      "얼마예요"
+    ],
     "band": 1,
-    "patternTags": ["copula-ieyo","question-polite"],
-    "focusWordIds": ["w0904_eolma"],
-    "sourceWordIds": ["w0904_eolma"],
+    "patternTags": [
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w0904_eolma"
+    ],
+    "sourceWordIds": [
+      "w0904_eolma"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69935,11 +70419,21 @@
     "korean": "화장실 어디예요?",
     "english": "Where is the bathroom?",
     "voiceText": "화장실 어디예요?",
-    "tokens": ["화장실","어디예요"],
+    "tokens": [
+      "화장실",
+      "어디예요"
+    ],
     "band": 1,
-    "patternTags": ["copula-ieyo","question-polite"],
-    "focusWordIds": ["w0407_hwajangsil"],
-    "sourceWordIds": ["w0407_hwajangsil"],
+    "patternTags": [
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w0407_hwajangsil"
+    ],
+    "sourceWordIds": [
+      "w0407_hwajangsil"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69955,11 +70449,25 @@
     "korean": "영어 할 수 있어요?",
     "english": "Can you speak English?",
     "voiceText": "영어 할 수 있어요?",
-    "tokens": ["영어","할","수","있어요"],
+    "tokens": [
+      "영어",
+      "할",
+      "수",
+      "있어요"
+    ],
     "band": 2,
-    "patternTags": ["can-su-itda","existence-itda","present-polite","question-polite"],
-    "focusWordIds": ["w_m6_2016_yeangeo"],
-    "sourceWordIds": ["w_m6_2016_yeangeo"],
+    "patternTags": [
+      "can-su-itda",
+      "existence-itda",
+      "present-polite",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2016_yeangeo"
+    ],
+    "sourceWordIds": [
+      "w_m6_2016_yeangeo"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69975,11 +70483,21 @@
     "korean": "선생님이 오세요.",
     "english": "The teacher is coming.",
     "voiceText": "선생님이 오세요.",
-    "tokens": ["선생님이","오세요"],
+    "tokens": [
+      "선생님이",
+      "오세요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","honorific-si"],
-    "focusWordIds": ["w0208_seonsaengnim"],
-    "sourceWordIds": ["w0208_seonsaengnim"],
+    "patternTags": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w0208_seonsaengnim"
+    ],
+    "sourceWordIds": [
+      "w0208_seonsaengnim"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69995,11 +70513,21 @@
     "korean": "할머니가 주무세요.",
     "english": "Grandmother is sleeping.",
     "voiceText": "할머니가 주무세요.",
-    "tokens": ["할머니가","주무세요"],
+    "tokens": [
+      "할머니가",
+      "주무세요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","honorific-si"],
-    "focusWordIds": ["w_m5_058_halmeoni"],
-    "sourceWordIds": ["w_m5_058_halmeoni"],
+    "patternTags": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m5_058_halmeoni"
+    ],
+    "sourceWordIds": [
+      "w_m5_058_halmeoni"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -70015,11 +70543,21 @@
     "korean": "사장님이 계세요.",
     "english": "The boss is here.",
     "voiceText": "사장님이 계세요.",
-    "tokens": ["사장님이","계세요"],
+    "tokens": [
+      "사장님이",
+      "계세요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","honorific-si"],
-    "focusWordIds": ["w1902_gyesida"],
-    "sourceWordIds": ["w1902_gyesida"],
+    "patternTags": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w1902_gyesida"
+    ],
+    "sourceWordIds": [
+      "w1902_gyesida"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -70035,11 +70573,21 @@
     "korean": "교수님이 말씀하세요.",
     "english": "The professor speaks.",
     "voiceText": "교수님이 말씀하세요.",
-    "tokens": ["교수님이","말씀하세요"],
+    "tokens": [
+      "교수님이",
+      "말씀하세요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","honorific-si"],
-    "focusWordIds": ["w_m6_1512_malsseum"],
-    "sourceWordIds": ["w_m6_1512_malsseum"],
+    "patternTags": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_1512_malsseum"
+    ],
+    "sourceWordIds": [
+      "w_m6_1512_malsseum"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -70055,11 +70603,21 @@
     "korean": "어머니가 드세요.",
     "english": "Mother eats.",
     "voiceText": "어머니가 드세요.",
-    "tokens": ["어머니가","드세요"],
+    "tokens": [
+      "어머니가",
+      "드세요"
+    ],
     "band": 1,
-    "patternTags": ["subject-i-ga","honorific-si"],
-    "focusWordIds": ["w_m5_641_eomeoni"],
-    "sourceWordIds": ["w_m5_641_eomeoni"],
+    "patternTags": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m5_641_eomeoni"
+    ],
+    "sourceWordIds": [
+      "w_m5_641_eomeoni"
+    ],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -70070,5 +70628,5 @@
     },
     "source": "legacy-app"
   }
-];
+  ];
 })();
