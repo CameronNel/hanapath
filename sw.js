@@ -1,5 +1,5 @@
-// [2026-07-07] Cache bumped to v246: Gemini Track D finish (s2008–s2060) + counter-phrase accuracy pass, with honorific -세요 tag fix.
-const CACHE_NAME = "hanapath-shell-v246";
+// [2026-07-07] Cache bumped to v247: s0001-s0200 patternTag sweep pass.
+const CACHE_NAME = "hanapath-shell-v247";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260707c",
+  "./sentences_core.js?v=20260707d",
   "./app.js?v=20260707a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",

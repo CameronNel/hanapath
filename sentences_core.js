@@ -467,7 +467,7 @@
       "늦어서",
       "죄송합니다."
     ],
-    "band": 1,
+    "band": 3,
     "patternTags": [
       "formal-nida",
       "because-aseo"
@@ -3328,9 +3328,9 @@
     ],
     "band": 1,
     "patternTags": [
-      "location-e",
       "present-polite",
-      "time-expression"
+      "time-expression",
+      "propositive-eyo"
     ],
     "focusWordIds": [
       "w_m6_3008_jeomsim_noon"
@@ -3359,9 +3359,9 @@
     ],
     "band": 1,
     "patternTags": [
-      "location-e",
       "present-polite",
-      "time-expression"
+      "time-expression",
+      "propositive-eyo"
     ],
     "focusWordIds": [
       "w0608_jeonyeok"
@@ -4468,7 +4468,8 @@
     ],
     "band": 2,
     "patternTags": [
-      "with-hago-wa"
+      "with-hago-wa",
+      "present-polite"
     ],
     "focusWordIds": [
       "fw1008_wa_gwa"
@@ -4500,7 +4501,6 @@
     "patternTags": [
       "with-hago-wa",
       "imperative-seyo",
-      "and-go",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -5451,7 +5451,6 @@
     ],
     "band": 2,
     "patternTags": [
-      "location-e",
       "present-polite",
       "time-expression"
     ],

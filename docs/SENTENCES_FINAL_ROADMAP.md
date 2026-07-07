@@ -495,4 +495,5 @@ them. One PR per box; browser-play each unit before shipping.
 | 2026-07-06 | D2 continued (s1246-s1260) | local branch | Curated the next 15 sentence rows in id order, corrected obvious band/tag issues, and kept the batch mechanical; 1,223 rows are explicit on both axes and 784 rows remain inferred. |
 | 2026-07-07 | D8 finish (s2008-s2060) | local branch | Curated the remaining 53 sentence rows (s2008-s2060) in id order, corrected band/tag issues, and flipped all annotation axes to explicit; all 2,060 rows are now explicit. |
 | 2026-07-07 | D8 review fix (s2025/s2026/s2056-s2060) | integration | Review of the D8 finish caught 7 honorific declaratives (오세요/계세요/주무세요/드세요/말씀하세요 with a 3rd-person 가/이 subject) mistagged `imperative-seyo` off the surface `-세요`; removed it, leaving `honorific-si`. These are statements, not commands. |
+| 2026-07-07 | Accuracy sweep batch 1 (s0001-s0200) | local branch | Swept s0001-s0200 for patternTag accuracy: fixed location-e false positives on time 에, missing present-polite, false positive and-go, and one band elevation. |
 
