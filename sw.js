@@ -1,5 +1,5 @@
-// [2026-07-07] Cache bumped to v250: land the s1601-s2000 patternTag/band accuracy sweep (integrated from PRs #128/#129).
-const CACHE_NAME = "hanapath-shell-v250";
+// [2026-07-07] Cache bumped to v251: close the s0401-s1600 patternTag accuracy-sweep gap (tense/location-e/existence/and-go/direction-euro false positives).
+const CACHE_NAME = "hanapath-shell-v251";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260707g",
+  "./sentences_core.js?v=20260707h",
   "./app.js?v=20260707a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
