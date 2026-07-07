@@ -54092,11 +54092,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "location-eseo",
       "subject-i-ga",
-      "counter-phrase",
-      "time-expression"
+      "time-expression",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2103_hoeui"
@@ -54167,7 +54166,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "subject-i-ga",
       "present-polite",
       "can-su-itda",
@@ -54247,10 +54245,9 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "topic-neun",
-      "direction-euro",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2107_gakja"
@@ -54285,10 +54282,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
       "present-polite",
-      "existence-itda"
+      "existence-itda",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2108_gamgak"
@@ -54324,7 +54321,6 @@
     "patternTags": [
       "subject-i-ga",
       "location-e",
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -54513,7 +54509,6 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -54623,7 +54618,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -54698,7 +54692,6 @@
     "band": 5,
     "patternTags": [
       "possessive-ui",
-      "location-e",
       "object-eul-reul",
       "present-polite"
     ],
@@ -54773,7 +54766,6 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "object-eul-reul",
       "present-polite",
       "because-aseo"
@@ -54880,9 +54872,7 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "location-eseo",
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -55256,7 +55246,8 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "location-e"
+      "location-e",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2134_goksik"
@@ -55288,7 +55279,6 @@
     ],
     "band": 3,
     "patternTags": [
-      "location-e",
       "past-polite",
       "because-aseo"
     ],
@@ -55364,7 +55354,8 @@
     "band": 5,
     "patternTags": [
       "location-eseo",
-      "subject-i-ga"
+      "subject-i-ga",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2137_gongsa"
@@ -55471,7 +55462,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "present-polite",
       "time-expression"
@@ -55582,9 +55572,11 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "present-polite",
-      "and-go"
+      "and-go",
+      "past-polite",
+      "location-e",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2143_gwiga"
@@ -55731,7 +55723,6 @@
     "band": 5,
     "patternTags": [
       "possessive-ui",
-      "location-e",
       "object-eul-reul",
       "present-polite",
       "must-ya-dwaeda"
@@ -55805,7 +55796,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -56021,7 +56011,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "subject-i-ga",
       "past-polite"
@@ -56060,7 +56049,8 @@
     "patternTags": [
       "subject-i-ga",
       "location-e",
-      "if-myeon"
+      "if-myeon",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2156_gaeulcheol"
@@ -56165,7 +56155,6 @@
     "band": 3,
     "patternTags": [
       "also-do",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -56201,7 +56190,6 @@
     "patternTags": [
       "possessive-ui",
       "subject-i-ga",
-      "location-e",
       "past-polite"
     ],
     "focusWordIds": [
@@ -56233,11 +56221,10 @@
       "최선을",
       "다합니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "possessive-ui",
-      "location-e",
       "object-eul-reul",
       "formal-nida"
     ],
@@ -56480,10 +56467,8 @@
       "강풍에",
       "주의하세요."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
-      "direction-euro",
-      "location-e",
       "imperative-seyo",
       "honorific-si",
       "time-expression"
@@ -56773,7 +56758,6 @@
     "patternTags": [
       "topic-neun",
       "possessive-ui",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -56985,7 +56969,6 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "direction-euro",
       "past-polite",
       "time-expression"
     ],
@@ -57089,11 +57072,11 @@
       "주말에",
       "열립니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
-      "time-expression"
+      "time-expression",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2184_gyeolsungjeon"
@@ -57197,7 +57180,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -57230,11 +57212,12 @@
       "관리를",
       "하십니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "honorific-si"
+      "honorific-si",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2188_gyeongbiwon"
@@ -57269,7 +57252,8 @@
     "patternTags": [
       "topic-neun",
       "location-eseo",
-      "object-eul-reul"
+      "object-eul-reul",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2189_gyeongyeonghak"
@@ -57379,7 +57363,6 @@
     "patternTags": [
       "location-eseo",
       "subject-i-ga",
-      "direction-euro",
       "object-eul-reul",
       "present-polite"
     ],
@@ -57453,7 +57436,6 @@
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -57527,7 +57509,8 @@
       "location-e",
       "subject-i-ga",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2196_gohyangjip"
@@ -57668,7 +57651,8 @@
     "band": 4,
     "patternTags": [
       "location-eseo",
-      "subject-i-ga"
+      "subject-i-ga",
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2200_gongsapan"
@@ -57699,7 +57683,7 @@
       "공식력이",
       "보장합니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "possessive-ui",
@@ -57737,9 +57721,9 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "past-polite"
+      "past-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2202_gongyeonjang"
@@ -57878,11 +57862,11 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "topic-neun",
       "subject-i-ga",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2206_gwangwanggaek"
@@ -58091,11 +58075,10 @@
       "교수법을",
       "강의하셔요."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "imperative-seyo",
       "honorific-si"
     ],
     "focusWordIds": [
@@ -58165,9 +58148,9 @@
     "band": 4,
     "patternTags": [
       "topic-neun",
-      "location-e",
       "object-eul-reul",
-      "present-polite"
+      "present-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2214_gyoyukbeop"
@@ -58236,7 +58219,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "direction-euro",
       "subject-i-ga",
       "past-polite"
     ],
@@ -58451,7 +58433,7 @@
       "지닌",
       "문서입니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
@@ -58490,7 +58472,6 @@
     "band": 4,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "object-eul-reul",
       "past-polite"
     ],
@@ -58603,7 +58584,6 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
       "past-polite",
       "because-aseo"
     ],
@@ -58672,7 +58652,7 @@
       "이상적인",
       "군인상입니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "with-hago-wa",
@@ -58748,7 +58728,6 @@
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -59115,9 +59094,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "present-polite"
+      "present-polite",
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2240_geumyeonbeop"
@@ -59191,10 +59170,7 @@
       "location-eseo",
       "subject-i-ga",
       "object-eul-reul",
-      "with-hago-wa",
-      "present-polite",
-      "and-go",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2242_gigyegong"
@@ -59228,10 +59204,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "possessive-ui",
       "object-eul-reul",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2243_ginyeomgwan"
@@ -59339,7 +59315,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "past-polite"
     ],
@@ -59377,7 +59352,6 @@
     "patternTags": [
       "topic-neun",
       "subject-i-ga",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -59480,14 +59454,14 @@
       "말을",
       "기억하세요."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "topic-neun",
       "object-eul-reul",
-      "imperative-seyo",
       "copula-ieyo",
-      "honorific-si"
+      "honorific-si",
+      "imperative-seyo"
     ],
     "focusWordIds": [
       "w_m6_2303_sogdam"
@@ -59699,10 +59673,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "direction-euro",
       "past-polite",
-      "because-aseo"
+      "because-aseo",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2309_sugso"
@@ -59738,7 +59712,6 @@
     "patternTags": [
       "possessive-ui",
       "subject-i-ga",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -59850,7 +59823,6 @@
     "patternTags": [
       "subject-i-ga",
       "possessive-ui",
-      "location-e",
       "present-polite",
       "because-aseo"
     ],
@@ -59889,9 +59861,9 @@
     "patternTags": [
       "possessive-ui",
       "topic-neun",
-      "location-e",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2314_seungri"
@@ -59998,10 +59970,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "possessive-ui",
       "subject-i-ga",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2317_sigmul"
@@ -60036,8 +60008,8 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
-      "past-polite"
+      "past-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2318_singo"
@@ -60073,7 +60045,6 @@
     "patternTags": [
       "topic-neun",
       "subject-i-ga",
-      "location-e",
       "present-polite",
       "because-aseo"
     ],
@@ -60256,9 +60227,9 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "past-polite"
+      "past-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2324_sinseol"
@@ -60366,10 +60337,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
       "past-polite",
-      "time-expression"
+      "time-expression",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2327_sinib"
@@ -60518,7 +60489,6 @@
     "band": 5,
     "patternTags": [
       "also-do",
-      "only-man",
       "subject-i-ga",
       "present-polite",
       "but-jiman"
@@ -60632,7 +60602,6 @@
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -60742,7 +60711,6 @@
     "patternTags": [
       "topic-neun",
       "object-eul-reul",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -60780,7 +60748,6 @@
     "patternTags": [
       "object-eul-reul",
       "topic-neun",
-      "direction-euro",
       "present-polite",
       "comparison-boda",
       "existence-itda"
@@ -60854,9 +60821,9 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "location-e",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2340_silhyeon"
@@ -60995,9 +60962,9 @@
     "band": 4,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "past-polite",
-      "and-go"
+      "and-go",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2344_angwa"
@@ -61070,8 +61037,8 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2346_anbu"
@@ -61107,7 +61074,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "subject-i-ga",
       "present-polite",
       "neg-ji-anta",
@@ -61147,7 +61113,6 @@
     "band": 5,
     "patternTags": [
       "possessive-ui",
-      "location-e",
       "subject-i-ga",
       "object-eul-reul",
       "past-polite"
@@ -61185,7 +61150,6 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "direction-euro",
       "past-polite",
       "when-ttae"
     ],
@@ -61222,9 +61186,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "present-polite"
+      "present-polite",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2350_anpakk"
@@ -61331,10 +61295,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "present-polite",
-      "and-go"
+      "and-go",
+      "location-e"
     ],
     "focusWordIds": [
       "w_m6_2353_yangnyeom"
@@ -61371,7 +61335,6 @@
     "patternTags": [
       "topic-neun",
       "possessive-ui",
-      "location-e",
       "object-eul-reul",
       "present-polite",
       "neg-ji-anta"
@@ -61405,7 +61368,7 @@
       "기본",
       "권리입니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "possessive-ui",
@@ -61480,7 +61443,6 @@
     "band": 4,
     "patternTags": [
       "location-eseo",
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -61667,7 +61629,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "direction-euro",
       "location-eseo",
       "subject-i-ga",
       "object-eul-reul",
@@ -61818,8 +61779,7 @@
     "patternTags": [
       "topic-neun",
       "subject-i-ga",
-      "present-polite",
-      "existence-itda"
+      "present-polite"
     ],
     "focusWordIds": [
       "w_m6_2366_yeonryeong"
@@ -61892,7 +61852,8 @@
     "patternTags": [
       "location-e",
       "subject-i-ga",
-      "copula-ieyo"
+      "copula-ieyo",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2368_yeonhyu"
@@ -61999,11 +61960,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "direction-euro",
       "subject-i-ga",
       "present-polite",
-      "and-go",
-      "existence-itda"
+      "and-go"
     ],
     "focusWordIds": [
       "w_m6_2371_yeolpung"
@@ -62302,7 +62261,7 @@
       "with-hago-wa",
       "present-polite",
       "and-go",
-      "existence-itda"
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2379_yegeum"
@@ -62339,7 +62298,7 @@
       "location-e",
       "with-hago-wa",
       "object-eul-reul",
-      "present-polite",
+      "past-polite",
       "time-expression"
     ],
     "focusWordIds": [
@@ -62375,7 +62334,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "object-eul-reul",
       "present-polite"
     ],
@@ -62450,7 +62408,7 @@
     "patternTags": [
       "location-e",
       "object-eul-reul",
-      "present-polite",
+      "past-polite",
       "time-expression"
     ],
     "focusWordIds": [
@@ -62521,7 +62479,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
       "past-polite"
     ],
@@ -62557,9 +62514,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
-      "present-polite"
+      "present-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2386_yeseub"
@@ -62780,9 +62737,8 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "present-polite",
+      "past-polite",
       "when-ttae"
     ],
     "focusWordIds": [
@@ -63080,7 +63036,6 @@
     "band": 3,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "object-eul-reul",
       "copula-ieyo"
     ],
@@ -63267,7 +63222,7 @@
       "location-e",
       "possessive-ui",
       "object-eul-reul",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2405_yongeo"
@@ -63376,7 +63331,7 @@
     "patternTags": [
       "location-eseo",
       "object-eul-reul",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2408_uyeon"
@@ -63411,10 +63366,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "topic-neun",
       "possessive-ui",
-      "present-polite"
+      "present-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2409_ujeong"
@@ -63532,8 +63487,7 @@
       "present-polite",
       "neg-ji-anta",
       "can-su-itda",
-      "if-myeon",
-      "existence-itda"
+      "if-myeon"
     ],
     "focusWordIds": [
       "w_m6_2501_yuri"
@@ -63718,8 +63672,8 @@
     "patternTags": [
       "topic-neun",
       "location-eseo",
-      "location-e",
-      "copula-ieyo"
+      "copula-ieyo",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2506_euntoe"
@@ -63785,7 +63739,7 @@
       "파악하여",
       "답변하세요."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "possessive-ui",
       "object-eul-reul",
@@ -63830,8 +63784,7 @@
       "subject-i-ga",
       "object-eul-reul",
       "present-polite",
-      "can-su-itda",
-      "existence-itda"
+      "can-su-itda"
     ],
     "focusWordIds": [
       "w_m6_2509_uisim"
@@ -63902,10 +63855,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "possessive-ui",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2511_ilon"
@@ -63941,7 +63894,6 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
       "past-polite"
     ],
     "focusWordIds": [
@@ -64165,9 +64117,8 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "subject-i-ga",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2518_insang"
@@ -64233,7 +64184,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "possessive-ui",
       "subject-i-ga",
       "past-polite"
@@ -64308,7 +64258,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "direction-euro",
       "object-eul-reul",
       "time-expression"
@@ -64596,7 +64545,6 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
       "past-polite",
       "and-go",
       "if-myeon"
@@ -64744,7 +64692,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "imperative-seyo",
       "and-go",
@@ -64823,7 +64770,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "time-expression"
     ],
@@ -64863,7 +64809,6 @@
       "topic-neun",
       "possessive-ui",
       "object-eul-reul",
-      "location-e",
       "past-polite"
     ],
     "focusWordIds": [
@@ -64976,8 +64921,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
-      "direction-euro",
       "present-polite"
     ],
     "focusWordIds": [
@@ -65088,7 +65031,7 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "present-polite",
+      "past-polite",
       "comparison-boda"
     ],
     "focusWordIds": [
@@ -65126,7 +65069,7 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2541_jeongo"
@@ -65159,7 +65102,6 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "past-polite"
     ],
@@ -65234,7 +65176,6 @@
     "patternTags": [
       "until-kkaji",
       "object-eul-reul",
-      "location-e",
       "imperative-seyo",
       "honorific-si",
       "time-expression"
@@ -65378,7 +65319,7 @@
       "횡단보도",
       "조심하세요."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "direction-euro",
       "also-do",
@@ -65459,8 +65400,7 @@
       "also-do",
       "object-eul-reul",
       "present-polite",
-      "and-go",
-      "existence-itda"
+      "and-go"
     ],
     "focusWordIds": [
       "w_m6_2550_taepung"
@@ -65532,7 +65472,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "past-polite",
       "time-expression"
@@ -65569,7 +65508,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "past-polite",
       "and-go",
@@ -65607,7 +65545,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "possessive-ui",
       "object-eul-reul",
       "past-polite"
@@ -65646,10 +65583,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "topic-neun",
-      "present-polite"
+      "present-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2703_supyeong"
@@ -65906,7 +65843,7 @@
       "possessive-ui",
       "topic-neun",
       "direction-euro",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2710_seungbu"
@@ -66089,11 +66026,10 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "location-e",
       "present-polite",
       "must-ya-dwaeda",
       "if-myeon",
-      "existence-itda"
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2715_sijeom"
@@ -66166,7 +66102,6 @@
     "patternTags": [
       "topic-neun",
       "subject-i-ga",
-      "direction-euro",
       "formal-nida"
     ],
     "focusWordIds": [
@@ -66342,7 +66277,7 @@
       "대단히",
       "죄송합니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "formal-nida",
       "because-aseo"
@@ -66415,9 +66350,8 @@
     "band": 5,
     "patternTags": [
       "with-hago-wa",
-      "direction-euro",
       "subject-i-ga",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2902_jeongi"
@@ -66453,8 +66387,7 @@
     "patternTags": [
       "subject-i-ga",
       "topic-neun",
-      "direction-euro",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2903_jeonbu"
@@ -66489,7 +66422,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "location-e",
       "formal-nida",
       "neg-mot"
     ],
@@ -66674,10 +66606,10 @@
     "patternTags": [
       "topic-neun",
       "also-do",
-      "location-e",
       "object-eul-reul",
       "formal-nida",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2909_sido"
@@ -66710,11 +66642,11 @@
     ],
     "band": 4,
     "patternTags": [
-      "location-e",
       "with-hago-wa",
       "direction-euro",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2910_sijeol"
@@ -66749,7 +66681,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "location-e",
       "object-eul-reul",
       "copula-ieyo"
     ],
@@ -66897,7 +66828,6 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "direction-euro",
       "past-polite",
       "counter-phrase",
       "time-expression"
@@ -66935,7 +66865,6 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
       "possessive-ui",
       "object-eul-reul",
       "past-polite",
@@ -66970,7 +66899,7 @@
       "엄청",
       "뜨겁습니다."
     ],
-    "band": 4,
+    "band": 5,
     "patternTags": [
       "subject-i-ga",
       "formal-nida"
@@ -67190,8 +67119,7 @@
     ],
     "band": 5,
     "patternTags": [
-      "topic-neun",
-      "direction-euro"
+      "topic-neun"
     ],
     "focusWordIds": [
       "w_m6_2924_sojae"
@@ -67300,9 +67228,9 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
-      "present-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2927_jamsi"
@@ -67337,8 +67265,8 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "direction-euro",
-      "time-expression"
+      "time-expression",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2928_hangnyeon"
@@ -67374,7 +67302,6 @@
     "patternTags": [
       "topic-neun",
       "possessive-ui",
-      "direction-euro",
       "past-polite"
     ],
     "focusWordIds": [
@@ -67450,7 +67377,6 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "present-polite",
       "counter-phrase",
       "time-expression"
@@ -67489,8 +67415,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
-      "direction-euro",
       "imperative-seyo",
       "if-myeon",
       "honorific-si"
@@ -67637,7 +67561,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "direction-euro",
       "subject-i-ga",
       "object-eul-reul",
       "past-polite"
@@ -67675,9 +67598,9 @@
     "band": 5,
     "patternTags": [
       "topic-neun",
-      "location-e",
       "with-hago-wa",
-      "time-expression"
+      "time-expression",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2937_gaggeum"
@@ -67748,10 +67671,10 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "possessive-ui",
       "object-eul-reul",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_2939_gaenyeom"
@@ -67823,7 +67746,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "location-e",
       "object-eul-reul",
       "past-polite",
       "time-expression"
@@ -67863,7 +67785,8 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "comparison-boda"
+      "comparison-boda",
+      "formal-nida"
     ],
     "focusWordIds": [
       "w_m6_2942_gijon"
@@ -67902,8 +67825,7 @@
       "object-eul-reul",
       "with-hago-wa",
       "present-polite",
-      "and-go",
-      "existence-itda"
+      "and-go"
     ],
     "focusWordIds": [
       "w_m6_2943_damdang"
@@ -67942,8 +67864,7 @@
       "location-e",
       "with-hago-wa",
       "present-polite",
-      "and-go",
-      "existence-itda"
+      "and-go"
     ],
     "focusWordIds": [
       "w_m6_2944_beomjoe"
@@ -67977,7 +67898,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -68053,8 +67973,7 @@
       "object-eul-reul",
       "with-hago-wa",
       "present-polite",
-      "and-go",
-      "existence-itda"
+      "and-go"
     ],
     "focusWordIds": [
       "w_m6_2947_eneoji"
@@ -68126,7 +68045,7 @@
     "band": 5,
     "patternTags": [
       "object-eul-reul",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2949_charye"
@@ -68156,8 +68075,8 @@
     ],
     "band": 1,
     "patternTags": [
-      "location-e",
-      "object-eul-reul"
+      "object-eul-reul",
+      "time-expression"
     ],
     "focusWordIds": [
       "w_m6_3040_charye_rites"
@@ -68260,7 +68179,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "direction-euro",
       "object-eul-reul",
       "past-polite"
     ],
@@ -68296,7 +68214,6 @@
     ],
     "band": 5,
     "patternTags": [
-      "direction-euro",
       "object-eul-reul",
       "past-polite",
       "and-go",
@@ -68593,7 +68510,6 @@
     "band": 5,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "formal-nida",
       "past-polite",
       "time-expression"
@@ -68632,7 +68548,6 @@
     "patternTags": [
       "possessive-ui",
       "object-eul-reul",
-      "direction-euro",
       "copula-ieyo",
       "present-polite",
       "must-ya-dwaeda"
@@ -68746,8 +68661,7 @@
     "band": 5,
     "patternTags": [
       "possessive-ui",
-      "location-e",
-      "present-polite"
+      "past-polite"
     ],
     "focusWordIds": [
       "w_m6_2964_haengjeong"
