@@ -1,5 +1,5 @@
-// [2026-07-07] Cache bumped to v244: fix locked-band CTA nav target + Reviews-due stat color var.
-const CACHE_NAME = "hanapath-shell-v244";
+// [2026-07-07] Cache bumped to v245: counter-phrase pattern tag accuracy pass.
+const CACHE_NAME = "hanapath-shell-v245";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260706d",
+  "./sentences_core.js?v=20260707b",
   "./app.js?v=20260707a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
