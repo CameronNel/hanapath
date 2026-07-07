@@ -317,7 +317,7 @@
       "저는",
       "학생이에요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "topic-neun",
       "copula-ieyo",
@@ -348,7 +348,7 @@
       "정말",
       "감사합니다."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "formal-nida"
     ],
@@ -435,7 +435,7 @@
       "물",
       "주세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -467,7 +467,7 @@
       "늦어서",
       "죄송합니다."
     ],
-    "band": 3,
+    "band": 5,
     "patternTags": [
       "formal-nida",
       "because-aseo"
@@ -498,7 +498,7 @@
       "걱정하지",
       "마세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "present-polite",
       "imperative-seyo",
@@ -530,7 +530,7 @@
       "좀",
       "도와주세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -868,7 +868,7 @@
       "선생님,",
       "감사합니다."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "formal-nida"
     ],
@@ -927,7 +927,7 @@
     "tokens": [
       "누구세요?"
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "question-polite",
       "honorific-si"
@@ -958,7 +958,7 @@
       "책",
       "주세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -1080,7 +1080,7 @@
       "그거",
       "주세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -1237,7 +1237,7 @@
       "전화",
       "주세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -1267,7 +1267,7 @@
       "여기",
       "앉으세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -1827,7 +1827,7 @@
       "놓지",
       "마세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "object-eul-reul",
       "imperative-seyo",
@@ -2856,7 +2856,7 @@
       "잔",
       "주세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si",
@@ -3639,7 +3639,7 @@
       "말해",
       "주세요."
     ],
-    "band": 1,
+    "band": 5,
     "patternTags": [
       "imperative-seyo",
       "honorific-si"
@@ -4497,7 +4497,7 @@
       "물",
       "주세요."
     ],
-    "band": 2,
+    "band": 5,
     "patternTags": [
       "with-hago-wa",
       "imperative-seyo",

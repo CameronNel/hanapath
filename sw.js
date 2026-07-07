@@ -1,5 +1,5 @@
-// [2026-07-07] Cache bumped to v252: sweep the s2001-s2060 tail (2 rows: past-tense fix + false existence-itda on 수 있다) — s0001-s2060 now fully swept.
-const CACHE_NAME = "hanapath-shell-v252";
+// [2026-07-07] Cache bumped to v253: batch A1 band sweep.
+const CACHE_NAME = "hanapath-shell-v253";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,7 @@ const APP_SHELL = [
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260707i",
+  "./sentences_core.js?v=20260707j",
   "./app.js?v=20260707a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
