@@ -229,7 +229,7 @@ be re-derived from data, not copied forward.**
 | 5 | Sentence SRS (`state.sentencesProgress`) | ✅ done — Leitner scheduling + due dates (C3) fully built and scheduled |
 | 6 | i+1 gating via `focusWordIds` | ✅ done — new-sentence queue restricted to known words (C2) |
 | 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows explicit; **accuracy sweep complete for all s0001–s2060** (finished 2026-07-07). |
-| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ❌ not started |
+| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | 🟡 **data authored, not wired** — `sentences_lesson_plan.js` ships 12 pattern-cluster units (concept card + 4–5 tag-matched bank sentences each), loaded as `window.HANAPATH_SENTENCE_LESSONS`. The **app.js lesson-player wiring is not done** (Track E remainder). |
 | 9 | Shadow mode + speech-stub wiring for sentences | ❌ not started (Dictation mode ships as a related listening drill) |
 | 10 | Transform drill (inflection engine) | ❌ not started |
 | 11 | Authored expansion batches (gap-driven) | ❌ not started (owner-gated volume) |
