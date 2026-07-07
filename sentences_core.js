@@ -9666,7 +9666,6 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "time-expression",
       "present-polite"
     ],
@@ -9764,7 +9763,6 @@
     "band": 2,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "time-expression",
       "present-polite"
     ],
@@ -9864,7 +9862,6 @@
     "band": 3,
     "patternTags": [
       "subject-i-ga",
-      "location-e",
       "time-expression",
       "present-polite"
     ],
@@ -10474,7 +10471,6 @@
     ],
     "band": 3,
     "patternTags": [
-      "location-e",
       "time-expression",
       "past-polite"
     ],
@@ -10765,7 +10761,6 @@
     ],
     "band": 3,
     "patternTags": [
-      "location-e",
       "time-expression",
       "present-polite",
       "counter-phrase"
