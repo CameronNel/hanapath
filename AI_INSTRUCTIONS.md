@@ -62,8 +62,26 @@ Route work by its shape, not its size:
   reconciling docs against re-derived data, and reviewing/landing the bulky
   batches Codex 5.4 produced.
 
+- **Gemini 3.5 Flash — fast worker, Sonnet-level judgment, needs an explicit
+  spec.** It can cover both lanes above — the bulky [codex] batches quickly,
+  *and* the judgment-heavy [high] boxes — **as long as the box is fully
+  specified** (exact files, exact per-row rule or spec section, exact
+  done-when). Its failure mode is speed without the full picture, not lack of
+  ability, so when you route to it:
+  - Hand it **one roadmap box with the recipe already resolved** — don't ask it
+    to decide scope or invent a plan.
+  - Make the **verify gates non-optional and explicit** (the Step 4 checklist
+    below runs on every PR, even a one-liner).
+  - Tell it to **re-derive every claim from the data** and to **stop and ask**
+    on any judgment the spec doesn't settle rather than guessing.
+  - Keep it out of unsupervised **merge/integration** and **schema/audit design**
+    work unless a high-intelligence pass reviews the result — those are where a
+    silent, fast mistake is most expensive (see the roadmap's §0 merge warning).
+
 Every box in the Sentences roadmap is pre-tagged **[codex]** or **[high]** —
-follow the tag.
+follow the tag. Gemini 3.5 Flash may execute either tag when the box is fully
+specified; the tag tells you how much judgment the box needs, not which model
+must run it.
 
 When in doubt, or when a "bulky" task turns out to require a semantic
 decision mid-batch, stop and hand it to the high intelligence model rather
