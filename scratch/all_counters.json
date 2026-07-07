@@ -1,0 +1,500 @@
+[
+  {
+    "id": "s0070",
+    "korean": "공원을 한 바퀴 돌았어요.",
+    "english": "I went around the park once.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0092",
+    "korean": "차 한 잔 주세요.",
+    "english": "A cup of tea, please.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0103",
+    "korean": "한 시간이 걸려요.",
+    "english": "It takes an hour.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0314",
+    "korean": "일 번 버스를 타요.",
+    "english": "I take bus number 1.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0323",
+    "korean": "십 분 동안 기다렸어요.",
+    "english": "I waited for ten minutes.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0327",
+    "korean": "사과 하나 주세요.",
+    "english": "Give me one apple, please.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0328",
+    "korean": "사과 두 개가 있어요.",
+    "english": "I have two apples.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0331",
+    "korean": "다섯 명이 있어요.",
+    "english": "There are five people.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0332",
+    "korean": "여섯 시에 일어나요.",
+    "english": "I wake up at six o'clock.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0333",
+    "korean": "일곱 살짜리 아이예요.",
+    "english": "It's a seven-year-old child.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0334",
+    "korean": "책 여덟 권을 읽었어요.",
+    "english": "I read eight books.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0335",
+    "korean": "아홉 시에 시험이 있어요.",
+    "english": "There is an exam at nine o'clock.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0336",
+    "korean": "열 명의 친구가 왔어요.",
+    "english": "Ten friends came.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0339",
+    "korean": "마흔 명이 왔어요.",
+    "english": "Forty people came.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0341",
+    "korean": "사과 한 개를 먹었어요.",
+    "english": "I ate one apple.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0342",
+    "korean": "학생 두 명을 만나요.",
+    "english": "I meet two students.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0343",
+    "korean": "한 번 해 보세요.",
+    "english": "Try doing it once.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0347",
+    "korean": "오 분 뒤에 시작해요.",
+    "english": "It starts in five minutes.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0348",
+    "korean": "손님 두 분이 오셨어요.",
+    "english": "Two honored guests came.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0349",
+    "korean": "고양이 두 마리를 키워요.",
+    "english": "I raise two cats.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0350",
+    "korean": "책 세 권을 샀어요.",
+    "english": "I bought three books.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0351",
+    "korean": "음료수 한 병 주세요.",
+    "english": "Give me one bottle of drink, please.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0352",
+    "korean": "물 한 잔 마셨어요.",
+    "english": "I drank a glass of water.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0353",
+    "korean": "라면 한 그릇 먹고 싶어요.",
+    "english": "I want to eat a bowl of ramen.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0354",
+    "korean": "영화 표 두 장 샀어요.",
+    "english": "I bought two movie tickets.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0355",
+    "korean": "차 한 대가 서 있어요.",
+    "english": "One car is parked.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0356",
+    "korean": "새 옷 한 벌 샀어요.",
+    "english": "I bought one set of new clothes.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0357",
+    "korean": "신발 두 켤레가 있어요.",
+    "english": "I have two pairs of shoes.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0358",
+    "korean": "우리 가족은 네 명이에요.",
+    "english": "Our family has four members.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0368",
+    "korean": "제 딸은 일곱 살이에요.",
+    "english": "My daughter is seven years old.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0399",
+    "korean": "하루에 세 번 이빨을 닦아요.",
+    "english": "I brush my teeth three times a day.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0435",
+    "korean": "아침에 우유를 한 잔 마셔요.",
+    "english": "I drink a glass of milk in the morning.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0451",
+    "korean": "사과 주스 한 병 마셨어요.",
+    "english": "I drank a bottle of apple juice.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0453",
+    "korean": "친구들과 소주를 한 잔 마셨어요.",
+    "english": "I drank a glass of soju with friends.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0483",
+    "korean": "한 해가 빨리 지나갔어요.",
+    "english": "A year went by quickly.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0495",
+    "korean": "일 초도 기다릴 수 없어요.",
+    "english": "I cannot wait even one second.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0497",
+    "korean": "일 주일에 책 한 권을 읽어요.",
+    "english": "I read one book in a week.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0499",
+    "korean": "오전 열 시에 회의가 있어요.",
+    "english": "There is a meeting at 10 AM.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0752",
+    "korean": "영화 시작 시각은 일곱 시예요.",
+    "english": "The movie start time is 7 o'clock.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0763",
+    "korean": "영화 제작에 일 년이 걸렸어요.",
+    "english": "The movie production took a year.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0846",
+    "korean": "회의 시작 시각은 오후 세 시입니다.",
+    "english": "The meeting start time is 3 PM.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0861",
+    "korean": "한 달 정도 서울에서 머물 계획이에요.",
+    "english": "I plan to stay in Seoul for about a month.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0900",
+    "korean": "이 회의실은 열 명 이상 쓸 수 없어요.",
+    "english": "This meeting room cannot be used by more than 10 people.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0943",
+    "korean": "일 년은 열두 달 또는 십이 월이에요.",
+    "english": "One year is twelve months or twelve months.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0952",
+    "korean": "사과 두 개를 접시에 놓았어요.",
+    "english": "I put two apples on the plate.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s0968",
+    "korean": "커피 한 잔 더 주세요.",
+    "english": "Please give me one more cup of coffee.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1012",
+    "korean": "지하철역 삼 번 출구로 나오면 시청이 보여요.",
+    "english": "If you come out of subway station exit 3, you see city hall.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1029",
+    "korean": "하나, 둘, 셋을 세어요.",
+    "english": "I count one, two, three.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1170",
+    "korean": "지갑에 오만 원짜리 지폐 한 장이 들어 있네요.",
+    "english": "There is a 50,000 Won bill in my wallet.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1200",
+    "korean": "우리 팀이 힘을 합쳐 프로젝트 공모전에서 1등을 했어요.",
+    "english": "Our team combined strength and won 1st place in the project competition.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1279",
+    "korean": "제 나이는 스물두 살이고 대학에서 역사 공부해요.",
+    "english": "My age is 22 years old and I study history at university.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1294",
+    "korean": "엘리베이터의 삼 번 버튼을 손가락으로 눌렀어요.",
+    "english": "I pressed the elevator button 3 with my finger.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1333",
+    "korean": "기차역 도착 예정 시각은 오후 두 시 반이에요.",
+    "english": "The train station arrival estimated time is 2:30 PM.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1338",
+    "korean": "두 부서는 동등한 권리와 책임을 지고 일해요.",
+    "english": "The two departments work bearing equal rights and responsibilities.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1339",
+    "korean": "두 사건이 동시에 발생해서 경찰이 수사 중이에요.",
+    "english": "The police are investigating because two incidents occurred at the same time.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1346",
+    "korean": "호수 둘레를 따라 걷는 데 한 시간이 걸립니다.",
+    "english": "It takes an hour to walk along the lake perimeter.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1362",
+    "korean": "부모님은 두 자녀를 차별 없이 똑같이 사랑하셔요.",
+    "english": "Parents love two children equally without discrimination.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1370",
+    "korean": "회의실에서 두 사람이 테이블을 마주 보고 앉았어요.",
+    "english": "The two people sat facing the table in the meeting room.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1427",
+    "korean": "두 국가 사이의 전쟁으로 평화가 깨졌어요.",
+    "english": "Peace was broken due to the war between the two nations.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1440",
+    "korean": "출장 때문에 지방 여러 도시를 다녀와야 해요.",
+    "english": "I must visit several provincial cities due to a business trip.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1485",
+    "korean": "이것은 우리 두 사람 사이의 중요한 비밀이에요.",
+    "english": "This is an important secret between the two of us.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1494",
+    "korean": "오늘 회의는 오후 두 시에 시작될 예정이에요.",
+    "english": "Today's meeting is scheduled to start at 2 PM.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1525",
+    "korean": "두 단어의 정확한 의미 차이를 설명해 주세요.",
+    "english": "Please explain the exact meaning difference between the two words.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1561",
+    "korean": "이 식당은 백화점 근처 유명 찌개 맛집이에요.",
+    "english": "This restaurant is a famous stew eatery near the department store.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1574",
+    "korean": "우리 한국어 공부 모임 멤버가 다섯 명으로 늘었어요.",
+    "english": "Our Korean study group members increased to five people.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1591",
+    "korean": "이번 세일 기간에 백화점은 최대 오십 퍼센트 할인해요.",
+    "english": "The department store discounts up to a maximum of 50 percent during this sale.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1594",
+    "korean": "저는 한국어를 배운 지 벌써 삼 개월이 다 되었어요.",
+    "english": "It's already been three months since I started studying Korean.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1601",
+    "korean": "오늘 오전 열 시에 사무실에서 주간 회의가 열려요.",
+    "english": "Today at 10 AM, the weekly meeting is held in the office.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1604",
+    "korean": "두 단어의 예시 문장을 각각 한 번씩 소리 내어 읽으세요.",
+    "english": "Read the example sentences of the two words aloud once each.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1612",
+    "korean": "그가 한 모든 주장이 결국 거짓으로 밝혀졌어요.",
+    "english": "All the claims he made finally turned out to be lies.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1639",
+    "korean": "두 나라는 군사 동맹을 맺고 국경 보안을 강화했어요.",
+    "english": "The two countries made a military alliance and strengthened border security.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1678",
+    "korean": "두 지역의 경제력 격차를 해소하려 정책을 펴요.",
+    "english": "We apply policies to resolve the economic strength gap of the two regions.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1707",
+    "korean": "두 연구 결과의 관련성을 밝히는 논문을 작성했어요.",
+    "english": "I wrote a thesis revealing the relevance of the two research results.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1725",
+    "korean": "두 국가는 국경 분쟁 상황을 국제법에 따라 조율했어요.",
+    "english": "The two nations coordinated the border dispute situation according to international law.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1807",
+    "korean": "우리는 삼 박 사 일간의 서울 여행 여정을 마쳤어요.",
+    "english": "We completed the 3-night, 4-day Seoul travel itinerary.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1922",
+    "korean": "두 야구 팀의 치열한 승부는 결국 무승부로 끝났어요.",
+    "english": "The fierce match of both baseball teams finally ended in a tie.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1937",
+    "korean": "그가 한 주장은 전부 거짓인 것으로 드러났어요.",
+    "english": "The claims he made all turned out to be lies.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1949",
+    "korean": "스마트폰 알람 시간을 오전 여섯 시 반으로 설정했어요.",
+    "english": "I set the smartphone alarm time to 6:30 AM.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1955",
+    "korean": "두 부서의 통합 일정 계획안이 공식 발표되었습니다.",
+    "english": "The integration schedule proposal of the two departments was officially announced.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1964",
+    "korean": "새 프로젝트 기획 회의가 오늘 오전 열 시에 시작돼요.",
+    "english": "The new project planning meeting starts today at 10 AM.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1967",
+    "korean": "지하 주차장 공사 현장은 일반인 접근 금지 구역이에요.",
+    "english": "The basement parking lot construction site is a zone restricted from general public access.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s1998",
+    "korean": "두 식물 종류의 형태적 특징 차이를 분석해 보았습니다.",
+    "english": "I analyzed the morphological characteristic differences of the two plant kinds.",
+    "annotationSource": "explicit"
+  },
+  {
+    "id": "s2003",
+    "korean": "10에서 3을 빼요.",
+    "english": "I subtract 3 from 10.",
+    "annotationSource": "explicit"
+  }
+]

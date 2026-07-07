@@ -1,0 +1,634 @@
+[
+  {
+    "id": "s2008",
+    "korean": "저는 커피를 마셔요.",
+    "english": "I drink coffee.",
+    "inferred": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite",
+      "honorific-si"
+    ],
+    "proposed": [
+      "topic-neun",
+      "object-eul-reul"
+    ]
+  },
+  {
+    "id": "s2009",
+    "korean": "오늘은 날씨가 좋아요.",
+    "english": "The weather is good today.",
+    "inferred": [
+      "topic-neun",
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "proposed": [
+      "topic-neun",
+      "subject-i-ga"
+    ]
+  },
+  {
+    "id": "s2010",
+    "korean": "사과를 먹어요.",
+    "english": "I eat an apple.",
+    "inferred": [
+      "object-eul-reul",
+      "with-hago-wa",
+      "present-polite"
+    ],
+    "proposed": [
+      "object-eul-reul"
+    ]
+  },
+  {
+    "id": "s2011",
+    "korean": "버스를 타요.",
+    "english": "I take the bus.",
+    "inferred": [
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "proposed": [
+      "object-eul-reul"
+    ]
+  },
+  {
+    "id": "s2012",
+    "korean": "저는 학생이 아니에요.",
+    "english": "I am not a student.",
+    "inferred": [
+      "topic-neun",
+      "subject-i-ga",
+      "location-e",
+      "present-polite",
+      "copula-negative-anieyo"
+    ],
+    "proposed": [
+      "topic-neun",
+      "subject-i-ga",
+      "copula-negative-anieyo"
+    ]
+  },
+  {
+    "id": "s2013",
+    "korean": "우리 집은 가까워요.",
+    "english": "Our house is close.",
+    "inferred": [
+      "topic-neun",
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "proposed": [
+      "topic-neun"
+    ]
+  },
+  {
+    "id": "s2014",
+    "korean": "물이 있어요.",
+    "english": "There is water.",
+    "inferred": [
+      "subject-i-ga",
+      "present-polite",
+      "existence-itda"
+    ],
+    "proposed": [
+      "subject-i-ga",
+      "existence-itda"
+    ]
+  },
+  {
+    "id": "s2015",
+    "korean": "이것은 책이에요.",
+    "english": "This is a book.",
+    "inferred": [
+      "topic-neun",
+      "subject-i-ga",
+      "location-e",
+      "copula-ieyo"
+    ],
+    "proposed": [
+      "topic-neun",
+      "copula-ieyo"
+    ]
+  },
+  {
+    "id": "s2016",
+    "korean": "저는 시간이 있어요.",
+    "english": "I have time.",
+    "inferred": [
+      "topic-neun",
+      "subject-i-ga",
+      "present-polite",
+      "honorific-si",
+      "existence-itda"
+    ],
+    "proposed": [
+      "topic-neun",
+      "subject-i-ga",
+      "existence-itda"
+    ]
+  },
+  {
+    "id": "s2017",
+    "korean": "한국어가 재미있어요.",
+    "english": "Korean is fun.",
+    "inferred": [
+      "subject-i-ga",
+      "present-polite",
+      "existence-itda"
+    ],
+    "proposed": [
+      "subject-i-ga",
+      "existence-itda"
+    ]
+  },
+  {
+    "id": "s2018",
+    "korean": "저는 학교에 가요.",
+    "english": "I go to school.",
+    "inferred": [
+      "topic-neun",
+      "subject-i-ga",
+      "location-e",
+      "present-polite"
+    ],
+    "proposed": [
+      "topic-neun",
+      "location-e"
+    ]
+  },
+  {
+    "id": "s2019",
+    "korean": "어제 책을 읽었어요.",
+    "english": "I read a book yesterday.",
+    "inferred": [
+      "object-eul-reul",
+      "present-polite",
+      "past-polite"
+    ],
+    "proposed": [
+      "object-eul-reul",
+      "past-polite"
+    ]
+  },
+  {
+    "id": "s2020",
+    "korean": "내일 친구를 만날 거예요.",
+    "english": "I will meet a friend tomorrow.",
+    "inferred": [
+      "object-eul-reul",
+      "only-man",
+      "future-geoyeyo",
+      "copula-ieyo"
+    ],
+    "proposed": [
+      "object-eul-reul",
+      "copula-ieyo"
+    ]
+  },
+  {
+    "id": "s2021",
+    "korean": "지금 커피를 마셔요.",
+    "english": "I am drinking coffee now.",
+    "inferred": [
+      "object-eul-reul",
+      "present-polite",
+      "honorific-si"
+    ],
+    "proposed": [
+      "object-eul-reul"
+    ]
+  },
+  {
+    "id": "s2022",
+    "korean": "저는 한국어를 배워요.",
+    "english": "I learn Korean.",
+    "inferred": [
+      "topic-neun",
+      "object-eul-reul"
+    ],
+    "proposed": [
+      "topic-neun",
+      "object-eul-reul"
+    ]
+  },
+  {
+    "id": "s2023",
+    "korean": "저는 집에 갈 거예요.",
+    "english": "I will go home.",
+    "inferred": [
+      "topic-neun",
+      "location-e",
+      "future-geoyeyo",
+      "copula-ieyo"
+    ],
+    "proposed": [
+      "topic-neun",
+      "location-e",
+      "copula-ieyo"
+    ]
+  },
+  {
+    "id": "s2024",
+    "korean": "저는 어제 운동했어요.",
+    "english": "I exercised yesterday.",
+    "inferred": [
+      "topic-neun",
+      "present-polite",
+      "past-polite"
+    ],
+    "proposed": [
+      "topic-neun",
+      "past-polite"
+    ]
+  },
+  {
+    "id": "s2025",
+    "korean": "할머니가 오세요.",
+    "english": "Grandmother is coming.",
+    "inferred": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "proposed": [
+      "subject-i-ga"
+    ]
+  },
+  {
+    "id": "s2026",
+    "korean": "선생님이 계세요.",
+    "english": "The teacher is here.",
+    "inferred": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "proposed": [
+      "subject-i-ga"
+    ]
+  },
+  {
+    "id": "s2027",
+    "korean": "저는 친구를 도와요.",
+    "english": "I help a friend.",
+    "inferred": [
+      "topic-neun",
+      "object-eul-reul",
+      "with-hago-wa",
+      "also-do",
+      "present-polite"
+    ],
+    "proposed": [
+      "topic-neun",
+      "object-eul-reul"
+    ]
+  },
+  {
+    "id": "s2028",
+    "korean": "우리는 영화를 봐요.",
+    "english": "We watch a movie.",
+    "inferred": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "proposed": [
+      "topic-neun",
+      "object-eul-reul"
+    ]
+  },
+  {
+    "id": "s2029",
+    "korean": "저는 매일 일해요.",
+    "english": "I work every day.",
+    "inferred": [
+      "topic-neun",
+      "present-polite"
+    ],
+    "proposed": [
+      "topic-neun"
+    ]
+  },
+  {
+    "id": "s2030",
+    "korean": "오늘은 쉬어요.",
+    "english": "I rest today.",
+    "inferred": [
+      "topic-neun",
+      "present-polite"
+    ],
+    "proposed": [
+      "topic-neun"
+    ]
+  },
+  {
+    "id": "s2031",
+    "korean": "안녕하세요.",
+    "english": "Hello.",
+    "inferred": [
+      "honorific-si"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2032",
+    "korean": "처음 뵙겠습니다.",
+    "english": "Nice to meet you.",
+    "inferred": [
+      "formal-nida"
+    ],
+    "proposed": [
+      "formal-nida"
+    ]
+  },
+  {
+    "id": "s2033",
+    "korean": "감사합니다.",
+    "english": "Thank you.",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2034",
+    "korean": "괜찮아요.",
+    "english": "It's okay.",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2035",
+    "korean": "네.",
+    "english": "Yes.",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2036",
+    "korean": "아니요.",
+    "english": "No.",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2037",
+    "korean": "이거 주세요.",
+    "english": "This one, please.",
+    "inferred": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2038",
+    "korean": "잠시만요.",
+    "english": "One moment, please.",
+    "inferred": [
+      "only-man",
+      "honorific-si"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2039",
+    "korean": "잘 모르겠어요.",
+    "english": "I don't understand.",
+    "inferred": [
+      "present-polite",
+      "future-geoyeyo"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2040",
+    "korean": "도와주세요.",
+    "english": "Please help me.",
+    "inferred": [
+      "with-hago-wa",
+      "also-do",
+      "honorific-si"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2041",
+    "korean": "다시 말씀해 주세요.",
+    "english": "Please say it again.",
+    "inferred": [
+      "honorific-si"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2042",
+    "korean": "천천히 말씀해 주세요.",
+    "english": "Please speak slowly.",
+    "inferred": [
+      "honorific-si"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2043",
+    "korean": "무슨 뜻이에요?",
+    "english": "What does it mean?",
+    "inferred": [
+      "subject-i-ga",
+      "location-e",
+      "copula-ieyo"
+    ],
+    "proposed": [
+      "copula-ieyo"
+    ]
+  },
+  {
+    "id": "s2044",
+    "korean": "한국어 조금 해요.",
+    "english": "I speak a little Korean.",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2045",
+    "korean": "네, 다시 말씀드릴게요.",
+    "english": "Yes, I will say it again.",
+    "inferred": [
+      "honorific-si"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2046",
+    "korean": "네, 천천히 말할게요.",
+    "english": "Yes, I will speak slowly.",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2047",
+    "korean": "저쪽이에요.",
+    "english": "It's over there.",
+    "inferred": [
+      "subject-i-ga",
+      "location-e",
+      "copula-ieyo"
+    ],
+    "proposed": [
+      "copula-ieyo"
+    ]
+  },
+  {
+    "id": "s2048",
+    "korean": "네, 여기요.",
+    "english": "Yes, here you go.",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2049",
+    "korean": "알겠습니다.",
+    "english": "Understood.",
+    "inferred": [
+      "formal-nida"
+    ],
+    "proposed": [
+      "formal-nida"
+    ]
+  },
+  {
+    "id": "s2050",
+    "korean": "죄송합니다",
+    "english": "I'm sorry",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2051",
+    "korean": "실례합니다",
+    "english": "Excuse me",
+    "inferred": [
+      "present-polite"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2052",
+    "korean": "커피 주세요",
+    "english": "Coffee, please",
+    "inferred": [
+      "honorific-si"
+    ],
+    "proposed": []
+  },
+  {
+    "id": "s2053",
+    "korean": "얼마예요?",
+    "english": "How much is it?",
+    "inferred": [
+      "copula-ieyo"
+    ],
+    "proposed": [
+      "copula-ieyo"
+    ]
+  },
+  {
+    "id": "s2054",
+    "korean": "화장실 어디예요?",
+    "english": "Where is the bathroom?",
+    "inferred": [
+      "copula-ieyo"
+    ],
+    "proposed": [
+      "copula-ieyo"
+    ]
+  },
+  {
+    "id": "s2055",
+    "korean": "영어 할 수 있어요?",
+    "english": "Can you speak English?",
+    "inferred": [
+      "present-polite",
+      "existence-itda"
+    ],
+    "proposed": [
+      "can-su-itda",
+      "existence-itda"
+    ]
+  },
+  {
+    "id": "s2056",
+    "korean": "선생님이 오세요.",
+    "english": "The teacher is coming.",
+    "inferred": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "proposed": [
+      "subject-i-ga"
+    ]
+  },
+  {
+    "id": "s2057",
+    "korean": "할머니가 주무세요.",
+    "english": "Grandmother is sleeping.",
+    "inferred": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "proposed": [
+      "subject-i-ga"
+    ]
+  },
+  {
+    "id": "s2058",
+    "korean": "사장님이 계세요.",
+    "english": "The boss is here.",
+    "inferred": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "proposed": [
+      "subject-i-ga"
+    ]
+  },
+  {
+    "id": "s2059",
+    "korean": "교수님이 말씀하세요.",
+    "english": "The professor speaks.",
+    "inferred": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "proposed": [
+      "subject-i-ga"
+    ]
+  },
+  {
+    "id": "s2060",
+    "korean": "어머니가 드세요.",
+    "english": "Mother eats.",
+    "inferred": [
+      "subject-i-ga",
+      "honorific-si"
+    ],
+    "proposed": [
+      "subject-i-ga"
+    ]
+  }
+]
