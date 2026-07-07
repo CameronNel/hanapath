@@ -228,7 +228,7 @@ be re-derived from data, not copied forward.**
 | 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the legacy level-rail shell is gone; `renderPracticeView` is now the self-contained **Sentence Studio** (hub → session → summary) reading from the bank. |
 | 5 | Sentence SRS (`state.sentencesProgress`) | ✅ done — Leitner scheduling + due dates (C3) fully built and scheduled |
 | 6 | i+1 gating via `focusWordIds` | ✅ done — new-sentence queue restricted to known words (C2) |
-| 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows explicit; s0001–s0400 accuracy sweep complete |
+| 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows explicit; accuracy sweep landed for **s0001–s0400 and s1601–s2000**. **Gap: s0401–s1600 not yet swept** (Codex batches #117–#120 were closed unmerged; do not claim these ranges are verified). |
 | 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ❌ not started |
 | 9 | Shadow mode + speech-stub wiring for sentences | ❌ not started (Dictation mode ships as a related listening drill) |
 | 10 | Transform drill (inflection engine) | ❌ not started |
