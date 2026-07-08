@@ -6675,25 +6675,34 @@ function wordBasicsSectionHtml(lessons = getWordLessons()) {
   if (!basics.length) return "";
   const completed = basics.filter((lesson) => isWordLessonCompleted(lesson.id)).length;
   return `
-    <details class="card word-section-details">
-      <summary class="word-section-summary">
-        <div>
-          <div class="eyebrow">Post-Hangul / Basics</div>
-          <div class="study-row-ko">Basics of the basics</div>
-          <div class="screen-sub" style="margin-bottom:0;">The first bridge from Hangul into usable words.</div>
-        </div>
-        <span class="pill muted">${completed}/${basics.length}</span>
-      </summary>
-      <div class="study-list word-section-body">
-        ${basics.map((lesson) => wordLessonRowHtml(lesson)).join("")}
+    <button class="card word-section-card" type="button" data-word-section="basics">
+      <div>
+        <div class="eyebrow">Post-Hangul / Basics</div>
+        <div class="study-row-ko">Basics of the basics</div>
+        <div class="screen-sub" style="margin-bottom:0;">The first bridge from Hangul into usable words.</div>
       </div>
-    </details>
+      <span class="pill muted">${completed}/${basics.length}</span>
+    </button>
   `;
 }
 
 function vocabularyStagesSectionHtml() {
   const progress = getLearnProgress("vocabulary");
-  const stageRows = Array.from({ length: progress.total }, (_, index) => {
+  return `
+    <button class="card word-section-card" type="button" data-word-section="stages">
+      <div>
+        <div class="eyebrow">Stages</div>
+        <div class="study-row-ko">Vocabulary bands</div>
+        <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo("vocabulary", progress.currentStage).detail)}`}</div>
+      </div>
+      <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
+    </button>
+  `;
+}
+
+function vocabularyStageRowsHtml() {
+  const progress = getLearnProgress("vocabulary");
+  return Array.from({ length: progress.total }, (_, index) => {
     const stageNumber = index + 1;
     const stageInfo = getLearnStageInfo("vocabulary", stageNumber);
     const status = getLearnStageStatus("vocabulary", stageNumber);
@@ -6716,22 +6725,6 @@ function vocabularyStagesSectionHtml() {
       </button>
     `;
   }).join("");
-
-  return `
-    <details class="card word-section-details">
-      <summary class="word-section-summary">
-        <div>
-          <div class="eyebrow">Stages</div>
-          <div class="study-row-ko">Vocabulary bands</div>
-          <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo("vocabulary", progress.currentStage).detail)}`}</div>
-        </div>
-        <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
-      </summary>
-      <div class="study-list word-section-body">
-        ${stageRows}
-      </div>
-    </details>
-  `;
 }
 
 function getWordLessonPathMeta(lesson, now = Date.now()) {
@@ -6808,15 +6801,15 @@ function wordPathLessonPanelHtml() {
     : `${visibleLessons.length} of ${lessons.length} lessons shown`;
 
   return `
-    <details class="card word-section-details">
-      <summary class="word-section-summary">
+    <div class="card">
+      <div class="flex-between mb-12">
         <div>
           <div class="eyebrow">Lessons</div>
           <div class="study-row-ko">Guided word lessons</div>
           <div class="screen-sub" style="margin-bottom:0;">Browse by category and learning level when you want the full path.</div>
         </div>
         <span class="pill accent" style="white-space:nowrap;">${completedCount}/${lessons.length}</span>
-      </summary>
+      </div>
       <div class="word-path-controls">
         <label class="word-path-field">
           <span>Category</span>
@@ -6833,7 +6826,22 @@ function wordPathLessonPanelHtml() {
       </div>
       <div class="word-path-summary">${escapeHtml(listSummary)}</div>
       <div class="study-list">${lessonRows || '<div class="study-row"><div><div class="study-row-ko">No lessons match those filters</div><div class="study-row-sub">Choose a different category or learning level.</div></div></div>'}</div>
-    </details>
+    </div>
+  `;
+}
+
+function wordLessonsSectionHtml(lessons = getWordLessons()) {
+  if (!lessons.length) return "";
+  const completedCount = (state.vocabLessonCompleted || []).length;
+  return `
+    <button class="card word-section-card" type="button" data-word-section="lessons">
+      <div>
+        <div class="eyebrow">Lessons</div>
+        <div class="study-row-ko">Guided word lessons</div>
+        <div class="screen-sub" style="margin-bottom:0;">Browse by category and learning level when you want the full path.</div>
+      </div>
+      <span class="pill accent" style="white-space:nowrap;">${completedCount}/${lessons.length}</span>
+    </button>
   `;
 }
 
@@ -6854,6 +6862,95 @@ function bindWordPathControls(el, rerender) {
       rerender();
     });
   }
+}
+
+function bindWordLessonRows(el) {
+  el.querySelectorAll("[data-words-open-lesson]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.wordsLocked) {
+        showRetryToast(getAlphabetProgress().complete
+          ? "Finish the previous word lesson to unlock this one."
+          : "Finish the Hangul stages to unlock word lessons.");
+        return;
+      }
+      openWordLesson(btn.dataset.wordsOpenLesson, { resume: state.vocabLessonActive === btn.dataset.wordsOpenLesson });
+    });
+  });
+}
+
+function bindVocabularyStageRows(el) {
+  el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.lockedStage) {
+        const progress = getLearnProgress("vocabulary");
+        const currentStageInfo = getLearnStageInfo("vocabulary", progress.currentStage);
+        showRetryToast(`Finish "${currentStageInfo.title}" to unlock this stage.`);
+        return;
+      }
+      openLearnStage("vocabulary", Number(btn.dataset.learnStage));
+    });
+  });
+}
+
+function openVocabularySubsection(section, backTarget = "menu") {
+  stopSpeech();
+  currentQuizScope = "vocabulary";
+  state.studio = "vocab";
+  activeHub = "learn";
+  setNavActive("learn");
+  const el = showScreen("detail");
+  if (!el) return;
+
+  const back = () => {
+    if (backTarget === "words-home") openWordsHome();
+    else openLearnStageMenu("vocabulary");
+  };
+
+  if (section === "basics") {
+    const basics = getBasicWordLessons();
+    showDetailBarWithBack("learn", "Post-Hangul / Basics", back, "Vocabulary");
+    el.innerHTML = `
+      <div class="card">
+        <div class="eyebrow">Post-Hangul / Basics</div>
+        <h2 class="screen-title" style="margin-bottom:8px;">Basics of the basics</h2>
+        <div class="screen-sub" style="margin-bottom:0;">The first bridge from Hangul into usable words.</div>
+      </div>
+      <div class="card">
+        <div class="study-list">${basics.map((lesson) => wordLessonRowHtml(lesson)).join("")}</div>
+      </div>
+    `;
+    bindWordLessonRows(el);
+    return;
+  }
+
+  if (section === "lessons") {
+    showDetailBarWithBack("learn", "Guided word lessons", back, "Vocabulary");
+    el.innerHTML = wordPathLessonPanelHtml();
+    bindWordPathControls(el, () => openVocabularySubsection("lessons", backTarget));
+    bindWordLessonRows(el);
+    return;
+  }
+
+  if (section === "stages") {
+    showDetailBarWithBack("learn", "Vocabulary bands", back, "Vocabulary");
+    el.innerHTML = `
+      <div class="card">
+        <div class="eyebrow">Stages</div>
+        <h2 class="screen-title" style="margin-bottom:8px;">Vocabulary bands</h2>
+        <div class="screen-sub" style="margin-bottom:0;">Open the broad 500-word bands when you want the old stage view.</div>
+      </div>
+      <div class="card">
+        <div class="study-list">${vocabularyStageRowsHtml()}</div>
+      </div>
+    `;
+    bindVocabularyStageRows(el);
+  }
+}
+
+function bindVocabularySectionCards(el, backTarget = "menu") {
+  el.querySelectorAll("[data-word-section]").forEach((btn) => {
+    btn.addEventListener("click", () => openVocabularySubsection(btn.dataset.wordSection, backTarget));
+  });
 }
 
 // Words home content (the "learn" view of the vocabulary section): continue
@@ -6916,38 +7013,12 @@ function wordsHomeContentHtml() {
     ${continueCard}
     ${reviewCard}
     ${wordBasicsSectionHtml(lessons)}
-    ${wordPathLessonPanelHtml()}
+    ${wordLessonsSectionHtml(lessons)}
     ${vocabularyStagesSectionHtml()}
   `;
 }
 function bindWordsHomeContent(el) {
-  const categorySelect = el.querySelector("[data-word-path-category]");
-  if (categorySelect) {
-    categorySelect.addEventListener("change", () => {
-      state.wordPathCategory = categorySelect.value || "all";
-      saveState();
-      renderVocabulary();
-    });
-  }
-  const levelSelect = el.querySelector("[data-word-path-level]");
-  if (levelSelect) {
-    levelSelect.addEventListener("change", () => {
-      state.wordPathLevel = levelSelect.value || "all";
-      saveState();
-      renderVocabulary();
-    });
-  }
-  el.querySelectorAll("[data-words-open-lesson]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (btn.dataset.wordsLocked) {
-        showRetryToast(getAlphabetProgress().complete
-          ? "Finish the previous word lesson to unlock this one."
-          : "Finish the Hangul stages to unlock word lessons.");
-        return;
-      }
-      openWordLesson(btn.dataset.wordsOpenLesson, { resume: state.vocabLessonActive === btn.dataset.wordsOpenLesson });
-    });
-  });
+  bindVocabularySectionCards(el, "words-home");
   const reviewBtn = el.querySelector("[data-words-start-review]");
   if (reviewBtn) reviewBtn.addEventListener("click", () => openWordReview());
 }
@@ -12203,7 +12274,7 @@ function renderLearnStageMenu(itemId) {
       </div>
     </div>`
     : "";
-  const wordPathHtml = itemId === "vocabulary" ? wordPathLessonPanelHtml() : "";
+  const wordPathHtml = itemId === "vocabulary" ? wordLessonsSectionHtml() : "";
 
   // Alphabet Drill Lab: permanent, unlocked once the mastery test is done.
   const drillLabHtml = itemId === "alphabet" && (progress.complete || TEST_UNLOCK_ALL_STAGES)
@@ -12282,18 +12353,7 @@ function renderLearnStageMenu(itemId) {
   if (drillLabBtn) drillLabBtn.addEventListener("click", () => openAlphabetDrillLab());
   bindWordBankEntryCard(el);
   if (itemId === "vocabulary") {
-    bindWordPathControls(el, () => renderLearnStageMenu(itemId));
-    el.querySelectorAll("[data-words-open-lesson]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        if (btn.dataset.wordsLocked) {
-          showRetryToast(getAlphabetProgress().complete
-            ? "Finish the previous word lesson to unlock this one."
-            : "Finish the Hangul stages to unlock word lessons.");
-          return;
-        }
-        openWordLesson(btn.dataset.wordsOpenLesson, { resume: state.vocabLessonActive === btn.dataset.wordsOpenLesson });
-      });
-    });
+    bindVocabularySectionCards(el, "menu");
   }
   const stageWordReviewBtn = document.getElementById("stageWordReviewBtn");
   if (stageWordReviewBtn) stageWordReviewBtn.addEventListener("click", () => openWordReview());
