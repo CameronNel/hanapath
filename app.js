@@ -13633,8 +13633,17 @@ const SENTENCE_MODES = [
   { id: "translate", label: "Translate & Type", sub: "See the English, type the Korean.", tag: "Flagship" },
   { id: "build", label: "Word Builder", sub: "Tap the Korean words into the right order.", tag: "No keyboard needed" },
   { id: "listen", label: "Dictation", sub: "Hear the sentence, then type what you heard.", tag: "Listening" },
-  { id: "mixed", label: "Mixed session", sub: "All three drills in one run.", tag: "Variety" },
+  { id: "shadow", label: "Shadow", sub: "Listen, repeat aloud, and optionally score your speech.", tag: "Speaking" },
+  { id: "transform", label: "Transform", sub: "Change tense or form using words you already know.", tag: "Grammar" },
+  { id: "mixed", label: "Mixed session", sub: "Translate, build, listen, and shadow in one run.", tag: "Variety" },
 ];
+const SENTENCE_TRANSFORM_TASKS = [
+  { id: "present-to-past", label: "Make it past tense", sourceForm: "polite", targetForm: "past", targetTag: "past-polite" },
+  { id: "past-to-present", label: "Make it present polite", sourceForm: "past", targetForm: "polite", targetTag: "present-polite" },
+  { id: "polite-to-formal", label: "Make it formal", sourceForm: "polite", targetForm: "formal", targetTag: "formal-nida" },
+  { id: "polite-to-honorific", label: "Make it honorific", sourceForm: "polite", targetForm: "honorific", targetTag: "honorific-si" },
+];
+const SENTENCE_REVIEW_EVENT_LIMIT = 5000;
 const PATTERN_TAG_INFO = {
   "topic-neun": "Check whether the sentence sets a topic with eun/neun.",
   "subject-i-ga": "Look for the subject marker i/ga after the noun doing or being something.",
@@ -13677,10 +13686,25 @@ const PATTERN_TAG_INFO = {
 
 // Live session (module-level, like the word-lesson view). Null = show the hub.
 let sentenceStudioSession = null;
+let sentenceLessonView = null;
 
 function getSentenceBankRows() {
   const bank = window.HANAPATH_SENTENCES;
   return Array.isArray(bank) ? bank : [];
+}
+
+function getSentenceLessons() {
+  const lessons = window.HANAPATH_SENTENCE_LESSONS;
+  return Array.isArray(lessons) ? lessons : [];
+}
+
+function getSentenceLessonById(lessonId) {
+  return getSentenceLessons().find((lesson) => lesson.id === lessonId) || null;
+}
+
+function getSentenceLessonRows(lesson) {
+  const byId = new Map(getSentenceBankRows().map((row) => [row.id, row]));
+  return (lesson?.sentenceIds || []).map((id) => byId.get(id)).filter(Boolean);
 }
 
 // Normalized accessor for the Sentences state slice (additive; older saved
@@ -13694,7 +13718,93 @@ function getSentencesProgress() {
   if (!p.results || typeof p.results !== "object") p.results = {};
   p.sessionsDone = Number(p.sessionsDone) || 0;
   if (p.newPerDay === undefined) p.newPerDay = 5;
+  if (!Array.isArray(p.completedLessons)) p.completedLessons = [];
+  p.completedLessons = [...new Set(p.completedLessons.filter((id) => typeof id === "string"))];
+  if (!Array.isArray(p.reviewEvents)) p.reviewEvents = [];
+  p.reviewEvents = normalizeSentenceReviewEvents(p.reviewEvents);
   return p;
+}
+
+function normalizeSentenceReviewResult(result, isCorrect) {
+  const raw = String(result || "").toLowerCase();
+  if (raw === "correct" || raw === "incorrect" || raw === "revealed" || raw === "self-marked") return raw;
+  return isCorrect ? "correct" : "incorrect";
+}
+
+function inferSentenceErrorType(mode, result, helpersUsed = []) {
+  if (result === "correct") return null;
+  if (result === "revealed" || helpersUsed.includes("reveal")) return "revealed";
+  const map = {
+    translate: "sentence-recall",
+    build: "word-order",
+    listen: "dictation",
+    shadow: "speech-match",
+    transform: "inflection-transform",
+    lesson: "pattern-lesson",
+  };
+  return map[mode] || "sentence-miss";
+}
+
+function estimateSentenceConfidence(result, latencyMs, helpersUsed = []) {
+  if (result === "revealed") return 0.1;
+  const safeLatency = Math.max(0, Number(latencyMs) || 0);
+  const speed = 1 - Math.min(1, safeLatency / 20000);
+  const helperPenalty = Math.min(0.35, helpersUsed.length * 0.08);
+  const base = result === "correct" ? 0.68 : 0.25;
+  const swing = result === "correct" ? 0.25 : -0.05;
+  return Math.max(0.05, Math.min(0.99, Math.round((base + speed * swing - helperPenalty) * 100) / 100));
+}
+
+function normalizeSentenceReviewEvent(event) {
+  if (!event || typeof event !== "object") return null;
+  const sentenceId = typeof event.sentenceId === "string" ? event.sentenceId : "";
+  if (!sentenceId) return null;
+  const mode = typeof event.mode === "string" && event.mode ? event.mode : "translate";
+  const helpersUsed = Array.isArray(event.helpersUsed)
+    ? event.helpersUsed.filter((value) => typeof value === "string")
+    : [];
+  const result = normalizeSentenceReviewResult(event.result, event.result === "correct");
+  const at = Number.isFinite(Number(event.at)) ? Number(event.at) : Date.now();
+  const latencyMs = Number.isFinite(Number(event.latencyMs)) ? Math.max(0, Math.round(Number(event.latencyMs))) : 0;
+  const confidence = Number.isFinite(Number(event.confidence))
+    ? Math.max(0, Math.min(1, Math.round(Number(event.confidence) * 100) / 100))
+    : estimateSentenceConfidence(result, latencyMs, helpersUsed);
+  return {
+    sentenceId,
+    mode,
+    result,
+    latencyMs,
+    helpersUsed,
+    helperCount: helpersUsed.length,
+    errorType: typeof event.errorType === "string" && event.errorType
+      ? event.errorType
+      : inferSentenceErrorType(mode, result, helpersUsed),
+    confidence,
+    lessonId: typeof event.lessonId === "string" && event.lessonId ? event.lessonId : null,
+    transformId: typeof event.transformId === "string" && event.transformId ? event.transformId : null,
+    speechScore: event.speechScore && typeof event.speechScore === "object" ? event.speechScore : null,
+    at,
+  };
+}
+
+function normalizeSentenceReviewEvents(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((event) => normalizeSentenceReviewEvent(event))
+    .filter(Boolean)
+    .sort((a, b) => a.at - b.at)
+    .slice(-SENTENCE_REVIEW_EVENT_LIMIT);
+}
+
+function pushSentenceReviewEvent(event) {
+  const progress = getSentencesProgress();
+  const normalized = normalizeSentenceReviewEvent(event);
+  if (!normalized) return null;
+  progress.reviewEvents.push(normalized);
+  if (progress.reviewEvents.length > SENTENCE_REVIEW_EVENT_LIMIT) {
+    progress.reviewEvents.splice(0, progress.reviewEvents.length - SENTENCE_REVIEW_EVENT_LIMIT);
+  }
+  return normalized;
 }
 
 // 'Met words' = union of word ids in completed word lessons and state.vocabSrs keys.
@@ -13815,6 +13925,34 @@ function getDueSentenceCountForBand(band) {
     }
   }
   return count;
+}
+
+function getSentenceAnalyticsSnapshot() {
+  const progress = getSentencesProgress();
+  const events = progress.reviewEvents || [];
+  const rowsById = new Map(getSentenceBankRows().map((row) => [row.id, row]));
+  const validEvents = events.filter((event) => rowsById.has(event.sentenceId));
+  const total = validEvents.length;
+  const correct = validEvents.filter((event) => event.result === "correct").length;
+  const avgLatencyMs = total
+    ? Math.round(validEvents.reduce((sum, event) => sum + (Number(event.latencyMs) || 0), 0) / total)
+    : 0;
+  const helperUses = validEvents.reduce((sum, event) => sum + (Number(event.helperCount) || 0), 0);
+  const byMode = validEvents.reduce((acc, event) => {
+    acc[event.mode] = (acc[event.mode] || 0) + 1;
+    return acc;
+  }, {});
+  return {
+    events: validEvents,
+    total,
+    correct,
+    correctPct: total ? Math.round((correct / total) * 100) : 0,
+    avgLatencyMs,
+    avgLatencyLabel: formatVocabLatencyMs(avgLatencyMs),
+    helperUses,
+    byMode,
+    recentEvents: validEvents.slice(-6).reverse(),
+  };
 }
 
 // Least-practiced-first selection with random tie-breaking.
@@ -13962,11 +14100,79 @@ function makeSentenceTilePool(row, bandRows) {
   return shuffle(tiles.concat(distractors));
 }
 
+function sentenceRowHasInflectedSurface(row, surface) {
+  const text = String(row?.korean || "");
+  const form = String(surface || "").trim();
+  return Boolean(form && text.includes(form));
+}
+
+function buildSentenceTransformForRow(row) {
+  const inflect = window.HANAPATH_INFLECT;
+  if (!row || !inflect || typeof inflect.inflect !== "function") return null;
+  const focusIds = Array.isArray(row.focusWordIds) ? row.focusWordIds : [];
+  for (const wordId of focusIds) {
+    const word = curatedWordsById.get(wordId);
+    if (!word || (word.pos !== "verb" && word.pos !== "adjective")) continue;
+    for (const task of SENTENCE_TRANSFORM_TASKS) {
+      const sourceSurface = inflect.inflect(word, task.sourceForm);
+      const targetSurface = inflect.inflect(word, task.targetForm);
+      if (!sourceSurface || !targetSurface || sourceSurface === targetSurface) continue;
+      if (!sentenceRowHasInflectedSurface(row, sourceSurface)) continue;
+      const expected = String(row.korean).replace(sourceSurface, targetSurface);
+      if (expected === row.korean) continue;
+      return {
+        id: `${row.id}:${word.id}:${task.id}`,
+        task,
+        word,
+        sourceSurface,
+        targetSurface,
+        prompt: task.label,
+        expected,
+        tokens: tokenizeSentence(expected),
+      };
+    }
+  }
+  return null;
+}
+
+function getSentenceTransformRowsForBand(band) {
+  return getSentenceRowsForBand(band)
+    .map((row) => ({ row, transform: buildSentenceTransformForRow(row) }))
+    .filter((item) => item.transform);
+}
+
+function pickSentenceTransformRows(band, count = SENTENCE_SESSION_LENGTH) {
+  const exact = getSentenceTransformRowsForBand(band);
+  const easier = band > 1
+    ? Array.from({ length: band - 1 }, (_, index) => getSentenceTransformRowsForBand(index + 1)).flat()
+    : [];
+  const seen = new Set();
+  return shuffle(exact.concat(easier))
+    .filter((item) => {
+      if (seen.has(item.row.id)) return false;
+      seen.add(item.row.id);
+      return true;
+    })
+    .slice(0, count)
+    .map((item) => item.row);
+}
+
+function getSentenceTransformForSessionRow(session, row) {
+  if (!session.transforms) session.transforms = {};
+  if (!session.transforms[row.id]) {
+    session.transforms[row.id] = buildSentenceTransformForRow(row);
+  }
+  return session.transforms[row.id] || null;
+}
+
 function startSentenceStudioSession(modeId) {
   stopSpeech();
   const progress = getSentencesProgress();
-  const rows = pickSentenceSessionRows(progress.band);
+  const rows = modeId === "transform"
+    ? pickSentenceTransformRows(progress.band)
+    : pickSentenceSessionRows(progress.band);
   if (!rows.length) return;
+  sentenceLessonView = null;
   sentenceStudioSession = {
     modeId,
     rows,
@@ -13981,16 +14187,61 @@ function startSentenceStudioSession(modeId) {
     lockedPrefix: "",
     builtTiles: [],
     tilePool: [],
+    transforms: {},
+    speech: null,
     autoPlayed: false,
+    questionStartedAt: 0,
     results: [], // { id, mode, correct, revealed, helpersUsed }
   };
   prepareSentenceQuestion();
   renderPracticeView();
 }
 
+function openSentenceLesson(lessonId) {
+  const lesson = getSentenceLessonById(lessonId);
+  if (!lesson) return;
+  stopSpeech();
+  sentenceStudioSession = null;
+  sentenceLessonView = { lessonId };
+  renderPracticeView();
+}
+
+function startSentenceLessonSession(lessonId) {
+  const lesson = getSentenceLessonById(lessonId);
+  const rows = getSentenceLessonRows(lesson);
+  if (!lesson || !rows.length) return;
+  stopSpeech();
+  sentenceLessonView = null;
+  sentenceStudioSession = {
+    modeId: "lesson",
+    lessonId,
+    lessonTitle: lesson.title,
+    rows,
+    index: 0,
+    phase: "question",
+    typed: "",
+    attempts: 0,
+    helperLevel: 0,
+    helperUsed: [],
+    helperTilePool: [],
+    revealedTokenCount: 0,
+    lockedPrefix: "",
+    builtTiles: [],
+    tilePool: [],
+    transforms: {},
+    speech: null,
+    autoPlayed: false,
+    questionStartedAt: 0,
+    results: [],
+  };
+  prepareSentenceQuestion();
+  renderPracticeView();
+}
+
 function sentenceQuestionMode(session = sentenceStudioSession) {
+  if (session.modeId === "lesson") return session.index % 2 === 0 ? "translate" : "build";
   if (session.modeId !== "mixed") return session.modeId;
-  return ["translate", "build", "listen"][session.index % 3];
+  return ["translate", "build", "listen", "shadow"][session.index % 4];
 }
 
 function prepareSentenceQuestion() {
@@ -14006,9 +14257,17 @@ function prepareSentenceQuestion() {
   session.autoPlayed = false;
   session.builtTiles = [];
   session.tilePool = [];
+  session.speech = null;
+  session.questionStartedAt = Date.now();
   if (sentenceQuestionMode() === "build") {
     const row = session.rows[session.index];
     session.tilePool = makeSentenceTilePool(row, getSentenceRowsForBand(getSentencesProgress().band));
+  } else if (sentenceQuestionMode() === "transform") {
+    const row = session.rows[session.index];
+    const transform = getSentenceTransformForSessionRow(session, row);
+    session.helperTilePool = transform
+      ? makeSentenceTokenPool(transform.tokens || tokenizeSentence(transform.expected), 4).map((tile) => tile.text)
+      : [];
   }
 }
 
@@ -14021,7 +14280,7 @@ function markSentenceHelperUsed(name) {
 // Persist one outcome per question into the durable per-sentence record.
 // EXTENSION (roadmap C3): also (re)schedule the row's SRS card here.
 // EXTENSION (roadmap J1): also emit a review-event for the analytics view.
-function recordSentenceResult(row, correct, revealed) {
+function recordSentenceResult(row, correct, revealed, meta = {}) {
   const progress = getSentencesProgress();
   const results = progress.results;
   const record = results[row.id] || (results[row.id] = { seen: 0, correct: 0, streak: 0, last: 0, box: 0, due: 0, lapses: 0 });
@@ -14048,22 +14307,42 @@ function recordSentenceResult(row, correct, revealed) {
     record.lapses = (record.lapses || 0) + 1;
   }
   record.due = record.last + VOCAB_SRS_INTERVALS[record.box];
+  const mode = sentenceQuestionMode();
+  const helpersUsed = sentenceStudioSession.helperUsed.slice();
+  const result = revealed ? "revealed" : correct ? "correct" : "incorrect";
+  const latencyMs = Number.isFinite(Number(meta.latencyMs))
+    ? Math.max(0, Math.round(Number(meta.latencyMs)))
+    : Math.max(0, Date.now() - (Number(sentenceStudioSession.questionStartedAt) || Date.now()));
+  pushSentenceReviewEvent({
+    sentenceId: row.id,
+    mode,
+    result,
+    latencyMs,
+    helpersUsed,
+    lessonId: sentenceStudioSession.lessonId || null,
+    transformId: meta.transformId || null,
+    speechScore: meta.speechScore || null,
+    at: record.last,
+  });
   
   sentenceStudioSession.results.push({
     id: row.id,
-    mode: sentenceQuestionMode(),
+    mode,
     correct,
     revealed,
-    helpersUsed: sentenceStudioSession.helperUsed.slice(),
+    helpersUsed,
+    latencyMs,
+    transformId: meta.transformId || null,
+    speechScore: meta.speechScore || null,
   });
   saveState();
 }
 
-function finishSentenceQuestion(correct, revealed = false) {
+function finishSentenceQuestion(correct, revealed = false, meta = {}) {
   const session = sentenceStudioSession;
   const row = session.rows[session.index];
   if (revealed) markSentenceHelperUsed("reveal");
-  recordSentenceResult(row, correct, revealed);
+  recordSentenceResult(row, correct, revealed, meta);
   session.phase = "feedback";
   if (correct) speak(row.voiceText || row.korean);
   renderPracticeView();
@@ -14076,6 +14355,13 @@ function advanceSentenceSession() {
     session.phase = "summary";
     const progress = getSentencesProgress();
     progress.sessionsDone += 1;
+    if (session.lessonId) {
+      const correct = session.results.filter((result) => result.correct).length;
+      const passCount = Math.ceil(session.rows.length * 0.67);
+      if (correct >= passCount && !progress.completedLessons.includes(session.lessonId)) {
+        progress.completedLessons.push(session.lessonId);
+      }
+    }
     saveState();
   } else {
     session.index += 1;
@@ -14087,6 +14373,7 @@ function advanceSentenceSession() {
 function exitSentenceStudioSession() {
   stopSpeech();
   sentenceStudioSession = null;
+  sentenceLessonView = null;
   renderPracticeView();
 }
 
@@ -14156,15 +14443,18 @@ function sentenceStudioHubHtml() {
   } else {
     modeCardsHtml = `
       <div class="study-list">
-        ${SENTENCE_MODES.map((mode) => `
-          <button class="study-row ss-mode" type="button" data-ss-start="${mode.id}">
+        ${SENTENCE_MODES.map((mode) => {
+          const available = mode.id !== "transform" || getSentenceTransformRowsForBand(progress.band).length >= SENTENCE_SESSION_LENGTH;
+          return `
+          <button class="study-row ss-mode" type="button" data-ss-start="${mode.id}" ${available ? "" : "disabled"}>
             <div>
               <div class="study-row-ko">${escapeHtml(mode.label)}</div>
-              <div class="study-row-sub">${escapeHtml(mode.sub)}</div>
+              <div class="study-row-sub">${escapeHtml(available ? mode.sub : "More transform-ready sentences are needed for this band.")}</div>
             </div>
             <span class="pill muted">${escapeHtml(mode.tag)}</span>
           </button>
-        `).join("")}
+        `;
+        }).join("")}
       </div>
     `;
   }
@@ -14194,6 +14484,38 @@ function sentenceStudioHubHtml() {
     `;
   }
 
+  const lessons = getSentenceLessons();
+  const completedLessons = new Set(progress.completedLessons || []);
+  const analytics = getSentenceAnalyticsSnapshot();
+  const modeBreakdown = Object.keys(analytics.byMode).length
+    ? Object.entries(analytics.byMode)
+      .map(([mode, count]) => `${mode}: ${count}`)
+      .join(" / ")
+    : "No sentence events yet";
+  const lessonRowsHtml = lessons.length
+    ? lessons.map((lesson) => {
+      const rowsForLesson = getSentenceLessonRows(lesson);
+      const complete = completedLessons.has(lesson.id);
+      const tags = (lesson.patternTags || []).slice(0, 3).join(" / ");
+      return `
+        <button class="study-row ss-mode" type="button" data-ss-lesson="${escapeHtml(lesson.id)}">
+          <div>
+            <div class="study-row-ko">${escapeHtml(lesson.title || lesson.id)}</div>
+            <div class="study-row-sub">${escapeHtml(tags)} / ${rowsForLesson.length} sentences</div>
+          </div>
+          <span class="pill ${complete ? "accent" : "muted"}">${complete ? "Done" : "Lesson"}</span>
+        </button>
+      `;
+    }).join("")
+    : `
+      <div class="study-row">
+        <div>
+          <div class="study-row-ko">Pattern lessons unavailable</div>
+          <div class="study-row-sub">Reload the app if the lesson plan did not load.</div>
+        </div>
+      </div>
+    `;
+
   return `
     <div class="card">
       <div class="eyebrow">Practice · Sentences</div>
@@ -14217,7 +14539,69 @@ function sentenceStudioHubHtml() {
       ${modeCardsHtml}
     </div>
 
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Sentence insights</div>
+          <div class="screen-sub" style="margin-bottom:0;">Events are captured now; the full metrics view can build from this trail.</div>
+        </div>
+        <span class="pill muted">${analytics.total} events</span>
+      </div>
+      <div class="stats-grid" style="margin-bottom:8px;">
+        <div class="stat-box"><span class="sv">${analytics.correctPct}%</span><span class="sl">Accuracy</span></div>
+        <div class="stat-box"><span class="sv">${analytics.avgLatencyLabel}</span><span class="sl">Avg latency</span></div>
+        <div class="stat-box"><span class="sv">${analytics.helperUses}</span><span class="sl">Helpers used</span></div>
+      </div>
+      <div class="screen-sub fs-xs" style="margin-bottom:0;">${escapeHtml(modeBreakdown)}</div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Pattern lessons</div>
+          <div class="screen-sub" style="margin-bottom:0;">Concept card, six examples, then Translate/Build checks.</div>
+        </div>
+        <span class="pill muted">${completedLessons.size}/${lessons.length}</span>
+      </div>
+      <div class="study-list">${lessonRowsHtml}</div>
+    </div>
+
     ${previewHtml}
+  `;
+}
+
+function sentenceLessonIntroHtml(lesson) {
+  const rows = getSentenceLessonRows(lesson);
+  const examples = rows.slice(0, 6).map((row) => `
+    <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
+      <div>
+        <div class="study-row-ko" lang="ko">${escapeHtml(row.korean)}</div>
+        <div class="study-row-sub">${escapeHtml(row.english)}</div>
+      </div>
+      <span class="pill muted">Hear</span>
+    </div>
+  `).join("");
+  const tagTips = (lesson.patternTags || [])
+    .map((tag) => PATTERN_TAG_INFO[tag])
+    .filter(Boolean)
+    .slice(0, 4)
+    .map((tip) => `<li>${escapeHtml(tip)}</li>`)
+    .join("");
+  return `
+    <div class="card">
+      <div class="eyebrow">Pattern lesson</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(lesson.title || "Sentence pattern")}</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(lesson.concept || "")}</div>
+      ${tagTips ? `<ul class="ss-tip-list">${tagTips}</ul>` : ""}
+      <div class="word-card-actions" style="margin-top:12px;">
+        <button class="button primary compact" type="button" data-ss-lesson-start="${escapeHtml(lesson.id)}">Start checks</button>
+        <button class="button secondary compact" type="button" data-ss-lesson-close>Back</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="eyebrow mb-12">Examples</div>
+      <div class="study-list">${examples}</div>
+    </div>
   `;
 }
 
@@ -14329,6 +14713,64 @@ function sentenceQuestionHtml(session) {
   const mode = sentenceQuestionMode(session);
   const step = `${session.index + 1} of ${session.rows.length}`;
 
+  if (mode === "transform") {
+    const transform = getSentenceTransformForSessionRow(session, row);
+    if (!transform) {
+      return `
+        <div class="card">
+          ${sentenceSessionDotsHtml(session)}
+          <div class="eyebrow">Transform / ${step}</div>
+          <div class="screen-sub" style="margin-bottom:12px;">No transform candidate was available for this sentence.</div>
+          <button class="button primary compact" type="button" data-ss-reveal>Skip</button>
+        </div>
+      `;
+    }
+    const tiles = (session.helperTilePool || [])
+      .map((tile) => `<button class="word-tile" type="button" data-ss-helper-tile="${escapeHtml(tile)}" lang="ko">${escapeHtml(tile)}</button>`)
+      .join("");
+    return `
+      <div class="card">
+        ${sentenceSessionDotsHtml(session)}
+        <div class="eyebrow">Transform / ${step}</div>
+        <div class="ss-prompt" lang="ko">${escapeHtml(row.korean)}</div>
+        <div class="screen-sub" style="margin-bottom:4px;">${escapeHtml(transform.prompt)} for <strong lang="ko">${escapeHtml(transform.sourceSurface)}</strong>.</div>
+        ${sentenceAnswerBoxHtml(session, "Type the transformed Korean sentence", `
+          <div class="ss-helper-panel">
+            <div class="ss-helper-title">Word bank</div>
+            <div class="word-tile-row">${tiles}</div>
+          </div>
+        `)}
+      </div>
+    `;
+  }
+
+  if (mode === "shadow") {
+    const speech = session.speech || {};
+    const scoreHtml = speech.score
+      ? `<div class="ss-helper-panel">${speakingScoreHtml(row.korean, speech.transcript || "", speech.score)}</div>`
+      : speech.status
+        ? `<div class="ss-helper-panel"><div class="ss-helper-title">Speech scoring</div><div class="screen-sub" style="margin-bottom:0;">${escapeHtml(speech.status)}</div></div>`
+        : "";
+    return `
+      <div class="card">
+        ${sentenceSessionDotsHtml(session)}
+        <div class="eyebrow">Shadow / ${step}</div>
+        <div class="ss-prompt" lang="ko">${escapeHtml(row.korean)}</div>
+        <div class="screen-sub" style="margin-bottom:4px;">${escapeHtml(row.english)}</div>
+        <div class="word-card-actions" style="margin-bottom:8px;">
+          <button class="button secondary compact" type="button" data-ss-play>Play</button>
+          <button class="button secondary compact" type="button" data-ss-slow>Slow replay</button>
+          <button class="button secondary compact" type="button" data-ss-record>${speech.listening ? "Listening..." : "Record attempt"}</button>
+        </div>
+        ${scoreHtml}
+        <div class="word-card-actions">
+          <button class="button primary compact" type="button" data-ss-selfmark="correct">I said it</button>
+          <button class="button secondary compact" type="button" data-ss-selfmark="incorrect">Need practice</button>
+        </div>
+      </div>
+    `;
+  }
+
   if (mode === "translate") {
     return `
       <div class="card">
@@ -14390,16 +14832,20 @@ function sentenceFeedbackHtml(session) {
   const row = session.rows[session.index];
   const result = session.results[session.index];
   const attempt = session.typed;
-  const diff = !result.correct && attempt && sentenceQuestionMode(session) !== "build"
+  const mode = result.mode || sentenceQuestionMode(session);
+  const transform = mode === "transform" ? getSentenceTransformForSessionRow(session, row) : null;
+  const targetRow = transform ? { ...row, korean: transform.expected, tokens: transform.tokens } : row;
+  const answerText = transform ? transform.expected : row.korean;
+  const diff = !result.correct && attempt && mode !== "build" && mode !== "shadow"
     ? `<div class="fs-xs text-muted-2" style="margin:10px 0 4px;">You typed: <span lang="ko">${escapeHtml(attempt)}</span></div>
-       <div class="ss-diff">${sentenceTokenDiffHtml(row, attempt)}</div>`
+       <div class="ss-diff">${sentenceTokenDiffHtml(targetRow, attempt)}</div>`
     : "";
   return `
     <div class="card">
       ${sentenceSessionDotsHtml(session)}
       <div class="eyebrow">${result.correct ? "Correct" : "The answer"}</div>
       <div class="ss-result ${result.correct ? "ss-result-good" : "ss-result-bad"}">${result.correct ? "잘했어요! Nice." : "Here's the sentence:"}</div>
-      <div class="ss-sentence" lang="ko">${escapeHtml(row.korean)}</div>
+      <div class="ss-sentence" lang="ko">${escapeHtml(answerText)}</div>
       <div class="screen-sub" style="margin-bottom:4px;">${escapeHtml(row.english)}</div>
       ${diff}
       <div class="word-card-actions">
@@ -14412,6 +14858,8 @@ function sentenceFeedbackHtml(session) {
 
 function sentenceSummaryHtml(session) {
   const correct = session.results.filter((r) => r.correct).length;
+  const passCount = session.lessonId ? Math.ceil(session.rows.length * 0.67) : 0;
+  const lessonPassed = session.lessonId && correct >= passCount;
   const rowsHtml = session.rows
     .map((row, i) => `
       <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
@@ -14433,6 +14881,7 @@ function sentenceSummaryHtml(session) {
       <div class="study-list">${rowsHtml}</div>
       <div class="word-card-actions" style="margin-top:12px;">
         <button class="button primary compact" type="button" data-ss-again>Practice again</button>
+        ${session.lessonId ? `<button class="button secondary compact" type="button" data-ss-lesson-back="${escapeHtml(session.lessonId)}">${lessonPassed ? "Back to lessons" : "Review concept"}</button>` : ""}
         <button class="button secondary compact" type="button" data-ss-exit>Back to Sentence Studio</button>
       </div>
     </div>
@@ -14451,6 +14900,9 @@ function renderPracticeView() {
   if (!isStudioUnlocked("sentences")) {
     sentenceStudioSession = null;
     el.innerHTML = sentenceStudioLockedHtml();
+  } else if (sentenceLessonView) {
+    const lesson = getSentenceLessonById(sentenceLessonView.lessonId);
+    el.innerHTML = lesson ? sentenceLessonIntroHtml(lesson) : sentenceStudioHubHtml();
   } else if (!sentenceStudioSession) {
     el.innerHTML = sentenceStudioHubHtml();
   } else if (sentenceStudioSession.phase === "question") {
@@ -14483,6 +14935,19 @@ function submitSentenceAnswer() {
     session.typed = attempt; // so feedback can echo it
   }
   if (!normalizeKoreanAnswer(attempt, { ignoreSpaces: true })) return;
+
+  if (mode === "transform") {
+    const transform = getSentenceTransformForSessionRow(session, row);
+    if (!transform) return;
+    const correct = normalizeKoreanAnswer(attempt, { ignoreSpaces: true }) === normalizeKoreanAnswer(transform.expected, { ignoreSpaces: true });
+    if (correct) {
+      finishSentenceQuestion(true, false, { transformId: transform.id });
+    } else {
+      session.attempts += 1;
+      renderPracticeView();
+    }
+    return;
+  }
 
   if (checkSentenceAnswer(row, attempt)) {
     finishSentenceQuestion(true);
@@ -14534,6 +14999,78 @@ function useSentenceHelper(helper) {
   renderPracticeView();
 }
 
+function speakSentenceSlow(text) {
+  stopSpeech();
+  if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance !== "function") {
+    return speak(text);
+  }
+  const utterance = new SpeechSynthesisUtterance(text);
+  const koreanVoice = getPreferredKoreanVoice();
+  utterance.lang = koreanVoice?.lang || "ko-KR";
+  utterance.rate = Math.max(0.45, SPEAK_RATE * 0.72);
+  utterance.pitch = 1;
+  if (koreanVoice) utterance.voice = koreanVoice;
+  window.speechSynthesis.speak(utterance);
+}
+
+function startSentenceSpeechScoring() {
+  const session = sentenceStudioSession;
+  if (!session || session.phase !== "question" || sentenceQuestionMode(session) !== "shadow") return;
+  const row = session.rows[session.index];
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  session.speech = { listening: false, status: "", transcript: "", score: null };
+  if (!Recognition) {
+    session.speech.status = "Speech scoring is not supported in this browser. You can still self-mark the shadow attempt.";
+    renderPracticeView();
+    return;
+  }
+  const recognition = new Recognition();
+  const startedAt = performance.now();
+  let transcript = "";
+  recognition.lang = "ko-KR";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.continuous = false;
+  session.speech = { listening: true, status: "Listening...", transcript: "", score: null };
+  renderPracticeView();
+  recognition.onresult = (event) => {
+    const first = event.results && event.results[0] && event.results[0][0];
+    transcript = first ? first.transcript : "";
+  };
+  recognition.onerror = () => {
+    session.speech = {
+      listening: false,
+      status: "Speech scoring could not hear a usable attempt. Try again, or self-mark.",
+      transcript: "",
+      score: null,
+    };
+    renderPracticeView();
+  };
+  recognition.onend = () => {
+    if (!sentenceStudioSession || sentenceStudioSession !== session) return;
+    const durationMs = performance.now() - startedAt;
+    const score = scoreSpeechAttempt(row.voiceText || row.korean, transcript, durationMs);
+    session.speech = {
+      listening: false,
+      status: "Analysis complete.",
+      transcript,
+      score,
+    };
+    renderPracticeView();
+  };
+  try {
+    recognition.start();
+  } catch (error) {
+    session.speech = {
+      listening: false,
+      status: error && error.message ? error.message : "Speech scoring could not start.",
+      transcript: "",
+      score: null,
+    };
+    renderPracticeView();
+  }
+}
+
 function bindSentenceStudioEvents(el) {
   el.querySelectorAll("[data-ss-goto]").forEach((btn) => {
     btn.addEventListener("click", () => showTab(btn.dataset.ssGoto));
@@ -14547,6 +15084,18 @@ function bindSentenceStudioEvents(el) {
   });
   el.querySelectorAll("[data-ss-start]").forEach((btn) => {
     btn.addEventListener("click", () => startSentenceStudioSession(btn.dataset.ssStart));
+  });
+  el.querySelectorAll("[data-ss-lesson]").forEach((btn) => {
+    btn.addEventListener("click", () => openSentenceLesson(btn.dataset.ssLesson));
+  });
+  el.querySelectorAll("[data-ss-lesson-start]").forEach((btn) => {
+    btn.addEventListener("click", () => startSentenceLessonSession(btn.dataset.ssLessonStart));
+  });
+  el.querySelectorAll("[data-ss-lesson-close]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      sentenceLessonView = null;
+      renderPracticeView();
+    });
   });
   el.querySelectorAll("[data-ss-preview-speak]").forEach((rowEl) => {
     rowEl.addEventListener("click", () => speak(rowEl.dataset.ssPreviewSpeak || ""));
@@ -14616,6 +15165,22 @@ function bindSentenceStudioEvents(el) {
       speak(row.voiceText || row.korean);
     });
   });
+  el.querySelectorAll("[data-ss-slow]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const row = session.rows[session.index];
+      speakSentenceSlow(row.voiceText || row.korean);
+    });
+  });
+  el.querySelectorAll("[data-ss-record]").forEach((btn) => {
+    btn.addEventListener("click", startSentenceSpeechScoring);
+  });
+  el.querySelectorAll("[data-ss-selfmark]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const correct = btn.dataset.ssSelfmark === "correct";
+      const speechScore = session.speech && session.speech.score ? session.speech.score : null;
+      finishSentenceQuestion(correct, false, { speechScore });
+    });
+  });
   el.querySelectorAll("[data-ss-next]").forEach((btn) => {
     btn.addEventListener("click", advanceSentenceSession);
   });
@@ -14624,6 +15189,12 @@ function bindSentenceStudioEvents(el) {
   });
   el.querySelectorAll("[data-ss-exit]").forEach((btn) => {
     btn.addEventListener("click", exitSentenceStudioSession);
+  });
+  el.querySelectorAll("[data-ss-lesson-back]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      sentenceStudioSession = null;
+      openSentenceLesson(btn.dataset.ssLessonBack);
+    });
   });
 }
 

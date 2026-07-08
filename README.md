@@ -33,6 +33,7 @@ http://localhost:8000
 ```bash
 node --check app.js sw.js words_curated_core.js words_inflect.js scripts/audit-words-data.mjs scripts/audit-app-shell.mjs
 node scripts/audit-words-data.mjs --strict
+node scripts/audit-sentences-foundation.mjs
 node scripts/audit-alphabet-audio.mjs --strict
 node scripts/audit-app-shell.mjs
 ```
