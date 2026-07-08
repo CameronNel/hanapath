@@ -6585,9 +6585,9 @@ function wordBankEntryCardHtml() {
   return `
     <button class="card alpha-board-entry" type="button" id="openEntireWordBank">
       <div class="alpha-board-entry-main">
-        <div class="eyebrow">Reference</div>
-        <div class="study-row-ko">Entire Korean Word Bank</div>
-        <div class="screen-sub" style="margin-bottom:0;">Curated beginner words, the 5,000 frequency list, and the supplementary long-tail list — search Korean, English, pronunciation, or lesson group.</div>
+        <div class="eyebrow">Word bank</div>
+        <div class="study-row-ko">Big list of Korean words</div>
+        <div class="screen-sub" style="margin-bottom:0;">Thousands of Korean words in one searchable place - Korean, English, pronunciation, lesson group, and more.</div>
       </div>
       <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">단어</span>
     </button>`;
@@ -6630,6 +6630,108 @@ function getWordLessonCategoryOptions(lessons) {
     });
   });
   return options.sort((a, b) => a.label.localeCompare(b.label));
+}
+
+function getBasicWordLessons(lessons = getWordLessons()) {
+  const basicIds = new Set([
+    "w0-post-hangul-bridge-01",
+    "w0-post-hangul-bridge-02",
+    "w20-theme-01",
+    "w20-theme-02",
+    "w20-theme-03",
+    "w20-theme-04",
+    "w21-theme-05",
+    "w21-theme-06",
+  ]);
+  return lessons.filter((lesson) => basicIds.has(lesson.id));
+}
+
+function wordLessonRowHtml(lesson, meta = getWordLessonPathMeta(lesson)) {
+  const completed = meta.completed;
+  const current = meta.current;
+  const unlocked = meta.unlocked;
+  const dotClass = completed ? "done" : current ? "next" : "lock";
+  const pill = completed ? `<span class="pill green">Done</span>` : current ? `<span class="pill accent">Ready</span>` : `<span class="pill muted">Locked</span>`;
+  const progressBits = [
+    `${lesson.newWordIds.length} words`,
+    meta.hardCount ? `${meta.hardCount} hard` : "",
+    meta.dueCount ? `${meta.dueCount} due` : "",
+    meta.knownCount ? `${meta.knownCount} known` : "",
+  ].filter(Boolean).join(" · ");
+  return `
+    <button class="study-row stage-row ${completed ? "complete" : current ? "current" : "locked"}" type="button" data-words-open-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : `data-words-locked="1"`}>
+      <span class="unit-dot ${dotClass}">${completed ? "✓" : escapeHtml(lesson.stage)}</span>
+      <div>
+        <div class="study-row-ko">${escapeHtml(lesson.title)}</div>
+        <div class="study-row-sub">${escapeHtml(lesson.subtitle || "")} · ${escapeHtml(progressBits)}</div>
+      </div>
+      ${pill}
+    </button>
+  `;
+}
+
+function wordBasicsSectionHtml(lessons = getWordLessons()) {
+  const basics = getBasicWordLessons(lessons);
+  if (!basics.length) return "";
+  const completed = basics.filter((lesson) => isWordLessonCompleted(lesson.id)).length;
+  return `
+    <details class="card word-section-details">
+      <summary class="word-section-summary">
+        <div>
+          <div class="eyebrow">Post-Hangul / Basics</div>
+          <div class="study-row-ko">Basics of the basics</div>
+          <div class="screen-sub" style="margin-bottom:0;">The first bridge from Hangul into usable words.</div>
+        </div>
+        <span class="pill muted">${completed}/${basics.length}</span>
+      </summary>
+      <div class="study-list word-section-body">
+        ${basics.map((lesson) => wordLessonRowHtml(lesson)).join("")}
+      </div>
+    </details>
+  `;
+}
+
+function vocabularyStagesSectionHtml() {
+  const progress = getLearnProgress("vocabulary");
+  const stageRows = Array.from({ length: progress.total }, (_, index) => {
+    const stageNumber = index + 1;
+    const stageInfo = getLearnStageInfo("vocabulary", stageNumber);
+    const status = getLearnStageStatus("vocabulary", stageNumber);
+    const locked = status === "locked";
+    const complete = status === "complete";
+    const current = status === "current";
+    const pillLabel = complete ? "Completed" : current ? "Current" : "Locked";
+    const pillClass = complete ? "green" : "muted";
+    const dotClass = complete ? "done" : current ? "next" : "lock";
+    const dotText = complete ? "✓" : String(stageNumber).padStart(2, "0");
+    const lockHint = locked ? ` data-locked-stage="${stageNumber}"` : "";
+    return `
+      <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}"${lockHint}>
+        <span class="unit-dot ${dotClass}">${escapeHtml(dotText)}</span>
+        <div>
+          <div class="study-row-ko">${escapeHtml(stageInfo.title)}</div>
+          <div class="study-row-sub">${escapeHtml(stageInfo.sub)}</div>
+        </div>
+        <span class="pill ${pillClass}">${pillLabel}</span>
+      </button>
+    `;
+  }).join("");
+
+  return `
+    <details class="card word-section-details">
+      <summary class="word-section-summary">
+        <div>
+          <div class="eyebrow">Stages</div>
+          <div class="study-row-ko">Vocabulary bands</div>
+          <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo("vocabulary", progress.currentStage).detail)}`}</div>
+        </div>
+        <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
+      </summary>
+      <div class="study-list word-section-body">
+        ${stageRows}
+      </div>
+    </details>
+  `;
 }
 
 function getWordLessonPathMeta(lesson, now = Date.now()) {
@@ -6700,42 +6802,21 @@ function wordPathLessonPanelHtml() {
   const visibleLessons = lessons
     .map((lesson) => ({ lesson, meta: getWordLessonPathMeta(lesson) }))
     .filter(({ lesson, meta }) => (categoryFilter === "all" || getWordLessonCategoryId(lesson) === categoryFilter) && wordLessonMatchesLevel(meta, levelFilter));
-  const lessonRows = visibleLessons.map(({ lesson, meta }) => {
-    const completed = meta.completed;
-    const current = meta.current;
-    const unlocked = meta.unlocked;
-    const dotClass = completed ? "done" : current ? "next" : "lock";
-    const pill = completed ? `<span class="pill green">Done</span>` : current ? `<span class="pill accent">Ready</span>` : `<span class="pill muted">Locked</span>`;
-    const progressBits = [
-      `${lesson.newWordIds.length} words`,
-      meta.hardCount ? `${meta.hardCount} hard` : "",
-      meta.dueCount ? `${meta.dueCount} due` : "",
-      meta.knownCount ? `${meta.knownCount} known` : "",
-    ].filter(Boolean).join(" · ");
-    return `
-      <button class="study-row stage-row ${completed ? "complete" : current ? "current" : "locked"}" type="button" data-words-open-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : `data-words-locked="1"`}>
-        <span class="unit-dot ${dotClass}">${completed ? "✓" : escapeHtml(lesson.stage)}</span>
-        <div>
-          <div class="study-row-ko">${escapeHtml(lesson.title)}</div>
-          <div class="study-row-sub">${escapeHtml(lesson.subtitle || "")} · ${escapeHtml(progressBits)}</div>
-        </div>
-        ${pill}
-      </button>
-    `;
-  }).join("");
+  const lessonRows = visibleLessons.map(({ lesson, meta }) => wordLessonRowHtml(lesson, meta)).join("");
   const listSummary = visibleLessons.length === lessons.length
     ? `${lessons.length} lessons shown`
     : `${visibleLessons.length} of ${lessons.length} lessons shown`;
 
   return `
-    <div class="card">
-      <div class="flex-between mb-12">
+    <details class="card word-section-details">
+      <summary class="word-section-summary">
         <div>
-          <div class="eyebrow">Word lessons</div>
-          <div class="screen-sub" style="margin-bottom:0;">Browse guided lessons by category and learning level.</div>
+          <div class="eyebrow">Lessons</div>
+          <div class="study-row-ko">Guided word lessons</div>
+          <div class="screen-sub" style="margin-bottom:0;">Browse by category and learning level when you want the full path.</div>
         </div>
         <span class="pill accent" style="white-space:nowrap;">${completedCount}/${lessons.length}</span>
-      </div>
+      </summary>
       <div class="word-path-controls">
         <label class="word-path-field">
           <span>Category</span>
@@ -6752,7 +6833,7 @@ function wordPathLessonPanelHtml() {
       </div>
       <div class="word-path-summary">${escapeHtml(listSummary)}</div>
       <div class="study-list">${lessonRows || '<div class="study-row"><div><div class="study-row-ko">No lessons match those filters</div><div class="study-row-sub">Choose a different category or learning level.</div></div></div>'}</div>
-    </div>
+    </details>
   `;
 }
 
@@ -6791,27 +6872,6 @@ function wordsHomeContentHtml() {
   const alphabetDone = getAlphabetProgress().complete || TEST_UNLOCK_ALL_STAGES; // see TEST_UNLOCK_ALL_STAGES above
   const next = getNextWordLesson();
   const dueCount = getVocabDueCount();
-  const completedCount = (state.vocabLessonCompleted || []).length;
-  const categoryOptions = getWordLessonCategoryOptions(lessons);
-  const categoryIds = new Set(categoryOptions.map((option) => option.id));
-  const nextCategory = next ? getWordLessonCategoryId(next) : "";
-  const defaultCategory = nextCategory && categoryIds.has(nextCategory) ? nextCategory : "all";
-  const categoryFilter = state.wordPathCategory && (state.wordPathCategory === "all" || categoryIds.has(state.wordPathCategory))
-    ? state.wordPathCategory
-    : defaultCategory;
-  const levelFilter = WORD_PATH_LEVEL_FILTERS.some((filter) => filter.id === state.wordPathLevel)
-    ? state.wordPathLevel
-    : "all";
-  const categoryOptionHtml = [
-    { id: "all", label: `All categories (${lessons.length})` },
-    ...categoryOptions.map((option) => ({
-      ...option,
-      label: `${option.label} (${lessons.filter((lesson) => getWordLessonCategoryId(lesson) === option.id).length})`,
-    })),
-  ].map((option) => `<option value="${escapeHtml(option.id)}" ${categoryFilter === option.id ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("");
-  const levelOptionHtml = WORD_PATH_LEVEL_FILTERS
-    .map((filter) => `<option value="${escapeHtml(filter.id)}" ${levelFilter === filter.id ? "selected" : ""}>${escapeHtml(filter.label)}</option>`)
-    .join("");
 
   const continueCard = alphabetDone
     ? (next
@@ -6821,7 +6881,7 @@ function wordsHomeContentHtml() {
           <h3 class="screen-title" style="margin-bottom:8px;">${escapeHtml(next.title)}</h3>
           <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(next.goal || next.subtitle || "")}</div>
           <div class="flex-between" style="gap:12px; align-items:center; flex-wrap:wrap;">
-            <span class="pill accent">${next.newWordIds.length} new words · Stage ${escapeHtml(next.stage)}</span>
+            <span class="pill accent">${next.newWordIds.length} new words - Stage ${escapeHtml(next.stage)}</span>
             <button class="button primary compact" type="button" data-words-open-lesson="${escapeHtml(next.id)}">${state.vocabLessonActive === next.id ? "Continue lesson" : "Start lesson"}</button>
           </div>
         </div>`
@@ -6835,7 +6895,7 @@ function wordsHomeContentHtml() {
       <div class="card">
         <div class="eyebrow">Word Path</div>
         <h3 class="screen-title" style="margin-bottom:8px;">Finish Hangul first</h3>
-        <div class="screen-sub" style="margin-bottom:0;">Word lessons unlock when the alphabet is complete. The word bank below is always open for browsing.</div>
+        <div class="screen-sub" style="margin-bottom:0;">Word lessons unlock when the alphabet is complete. The word bank is always open for browsing.</div>
       </div>`;
 
   const reviewCard = `
@@ -6852,67 +6912,14 @@ function wordsHomeContentHtml() {
       </div>
     </div>`;
 
-  const visibleLessons = lessons
-    .map((lesson) => ({ lesson, meta: getWordLessonPathMeta(lesson) }))
-    .filter(({ lesson, meta }) => (categoryFilter === "all" || getWordLessonCategoryId(lesson) === categoryFilter) && wordLessonMatchesLevel(meta, levelFilter));
-  const lessonRows = visibleLessons.map(({ lesson, meta }) => {
-    const completed = meta.completed;
-    const unlocked = meta.unlocked;
-    const current = meta.current;
-    const progressBits = [
-      `${lesson.newWordIds.length} words`,
-      meta.hardCount ? `${meta.hardCount} hard` : "",
-      meta.dueCount ? `${meta.dueCount} due` : "",
-      meta.knownCount ? `${meta.knownCount} known` : "",
-    ].filter(Boolean).join(" Â· ");
-    const dotClass = completed ? "done" : current ? "next" : "lock";
-    const pill = completed ? `<span class="pill green">Done</span>` : current ? `<span class="pill accent">Ready</span>` : `<span class="pill muted">Locked</span>`;
-    return `
-      <button class="study-row stage-row ${completed ? "complete" : current ? "current" : "locked"}" type="button" data-words-open-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : `data-words-locked="1"`}>
-        <span class="unit-dot ${dotClass}">${completed ? "✓" : escapeHtml(lesson.stage)}</span>
-        <div>
-          <div class="study-row-ko">${escapeHtml(lesson.title)}</div>
-          <div class="study-row-sub">${escapeHtml(lesson.subtitle || "")} · ${escapeHtml(progressBits)}</div>
-        </div>
-        ${pill}
-      </button>
-    `;
-  }).join("");
-  const listSummary = visibleLessons.length === lessons.length
-    ? `${lessons.length} lessons shown`
-    : `${visibleLessons.length} of ${lessons.length} lessons shown`;
-
   return `
     ${continueCard}
     ${reviewCard}
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Word Path</div>
-          <div class="screen-sub" style="margin-bottom:0;">Short guided lessons: see, hear, type, repeat, and use each word.</div>
-        </div>
-        <span class="pill accent" style="white-space:nowrap;">${completedCount}/${lessons.length}</span>
-      </div>
-      <div class="word-path-controls">
-        <label class="word-path-field">
-          <span>Category</span>
-          <select class="alphabet-stage-select word-path-select" data-word-path-category>
-            ${categoryOptionHtml}
-          </select>
-        </label>
-        <label class="word-path-field">
-          <span>Learning level</span>
-          <select class="alphabet-stage-select word-path-select" data-word-path-level>
-            ${levelOptionHtml}
-          </select>
-        </label>
-      </div>
-      <div class="word-path-summary">${escapeHtml(listSummary)}</div>
-      <div class="study-list">${lessonRows || '<div class="study-row"><div><div class="study-row-ko">No lessons match those filters</div><div class="study-row-sub">Choose a different category or learning level.</div></div></div>'}</div>
-    </div>
+    ${wordBasicsSectionHtml(lessons)}
+    ${wordPathLessonPanelHtml()}
+    ${vocabularyStagesSectionHtml()}
   `;
 }
-
 function bindWordsHomeContent(el) {
   const categorySelect = el.querySelector("[data-word-path-category]");
   if (categorySelect) {
@@ -12167,22 +12174,10 @@ function renderLearnStageMenu(itemId) {
     </button>`
     : "";
 
-  // Words section: pin the Entire Word Bank reference and the next guided
-  // word lesson above the band stages (mirrors the alphabet layout).
-  const nextWordLesson = itemId === "vocabulary" ? getNextWordLesson() : null;
+  // Words section: keep the stage menu grouped into a few high-level buckets.
   const wordDueCount = itemId === "vocabulary" ? getVocabDueCount() : 0;
   const wordBankHtml = itemId === "vocabulary" ? wordBankEntryCardHtml() : "";
-  const wordLessonHtml = itemId === "vocabulary" && nextWordLesson && (getAlphabetProgress().complete || TEST_UNLOCK_ALL_STAGES)
-    ? `
-    <button class="card alpha-board-entry" type="button" id="stageOpenWordLesson">
-      <div class="alpha-board-entry-main">
-        <div class="eyebrow">Continue words</div>
-        <div class="study-row-ko">${escapeHtml(nextWordLesson.title)}</div>
-        <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(nextWordLesson.goal || nextWordLesson.subtitle || "")}</div>
-      </div>
-      <span class="alpha-board-entry-glyphs" aria-hidden="true">▶</span>
-    </button>`
-    : "";
+  const wordBasicsHtml = itemId === "vocabulary" ? wordBasicsSectionHtml() : "";
   const wordReviewHtml = itemId === "vocabulary" && wordDueCount
     ? `
     <div class="card letter-review-banner">
@@ -12236,20 +12231,9 @@ function renderLearnStageMenu(itemId) {
       </div>
     </div>`
     : "";
-
-  el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
-      <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
-    </div>
-    ${fullAlphabetHtml}
-    ${wordBankHtml}
-    ${wordLessonHtml}
-    ${wordReviewHtml}
-    ${sentenceReviewHtml}
-    ${wordPathHtml}
-    ${drillLabHtml}
-    ${letterReviewHtml}
+  const stagesHtml = itemId === "vocabulary"
+    ? vocabularyStagesSectionHtml()
+    : `
     <div class="card">
       <div class="flex-between mb-12">
         <div>
@@ -12261,7 +12245,22 @@ function renderLearnStageMenu(itemId) {
       <div class="study-list">
         ${stageRows}
       </div>
+    </div>`;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
+      <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
     </div>
+    ${fullAlphabetHtml}
+    ${wordBankHtml}
+    ${wordBasicsHtml}
+    ${wordReviewHtml}
+    ${sentenceReviewHtml}
+    ${wordPathHtml}
+    ${drillLabHtml}
+    ${letterReviewHtml}
+    ${stagesHtml}
   `;
 
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
@@ -12295,10 +12294,6 @@ function renderLearnStageMenu(itemId) {
         openWordLesson(btn.dataset.wordsOpenLesson, { resume: state.vocabLessonActive === btn.dataset.wordsOpenLesson });
       });
     });
-  }
-  const stageWordLessonBtn = document.getElementById("stageOpenWordLesson");
-  if (stageWordLessonBtn && nextWordLesson) {
-    stageWordLessonBtn.addEventListener("click", () => openWordLesson(nextWordLesson.id, { resume: state.vocabLessonActive === nextWordLesson.id }));
   }
   const stageWordReviewBtn = document.getElementById("stageWordReviewBtn");
   if (stageWordReviewBtn) stageWordReviewBtn.addEventListener("click", () => openWordReview());

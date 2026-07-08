@@ -472,6 +472,40 @@ input, textarea { cursor: text; }
 .stage-row.locked   { cursor: default; }
 .stage-row.locked .study-row-ko { color: var(--muted); }
 .stage-row.locked:hover { transform: none; background: transparent; }
+.word-section-details {
+  padding: 0;
+  overflow: hidden;
+}
+.word-section-details[open] {
+  padding-bottom: 16px;
+}
+.word-section-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+.word-section-summary::-webkit-details-marker { display: none; }
+.word-section-summary::after {
+  content: "▾";
+  color: var(--accent);
+  font-weight: 900;
+  margin-left: auto;
+  transform: rotate(-90deg);
+  transition: transform .18s ease;
+}
+.word-section-details[open] .word-section-summary::after {
+  transform: rotate(0);
+}
+.word-section-summary > div {
+  flex: 1;
+  min-width: 0;
+}
+.word-section-body {
+  padding: 0 16px;
+}
 .study-pill {
   display: flex;
   flex-direction: column;

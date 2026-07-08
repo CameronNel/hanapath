@@ -1,9 +1,9 @@
-// [2026-07-08] Cache bumped to v261: TEST_UNLOCK_ALL_STAGES enabled.
-const CACHE_NAME = "hanapath-shell-v261";
+// [2026-07-08] Cache bumped to v262: grouped Vocabulary stage menu and drawer styling.
+const CACHE_NAME = "hanapath-shell-v262";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260706b",
+  "./styles.css?v=20260708a",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705f",
   "./words_curated_core.js?v=20260705e",
@@ -12,7 +12,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260708g",
+  "./app.js?v=20260708h",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
