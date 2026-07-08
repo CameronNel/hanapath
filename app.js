@@ -12410,15 +12410,15 @@ function renderLearnStageMenu(itemId) {
       <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
       <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
     </div>
+    ${letterReviewHtml}
     ${fullAlphabetHtml}
     ${wordBankHtml}
     ${wordBasicsHtml}
     ${wordReviewHtml}
     ${sentenceReviewHtml}
     ${wordPathHtml}
-    ${drillLabHtml}
-    ${letterReviewHtml}
     ${stagesHtml}
+    ${drillLabHtml}
   `;
 
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
