@@ -1,30 +1,58 @@
-import http from 'http';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
-import { createRequire } from 'module';
+import fs from "fs";
+import http from "http";
+import path from "path";
+import { createRequire } from "module";
+import { fileURLToPath } from "url";
 
 const require = createRequire(import.meta.url);
 
-// Ensure playwright-core is installed locally
+let chromium;
 try {
-  require.resolve('playwright-core');
-} catch (e) {
-  console.log('playwright-core not found. Installing locally...');
-  execSync('npm install --no-save playwright-core', { stdio: 'inherit' });
+  ({ chromium } = require("playwright-core"));
+} catch (error) {
+  throw new Error("playwright-core is required for this smoke test. Install it locally or use the bundled workspace dependency runtime.");
 }
 
-const { chromium } = require('playwright-core');
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(__dirname, '..');
+const rootDir = path.resolve(__dirname, "..");
+const storageKey = "hanapath-v1";
+const alphabetLessonIds = [
+  "anchor-vowels",
+  "base-consonants",
+  "block-geometry",
+  "complete-vowels",
+  "strong-consonants",
+  "batchim-basics",
+  "reading-graduation",
+  "alphabet-mastery",
+];
 
-// 1. Start a simple static web server
+const contentTypes = new Map([
+  [".css", "text/css"],
+  [".csv", "text/csv"],
+  [".html", "text/html"],
+  [".js", "application/javascript"],
+  [".json", "application/json"],
+  [".png", "image/png"],
+  [".webmanifest", "application/manifest+json"],
+]);
+
+function staticFileForRequest(url) {
+  const pathname = decodeURIComponent(url.split("?")[0] || "/");
+  const relativePath = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
+  const resolved = path.resolve(rootDir, relativePath);
+  if (resolved !== rootDir && !resolved.startsWith(rootDir + path.sep)) {
+    return null;
+  }
+  return resolved;
+}
+
 const server = http.createServer((req, res) => {
-  let filePath = path.join(rootDir, req.url.split('?')[0]);
-  if (filePath === rootDir || filePath.endsWith('/') || req.url === '/') {
-    filePath = path.join(rootDir, 'index.html');
+  const filePath = staticFileForRequest(req.url || "/");
+  if (!filePath) {
+    res.writeHead(403);
+    res.end("Forbidden");
+    return;
   }
 
   fs.readFile(filePath, (err, data) => {
@@ -33,222 +61,229 @@ const server = http.createServer((req, res) => {
       res.end("Not Found");
       return;
     }
-    let contentType = 'text/html';
-    if (filePath.endsWith('.js')) contentType = 'application/javascript';
-    if (filePath.endsWith('.css')) contentType = 'text/css';
-    if (filePath.endsWith('.json')) contentType = 'application/json';
-    if (filePath.endsWith('.webmanifest')) contentType = 'application/manifest+json';
-    res.writeHead(200, { 'Content-Type': contentType });
+    const contentType = contentTypes.get(path.extname(filePath)) || "application/octet-stream";
+    res.writeHead(200, { "Content-Type": contentType });
     res.end(data);
   });
 });
 
 const port = await new Promise((resolve) => {
-  server.listen(0, '127.0.0.1', () => {
-    resolve(server.address().port);
-  });
+  server.listen(0, "127.0.0.1", () => resolve(server.address().port));
 });
 const baseUrl = `http://127.0.0.1:${port}`;
 console.log(`Test server running at ${baseUrl}`);
 
-// 2. Launch browser
-console.log('Launching browser...');
 let browser;
 try {
-  browser = await chromium.launch({ channel: 'chrome', headless: true });
-} catch (err) {
+  browser = await chromium.launch({ channel: "chrome", headless: true });
+} catch {
   try {
-    browser = await chromium.launch({ channel: 'msedge', headless: true });
-  } catch (err2) {
+    browser = await chromium.launch({ channel: "msedge", headless: true });
+  } catch {
     browser = await chromium.launch({ headless: true });
   }
+}
+
+async function waitForApp(page) {
+  await page.goto(`${baseUrl}/index.html`);
+  await page.waitForSelector("button.nav-btn[data-nav='practice']", { timeout: 10000 });
+}
+
+async function openSentenceStudio(page) {
+  await page.click("button.nav-btn[data-nav='practice']");
+  await page.waitForSelector("button[data-hub-item='sentences']", { timeout: 5000 });
+  await page.click("button[data-hub-item='sentences']");
+  await page.waitForSelector("#screen-speak", { timeout: 5000 });
+}
+
+async function getStoredState(page) {
+  return page.evaluate((key) => JSON.parse(localStorage.getItem(key) || "{}"), storageKey);
+}
+
+async function setStoredState(page, state) {
+  await page.evaluate(
+    ({ key, value }) => localStorage.setItem(key, JSON.stringify(value)),
+    { key: storageKey, value: state },
+  );
+}
+
+async function seedPostWordsLearner(page) {
+  await waitForApp(page);
+  const allWordLessonIds = await page.evaluate(() =>
+    Array.isArray(window.HANAPATH_WORD_LESSONS) ? window.HANAPATH_WORD_LESSONS.map((lesson) => lesson.id) : [],
+  );
+  if (!allWordLessonIds.length) {
+    throw new Error("Could not seed post-Words learner: word lesson plan did not load.");
+  }
+
+  await setStoredState(page, {
+    onboarded: true,
+    level: "K2",
+    correct: 25,
+    asked: 25,
+    phaseOneCompleted: alphabetLessonIds,
+    vocabLessonCompleted: allWordLessonIds,
+    vocabKnownRanks: Array.from({ length: 25 }, (_, index) => index + 1),
+    navTab: "today",
+    route: { hub: "learn", item: null, stage: null },
+    sentencesProgress: { band: 1, results: {}, sessionsDone: 0 },
+  });
+  await page.reload();
+  await page.waitForSelector("button.nav-btn[data-nav='practice']", { timeout: 10000 });
+}
+
+async function currentSentenceQuestion(page) {
+  await page.waitForSelector(".card[data-ss-id]", { state: "visible", timeout: 5000 });
+  return page.evaluate(() => {
+    const card = document.querySelector(".card[data-ss-id]");
+    const id = card?.getAttribute("data-ss-id") || "";
+    const row = window.HANAPATH_SENTENCES.find((item) => item.id === id);
+    const mode = window.sentenceQuestionMode ? window.sentenceQuestionMode() : "translate";
+    let expected = row?.korean || "";
+    let transformId = null;
+    if (mode === "transform") {
+      const transform = getSentenceTransformForSessionRow(sentenceStudioSession, row);
+      expected = transform?.expected || expected;
+      transformId = transform?.id || null;
+    }
+    return {
+      id,
+      mode,
+      expected,
+      transformId,
+    };
+  });
+}
+
+async function answerCurrentQuestion(page, { useHelpers = false, reveal = false } = {}) {
+  const question = await currentSentenceQuestion(page);
+  console.log(`Answering ${question.mode} question for ${question.id}`);
+
+  if (question.mode === "build") {
+    const clickIndices = await page.evaluate((id) => {
+      const row = window.HANAPATH_SENTENCES.find((item) => item.id === id);
+      if (!row) return [];
+      const stripEnd = (token) => String(token).replace(/[.!?...,~]+$/, "");
+      const expectedWords = (row.tokens || row.korean.split(/\s+/)).map(stripEnd).filter(Boolean);
+      const tiles = Array.from(document.querySelectorAll("button[data-ss-tile]"));
+      const tileTexts = tiles.map((btn) => stripEnd(btn.textContent.trim()));
+      const indices = [];
+      const used = new Set();
+      for (const word of expectedWords) {
+        const index = tileTexts.findIndex((text, candidateIndex) => text === word && !used.has(candidateIndex));
+        if (index !== -1) {
+          indices.push(tiles[index].getAttribute("data-ss-tile"));
+          used.add(index);
+        }
+      }
+      return indices;
+    }, question.id);
+
+    for (const index of clickIndices) {
+      await page.click(`button[data-ss-tile="${index}"]`);
+    }
+    await page.click("button[data-ss-check]");
+  } else if (question.mode === "shadow") {
+    await page.click("button[data-ss-selfmark='correct']");
+  } else if (reveal) {
+    await page.click("button[data-ss-reveal]");
+  } else {
+    if (useHelpers) {
+      await page.click("button[data-ss-helper='tip']");
+      await page.click("button[data-ss-helper='wordBank']");
+      await page.click("button[data-ss-helper='nextChunk']");
+    }
+    await page.fill("#ssTypedInput", question.expected);
+    await page.click("button[data-ss-check]");
+  }
+
+  await page.waitForSelector("button[data-ss-next]", { state: "visible", timeout: 5000 });
+  return question;
+}
+
+async function latestSentenceEvent(page) {
+  const state = await getStoredState(page);
+  const events = state.sentencesProgress?.reviewEvents || [];
+  return events[events.length - 1] || null;
 }
 
 try {
   const context = await browser.newContext();
   const page = await context.newPage();
-  
-  // Track page errors
   const pageErrors = [];
-  page.on('pageerror', (err) => {
-    console.error('PAGE ERROR:', err.message);
+  page.on("pageerror", (err) => {
+    console.error("PAGE ERROR:", err.message);
     pageErrors.push(err);
   });
 
-  // Scenario A: Cold Learner (empty localStorage)
-  console.log('\n--- Scenario A: Cold Learner ---');
-  await page.goto(`${baseUrl}/index.html`);
-  await page.waitForTimeout(500); // Allow app to render initial state
-
-  // Click on "Practice" tab in bottom nav
-  console.log('Navigating to Practice Hub...');
-  await page.click('button.nav-btn[data-nav="practice"]');
-  await page.waitForTimeout(200);
-
-  // Click on "Sentence quiz"
-  console.log('Opening Sentence quiz...');
-  await page.click('button[data-hub-item="sentences"]');
-  await page.waitForTimeout(200);
-
-  // Assert that Sentence Studio is locked
-  const lockText = await page.textContent('#screen-speak');
-  if (lockText.includes('Sentences unlock after you finish the alphabet')) {
-    console.log('PASS: Sentence Studio is correctly lock-gated for cold learners.');
-  } else {
-    throw new Error(`FAIL: Sentence Studio was not locked. Content: ${lockText}`);
+  console.log("\n--- Scenario A: cold learner is gated ---");
+  await waitForApp(page);
+  await openSentenceStudio(page);
+  const lockText = await page.textContent("#screen-speak");
+  if (!lockText.includes("Sentences unlock after you finish the alphabet")) {
+    throw new Error(`Sentence Studio was not locked for a cold learner. Content: ${lockText}`);
   }
+  await page.click("button[data-ss-goto='today']");
+  await page.waitForSelector("button[data-hub-item='alphabet']", { timeout: 5000 });
+  console.log("PASS: cold learner is locked and can recover to Learn.");
 
-  // Click "Continue the alphabet" button to verify recovery
-  console.log('Clicking "Continue the alphabet" recovery link...');
-  await page.click('button[data-ss-goto="today"]');
-  await page.waitForTimeout(200);
-  
-  // Assert we are back on the Learn Hub
-  const learnHubVisible = await page.isVisible('button[data-hub-item="alphabet"]');
-  if (learnHubVisible) {
-    console.log('PASS: Recovery button returned user to Learn Hub menu.');
-  } else {
-    throw new Error('FAIL: Recovery button did not return user to Learn Hub menu.');
+  console.log("\n--- Scenario B: post-Words learner can practice sentences ---");
+  await seedPostWordsLearner(page);
+  await openSentenceStudio(page);
+  await page.waitForSelector("button[data-ss-start='translate']", { timeout: 5000 });
+  console.log("PASS: Sentence Studio unlocked for seeded post-Words learner.");
+
+  await page.click("button[data-ss-start='translate']");
+  const helperQuestion = await answerCurrentQuestion(page, { useHelpers: true });
+  let event = await latestSentenceEvent(page);
+  if (!event || event.sentenceId !== helperQuestion.id || event.result !== "correct" || event.helperCount < 3) {
+    throw new Error(`Expected a correct helper-backed translate event; got ${JSON.stringify(event)}`);
   }
+  console.log("PASS: Translate & Type records helper-backed success.");
 
-  // Scenario B: Seeded Post-Words Learner
-  console.log('\n--- Scenario B: Seeded Post-Words Learner ---');
-  await context.clearCookies();
-  
-  // Seed local storage for Everyday Level K2 with completed vocabulary and alphabet
-  await page.goto(`${baseUrl}/index.html`);
-  
-  // Fetch ALPHABET_LESSON_IDS dynamically from the page
-  const alphabetLessonIds = await page.evaluate(() => window.phaseOneLessons ? window.phaseOneLessons.map(l => l.id) : []);
-
-  await page.evaluate((ids) => {
-    localStorage.clear();
-    const stateObj = {
-      onboarded: true,
-      level: 'K2',
-      correct: 25,
-      asked: 25,
-      phaseOneCompleted: ids,
-      vocabLessonCompleted: window.HANAPATH_WORD_LESSONS ? window.HANAPATH_WORD_LESSONS.map(l => l.id) : [],
-      navTab: 'today',
-      route: { hub: 'learn', item: null, stage: null },
-      sentencesProgress: { band: 1, results: {}, sessionsDone: 0 }
-    };
-    localStorage.setItem('hanapath-v1', JSON.stringify(stateObj));
-  }, alphabetLessonIds);
-  
-  // Reload page to apply localStorage
-  await page.reload();
-  await page.waitForTimeout(500);
-
-  // Click on "Practice" tab in bottom nav
-  console.log('Navigating to Practice Hub...');
-  await page.click('button.nav-btn[data-nav="practice"]');
-  await page.waitForTimeout(200);
-
-  // Click on "Sentence quiz"
-  console.log('Opening Sentence quiz...');
-  await page.click('button[data-hub-item="sentences"]');
-  await page.waitForTimeout(200);
-
-  // Verify Sentence Studio is unlocked
-  const studioVisible = await page.isVisible('button[data-ss-start="mixed"]');
-  if (studioVisible) {
-    console.log('PASS: Sentence Studio unlocked for post-words K2 learner.');
-  } else {
-    throw new Error('FAIL: Sentence Studio was locked for post-words learner.');
+  await page.click("button[data-ss-next]");
+  const unaidedQuestion = await answerCurrentQuestion(page);
+  event = await latestSentenceEvent(page);
+  if (!event || event.sentenceId !== unaidedQuestion.id || event.result !== "correct" || event.helperCount !== 0) {
+    throw new Error(`Expected a correct unaided translate event; got ${JSON.stringify(event)}`);
   }
+  console.log("PASS: Translate & Type records unaided success.");
 
-  // Start mixed session
-  console.log('Starting mixed sentences session...');
-  await page.click('button[data-ss-start="mixed"]');
-  await page.waitForTimeout(500);
-
-  // Play through the 5 questions
-  for (let i = 0; i < 5; i++) {
-    console.log(`Answering question ${i + 1}/5...`);
-    
-    // Wait for the active question card to render
-    await page.waitForSelector('.card[data-ss-id]', { state: 'visible', timeout: 5000 });
-    
-    const sentenceId = await page.getAttribute('.card[data-ss-id]', 'data-ss-id');
-    console.log(`Active sentence ID: "${sentenceId}"`);
-
-    const qMode = await page.evaluate(() => window.sentenceQuestionMode ? window.sentenceQuestionMode() : 'translate');
-    console.log(`Question Mode: ${qMode}`);
-
-    if (qMode === 'build') {
-      // Find the correct tile order
-      const clickIndices = await page.evaluate((id) => {
-        const row = window.HANAPATH_SENTENCES.find(r => r.id === id);
-        if (!row) return [];
-        const stripEnd = (tok) => String(tok).replace(/[.!?…,~]+$/, "");
-        const expectedWords = (row.tokens || row.korean.split(/\s+/)).map(stripEnd).filter(Boolean);
-        const tiles = Array.from(document.querySelectorAll('button[data-ss-tile]'));
-        const tileTexts = tiles.map(btn => stripEnd(btn.textContent.trim()));
-        const indices = [];
-        const used = new Set();
-        for (const word of expectedWords) {
-          const idx = tileTexts.findIndex((txt, idx2) => txt === word && !used.has(idx2));
-          if (idx !== -1) {
-            indices.push(tiles[idx].getAttribute('data-ss-tile'));
-            used.add(idx);
-          }
-        }
-        return indices;
-      }, sentenceId);
-
-      for (const idx of clickIndices) {
-        await page.click(`button[data-ss-tile="${idx}"]`);
-        await page.waitForTimeout(100);
-      }
-      // Click Check button to submit
-      await page.click('button[data-ss-check]');
-    } else if (qMode === 'shadow') {
-      // Click the self-mark correct button
-      await page.click('button[data-ss-selfmark="correct"]');
-    } else {
-      // For type/translate/listen/transform modes, fill the expected answer directly
-      const answer = await page.evaluate((id) => {
-        const row = window.HANAPATH_SENTENCES.find(r => r.id === id);
-        return row ? row.korean : null;
-      }, sentenceId);
-
-      if (!answer) {
-        throw new Error(`Could not find sentence with ID: "${sentenceId}"`);
-      }
-      await page.fill('#ssTypedInput', answer);
-      // Click Check button to submit
-      await page.click('button[data-ss-check]');
+  await page.evaluate((key) => {
+    const state = JSON.parse(localStorage.getItem(key));
+    for (const record of Object.values(state.sentencesProgress.results || {})) {
+      record.due = Date.now() - 1000;
     }
-
-    await page.waitForTimeout(200); // Wait for transition to feedback
-    
-    // Proceed to next question by clicking [data-ss-next] button
-    await page.waitForSelector('button[data-ss-next]', { state: 'visible', timeout: 2000 });
-    await page.click('button[data-ss-next]');
-    await page.waitForTimeout(200);
+    localStorage.setItem(key, JSON.stringify(state));
+  }, storageKey);
+  await page.reload();
+  await openSentenceStudio(page);
+  const dueCountText = await page.textContent("#screen-speak");
+  if (!/Reviews due\s*[\s\S]*?[1-9]/.test(dueCountText)) {
+    throw new Error("Expected at least one sentence review to resurface after forcing due dates into the past.");
   }
+  console.log("PASS: due sentence reviews resurface on the hub.");
 
-  // Assert summary screen is reached
-  const summaryTitle = await page.textContent('#screen-speak .screen-title');
-  if (summaryTitle.includes('correct')) {
-    console.log(`PASS: Completed all 5 questions and reached the summary screen (${summaryTitle}).`);
-  } else {
-    throw new Error(`FAIL: Did not reach summary screen. Title: ${summaryTitle}`);
+  console.log("\n--- Scenario C: transform mode records transform IDs ---");
+  let state = await getStoredState(page);
+  state.sentencesProgress = { ...(state.sentencesProgress || {}), band: 3 };
+  await setStoredState(page, state);
+  await page.reload();
+  await openSentenceStudio(page);
+  await page.waitForSelector("button[data-ss-start='transform']:not([disabled])", { timeout: 5000 });
+  await page.click("button[data-ss-start='transform']");
+  const transformQuestion = await answerCurrentQuestion(page, { reveal: true });
+  event = await latestSentenceEvent(page);
+  if (!event || event.sentenceId !== transformQuestion.id || event.result !== "revealed" || !event.transformId) {
+    throw new Error(`Expected transform reveal event with transformId; got ${JSON.stringify(event)}`);
   }
+  console.log("PASS: Transform reveal records transformId.");
 
-  // Verify no page errors occurred
-  if (pageErrors.length > 0) {
-    throw new Error(`FAIL: ${pageErrors.length} console/page error(s) occurred during run.`);
-  } else {
-    console.log('PASS: 0 page errors captured during the run.');
+  if (pageErrors.length) {
+    throw new Error(`${pageErrors.length} page error(s) occurred during the run.`);
   }
-
-  console.log('\nAll scripted cold-learner verifications passed successfully! 🛡️');
-
+  console.log("\nAll scripted cold-learner verifications passed successfully.");
 } finally {
-  console.log('Cleaning up browser and server...');
-  await browser.close();
+  await browser?.close();
   server.close();
 }

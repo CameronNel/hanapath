@@ -2853,7 +2853,7 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // (this only bypasses the access gate, not completion tracking) — see
 // isLessonUnlocked() below and isWordLessonUnlocked() further down for the
 // two places this is consumed. Flip to true only for local testing.
-const TEST_UNLOCK_ALL_STAGES = true;
+const TEST_UNLOCK_ALL_STAGES = false;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -4140,7 +4140,7 @@ function buildVocabMetricsView() {
           .map(([mode, count]) => `${mode}: ${count}`)
           .join(" / ")
         : "No sentence events yet";
-      
+
       const sRecentRows = sAnalytics.recentEvents.length
         ? sAnalytics.recentEvents.map((event) => {
           const sentence = getSentenceBankRows().find(r => r.id === event.sentenceId);
@@ -15287,7 +15287,15 @@ function bindSentenceStudioEvents(el) {
     btn.addEventListener("click", submitSentenceAnswer);
   });
   el.querySelectorAll("[data-ss-reveal]").forEach((btn) => {
-    btn.addEventListener("click", () => finishSentenceQuestion(false, true));
+    btn.addEventListener("click", () => {
+      const meta = {};
+      if (sentenceQuestionMode(session) === "transform") {
+        const row = session.rows[session.index];
+        const transform = getSentenceTransformForSessionRow(session, row);
+        if (transform) meta.transformId = transform.id;
+      }
+      finishSentenceQuestion(false, true, meta);
+    });
   });
   el.querySelectorAll("[data-ss-play], [data-ss-hear]").forEach((btn) => {
     btn.addEventListener("click", () => {

@@ -1,5 +1,5 @@
-// [2026-07-08] Cache bumped to v259: Implement Track J1 sentence analytics inside Word insights.
-const CACHE_NAME = "hanapath-shell-v259";
+// [2026-07-08] Cache bumped to v260: Restore real progression gates and strengthen Sentences close-out verification.
+const CACHE_NAME = "hanapath-shell-v260";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,7 +12,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260708e",
+  "./app.js?v=20260708f",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
