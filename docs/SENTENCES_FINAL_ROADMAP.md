@@ -440,6 +440,48 @@ them. One PR per box; browser-play each unit before shipping.
 
 ---
 
+## 12.5 Foundation rails for Gemini batches
+
+The 2026-07-08 foundation pass is intended to make the remaining work
+Gemini-safe without handing Gemini architecture decisions:
+
+- **Track E rail:** `app.js` can open `window.HANAPATH_SENTENCE_LESSONS` from
+  the Sentence Studio hub. Each unit has a concept screen, six audio-backed
+  examples, and a lesson session that alternates Translate & Type with Word
+  Builder. Gemini-safe follow-up: improve lesson copy or swap example ids only
+  when `node scripts/audit-sentences-foundation.mjs` stays green.
+- **Track F rail:** Sentence Studio has a `shadow` mode: play, slow replay
+  via browser TTS, optional SpeechRecognition scoring using the existing
+  transcript-match stub, and self-mark buttons. Gemini-safe follow-up: copy
+  polish and browser smoke check notes; do not change scoring architecture.
+- **Track G rail:** Sentence Studio has a `transform` mode powered by
+  `HANAPATH_INFLECT`. It selects only rows where a verb/adjective focus word's
+  current inflected surface can be replaced by a generated target form.
+  Gemini-safe follow-up: add or reorder transform task recipes only if the
+  foundation audit still reports enough candidates and no errors.
+- **Track I rail:** legacy Listening remains on `getSentenceStudyBank()`; do
+  not delete it until a browser smoke test proves sentence choice, dictation,
+  phrase listening, and conversation listening still work after replacement.
+- **Track J rail:** `recordSentenceResult()` now emits sentence review events
+  with mode, result, helper count, latency, lesson id, transform id, and speech
+  score. The hub shows a compact Sentence insights card. Gemini-safe follow-up:
+  expand docs/counts and run the cold-learner script; feature fixes from a
+  failed cold run stay high-intelligence work.
+
+Mechanical verification for all Gemini follow-ups:
+
+```bash
+node --check app.js
+node --check scripts/audit-sentences-foundation.mjs
+node scripts/audit-sentences-foundation.mjs
+node scripts/audit-sentences-data.mjs --strict
+node scripts/audit-words-data.mjs --strict
+node scripts/audit-alphabet-audio.mjs --strict
+node scripts/audit-app-shell.mjs
+```
+
+---
+
 ## 13. Progress log
 
 | Date | Box | PR | Notes |
@@ -502,4 +544,4 @@ them. One PR per box; browser-play each unit before shipping.
 | 2026-07-07 | Track E micro-lesson data + tag coverage report | integration | Landed `sentences_lesson_plan.js` (12 pattern-cluster units, `window.HANAPATH_SENTENCE_LESSONS`) and `docs/SENTENCES_TAG_COVERAGE.md` from Gemini's batch, **reviewed**: coverage counts re-derived and confirmed exact; lesson plan had 9/59 mis-tagged example sentences (past-tense unit cited present-tense rows, future unit cited 있어요, negation unit cited rows with no negation) — replaced with correctly tag-matched examples (0 mismatches now). App.js lesson-player wiring still pending (Track E remainder). |
 | 2026-07-07 | Band accuracy sweep — **REJECTED** (not merged) | integration | Gemini's 11-batch band sweep (PRs #133–#143) was rejected: 93 of 117 changes were register-driven over-promotions — short beginner phrases (물 주세요, 감사합니다, 누구세요?) pushed to band 5 because the handover rule wrongly treated honorific-si/formal-nida/imperative-seyo as band-5 triggers. **Band ≈ length/multi-clause complexity, NOT politeness register.** Bands left as Track-D curated. Do not re-run a band sweep without a register-agnostic rule (band 5 = ≥7 tokens OR ≥2 clause linkers OR clause-linker + ≥5 tokens; honorific/formal register does not raise the band). |
 | 2026-07-07 | Accuracy sweep s0401-s1600 (gap closed) | integration | Swept the last unswept range, 150 rows, patternTags only. Detector was validated before applying: **tense** via Hangul jongseong decomposition (ㅆ-batchim = contracted past 았/었/였, excluding 있/겠), not a naive 았/었/였 substring — 51 rows mistagged `present-polite` on clearly past verbs (샀어요/봤어요/끝났어요/…) flipped to `past-polite`; **location-e** removed from 29 rows via an **exact** temporal/fixed 에-token set (시에/주말에/덕분에/…), not `endsWith` (which had falsely matched 화분에 on 분); **existence-itda** removed from 56 rows where 있 is progressive/resultative/potential/lexicalized (kept genuine 있다/없다 existence); **and-go** removed from 52 rows that were progressive `-고 있` or had no `고` at all; **direction-euro** removed from 4 fixed adverbs (무료로/토대로/대상으로/마음대로). All classes spot-checked against the Korean. **s0001–s2000 accuracy sweep now complete.** |
-
+| 2026-07-08 | Foundation rails for Tracks E/F/G/I/J | local branch | Added the high-judgment app foundations Gemini can safely build on: playable pattern-lesson concept/session path, Shadow mode with slow replay + SpeechRecognition scoring stub + self-marking, Transform mode backed by `HANAPATH_INFLECT`, sentence review-event analytics, and `scripts/audit-sentences-foundation.mjs` to validate lesson refs and transform candidates. |

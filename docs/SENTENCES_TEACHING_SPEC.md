@@ -259,6 +259,16 @@ be re-derived from data, not copied forward.**
 > have live `EXTENSION`/legacy code in `app.js`. Re-derive status from the
 > code, not from a prior checkmark.
 
+> **Foundation rails note (2026-07-08):** `app.js` now has the high-judgment
+> foundations for the remaining Sentences work: pattern lessons are reachable
+> from the Sentence Studio hub with a concept screen and Translate/Build checks;
+> Shadow mode has play, slow replay, optional browser SpeechRecognition scoring,
+> and self-marking; Transform mode uses `HANAPATH_INFLECT` to generate only
+> validated sentence-level targets; `recordSentenceResult()` emits sentence
+> review events; and `scripts/audit-sentences-foundation.mjs` verifies lesson
+> refs plus transform candidate coverage. This does **not** remove owner gating
+> on authored expansion or replace the required cold-learner close-out test.
+
 ## §9 Milestone reference sheet
 
 | Milestone | Depends on | Primary files | Done when |
