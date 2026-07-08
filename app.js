@@ -10213,6 +10213,13 @@ function renderDrillQuestion() {
     document.querySelectorAll("#drillOptions .option").forEach((b) =>
       b.addEventListener("click", () => answerDrill(b.dataset.drillOption, b)));
   }
+  const visualButton = document.querySelector(".drill-visual-button[data-speak]");
+  if (visualButton) {
+    visualButton.addEventListener("click", () => {
+      flashElement(visualButton);
+      void speak(visualButton.dataset.speak || "");
+    });
+  }
   document.getElementById("drillEndBtn").addEventListener("click", () => renderDrillResult());
   document.getElementById("drillNextBtn").addEventListener("click", () => { s.asked += 1; renderDrillQuestion(); });
 }

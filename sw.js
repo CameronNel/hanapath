@@ -1,5 +1,5 @@
-// [2026-07-08] Cache bumped to v268: Drill center visual is tappable audio.
-const CACHE_NAME = "hanapath-shell-v268";
+// [2026-07-08] Cache bumped to v269: Drill center visual click now speaks.
+const CACHE_NAME = "hanapath-shell-v269";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,7 +12,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260708l",
+  "./app.js?v=20260708m",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
