@@ -6712,7 +6712,48 @@ function vocabularyStageRowsHtml() {
     const pillLabel = complete ? "Completed" : current ? "Current" : "Locked";
     const pillClass = complete ? "green" : "muted";
     const dotClass = complete ? "done" : current ? "next" : "lock";
-    const dotText = complete ? "✓" : String(stageNumber).padStart(2, "0");
+    const dotText = complete ? String.fromCharCode(10003) : String(stageNumber).padStart(2, "0");
+    const lockHint = locked ? ` data-locked-stage="${stageNumber}"` : "";
+    return `
+      <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}"${lockHint}>
+        <span class="unit-dot ${dotClass}">${escapeHtml(dotText)}</span>
+        <div>
+          <div class="study-row-ko">${escapeHtml(stageInfo.title)}</div>
+          <div class="study-row-sub">${escapeHtml(stageInfo.sub)}</div>
+        </div>
+        <span class="pill ${pillClass}">${pillLabel}</span>
+      </button>
+    `;
+  }).join("");
+}
+
+function alphabetStagesSectionHtml() {
+  const progress = getLearnProgress("alphabet");
+  return `
+    <button class="card word-section-card" type="button" data-alphabet-section="stages">
+      <div>
+        <div class="eyebrow">Stages</div>
+        <div class="study-row-ko">Alphabet stages</div>
+        <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo("alphabet", progress.currentStage).detail)}`}</div>
+      </div>
+      <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
+    </button>
+  `;
+}
+
+function alphabetStageRowsHtml() {
+  const progress = getLearnProgress("alphabet");
+  return Array.from({ length: progress.total }, (_, index) => {
+    const stageNumber = index + 1;
+    const stageInfo = getLearnStageInfo("alphabet", stageNumber);
+    const status = getLearnStageStatus("alphabet", stageNumber);
+    const locked = status === "locked";
+    const complete = status === "complete";
+    const current = status === "current";
+    const pillLabel = complete ? "Completed" : current ? "Current" : "Locked";
+    const pillClass = complete ? "green" : "muted";
+    const dotClass = complete ? "done" : current ? "next" : "lock";
+    const dotText = complete ? String.fromCharCode(10003) : String(stageNumber).padStart(2, "0");
     const lockHint = locked ? ` data-locked-stage="${stageNumber}"` : "";
     return `
       <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}"${lockHint}>
@@ -6950,6 +6991,50 @@ function openVocabularySubsection(section, backTarget = "menu") {
 function bindVocabularySectionCards(el, backTarget = "menu") {
   el.querySelectorAll("[data-word-section]").forEach((btn) => {
     btn.addEventListener("click", () => openVocabularySubsection(btn.dataset.wordSection, backTarget));
+  });
+}
+
+function bindAlphabetStageRows(el) {
+  el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.lockedStage) {
+        const progress = getLearnProgress("alphabet");
+        const currentStageInfo = getLearnStageInfo("alphabet", progress.currentStage);
+        showRetryToast(`Finish "${currentStageInfo.title}" to unlock this stage.`);
+        return;
+      }
+      openLearnStage("alphabet", Number(btn.dataset.learnStage));
+    });
+  });
+}
+
+function openAlphabetSubsection(section) {
+  if (section !== "stages") return;
+  stopSpeech();
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+  activeHub = "learn";
+  setNavActive("learn");
+  const el = showScreen("detail");
+  if (!el) return;
+
+  showDetailBarWithBack("learn", "Alphabet stages", () => openLearnStageMenu("alphabet"), "Alphabet");
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Stages</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Alphabet stages</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Open the step-by-step Hangul path when you want the full stage list.</div>
+    </div>
+    <div class="card">
+      <div class="study-list">${alphabetStageRowsHtml()}</div>
+    </div>
+  `;
+  bindAlphabetStageRows(el);
+}
+
+function bindAlphabetSectionCards(el) {
+  el.querySelectorAll("[data-alphabet-section]").forEach((btn) => {
+    btn.addEventListener("click", () => openAlphabetSubsection(btn.dataset.alphabetSection));
   });
 }
 
@@ -12304,7 +12389,9 @@ function renderLearnStageMenu(itemId) {
     : "";
   const stagesHtml = itemId === "vocabulary"
     ? vocabularyStagesSectionHtml()
-    : `
+    : itemId === "alphabet"
+      ? alphabetStagesSectionHtml()
+      : `
     <div class="card">
       <div class="flex-between mb-12">
         <div>
@@ -12351,6 +12438,9 @@ function renderLearnStageMenu(itemId) {
   if (entireAlphabetBtn) entireAlphabetBtn.addEventListener("click", () => openEntireAlphabet());
   const drillLabBtn = document.getElementById("openDrillLab");
   if (drillLabBtn) drillLabBtn.addEventListener("click", () => openAlphabetDrillLab());
+  if (itemId === "alphabet") {
+    bindAlphabetSectionCards(el);
+  }
   bindWordBankEntryCard(el);
   if (itemId === "vocabulary") {
     bindVocabularySectionCards(el, "menu");

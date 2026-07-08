@@ -1,5 +1,5 @@
-// [2026-07-08] Cache bumped to v263: Vocabulary category cards open sub-screens.
-const CACHE_NAME = "hanapath-shell-v263";
+// [2026-07-08] Cache bumped to v264: Alphabet stages open in a sub-screen.
+const CACHE_NAME = "hanapath-shell-v264";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,7 +12,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260708i",
+  "./app.js?v=20260708j",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
