@@ -1538,6 +1538,30 @@ button.bd-assembled:hover {
   align-items: center;
   justify-content: center;
 }
+.drill-visual-button {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--accent);
+}
+.drill-visual-button span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.drill-visual-button:hover {
+  background: rgba(91, 157, 255,.10);
+  text-shadow: 0 0 16px rgba(91, 157, 255,.5);
+}
+.drill-visual-button:active {
+  transform: scale(.98);
+}
+.drill-visual-button:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+  outline: none;
+}
 
 .quiz-prompt { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
 .quiz-detail { font-size: .84rem; color: var(--muted); margin-bottom: 14px; }

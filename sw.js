@@ -1,9 +1,9 @@
-// [2026-07-08] Cache bumped to v267: Drill Lab mode tiles use a four-up grid.
-const CACHE_NAME = "hanapath-shell-v267";
+// [2026-07-08] Cache bumped to v268: Drill center visual is tappable audio.
+const CACHE_NAME = "hanapath-shell-v268";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260708d",
+  "./styles.css?v=20260708e",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705f",
   "./words_curated_core.js?v=20260705e",
@@ -12,7 +12,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260708k",
+  "./app.js?v=20260708l",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

@@ -10155,6 +10155,12 @@ function renderDrillQuestion() {
   s.buildFilled = [];
   const isBuild = q.interaction === "build";
   const progress = s.total === Infinity ? `${s.asked + 1}` : `${s.asked + 1} / ${s.total}`;
+  const visualSpeakText = getDrillWholeAudioText(q);
+  const visualHtml = q.visual && visualSpeakText
+    ? `<button class="quiz-visual drill-visual-button" type="button" data-speak="${escapeHtml(visualSpeakText)}" aria-label="Hear ${escapeHtml(visualSpeakText)}"><span>${q.visual}</span></button>`
+    : q.visual
+      ? `<div class="quiz-visual">${q.visual}</div>`
+      : "";
   const interactiveHtml = isBuild
     ? `<div class="bd-builder" id="drillBuilder" lang="ko">
          <div class="drill-build-slots">${q.seq.map((_, i) => `<span class="bd-slot" data-drill-slot="${i}" aria-hidden="true">·</span>`).join("")}</div>
@@ -10170,7 +10176,7 @@ function renderDrillQuestion() {
   el.innerHTML = `
     <div class="card">
       <div class="lesson-step-row"><span>${escapeHtml(modeLabel)} · ${progress}</span><strong>${s.correct} correct · streak ${s.streak}</strong></div>
-      ${q.visual ? `<div class="quiz-visual" style="text-align:center;margin:10px 0;">${q.visual}</div>` : ""}
+      ${visualHtml}
       <div class="drill-audio-row">
         ${renderDrillAudioButtons(q)}
         ${phaseOneReferenceButtonHtml()}
