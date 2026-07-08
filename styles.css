@@ -479,7 +479,12 @@ input, textarea { cursor: text; }
   width: 100%;
   text-align: left;
   cursor: pointer;
+  border: 1px solid var(--line-strong);
+  background:
+    linear-gradient(135deg, rgba(91,157,255,.16), rgba(45,212,191,.10));
+  transition: transform var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out);
 }
+.word-section-card:hover { transform: translateY(-2px); box-shadow: var(--glow-accent); }
 .word-section-card::after {
   content: ">";
   color: var(--accent);

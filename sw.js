@@ -1,9 +1,9 @@
-// [2026-07-08] Cache bumped to v265: Alphabet menu card order updated.
-const CACHE_NAME = "hanapath-shell-v265";
+// [2026-07-08] Cache bumped to v266: Alphabet menu cards use one blue style.
+const CACHE_NAME = "hanapath-shell-v266";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260708b",
+  "./styles.css?v=20260708c",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705f",
   "./words_curated_core.js?v=20260705e",
