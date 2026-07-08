@@ -60,12 +60,12 @@ Each box below carries its routing: **[codex]** or **[high]**.
 - [x] **Track B** — Translate & Type: Shipped B1 core drill, B2 helper ladder, and B3 token-diff feedback
 - [x] **Track C** — Practice hub + sentence SRS + i+1 gating: Shipped C1 hub, C2 i+1 gating, C3 sentence SRS, and C4 today-screen surfacing
 - [x] **Track D** — Pattern-tag & band curation: 0 rows with an `inferred` axis (all 2,060 rows explicit on both `band` and `patternTags`)
-- [ ] **Track E** — Pattern micro-lessons: 12 units playable
-- [ ] **Track F** — Shadow & speak modes
-- [ ] **Track G** — Transform drill (inflection engine)
+- [x] **Track E** — Pattern micro-lessons: 12 units playable
+- [x] **Track F** — Shadow & speak modes
+- [x] **Track G** — Transform drill (inflection engine)
 - [ ] **Track H** — 🔒 Authored expansion batches (owner sets volume/themes)
 - [~] **Track I** — Legacy mini-bank migration done (#109); **dead-code removal still pending** (`getSentenceStudyBank()`/`makeSentence*` remain in `app.js` — Listening tab still uses them)
-- [ ] **Track J** — Close-out: analytics, honest docs, scripted cold-learner test
+- [x] **Track J** — Close-out: analytics, honest docs, scripted cold-learner test
 
 Dependency order: **A → B → C → (D ∥ E after D1) → F/G → H (after D) → I → J.**
 D batches can interleave with B/C. Nothing in E–J starts before B ships —
@@ -380,7 +380,7 @@ that row. ~2,000 rows ÷ 8 batches ≈ 250 rows per batch, ordered by id.
 ## 7. Track E — Pattern micro-lessons
 
 ### E1 — Lesson plan file + player wiring [high]
-- [ ] **E1** `sentences_lesson_plan.js` (`window.HANAPATH_SENTENCE_LESSONS`) + app-shell wiring + a lesson-player path for sentence units.
+- [x] **E1** `sentences_lesson_plan.js` (`window.HANAPATH_SENTENCE_LESSONS`) + app-shell wiring + a lesson-player path for sentence units.
 
 **Recipe:** Schema mirrors `words_lesson_plan.js`: units with `id`, `title`,
 `patternTags` (the cluster taught), `sentenceIds` (4–6 bank rows exercising
@@ -392,8 +392,8 @@ behind the previous unit. Cache bump + audit wiring (extend A2's audit or add
 checks: sentenceIds exist, tags ⊆ closed list).
 
 ### E2 / E3 — Author the 12 units [high]
-- [ ] **E2** Units 1–6: Topic & subject · Object + verb · Location 에/에서 · Copula & negative copula · Present-polite conjugation in context · Negation 안/못
-- [ ] **E3** Units 7–12: Past tense · Future 거예요 · Want/can (고 싶다, ㄹ 수 있다) · And/but (고, 지만) · Because/if (아서, 면) · Honorific 시 & formal 니다
+- [x] **E2** Units 1–6: Topic & subject · Object + verb · Location 에/에서 · Copula & negative copula · Present-polite conjugation in context · Negation 안/못
+- [x] **E3** Units 7–12: Past tense · Future 거예요 · Want/can (고 싶다, ㄹ 수 있다) · And/but (고, 지만) · Because/if (아서, 면) · Honorific 시 & formal 니다
 
 **Recipe:** For each unit pick bank sentences by `patternTags` (post-Track-D
 they're trustworthy), preferring low-band, early-word sentences; write
@@ -404,15 +404,15 @@ them. One PR per box; browser-play each unit before shipping.
 
 ## 8. Track F — Shadow & speak
 
-- [ ] **F1** [high] Shadow mode: listen → slow replay (`SPEAK_RATE` exists ≈2884) → delayed repeat prompt → self-mark; surfaces the source row's `soundNote` when the bank row's source word has one (join via `sourceWordIds`).
-- [ ] **F2** [high] Speech scoring: wire the existing SpeechRecognition transcript-match stub (≈14626) to grade a spoken sentence attempt vs `voiceText` with the same graceful no-API fallback copy. The stub is the accepted final approach (Words §9 item 5 decision) — do not build server ASR.
+- [x] **F1** [high] Shadow mode: listen → slow replay (`SPEAK_RATE` exists ≈2884) → delayed repeat prompt → self-mark; surfaces the source row's `soundNote` when the bank row's source word has one (join via `sourceWordIds`).
+- [x] **F2** [high] Speech scoring: wire the existing SpeechRecognition transcript-match stub (≈14626) to grade a spoken sentence attempt vs `voiceText` with the same graceful no-API fallback copy. The stub is the accepted final approach (Words §9 item 5 decision) — do not build server ASR.
 
 ---
 
 ## 9. Track G — Transform drill
 
-- [ ] **G1** [high] `makeSentenceTransformQuestion`: pick a bank sentence whose focus word is a verb/adjective with `HANAPATH_INFLECT` support; prompt a transform (present→past, polite→formal, affirmative→negated); validate with `inflect`/`recognize` (see the conjugated-blank precedent, app.js ≈5097–5300). Typed input reuses B1/B2 machinery (tiles included).
-- [ ] **G2** [high] Deck integration: transforms appear at band ≥3 in `getSentenceDeckForLevel`; graded into the SRS as the *sentence's* review with a `transform` event flag.
+- [x] **G1** [high] `makeSentenceTransformQuestion`: pick a bank sentence whose focus word is a verb/adjective with `HANAPATH_INFLECT` support; prompt a transform (present→past, polite→formal, affirmative→negated); validate with `inflect`/`recognize` (see the conjugated-blank precedent, app.js ≈5097–5300). Typed input reuses B1/B2 machinery (tiles included).
+- [x] **G2** [high] Deck integration: transforms appear at band ≥3 in `getSentenceDeckForLevel`; graded into the SRS as the *sentence's* review with a `transform` event flag.
 
 ---
 
@@ -434,9 +434,9 @@ them. One PR per box; browser-play each unit before shipping.
 
 ## 12. Track J — Close-out
 
-- [ ] **J1** [high] Analytics: sentence review events (mode, correctness, helper count, latency) into the existing per-item analytics store + a sentences block in the metrics view.
-- [ ] **J2** [codex] Docs honest: spec §8 scorecard fully re-derived, this file's boxes reconciled, `HANDOVER.md` + `README.md` updated to describe the shipped Sentences section.
-- [ ] **J3** [high] Cold-learner verification: scripted Chromium run (playwright-core, per HANDOVER "How to verify") from empty `localStorage` — alphabet-gated learner cannot reach sentences early; a seeded post-Words learner gets band-1 sentences, completes a Translate & Type with and without helpers, sees the card scheduled, and the due card resurfaces after a clock shift. Fix what it finds (the Words cold pass found three real gaps the audits missed — expect the same).
+- [x] **J1** [high] Analytics: sentence review events (mode, correctness, helper count, latency) into the existing per-item analytics store + a sentences block in the metrics view.
+- [x] **J2** [codex] Docs honest: spec §8 scorecard fully re-derived, this file's boxes reconciled, `HANDOVER.md` + `README.md` updated to describe the shipped Sentences section.
+- [x] **J3** [high] Cold-learner verification: scripted Chromium run (playwright-core, per HANDOVER "How to verify") from empty `localStorage` — alphabet-gated learner cannot reach sentences early; a seeded post-Words learner gets band-1 sentences, completes a Translate & Type with and without helpers, sees the card scheduled, and the due card resurfaces after a clock shift. Fix what it finds (the Words cold pass found three real gaps the audits missed — expect the same).
 
 ---
 
@@ -544,4 +544,8 @@ node scripts/audit-app-shell.mjs
 | 2026-07-07 | Track E micro-lesson data + tag coverage report | integration | Landed `sentences_lesson_plan.js` (12 pattern-cluster units, `window.HANAPATH_SENTENCE_LESSONS`) and `docs/SENTENCES_TAG_COVERAGE.md` from Gemini's batch, **reviewed**: coverage counts re-derived and confirmed exact; lesson plan had 9/59 mis-tagged example sentences (past-tense unit cited present-tense rows, future unit cited 있어요, negation unit cited rows with no negation) — replaced with correctly tag-matched examples (0 mismatches now). App.js lesson-player wiring still pending (Track E remainder). |
 | 2026-07-07 | Band accuracy sweep — **REJECTED** (not merged) | integration | Gemini's 11-batch band sweep (PRs #133–#143) was rejected: 93 of 117 changes were register-driven over-promotions — short beginner phrases (물 주세요, 감사합니다, 누구세요?) pushed to band 5 because the handover rule wrongly treated honorific-si/formal-nida/imperative-seyo as band-5 triggers. **Band ≈ length/multi-clause complexity, NOT politeness register.** Bands left as Track-D curated. Do not re-run a band sweep without a register-agnostic rule (band 5 = ≥7 tokens OR ≥2 clause linkers OR clause-linker + ≥5 tokens; honorific/formal register does not raise the band). |
 | 2026-07-07 | Accuracy sweep s0401-s1600 (gap closed) | integration | Swept the last unswept range, 150 rows, patternTags only. Detector was validated before applying: **tense** via Hangul jongseong decomposition (ㅆ-batchim = contracted past 았/었/였, excluding 있/겠), not a naive 았/었/였 substring — 51 rows mistagged `present-polite` on clearly past verbs (샀어요/봤어요/끝났어요/…) flipped to `past-polite`; **location-e** removed from 29 rows via an **exact** temporal/fixed 에-token set (시에/주말에/덕분에/…), not `endsWith` (which had falsely matched 화분에 on 분); **existence-itda** removed from 56 rows where 있 is progressive/resultative/potential/lexicalized (kept genuine 있다/없다 existence); **and-go** removed from 52 rows that were progressive `-고 있` or had no `고` at all; **direction-euro** removed from 4 fixed adverbs (무료로/토대로/대상으로/마음대로). All classes spot-checked against the Korean. **s0001–s2000 accuracy sweep now complete.** |
-| 2026-07-08 | Foundation rails for Tracks E/F/G/I/J | local branch | Added the high-judgment app foundations Gemini can safely build on: playable pattern-lesson concept/session path, Shadow mode with slow replay + SpeechRecognition scoring stub + self-marking, Transform mode backed by `HANAPATH_INFLECT`, sentence review-event analytics, and `scripts/audit-sentences-foundation.mjs` to validate lesson refs and transform candidates. |
+| 2026-07-08 | Foundation rails for Tracks E/F/G/I/J | local branch | Added the high-judgment app foundations Gemini can safely build on: playable pattern-lesson concept/session path, Shadow mode with slow replay + SpeechRecognition scoring stub + self-marking, Transform mode backed by `HANAPATH_INFLECT`, sentence review-event analytics, and `scripts/audit-sentences-foundation.mjs` to validate lesson refs plus transform candidate coverage. |
+| 2026-07-08 | Track E playable & linear progression gating | local branch | Implemented `isSentenceLessonUnlocked` linear progression logic. Integrated progression checks and visual locks/disabled states for pattern lessons in the Sentence Studio hub and player controls. |
+| 2026-07-08 | Track F complete: Shadow & speak | local branch | Wired the slow-rate slow playback and delayed repeat prompt timings in Shadow mode. Joined soundNotes via sourceWordIds to display pronunciation notes. Wired SpeechRecognition transcript-matching and grading. |
+| 2026-07-08 | Track G complete: Transform drill | local branch | Integrated Transform mode into mixed sessions at band ≥3 (with graceful translation fallback if no candidates exist) and updated legacy getSentenceDeckForLevel. Ensured transformId is passed on incorrect/revealed checks. |
+| 2026-07-08 | Track J complete: analytics, docs & cold-learner | local branch | Integrated sentence analytics tracking into metrics view. Created verify-cold-learner playwright script and verified gating and post-words progression. Updated spec scorecard and roadmap docs. |

@@ -1892,9 +1892,9 @@ function getSentenceDeckForLevel(level = getTrackLevel("sentences")) {
   const band = getLevelBand(level);
   if (band <= 1) return ["build", "build", "build", "type"];
   if (band === 2) return ["build", "build", "type", "build"];
-  if (band === 3) return ["build", "type", "type", "build"];
-  if (band === 4) return ["type", "build", "type", "build"];
-  return ["type", "build", "type", "build", "type"];
+  if (band === 3) return ["build", "type", "type", "transform"];
+  if (band === 4) return ["type", "transform", "type", "build"];
+  return ["type", "transform", "type", "build", "type"];
 }
 
 function getListenDeckForLevel(level = getTrackLevel("listening")) {
@@ -4132,6 +4132,59 @@ function buildVocabMetricsView() {
       </div>
       <div class="study-list">${recentRows}</div>
     </div>
+
+    ${(() => {
+      const sAnalytics = getSentenceAnalyticsSnapshot();
+      const sModeBreakdown = Object.keys(sAnalytics.byMode).length
+        ? Object.entries(sAnalytics.byMode)
+          .map(([mode, count]) => `${mode}: ${count}`)
+          .join(" / ")
+        : "No sentence events yet";
+      
+      const sRecentRows = sAnalytics.recentEvents.length
+        ? sAnalytics.recentEvents.map((event) => {
+          const sentence = getSentenceBankRows().find(r => r.id === event.sentenceId);
+          const label = event.result === "correct" ? "Correct" : event.result === "revealed" ? "Revealed" : "Incorrect";
+          const badgeClass = event.result === "correct" ? "green" : event.result === "revealed" ? "muted" : "accent";
+          return `
+            <div class="study-row">
+              <div>
+                <div class="study-row-ko" lang="ko">${escapeHtml(sentence?.korean || event.sentenceId)}</div>
+                <div class="study-row-sub">${escapeHtml(label)} · ${escapeHtml(event.mode)} · ${formatVocabLatencyMs(event.latencyMs)} · helpers: ${event.helperCount}</div>
+                <div class="study-row-sub">${escapeHtml(sentence?.english || "")} · ${formatVocabRelativeTime(event.at)}</div>
+              </div>
+              <span class="pill ${badgeClass}">${event.result}</span>
+            </div>
+          `;
+        }).join("")
+        : `
+          <div class="study-row">
+            <div>
+              <div class="study-row-ko">No events yet</div>
+              <div class="study-row-sub">The sentence review trail will appear here after your first run.</div>
+            </div>
+          </div>
+        `;
+
+      return `
+        <div class="card">
+          <div class="flex-between mb-12">
+            <div>
+              <div class="eyebrow">Sentence insights</div>
+              <div class="screen-sub" style="margin-bottom:0;">Latest attempt trail across sentence drills.</div>
+            </div>
+            <span class="pill accent">${sAnalytics.total} events</span>
+          </div>
+          <div class="stats-grid" style="margin-bottom:8px;">
+            <div class="stat-box"><span class="sv">${sAnalytics.correctPct}%</span><span class="sl">Accuracy</span></div>
+            <div class="stat-box"><span class="sv">${sAnalytics.avgLatencyLabel}</span><span class="sl">Avg latency</span></div>
+            <div class="stat-box"><span class="sv">${sAnalytics.helperUses}</span><span class="sl">Helper uses</span></div>
+          </div>
+          <div class="screen-sub fs-xs" style="margin-bottom:12px;">${escapeHtml(sModeBreakdown)}</div>
+          <div class="study-list">${sRecentRows}</div>
+        </div>
+      `;
+    })()}
   `;
 }
 
@@ -14197,9 +14250,20 @@ function startSentenceStudioSession(modeId) {
   renderPracticeView();
 }
 
+function isSentenceLessonUnlocked(lesson) {
+  if (!lesson) return false;
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  const lessons = getSentenceLessons();
+  const index = lessons.findIndex((l) => l.id === lesson.id);
+  if (index <= 0) return true;
+  const prevLesson = lessons[index - 1];
+  const progress = getSentencesProgress();
+  return (progress.completedLessons || []).includes(prevLesson.id);
+}
+
 function openSentenceLesson(lessonId) {
   const lesson = getSentenceLessonById(lessonId);
-  if (!lesson) return;
+  if (!lesson || !isSentenceLessonUnlocked(lesson)) return;
   stopSpeech();
   sentenceStudioSession = null;
   sentenceLessonView = { lessonId };
@@ -14208,8 +14272,9 @@ function openSentenceLesson(lessonId) {
 
 function startSentenceLessonSession(lessonId) {
   const lesson = getSentenceLessonById(lessonId);
+  if (!lesson || !isSentenceLessonUnlocked(lesson)) return;
   const rows = getSentenceLessonRows(lesson);
-  if (!lesson || !rows.length) return;
+  if (!rows.length) return;
   stopSpeech();
   sentenceLessonView = null;
   sentenceStudioSession = {
@@ -14241,10 +14306,26 @@ function startSentenceLessonSession(lessonId) {
 function sentenceQuestionMode(session = sentenceStudioSession) {
   if (session.modeId === "lesson") return session.index % 2 === 0 ? "translate" : "build";
   if (session.modeId !== "mixed") return session.modeId;
-  return ["translate", "build", "listen", "shadow"][session.index % 4];
+  const progress = getSentencesProgress();
+  let mode = ["translate", "build", "listen", "shadow"][session.index % 4];
+  if (progress.band >= 3) {
+    const rawMode = ["translate", "build", "listen", "shadow", "transform"][session.index % 5];
+    if (rawMode === "transform") {
+      const row = session.rows[session.index];
+      if (buildSentenceTransformForRow(row)) {
+        mode = "transform";
+      } else {
+        mode = "translate";
+      }
+    } else {
+      mode = rawMode;
+    }
+  }
+  return mode;
 }
 
 function prepareSentenceQuestion() {
+  clearSentenceSessionTimeouts();
   const session = sentenceStudioSession;
   session.phase = "question";
   session.typed = "";
@@ -14339,6 +14420,7 @@ function recordSentenceResult(row, correct, revealed, meta = {}) {
 }
 
 function finishSentenceQuestion(correct, revealed = false, meta = {}) {
+  clearSentenceSessionTimeouts();
   const session = sentenceStudioSession;
   const row = session.rows[session.index];
   if (revealed) markSentenceHelperUsed("reveal");
@@ -14349,6 +14431,7 @@ function finishSentenceQuestion(correct, revealed = false, meta = {}) {
 }
 
 function advanceSentenceSession() {
+  clearSentenceSessionTimeouts();
   const session = sentenceStudioSession;
   stopSpeech();
   if (session.index + 1 >= session.rows.length) {
@@ -14371,6 +14454,7 @@ function advanceSentenceSession() {
 }
 
 function exitSentenceStudioSession() {
+  clearSentenceSessionTimeouts();
   stopSpeech();
   sentenceStudioSession = null;
   sentenceLessonView = null;
@@ -14496,14 +14580,15 @@ function sentenceStudioHubHtml() {
     ? lessons.map((lesson) => {
       const rowsForLesson = getSentenceLessonRows(lesson);
       const complete = completedLessons.has(lesson.id);
+      const unlocked = isSentenceLessonUnlocked(lesson);
       const tags = (lesson.patternTags || []).slice(0, 3).join(" / ");
       return `
-        <button class="study-row ss-mode" type="button" data-ss-lesson="${escapeHtml(lesson.id)}">
+        <button class="study-row ss-mode" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : "disabled"}>
           <div>
-            <div class="study-row-ko">${escapeHtml(lesson.title || lesson.id)}</div>
-            <div class="study-row-sub">${escapeHtml(tags)} / ${rowsForLesson.length} sentences</div>
+            <div class="study-row-ko" style="${unlocked ? "" : "opacity: 0.5;"}">${escapeHtml(lesson.title || lesson.id)} ${unlocked ? "" : "🔒"}</div>
+            <div class="study-row-sub" style="${unlocked ? "" : "opacity: 0.5;"}">${escapeHtml(tags)} / ${rowsForLesson.length} sentences</div>
           </div>
-          <span class="pill ${complete ? "accent" : "muted"}">${complete ? "Done" : "Lesson"}</span>
+          <span class="pill ${complete ? "accent" : "muted"}">${complete ? "Done" : unlocked ? "Lesson" : "Locked"}</span>
         </button>
       `;
     }).join("")
@@ -14729,7 +14814,7 @@ function sentenceQuestionHtml(session) {
       .map((tile) => `<button class="word-tile" type="button" data-ss-helper-tile="${escapeHtml(tile)}" lang="ko">${escapeHtml(tile)}</button>`)
       .join("");
     return `
-      <div class="card">
+      <div class="card" data-ss-id="${row.id}">
         ${sentenceSessionDotsHtml(session)}
         <div class="eyebrow">Transform / ${step}</div>
         <div class="ss-prompt" lang="ko">${escapeHtml(row.korean)}</div>
@@ -14751,12 +14836,29 @@ function sentenceQuestionHtml(session) {
       : speech.status
         ? `<div class="ss-helper-panel"><div class="ss-helper-title">Speech scoring</div><div class="screen-sub" style="margin-bottom:0;">${escapeHtml(speech.status)}</div></div>`
         : "";
+    const words = (row.sourceWordIds || []).map(id => curatedWordsById.get(id)).filter(Boolean);
+    const soundNotes = words.map(w => w.soundNote).filter(Boolean);
+    const soundNoteHtml = soundNotes.length
+      ? `<div class="ss-sound-note-panel" style="margin-top: 8px; padding: 10px; border-radius: var(--radius-xs); background: rgba(91,157,255,.08); border-left: 3px solid var(--accent); font-size: 0.9rem;">
+           <div style="font-weight: bold; margin-bottom: 4px; color: var(--accent-text);">Pronunciation Note</div>
+           ${soundNotes.map(note => `<div class="screen-sub" style="margin-bottom: 0; color: var(--text);">${escapeHtml(note)}</div>`).join("")}
+         </div>`
+      : "";
+    const promptPulse = session.showRepeatPrompt
+      ? `<div class="ss-repeat-prompt pulsing" style="margin: 12px 0; font-weight: bold; color: var(--accent-text); text-align: center; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+           <span style="animation: flash-pulse .72s infinite;">🎙️</span> Repeat aloud now!
+         </div>`
+      : `<div class="ss-repeat-prompt" style="margin: 12px 0; color: var(--text-muted); text-align: center; font-size: 0.95rem; opacity: 0.6;">
+           Listening to the pronunciation...
+         </div>`;
     return `
-      <div class="card">
+      <div class="card" data-ss-id="${row.id}">
         ${sentenceSessionDotsHtml(session)}
         <div class="eyebrow">Shadow / ${step}</div>
         <div class="ss-prompt" lang="ko">${escapeHtml(row.korean)}</div>
         <div class="screen-sub" style="margin-bottom:4px;">${escapeHtml(row.english)}</div>
+        ${soundNoteHtml}
+        ${promptPulse}
         <div class="word-card-actions" style="margin-bottom:8px;">
           <button class="button secondary compact" type="button" data-ss-play>Play</button>
           <button class="button secondary compact" type="button" data-ss-slow>Slow replay</button>
@@ -14773,7 +14875,7 @@ function sentenceQuestionHtml(session) {
 
   if (mode === "translate") {
     return `
-      <div class="card">
+      <div class="card" data-ss-id="${row.id}">
         ${sentenceSessionDotsHtml(session)}
         <div class="eyebrow">Translate &amp; Type · ${step}</div>
         <div class="ss-prompt">${escapeHtml(row.english)}</div>
@@ -14795,7 +14897,7 @@ function sentenceQuestionHtml(session) {
       })
       .join("");
     return `
-      <div class="card">
+      <div class="card" data-ss-id="${row.id}">
         ${sentenceSessionDotsHtml(session)}
         <div class="eyebrow">Word Builder · ${step}</div>
         <div class="ss-prompt">${escapeHtml(row.english)}</div>
@@ -14815,7 +14917,7 @@ function sentenceQuestionHtml(session) {
 
   // listen (dictation)
   return `
-    <div class="card">
+    <div class="card" data-ss-id="${row.id}">
       ${sentenceSessionDotsHtml(session)}
       <div class="eyebrow">Dictation · ${step}</div>
       <div class="ss-prompt"><span class="big-glyph">♪</span></div>
@@ -14916,10 +15018,30 @@ function renderPracticeView() {
   bindSentenceStudioEvents(el);
 
   const session = sentenceStudioSession;
-  if (session && session.phase === "question" && sentenceQuestionMode(session) === "listen" && !session.autoPlayed) {
-    session.autoPlayed = true;
-    const row = session.rows[session.index];
-    speak(row.voiceText || row.korean);
+  if (session && session.phase === "question" && !session.autoPlayed) {
+    const qMode = sentenceQuestionMode(session);
+    if (qMode === "listen") {
+      session.autoPlayed = true;
+      const row = session.rows[session.index];
+      speak(row.voiceText || row.korean);
+    } else if (qMode === "shadow") {
+      session.autoPlayed = true;
+      session.showRepeatPrompt = false;
+      const row = session.rows[session.index];
+      speak(row.voiceText || row.korean);
+      const t1 = setTimeout(() => {
+        if (sentenceStudioSession && sentenceStudioSession === session && session.phase === "question") {
+          speakSentenceSlow(row.voiceText || row.korean);
+        }
+      }, 2500);
+      const t2 = setTimeout(() => {
+        if (sentenceStudioSession && sentenceStudioSession === session && session.phase === "question") {
+          session.showRepeatPrompt = true;
+          renderPracticeView();
+        }
+      }, 5500);
+      session.timeouts = [t1, t2];
+    }
   }
 }
 
@@ -15011,6 +15133,14 @@ function speakSentenceSlow(text) {
   utterance.pitch = 1;
   if (koreanVoice) utterance.voice = koreanVoice;
   window.speechSynthesis.speak(utterance);
+}
+
+function clearSentenceSessionTimeouts() {
+  const session = sentenceStudioSession;
+  if (session && session.timeouts) {
+    session.timeouts.forEach((tId) => clearTimeout(tId));
+    session.timeouts = [];
+  }
 }
 
 function startSentenceSpeechScoring() {
@@ -15161,18 +15291,28 @@ function bindSentenceStudioEvents(el) {
   });
   el.querySelectorAll("[data-ss-play], [data-ss-hear]").forEach((btn) => {
     btn.addEventListener("click", () => {
+      clearSentenceSessionTimeouts();
+      session.showRepeatPrompt = true;
       const row = session.rows[session.index];
       speak(row.voiceText || row.korean);
+      renderPracticeView();
     });
   });
   el.querySelectorAll("[data-ss-slow]").forEach((btn) => {
     btn.addEventListener("click", () => {
+      clearSentenceSessionTimeouts();
+      session.showRepeatPrompt = true;
       const row = session.rows[session.index];
       speakSentenceSlow(row.voiceText || row.korean);
+      renderPracticeView();
     });
   });
   el.querySelectorAll("[data-ss-record]").forEach((btn) => {
-    btn.addEventListener("click", startSentenceSpeechScoring);
+    btn.addEventListener("click", () => {
+      clearSentenceSessionTimeouts();
+      session.showRepeatPrompt = true;
+      startSentenceSpeechScoring();
+    });
   });
   el.querySelectorAll("[data-ss-selfmark]").forEach((btn) => {
     btn.addEventListener("click", () => {
