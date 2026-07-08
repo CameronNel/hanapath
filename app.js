@@ -2853,7 +2853,7 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // (this only bypasses the access gate, not completion tracking) — see
 // isLessonUnlocked() below and isWordLessonUnlocked() further down for the
 // two places this is consumed. Flip to true only for local testing.
-const TEST_UNLOCK_ALL_STAGES = false;
+const TEST_UNLOCK_ALL_STAGES = true;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -3123,6 +3123,7 @@ function getUnlockedStudioIds(level = state.level) {
 }
 
 function isStudioUnlocked(id, level = state.level) {
+  if (TEST_UNLOCK_ALL_STAGES) return true;
   return getUnlockedStudioIds(level).has(id);
 }
 
