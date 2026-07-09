@@ -2864,6 +2864,15 @@ li { margin-bottom: 4px; }
   gap: 10px;
   margin: 14px 0 10px;
 }
+.alpha-compound-head > div,
+.alpha-group-head > div {
+  min-width: 0;
+}
+.alpha-compound-head button,
+.alpha-group-head button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 .alpha-compound-head { border-top: 1px solid var(--line); padding-top: 14px; }
 .alpha-group-head { margin-top: 0; }
 

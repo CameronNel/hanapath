@@ -1,9 +1,9 @@
-// [2026-07-09] Cache bumped to v272: convert Alphabet controls to dropdowns.
-const CACHE_NAME = "hanapath-shell-v272";
+// [2026-07-09] Cache bumped to v273: prevent Alphabet list play buttons wrapping.
+const CACHE_NAME = "hanapath-shell-v273";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260709c",
+  "./styles.css?v=20260709d",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705f",
   "./words_curated_core.js?v=20260705e",
