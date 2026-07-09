@@ -7375,6 +7375,7 @@ const INCORRECT_SOUND_DEFS = [
 ];
 
 const audioFileCache = {};
+let lastFeedbackSoundTime = 0;
 
 function playFileSound(url) {
   try {
@@ -7390,6 +7391,7 @@ function playFileSound(url) {
 }
 
 function playCorrectSoundOption(option) {
+  lastFeedbackSoundTime = Date.now();
   const idx = option - 1;
   if (CORRECT_SOUND_DEFS[idx]) {
     playFileSound(CORRECT_SOUND_DEFS[idx].url);
@@ -7397,6 +7399,7 @@ function playCorrectSoundOption(option) {
 }
 
 function playIncorrectSoundOption(option) {
+  lastFeedbackSoundTime = Date.now();
   const idx = option - 1;
   if (INCORRECT_SOUND_DEFS[idx]) {
     playFileSound(INCORRECT_SOUND_DEFS[idx].url);
@@ -8535,50 +8538,61 @@ function lookupAudioUrl(text) {
 }
 
 function speak(text, options = {}) {
-  const { preserveSequence = false } = options;
   return new Promise((resolve) => {
     if (!text) {
       resolve();
       return;
     }
 
-    if (preserveSequence) {
-      cancelSpeechOutput();
+    const elapsed = Date.now() - lastFeedbackSoundTime;
+    if (elapsed < 600) {
+      window.setTimeout(() => {
+        proceedSpeak(text, options, resolve);
+      }, 600 - elapsed);
     } else {
-      stopSpeech();
+      proceedSpeak(text, options, resolve);
     }
-
-    if (typeof window.AUDIO_MAP !== 'undefined') {
-      const cleanText = normalizeAudioKey(text);
-      const audioUrl = lookupAudioUrl(text);
-
-      if (audioUrl) {
-        const audio = new Audio(audioUrl);
-        
-        audio.onended = () => {
-          if (currentCustomAudio === audio) currentCustomAudio = null;
-          resolve();
-        };
-        
-        audio.onerror = () => {
-          console.warn(`Failed to play ${audioUrl}`);
-          if (currentCustomAudio === audio) currentCustomAudio = null;
-          fallbackSpeak(text, resolve);
-        };
-
-        currentCustomAudio = audio;
-        audio.play().catch(e => {
-          if (currentCustomAudio === audio) currentCustomAudio = null;
-          fallbackSpeak(text, resolve);
-        });
-        return;
-      } else {
-        console.warn(`No pre-generated audio found for: "${cleanText}"`);
-      }
-    }
-    
-    fallbackSpeak(text, resolve);
   });
+}
+
+function proceedSpeak(text, options, resolve) {
+  const { preserveSequence = false } = options;
+  if (preserveSequence) {
+    cancelSpeechOutput();
+  } else {
+    stopSpeech();
+  }
+
+  if (typeof window.AUDIO_MAP !== 'undefined') {
+    const cleanText = normalizeAudioKey(text);
+    const audioUrl = lookupAudioUrl(text);
+
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
+      
+      audio.onended = () => {
+        if (currentCustomAudio === audio) currentCustomAudio = null;
+        resolve();
+      };
+      
+      audio.onerror = () => {
+        console.warn(`Failed to play ${audioUrl}`);
+        if (currentCustomAudio === audio) currentCustomAudio = null;
+        fallbackSpeak(text, resolve);
+      };
+
+      currentCustomAudio = audio;
+      audio.play().catch(e => {
+        if (currentCustomAudio === audio) currentCustomAudio = null;
+        fallbackSpeak(text, resolve);
+      });
+      return;
+    } else {
+      console.warn(`No pre-generated audio found for: "${cleanText}"`);
+    }
+  }
+  
+  fallbackSpeak(text, resolve);
 }
 
 function fallbackSpeak(text, resolve) {
@@ -9312,7 +9326,6 @@ function answerPhaseOneQuestion(choice, button) {
   const question = lesson.questions[phaseOneView.questionIndex];
   const feedback = document.getElementById("phaseOneFeedback");
   const buttons = [...els.phaseOneStage.querySelectorAll(".lesson-option")];
-  speakClickableText(choice, { preferSoundLabels: true });
 
   if (choice !== question.answer) {
     phaseOneView.hadMistake = true;
@@ -9321,6 +9334,7 @@ function answerPhaseOneQuestion(choice, button) {
     const rule = question.explanation || question.detail || "Use the shape clue and try another answer.";
     feedback.innerHTML = "<strong>Not yet.</strong> " + escapeHtml(rule);
     showRetryToast(rule);
+    speakClickableText(choice, { preferSoundLabels: true });
     return;
   }
 
@@ -9334,6 +9348,7 @@ function answerPhaseOneQuestion(choice, button) {
   });
   feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation);
   showCorrectToast();
+  speakClickableText(choice, { preferSoundLabels: true });
   els.phaseOneActionButton.disabled = false;
   refreshPhaseOneHearLabel();
 }
@@ -13499,7 +13514,6 @@ function renderLetterReview() {
 function answerLetterReview(button, letter, correctSound) {
   if (letterReview.answered) return;
   letterReview.answered = true;
-  speakClickableText(button.dataset.sound || "", { preferSoundLabels: true });
   const correct = (button.dataset.sound || "") === correctSound;
   [...document.querySelectorAll("#letterReviewOptions .option")].forEach((b) => {
     b.disabled = true;
@@ -13513,6 +13527,7 @@ function answerLetterReview(button, letter, correctSound) {
   } else {
     showRetryToast(`${letter} sounds like "${correctSound}".`);
   }
+  speakClickableText(button.dataset.sound || "", { preferSoundLabels: true });
   const fb = document.getElementById("letterReviewFeedback");
   if (fb) {
     fb.innerHTML = correct
@@ -14774,7 +14789,12 @@ function finishSentenceQuestion(correct, revealed = false, meta = {}) {
   if (revealed) markSentenceHelperUsed("reveal");
   recordSentenceResult(row, correct, revealed, meta);
   session.phase = "feedback";
-  if (correct) speak(row.voiceText || row.korean);
+  if (correct) {
+    playCorrectSound();
+    speak(row.voiceText || row.korean);
+  } else {
+    playIncorrectSound();
+  }
   renderPracticeView();
 }
 
