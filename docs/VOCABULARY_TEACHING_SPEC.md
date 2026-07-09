@@ -4,6 +4,12 @@ Date: 2026-07-05
 Repo: `CameronNel/hanapath`
 Status: **governing spec for *what* and *how* the Words section teaches.**
 
+> **Curriculum v2 addendum (2026-07-09):** The shipped Words curriculum
+> structure and execution status are governed by
+> [`WORDS_CURRICULUM_V2_PLAN.md`](WORDS_CURRICULUM_V2_PLAN.md). This document
+> remains the pedagogy and linguistics north star; its older staged-curriculum
+> descriptions are not an allocation or ID source of truth.
+
 ## How this doc relates to the others
 
 - **This doc** — the *why / what to teach*: the linguistic and pedagogical

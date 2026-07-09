@@ -1,5 +1,5 @@
 // [2026-07-09] Cache bumped to v288: persist guided Words lesson sessions safely across reloads.
-const CACHE_NAME = "hanapath-shell-v291";
+const CACHE_NAME = "hanapath-shell-v296";
 const APP_SHELL = [
   "./",
   "./index.html",

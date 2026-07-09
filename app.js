@@ -2854,6 +2854,10 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // isLessonUnlocked() below and isWordLessonUnlocked() further down for the
 // two places this is consumed. Flip to true only for local testing.
 const TEST_UNLOCK_ALL_STAGES = false;
+// Testing control: show a path button that crowns every lesson in a v2
+// section. Set false before any learner-facing release; the handler is also
+// guarded so a stale button cannot mutate completion when disabled.
+const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -4248,9 +4252,8 @@ const WORD_BANK_SORTS = [
 ];
 
 const WORD_BANK_PAGE_SIZE = 50;
-// Temporarily hide the self-checked repeat step from guided Words lessons.
-// Keep the renderer in place so this can be re-enabled without rebuilding it.
-// Owner instruction: only flip this back on after Cameron explicitly asks for it.
+// Reversible Words-lesson speaking step. Keep the renderer in place so the
+// step can be restored by flipping this one flag later.
 const WORD_LESSON_REPEAT_STEP_ENABLED = false;
 
 const WORD_PATH_LEVEL_FILTERS = [
@@ -4402,6 +4405,28 @@ function isWordSectionUnlocked(section) {
   if (section.id === "s1") return getAlphabetProgress().complete;
   const previous = getWordSectionById(section.prerequisiteSectionId);
   return Boolean(previous && getWordUnits().filter((unit) => unit.sectionId === previous.id).every(isWordUnitCrowned));
+}
+
+function completeWordSectionForTesting(sectionId) {
+  if (!TEST_ENABLE_WORD_SECTION_COMPLETION) return;
+  const section = getWordSectionById(sectionId);
+  if (!section || !isWordCurriculumV2()) return;
+  const lessonIds = getWordUnits()
+    .filter((unit) => unit.sectionId === section.id)
+    .flatMap((unit) => [...unit.lessonIds, unit.checkpointId])
+    .filter(Boolean);
+  state.vocabLessonCompleted = [...new Set([...(state.vocabLessonCompleted || []), ...lessonIds])];
+  if (state.vocabLessonActive && lessonIds.includes(state.vocabLessonActive)) {
+    state.vocabLessonActive = null;
+    state.vocabLessonSession = null;
+  }
+  saveState();
+}
+
+function completeAlphabetSectionForTesting() {
+  if (!TEST_ENABLE_WORD_SECTION_COMPLETION) return;
+  state.phaseOneCompleted = phaseOneLessons.map((lesson) => lesson.id);
+  saveState();
 }
 function isWordUnitUnlocked(unit) {
   if (!unit || !isWordSectionUnlocked(getWordSectionById(unit.sectionId))) return false;
@@ -5753,19 +5778,25 @@ function wordLessonResultHtml(lesson, view) {
 
   const passed = wordLessonPassed(lesson, view);
   const nextLesson = getNextWordLesson();
+  const isCheckpoint = lesson.type === "checkpoint";
+  const resultEyebrow = isCheckpoint && passed ? "Checkpoint complete" : `${escapeHtml(lesson.title)} ${passed ? "complete" : "— almost"}`;
+  const resultTitle = isCheckpoint && passed ? "Unit crowned" : passed ? "Lesson complete" : isCheckpoint ? "Checkpoint not passed yet" : "Good try — review and retry";
+  const resultCopy = passed
+    ? isCheckpoint
+      ? "You cleared this unit checkpoint. The next unit is ready when you are."
+      : "All of these words are now in your spaced review queue. They'll come back at the right time."
+    : `You need ${lesson.pass?.minFirstTryPct ?? 75}% on first tries to pass. The words are saved — review them and retry.`;
   return `
-    <div class="card word-card">
-      <div class="eyebrow">${escapeHtml(lesson.title)} ${passed ? "complete" : "— almost"}</div>
-      <h2 class="screen-title" style="margin-bottom:12px;">${passed ? "Lesson complete" : "Good try — review and retry"}</h2>
+    <div class="card word-card ${isCheckpoint && passed ? "word-checkpoint-crowned" : ""}">
+      <div class="eyebrow">${resultEyebrow}</div>
+      <h2 class="screen-title" style="margin-bottom:12px;">${resultTitle}</h2>
       <div class="word-result-grid">
         <div class="stat-box"><span class="sv">${view.words.length}</span><span class="sl">${lesson.type === "checkpoint" ? "Review words" : "New words"}</span></div>
         <div class="stat-box"><span class="sv">${stats.typedCorrect}/${Math.max(stats.typedTotal, view.words.length)}</span><span class="sl">Typed</span></div>
         <div class="stat-box"><span class="sv">${stats.pct}%</span><span class="sl">First-try</span></div>
         <div class="stat-box"><span class="sv">${getVocabDueCount()}</span><span class="sl">Due for review</span></div>
       </div>
-      <div class="screen-sub" style="margin:12px 0;">${passed
-        ? "All of these words are now in your spaced review queue. They'll come back at the right time."
-        : `You need ${lesson.pass?.minFirstTryPct ?? 75}% on first tries to pass. The words are saved — review them and retry.`}</div>
+      <div class="screen-sub" style="margin:12px 0;">${resultCopy}</div>
       <div class="word-card-actions">
         ${passed && nextLesson ? `<button class="button primary compact" type="button" data-word-lesson-open="${escapeHtml(nextLesson.id)}">Next lesson: ${escapeHtml(nextLesson.title)} →</button>` : ""}
         ${!passed ? `<button class="button primary compact" type="button" data-word-lesson-open="${escapeHtml(lesson.id)}">Retry lesson</button>` : ""}
@@ -6989,14 +7020,17 @@ function vocabularyStageRowsHtml() {
 function alphabetStagesSectionHtml() {
   const progress = getLearnProgress("alphabet");
   return `
-    <button class="card word-section-card" type="button" data-alphabet-section="stages">
+    <div class="card word-section-card" data-alphabet-section="stages" role="button" tabindex="0">
       <div>
         <div class="eyebrow">Stages</div>
         <div class="study-row-ko">Alphabet stages</div>
         <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo("alphabet", progress.currentStage).detail)}`}</div>
       </div>
-      <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
-    </button>
+      <div class="flex gap-8" style="align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+        <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
+        ${TEST_ENABLE_WORD_SECTION_COMPLETION ? '<button class="button secondary compact" type="button" data-complete-alphabet-section>Complete section (test)</button>' : ""}
+      </div>
+    </div>
   `;
 }
 
@@ -7078,7 +7112,10 @@ function wordPathV2Html() {
     return `<section class="vocab-path-section ${unlocked ? "is-open" : "is-locked"}">
       <div class="vocab-path-section-header">
         <div><div class="eyebrow">Section ${escapeHtml(section.id.toUpperCase())}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
-        <span class="pill ${unlocked ? "accent" : "muted"}">${unlocked ? `${crowned}/${sectionUnits.length} crowned` : "🔒 Locked"}</span>
+        <div class="flex gap-8" style="align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+          <span class="pill ${unlocked ? "accent" : "muted"}">${unlocked ? `${crowned}/${sectionUnits.length} crowned` : "🔒 Locked"}</span>
+          ${TEST_ENABLE_WORD_SECTION_COMPLETION ? `<button class="button secondary compact" type="button" data-word-complete-section="${escapeHtml(section.id)}">Complete section (test)</button>` : ""}
+        </div>
       </div>
       ${unlocked ? (sectionOpen ? sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("") : `<details class="vocab-path-explore"><summary>Explore topics · ${sectionUnits.length} units</summary><div class="vocab-path-unit-list">${sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("")}</div></details>`) : `<div class="vocab-path-lock-note">Finish ${escapeHtml(section.prerequisiteSectionId ? getWordSectionById(section.prerequisiteSectionId)?.name || "the previous section" : "Hangul")} to unlock this section.</div>`}
     </section>`;
@@ -7092,6 +7129,12 @@ function wordPathV2UnitHtml(unit, activeUnitId) {
   const unlocked = isWordUnitUnlocked(unit);
   const active = unit.id === activeUnitId;
   const completed = contentLessons.filter((lesson) => isWordLessonCompleted(lesson.id)).length;
+  const unitWordIds = [...contentLessons, checkpoint].flatMap((lesson) => getWordLessonReviewWordIds(lesson));
+  const dueCount = [...new Set(unitWordIds)].filter((wordId) => {
+    const record = getVocabSrsRecord(wordId);
+    return record && !record.isKnown && Number(record.due) > 0 && Number(record.due) <= Date.now();
+  }).length;
+  const dueChip = dueCount ? `<span class="vocab-path-unit-due">${dueCount} due</span>` : "";
   const lessonRows = [...contentLessons, checkpoint].map((lesson) => {
     const meta = getWordLessonPathMeta(lesson);
     return wordLessonRowHtml(lesson, meta);
@@ -7099,7 +7142,7 @@ function wordPathV2UnitHtml(unit, activeUnitId) {
   return `<article class="vocab-path-unit ${active ? "is-highlighted" : ""} ${crowned ? "is-crowned" : ""} ${!unlocked ? "is-locked" : ""}">
     <button class="vocab-path-unit-header" type="button" data-word-unit-toggle="${escapeHtml(unit.id)}" aria-expanded="${crowned ? "false" : "true"}">
       <span class="vocab-path-unit-emoji" aria-hidden="true">${escapeHtml(unit.emoji || "✏️")}</span>
-      <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>${escapeHtml(formatWordLessonCategoryLabel(unit.track))} · ${completed}/${contentLessons.length} lessons</small></span>
+      <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>${escapeHtml(formatWordLessonCategoryLabel(unit.track))} · ${completed}/${contentLessons.length} lessons ${dueChip}</small></span>
       <span class="pill ${crowned ? "green" : unlocked ? "accent" : "muted"}">${crowned ? "🏆 Crowned" : unlocked ? `${completed}/${contentLessons.length}` : "🔒"}</span>
     </button>
     <div class="vocab-path-unit-lessons" data-word-unit-lessons="${escapeHtml(unit.id)}" ${crowned ? "hidden" : ""}>${lessonRows}</div>
@@ -7420,6 +7463,13 @@ function bindWordsHomeContent(el) {
   bindVocabularySectionCards(el, "words-home");
   bindWordLessonRows(el);
   bindWordPathUnitToggles(el);
+  el.querySelectorAll("[data-word-complete-section]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      completeWordSectionForTesting(button.dataset.wordCompleteSection);
+      renderVocabulary();
+    });
+  });
   const reviewBtn = el.querySelector("[data-words-start-review]");
   if (reviewBtn) reviewBtn.addEventListener("click", () => openWordReview());
 }
@@ -12866,6 +12916,12 @@ function renderLearnStageMenu(itemId) {
   });
   const stageLetterReviewBtn = document.getElementById("stageLetterReviewBtn");
   if (stageLetterReviewBtn) stageLetterReviewBtn.addEventListener("click", () => startLetterReview());
+  const completeAlphabetBtn = el.querySelector("[data-complete-alphabet-section]");
+  if (completeAlphabetBtn) completeAlphabetBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    completeAlphabetSectionForTesting();
+    renderLearnStageMenu("alphabet");
+  });
   // [2026-06-29] Wire the full-alphabet entry card.
   const entireAlphabetBtn = document.getElementById("openEntireAlphabet");
   if (entireAlphabetBtn) entireAlphabetBtn.addEventListener("click", () => openEntireAlphabet());

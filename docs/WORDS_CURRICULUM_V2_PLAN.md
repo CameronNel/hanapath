@@ -10,6 +10,12 @@
 > checkpoint-safe audits, and a finite-core/elective-expansion architecture.
 > The binding corrections labelled in §3–§5 take precedence over any earlier
 > provisional narrative in this document.
+
+> **Phase 1 close-out (2026-07-09):** The owner approved the v2 allocation,
+> workload prototype, emoji/copy polish, live-profile migration review, and
+> real-device S1/S2 acceptance. P1-0 through P1-G are complete; v2 IDs and
+> the finite-core path are frozen. Further curriculum changes belong in the
+> expansion pipeline below.
 >
 > **Audience:** a highly capable coding model executing this plan PR by PR.
 > Read §1 (locked decisions), §2 (verified current state), §3 (target design),
@@ -741,7 +747,7 @@ records these supersessions in the docs.
 > coding model; **[author]** = strongest available writing model (names/copy);
 > **[owner]** 🔒 = owner action.
 
-- [ ] **P1-0 — Curriculum reconciliation + owner sign-off** [coder + author + owner]
+- [x] **P1-0 — Curriculum reconciliation + owner sign-off** [coder + author + owner]
   Create the immutable v1 snapshot, resolve the five duplicate legacy
   placements, classify the mixed grammar/connective words, resolve/report all
   `contrastWith` links, and emit the exact S1/S2 preview plus the full
@@ -753,7 +759,7 @@ records these supersessions in the docs.
   exceptions have a reason; the manifest passes a self-check; no ids or app
   files change.
 
-- [ ] **P1-A — Size-aware drills + mid-lesson save** [coder]
+- [x] **P1-A — Size-aware drills + mid-lesson save** [coder]
   Scale drill caps per §3.12; add `state.vocabLessonSession` save/resume;
   works against the CURRENT plan file (no data change). Touches `app.js`
   (+ `sw.js`/`index.html` cache bumps).
@@ -762,7 +768,7 @@ records these supersessions in the docs.
   answer, reopen, and verify position, feedback, questions, and SRS attempts
   are identical (no double record); audits green; `node --check app.js`.
 
-- [ ] **P1-B — Curriculum v2 generator + data + audit v2** [coder + author]
+- [x] **P1-B — Curriculum v2 generator + data + audit v2** [coder + author]
   Build `scripts/generate_words_curriculum_v2.mjs` (§3.4–§3.6), commit the
   v1 snapshot, allocation manifest, and v2 lock (§3.2A/§3.5), author
   `scripts/curriculum_v2_names.json` (§3.7), regenerate
@@ -779,7 +785,7 @@ records these supersessions in the docs.
   §3.13 invariant demonstrably enforced (add a self-test that mutates a copy
   and expects failures).
 
-- [ ] **P1-C — App switchover: unlock model, checkpoint runner, migration**
+- [x] **P1-C — App switchover: unlock model, checkpoint runner, migration**
   [coder]
   Swap `words_lesson_plan_v2.js` → `words_lesson_plan.js` (delete old).
   Implement §3.8 unlock derivation, §3.10 checkpoint-lesson runner path
@@ -797,7 +803,7 @@ records these supersessions in the docs.
   is unchanged unless separately approved; SRS intact, no console errors;
   audits + app-shell audit green; cache bumped.
 
-- [ ] **P1-D — Path UI** [coder]
+- [x] **P1-D — Path UI** [coder]
   Implement §3.9: sections/units/lesson-nodes path replacing
   `wordPathLessonPanelHtml` + the lessons entry card; delete the Category/Level filter
   controls; new CSS in `styles.css`.
@@ -805,13 +811,13 @@ records these supersessions in the docs.
   behavior, locked toasts, continue hero targets the highlighted node);
   mobile-width layout sane; cache bumped; `audit-app-shell` green.
 
-- [ ] **P1-E — Polish pass** [coder + author]
+- [x] **P1-E — Polish pass** [coder + author]
   Unit emoji set finalized; per-unit "n due" chip (optional per §3.9); result
   screen crowning animation/copy for checkpoints; empty states; copy review
   of all goals/subtitles in context.
   *Accept:* owner eyeballs the path end-to-end; no audit regressions.
 
-- [ ] **P1-F — Docs + protection re-lock** [coder]
+- [x] **P1-F — Docs + protection re-lock** [coder]
   Update `CLAUDE.md` (Words section status: restructured under this plan;
   point here), `HANDOVER.md`, spec supersession notes (§3.14) in
   `docs/VOCABULARY_TEACHING_SPEC.md` + `docs/WORDS_SECTION_MASTER_SPEC.md`
@@ -819,7 +825,7 @@ records these supersessions in the docs.
   structure.
   *Accept:* a cold-start agent reading CLAUDE.md lands in this doc.
 
-- [ ] 🔒 **P1-G — Owner acceptance** [owner]
+- [x] 🔒 **P1-G — Owner acceptance** [owner]
   Play through S1 + one S2 unit on a real device; confirm migration on your
   live profile (export/back up `localStorage` first!); confirm session length
   feels right; then declare Phase 1 closed here with a dated note.
@@ -978,14 +984,18 @@ words merely because a newly curated candidate has a high raw rank.
    integration points; legacy band quiz view untouched.
 7. `TEST_UNLOCK_ALL_STAGES` ships `false` from P1-C onward; normal gate tests
    never run under the override.
-8. Additive schema changes only; a v1 saved state must always load (the
+8. `TEST_ENABLE_WORD_SECTION_COMPLETION` is a separate local test control. It
+   must be set to `false` before learner-facing release; when enabled, its
+   section button may crown test data but must not be treated as learner
+   acceptance evidence.
+9. Additive schema changes only; a v1 saved state must always load (the
    migration handles it — never require a manual reset).
-9. No batch may weaken an audit check to get itself green.
-10. Re-derive counts from data files before relying on any scorecard/ledger
+10. No batch may weaken an audit check to get itself green.
+11. Re-derive counts from data files before relying on any scorecard/ledger
     claim (the Words scorecard was wrong 4 times historically).
-11. After v2 ships, the curriculum lock is append-only: no PR may change a
+12. After v2 ships, the curriculum lock is append-only: no PR may change a
     shipped id, word membership, name, or required-core progression rule.
-12. Before Phase 2 scale, meet the committed low-end/mobile parse, PWA cache,
+13. Before Phase 2 scale, meet the committed low-end/mobile parse, PWA cache,
     and persisted-state budgets. A silent `localStorage` quota failure is a
     release blocker, not a graceful fallback.
 
@@ -1025,11 +1035,11 @@ your real profile):
 
 | Item | Needed by | Note |
 |---|---|---|
-| Approve unit emoji set | P1-E | Generator ships placeholder ✏️ emoji until then |
-| Approve S1/S2 allocation + workload prototype | P1-0 | Required before v2 ids are frozen; confirm the first gate is not too long |
-| Decide whether all 97 S1 words gate S2 | P1-0 | The timing prototype must show this is a humane first gate, or allocate earlier daily-life access |
-| Approve core versus elective-pack boundary | P1-0 | S1-S8 are finite core; Phase 2 must not become 50+ serial gates |
-| Live-profile migration test | P1-G | Back up localStorage before testing |
+| Approve unit emoji set | P1-E | Approved in P1-G close-out |
+| Approve S1/S2 allocation + workload prototype | P1-0 | Approved in P1-G close-out |
+| Decide whether all 97 S1 words gate S2 | P1-0 | Approved in P1-G close-out |
+| Approve core versus elective-pack boundary | P1-0 | Approved in P1-G close-out; S1-S8 remain finite core |
+| Live-profile migration test | P1-G | Confirmed in owner acceptance; preserve the backup with the live profile |
 | Audio runs per Phase 2 batch | every P2 batch | `python generate_assets.py` |
 | Decide fate of legacy band quiz view | post-Phase 1 | Untouched by this plan; consider folding into path later |
 | Approve any change to Sentences early gate | separate review | Keep the current 31-word marker by default; S1's 97 words are not behavior-equivalent |

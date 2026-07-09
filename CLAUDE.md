@@ -21,10 +21,13 @@ otherwise.
 > **Translate & Type**: English prompt → learner types the Korean in Hangul,
 > with a tip / word-bank / next-chunk / reveal helper ladder.
 
-The **Alphabet and Words sections are complete and protected** — the Words
-finalization queue closed 2026-07-05 (historical record:
-`docs/archive/WORDS_FINAL_ROADMAP.md`). Do not regress either; the audits are
-the guard.
+The **Alphabet section is complete and protected**. The Words section is now
+restructured under the live v2 curriculum plan:
+[`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md). Read
+that plan before changing Words; its hardened owner decisions override older
+provisional Words prose. The old Words finalization queue is historical
+(`docs/archive/WORDS_FINAL_ROADMAP.md`). Do not regress either section; the
+audits are the guard.
 
 Do not assume "done" or "not done" from memory or from a checkmark: **verify
 scorecard claims against the actual data** (the Words scorecard was wrong four
