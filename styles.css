@@ -3218,6 +3218,7 @@ li { margin-bottom: 4px; }
 
 .word-card { text-align: left; }
 .word-card-heading { display: flex; align-items: baseline; justify-content: center; gap: 10px; }
+.word-card-heading .word-card-ko { width: auto; }
 .word-card-ko,
 .word-card-ko-static {
   display: block; width: 100%; text-align: center;
@@ -3228,6 +3229,12 @@ li { margin-bottom: 4px; }
 .word-card-ko { background: none; border: none; cursor: pointer; border-radius: 12px; padding: 4px 8px; }
 .word-card-ko:hover { background: rgba(91,157,255,.08); }
 .word-card-pos { font-size: .78rem; color: var(--muted-2); font-weight: 700; text-transform: lowercase; }
+.word-example-play {
+  width: 30px; height: 30px; padding: 0; border: 1px solid rgba(91,157,255,.4); border-radius: 50%;
+  color: var(--accent-text); background: rgba(91,157,255,.12); font-size: .78rem; cursor: pointer;
+  transition: transform .16s ease, background .16s ease;
+}
+.word-example-play:hover { transform: scale(1.08); background: rgba(91,157,255,.22); }
 .word-card-meaning { text-align: center; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
 .word-card-meta { text-align: center; font-size: .82rem; color: var(--muted); margin-bottom: 8px; }
 .word-card-meta-primary { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; font-size: .82rem; }
@@ -3275,6 +3282,8 @@ li { margin-bottom: 4px; }
 }
 
 .word-card-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+.word-card-nav-actions { align-items: center; justify-content: space-between; }
+.word-card-nav-actions [data-word-lesson-next] { margin-left: auto; }
 
 .word-rating-prompt { margin-top: 14px; text-align: center; animation: word-rating-in .32s ease both; }
 .word-rating-label { color: var(--muted); font-size: .8rem; margin-bottom: 8px; }
