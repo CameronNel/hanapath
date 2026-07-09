@@ -2903,6 +2903,16 @@ function migrateAlphabetProgress() {
 }
 
 const state = loadState();
+if (state.soundEffectPresetVersion !== 3) {
+  if (state.activeCorrectSound === 2 || state.activeCorrectSound === 6 || !Number.isInteger(state.activeCorrectSound)) {
+    state.activeCorrectSound = 14;
+  }
+  if (state.activeIncorrectSound === 1 || !Number.isInteger(state.activeIncorrectSound)) {
+    state.activeIncorrectSound = 2;
+  }
+  state.soundEffectPresetVersion = 3;
+  saveState();
+}
 state.navTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTab) || "today");
 state.mainTab = normalizeMainTab(state.mainTab || getMainTabForNavTab(state.navTab) || "alphabet");
 state.tabLevels = normalizeTabLevels(state.tabLevels);
@@ -2950,8 +2960,9 @@ function loadState() {
     // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
     alphabetBoardMode: "keyboard",
     alphabetBoardLabels: "none",
-    activeCorrectSound: 2,
-    activeIncorrectSound: 1,
+    activeCorrectSound: 14,
+    activeIncorrectSound: 2,
+    soundEffectPresetVersion: 3,
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
@@ -7393,11 +7404,11 @@ function playIncorrectSoundOption(option) {
 }
 
 function playCorrectSound() {
-  playCorrectSoundOption(state.activeCorrectSound || 2);
+  playCorrectSoundOption(state.activeCorrectSound || 14);
 }
 
 function playIncorrectSound() {
-  playIncorrectSoundOption(state.activeIncorrectSound || 1);
+  playIncorrectSoundOption(state.activeIncorrectSound || 2);
 }
 
 function getCorrectToastElement() {
@@ -12387,8 +12398,8 @@ function renderSoundTestScreen() {
   const el = showScreen("menu");
   if (!el) return;
   
-  const activeCorrect = state.activeCorrectSound || 2;
-  const activeIncorrect = state.activeIncorrectSound || 1;
+  const activeCorrect = state.activeCorrectSound || 14;
+  const activeIncorrect = state.activeIncorrectSound || 2;
 
   const correctRowsHtml = CORRECT_SOUND_DEFS.map((def, idx) => {
     const opt = idx + 1;
