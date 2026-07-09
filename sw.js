@@ -1,5 +1,5 @@
-// [2026-07-09] Cache bumped to v273: prevent Alphabet list play buttons wrapping.
-const CACHE_NAME = "hanapath-shell-v273";
+// [2026-07-09] Cache bumped to v274: add correct/incorrect sound effects.
+const CACHE_NAME = "hanapath-shell-v274";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,7 +12,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260709c",
+  "./app.js?v=20260709d",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
