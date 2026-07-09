@@ -2949,7 +2949,7 @@ function loadState() {
     alphabetView: "vowels",
     // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
     alphabetBoardMode: "keyboard",
-    alphabetBoardLabels: "roman",
+    alphabetBoardLabels: "none",
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
@@ -9652,7 +9652,7 @@ const JAMO_VOICING_NOTE = {
 };
 
 function jamoSubLabel(ch) {
-  const mode = state.alphabetBoardLabels || "roman";
+  const mode = state.alphabetBoardLabels || "none";
   if (mode === "none") return "";
   if (mode === "name") return (JAMO_INFO[ch] && JAMO_INFO[ch].name) || ch;
   if (mode === "phonetic") return jamoPhonetic(ch);
@@ -9737,7 +9737,7 @@ function renderAlphabetKeyboardBoard() {
   }).join("");
 
   const compoundStrip = COMPOUND_VOWELS.map(({ char, combo }) => {
-    const mode = state.alphabetBoardLabels || "roman";
+    const mode = state.alphabetBoardLabels || "none";
     const sub = mode === "none" ? "" : mode === "roman" ? combo.join("+") : jamoSubLabel(char);
     return `
     <button class="alpha-key compound${char === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(char)}" lang="ko" aria-label="${escapeHtml(jamoDemo(char))}">
@@ -9836,7 +9836,7 @@ function refreshAlphabetBoard({ animate } = {}) {
 function refreshAlphabetLabels() {
   const mount = document.getElementById("alphaBoardMount");
   if (!mount) { refreshAlphabetBoard({}); return; }
-  const hiding = (state.alphabetBoardLabels || "roman") === "none";
+  const hiding = (state.alphabetBoardLabels || "none") === "none";
   const subs = mount.querySelectorAll(".alpha-key:not(.compound) .alpha-key-sub, .alpha-list-sub");
   if (hiding && subs.length) {
     subs.forEach((s) => s.classList.add("alpha-sub-out"));
@@ -9846,21 +9846,15 @@ function refreshAlphabetLabels() {
   }
 }
 
-// Reflect the current mode/labels on the segmented control buttons without a
+// Reflect the current mode/labels on the dropdown controls without a
 // re-render (they persist across in-place board updates).
 function syncAlphabetSeg() {
   const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
-  const labels = state.alphabetBoardLabels || "roman";
-  document.querySelectorAll("[data-alpha-mode]").forEach((b) => {
-    const on = b.dataset.alphaMode === mode;
-    b.classList.toggle("active", on);
-    b.setAttribute("aria-pressed", String(on));
-  });
-  document.querySelectorAll("[data-alpha-labels]").forEach((b) => {
-    const on = b.dataset.alphaLabels === labels;
-    b.classList.toggle("active", on);
-    b.setAttribute("aria-pressed", String(on));
-  });
+  const labels = state.alphabetBoardLabels || "none";
+  const modeSelect = document.getElementById("alphaModeSelect");
+  if (modeSelect) modeSelect.value = mode;
+  const labelsSelect = document.getElementById("alphaLabelsSelect");
+  if (labelsSelect) labelsSelect.value = labels;
 }
 
 function renderEntireAlphabet() {
@@ -9881,11 +9875,8 @@ function renderEntireAlphabet() {
   }, "Alphabet");
 
   const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
-  const labels = state.alphabetBoardLabels || "roman";
+  const labels = state.alphabetBoardLabels || "none";
   if (!alphabetBoardSelected) alphabetBoardSelected = "ㄱ";
-
-  const seg = (group, value, current, label) =>
-    `<button class="alpha-seg${value === current ? " active" : ""}" type="button" data-alpha-${group}="${value}" aria-pressed="${value === current}">${label}</button>`;
 
   const resumeBtnHtml = isQuickRef
     ? `<div style="margin-bottom: 16px;">
@@ -9900,16 +9891,16 @@ function renderEntireAlphabet() {
       <div class="screen-sub" style="margin-bottom:12px;">All 19 consonants and 21 vowels in one place. Tap any letter to hear it.</div>
       ${resumeBtnHtml}
       <div class="alpha-controls">
-        <div class="alpha-seg-group" role="group" aria-label="Display mode">
-          ${seg("mode", "keyboard", mode, "⌨ Keyboard")}
-          ${seg("mode", "list", mode, "☰ List")}
-        </div>
-        <div class="alpha-seg-group" role="group" aria-label="Letter labels">
-          ${seg("labels", "roman", labels, "Aa Sound")}
-          ${seg("labels", "phonetic", labels, "k→g Phonetic")}
-          ${seg("labels", "name", labels, "가 Name")}
-          ${seg("labels", "none", labels, "∅ Hide")}
-        </div>
+        <select id="alphaModeSelect" class="alpha-select" aria-label="Display mode">
+          <option value="keyboard" ${mode === "keyboard" ? "selected" : ""}>⌨ Keyboard</option>
+          <option value="list" ${mode === "list" ? "selected" : ""}>☰ List</option>
+        </select>
+        <select id="alphaLabelsSelect" class="alpha-select" aria-label="Letter labels">
+          <option value="none" ${labels === "none" ? "selected" : ""}>∅ Hide</option>
+          <option value="roman" ${labels === "roman" ? "selected" : ""}>Aa Sound</option>
+          <option value="phonetic" ${labels === "phonetic" ? "selected" : ""}>k→g Phonetic</option>
+          <option value="name" ${labels === "name" ? "selected" : ""}>가 Name</option>
+        </select>
       </div>
     </div>
     <div class="card alpha-detail" id="alphaBoardDetail" role="status" aria-live="polite" aria-label="Selected letter">${alphabetDetailHtml(alphabetBoardSelected)}</div>
@@ -9926,24 +9917,28 @@ function renderEntireAlphabet() {
     });
   }
 
-  el.querySelectorAll("[data-alpha-mode]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (state.alphabetBoardMode === btn.dataset.alphaMode) return;
-      state.alphabetBoardMode = btn.dataset.alphaMode;
+  const modeSelect = el.querySelector("#alphaModeSelect");
+  if (modeSelect) {
+    modeSelect.addEventListener("change", (e) => {
+      const val = e.target.value;
+      if (state.alphabetBoardMode === val) return;
+      state.alphabetBoardMode = val;
       saveState();
-      syncAlphabetSeg();
       refreshAlphabetBoard({ animate: "board" });
     });
-  });
-  el.querySelectorAll("[data-alpha-labels]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if ((state.alphabetBoardLabels || "roman") === btn.dataset.alphaLabels) return;
-      state.alphabetBoardLabels = btn.dataset.alphaLabels;
+  }
+
+  const labelsSelect = el.querySelector("#alphaLabelsSelect");
+  if (labelsSelect) {
+    labelsSelect.addEventListener("change", (e) => {
+      const val = e.target.value;
+      if ((state.alphabetBoardLabels || "none") === val) return;
+      state.alphabetBoardLabels = val;
       saveState();
-      syncAlphabetSeg();
       refreshAlphabetLabels();
     });
-  });
+  }
+
   bindAlphabetBoard(el.querySelector("#alphaBoardMount"));
   const detailCard = el.querySelector("#alphaBoardDetail");
   if (detailCard) {

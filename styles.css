@@ -2763,6 +2763,33 @@ li { margin-bottom: 4px; }
   flex-wrap: wrap;
   gap: 10px;
 }
+.alpha-select {
+  flex: 1 1 180px;
+  min-height: 42px;
+  padding: 8px 36px 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--accent) 50%) calc(100% - 15px) 50% / 6px 6px no-repeat,
+    linear-gradient(135deg, var(--accent) 50%, transparent 50%) calc(100% - 11px) 50% / 6px 6px no-repeat,
+    rgba(255,255,255,.05);
+  color: var(--text);
+  font-size: .88rem;
+  font-weight: 700;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.alpha-select:hover {
+  border-color: var(--line-strong);
+}
+.alpha-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(91, 157, 255,.14);
+}
 .alpha-seg-group {
   display: inline-flex;
   background: var(--panel-strong);
