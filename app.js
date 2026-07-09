@@ -2950,8 +2950,9 @@ function loadState() {
     // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
     alphabetBoardMode: "keyboard",
     alphabetBoardLabels: "none",
-    activeCorrectSound: 2,
+    activeCorrectSound: 6,
     activeIncorrectSound: 1,
+    soundEffectPresetVersion: 2,
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
@@ -7363,6 +7364,14 @@ const INCORRECT_SOUND_DEFS = [
   { name: "Muted Wood Click", desc: "A very quiet, organic wooden click.", url: "audio/sound_effects/incorrect/incorrect_20.wav" }
 ];
 
+if (state.soundEffectPresetVersion !== 2) {
+  if (state.activeCorrectSound === 2 || !Number.isInteger(state.activeCorrectSound)) {
+    state.activeCorrectSound = 6;
+  }
+  state.soundEffectPresetVersion = 2;
+  saveState();
+}
+
 const audioFileCache = {};
 
 function playFileSound(url) {
@@ -7393,7 +7402,7 @@ function playIncorrectSoundOption(option) {
 }
 
 function playCorrectSound() {
-  playCorrectSoundOption(state.activeCorrectSound || 2);
+  playCorrectSoundOption(state.activeCorrectSound || 6);
 }
 
 function playIncorrectSound() {
@@ -12387,7 +12396,7 @@ function renderSoundTestScreen() {
   const el = showScreen("menu");
   if (!el) return;
   
-  const activeCorrect = state.activeCorrectSound || 2;
+  const activeCorrect = state.activeCorrectSound || 6;
   const activeIncorrect = state.activeIncorrectSound || 1;
 
   const correctRowsHtml = CORRECT_SOUND_DEFS.map((def, idx) => {
