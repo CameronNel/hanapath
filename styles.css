@@ -3217,6 +3217,7 @@ li { margin-bottom: 4px; }
 .word-reference-row .button { font-size: .85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; }
 
 .word-card { text-align: left; }
+.word-card-heading { display: flex; align-items: baseline; justify-content: center; gap: 10px; }
 .word-card-ko,
 .word-card-ko-static {
   display: block; width: 100%; text-align: center;
@@ -3226,8 +3227,11 @@ li { margin-bottom: 4px; }
 }
 .word-card-ko { background: none; border: none; cursor: pointer; border-radius: 12px; padding: 4px 8px; }
 .word-card-ko:hover { background: rgba(91,157,255,.08); }
+.word-card-pos { font-size: .78rem; color: var(--muted-2); font-weight: 700; text-transform: lowercase; }
 .word-card-meaning { text-align: center; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
 .word-card-meta { text-align: center; font-size: .82rem; color: var(--muted); margin-bottom: 8px; }
+.word-card-meta-primary { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; font-size: .82rem; }
+.word-card-meta-primary span + span { border-left: 1px solid var(--line); padding-left: 10px; }
 .word-card-forms { text-align: center; font-size: .85rem; color: var(--muted); margin-bottom: 8px; }
 .word-card-forms span { color: var(--text); font-weight: 700; }
 
@@ -3271,6 +3275,40 @@ li { margin-bottom: 4px; }
 }
 
 .word-card-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+
+.word-rating-prompt { margin-top: 14px; text-align: center; animation: word-rating-in .32s ease both; }
+.word-rating-label { color: var(--muted); font-size: .8rem; margin-bottom: 8px; }
+.word-rating-actions { display: flex; justify-content: center; gap: 10px; }
+.word-rating-button {
+  border: 1px solid currentColor; border-radius: 999px; padding: 10px 22px;
+  font: inherit; font-weight: 800; cursor: pointer; transition: transform .18s ease, filter .18s ease, opacity .18s ease;
+}
+.word-rating-button:hover:not(:disabled) { transform: translateY(-2px) rotate(-1deg); filter: brightness(1.12); }
+.word-rating-button:disabled { cursor: default; }
+.word-rating-hard { color: #ff7d7d; background: rgba(255, 93, 93, .12); }
+.word-rating-known { color: #72dda0; background: rgba(72, 210, 133, .12); }
+.word-rating-button.is-selected { animation: word-rating-pop .5s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes word-rating-in { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes word-rating-pop { 0% { transform: scale(1); } 45% { transform: scale(1.16) rotate(-3deg); } 100% { transform: scale(1.04); } }
+
+.word-example-overlay {
+  position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center;
+  padding: 24px; background: rgba(5, 10, 24, .78); backdrop-filter: blur(7px);
+  animation: word-example-overlay-in .2s ease both;
+}
+.word-example-dialog {
+  position: relative; width: min(100%, 430px); padding: 28px 22px 24px; text-align: center;
+  border: 1px solid rgba(126, 169, 255, .3); border-radius: 22px;
+  background: var(--panel, #141b31); box-shadow: 0 22px 70px rgba(0,0,0,.42);
+  animation: word-example-dialog-in .28s cubic-bezier(.2, 1.2, .4, 1) both;
+}
+.word-example-close { position: absolute; top: 8px; right: 12px; border: 0; background: none; color: var(--muted); font-size: 1.7rem; line-height: 1; cursor: pointer; }
+.word-example-dialog-word { margin: 10px 0 18px; font-family: "Noto Sans KR", sans-serif; font-size: 1.4rem; }
+.word-example-dialog-ko { font-family: "Noto Sans KR", sans-serif; font-size: clamp(1.35rem, 5vw, 1.8rem); font-weight: 800; line-height: 1.45; }
+.word-example-dialog-en { margin-top: 8px; color: var(--muted); font-size: .95rem; }
+.word-example-dialog-hear { margin-top: 20px; }
+@keyframes word-example-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes word-example-dialog-in { from { opacity: 0; transform: translateY(14px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 .word-type-box { margin: 12px 0 4px; }
 .word-tile-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; justify-content: center; }
