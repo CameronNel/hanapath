@@ -2729,11 +2729,16 @@ li { margin-bottom: 4px; }
 .alpha-board-entry:hover { transform: translateY(-2px); box-shadow: var(--glow-accent); }
 .alpha-board-entry-main { flex: 1 1 auto; }
 .alpha-board-entry-glyphs {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
   font-family: "Noto Sans KR", sans-serif;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--accent);
-  letter-spacing: 2px;
+  line-height: 1;
+  letter-spacing: .02em;
   opacity: .9;
 }
 
