@@ -5405,7 +5405,7 @@ function openWordExampleOverlay(word) {
       <button class="word-example-close" type="button" data-word-example-close aria-label="Close example">×</button>
       <div class="eyebrow">Example sentence</div>
       <button id="wordExampleTitle" class="word-example-dialog-word" type="button" lang="ko" data-word-example-hangul aria-label="Hear ${escapeHtml(word.display || word.korean)}">${escapeHtml(word.display || word.korean)}</button>
-      <div class="word-example-dialog-ko" lang="ko">${escapeHtml(word.exampleKo || "")}</div>
+      <button class="word-example-dialog-ko" type="button" lang="ko" data-word-example-sentence aria-label="Play example sentence">${escapeHtml(word.exampleKo || "")}</button>
       <div class="word-example-dialog-en">${escapeHtml(word.exampleEn || "")}</div>
       <button class="button primary compact word-example-dialog-hear" type="button" data-word-example-play>▶ Play again</button>
     </div>
@@ -5418,8 +5418,12 @@ function openWordExampleOverlay(word) {
       closeWordExampleOverlay();
       return;
     }
-    if (event.target.closest("[data-word-example-play]")) play();
-    if (event.target.closest("[data-word-example-hangul]")) playHangul();
+    const playAgain = event.target.closest("[data-word-example-play]");
+    if (playAgain) { flashElement(playAgain); play(); return; }
+    const hangul = event.target.closest("[data-word-example-hangul]");
+    if (hangul) { flashElement(hangul); playHangul(); return; }
+    const sentence = event.target.closest("[data-word-example-sentence]");
+    if (sentence) { flashElement(sentence); play(); }
   });
   document.addEventListener("keydown", handleWordExampleEscape);
   play();
@@ -5586,7 +5590,10 @@ function wordLessonStudyHtml(lesson, view) {
     return `
       <div class="card word-card">
         <div class="word-card-progress-row">
-          <div class="eyebrow">${escapeHtml(progress)}</div>
+          <div class="word-card-progress-tile">
+            <div class="eyebrow">${escapeHtml(progress)}</div>
+            <div class="word-card-progress-track" aria-hidden="true"><span style="width:${Math.round(((step.wordIndex + 1) / Math.max(1, view.words.length)) * 100)}%;"></span></div>
+          </div>
           <button class="button secondary compact word-card-bank-button" type="button" data-word-open-reference>📚 Word Bank</button>
         </div>
         <div class="word-card-heading">
