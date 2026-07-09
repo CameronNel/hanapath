@@ -3220,15 +3220,19 @@ li { margin-bottom: 4px; }
 .word-card-progress-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .word-card-bank-button { font-size: .78rem; padding: 5px 9px; white-space: nowrap; }
 .word-card-heading { display: block; }
+.word-card-ko-tile { position: relative; margin: 12px 0 8px; padding: 10px 58px 10px 14px; border: 1px solid rgba(91,157,255,.12); border-radius: 12px; background: rgba(91,157,255,.10); }
 .word-card-ko,
 .word-card-ko-static {
   display: block; width: 100%; text-align: left;
   font-family: "Noto Sans KR", sans-serif; font-weight: 900;
   font-size: clamp(2rem, 9vw, 3rem); line-height: 1.25;
-  color: var(--text); margin: 12px 0 4px;
+  color: var(--text); margin: 0;
 }
-.word-card-ko { background: rgba(91,157,255,.10); border: 1px solid rgba(91,157,255,.12); cursor: pointer; border-radius: 12px; padding: 10px 14px; }
+.word-card-ko-static { margin: 12px 0 4px; }
+.word-card-ko { background: none; border: none; cursor: pointer; border-radius: 8px; padding: 0; }
 .word-card-ko:hover { background: rgba(91,157,255,.08); }
+.word-card-ko-play { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); width: 38px; height: 38px; border: 1px solid rgba(126,169,255,.48); border-radius: 50%; color: var(--accent-text); background: rgba(91,157,255,.18); font-size: .9rem; cursor: pointer; box-shadow: 0 5px 14px rgba(0,0,0,.16); transition: transform .16s ease, background .16s ease; }
+.word-card-ko-play:hover { transform: translateY(-50%) scale(1.08); background: rgba(91,157,255,.3); }
 .word-card-ko-main { display: block; }
 .word-card-ko-rom { display: block; margin-top: 2px; font-family: inherit; font-size: .78rem; line-height: 1.2; font-weight: 700; color: var(--muted-2); }
 .word-card-definition { display: flex; align-items: baseline; gap: 8px; margin: 0 0 8px 8px; color: var(--muted); font-size: .86rem; line-height: 1.35; }
@@ -3280,12 +3284,12 @@ li { margin-bottom: 4px; }
 }
 
 .word-card-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
-.word-card-audio-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.word-card-audio-actions .button { width: 100%; white-space: nowrap; }
-.word-card-nav-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.word-card-nav-actions .button { width: 100%; min-width: 0; padding-left: 6px; padding-right: 6px; white-space: nowrap; }
+.word-card-audio-actions { justify-content: flex-start; }
+.word-card-audio-actions .button { white-space: nowrap; }
+.word-card-nav-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.word-card-nav-actions .button { width: 100%; min-width: 0; min-height: 50px; padding-left: 8px; padding-right: 8px; white-space: nowrap; }
 
-.word-study-note { margin: 10px 0 4px; color: var(--muted); font-size: .86rem; line-height: 1.45; text-align: left; }
+.word-study-note { margin: 10px 8px 4px; color: var(--muted); font-size: .86rem; line-height: 1.45; text-align: left; }
 
 .word-rating-prompt { margin-top: 14px; text-align: center; animation: word-rating-in .32s ease both; }
 .word-rating-label { color: var(--muted); font-size: .8rem; margin-bottom: 8px; }
@@ -3314,7 +3318,8 @@ li { margin-bottom: 4px; }
   animation: word-example-dialog-in .28s cubic-bezier(.2, 1.2, .4, 1) both;
 }
 .word-example-close { position: absolute; top: 8px; right: 12px; border: 0; background: none; color: var(--muted); font-size: 1.7rem; line-height: 1; cursor: pointer; }
-.word-example-dialog-word { margin: 10px 0 18px; font-family: "Noto Sans KR", sans-serif; font-size: 1.4rem; }
+.word-example-dialog-word { display: block; margin: 10px auto 18px; padding: 0; border: 0; background: none; color: var(--text); cursor: pointer; font: 900 1.4rem "Noto Sans KR", sans-serif; }
+.word-example-dialog-word:hover { color: var(--accent-text); }
 .word-example-dialog-ko { font-family: "Noto Sans KR", sans-serif; font-size: clamp(1.35rem, 5vw, 1.8rem); font-weight: 800; line-height: 1.45; }
 .word-example-dialog-en { margin-top: 8px; color: var(--muted); font-size: .95rem; }
 .word-example-dialog-hear { margin-top: 20px; }

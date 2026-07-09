@@ -5404,20 +5404,22 @@ function openWordExampleOverlay(word) {
     <div class="word-example-dialog" role="dialog" aria-modal="true" aria-labelledby="wordExampleTitle">
       <button class="word-example-close" type="button" data-word-example-close aria-label="Close example">×</button>
       <div class="eyebrow">Example sentence</div>
-      <h2 id="wordExampleTitle" class="word-example-dialog-word" lang="ko">${escapeHtml(word.display || word.korean)}</h2>
+      <button id="wordExampleTitle" class="word-example-dialog-word" type="button" lang="ko" data-word-example-hangul aria-label="Hear ${escapeHtml(word.display || word.korean)}">${escapeHtml(word.display || word.korean)}</button>
       <div class="word-example-dialog-ko" lang="ko">${escapeHtml(word.exampleKo || "")}</div>
       <div class="word-example-dialog-en">${escapeHtml(word.exampleEn || "")}</div>
-      <button class="button primary compact word-example-dialog-hear" type="button" data-word-example-play>▶ Hear in a sentence</button>
+      <button class="button primary compact word-example-dialog-hear" type="button" data-word-example-play>▶ Play again</button>
     </div>
   `;
   document.body.appendChild(overlay);
   const play = () => void speak(word.exampleVoiceText || word.exampleKo || "");
+  const playHangul = () => void speak(word.voiceText || word.korean || "");
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay || event.target.closest("[data-word-example-close]")) {
       closeWordExampleOverlay();
       return;
     }
     if (event.target.closest("[data-word-example-play]")) play();
+    if (event.target.closest("[data-word-example-hangul]")) playHangul();
   });
   document.addEventListener("keydown", handleWordExampleEscape);
   play();
@@ -5588,19 +5590,20 @@ function wordLessonStudyHtml(lesson, view) {
           <button class="button secondary compact word-card-bank-button" type="button" data-word-open-reference>📚 Word Bank</button>
         </div>
         <div class="word-card-heading">
-          <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}"><span class="word-card-ko-main">${escapeHtml(display)}</span><span class="word-card-ko-rom">${escapeHtml(word.pronunciation)}</span></button>
+          <div class="word-card-ko-tile">
+            <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}"><span class="word-card-ko-main">${escapeHtml(display)}</span><span class="word-card-ko-rom">${escapeHtml(word.pronunciation)}</span></button>
+            <button class="word-card-ko-play" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Play ${escapeHtml(display)}" title="Play Hangul">▶</button>
+          </div>
         </div>
         <div class="word-card-definition"><span>${escapeHtml(word.pos)}</span><span aria-hidden="true">|</span><span>${escapeHtml(word.meaning)}</span></div>
         ${formsHtml}
         ${wordHonorificCardHtml(word)}
         ${word.usageNote ? `<div class="word-study-note">${escapeHtml(word.usageNote)}</div>` : ""}
         <div class="word-card-actions word-card-audio-actions">
-          <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear word</button>
-          <button class="button secondary compact" type="button" data-word-example-open>▶ Hear in a sentence</button>
+          <button class="button secondary compact" type="button" data-word-example-open>▶ Hear it in a sentence</button>
         </div>
         <div class="word-card-actions word-card-nav-actions">
           <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
-          <button class="button secondary compact" type="button" data-word-open-reference>📚 Word Bank</button>
           <button class="button primary compact" type="button" data-word-lesson-next>Next: type it →</button>
         </div>
       </div>
