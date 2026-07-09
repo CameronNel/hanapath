@@ -7317,302 +7317,78 @@ function shuffle(list) {
   return copy;
 }
 
-let globalAudioContext = null;
-
-function getAudioContext() {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return null;
-  if (!globalAudioContext) {
-    globalAudioContext = new AudioContext();
-  }
-  if (globalAudioContext.state === "suspended") {
-    globalAudioContext.resume();
-  }
-  return globalAudioContext;
-}
-
-// ── Audio Synthesizers Generator Helpers ──
-
-function playPop(ctx, fStart, fEnd, duration, delay = 0, type = "sine") {
-  const tStart = ctx.currentTime + delay;
-  const tEnd = tStart + duration;
-  
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(fStart, tStart);
-  osc.frequency.exponentialRampToValueAtTime(fEnd, tEnd);
-  
-  gain.gain.setValueAtTime(0, tStart);
-  gain.gain.linearRampToValueAtTime(0.2, tStart + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-  
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(tStart);
-  osc.stop(tEnd);
-}
-
-function playArpeggio(ctx, freqs, noteDur, gap, type = "sine") {
-  freqs.forEach((freq, idx) => {
-    const delay = idx * gap;
-    const tStart = ctx.currentTime + delay;
-    const tEnd = tStart + noteDur;
-    
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, tStart);
-    
-    gain.gain.setValueAtTime(0, tStart);
-    gain.gain.linearRampToValueAtTime(0.15, tStart + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(tStart);
-    osc.stop(tEnd);
-  });
-}
-
-function playBell(ctx, freq, duration) {
-  const tStart = ctx.currentTime;
-  const tEnd = tStart + duration;
-  
-  const osc1 = ctx.createOscillator();
-  const gain1 = ctx.createGain();
-  osc1.type = "sine";
-  osc1.frequency.setValueAtTime(freq, tStart);
-  gain1.gain.setValueAtTime(0.12, tStart);
-  gain1.gain.exponentialRampToValueAtTime(0.001, tEnd);
-  osc1.connect(gain1);
-  gain1.connect(ctx.destination);
-  osc1.start(tStart);
-  osc1.stop(tEnd);
-  
-  const osc2 = ctx.createOscillator();
-  const gain2 = ctx.createGain();
-  osc2.type = "sine";
-  osc2.frequency.setValueAtTime(freq * 2, tStart);
-  gain2.gain.setValueAtTime(0.06, tStart);
-  gain2.gain.exponentialRampToValueAtTime(0.001, tStart + duration * 0.7);
-  osc2.connect(gain2);
-  gain2.connect(ctx.destination);
-  osc2.start(tStart);
-  osc2.stop(tStart + duration * 0.7);
-}
-
-function playSwell(ctx, freq, duration) {
-  const tStart = ctx.currentTime;
-  const tEnd = tStart + duration;
-  
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(freq, tStart);
-  
-  gain.gain.setValueAtTime(0, tStart);
-  gain.gain.linearRampToValueAtTime(0.15, tStart + duration * 0.4);
-  gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-  
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(tStart);
-  osc.stop(tEnd);
-}
-
-function playChord(ctx, freqs, duration, type = "sine") {
-  const tStart = ctx.currentTime;
-  const tEnd = tStart + duration;
-  
-  freqs.forEach((freq) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, tStart);
-    
-    gain.gain.setValueAtTime(0.06, tStart);
-    gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(tStart);
-    osc.stop(tEnd);
-  });
-}
-
-function playWhistle(ctx, fStart, fEnd, duration) {
-  const tStart = ctx.currentTime;
-  const tEnd = tStart + duration;
-  
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(fStart, tStart);
-  osc.frequency.linearRampToValueAtTime(fEnd, tEnd);
-  
-  gain.gain.setValueAtTime(0, tStart);
-  gain.gain.linearRampToValueAtTime(0.12, tStart + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-  
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(tStart);
-  osc.stop(tEnd);
-}
-
-function playBuzz(ctx, freq, duration, delay = 0, type = "triangle") {
-  const tStart = ctx.currentTime + delay;
-  const tEnd = tStart + duration;
-  
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, tStart);
-  
-  gain.gain.setValueAtTime(0, tStart);
-  gain.gain.linearRampToValueAtTime(0.12, tStart + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-  
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(tStart);
-  osc.stop(tEnd);
-}
-
-function playSlide(ctx, fStart, fEnd, duration, delay = 0, type = "triangle") {
-  const tStart = ctx.currentTime + delay;
-  const tEnd = tStart + duration;
-  
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(fStart, tStart);
-  osc.frequency.linearRampToValueAtTime(fEnd, tEnd);
-  
-  gain.gain.setValueAtTime(0.12, tStart);
-  gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-  
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(tStart);
-  osc.stop(tEnd);
-}
-
-function playDisharmony(ctx, f1, f2, duration) {
-  const tStart = ctx.currentTime;
-  const tEnd = tStart + duration;
-  
-  [f1, f2].forEach((freq) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(freq, tStart);
-    
-    gain.gain.setValueAtTime(0.05, tStart);
-    gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(tStart);
-    osc.stop(tEnd);
-  });
-}
-
-function playBoing(ctx, baseFreq, duration) {
-  const tStart = ctx.currentTime;
-  const tEnd = tStart + duration;
-  
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = "triangle";
-  osc.frequency.setValueAtTime(baseFreq, tStart);
-  
-  // Modulate frequency rapidly for vibrato
-  let time = tStart;
-  let cycle = 0;
-  while (time < tEnd) {
-    const nextTime = time + 0.02;
-    const mod = Math.sin(cycle) * 30 - (cycle * 2);
-    osc.frequency.setValueAtTime(Math.max(40, baseFreq + mod), time);
-    time = nextTime;
-    cycle += 1.0;
-  }
-  
-  gain.gain.setValueAtTime(0.15, tStart);
-  gain.gain.exponentialRampToValueAtTime(0.001, tEnd);
-  
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(tStart);
-  osc.stop(tEnd);
-}
-
-// ── SOUND DEFINITIONS ──
-
 const CORRECT_SOUND_DEFS = [
-  { name: "Single Bubble Pop", desc: "A quick, single high-pitched bubble pop.", play: (ctx) => playPop(ctx, 523, 1046, 0.12) },
-  { name: "Double Pop (Plop-Plip)", desc: "A cute, bouncy double bubble pop sound.", play: (ctx) => { playPop(ctx, 380, 760, 0.09, 0); playPop(ctx, 580, 1160, 0.09, 0.07); } },
-  { name: "Ascending Third", desc: "Two bright sine notes (C5 to E5).", play: (ctx) => playArpeggio(ctx, [523.25, 659.25], 0.08, 0.15) },
-  { name: "Ascending Triad", desc: "A bright arpeggio (C5, E5, G5).", play: (ctx) => playArpeggio(ctx, [523.25, 659.25, 783.99], 0.06, 0.12) },
-  { name: "Octave Jump", desc: "Clean, motivating octave jump (C5 to C6).", play: (ctx) => playArpeggio(ctx, [523.25, 1046.5], 0.07, 0.15) },
-  { name: "Retro Coin Chime", desc: "Classic retro game coin chime.", play: (ctx) => playArpeggio(ctx, [987.77, 1318.51], 0.07, 0.18) },
-  { name: "Cute Laser Zip", desc: "Fast frequency zip upward.", play: (ctx) => playPop(ctx, 400, 1600, 0.1, 0, "triangle") },
-  { name: "Bright Bell", desc: "High bell tone with metallic resonance.", play: (ctx) => playBell(ctx, 880, 0.5) },
-  { name: "Triumphant Fanfare", desc: "Motivating mini-fanfare.", play: (ctx) => playArpeggio(ctx, [523.25, 783.99, 1046.5], 0.08, 0.15, "triangle") },
-  { name: "Sparkle / Twinkle", desc: "Three ultra-fast high notes.", play: (ctx) => playArpeggio(ctx, [1318.51, 1567.98, 2093.0], 0.04, 0.08) },
-  { name: "Bouncy Drop", desc: "Cute descending pitch pop.", play: (ctx) => playPop(ctx, 800, 400, 0.12) },
-  { name: "Double Ding", desc: "Two rapid high-pitched chimes.", play: (ctx) => playArpeggio(ctx, [1046.5, 1046.5], 0.05, 0.1) },
-  { name: "Glissando Up", desc: "Fast frequency glide.", play: (ctx) => playPop(ctx, 300, 1500, 0.2, 0, "sine") },
-  { name: "Chirp Chirp", desc: "Two ultra-fast sweeps.", play: (ctx) => { playPop(ctx, 800, 1600, 0.04, 0); playPop(ctx, 1000, 2000, 0.04, 0.05); } },
-  { name: "Dreamy Swell", desc: "Soft tone with a slow fade-in.", play: (ctx) => playSwell(ctx, 659.25, 0.3) },
-  { name: "Happy Chord", desc: "A rich major chord played together.", play: (ctx) => playChord(ctx, [523.25, 659.25, 783.99], 0.25) },
-  { name: "Whistle Tune", desc: "Cute little whistling slide.", play: (ctx) => playWhistle(ctx, 880, 1200, 0.15) },
-  { name: "Level Up Fanfare", desc: "Short rising progression (C-E-G-C).", play: (ctx) => playArpeggio(ctx, [523.25, 659.25, 783.99, 1046.5], 0.05, 0.1) },
-  { name: "Pop Burst", desc: "Three tiny bubble pops in a row.", play: (ctx) => { playPop(ctx, 400, 800, 0.05, 0); playPop(ctx, 600, 1200, 0.05, 0.04); playPop(ctx, 800, 1600, 0.05, 0.08); } },
-  { name: "Sweet Chime", desc: "Gentle major fifth arpeggio.", play: (ctx) => playArpeggio(ctx, [587.33, 880.0], 0.08, 0.2) },
-  { name: "Bright Laser", desc: "A sci-fi style laser pop.", play: (ctx) => playPop(ctx, 600, 2400, 0.08, 0, "triangle") }
+  { name: "Chime Confirmation 1", desc: "A clean, retro-style confirmation chime.", url: "audio/sound_effects/correct/correct_1.wav" },
+  { name: "Chime Confirmation 2", desc: "A bright, multi-tone confirmation bell.", url: "audio/sound_effects/correct/correct_2.wav" },
+  { name: "Chime Confirmation 3", desc: "A fast, cute high-pitched chord.", url: "audio/sound_effects/correct/correct_3.wav" },
+  { name: "Chime Confirmation 4", desc: "A soft, pleasant success chime.", url: "audio/sound_effects/correct/correct_4.wav" },
+  { name: "Chirpy Rise 1", desc: "A bubbly ascending chirping chime.", url: "audio/sound_effects/correct/correct_5.wav" },
+  { name: "Chirpy Rise 2", desc: "A fast rising digital feedback sweep.", url: "audio/sound_effects/correct/correct_6.wav" },
+  { name: "Chirpy Rise 3", desc: "A cute sci-fi rising coin-like sound.", url: "audio/sound_effects/correct/correct_7.wav" },
+  { name: "Chirpy Rise 4", desc: "A bright, motivating sweep up.", url: "audio/sound_effects/correct/correct_8.wav" },
+  { name: "Chirpy Rise 5", desc: "A playful, bubbly retro game rise.", url: "audio/sound_effects/correct/correct_9.wav" },
+  { name: "Bubble Pop Open 1", desc: "A clean, bubbly interface pop.", url: "audio/sound_effects/correct/correct_10.wav" },
+  { name: "Bubble Pop Open 2", desc: "A slightly softer, hollow bubble pop.", url: "audio/sound_effects/correct/correct_11.wav" },
+  { name: "Bubble Pop Open 3", desc: "A cute plop-plip double bubble sound.", url: "audio/sound_effects/correct/correct_12.wav" },
+  { name: "Glass Ding 1", desc: "A high-pitched metallic glass chime.", url: "audio/sound_effects/correct/correct_13.wav" },
+  { name: "Glass Ding 2", desc: "A clean, resonant glass ring.", url: "audio/sound_effects/correct/correct_14.wav" },
+  { name: "Glass Ding 3", desc: "A soft, pleasant metallic bell hit.", url: "audio/sound_effects/correct/correct_15.wav" },
+  { name: "Cute Click 1", desc: "A solid, tactile interface button click.", url: "audio/sound_effects/correct/correct_16.wav" },
+  { name: "Cute Click 2", desc: "A quick, soft digital snap.", url: "audio/sound_effects/correct/correct_17.wav" },
+  { name: "Cute Click 3", desc: "A high-pitched woodblock-like click.", url: "audio/sound_effects/correct/correct_18.wav" },
+  { name: "Cute Click 4", desc: "A clean, sharp cursor select tap.", url: "audio/sound_effects/correct/correct_19.wav" },
+  { name: "Cute Pluck 1", desc: "A fast, bouncy string-like pluck.", url: "audio/sound_effects/correct/correct_20.wav" }
 ];
 
 const INCORRECT_SOUND_DEFS = [
-  { name: "Double Buzz (Eeh-Eh)", desc: "A soft, quick double buzzer sound.", play: (ctx) => { playBuzz(ctx, 180, 0.09, 0); playBuzz(ctx, 145, 0.12, 0.15); } },
-  { name: "Slide-Down Buzz", desc: "A single, faint descending buzzer tone.", play: (ctx) => playSlide(ctx, 200, 120, 0.25) },
-  { name: "Single Short Buzz", desc: "One short buzz note (square wave).", play: (ctx) => playBuzz(ctx, 130, 0.15, 0, "square") },
-  { name: "Incorrect Ding-Dong", desc: "Descending arpeggio (F3 to D3).", play: (ctx) => playArpeggio(ctx, [174.61, 146.83], 0.15, 0.2, "sine") },
-  { name: "Grounded Flat", desc: "Low flat square wave at 80Hz.", play: (ctx) => playBuzz(ctx, 80, 0.22, 0, "square") },
-  { name: "Double Thump", desc: "Two low sine wave hits.", play: (ctx) => { playBuzz(ctx, 90, 0.08, 0, "sine"); playBuzz(ctx, 80, 0.1, 0.12, "sine"); } },
-  { name: "Retro Crash", desc: "Sawtooth wave with rapid decay.", play: (ctx) => playBuzz(ctx, 100, 0.15, 0, "sawtooth") },
-  { name: "Sad Slide", desc: "Descending pitch slide (triangle wave).", play: (ctx) => playSlide(ctx, 300, 100, 0.35) },
-  { name: "Robot Blip", desc: "Fast frequency shift down.", play: (ctx) => playSlide(ctx, 400, 150, 0.1, 0, "square") },
-  { name: "Spring Boing", desc: "Cute rapid frequency vibrato.", play: (ctx) => playBoing(ctx, 220, 0.35) },
-  { name: "Double Decline", desc: "Two quick descending notes (Eb3 to Db3).", play: (ctx) => playArpeggio(ctx, [155.56, 138.59], 0.12, 0.15) },
-  { name: "Retro Fail", desc: "Descending minor triad arpeggio.", play: (ctx) => playArpeggio(ctx, [196.0, 155.56, 130.81], 0.1, 0.15, "triangle") },
-  { name: "Alert Buzz", desc: "Short alert square wave.", play: (ctx) => playBuzz(ctx, 220, 0.12, 0, "square") },
-  { name: "Hollow Plop", desc: "Descending triangle pop.", play: (ctx) => playSlide(ctx, 400, 100, 0.15) },
-  { name: "Power Down", desc: "Slow descending pitch (square wave).", play: (ctx) => playSlide(ctx, 300, 60, 0.45, 0, "square") },
-  { name: "Flat Honk", desc: "Disharmonious double-tone buzz.", play: (ctx) => playDisharmony(ctx, 220, 225, 0.3) },
-  { name: "Buzzy Pluck", desc: "Sawtooth pluck with instant decay.", play: (ctx) => playBuzz(ctx, 150, 0.08, 0, "sawtooth") },
-  { name: "Static Click", desc: "Ultra-short square pop.", play: (ctx) => playBuzz(ctx, 800, 0.01, 0, "square") },
-  { name: "Sad Chord", desc: "Low minor chord played together.", play: (ctx) => playChord(ctx, [130.81, 155.56, 196.0], 0.4, "sine") },
-  { name: "Disappointment", desc: "Two long, sad descending notes.", play: (ctx) => playArpeggio(ctx, [196.0, 185.0], 0.25, 0.28) },
-  { name: "Deep Alert", desc: "Deep square alert tone.", play: (ctx) => playBuzz(ctx, 110, 0.18, 0, "square") }
+  { name: "Soft Error Buzz 1", desc: "A dull, low-pitched interface error buzzer.", url: "audio/sound_effects/incorrect/incorrect_1.wav" },
+  { name: "Soft Error Buzz 2", desc: "A slightly sharp, digital error buzzer.", url: "audio/sound_effects/incorrect/incorrect_2.wav" },
+  { name: "Soft Error Buzz 3", desc: "A soft, double error beep.", url: "audio/sound_effects/incorrect/incorrect_3.wav" },
+  { name: "Soft Error Buzz 4", desc: "A flat, hollow buzzer tone.", url: "audio/sound_effects/incorrect/incorrect_4.wav" },
+  { name: "Soft Error Buzz 5", desc: "A clean warning indicator sound.", url: "audio/sound_effects/incorrect/incorrect_5.wav" },
+  { name: "Soft Error Buzz 6", desc: "A short, sharp error alert click.", url: "audio/sound_effects/incorrect/incorrect_6.wav" },
+  { name: "Soft Error Buzz 7", desc: "A deep, dull feedback buzz.", url: "audio/sound_effects/incorrect/incorrect_7.wav" },
+  { name: "Soft Error Buzz 8", desc: "A classic retro game failure buzz.", url: "audio/sound_effects/incorrect/incorrect_8.wav" },
+  { name: "Digital Glitch 1", desc: "A quick, textured digital error glitch.", url: "audio/sound_effects/incorrect/incorrect_9.wav" },
+  { name: "Digital Glitch 2", desc: "A short, scratchy glitch click.", url: "audio/sound_effects/incorrect/incorrect_10.wav" },
+  { name: "Digital Glitch 3", desc: "A classic sci-fi scanner error glitch.", url: "audio/sound_effects/incorrect/incorrect_11.wav" },
+  { name: "Digital Glitch 4", desc: "A low, textured warning glitch.", url: "audio/sound_effects/incorrect/incorrect_12.wav" },
+  { name: "Decline Swoosh 1", desc: "A soft descending swoosh.", url: "audio/sound_effects/incorrect/incorrect_13.wav" },
+  { name: "Decline Swoosh 2", desc: "A quick falling feedback sweep.", url: "audio/sound_effects/incorrect/incorrect_14.wav" },
+  { name: "Decline Swoosh 3", desc: "A smooth retro game decline slide.", url: "audio/sound_effects/incorrect/incorrect_15.wav" },
+  { name: "Decline Swoosh 4", desc: "A low, deep pitch drop swoosh.", url: "audio/sound_effects/incorrect/incorrect_16.wav" },
+  { name: "Cancel Tap 1", desc: "A soft cancellation tap.", url: "audio/sound_effects/incorrect/incorrect_17.wav" },
+  { name: "Cancel Tap 2", desc: "A quick, hollow back button snap.", url: "audio/sound_effects/incorrect/incorrect_18.wav" },
+  { name: "Cancel Tap 3", desc: "A flat cancellation block hit.", url: "audio/sound_effects/incorrect/incorrect_19.wav" },
+  { name: "Cancel Tap 4", desc: "A deep, warning click.", url: "audio/sound_effects/incorrect/incorrect_20.wav" }
 ];
 
+const audioFileCache = {};
+
+function playFileSound(url) {
+  try {
+    if (!audioFileCache[url]) {
+      audioFileCache[url] = new Audio(url);
+    }
+    const audio = audioFileCache[url];
+    audio.currentTime = 0;
+    audio.play().catch((e) => console.warn("Failed to play audio file:", e));
+  } catch (e) {
+    console.warn("Audio file playback error:", e);
+  }
+}
+
 function playCorrectSoundOption(option) {
-  const ctx = getAudioContext();
-  if (!ctx) return;
   const idx = option - 1;
   if (CORRECT_SOUND_DEFS[idx]) {
-    CORRECT_SOUND_DEFS[idx].play(ctx);
+    playFileSound(CORRECT_SOUND_DEFS[idx].url);
   }
 }
 
 function playIncorrectSoundOption(option) {
-  const ctx = getAudioContext();
-  if (!ctx) return;
   const idx = option - 1;
   if (INCORRECT_SOUND_DEFS[idx]) {
-    INCORRECT_SOUND_DEFS[idx].play(ctx);
+    playFileSound(INCORRECT_SOUND_DEFS[idx].url);
   }
 }
 
