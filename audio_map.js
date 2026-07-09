@@ -25363,5 +25363,9 @@ window.AUDIO_MAP = {
   "준공": "./audio/0ba3fc3a7a64baf2c2adbd31720af070.ogg",
   "대강": "./audio/d1425f3fe349020fd4195ae656cf89d0.ogg",
   "덮개": "./audio/685f09f4512fb10bc9e6235b5aaf8654.ogg",
-  "래쉬": "./audio/a60c720850eba4c8a22a1fd015ec33f9.ogg"
+  "래쉬": "./audio/a60c720850eba4c8a22a1fd015ec33f9.ogg",
+  "No sound": "./audio/f0cdd208a20feeff586c3d10be4abf0b.ogg",
+  "잘했어요!": "./audio/6e6331ad4d21cbc5ed44ea51c1468592.ogg",
+  "한국어로 써 보세요": "./audio/e4763af58ecf6c9454b057ea3a050163.ogg",
+  "들리는 대로 써 보세요": "./audio/f549ddfe2e06693b856948f90ed08297.ogg"
 };

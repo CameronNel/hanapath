@@ -67,7 +67,9 @@ def extract_korean_text():
     # Drop extraction noise: strings with runs of latin letters are JS-literal
     # fragments or English usage notes the app never speaks (the Korean voice
     # shouldn't read English anyway). Single stray letters are tolerated.
-    return [p for p in phrases if not re.search(r"[A-Za-z]{2,}", p)]
+    korean_phrases = [p for p in phrases if not re.search(r"[A-Za-z]{2,}", p)]
+    korean_phrases.append("No sound")
+    return list(set(korean_phrases))
 
 def generate_one(text, md5_hash):
     """Generate one phrase: edge-tts -> temp mp3 -> Opus .ogg.
@@ -77,6 +79,20 @@ def generate_one(text, md5_hash):
     should be retried on the next run.
     """
     out_ogg = os.path.join(OUTPUT_DIR, f"{md5_hash}.ogg")
+    
+    if text == "No sound":
+        result = subprocess.run(
+            [FFMPEG, '-nostdin', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=mono',
+             '-t', '0.5', '-c:a', 'libopus', '-b:a', OPUS_BITRATE, out_ogg],
+            capture_output=True, text=True
+        )
+        if result.returncode != 0 or not os.path.exists(out_ogg) or os.path.getsize(out_ogg) == 0:
+            print(f"  ERROR: silence generation failed for: {text}\n  {result.stderr.strip()}")
+            if os.path.exists(out_ogg):
+                os.remove(out_ogg)
+            return None
+        return f"./audio/{md5_hash}.ogg"
+
     tmp_mp3 = os.path.join(OUTPUT_DIR, f"{md5_hash}.tmp.mp3")
     legacy_mp3 = os.path.join(OUTPUT_DIR, f"{md5_hash}.mp3")
 

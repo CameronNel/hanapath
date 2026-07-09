@@ -1,11 +1,11 @@
-// [2026-07-09] Cache bumped to v283: add delay between chimes and target pronunciation.
-const CACHE_NAME = "hanapath-shell-v283";
+// [2026-07-09] Cache bumped to v284: map silent Opus file for 'No sound' option.
+const CACHE_NAME = "hanapath-shell-v284";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260709e",
   "./lib/hangul.js",
-  "./audio_map.js?v=20260705f",
+  "./audio_map.js?v=20260709g",
   "./words_curated_core.js?v=20260705e",
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260705e",
