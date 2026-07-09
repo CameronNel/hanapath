@@ -4248,6 +4248,10 @@ const WORD_BANK_SORTS = [
 ];
 
 const WORD_BANK_PAGE_SIZE = 50;
+// Temporarily hide the self-checked repeat step from guided Words lessons.
+// Keep the renderer in place so this can be re-enabled without rebuilding it.
+// Owner instruction: only flip this back on after Cameron explicitly asks for it.
+const WORD_LESSON_REPEAT_STEP_ENABLED = false;
 
 const WORD_PATH_LEVEL_FILTERS = [
   { id: "all", label: "All learning levels" },
@@ -5355,6 +5359,45 @@ function wordReferenceButtonHtml() {
     '</div>';
 }
 
+function closeWordExampleOverlay() {
+  const overlay = document.querySelector("[data-word-example-overlay]");
+  if (overlay) overlay.remove();
+  document.removeEventListener("keydown", handleWordExampleEscape);
+}
+
+function handleWordExampleEscape(event) {
+  if (event.key === "Escape") closeWordExampleOverlay();
+}
+
+function openWordExampleOverlay(word) {
+  if (!word) return;
+  closeWordExampleOverlay();
+  const overlay = document.createElement("div");
+  overlay.className = "word-example-overlay";
+  overlay.dataset.wordExampleOverlay = "true";
+  overlay.innerHTML = `
+    <div class="word-example-dialog" role="dialog" aria-modal="true" aria-labelledby="wordExampleTitle">
+      <button class="word-example-close" type="button" data-word-example-close aria-label="Close example">×</button>
+      <div class="eyebrow">Example sentence</div>
+      <h2 id="wordExampleTitle" class="word-example-dialog-word" lang="ko">${escapeHtml(word.display || word.korean)}</h2>
+      <div class="word-example-dialog-ko" lang="ko">${escapeHtml(word.exampleKo || "")}</div>
+      <div class="word-example-dialog-en">${escapeHtml(word.exampleEn || "")}</div>
+      <button class="button primary compact word-example-dialog-hear" type="button" data-word-example-play>▶ Hear example</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  const play = () => void speak(word.exampleVoiceText || word.exampleKo || "");
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay || event.target.closest("[data-word-example-close]")) {
+      closeWordExampleOverlay();
+      return;
+    }
+    if (event.target.closest("[data-word-example-play]")) play();
+  });
+  document.addEventListener("keydown", handleWordExampleEscape);
+  play();
+}
+
 function openWordBankQuickRef() {
   state.wordQuickRefActive = true;
   state.wordQuickRefReturn = wordLessonView
@@ -5456,7 +5499,17 @@ function renderWordLesson() {
   bindWordLessonRoot(el.querySelector("#wordLessonRoot"));
 }
 
+function getWordLessonIntroGoal(lesson) {
+  const goal = String(lesson?.goal || "");
+  if (WORD_LESSON_REPEAT_STEP_ENABLED) return goal;
+  return goal.replace("see, hear, type, repeat, and review", "see, hear, type, and review");
+}
+
 function wordLessonIntroHtml(lesson, view) {
+  const repeatTutorialRow = WORD_LESSON_REPEAT_STEP_ENABLED
+    ? '<div class="study-row"><div><div class="study-row-ko">🗣 Repeat aloud</div><div class="study-row-sub">Hear the word, say it out loud, then tap “I said it”. Nobody grades you.</div></div></div>'
+    : "";
+  const goal = getWordLessonIntroGoal(lesson);
   const tutorialHtml = lesson.tutorial
     ? `
       <div class="card">
@@ -5464,7 +5517,7 @@ function wordLessonIntroHtml(lesson, view) {
         <div class="study-list">
           <div class="study-row"><div><div class="study-row-ko">▶ Hear word · Hear example</div><div class="study-row-sub">Every word and sentence has audio. Tap to listen as often as you like.</div></div></div>
           <div class="study-row"><div><div class="study-row-ko">⌨ Type it</div><div class="study-row-sub">You'll type each word once. No Korean keyboard? Tap the syllable blocks instead.</div></div></div>
-          <div class="study-row"><div><div class="study-row-ko">🗣 Repeat aloud</div><div class="study-row-sub">Hear the word, say it out loud, then tap “I said it”. Nobody grades you.</div></div></div>
+          ${repeatTutorialRow}
           <div class="study-row"><div><div class="study-row-ko">✓ Known · ✗ Hard</div><div class="study-row-sub">Mark words you already know or find hard. Hard words come back sooner in review.</div></div></div>
           <div class="study-row"><div><div class="study-row-ko">🔁 Review</div><div class="study-row-sub">Finished words are scheduled for spaced review so they stick.</div></div></div>
           <div class="study-row"><div><div class="study-row-ko">📚 Word Bank</div><div class="study-row-sub">Look up any word mid-lesson — you'll return to the exact spot you left.</div></div></div>
@@ -5476,7 +5529,7 @@ function wordLessonIntroHtml(lesson, view) {
       <div class="eyebrow">Stage ${escapeHtml(lesson.stage)} · Word lesson</div>
       <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(lesson.title)}</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(lesson.subtitle || "")}</div>
-      <div class="text-muted-2 fs-sm" style="margin-bottom:12px;">${escapeHtml(lesson.goal || "")}</div>
+      <div class="text-muted-2 fs-sm" style="margin-bottom:12px;">${escapeHtml(goal)}</div>
       <div class="flex-between" style="gap:12px; flex-wrap:wrap;">
         <span class="pill accent">${view.words.length} new word${view.words.length === 1 ? "" : "s"}</span>
         <button class="button primary compact" type="button" data-word-lesson-start>Start</button>
@@ -5501,31 +5554,28 @@ function wordLessonStudyHtml(lesson, view) {
   const pronunciationLayer = getWordPronunciationLayerText(word);
 
   if (step.type === "card") {
-    const record = getVocabSrsRecord(word.id);
-    const isKnown = Boolean(record?.isKnown);
-    const isHard = Boolean(record?.isHard);
     const formsHtml = Array.isArray(word.forms) && word.forms.length
       ? `<div class="word-card-forms">Forms: ${word.forms.map((f) => `<span lang="ko">${escapeHtml(f)}</span>`).join(" · ")}</div>`
       : "";
     return `
       <div class="card word-card">
         <div class="eyebrow">${escapeHtml(progress)}</div>
-        <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}">${escapeHtml(display)}</button>
-        <div class="word-card-meaning">${escapeHtml(word.meaning)}</div>
-        <div class="word-card-meta">${escapeHtml(word.pos)} · ${escapeHtml(word.pronunciation)}</div>
+        <div class="word-card-heading">
+          <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}">${escapeHtml(display)}</button>
+          <span class="word-card-pos">${escapeHtml(word.pos)}</span>
+        </div>
+        <div class="word-card-meta word-card-meta-primary"><span>${escapeHtml(word.pronunciation)}</span><span>${escapeHtml(word.meaning)}</span></div>
         ${pronunciationLayer ? `<div class="word-card-meta">${escapeHtml(pronunciationLayer)}</div>` : ""}
         ${formsHtml}
         ${wordHonorificCardHtml(word)}
         <div class="word-example">
-          <button class="word-example-ko" type="button" lang="ko" data-speak="${escapeHtml(word.exampleVoiceText || word.exampleKo)}" aria-label="Hear example sentence">${escapeHtml(word.exampleKo)}</button>
+          <button class="word-example-ko" type="button" lang="ko" data-word-example-open aria-label="Hear example sentence">${escapeHtml(word.exampleKo)}</button>
           <div class="word-example-en">${escapeHtml(word.exampleEn)}</div>
         </div>
         ${word.usageNote ? `<div class="word-usage-note">${escapeHtml(word.usageNote)}</div>` : ""}
         <div class="word-card-actions">
           <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear word</button>
-          <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.exampleVoiceText || word.exampleKo)}">▶ Hear example</button>
-          <button class="button ${isHard ? "primary" : "secondary"} compact" type="button" data-word-lesson-hard="${escapeHtml(word.id)}">${isHard ? "Hard ✓" : "Hard"}</button>
-          <button class="button ${isKnown ? "success" : "secondary"} compact" type="button" data-word-lesson-known="${escapeHtml(word.id)}">${isKnown ? "Known ✓" : "Known"}</button>
+          <button class="button secondary compact" type="button" data-word-example-open>▶ Hear example</button>
         </div>
         <div class="word-card-actions">
           <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
@@ -5560,7 +5610,13 @@ function wordLessonStudyHtml(lesson, view) {
           <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear it</button>
           ${view.reviewingCheckpoint ? '<button class="button secondary compact" type="button" data-word-return-checkpoint>Return to questions</button>' : ""}
           ${view.typedDone
-            ? `<button class="button primary compact" type="button" data-word-lesson-next>Next →</button>`
+            ? `<div class="word-rating-prompt" role="group" aria-label="Rate this word">
+                <div class="word-rating-label">How did that feel?</div>
+                <div class="word-rating-actions">
+                  <button class="word-rating-button word-rating-hard" type="button" data-word-lesson-rate="hard">Hard</button>
+                  <button class="word-rating-button word-rating-known" type="button" data-word-lesson-rate="known">Known</button>
+                </div>
+              </div>`
             : `<button class="button primary compact" type="button" data-word-type-check>Check</button>`}
         </div>
         ${wordReferenceButtonHtml()}
@@ -5919,6 +5975,14 @@ function bindWordLessonRoot(root) {
     const openRef = event.target.closest("[data-word-open-reference]");
     if (openRef) { openWordBankQuickRef(); return; }
 
+    const exampleBtn = event.target.closest("[data-word-example-open]");
+    if (exampleBtn) {
+      const step = view.mode === "study" ? getWordLessonStep(view) : null;
+      const word = step ? curatedWordsById.get(step.wordId) : null;
+      if (word) openWordExampleOverlay(word);
+      return;
+    }
+
     const speakBtn = event.target.closest("[data-speak]");
     if (speakBtn && root.contains(speakBtn)) {
       flashElement(speakBtn);
@@ -5939,6 +6003,19 @@ function bindWordLessonRoot(root) {
       stopSpeech();
       if (view.mode === "study") advanceWordLessonStudy(view);
       else if (view.mode === "check") advanceWordLessonCheck(view);
+      return;
+    }
+    const rateBtn = event.target.closest("[data-word-lesson-rate]");
+    if (rateBtn && view.mode === "study" && view.typedDone) {
+      const step = getWordLessonStep(view);
+      const word = step ? curatedWordsById.get(step.wordId) : null;
+      if (!word || rateBtn.disabled) return;
+      root.querySelectorAll("[data-word-lesson-rate]").forEach((button) => { button.disabled = true; });
+      rateBtn.classList.add("is-selected");
+      setCuratedWordStatus(word.id, rateBtn.dataset.wordLessonRate);
+      window.setTimeout(() => {
+        if (wordLessonView === view) advanceWordLessonStudy(view);
+      }, 520);
       return;
     }
     if (event.target.closest("[data-word-review-study]")) {
@@ -7042,6 +7119,7 @@ function bindWordPathUnitToggles(el) {
 }
 
 function wordPathLessonPanelHtml() {
+  if (isWordCurriculumV2()) return wordPathV2Html();
   const lessons = getWordLessons();
   if (!lessons.length) return "";
 
@@ -12257,7 +12335,7 @@ let activeTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTa
 // dashboard; Learn / Practice / Progress each open a submenu of tiles, and a
 // tile opens a focused content screen with a "back to <hub>" bar at the top.
 
-const HUBS = ["learn", "practice", "progress", "sounds"];
+const HUBS = ["learn", "practice", "progress"];
 
 const HUB_DEFS = {
   learn: {
@@ -12603,10 +12681,6 @@ function getActiveLearnLevel(itemId) {
 }
 
 function renderHubMenu(hub) {
-  if (hub === "sounds") {
-    renderSoundTestScreen();
-    return;
-  }
   const def = HUB_DEFS[hub];
   const el = showScreen("menu");
   if (!def || !el) return;
@@ -12631,89 +12705,6 @@ function renderHubMenu(hub) {
   `;
   el.querySelectorAll("[data-hub-item]").forEach((btn) => {
     btn.addEventListener("click", () => openHubItem(hub, btn.dataset.hubItem));
-  });
-}
-
-function renderSoundTestScreen() {
-  const el = showScreen("menu");
-  if (!el) return;
-  
-  const activeCorrect = state.activeCorrectSound || 14;
-  const activeIncorrect = state.activeIncorrectSound || 2;
-
-  const correctRowsHtml = CORRECT_SOUND_DEFS.map((def, idx) => {
-    const opt = idx + 1;
-    return `
-      <button class="sound-option-row${activeCorrect === opt ? " active" : ""}" type="button" data-correct-opt="${opt}">
-        <div class="sound-option-info">
-          <strong>Option ${opt}: ${escapeHtml(def.name)}</strong>
-          <p class="sound-option-desc">${escapeHtml(def.desc)}</p>
-        </div>
-        <span class="sound-option-badge">Use this</span>
-      </button>
-    `;
-  }).join("");
-
-  const incorrectRowsHtml = INCORRECT_SOUND_DEFS.map((def, idx) => {
-    const opt = idx + 1;
-    return `
-      <button class="sound-option-row${activeIncorrect === opt ? " active" : ""}" type="button" data-incorrect-opt="${opt}">
-        <div class="sound-option-info">
-          <strong>Option ${opt}: ${escapeHtml(def.name)}</strong>
-          <p class="sound-option-desc">${escapeHtml(def.desc)}</p>
-        </div>
-        <span class="sound-option-badge">Use this</span>
-      </button>
-    `;
-  }).join("");
-
-  el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Sound Effects Tester</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">HanaPath Audio Lab</h2>
-      <div class="screen-sub" style="margin-bottom:0;">Preview synthesized sound options and select which ones are active in the app. Selection is saved automatically.</div>
-    </div>
-    
-    <div class="card">
-      <div class="eyebrow mb-12">Correct Answer (Right) Options</div>
-      <div style="display:flex; flex-direction:column; gap:12px;">
-        ${correctRowsHtml}
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Incorrect Answer (Wrong) Options</div>
-      <div style="display:flex; flex-direction:column; gap:12px;">
-        ${incorrectRowsHtml}
-      </div>
-    </div>
-  `;
-
-  // Bind selection and play
-  el.querySelectorAll("[data-correct-opt]").forEach((row) => {
-    row.addEventListener("click", () => {
-      const opt = Number(row.dataset.correctOpt);
-      playCorrectSoundOption(opt);
-      state.activeCorrectSound = opt;
-      saveState();
-      // update active classes
-      el.querySelectorAll("[data-correct-opt]").forEach((r) => {
-        r.classList.toggle("active", Number(r.dataset.correctOpt) === opt);
-      });
-    });
-  });
-
-  el.querySelectorAll("[data-incorrect-opt]").forEach((row) => {
-    row.addEventListener("click", () => {
-      const opt = Number(row.dataset.incorrectOpt);
-      playIncorrectSoundOption(opt);
-      state.activeIncorrectSound = opt;
-      saveState();
-      // update active classes
-      el.querySelectorAll("[data-incorrect-opt]").forEach((r) => {
-        r.classList.toggle("active", Number(r.dataset.incorrectOpt) === opt);
-      });
-    });
   });
 }
 
