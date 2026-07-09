@@ -7318,26 +7318,26 @@ function shuffle(list) {
 }
 
 const CORRECT_SOUND_DEFS = [
-  { name: "Soothing Bubble Pop 1", desc: "A soft, warm bubble pop (low-frequency 220Hz to 300Hz glide).", url: "audio/sound_effects/correct/correct_1.wav" },
-  { name: "Soothing Bubble Pop 2", desc: "A slightly higher warm bubble pop (250Hz to 350Hz).", url: "audio/sound_effects/correct/correct_2.wav" },
-  { name: "Soothing Double Pop", desc: "Two quick, soft bubble pops back-to-back.", url: "audio/sound_effects/correct/correct_3.wav" },
-  { name: "Soft Wooden Pluck 1", desc: "A warm, muted wooden pluck (220Hz fundamental).", url: "audio/sound_effects/correct/correct_4.wav" },
-  { name: "Soft Wooden Pluck 2", desc: "A slightly higher warm wooden pluck (280Hz).", url: "audio/sound_effects/correct/correct_5.wav" },
-  { name: "Warm Rhodes Chord", desc: "A soft, lush electric piano major chord triad.", url: "audio/sound_effects/correct/correct_6.wav" },
-  { name: "Warm Rhodes Major 7th", desc: "A cozy electric piano major 7th chord.", url: "audio/sound_effects/correct/correct_7.wav" },
-  { name: "Gentle Marimba Tap 1", desc: "A soft, warm marimba chime (261Hz).", url: "audio/sound_effects/correct/correct_8.wav" },
-  { name: "Gentle Marimba Tap 2", desc: "A slightly higher soft marimba chime (329Hz).", url: "audio/sound_effects/correct/correct_9.wav" },
-  { name: "Water Drop Bubble", desc: "A smooth, rising water droplet sweep.", url: "audio/sound_effects/correct/correct_10.wav" },
-  { name: "Soft Forest Chirp", desc: "Two quick, gentle bird-like soft pops.", url: "audio/sound_effects/correct/correct_11.wav" },
-  { name: "Soft Kalimba Note 1", desc: "A warm thumb-piano tine pluck (220Hz).", url: "audio/sound_effects/correct/correct_12.wav" },
-  { name: "Soft Kalimba Note 2", desc: "A slightly higher soft kalimba pluck (330Hz).", url: "audio/sound_effects/correct/correct_13.wav" },
-  { name: "Cozy Rhodes Arpeggio", desc: "A warm Rhodes chord arpeggiated upward.", url: "audio/sound_effects/correct/correct_14.wav" },
-  { name: "Warm Wood Double Tap", desc: "Two cozy, muted wood block clicks.", url: "audio/sound_effects/correct/correct_15.wav" },
-  { name: "Low Whistle Glide", desc: "A gentle, human-like warm sliding whistle.", url: "audio/sound_effects/correct/correct_16.wav" },
-  { name: "Soothing Ambient Swell", desc: "A slow, warm, breathing synthesizer swell.", url: "audio/sound_effects/correct/correct_17.wav" },
-  { name: "Warm Pentatonic Rise", desc: "Three gentle marimba notes rising in a warm scale.", url: "audio/sound_effects/correct/correct_18.wav" },
+  { name: "Bubblegum Chord Cascade", desc: "Duolingo-style rising arpeggio bubble pops (C5 -> E5 -> G5 -> C6). Warm and cute!", url: "audio/sound_effects/correct/correct_1.wav" },
+  { name: "Pentatonic Bubble Rise", desc: "Five rapid rising pops in the major pentatonic scale (C5 -> D5 -> E5 -> G5 -> A5).", url: "audio/sound_effects/correct/correct_2.wav" },
+  { name: "Bubblegum Double Pop", desc: "A bouncy, high double pop (F5 -> Bb5).", url: "audio/sound_effects/correct/correct_3.wav" },
+  { name: "Bubblegum Major 7th", desc: "Four soft pop notes played as a warm simultaneous chord.", url: "audio/sound_effects/correct/correct_4.wav" },
+  { name: "Kalimba Bubble Arpeggio", desc: "A cute thumb-piano arpeggio with bubble-pop sweeps (E5 -> G#5 -> B5 -> E6).", url: "audio/sound_effects/correct/correct_5.wav" },
+  { name: "Single Bubblegum Pop 1", desc: "A clean, single bubblegum pop note (F5).", url: "audio/sound_effects/correct/correct_6.wav" },
+  { name: "Single Bubblegum Pop 2", desc: "A slightly higher single bubblegum pop (Bb5).", url: "audio/sound_effects/correct/correct_7.wav" },
+  { name: "Triple Bubblegum Cascade", desc: "Three rapid pop notes ascending in pitch (C5 -> G5 -> C6).", url: "audio/sound_effects/correct/correct_8.wav" },
+  { name: "Water Droplet Pop", desc: "A smooth, wet rising water droplet pop sweep.", url: "audio/sound_effects/correct/correct_9.wav" },
+  { name: "Soft Bouncy Pop", desc: "A single bouncy pop note (D5).", url: "audio/sound_effects/correct/correct_10.wav" },
+  { name: "Bouncy Toy Pop", desc: "A cute spring-like pitch vibrato pop.", url: "audio/sound_effects/correct/correct_11.wav" },
+  { name: "Morning Bird Pop", desc: "Two rapid, tiny high-frequency pops.", url: "audio/sound_effects/correct/correct_12.wav" },
+  { name: "Harmonized Bubble Pop", desc: "Two soft pop notes played in a warm third harmony.", url: "audio/sound_effects/correct/correct_13.wav" },
+  { name: "Rhodes Chord Swell", desc: "A warm electric piano major triad swell.", url: "audio/sound_effects/correct/correct_14.wav" },
+  { name: "Double Pop High", desc: "Two rapid pops jumping up to E6.", url: "audio/sound_effects/correct/correct_15.wav" },
+  { name: "Whistle Bubble Pop", desc: "A gentle human whistle slide resolved into a pop.", url: "audio/sound_effects/correct/correct_16.wav" },
+  { name: "Ambient Bubble Swell", desc: "A slow, warm ambient chime bar swell.", url: "audio/sound_effects/correct/correct_17.wav" },
+  { name: "Pentatonic Pop Cascade", desc: "Three rapid pop notes (C5 -> E5 -> A5).", url: "audio/sound_effects/correct/correct_18.wav" },
   { name: "Gentle Rain Plop", desc: "A soft, watery rain pop.", url: "audio/sound_effects/correct/correct_19.wav" },
-  { name: "Soft Sleepy Chime", desc: "A peaceful, muffled two-tone chime chord.", url: "audio/sound_effects/correct/correct_20.wav" }
+  { name: "Soft Sleepy Chime", desc: "A peaceful, warm two-tone chime chord.", url: "audio/sound_effects/correct/correct_20.wav" }
 ];
 
 const INCORRECT_SOUND_DEFS = [
