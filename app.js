@@ -4253,6 +4253,10 @@ const WORD_BANK_SORTS = [
 
 const WORD_BANK_PAGE_SIZE = 50;
 
+// Reversible Words-lesson speaking step. Keep the renderer in place so the
+// step can be restored by flipping this one flag later.
+const WORD_LESSON_REPEAT_STEP_ENABLED = false;
+
 const WORD_PATH_LEVEL_FILTERS = [
   { id: "all", label: "All learning levels" },
   { id: "ready", label: "Ready / learning" },
@@ -5482,7 +5486,17 @@ function renderWordLesson() {
   bindWordLessonRoot(el.querySelector("#wordLessonRoot"));
 }
 
+function getWordLessonIntroGoal(lesson) {
+  const goal = String(lesson?.goal || "");
+  if (WORD_LESSON_REPEAT_STEP_ENABLED) return goal;
+  return goal.replace("see, hear, type, repeat, and review", "see, hear, type, and review");
+}
+
 function wordLessonIntroHtml(lesson, view) {
+  const repeatTutorialRow = WORD_LESSON_REPEAT_STEP_ENABLED
+    ? '<div class="study-row"><div><div class="study-row-ko">🗣 Repeat aloud</div><div class="study-row-sub">Hear the word, say it out loud, then tap “I said it”. Nobody grades you.</div></div></div>'
+    : "";
+  const goal = getWordLessonIntroGoal(lesson);
   const tutorialHtml = lesson.tutorial
     ? `
       <div class="card">
@@ -5490,7 +5504,7 @@ function wordLessonIntroHtml(lesson, view) {
         <div class="study-list">
           <div class="study-row"><div><div class="study-row-ko">▶ Hear word · Hear example</div><div class="study-row-sub">Every word and sentence has audio. Tap to listen as often as you like.</div></div></div>
           <div class="study-row"><div><div class="study-row-ko">⌨ Type it</div><div class="study-row-sub">You'll type each word once. No Korean keyboard? Tap the syllable blocks instead.</div></div></div>
-          <div class="study-row"><div><div class="study-row-ko">🗣 Repeat aloud</div><div class="study-row-sub">Hear the word, say it out loud, then tap “I said it”. Nobody grades you.</div></div></div>
+          ${repeatTutorialRow}
           <div class="study-row"><div><div class="study-row-ko">✓ Known · ✗ Hard</div><div class="study-row-sub">Mark words you already know or find hard. Hard words come back sooner in review.</div></div></div>
           <div class="study-row"><div><div class="study-row-ko">🔁 Review</div><div class="study-row-sub">Finished words are scheduled for spaced review so they stick.</div></div></div>
           <div class="study-row"><div><div class="study-row-ko">📚 Word Bank</div><div class="study-row-sub">Look up any word mid-lesson — you'll return to the exact spot you left.</div></div></div>
@@ -5502,7 +5516,7 @@ function wordLessonIntroHtml(lesson, view) {
       <div class="eyebrow">Stage ${escapeHtml(lesson.stage)} · Word lesson</div>
       <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(lesson.title)}</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(lesson.subtitle || "")}</div>
-      <div class="text-muted-2 fs-sm" style="margin-bottom:12px;">${escapeHtml(lesson.goal || "")}</div>
+      <div class="text-muted-2 fs-sm" style="margin-bottom:12px;">${escapeHtml(goal)}</div>
       <div class="flex-between" style="gap:12px; flex-wrap:wrap;">
         <span class="pill accent">${view.words.length} new word${view.words.length === 1 ? "" : "s"}</span>
         <button class="button primary compact" type="button" data-word-lesson-start>Start</button>
