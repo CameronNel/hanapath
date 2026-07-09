@@ -2950,6 +2950,8 @@ function loadState() {
     // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
     alphabetBoardMode: "keyboard",
     alphabetBoardLabels: "none",
+    activeCorrectSound: 2,
+    activeIncorrectSound: 1,
     tabLevels: { alphabet: 1, vocabulary: 1, sentences: 1, listening: 1 },
     skills: { vocab: 8, grammar: 5, reading: 6, listening: 3, speaking: 2, pronunciation: 4, writing: 2 },
     round: 1, asked: 0, correct: 0, streak: 0, bestStreak: 0,
@@ -7315,82 +7317,124 @@ function shuffle(list) {
   return copy;
 }
 
-function playCorrectSound() {
+function playCorrectSoundOption(option) {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
     const ctx = new AudioContext();
 
-    // Pop 1
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.type = "sine";
-    osc1.frequency.setValueAtTime(380, ctx.currentTime);
-    osc1.frequency.exponentialRampToValueAtTime(760, ctx.currentTime + 0.09);
-    gain1.gain.setValueAtTime(0, ctx.currentTime);
-    gain1.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.035);
-    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
-    
-    osc1.connect(gain1);
-    gain1.connect(ctx.destination);
-    osc1.start(ctx.currentTime);
-    osc1.stop(ctx.currentTime + 0.09);
+    if (option === 1) {
+      // Option 1: Single bubble pop
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1046.5, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.12);
+    } else {
+      // Option 2: Double bubble pop (Plop-Plip)
+      // Pop 1
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(380, ctx.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(760, ctx.currentTime + 0.09);
+      gain1.gain.setValueAtTime(0, ctx.currentTime);
+      gain1.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.035);
+      gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+      
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(ctx.currentTime);
+      osc1.stop(ctx.currentTime + 0.09);
 
-    // Pop 2 (starts at t = 0.07s)
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.type = "sine";
-    osc2.frequency.setValueAtTime(580, ctx.currentTime + 0.07);
-    osc2.frequency.exponentialRampToValueAtTime(1160, ctx.currentTime + 0.07 + 0.09);
-    gain2.gain.setValueAtTime(0, ctx.currentTime + 0.07);
-    gain2.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.07 + 0.035);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07 + 0.09);
-    
-    osc2.connect(gain2);
-    gain2.connect(ctx.destination);
-    osc2.start(ctx.currentTime + 0.07);
-    osc2.stop(ctx.currentTime + 0.07 + 0.09);
+      // Pop 2
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(580, ctx.currentTime + 0.07);
+      osc2.frequency.exponentialRampToValueAtTime(1160, ctx.currentTime + 0.07 + 0.09);
+      gain2.gain.setValueAtTime(0, ctx.currentTime + 0.07);
+      gain2.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.07 + 0.035);
+      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07 + 0.09);
+      
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(ctx.currentTime + 0.07);
+      osc2.stop(ctx.currentTime + 0.07 + 0.09);
+    }
   } catch (e) {
-    console.warn("Failed to play correct sound effect:", e);
+    console.warn("Failed to play correct option:", e);
   }
 }
 
-function playIncorrectSound() {
+function playIncorrectSoundOption(option) {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
     const ctx = new AudioContext();
 
-    // Pulse 1
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.type = "triangle";
-    osc1.frequency.setValueAtTime(180, ctx.currentTime);
-    gain1.gain.setValueAtTime(0, ctx.currentTime);
-    gain1.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.045);
-    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
-    
-    osc1.connect(gain1);
-    gain1.connect(ctx.destination);
-    osc1.start(ctx.currentTime);
-    osc1.stop(ctx.currentTime + 0.09);
+    if (option === 1) {
+      // Option 1: Double buzz (eeh-eh)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = "triangle";
+      osc1.frequency.setValueAtTime(180, ctx.currentTime);
+      gain1.gain.setValueAtTime(0, ctx.currentTime);
+      gain1.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.045);
+      gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+      
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(ctx.currentTime);
+      osc1.stop(ctx.currentTime + 0.09);
 
-    // Pulse 2 (starts at t = 0.15s)
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.type = "triangle";
-    osc2.frequency.setValueAtTime(145, ctx.currentTime + 0.15);
-    gain2.gain.setValueAtTime(0, ctx.currentTime + 0.15);
-    gain2.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.15 + 0.06);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15 + 0.12);
-    
-    osc2.connect(gain2);
-    gain2.connect(ctx.destination);
-    osc2.start(ctx.currentTime + 0.15);
-    osc2.stop(ctx.currentTime + 0.15 + 0.12);
+      // Pop 2
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = "triangle";
+      osc2.frequency.setValueAtTime(145, ctx.currentTime + 0.15);
+      gain2.gain.setValueAtTime(0, ctx.currentTime + 0.15);
+      gain2.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.15 + 0.06);
+      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15 + 0.12);
+      
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(ctx.currentTime + 0.15);
+      osc2.stop(ctx.currentTime + 0.15 + 0.12);
+    } else {
+      // Option 2: Slide-down buzz
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(120, ctx.currentTime + 0.25);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.25);
+    }
   } catch (e) {
-    console.warn("Failed to play incorrect sound effect:", e);
+    console.warn("Failed to play incorrect option:", e);
   }
+}
+
+function playCorrectSound() {
+  playCorrectSoundOption(state.activeCorrectSound || 2);
+}
+
+function playIncorrectSound() {
+  playIncorrectSoundOption(state.activeIncorrectSound || 1);
 }
 
 function getCorrectToastElement() {
@@ -11999,7 +12043,7 @@ let activeTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTa
 // dashboard; Learn / Practice / Progress each open a submenu of tiles, and a
 // tile opens a focused content screen with a "back to <hub>" bar at the top.
 
-const HUBS = ["learn", "practice", "progress"];
+const HUBS = ["learn", "practice", "progress", "sounds"];
 
 const HUB_DEFS = {
   learn: {
@@ -12345,6 +12389,10 @@ function getActiveLearnLevel(itemId) {
 }
 
 function renderHubMenu(hub) {
+  if (hub === "sounds") {
+    renderSoundTestScreen();
+    return;
+  }
   const def = HUB_DEFS[hub];
   const el = showScreen("menu");
   if (!def || !el) return;
@@ -12369,6 +12417,91 @@ function renderHubMenu(hub) {
   `;
   el.querySelectorAll("[data-hub-item]").forEach((btn) => {
     btn.addEventListener("click", () => openHubItem(hub, btn.dataset.hubItem));
+  });
+}
+
+function renderSoundTestScreen() {
+  const el = showScreen("menu");
+  if (!el) return;
+  
+  const activeCorrect = state.activeCorrectSound || 2;
+  const activeIncorrect = state.activeIncorrectSound || 1;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Sound Effects Tester</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">HanaPath Audio Lab</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Preview synthesized sound options and select which ones are active in the app. Selection is saved automatically.</div>
+    </div>
+    
+    <div class="card">
+      <div class="eyebrow mb-12">Correct Answer (Right) Options</div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <button class="sound-option-row${activeCorrect === 1 ? " active" : ""}" type="button" data-correct-opt="1">
+          <div class="sound-option-info">
+            <strong>Option 1: Single Bubble Pop</strong>
+            <p class="sound-option-desc">A quick, single high-pitched bubble pop.</p>
+          </div>
+          <span class="sound-option-badge">Use this</span>
+        </button>
+        
+        <button class="sound-option-row${activeCorrect === 2 ? " active" : ""}" type="button" data-correct-opt="2">
+          <div class="sound-option-info">
+            <strong>Option 2: Double Pop (Plop-Plip)</strong>
+            <p class="sound-option-desc">A cute, bouncy double bubble pop sound.</p>
+          </div>
+          <span class="sound-option-badge">Use this</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-12">Incorrect Answer (Wrong) Options</div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <button class="sound-option-row${activeIncorrect === 1 ? " active" : ""}" type="button" data-incorrect-opt="1">
+          <div class="sound-option-info">
+            <strong>Option 1: Double Buzz (Eeh-Eh)</strong>
+            <p class="sound-option-desc">A soft, quick double buzzer sound.</p>
+          </div>
+          <span class="sound-option-badge">Use this</span>
+        </button>
+        
+        <button class="sound-option-row${activeIncorrect === 2 ? " active" : ""}" type="button" data-incorrect-opt="2">
+          <div class="sound-option-info">
+            <strong>Option 2: Slide-Down Buzz</strong>
+            <p class="sound-option-desc">A single, faint descending buzzer tone.</p>
+          </div>
+          <span class="sound-option-badge">Use this</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Bind selection and play
+  el.querySelectorAll("[data-correct-opt]").forEach((row) => {
+    row.addEventListener("click", () => {
+      const opt = Number(row.dataset.correctOpt);
+      playCorrectSoundOption(opt);
+      state.activeCorrectSound = opt;
+      saveState();
+      // update active classes
+      el.querySelectorAll("[data-correct-opt]").forEach((r) => {
+        r.classList.toggle("active", Number(r.dataset.correctOpt) === opt);
+      });
+    });
+  });
+
+  el.querySelectorAll("[data-incorrect-opt]").forEach((row) => {
+    row.addEventListener("click", () => {
+      const opt = Number(row.dataset.incorrectOpt);
+      playIncorrectSoundOption(opt);
+      state.activeIncorrectSound = opt;
+      saveState();
+      // update active classes
+      el.querySelectorAll("[data-incorrect-opt]").forEach((r) => {
+        r.classList.toggle("active", Number(r.dataset.incorrectOpt) === opt);
+      });
+    });
   });
 }
 

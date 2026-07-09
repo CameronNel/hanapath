@@ -3552,3 +3552,63 @@ li { margin-bottom: 4px; }
 }
 .ss-tok-ok { border-color: var(--good); color: var(--good); background: rgba(45,212,191,.12); }
 .ss-tok-miss { border-color: var(--bad); color: var(--bad); background: rgba(248,113,113,.10); }
+
+/* ── SOUND OPTION TESTER ────────────────────────────────────────── */
+.sound-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.sound-option-row:hover {
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 255, 0.05);
+}
+.sound-option-row:active {
+  transform: translateY(1px);
+}
+.sound-option-row.active {
+  border-color: var(--accent);
+  background: rgba(91, 157, 255, 0.12);
+}
+.sound-option-info {
+  flex: 1;
+  min-width: 0;
+}
+.sound-option-info strong {
+  display: block;
+  font-size: .92rem;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.sound-option-desc {
+  font-size: .78rem;
+  color: var(--muted-2);
+  line-height: 1.35;
+  margin: 0;
+}
+.sound-option-badge {
+  flex-shrink: 0;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 5px 10px;
+  border-radius: var(--radius-xs);
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  transition: all .15s;
+}
+.sound-option-row.active .sound-option-badge {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #06122b;
+}

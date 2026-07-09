@@ -1,9 +1,9 @@
-// [2026-07-09] Cache bumped to v274: add correct/incorrect sound effects.
-const CACHE_NAME = "hanapath-shell-v274";
+// [2026-07-09] Cache bumped to v275: add sound tester tab on home screen.
+const CACHE_NAME = "hanapath-shell-v275";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260709d",
+  "./styles.css?v=20260709e",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705f",
   "./words_curated_core.js?v=20260705e",
@@ -12,7 +12,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260709d",
+  "./app.js?v=20260709e",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
