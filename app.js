@@ -2989,6 +2989,7 @@ function loadState() {
     vocabReviewEvents: [],
     vocabLessonCompleted: [],
     vocabLessonActive: null,
+    vocabLessonSession: null,
     vocabDailyNewTarget: 5,
     wordPathCategory: "",
     wordPathLevel: "all",
@@ -4275,6 +4276,82 @@ let wordBankSearchTimer = null;
 // (including the Word Bank quick reference) but not a full reload.
 let wordLessonView = null;
 
+function serializeWordLessonView(view) {
+  if (!view || !view.lessonId || view.isReview) return null;
+  return {
+    version: 1,
+    lessonId: view.lessonId,
+    mode: view.mode,
+    stepIndex: view.stepIndex,
+    questionIndex: view.questionIndex,
+    words: (view.words || []).map((word) => word.id),
+    steps: view.steps || [],
+    questions: view.questions || [],
+    results: view.results || [],
+    typedAttempts: view.typedAttempts || {},
+    typedValue: view.typedValue || "",
+    typedFeedback: view.typedFeedback || "",
+    typedDone: Boolean(view.typedDone),
+    answered: Boolean(view.answered),
+    selectedChoice: view.selectedChoice || "",
+    checkCorrect: view.checkCorrect ?? null,
+    checkFeedback: view.checkFeedback || "",
+    reviewingCheckpoint: Boolean(view.reviewingCheckpoint),
+    checkpointTypedValue: view.checkpointTypedValue || "",
+    typeTiles: view.typeTiles || null,
+    typeTilesWordId: view.typeTilesWordId || null,
+    stepStartedAt: Number(view.stepStartedAt) || 0,
+    questionStartedAt: Number(view.questionStartedAt) || 0,
+    resultSaved: Boolean(view.resultSaved),
+  };
+}
+
+function rehydrateWordLessonView(snapshot, lesson) {
+  if (!snapshot || snapshot.version !== 1 || !lesson || snapshot.lessonId !== lesson.id) return null;
+  const validModes = new Set(["intro", "study", "check", "result"]);
+  if (!validModes.has(snapshot.mode) || !Array.isArray(snapshot.words) || !Array.isArray(snapshot.steps) || !Array.isArray(snapshot.questions)) return null;
+  const words = snapshot.words.map((id) => curatedWordsById.get(id));
+  if (words.some((word) => !word) || snapshot.steps.some((step) => !step || !curatedWordsById.has(step.wordId))) return null;
+  if (snapshot.questions.some((question) => !question || !curatedWordsById.has(question.wordId))) return null;
+  if (!Number.isInteger(snapshot.stepIndex) || snapshot.stepIndex < 0 || snapshot.stepIndex > snapshot.steps.length) return null;
+  if (!Number.isInteger(snapshot.questionIndex) || snapshot.questionIndex < 0 || snapshot.questionIndex > snapshot.questions.length) return null;
+  return {
+    lessonId: lesson.id,
+    isReview: false,
+    mode: snapshot.mode,
+    stepIndex: snapshot.stepIndex,
+    questionIndex: snapshot.questionIndex,
+    stepStartedAt: Number(snapshot.stepStartedAt) || 0,
+    questionStartedAt: Number(snapshot.questionStartedAt) || 0,
+    steps: snapshot.steps,
+    questions: snapshot.questions,
+    words,
+    typedValue: String(snapshot.typedValue || ""),
+    typedFeedback: String(snapshot.typedFeedback || ""),
+    typedDone: Boolean(snapshot.typedDone),
+    typedAttempts: snapshot.typedAttempts && typeof snapshot.typedAttempts === "object" ? snapshot.typedAttempts : {},
+    answered: Boolean(snapshot.answered),
+    selectedChoice: String(snapshot.selectedChoice || ""),
+    checkCorrect: snapshot.checkCorrect ?? null,
+    checkFeedback: String(snapshot.checkFeedback || ""),
+    results: Array.isArray(snapshot.results) ? snapshot.results : [],
+    resultSaved: Boolean(snapshot.resultSaved),
+    reviewingCheckpoint: Boolean(snapshot.reviewingCheckpoint),
+    checkpointTypedValue: String(snapshot.checkpointTypedValue || ""),
+    typeTiles: Array.isArray(snapshot.typeTiles) ? snapshot.typeTiles : null,
+    typeTilesWordId: snapshot.typeTilesWordId || null,
+  };
+}
+
+function persistWordLessonSession(view = wordLessonView) {
+  if (!view || view.isReview || view.mode === "result" || view.resultSaved) {
+    state.vocabLessonSession = null;
+  } else {
+    state.vocabLessonSession = serializeWordLessonView(view);
+  }
+  saveState();
+}
+
 function startWordLessonStudyTimer(view) {
   if (view) view.stepStartedAt = Date.now();
 }
@@ -4305,6 +4382,7 @@ function migrateVocabState() {
   if (!Array.isArray(state.vocabLessonCompleted)) state.vocabLessonCompleted = [];
   state.vocabLessonCompleted = [...new Set(state.vocabLessonCompleted.filter((id) => typeof id === "string"))];
   if (typeof state.vocabLessonActive !== "string") state.vocabLessonActive = null;
+  if (!state.vocabLessonSession || typeof state.vocabLessonSession !== "object" || Array.isArray(state.vocabLessonSession)) state.vocabLessonSession = null;
   if (!Number.isInteger(state.vocabDailyNewTarget) || state.vocabDailyNewTarget <= 0) state.vocabDailyNewTarget = 5;
   state.wordPathCategory = typeof state.wordPathCategory === "string" ? state.wordPathCategory : "";
   state.wordPathLevel = typeof state.wordPathLevel === "string" ? state.wordPathLevel : "all";
@@ -5074,11 +5152,30 @@ function buildWordLessonQuestions(lesson, words) {
     if (question) questions.push(question);
   };
 
+  const hasCustomCheckpoint = checkpoints.some((checkpoint) => ["form-recognition", "form-production", "function-usage"].includes(checkpoint));
+  if (!hasCustomCheckpoint && (checkpoints.includes("ko-to-meaning") || checkpoints.includes("meaning-to-ko"))) {
+    words.forEach((word, index) => push(word, index % 2 === 0 ? "koToMeaning" : "meaningToKo"));
+    if (checkpoints.includes("type-ko")) {
+      for (let index = 0; index < words.length; index += 2) push(words[index], "typeKo");
+    }
+    if (checkpoints.includes("sentence-blank")) {
+      const viable = words.filter((word) => generateWordQuestionFor(word, "context"));
+      const count = Math.min(3, viable.length);
+      const selected = [];
+      for (let index = 0; index < count; index += 1) {
+        const word = viable[Math.floor(index * viable.length / count)];
+        if (word && !selected.includes(word)) selected.push(word);
+      }
+      selected.forEach((word) => push(word, "context"));
+    }
+    return questions;
+  }
+
   if (checkpoints.includes("ko-to-meaning")) words.forEach((word) => push(word, "koToMeaning"));
-  if (checkpoints.includes("audio-to-meaning")) words.slice(0, 2).forEach((word) => push(word, "audioToMeaning"));
+  if (checkpoints.includes("audio-to-meaning")) words.forEach((word) => push(word, "audioToMeaning"));
   if (checkpoints.includes("meaning-to-ko")) words.forEach((word) => push(word, "meaningToKo"));
   if (checkpoints.includes("type-ko")) {
-    [words[0], words[words.length - 1]].filter(Boolean).forEach((word) => push(word, "typeKo"));
+    for (let index = 0; index < words.length; index += 2) push(words[index], "typeKo");
   }
   if (checkpoints.includes("form-recognition")) {
     words.forEach((word) => push(word, "formRecognition"));
@@ -5087,12 +5184,7 @@ function buildWordLessonQuestions(lesson, words) {
     words.forEach((word) => push(word, "formProduction"));
   }
   if (checkpoints.includes("sentence-blank")) {
-    let added = 0;
-    words.forEach((word) => {
-      if (added >= 3) return;
-      const question = generateWordQuestionFor(word, "context");
-      if (question) { questions.push(question); added += 1; }
-    });
+    words.forEach((word) => push(word, "context"));
   }
   if (checkpoints.includes("function-usage")) {
     words.forEach((word) => push(word, "functionUsage"));
@@ -5140,10 +5232,11 @@ function openWordLesson(lessonId, { resume = false } = {}) {
   }
   stopSpeech();
   if (!resume || !wordLessonView || wordLessonView.lessonId !== lesson.id) {
-    initWordLessonView(lesson);
+    wordLessonView = resume ? rehydrateWordLessonView(state.vocabLessonSession, lesson) : null;
+    if (!wordLessonView) initWordLessonView(lesson);
   }
   state.vocabLessonActive = lesson.id;
-  saveState();
+  persistWordLessonSession(wordLessonView);
   renderWordLesson();
 }
 
@@ -5576,6 +5669,7 @@ function wordLessonPassed(lesson, view) {
 function finishWordLesson(lesson, view) {
   if (view.resultSaved) return;
   view.resultSaved = true;
+  state.vocabLessonSession = null;
   if (view.isReview) { saveState(); return; }
   // Make sure every new word has an SRS record so it shows up in review.
   view.words.forEach((word) => {
@@ -5632,6 +5726,7 @@ function advanceWordLessonStudy(view) {
     view.mode = "result";
     finishWordLesson(getWordLessonById(view.lessonId), view);
   }
+  persistWordLessonSession(view);
   renderWordLesson();
 }
 
@@ -5651,6 +5746,7 @@ function advanceWordLessonCheck(view) {
     view.mode = "result";
     finishWordLesson(view.isReview ? null : getWordLessonById(view.lessonId), view);
   }
+  persistWordLessonSession(view);
   renderWordLesson();
 }
 
@@ -5665,6 +5761,7 @@ function returnToWordLessonCheckpoint(view) {
   view.typedDone = false;
   view.typeTiles = null;
   view.typeTilesWordId = null;
+  persistWordLessonSession(view);
   renderWordLesson();
 }
 
@@ -5686,7 +5783,7 @@ function answerWordLessonChoice(view, choice) {
     lessonId: view.lessonId || null,
     result: isCorrect ? "correct" : "incorrect",
   });
-  saveState();
+  persistWordLessonSession(view);
   if (isCorrect) showCorrectToast();
   renderWordLesson();
 }
@@ -5715,7 +5812,7 @@ function answerWordLessonTyped(view) {
     lessonId: view.lessonId || null,
     result: isCorrect ? "correct" : "incorrect",
   });
-  saveState();
+  persistWordLessonSession(view);
   if (isCorrect) showCorrectToast();
   renderWordLesson();
 }
@@ -5737,7 +5834,7 @@ function checkWordLessonStudyTyped(view) {
     lessonId: view.lessonId || null,
     result: isCorrect ? "correct" : "incorrect",
   });
-  saveState();
+  persistWordLessonSession(view);
   if (isCorrect) {
     view.typedDone = true;
     view.typedFeedback = `<strong>Correct.</strong> <span lang="ko">${escapeHtml(getWordTypeTarget(word))}</span> — ${escapeHtml(word.meaningShort)}.`;
@@ -5745,6 +5842,7 @@ function checkWordLessonStudyTyped(view) {
   } else {
     view.typedFeedback = `<strong>Not yet.</strong> You typed <strong lang="ko">${escapeHtml(typed)}</strong>. Target: <strong lang="ko">${escapeHtml(getWordTypeTarget(word))}</strong>. Try again or tap the blocks.`;
   }
+  persistWordLessonSession(view);
   renderWordLesson();
 }
 
@@ -5769,6 +5867,7 @@ function bindWordLessonRoot(root) {
       view.stepIndex = 0;
       if (view.mode === "study") startWordLessonStudyTimer(view);
       else startWordLessonQuestionTimer(view);
+      persistWordLessonSession(view);
       renderWordLesson();
       return;
     }
@@ -5789,6 +5888,7 @@ function bindWordLessonRoot(root) {
         view.typeTiles = null;
         view.typeTilesWordId = null;
         startWordLessonStudyTimer(view);
+        persistWordLessonSession(view);
         renderWordLesson();
       }
       return;
@@ -5806,6 +5906,7 @@ function bindWordLessonRoot(root) {
         view.typeTiles = null;
         view.typeTilesWordId = null;
         startWordLessonStudyTimer(view);
+        persistWordLessonSession(view);
         renderWordLesson();
       }
       return;
@@ -5831,12 +5932,14 @@ function bindWordLessonRoot(root) {
       view.typedValue = String(view.typedValue || "") + tileText;
       const input = root.querySelector("#wordTypeInput");
       if (input) input.value = view.typedValue;
+      persistWordLessonSession(view);
       return;
     }
     if (event.target.closest("[data-word-tile-erase]")) {
       view.typedValue = Array.from(String(view.typedValue || "")).slice(0, -1).join("");
       const input = root.querySelector("#wordTypeInput");
       if (input) input.value = view.typedValue;
+      persistWordLessonSession(view);
       return;
     }
     if (event.target.closest("[data-word-type-check]")) { checkWordLessonStudyTyped(view); return; }
