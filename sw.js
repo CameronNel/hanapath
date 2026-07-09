@@ -1,5 +1,5 @@
 // [2026-07-09] Cache bumped to v288: persist guided Words lesson sessions safely across reloads.
-const CACHE_NAME = "hanapath-shell-v288";
+const CACHE_NAME = "hanapath-shell-v289";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,11 +8,11 @@ const APP_SHELL = [
   "./audio_map.js?v=20260709g",
   "./words_curated_core.js?v=20260705e",
   "./words_inflect.js?v=20260703c",
-  "./words_lesson_plan.js?v=20260705e",
+  "./words_lesson_plan.js?v=20260709f",
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260709q",
+  "./app.js?v=20260709r",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

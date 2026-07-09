@@ -19,7 +19,7 @@
 //     the isFunctionWord gate, and the form-drill conjugation requirements —
 //     Track F4; dead checkpoints shipped silently for months before this)
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import vm from "node:vm";
@@ -27,8 +27,9 @@ import vm from "node:vm";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const strict = process.argv.includes("--strict");
 const planArgIndex = process.argv.indexOf("--plan");
-const planV2 = planArgIndex >= 0 && process.argv[planArgIndex + 1] === "v2";
-const planFile = planV2 ? "words_lesson_plan_v2.js" : "words_lesson_plan.js";
+const planV2Requested = planArgIndex >= 0 && process.argv[planArgIndex + 1] === "v2";
+const planFile = planV2Requested && existsSync(join(root, "words_lesson_plan_v2.js")) ? "words_lesson_plan_v2.js" : "words_lesson_plan.js";
+const planV2 = planV2Requested || readFileSync(join(root, planFile), "utf8").includes("HANAPATH_WORD_SECTIONS");
 
 const sandbox = { window: {} };
 vm.createContext(sandbox);

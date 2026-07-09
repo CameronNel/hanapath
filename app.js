@@ -2853,7 +2853,7 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // (this only bypasses the access gate, not completion tracking) — see
 // isLessonUnlocked() below and isWordLessonUnlocked() further down for the
 // two places this is consumed. Flip to true only for local testing.
-const TEST_UNLOCK_ALL_STAGES = true;
+const TEST_UNLOCK_ALL_STAGES = false;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -4376,6 +4376,41 @@ function getWordLessons() {
   return Array.isArray(window.HANAPATH_WORD_LESSONS) ? window.HANAPATH_WORD_LESSONS : [];
 }
 
+function isWordCurriculumV2() {
+  return Array.isArray(window.HANAPATH_WORD_SECTIONS) && Array.isArray(window.HANAPATH_WORD_UNITS);
+}
+
+function getWordSections() { return isWordCurriculumV2() ? window.HANAPATH_WORD_SECTIONS : []; }
+function getWordUnits() { return isWordCurriculumV2() ? window.HANAPATH_WORD_UNITS : []; }
+function getWordSectionById(sectionId) { return getWordSections().find((section) => section.id === sectionId) || null; }
+function getWordUnitById(unitId) { return getWordUnits().find((unit) => unit.id === unitId) || null; }
+function getWordLessonStudyWordIds(lesson) { return Array.isArray(lesson?.newWordIds) ? lesson.newWordIds : []; }
+function getWordLessonReviewWordIds(lesson) {
+  return lesson?.type === "checkpoint" ? (Array.isArray(lesson.reviewWordIds) ? lesson.reviewWordIds : []) : getWordLessonStudyWordIds(lesson);
+}
+function getWordUnitContentLessons(unit) {
+  return unit ? unit.lessonIds.map((id) => getWordLessonById(id)).filter((lesson) => lesson && lesson.type !== "checkpoint") : [];
+}
+function isWordUnitCrowned(unit) { return Boolean(unit && isWordLessonCompleted(unit.checkpointId)); }
+function isWordSectionUnlocked(section) {
+  if (!section) return false;
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  if (section.id === "s1") return getAlphabetProgress().complete;
+  const previous = getWordSectionById(section.prerequisiteSectionId);
+  return Boolean(previous && getWordUnits().filter((unit) => unit.sectionId === previous.id).every(isWordUnitCrowned));
+}
+function isWordUnitUnlocked(unit) {
+  if (!unit || !isWordSectionUnlocked(getWordSectionById(unit.sectionId))) return false;
+  return !unit.prerequisiteUnitId || isWordUnitCrowned(getWordUnitById(unit.prerequisiteUnitId));
+}
+function getLegacyCompletedWordIds(legacyLessonIds) {
+  const snapshot = window.HANAPATH_WORD_V1_SNAPSHOT;
+  const map = snapshot && snapshot.lessons && typeof snapshot.lessons === "object" ? snapshot.lessons : {};
+  const ids = new Set();
+  for (const lessonId of legacyLessonIds) for (const wordId of (Array.isArray(map[lessonId]) ? map[lessonId] : [])) ids.add(wordId);
+  return ids;
+}
+
 function migrateVocabState() {
   if (!state.vocabSrs || typeof state.vocabSrs !== "object" || Array.isArray(state.vocabSrs)) state.vocabSrs = {};
   state.vocabReviewEvents = normalizeVocabReviewEvents(state.vocabReviewEvents);
@@ -4383,6 +4418,27 @@ function migrateVocabState() {
   state.vocabLessonCompleted = [...new Set(state.vocabLessonCompleted.filter((id) => typeof id === "string"))];
   if (typeof state.vocabLessonActive !== "string") state.vocabLessonActive = null;
   if (!state.vocabLessonSession || typeof state.vocabLessonSession !== "object" || Array.isArray(state.vocabLessonSession)) state.vocabLessonSession = null;
+  if (!Array.isArray(state.vocabUnitMigrationCredit)) state.vocabUnitMigrationCredit = [];
+  if (isWordCurriculumV2() && Number(state.vocabPlanVersion || 1) < 2) {
+    const legacyLessonIds = [...state.vocabLessonCompleted];
+    const creditedWordIds = getLegacyCompletedWordIds(legacyLessonIds);
+    state.vocabLessonCompleted = [];
+    for (const lesson of getWordLessons()) {
+      if (lesson.type !== "content") continue;
+      const wordIds = getWordLessonStudyWordIds(lesson);
+      if (wordIds.length && wordIds.every((id) => creditedWordIds.has(id))) state.vocabLessonCompleted.push(lesson.id);
+    }
+    state.vocabLessonCompletedLegacy = legacyLessonIds;
+    state.vocabUnitMigrationCredit = getWordUnits()
+      .filter((unit) => getWordUnitContentLessons(unit).every((lesson) => isWordLessonCompleted(lesson.id)))
+      .map((unit) => unit.id);
+    state.vocabLessonActive = null;
+    state.vocabLessonSession = null;
+    state.wordPathCategory = null;
+    state.wordPathLevel = null;
+    state.vocabPlanVersion = 2;
+    saveState();
+  }
   if (!Number.isInteger(state.vocabDailyNewTarget) || state.vocabDailyNewTarget <= 0) state.vocabDailyNewTarget = 5;
   state.wordPathCategory = typeof state.wordPathCategory === "string" ? state.wordPathCategory : "";
   state.wordPathLevel = typeof state.wordPathLevel === "string" ? state.wordPathLevel : "all";
@@ -5127,6 +5183,14 @@ function isWordLessonCompleted(lessonId) {
 
 function isWordLessonUnlocked(lesson) {
   if (!lesson) return false;
+  if (isWordCurriculumV2()) {
+    const unit = getWordUnitById(lesson.unitId);
+    if (!isWordUnitUnlocked(unit)) return false;
+    const contentLessons = getWordUnitContentLessons(unit);
+    if (lesson.type === "checkpoint") return contentLessons.every((contentLesson) => isWordLessonCompleted(contentLesson.id));
+    const index = contentLessons.findIndex((contentLesson) => contentLesson.id === lesson.id);
+    return index <= 0 || isWordLessonCompleted(contentLessons[index - 1].id);
+  }
   if (TEST_UNLOCK_ALL_STAGES) return true; // see TEST_UNLOCK_ALL_STAGES above — must come before the alphabet-complete gate, not after
   if (lesson.unlock?.requiresAlphabetComplete && !getAlphabetProgress().complete) return false;
   const prev = lesson.unlock?.previousLessonId;
@@ -5138,7 +5202,7 @@ function getNextWordLesson() {
 }
 
 function getWordLessonWords(lesson) {
-  return (lesson.newWordIds || []).map((id) => curatedWordsById.get(id)).filter(Boolean);
+  return getWordLessonReviewWordIds(lesson).map((id) => curatedWordsById.get(id)).filter(Boolean);
 }
 
 // Checkpoint question list for a lesson: recognition first, then recall,
@@ -5195,15 +5259,15 @@ function buildWordLessonQuestions(lesson, words) {
 function initWordLessonView(lesson) {
   const words = getWordLessonWords(lesson);
   const steps = [];
-  words.forEach((word, index) => {
+  if (lesson.type !== "checkpoint") words.forEach((word, index) => {
     steps.push({ type: "card", wordId: word.id, wordIndex: index });
     steps.push({ type: "type", wordId: word.id, wordIndex: index });
-    steps.push({ type: "repeat", wordId: word.id, wordIndex: index });
+    if (typeof WORD_LESSON_REPEAT_STEP_ENABLED === "undefined" || WORD_LESSON_REPEAT_STEP_ENABLED) steps.push({ type: "repeat", wordId: word.id, wordIndex: index });
   });
   wordLessonView = {
     lessonId: lesson.id,
     isReview: false,
-    mode: "intro", // intro | study | check | result
+    mode: lesson.type === "checkpoint" ? "check" : "intro", // intro | study | check | result
     stepIndex: 0,
     questionIndex: 0,
     stepStartedAt: 0,
@@ -5638,7 +5702,7 @@ function wordLessonResultHtml(lesson, view) {
       <div class="eyebrow">${escapeHtml(lesson.title)} ${passed ? "complete" : "— almost"}</div>
       <h2 class="screen-title" style="margin-bottom:12px;">${passed ? "Lesson complete" : "Good try — review and retry"}</h2>
       <div class="word-result-grid">
-        <div class="stat-box"><span class="sv">${view.words.length}</span><span class="sl">New words</span></div>
+        <div class="stat-box"><span class="sv">${view.words.length}</span><span class="sl">${lesson.type === "checkpoint" ? "Review words" : "New words"}</span></div>
         <div class="stat-box"><span class="sv">${stats.typedCorrect}/${Math.max(stats.typedTotal, view.words.length)}</span><span class="sl">Typed</span></div>
         <div class="stat-box"><span class="sv">${stats.pct}%</span><span class="sl">First-try</span></div>
         <div class="stat-box"><span class="sv">${getVocabDueCount()}</span><span class="sl">Due for review</span></div>
@@ -5956,7 +6020,7 @@ function bindWordLessonRoot(root) {
 
   const input = root.querySelector("#wordTypeInput");
   if (input) {
-    input.addEventListener("input", () => { view.typedValue = input.value; });
+    input.addEventListener("input", () => { view.typedValue = input.value; persistWordLessonSession(view); });
     input.addEventListener("keydown", (event) => {
       if (event.key !== "Enter") return;
       event.preventDefault();
@@ -6726,7 +6790,7 @@ function getWordLessonCategoryId(lesson) {
   const fallbackWordsById = curatedWordsById.size
     ? null
     : new Map(getCuratedWords().map((word) => [word.id, word]));
-  const words = (lesson?.newWordIds || [])
+  const words = getWordLessonReviewWordIds(lesson)
     .map((id) => curatedWordsById.get(id) || fallbackWordsById?.get(id))
     .filter(Boolean);
   const group = words.find((word) => word.lessonGroup)?.lessonGroup;
@@ -6749,6 +6813,7 @@ function getWordLessonCategoryOptions(lessons) {
 }
 
 function getBasicWordLessons(lessons = getWordLessons()) {
+  if (isWordCurriculumV2()) return lessons.filter((lesson) => lesson.type === "content" && getWordUnitById(lesson.unitId)?.sectionId === "s1");
   const basicIds = new Set([
     "w0-post-hangul-bridge-01",
     "w0-post-hangul-bridge-02",
@@ -6768,8 +6833,9 @@ function wordLessonRowHtml(lesson, meta = getWordLessonPathMeta(lesson)) {
   const unlocked = meta.unlocked;
   const dotClass = completed ? "done" : current ? "next" : "lock";
   const pill = completed ? `<span class="pill green">Done</span>` : current ? `<span class="pill accent">Ready</span>` : `<span class="pill muted">Locked</span>`;
+  const wordIds = getWordLessonReviewWordIds(lesson);
   const progressBits = [
-    `${lesson.newWordIds.length} words`,
+    `${wordIds.length} ${lesson.type === "checkpoint" ? "review words" : "new words"}`,
     meta.hardCount ? `${meta.hardCount} hard` : "",
     meta.dueCount ? `${meta.dueCount} due` : "",
     meta.knownCount ? `${meta.knownCount} known` : "",
@@ -6888,7 +6954,7 @@ function getWordLessonPathMeta(lesson, now = Date.now()) {
   const completed = isWordLessonCompleted(lesson.id);
   const unlocked = isWordLessonUnlocked(lesson);
   const active = state.vocabLessonActive === lesson.id;
-  const words = (lesson.newWordIds || []).map((id) => curatedWordsById.get(id)).filter(Boolean);
+  const words = getWordLessonReviewWordIds(lesson).map((id) => curatedWordsById.get(id)).filter(Boolean);
   let hardCount = 0;
   let knownCount = 0;
   let dueCount = 0;
@@ -7179,7 +7245,7 @@ function wordsHomeContentHtml() {
           <h3 class="screen-title" style="margin-bottom:8px;">${escapeHtml(next.title)}</h3>
           <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(next.goal || next.subtitle || "")}</div>
           <div class="flex-between" style="gap:12px; align-items:center; flex-wrap:wrap;">
-            <span class="pill accent">${next.newWordIds.length} new words - Stage ${escapeHtml(next.stage)}</span>
+            <span class="pill accent">${getWordLessonReviewWordIds(next).length} ${next.type === "checkpoint" ? "review words" : "new words"} - Stage ${escapeHtml(next.stage)}</span>
             <button class="button primary compact" type="button" data-words-open-lesson="${escapeHtml(next.id)}">${state.vocabLessonActive === next.id ? "Continue lesson" : "Start lesson"}</button>
           </div>
         </div>`
@@ -14333,10 +14399,8 @@ function getMetWords() {
   const lessons = Array.isArray(window.HANAPATH_WORD_LESSONS) ? window.HANAPATH_WORD_LESSONS : [];
   for (const lesson of lessons) {
     if (completedLessonIds.includes(lesson.id)) {
-      if (Array.isArray(lesson.newWordIds)) {
-        for (const wId of lesson.newWordIds) {
+      for (const wId of getWordLessonReviewWordIds(lesson)) {
           metWords.add(wId);
-        }
       }
     }
   }
@@ -14348,16 +14412,18 @@ function getMetWords() {
   return metWords;
 }
 
+function getSentenceEarlyWordIds() {
+  const snapshot = window.HANAPATH_WORD_V1_SNAPSHOT;
+  const lessons = snapshot && snapshot.lessons && typeof snapshot.lessons === "object" ? snapshot.lessons : {};
+  return new Set(Object.entries(lessons).filter(([id]) => /^(w0|w1|w2)-/.test(id)).flatMap(([, ids]) => Array.isArray(ids) ? ids : []));
+}
+
 function isSentenceAvailable(row, metWords) {
   if (!Array.isArray(row.focusWordIds) || row.focusWordIds.length === 0) return true;
   return row.focusWordIds.every(wId => {
     if (metWords.has(wId)) return true;
     if (row.band === 1) {
-      const lessons = Array.isArray(window.HANAPATH_WORD_LESSONS) ? window.HANAPATH_WORD_LESSONS : [];
-      const inW0ToW2 = lessons.some(l => 
-        (l.stage === "W0" || l.stage === "W1" || l.stage === "W2") && 
-        Array.isArray(l.newWordIds) && l.newWordIds.includes(wId)
-      );
+      const inW0ToW2 = getSentenceEarlyWordIds().has(wId);
       if (inW0ToW2) return true;
     }
     return false;
@@ -14387,12 +14453,7 @@ function getUnmetFocusWordsCountForBand(band) {
       for (const wId of row.focusWordIds) {
         if (!metWords.has(wId)) {
           if (band === 1) {
-            const lessons = Array.isArray(window.HANAPATH_WORD_LESSONS) ? window.HANAPATH_WORD_LESSONS : [];
-            const inW0ToW2 = lessons.some(l => 
-              (l.stage === "W0" || l.stage === "W1" || l.stage === "W2") && 
-              Array.isArray(l.newWordIds) && l.newWordIds.includes(wId)
-            );
-            if (inW0ToW2) continue;
+            if (getSentenceEarlyWordIds().has(wId)) continue;
           }
           unmetWords.add(wId);
         }
