@@ -3217,6 +3217,8 @@ li { margin-bottom: 4px; }
 .word-reference-row .button { font-size: .85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; }
 
 .word-card { text-align: left; }
+.word-card-progress-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.word-card-bank-button { font-size: .78rem; padding: 5px 9px; white-space: nowrap; }
 .word-card-heading { display: block; }
 .word-card-ko,
 .word-card-ko-static {
@@ -3225,9 +3227,12 @@ li { margin-bottom: 4px; }
   font-size: clamp(2rem, 9vw, 3rem); line-height: 1.25;
   color: var(--text); margin: 12px 0 4px;
 }
-.word-card-ko { background: none; border: none; cursor: pointer; border-radius: 12px; padding: 4px 8px; }
+.word-card-ko { background: rgba(91,157,255,.10); border: 1px solid rgba(91,157,255,.12); cursor: pointer; border-radius: 12px; padding: 10px 14px; }
 .word-card-ko:hover { background: rgba(91,157,255,.08); }
-.word-card-pos { display: block; margin: 0 0 8px 8px; font-size: .78rem; color: var(--muted-2); font-weight: 700; text-transform: lowercase; }
+.word-card-ko-main { display: block; }
+.word-card-ko-rom { display: block; margin-top: 2px; font-family: inherit; font-size: .78rem; line-height: 1.2; font-weight: 700; color: var(--muted-2); }
+.word-card-definition { display: flex; align-items: baseline; gap: 8px; margin: 0 0 8px 8px; color: var(--muted); font-size: .86rem; line-height: 1.35; }
+.word-card-definition span:first-child { color: var(--text); font-weight: 700; text-transform: lowercase; }
 .word-card-meaning { text-align: center; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
 .word-card-meta { text-align: center; font-size: .82rem; color: var(--muted); margin-bottom: 8px; }
 .word-card-meta-primary { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; font-size: .82rem; }
@@ -3280,8 +3285,7 @@ li { margin-bottom: 4px; }
 .word-card-nav-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .word-card-nav-actions .button { width: 100%; min-width: 0; padding-left: 6px; padding-right: 6px; white-space: nowrap; }
 
-.word-example-sentence { margin: 12px 0 4px; color: var(--muted); font-size: .92rem; line-height: 1.45; text-align: left; }
-.word-example-sentence-en { margin-top: 3px; color: var(--muted-2); font-size: .82rem; }
+.word-study-note { margin: 10px 0 4px; color: var(--muted); font-size: .86rem; line-height: 1.45; text-align: left; }
 
 .word-rating-prompt { margin-top: 14px; text-align: center; animation: word-rating-in .32s ease both; }
 .word-rating-label { color: var(--muted); font-size: .8rem; margin-bottom: 8px; }
