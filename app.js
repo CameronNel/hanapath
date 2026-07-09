@@ -12418,20 +12418,29 @@ function renderLearnStageMenu(itemId) {
       </div>
     </div>`;
 
+  const alphabetGridHtml = itemId === "alphabet"
+    ? `
+    <div class="alphabet-menu-grid">
+      ${fullAlphabetHtml}
+      ${stagesHtml}
+      ${drillLabHtml}
+    </div>`
+    : "";
+
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
       <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
     </div>
     ${letterReviewHtml}
-    ${fullAlphabetHtml}
-    ${wordBankHtml}
-    ${wordBasicsHtml}
-    ${wordReviewHtml}
-    ${sentenceReviewHtml}
-    ${wordPathHtml}
-    ${stagesHtml}
-    ${drillLabHtml}
+    ${itemId === "alphabet" ? alphabetGridHtml : `
+      ${wordBankHtml}
+      ${wordBasicsHtml}
+      ${wordReviewHtml}
+      ${sentenceReviewHtml}
+      ${wordPathHtml}
+      ${stagesHtml}
+    `}
   `;
 
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {

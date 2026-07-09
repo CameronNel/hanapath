@@ -1,9 +1,9 @@
-// [2026-07-09] Cache bumped to v270: compact Alphabet entry glyphs on mobile.
-const CACHE_NAME = "hanapath-shell-v270";
+// [2026-07-09] Cache bumped to v271: link Alphabet choice tile sizes.
+const CACHE_NAME = "hanapath-shell-v271";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260709a",
+  "./styles.css?v=20260709b",
   "./lib/hangul.js",
   "./audio_map.js?v=20260705f",
   "./words_curated_core.js?v=20260705e",
@@ -12,7 +12,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260708m",
+  "./app.js?v=20260709b",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
