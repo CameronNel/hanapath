@@ -984,14 +984,18 @@ words merely because a newly curated candidate has a high raw rank.
    integration points; legacy band quiz view untouched.
 7. `TEST_UNLOCK_ALL_STAGES` ships `false` from P1-C onward; normal gate tests
    never run under the override.
-8. Additive schema changes only; a v1 saved state must always load (the
+8. `TEST_ENABLE_WORD_SECTION_COMPLETION` is a separate local test control. It
+   must be set to `false` before learner-facing release; when enabled, its
+   section button may crown test data but must not be treated as learner
+   acceptance evidence.
+9. Additive schema changes only; a v1 saved state must always load (the
    migration handles it — never require a manual reset).
-9. No batch may weaken an audit check to get itself green.
-10. Re-derive counts from data files before relying on any scorecard/ledger
+10. No batch may weaken an audit check to get itself green.
+11. Re-derive counts from data files before relying on any scorecard/ledger
     claim (the Words scorecard was wrong 4 times historically).
-11. After v2 ships, the curriculum lock is append-only: no PR may change a
+12. After v2 ships, the curriculum lock is append-only: no PR may change a
     shipped id, word membership, name, or required-core progression rule.
-12. Before Phase 2 scale, meet the committed low-end/mobile parse, PWA cache,
+13. Before Phase 2 scale, meet the committed low-end/mobile parse, PWA cache,
     and persisted-state budgets. A silent `localStorage` quota failure is a
     release blocker, not a graceful fallback.
 
