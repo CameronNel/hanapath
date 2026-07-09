@@ -26,24 +26,34 @@ import vm from "node:vm";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const strict = process.argv.includes("--strict");
+const planArgIndex = process.argv.indexOf("--plan");
+const planV2 = planArgIndex >= 0 && process.argv[planArgIndex + 1] === "v2";
+const planFile = planV2 ? "words_lesson_plan_v2.js" : "words_lesson_plan.js";
 
 const sandbox = { window: {} };
 vm.createContext(sandbox);
-for (const file of ["words_curated_core.js", "words_inflect.js", "words_lesson_plan.js", "audio_map.js"]) {
+for (const file of ["words_curated_core.js", "words_inflect.js", planFile, "audio_map.js"]) {
   vm.runInContext(readFileSync(join(root, file), "utf8"), sandbox, { filename: file });
 }
 
 const words = sandbox.window.HANAPATH_CURATED_WORDS;
 const lessons = sandbox.window.HANAPATH_WORD_LESSONS;
+const sections = sandbox.window.HANAPATH_WORD_SECTIONS;
+const units = sandbox.window.HANAPATH_WORD_UNITS;
+const allocation = planV2 ? JSON.parse(readFileSync(join(root, "scripts", "curriculum_v2_allocation.json"), "utf8")) : null;
 
 const errors = [];
 const warnings = [];
+const wordsById = new Map((words || []).map((w) => [w.id, w]));
 
 if (!Array.isArray(words) || words.length === 0) {
   errors.push("window.HANAPATH_CURATED_WORDS is missing or empty");
 }
 if (!Array.isArray(lessons) || lessons.length === 0) {
   errors.push("window.HANAPATH_WORD_LESSONS is missing or empty");
+}
+if (planV2 && (!Array.isArray(sections) || !Array.isArray(units))) {
+  errors.push("v2 plan must export HANAPATH_WORD_SECTIONS and HANAPATH_WORD_UNITS");
 }
 
 const HANGUL_RE = /[가-힣ㄱ-ㅎㅏ-ㅣ]/;
@@ -272,16 +282,20 @@ for (const lesson of lessons || []) {
 const lessonIds = new Set();
 for (const lesson of lessons || []) {
   const label = lesson.id || lesson.title || "(unknown lesson)";
+  const isCheckpoint = planV2 && lesson.type === "checkpoint";
   if (!lesson.id) errors.push(`lesson ${JSON.stringify(lesson.title)} has no id`);
   else if (lessonIds.has(lesson.id)) errors.push(`duplicate lesson id: ${lesson.id}`);
   else lessonIds.add(lesson.id);
 
-  if (!Array.isArray(lesson.newWordIds) || lesson.newWordIds.length === 0) {
+  if (!Array.isArray(lesson.newWordIds) || (!isCheckpoint && lesson.newWordIds.length === 0)) {
     errors.push(`${label}: empty newWordIds`);
-    continue;
+    if (!Array.isArray(lesson.newWordIds)) continue;
   }
-  for (const wordId of lesson.newWordIds) {
+  for (const wordId of lesson.newWordIds || []) {
     if (!idSet.has(wordId)) errors.push(`${label}: references missing word id ${wordId}`);
+  }
+  if (isCheckpoint && (!Array.isArray(lesson.reviewWordIds) || lesson.reviewWordIds.length === 0)) {
+    errors.push(`${label}: checkpoint requires non-empty reviewWordIds`);
   }
   if (!Array.isArray(lesson.checkpoints) || lesson.checkpoints.length === 0) {
     warnings.push(`${label}: no checkpoints`);
@@ -294,14 +308,67 @@ for (const lesson of lessons || []) {
     errors.push(`${label}: subtitle claims ${subtitleMatch[1]} words but newWordIds has ${lesson.newWordIds.length}`);
   }
   const hasFoldableSibling = lesson.stage && (stageLessonCounts.get(lesson.stage) || 0) > 1;
-  if (lesson.newWordIds.length < 4 && hasFoldableSibling) {
+  if (!isCheckpoint && lesson.newWordIds.length < 4 && hasFoldableSibling) {
     warnings.push(`${label}: thin lesson with only ${lesson.newWordIds.length} word(s) - consider folding into a same-stage sibling`);
   }
 }
 for (const lesson of lessons || []) {
+  if (planV2) continue;
   const prev = lesson.unlock && lesson.unlock.previousLessonId;
   if (prev && !lessonIds.has(prev)) {
     errors.push(`${lesson.id}: unlock.previousLessonId references missing lesson ${prev}`);
+  }
+}
+
+if (planV2) {
+  const sectionIds = new Set((sections || []).map((section) => section.id));
+  const unitById = new Map((units || []).map((unit) => [unit.id, unit]));
+  const contentOccurrences = new Map();
+  const titleBySection = new Map();
+  for (const unit of units || []) {
+    if (!sectionIds.has(unit.sectionId)) errors.push(`${unit.id}: invalid sectionId`);
+    if (!Array.isArray(unit.lessonIds) || unit.lessonIds.length < 2 || unit.lessonIds.length > 4) errors.push(`${unit.id}: unit must contain 2–4 content lessons`);
+    if (!unit.checkpointId || !lessonIds.has(unit.checkpointId)) errors.push(`${unit.id}: checkpointId does not resolve`);
+    const siblingNames = (units || []).filter((candidate) => candidate.sectionId === unit.sectionId && candidate.id !== unit.id).map((candidate) => String(candidate.name || "").toLowerCase());
+    if (siblingNames.includes(String(unit.name || "").toLowerCase())) errors.push(`${unit.id}: duplicate unit name within section`);
+  }
+  for (const lesson of lessons || []) {
+    if (!unitById.has(lesson.unitId)) errors.push(`${lesson.id}: invalid unitId`);
+    const unit = unitById.get(lesson.unitId);
+    if (unit && lesson.type === "content" && !unit.lessonIds.includes(lesson.id)) errors.push(`${lesson.id}: content lesson missing from unit.lessonIds`);
+    if (lesson.type === "checkpoint") {
+      if (lesson.newWordIds.length !== 0) errors.push(`${lesson.id}: checkpoint has newWordIds`);
+      const expected = (lessons || []).filter((candidate) => candidate.unitId === lesson.unitId && candidate.type === "content").flatMap((candidate) => candidate.newWordIds);
+      if (!Array.isArray(lesson.reviewWordIds) || lesson.reviewWordIds.join("\u0000") !== expected.join("\u0000")) errors.push(`${lesson.id}: reviewWordIds does not exactly equal unit content words`);
+    } else {
+      const grammarExempt = unit?.track === "grammar";
+      if ((!grammarExempt && lesson.newWordIds.length < 5) || lesson.newWordIds.length > 15) errors.push(`${lesson.id}: content lesson has ${lesson.newWordIds.length} words outside hard 5–15 bounds`);
+      if (!grammarExempt && (lesson.newWordIds.length < 8 || lesson.newWordIds.length > 12)) warnings.push(`${lesson.id}: content lesson has ${lesson.newWordIds.length} words outside target 8–12 band`);
+      for (const id of lesson.newWordIds) contentOccurrences.set(id, (contentOccurrences.get(id) || 0) + 1);
+      const titles = titleBySection.get(lesson.stage) || new Set();
+      if (titles.has(String(lesson.title || "").toLowerCase())) errors.push(`${lesson.id}: duplicate title within section`);
+      titles.add(String(lesson.title || "").toLowerCase()); titleBySection.set(lesson.stage, titles);
+      if (/\b(\d+|II|III|IV|V)\b$/i.test(lesson.title || "")) errors.push(`${lesson.id}: title has forbidden numeral/Roman suffix`);
+      if ((lesson.title || "").length > 32) warnings.push(`${lesson.id}: title exceeds 32 characters`);
+      if ((lesson.subtitle || "").length > 48) warnings.push(`${lesson.id}: subtitle exceeds 48 characters`);
+    }
+  }
+  for (const id of idSet) if (contentOccurrences.get(id) !== 1) errors.push(`v2 word ${id} occurs ${contentOccurrences.get(id) || 0} times in content lessons`);
+  for (const unit of units || []) {
+    const reviewIds = (lessons || []).filter((lesson) => lesson.unitId === unit.id && lesson.type === "content").flatMap((lesson) => lesson.newWordIds);
+    const surfaces = new Map();
+    for (const id of reviewIds) { const surface = wordsById.get(id)?.korean; if (!surfaces.has(surface)) surfaces.set(surface, []); surfaces.get(surface).push(id); }
+    const duplicates = [...surfaces].filter(([, ids]) => ids.length > 1);
+    if (duplicates.length && !unit.senseSafeException) errors.push(`${unit.id}: duplicate Korean surfaces in review words without a documented exception`);
+  }
+  if (allocation) {
+    const surfaceToIds = new Map();
+    for (const word of words) { if (!surfaceToIds.has(word.korean)) surfaceToIds.set(word.korean, []); surfaceToIds.get(word.korean).push(word.id); }
+    for (const row of allocation.contrastWith?.rows || []) {
+      const matches = surfaceToIds.get(row.targetSurface) || [];
+      const status = matches.length === 0 ? "unresolved" : matches.length === 1 ? "unique" : "polysemous";
+      if (row.status !== status || row.matches.join("\u0000") !== matches.join("\u0000")) errors.push(`contrast resolver drifted for ${row.fromId} → ${row.targetSurface}`);
+    }
   }
 }
 
@@ -314,7 +381,6 @@ for (const lesson of lessons || []) {
 // (makeWordSentenceBlank / makeConjugatedSentenceBlank, the functionUsage
 // gate, or the form-drill target selection), update them together.
 const inflect = sandbox.window.HANAPATH_INFLECT;
-const wordsById = new Map((words || []).map((w) => [w.id, w]));
 
 const BLANK_FORM_NAMES = ["past", "honorific", "formal", "polite", "attributive"];
 const BLANK_STEM_ENDINGS = ["고", "지", "서", "면"];
@@ -375,7 +441,8 @@ const CHECKPOINT_PREDICATES = {
 };
 for (const lesson of lessons || []) {
   if (!Array.isArray(lesson.checkpoints) || !Array.isArray(lesson.newWordIds)) continue;
-  const lessonWords = lesson.newWordIds.map((id) => wordsById.get(id)).filter(Boolean);
+  const auditWordIds = planV2 && lesson.type === "checkpoint" ? lesson.reviewWordIds : lesson.newWordIds;
+  const lessonWords = (auditWordIds || []).map((id) => wordsById.get(id)).filter(Boolean);
   if (!lessonWords.length) continue; // missing ids already reported above
   for (const checkpoint of lesson.checkpoints) {
     const predicate = CHECKPOINT_PREDICATES[checkpoint];
@@ -388,7 +455,7 @@ for (const lesson of lessons || []) {
 
 // Words never referenced by any lesson are allowed (bank-only), but flag them
 // so orphaned content is visible.
-const referenced = new Set((lessons || []).flatMap((l) => l.newWordIds || []));
+const referenced = new Set((lessons || []).flatMap((l) => planV2 && l.type === "checkpoint" ? [] : (l.newWordIds || [])));
 for (const word of words || []) {
   if (word.id && !referenced.has(word.id)) warnings.push(`${word.id}: not used by any lesson`);
 }

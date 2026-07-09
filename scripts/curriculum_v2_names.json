@@ -1,0 +1,1721 @@
+{
+  "units": {
+    "s1-firstwords-u1": {
+      "name": "Reading the signs",
+      "emoji": "✏️"
+    },
+    "s1-firstwords-u2": {
+      "name": "Useful first exchanges",
+      "emoji": "✏️"
+    },
+    "s1-firstwords-u3": {
+      "name": "Questions on the street",
+      "emoji": "✏️"
+    },
+    "s2-actions-u1": {
+      "name": "Getting things done",
+      "emoji": "✏️"
+    },
+    "s2-daily-u1": {
+      "name": "Morning routines",
+      "emoji": "✏️"
+    },
+    "s2-feelings-u1": {
+      "name": "How was your day",
+      "emoji": "✏️"
+    },
+    "s2-food-u1": {
+      "name": "Ordering a meal",
+      "emoji": "✏️"
+    },
+    "s2-grammar-u1": {
+      "name": "Function words",
+      "emoji": "✏️"
+    },
+    "s2-nature-u1": {
+      "name": "Weather today",
+      "emoji": "✏️"
+    },
+    "s2-people-u1": {
+      "name": "Family introductions",
+      "emoji": "✏️"
+    },
+    "s2-shopping-u1": {
+      "name": "At the market",
+      "emoji": "✏️"
+    },
+    "s2-study-u1": {
+      "name": "In the classroom",
+      "emoji": "✏️"
+    },
+    "s2-tech-u1": {
+      "name": "Everyday devices",
+      "emoji": "✏️"
+    },
+    "s2-travel-u1": {
+      "name": "Finding your way",
+      "emoji": "✏️"
+    },
+    "s3-health-u1": {
+      "name": "Body and movement",
+      "emoji": "✏️"
+    },
+    "s3-hobbies-u1": {
+      "name": "Free-time plans",
+      "emoji": "✏️"
+    },
+    "s3-work-u1": {
+      "name": "At the workplace",
+      "emoji": "✏️"
+    },
+    "s3-actions-u2": {
+      "name": "Morning action verbs",
+      "emoji": "✏️"
+    },
+    "s3-daily-u2": {
+      "name": "Time on the calendar",
+      "emoji": "✏️"
+    },
+    "s3-feelings-u2": {
+      "name": "Rainy-day moods",
+      "emoji": "✏️"
+    },
+    "s3-grammar-u2": {
+      "name": "Connecting clauses",
+      "emoji": "✏️"
+    },
+    "s3-nature-u2": {
+      "name": "Animals nearby",
+      "emoji": "✏️"
+    },
+    "s3-study-u2": {
+      "name": "Study plans",
+      "emoji": "✏️"
+    },
+    "s3-travel-u2": {
+      "name": "Getting around town",
+      "emoji": "✏️"
+    },
+    "s3-work-u2": {
+      "name": "Meeting the team",
+      "emoji": "✏️"
+    },
+    "s4-food-u2": {
+      "name": "Drinks and dishes",
+      "emoji": "✏️"
+    },
+    "s4-shopping-u2": {
+      "name": "Choosing clothes",
+      "emoji": "✏️"
+    },
+    "s4-actions-u3": {
+      "name": "Plans in motion",
+      "emoji": "✏️"
+    },
+    "s4-daily-u3": {
+      "name": "Meals at home",
+      "emoji": "✏️"
+    },
+    "s4-feelings-u3": {
+      "name": "Describing the room",
+      "emoji": "✏️"
+    },
+    "s4-nature-u3": {
+      "name": "A walk outdoors",
+      "emoji": "✏️"
+    },
+    "s4-shopping-u3": {
+      "name": "Paying the bill",
+      "emoji": "✏️"
+    },
+    "s4-study-u3": {
+      "name": "Reading together",
+      "emoji": "✏️"
+    },
+    "s4-travel-u3": {
+      "name": "At the station",
+      "emoji": "✏️"
+    },
+    "s4-work-u3": {
+      "name": "Jobs and duties",
+      "emoji": "✏️"
+    },
+    "s5-health-u2": {
+      "name": "At the clinic",
+      "emoji": "✏️"
+    },
+    "s5-food-u3": {
+      "name": "Cooking at home",
+      "emoji": "✏️"
+    },
+    "s5-grammar-u3": {
+      "name": "Register and respect",
+      "emoji": "✏️"
+    },
+    "s5-actions-u4": {
+      "name": "A busy afternoon",
+      "emoji": "✏️"
+    },
+    "s5-daily-u4": {
+      "name": "After-work plans",
+      "emoji": "✏️"
+    },
+    "s5-feelings-u4": {
+      "name": "A bright morning",
+      "emoji": "✏️"
+    },
+    "s5-nature-u4": {
+      "name": "Seasonal changes",
+      "emoji": "✏️"
+    },
+    "s5-study-u4": {
+      "name": "School supplies",
+      "emoji": "✏️"
+    },
+    "s5-travel-u4": {
+      "name": "City landmarks",
+      "emoji": "✏️"
+    },
+    "s5-work-u4": {
+      "name": "A busy workday",
+      "emoji": "✏️"
+    },
+    "s6-hobbies-u2": {
+      "name": "Sports with friends",
+      "emoji": "✏️"
+    },
+    "s6-tech-u2": {
+      "name": "At the desk",
+      "emoji": "✏️"
+    },
+    "s6-health-u3": {
+      "name": "Feeling better",
+      "emoji": "✏️"
+    },
+    "s6-hobbies-u4": {
+      "name": "A weekend hobby",
+      "emoji": "✏️"
+    },
+    "s6-actions-u5": {
+      "name": "Helping hands",
+      "emoji": "✏️"
+    },
+    "s6-daily-u5": {
+      "name": "A quiet evening",
+      "emoji": "✏️"
+    },
+    "s6-feelings-u5": {
+      "name": "Small talk outside",
+      "emoji": "✏️"
+    },
+    "s6-shopping-u5": {
+      "name": "Shopping together",
+      "emoji": "✏️"
+    },
+    "s6-study-u5": {
+      "name": "Working on a project",
+      "emoji": "✏️"
+    },
+    "s6-travel-u5": {
+      "name": "A day trip",
+      "emoji": "✏️"
+    },
+    "s7-hobbies-u3": {
+      "name": "Music and games",
+      "emoji": "✏️"
+    },
+    "s7-tech-u3": {
+      "name": "Messages and calls",
+      "emoji": "✏️"
+    },
+    "s7-grammar-u4": {
+      "name": "Forms and nuance",
+      "emoji": "✏️"
+    },
+    "s7-actions-u6": {
+      "name": "Moving through town",
+      "emoji": "✏️"
+    },
+    "s7-daily-u6": {
+      "name": "Morning routines to brea",
+      "emoji": "✏️"
+    },
+    "s7-feelings-u6": {
+      "name": "Good news today",
+      "emoji": "✏️"
+    },
+    "s7-study-u6": {
+      "name": "In the classroom absence",
+      "emoji": "✏️"
+    },
+    "s7-travel-u6": {
+      "name": "Checking the route",
+      "emoji": "✏️"
+    },
+    "s7-feelings-u10": {
+      "name": "A bright morning cheerfu",
+      "emoji": "✏️"
+    },
+    "s7-feelings-u11": {
+      "name": "Small talk outside thick",
+      "emoji": "✏️"
+    },
+    "s8-people-u2": {
+      "name": "Talking about friends",
+      "emoji": "✏️"
+    },
+    "s8-people-u3": {
+      "name": "People around us",
+      "emoji": "✏️"
+    },
+    "s8-shopping-u4": {
+      "name": "Finding the right size",
+      "emoji": "✏️"
+    },
+    "s8-actions-u7": {
+      "name": "Getting things done to p",
+      "emoji": "✏️"
+    },
+    "s8-feelings-u7": {
+      "name": "How was your day rumor",
+      "emoji": "✏️"
+    },
+    "s8-travel-u7": {
+      "name": "Finding your way going o",
+      "emoji": "✏️"
+    },
+    "s8-feelings-u8": {
+      "name": "Rainy-day moods freshnes",
+      "emoji": "✏️"
+    },
+    "s8-travel-u8": {
+      "name": "Getting around town to g",
+      "emoji": "✏️"
+    },
+    "s8-feelings-u9": {
+      "name": "Describing the room to g",
+      "emoji": "✏️"
+    },
+    "s8-travel-u9": {
+      "name": "At the station tourist s",
+      "emoji": "✏️"
+    }
+  },
+  "lessons": {
+    "s1-firstwords-u1-l1": {
+      "title": "Read it aloud",
+      "subtitle": "Hangul in context",
+      "goal": "Use Hangul in a simple Korean exchange."
+    },
+    "s1-firstwords-u1-l2": {
+      "title": "Ask a simple question",
+      "subtitle": "hello in context",
+      "goal": "Use hello in a simple Korean exchange."
+    },
+    "s1-firstwords-u1-l3": {
+      "title": "Point it out",
+      "subtitle": "got it in context",
+      "goal": "Use got it in a simple Korean exchange."
+    },
+    "s1-firstwords-u1-cp": {
+      "title": "Reading the signs review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s1-firstwords-u2-l1": {
+      "title": "Count what you see",
+      "subtitle": "teacher in context",
+      "goal": "Use teacher in a simple Korean exchange."
+    },
+    "s1-firstwords-u2-l2": {
+      "title": "Use it in a greeting",
+      "subtitle": "phone in context",
+      "goal": "Use phone in a simple Korean exchange."
+    },
+    "s1-firstwords-u2-l3": {
+      "title": "Read it aloud practice",
+      "subtitle": "two in context",
+      "goal": "Use two in a simple Korean exchange."
+    },
+    "s1-firstwords-u2-cp": {
+      "title": "Useful first exchanges review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s1-firstwords-u3-l1": {
+      "title": "Ask a simple question practice",
+      "subtitle": "thousand in context",
+      "goal": "Use thousand in a simple Korean exchange."
+    },
+    "s1-firstwords-u3-l2": {
+      "title": "Point it out practice",
+      "subtitle": "nine in context",
+      "goal": "Use nine in a simple Korean exchange."
+    },
+    "s1-firstwords-u3-l3": {
+      "title": "Count what you see practice",
+      "subtitle": "Korean Won currency in context",
+      "goal": "Use Korean Won currency in a simple Korean exchange."
+    },
+    "s1-firstwords-u3-l4": {
+      "title": "Use it in a greeting practice",
+      "subtitle": "vehicles in context",
+      "goal": "Use vehicles in a simple Korean exchange."
+    },
+    "s1-firstwords-u3-cp": {
+      "title": "Questions on the street review",
+      "subtitle": "Review 37 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-actions-u1-l1": {
+      "title": "How to thought",
+      "subtitle": "thought in context",
+      "goal": "Use thought in a simple Korean exchange."
+    },
+    "s2-actions-u1-l2": {
+      "title": "Ready to plan",
+      "subtitle": "plan in context",
+      "goal": "Use plan in a simple Korean exchange."
+    },
+    "s2-actions-u1-l3": {
+      "title": "A plan to help",
+      "subtitle": "help in context",
+      "goal": "Use help in a simple Korean exchange."
+    },
+    "s2-actions-u1-cp": {
+      "title": "Getting things done review",
+      "subtitle": "Review 32 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-daily-u1-l1": {
+      "title": "Starting with year",
+      "subtitle": "year in context",
+      "goal": "Use year in a simple Korean exchange."
+    },
+    "s2-daily-u1-l2": {
+      "title": "Making time for day",
+      "subtitle": "day in context",
+      "goal": "Use day in a simple Korean exchange."
+    },
+    "s2-daily-u1-l3": {
+      "title": "At afterwards",
+      "subtitle": "afterwards in context",
+      "goal": "Use afterwards in a simple Korean exchange."
+    },
+    "s2-daily-u1-cp": {
+      "title": "Morning routines review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-feelings-u1-l1": {
+      "title": "Talking about more",
+      "subtitle": "more in context",
+      "goal": "Use more in a simple Korean exchange."
+    },
+    "s2-feelings-u1-l2": {
+      "title": "A need kind of day",
+      "subtitle": "need in context",
+      "goal": "Use need in a simple Korean exchange."
+    },
+    "s2-feelings-u1-l3": {
+      "title": "Describing degree",
+      "subtitle": "degree in context",
+      "goal": "Use degree in a simple Korean exchange."
+    },
+    "s2-feelings-u1-cp": {
+      "title": "How was your day review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-food-u1-l1": {
+      "title": "Ordering tea",
+      "subtitle": "tea in context",
+      "goal": "Use tea in a simple Korean exchange."
+    },
+    "s2-food-u1-l2": {
+      "title": "Sharing eating light",
+      "subtitle": "eating light in context",
+      "goal": "Use eating light in a simple Korean exchange."
+    },
+    "s2-food-u1-l3": {
+      "title": "Cooking menu",
+      "subtitle": "menu in context",
+      "goal": "Use menu in a simple Korean exchange."
+    },
+    "s2-food-u1-cp": {
+      "title": "Ordering a meal review",
+      "subtitle": "Review 31 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-grammar-u1-l1": {
+      "title": "Using topic marker",
+      "subtitle": "topic marker in context",
+      "goal": "Use topic marker in a simple Korean exchange."
+    },
+    "s2-grammar-u1-l2": {
+      "title": "Building with at",
+      "subtitle": "at in context",
+      "goal": "Use at in a simple Korean exchange."
+    },
+    "s2-grammar-u1-cp": {
+      "title": "Function words review",
+      "subtitle": "Review 10 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-nature-u1-l1": {
+      "title": "Seeing sun",
+      "subtitle": "sun in context",
+      "goal": "Use sun in a simple Korean exchange."
+    },
+    "s2-nature-u1-l2": {
+      "title": "Talking about reason",
+      "subtitle": "reason in context",
+      "goal": "Use reason in a simple Korean exchange."
+    },
+    "s2-nature-u1-l3": {
+      "title": "A day with green grass",
+      "subtitle": "green grass in context",
+      "goal": "Use green grass in a simple Korean exchange."
+    },
+    "s2-nature-u1-cp": {
+      "title": "Weather today review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-people-u1-l1": {
+      "title": "Meeting woman",
+      "subtitle": "woman in context",
+      "goal": "Use woman in a simple Korean exchange."
+    },
+    "s2-people-u1-l2": {
+      "title": "Talking with marriage",
+      "subtitle": "marriage in context",
+      "goal": "Use marriage in a simple Korean exchange."
+    },
+    "s2-people-u1-l3": {
+      "title": "Introducing male",
+      "subtitle": "male in context",
+      "goal": "Use male in a simple Korean exchange."
+    },
+    "s2-people-u1-cp": {
+      "title": "Family introductions review",
+      "subtitle": "Review 33 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-shopping-u1-l1": {
+      "title": "Choosing shoe",
+      "subtitle": "shoe in context",
+      "goal": "Use shoe in a simple Korean exchange."
+    },
+    "s2-shopping-u1-l2": {
+      "title": "Buying dress code",
+      "subtitle": "dress code in context",
+      "goal": "Use dress code in a simple Korean exchange."
+    },
+    "s2-shopping-u1-l3": {
+      "title": "Comparing expense",
+      "subtitle": "expense in context",
+      "goal": "Use expense in a simple Korean exchange."
+    },
+    "s2-shopping-u1-cp": {
+      "title": "At the market review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-study-u1-l1": {
+      "title": "Learning about line",
+      "subtitle": "line in context",
+      "goal": "Use line in a simple Korean exchange."
+    },
+    "s2-study-u1-l2": {
+      "title": "Using university in class",
+      "subtitle": "university in context",
+      "goal": "Use university in a simple Korean exchange."
+    },
+    "s2-study-u1-l3": {
+      "title": "A lesson on comparison",
+      "subtitle": "comparison in context",
+      "goal": "Use comparison in a simple Korean exchange."
+    },
+    "s2-study-u1-cp": {
+      "title": "In the classroom review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-tech-u1-l1": {
+      "title": "Using ruler",
+      "subtitle": "ruler in context",
+      "goal": "Use ruler in a simple Korean exchange."
+    },
+    "s2-tech-u1-l2": {
+      "title": "Fixing function",
+      "subtitle": "function in context",
+      "goal": "Use function in a simple Korean exchange."
+    },
+    "s2-tech-u1-l3": {
+      "title": "Sending automatic operation",
+      "subtitle": "automatic operation in context",
+      "goal": "Use automatic operation in a simple Korean exchange."
+    },
+    "s2-tech-u1-cp": {
+      "title": "Everyday devices review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s2-travel-u1-l1": {
+      "title": "Finding above",
+      "subtitle": "above in context",
+      "goal": "Use above in a simple Korean exchange."
+    },
+    "s2-travel-u1-l2": {
+      "title": "Asking about front",
+      "subtitle": "front in context",
+      "goal": "Use front in a simple Korean exchange."
+    },
+    "s2-travel-u1-l3": {
+      "title": "On the way to government",
+      "subtitle": "government in context",
+      "goal": "Use government in a simple Korean exchange."
+    },
+    "s2-travel-u1-cp": {
+      "title": "Finding your way review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-health-u1-l1": {
+      "title": "Talking about mouth",
+      "subtitle": "mouth in context",
+      "goal": "Use mouth in a simple Korean exchange."
+    },
+    "s3-health-u1-l2": {
+      "title": "Checking hospital",
+      "subtitle": "hospital in context",
+      "goal": "Use hospital in a simple Korean exchange."
+    },
+    "s3-health-u1-l3": {
+      "title": "Caring for obstacle",
+      "subtitle": "obstacle in context",
+      "goal": "Use obstacle in a simple Korean exchange."
+    },
+    "s3-health-u1-cp": {
+      "title": "Body and movement review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-hobbies-u1-l1": {
+      "title": "Trying game",
+      "subtitle": "game in context",
+      "goal": "Use game in a simple Korean exchange."
+    },
+    "s3-hobbies-u1-l2": {
+      "title": "Playing attack",
+      "subtitle": "attack in context",
+      "goal": "Use attack in a simple Korean exchange."
+    },
+    "s3-hobbies-u1-l3": {
+      "title": "Planning season",
+      "subtitle": "season in context",
+      "goal": "Use season in a simple Korean exchange."
+    },
+    "s3-hobbies-u1-cp": {
+      "title": "Free-time plans review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-work-u1-l1": {
+      "title": "Working with representative",
+      "subtitle": "representative in context",
+      "goal": "Use representative in a simple Korean exchange."
+    },
+    "s3-work-u1-l2": {
+      "title": "A task for police",
+      "subtitle": "police in context",
+      "goal": "Use police in a simple Korean exchange."
+    },
+    "s3-work-u1-l3": {
+      "title": "Talking about business",
+      "subtitle": "business in context",
+      "goal": "Use business in a simple Korean exchange."
+    },
+    "s3-work-u1-cp": {
+      "title": "At the workplace review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-actions-u2-l1": {
+      "title": "How to greeting",
+      "subtitle": "greeting in context",
+      "goal": "Use greeting in a simple Korean exchange."
+    },
+    "s3-actions-u2-l2": {
+      "title": "Ready to selection",
+      "subtitle": "selection in context",
+      "goal": "Use selection in a simple Korean exchange."
+    },
+    "s3-actions-u2-l3": {
+      "title": "A plan to suggestion",
+      "subtitle": "suggestion in context",
+      "goal": "Use suggestion in a simple Korean exchange."
+    },
+    "s3-actions-u2-cp": {
+      "title": "Morning action verbs review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-daily-u2-l1": {
+      "title": "Starting with hour",
+      "subtitle": "hour in context",
+      "goal": "Use hour in a simple Korean exchange."
+    },
+    "s3-daily-u2-l2": {
+      "title": "Making time for for a long",
+      "subtitle": "for a long in context",
+      "goal": "Use for a long in a simple Korean exchange."
+    },
+    "s3-daily-u2-l3": {
+      "title": "At these days",
+      "subtitle": "these days in context",
+      "goal": "Use these days in a simple Korean exchange."
+    },
+    "s3-daily-u2-cp": {
+      "title": "Time on the calendar review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-feelings-u2-l1": {
+      "title": "Talking about state",
+      "subtitle": "state in context",
+      "goal": "Use state in a simple Korean exchange."
+    },
+    "s3-feelings-u2-l2": {
+      "title": "A always kind of day",
+      "subtitle": "always in context",
+      "goal": "Use always in a simple Korean exchange."
+    },
+    "s3-feelings-u2-l3": {
+      "title": "Describing finally",
+      "subtitle": "finally in context",
+      "goal": "Use finally in a simple Korean exchange."
+    },
+    "s3-feelings-u2-cp": {
+      "title": "Rainy-day moods review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-grammar-u2-l1": {
+      "title": "Using if",
+      "subtitle": "if in context",
+      "goal": "Use if in a simple Korean exchange."
+    },
+    "s3-grammar-u2-l2": {
+      "title": "Building with not",
+      "subtitle": "not in context",
+      "goal": "Use not in a simple Korean exchange."
+    },
+    "s3-grammar-u2-cp": {
+      "title": "Connecting clauses review",
+      "subtitle": "Review 12 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-nature-u2-l1": {
+      "title": "Seeing change",
+      "subtitle": "change in context",
+      "goal": "Use change in a simple Korean exchange."
+    },
+    "s3-nature-u2-l2": {
+      "title": "Talking about mouse",
+      "subtitle": "mouse in context",
+      "goal": "Use mouse in a simple Korean exchange."
+    },
+    "s3-nature-u2-l3": {
+      "title": "A day with autumn",
+      "subtitle": "autumn in context",
+      "goal": "Use autumn in a simple Korean exchange."
+    },
+    "s3-nature-u2-cp": {
+      "title": "Animals nearby review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-study-u2-l1": {
+      "title": "Learning about data",
+      "subtitle": "data in context",
+      "goal": "Use data in a simple Korean exchange."
+    },
+    "s3-study-u2-l2": {
+      "title": "Using evaluation in class",
+      "subtitle": "evaluation in context",
+      "goal": "Use evaluation in a simple Korean exchange."
+    },
+    "s3-study-u2-l3": {
+      "title": "A lesson on failure",
+      "subtitle": "failure in context",
+      "goal": "Use failure in a simple Korean exchange."
+    },
+    "s3-study-u2-cp": {
+      "title": "Study plans review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-travel-u2-l1": {
+      "title": "Finding way",
+      "subtitle": "way in context",
+      "goal": "Use way in a simple Korean exchange."
+    },
+    "s3-travel-u2-l2": {
+      "title": "Asking about overseas",
+      "subtitle": "overseas in context",
+      "goal": "Use overseas in a simple Korean exchange."
+    },
+    "s3-travel-u2-l3": {
+      "title": "On the way to policy",
+      "subtitle": "policy in context",
+      "goal": "Use policy in a simple Korean exchange."
+    },
+    "s3-travel-u2-cp": {
+      "title": "Getting around town review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s3-work-u2-l1": {
+      "title": "Working with supervisor",
+      "subtitle": "supervisor in context",
+      "goal": "Use supervisor in a simple Korean exchange."
+    },
+    "s3-work-u2-l2": {
+      "title": "A task for teacher",
+      "subtitle": "teacher in context",
+      "goal": "Use teacher in a simple Korean exchange."
+    },
+    "s3-work-u2-l3": {
+      "title": "Talking about retirement",
+      "subtitle": "retirement in context",
+      "goal": "Use retirement in a simple Korean exchange."
+    },
+    "s3-work-u2-cp": {
+      "title": "Meeting the team review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-food-u2-l1": {
+      "title": "Ordering rice",
+      "subtitle": "rice in context",
+      "goal": "Use rice in a simple Korean exchange."
+    },
+    "s4-food-u2-l2": {
+      "title": "Sharing red pepper paste",
+      "subtitle": "red pepper paste in context",
+      "goal": "Use red pepper paste in a simple Korean exchange."
+    },
+    "s4-food-u2-cp": {
+      "title": "Drinks and dishes review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-shopping-u2-l1": {
+      "title": "Choosing income",
+      "subtitle": "income in context",
+      "goal": "Use income in a simple Korean exchange."
+    },
+    "s4-shopping-u2-l2": {
+      "title": "Buying color",
+      "subtitle": "color in context",
+      "goal": "Use color in a simple Korean exchange."
+    },
+    "s4-shopping-u2-l3": {
+      "title": "Comparing goods",
+      "subtitle": "goods in context",
+      "goal": "Use goods in a simple Korean exchange."
+    },
+    "s4-shopping-u2-cp": {
+      "title": "Choosing clothes review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-actions-u3-l1": {
+      "title": "How to improvement",
+      "subtitle": "improvement in context",
+      "goal": "Use improvement in a simple Korean exchange."
+    },
+    "s4-actions-u3-l2": {
+      "title": "Ready to realization",
+      "subtitle": "realization in context",
+      "goal": "Use realization in a simple Korean exchange."
+    },
+    "s4-actions-u3-l3": {
+      "title": "A plan to to buy",
+      "subtitle": "to buy in context",
+      "goal": "Use to buy in a simple Korean exchange."
+    },
+    "s4-actions-u3-cp": {
+      "title": "Plans in motion review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-daily-u3-l1": {
+      "title": "Starting with dinner",
+      "subtitle": "dinner in context",
+      "goal": "Use dinner in a simple Korean exchange."
+    },
+    "s4-daily-u3-l2": {
+      "title": "Making time for suddenly",
+      "subtitle": "suddenly in context",
+      "goal": "Use suddenly in a simple Korean exchange."
+    },
+    "s4-daily-u3-l3": {
+      "title": "At weekend",
+      "subtitle": "weekend in context",
+      "goal": "Use weekend in a simple Korean exchange."
+    },
+    "s4-daily-u3-cp": {
+      "title": "Meals at home review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-feelings-u3-l1": {
+      "title": "Talking about influence",
+      "subtitle": "influence in context",
+      "goal": "Use influence in a simple Korean exchange."
+    },
+    "s4-feelings-u3-l2": {
+      "title": "A ability kind of day",
+      "subtitle": "ability in context",
+      "goal": "Use ability in a simple Korean exchange."
+    },
+    "s4-feelings-u3-l3": {
+      "title": "Describing fame",
+      "subtitle": "fame in context",
+      "goal": "Use fame in a simple Korean exchange."
+    },
+    "s4-feelings-u3-cp": {
+      "title": "Describing the room review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-nature-u3-l1": {
+      "title": "Seeing chicken",
+      "subtitle": "chicken in context",
+      "goal": "Use chicken in a simple Korean exchange."
+    },
+    "s4-nature-u3-l2": {
+      "title": "Talking about topic of conversat",
+      "subtitle": "topic of conversation in context",
+      "goal": "Use topic of conversation in a simple Korean exchange."
+    },
+    "s4-nature-u3-l3": {
+      "title": "A day with to be hot",
+      "subtitle": "to be hot in context",
+      "goal": "Use to be hot in a simple Korean exchange."
+    },
+    "s4-nature-u3-cp": {
+      "title": "A walk outdoors review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-shopping-u3-l1": {
+      "title": "Choosing to subtract",
+      "subtitle": "to subtract in context",
+      "goal": "Use to subtract in a simple Korean exchange."
+    },
+    "s4-shopping-u3-l2": {
+      "title": "Buying to exchange",
+      "subtitle": "to exchange in context",
+      "goal": "Use to exchange in a simple Korean exchange."
+    },
+    "s4-shopping-u3-l3": {
+      "title": "Comparing to wear",
+      "subtitle": "to wear in context",
+      "goal": "Use to wear in a simple Korean exchange."
+    },
+    "s4-shopping-u3-cp": {
+      "title": "Paying the bill review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-study-u3-l1": {
+      "title": "Learning about goal",
+      "subtitle": "goal in context",
+      "goal": "Use goal in a simple Korean exchange."
+    },
+    "s4-study-u3-l2": {
+      "title": "Using answer in class",
+      "subtitle": "answer in context",
+      "goal": "Use answer in a simple Korean exchange."
+    },
+    "s4-study-u3-l3": {
+      "title": "A lesson on literature",
+      "subtitle": "literature in context",
+      "goal": "Use literature in a simple Korean exchange."
+    },
+    "s4-study-u3-cp": {
+      "title": "Reading together review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-travel-u3-l1": {
+      "title": "Finding street",
+      "subtitle": "street in context",
+      "goal": "Use street in a simple Korean exchange."
+    },
+    "s4-travel-u3-l2": {
+      "title": "Asking about side",
+      "subtitle": "side in context",
+      "goal": "Use side in a simple Korean exchange."
+    },
+    "s4-travel-u3-l3": {
+      "title": "On the way to direction",
+      "subtitle": "direction in context",
+      "goal": "Use direction in a simple Korean exchange."
+    },
+    "s4-travel-u3-cp": {
+      "title": "At the station review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s4-work-u3-l1": {
+      "title": "Working with pharmacist",
+      "subtitle": "pharmacist in context",
+      "goal": "Use pharmacist in a simple Korean exchange."
+    },
+    "s4-work-u3-l2": {
+      "title": "A task for apothecary",
+      "subtitle": "apothecary in context",
+      "goal": "Use apothecary in a simple Korean exchange."
+    },
+    "s4-work-u3-cp": {
+      "title": "Jobs and duties review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-health-u2-l1": {
+      "title": "Talking about hair",
+      "subtitle": "hair in context",
+      "goal": "Use hair in a simple Korean exchange."
+    },
+    "s5-health-u2-l2": {
+      "title": "Checking shoulder",
+      "subtitle": "shoulder in context",
+      "goal": "Use shoulder in a simple Korean exchange."
+    },
+    "s5-health-u2-l3": {
+      "title": "Caring for to hurt",
+      "subtitle": "to hurt in context",
+      "goal": "Use to hurt in a simple Korean exchange."
+    },
+    "s5-health-u2-cp": {
+      "title": "At the clinic review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-food-u3-l1": {
+      "title": "Ordering Japanese food",
+      "subtitle": "Japanese food in context",
+      "goal": "Use Japanese food in a simple Korean exchange."
+    },
+    "s5-food-u3-l2": {
+      "title": "Sharing banana",
+      "subtitle": "banana in context",
+      "goal": "Use banana in a simple Korean exchange."
+    },
+    "s5-food-u3-cp": {
+      "title": "Cooking at home review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-grammar-u3-l1": {
+      "title": "Using casual ending",
+      "subtitle": "casual ending in context",
+      "goal": "Use casual ending in a simple Korean exchange."
+    },
+    "s5-grammar-u3-l2": {
+      "title": "Building with subject honorific",
+      "subtitle": "subject honorific in context",
+      "goal": "Use subject honorific in a simple Korean exchange."
+    },
+    "s5-grammar-u3-cp": {
+      "title": "Register and respect review",
+      "subtitle": "Review 13 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-actions-u4-l1": {
+      "title": "How to to exist",
+      "subtitle": "to exist in context",
+      "goal": "Use to exist in a simple Korean exchange."
+    },
+    "s5-actions-u4-l2": {
+      "title": "Ready to to learn",
+      "subtitle": "to learn in context",
+      "goal": "Use to learn in a simple Korean exchange."
+    },
+    "s5-actions-u4-l3": {
+      "title": "A plan to to receive",
+      "subtitle": "to receive in context",
+      "goal": "Use to receive in a simple Korean exchange."
+    },
+    "s5-actions-u4-cp": {
+      "title": "A busy afternoon review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-daily-u4-l1": {
+      "title": "Starting with noon",
+      "subtitle": "noon in context",
+      "goal": "Use noon in a simple Korean exchange."
+    },
+    "s5-daily-u4-l2": {
+      "title": "Making time for temporary",
+      "subtitle": "temporary in context",
+      "goal": "Use temporary in a simple Korean exchange."
+    },
+    "s5-daily-u4-l3": {
+      "title": "At holiday",
+      "subtitle": "holiday in context",
+      "goal": "Use holiday in a simple Korean exchange."
+    },
+    "s5-daily-u4-cp": {
+      "title": "After-work plans review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-feelings-u4-l1": {
+      "title": "Talking about reality",
+      "subtitle": "reality in context",
+      "goal": "Use reality in a simple Korean exchange."
+    },
+    "s5-feelings-u4-l2": {
+      "title": "A not at all kind of day",
+      "subtitle": "not at all in context",
+      "goal": "Use not at all in a simple Korean exchange."
+    },
+    "s5-feelings-u4-l3": {
+      "title": "Describing hope",
+      "subtitle": "hope in context",
+      "goal": "Use hope in a simple Korean exchange."
+    },
+    "s5-feelings-u4-cp": {
+      "title": "A bright morning review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-nature-u4-l1": {
+      "title": "Seeing to climb",
+      "subtitle": "to climb in context",
+      "goal": "Use to climb in a simple Korean exchange."
+    },
+    "s5-nature-u4-l2": {
+      "title": "Talking about global warming",
+      "subtitle": "global warming in context",
+      "goal": "Use global warming in a simple Korean exchange."
+    },
+    "s5-nature-u4-l3": {
+      "title": "A day with gale",
+      "subtitle": "gale in context",
+      "goal": "Use gale in a simple Korean exchange."
+    },
+    "s5-nature-u4-cp": {
+      "title": "Seasonal changes review",
+      "subtitle": "Review 27 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-study-u4-l1": {
+      "title": "Learning about learning",
+      "subtitle": "learning in context",
+      "goal": "Use learning in a simple Korean exchange."
+    },
+    "s5-study-u4-l2": {
+      "title": "Using studying abroad in class",
+      "subtitle": "studying abroad in context",
+      "goal": "Use studying abroad in a simple Korean exchange."
+    },
+    "s5-study-u4-l3": {
+      "title": "A lesson on name",
+      "subtitle": "name in context",
+      "goal": "Use name in a simple Korean exchange."
+    },
+    "s5-study-u4-cp": {
+      "title": "School supplies review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-travel-u4-l1": {
+      "title": "Finding summit",
+      "subtitle": "summit in context",
+      "goal": "Use summit in a simple Korean exchange."
+    },
+    "s5-travel-u4-l2": {
+      "title": "Asking about crime",
+      "subtitle": "crime in context",
+      "goal": "Use crime in a simple Korean exchange."
+    },
+    "s5-travel-u4-l3": {
+      "title": "On the way to Suwon",
+      "subtitle": "Suwon in context",
+      "goal": "Use Suwon in a simple Korean exchange."
+    },
+    "s5-travel-u4-cp": {
+      "title": "City landmarks review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s5-work-u4-l1": {
+      "title": "Working with counselor",
+      "subtitle": "counselor in context",
+      "goal": "Use counselor in a simple Korean exchange."
+    },
+    "s5-work-u4-l2": {
+      "title": "A task for soldier's image",
+      "subtitle": "soldier's image in context",
+      "goal": "Use soldier's image in a simple Korean exchange."
+    },
+    "s5-work-u4-cp": {
+      "title": "A busy workday review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-hobbies-u2-l1": {
+      "title": "Trying ranking",
+      "subtitle": "ranking in context",
+      "goal": "Use ranking in a simple Korean exchange."
+    },
+    "s6-hobbies-u2-l2": {
+      "title": "Playing competition",
+      "subtitle": "competition in context",
+      "goal": "Use competition in a simple Korean exchange."
+    },
+    "s6-hobbies-u2-l3": {
+      "title": "Planning appreciation",
+      "subtitle": "appreciation in context",
+      "goal": "Use appreciation in a simple Korean exchange."
+    },
+    "s6-hobbies-u2-cp": {
+      "title": "Sports with friends review",
+      "subtitle": "Review 29 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-tech-u2-l1": {
+      "title": "Using machine",
+      "subtitle": "machine in context",
+      "goal": "Use machine in a simple Korean exchange."
+    },
+    "s6-tech-u2-l2": {
+      "title": "Fixing bag",
+      "subtitle": "bag in context",
+      "goal": "Use bag in a simple Korean exchange."
+    },
+    "s6-tech-u2-l3": {
+      "title": "Sending use",
+      "subtitle": "use in context",
+      "goal": "Use use in a simple Korean exchange."
+    },
+    "s6-tech-u2-cp": {
+      "title": "At the desk review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-health-u3-l1": {
+      "title": "Talking about toothache",
+      "subtitle": "toothache in context",
+      "goal": "Use toothache in a simple Korean exchange."
+    },
+    "s6-health-u3-l2": {
+      "title": "Checking non-smoking",
+      "subtitle": "non-smoking in context",
+      "goal": "Use non-smoking in a simple Korean exchange."
+    },
+    "s6-health-u3-cp": {
+      "title": "Feeling better review",
+      "subtitle": "Review 19 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-hobbies-u4-l1": {
+      "title": "Trying PC bang",
+      "subtitle": "PC bang in context",
+      "goal": "Use PC bang in a simple Korean exchange."
+    },
+    "s6-hobbies-u4-l2": {
+      "title": "Playing final game",
+      "subtitle": "final game in context",
+      "goal": "Use final game in a simple Korean exchange."
+    },
+    "s6-hobbies-u4-cp": {
+      "title": "A weekend hobby review",
+      "subtitle": "Review 18 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-actions-u5-l1": {
+      "title": "How to to jump",
+      "subtitle": "to jump in context",
+      "goal": "Use to jump in a simple Korean exchange."
+    },
+    "s6-actions-u5-l2": {
+      "title": "Ready to to congratulate",
+      "subtitle": "to congratulate in context",
+      "goal": "Use to congratulate in a simple Korean exchange."
+    },
+    "s6-actions-u5-l3": {
+      "title": "A plan to to untie",
+      "subtitle": "to untie in context",
+      "goal": "Use to untie in a simple Korean exchange."
+    },
+    "s6-actions-u5-cp": {
+      "title": "Helping hands review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-daily-u5-l1": {
+      "title": "Starting with to leave behind",
+      "subtitle": "to leave behind in context",
+      "goal": "Use to leave behind in a simple Korean exchange."
+    },
+    "s6-daily-u5-l2": {
+      "title": "Making time for to open",
+      "subtitle": "to open in context",
+      "goal": "Use to open in a simple Korean exchange."
+    },
+    "s6-daily-u5-l3": {
+      "title": "At flowerpot",
+      "subtitle": "flowerpot in context",
+      "goal": "Use flowerpot in a simple Korean exchange."
+    },
+    "s6-daily-u5-cp": {
+      "title": "A quiet evening review",
+      "subtitle": "Review 29 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-feelings-u5-l1": {
+      "title": "Talking about excellence",
+      "subtitle": "excellence in context",
+      "goal": "Use excellence in a simple Korean exchange."
+    },
+    "s6-feelings-u5-l2": {
+      "title": "A truth kind of day",
+      "subtitle": "truth in context",
+      "goal": "Use truth in a simple Korean exchange."
+    },
+    "s6-feelings-u5-l3": {
+      "title": "Describing mistake",
+      "subtitle": "mistake in context",
+      "goal": "Use mistake in a simple Korean exchange."
+    },
+    "s6-feelings-u5-cp": {
+      "title": "Small talk outside review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-shopping-u5-l1": {
+      "title": "Choosing pattern",
+      "subtitle": "pattern in context",
+      "goal": "Use pattern in a simple Korean exchange."
+    },
+    "s6-shopping-u5-l2": {
+      "title": "Buying exchange voucher",
+      "subtitle": "exchange voucher in context",
+      "goal": "Use exchange voucher in a simple Korean exchange."
+    },
+    "s6-shopping-u5-cp": {
+      "title": "Shopping together review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-study-u5-l1": {
+      "title": "Learning about phrase",
+      "subtitle": "phrase in context",
+      "goal": "Use phrase in a simple Korean exchange."
+    },
+    "s6-study-u5-l2": {
+      "title": "Using student ID card in class",
+      "subtitle": "student ID card in context",
+      "goal": "Use student ID card in a simple Korean exchange."
+    },
+    "s6-study-u5-cp": {
+      "title": "Working on a project review",
+      "subtitle": "Review 18 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s6-travel-u5-l1": {
+      "title": "Finding normality",
+      "subtitle": "normality in context",
+      "goal": "Use normality in a simple Korean exchange."
+    },
+    "s6-travel-u5-l2": {
+      "title": "Asking about hometown",
+      "subtitle": "hometown in context",
+      "goal": "Use hometown in a simple Korean exchange."
+    },
+    "s6-travel-u5-l3": {
+      "title": "On the way to protest",
+      "subtitle": "protest in context",
+      "goal": "Use protest in a simple Korean exchange."
+    },
+    "s6-travel-u5-cp": {
+      "title": "A day trip review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-hobbies-u3-l1": {
+      "title": "Trying match",
+      "subtitle": "match in context",
+      "goal": "Use match in a simple Korean exchange."
+    },
+    "s7-hobbies-u3-l2": {
+      "title": "Playing to play",
+      "subtitle": "to play in context",
+      "goal": "Use to play in a simple Korean exchange."
+    },
+    "s7-hobbies-u3-cp": {
+      "title": "Music and games review",
+      "subtitle": "Review 18 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-tech-u3-l1": {
+      "title": "Using watch",
+      "subtitle": "watch in context",
+      "goal": "Use watch in a simple Korean exchange."
+    },
+    "s7-tech-u3-l2": {
+      "title": "Fixing wristwatch",
+      "subtitle": "wristwatch in context",
+      "goal": "Use wristwatch in a simple Korean exchange."
+    },
+    "s7-tech-u3-l3": {
+      "title": "Sending spoon and chopsticks",
+      "subtitle": "spoon and chopsticks in context",
+      "goal": "Use spoon and chopsticks in a simple Korean exchange."
+    },
+    "s7-tech-u3-cp": {
+      "title": "Messages and calls review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-grammar-u4-l1": {
+      "title": "Using present modifier",
+      "subtitle": "present modifier in context",
+      "goal": "Use present modifier in a simple Korean exchange."
+    },
+    "s7-grammar-u4-l2": {
+      "title": "Building with to walk",
+      "subtitle": "to walk in context",
+      "goal": "Use to walk in a simple Korean exchange."
+    },
+    "s7-grammar-u4-l3": {
+      "title": "Choosing so",
+      "subtitle": "so in context",
+      "goal": "Use so in a simple Korean exchange."
+    },
+    "s7-grammar-u4-l4": {
+      "title": "Practising but",
+      "subtitle": "but in context",
+      "goal": "Use but in a simple Korean exchange."
+    },
+    "s7-grammar-u4-cp": {
+      "title": "Forms and nuance review",
+      "subtitle": "Review 31 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-actions-u6-l1": {
+      "title": "How to to burn",
+      "subtitle": "to burn in context",
+      "goal": "Use to burn in a simple Korean exchange."
+    },
+    "s7-actions-u6-l2": {
+      "title": "Ready to to remember",
+      "subtitle": "to remember in context",
+      "goal": "Use to remember in a simple Korean exchange."
+    },
+    "s7-actions-u6-cp": {
+      "title": "Moving through town review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-daily-u6-l1": {
+      "title": "Starting with to breathe",
+      "subtitle": "to breathe in context",
+      "goal": "Use to breathe in a simple Korean exchange."
+    },
+    "s7-daily-u6-l2": {
+      "title": "Making time for birthday",
+      "subtitle": "birthday in context",
+      "goal": "Use birthday in a simple Korean exchange."
+    },
+    "s7-daily-u6-l3": {
+      "title": "At to be late",
+      "subtitle": "to be late in context",
+      "goal": "Use to be late in a simple Korean exchange."
+    },
+    "s7-daily-u6-cp": {
+      "title": "Morning routines to brea review",
+      "subtitle": "Review 27 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-feelings-u6-l1": {
+      "title": "Talking about suspicion",
+      "subtitle": "suspicion in context",
+      "goal": "Use suspicion in a simple Korean exchange."
+    },
+    "s7-feelings-u6-l2": {
+      "title": "A fear kind of day",
+      "subtitle": "fear in context",
+      "goal": "Use fear in a simple Korean exchange."
+    },
+    "s7-feelings-u6-l3": {
+      "title": "Describing hardship",
+      "subtitle": "hardship in context",
+      "goal": "Use hardship in a simple Korean exchange."
+    },
+    "s7-feelings-u6-cp": {
+      "title": "Good news today review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-study-u6-l1": {
+      "title": "Learning about absence",
+      "subtitle": "absence in context",
+      "goal": "Use absence in a simple Korean exchange."
+    },
+    "s7-study-u6-l2": {
+      "title": "Using regularity in class",
+      "subtitle": "regularity in context",
+      "goal": "Use regularity in a simple Korean exchange."
+    },
+    "s7-study-u6-cp": {
+      "title": "In the classroom absence review",
+      "subtitle": "Review 18 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-travel-u6-l1": {
+      "title": "Finding lake",
+      "subtitle": "lake in context",
+      "goal": "Use lake in a simple Korean exchange."
+    },
+    "s7-travel-u6-l2": {
+      "title": "Asking about art gallery",
+      "subtitle": "art gallery in context",
+      "goal": "Use art gallery in a simple Korean exchange."
+    },
+    "s7-travel-u6-l3": {
+      "title": "On the way to outside",
+      "subtitle": "outside in context",
+      "goal": "Use outside in a simple Korean exchange."
+    },
+    "s7-travel-u6-cp": {
+      "title": "Checking the route review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-feelings-u10-l1": {
+      "title": "Talking about cheerful",
+      "subtitle": "cheerful in context",
+      "goal": "Use cheerful in a simple Korean exchange."
+    },
+    "s7-feelings-u10-l2": {
+      "title": "A loneliness kind of day",
+      "subtitle": "loneliness in context",
+      "goal": "Use loneliness in a simple Korean exchange."
+    },
+    "s7-feelings-u10-l3": {
+      "title": "Describing suddenness",
+      "subtitle": "suddenness in context",
+      "goal": "Use suddenness in a simple Korean exchange."
+    },
+    "s7-feelings-u10-cp": {
+      "title": "A bright morning cheerfu review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s7-feelings-u11-l1": {
+      "title": "Talking about thickness",
+      "subtitle": "thickness in context",
+      "goal": "Use thickness in a simple Korean exchange."
+    },
+    "s7-feelings-u11-l2": {
+      "title": "A individual difference kind of",
+      "subtitle": "individual difference in context",
+      "goal": "Use individual difference in a simple Korean exchange."
+    },
+    "s7-feelings-u11-l3": {
+      "title": "Describing reality",
+      "subtitle": "reality in context",
+      "goal": "Use reality in a simple Korean exchange."
+    },
+    "s7-feelings-u11-cp": {
+      "title": "Small talk outside thick review",
+      "subtitle": "Review 29 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-people-u2-l1": {
+      "title": "Meeting husband",
+      "subtitle": "husband in context",
+      "goal": "Use husband in a simple Korean exchange."
+    },
+    "s8-people-u2-l2": {
+      "title": "Talking with you",
+      "subtitle": "you in context",
+      "goal": "Use you in a simple Korean exchange."
+    },
+    "s8-people-u2-l3": {
+      "title": "Introducing face-to-face",
+      "subtitle": "face-to-face in context",
+      "goal": "Use face-to-face in a simple Korean exchange."
+    },
+    "s8-people-u2-cp": {
+      "title": "Talking about friends review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-people-u3-l1": {
+      "title": "Meeting friendship",
+      "subtitle": "friendship in context",
+      "goal": "Use friendship in a simple Korean exchange."
+    },
+    "s8-people-u3-l2": {
+      "title": "Talking with family member",
+      "subtitle": "family member in context",
+      "goal": "Use family member in a simple Korean exchange."
+    },
+    "s8-people-u3-cp": {
+      "title": "People around us review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-shopping-u4-l1": {
+      "title": "Choosing currency exchange",
+      "subtitle": "currency exchange in context",
+      "goal": "Use currency exchange in a simple Korean exchange."
+    },
+    "s8-shopping-u4-l2": {
+      "title": "Buying receipt binder",
+      "subtitle": "receipt binder in context",
+      "goal": "Use receipt binder in a simple Korean exchange."
+    },
+    "s8-shopping-u4-cp": {
+      "title": "Finding the right size review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-actions-u7-l1": {
+      "title": "How to to press",
+      "subtitle": "to press in context",
+      "goal": "Use to press in a simple Korean exchange."
+    },
+    "s8-actions-u7-l2": {
+      "title": "Ready to to hesitate",
+      "subtitle": "to hesitate in context",
+      "goal": "Use to hesitate in a simple Korean exchange."
+    },
+    "s8-actions-u7-cp": {
+      "title": "Getting things done to p review",
+      "subtitle": "Review 20 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-feelings-u7-l1": {
+      "title": "Talking about rumor",
+      "subtitle": "rumor in context",
+      "goal": "Use rumor in a simple Korean exchange."
+    },
+    "s8-feelings-u7-l2": {
+      "title": "A joy kind of day",
+      "subtitle": "joy in context",
+      "goal": "Use joy in a simple Korean exchange."
+    },
+    "s8-feelings-u7-l3": {
+      "title": "Describing uniqueness",
+      "subtitle": "uniqueness in context",
+      "goal": "Use uniqueness in a simple Korean exchange."
+    },
+    "s8-feelings-u7-cp": {
+      "title": "How was your day rumor review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-travel-u7-l1": {
+      "title": "Finding going out",
+      "subtitle": "going out in context",
+      "goal": "Use going out in a simple Korean exchange."
+    },
+    "s8-travel-u7-l2": {
+      "title": "Asking about to reserve",
+      "subtitle": "to reserve in context",
+      "goal": "Use to reserve in a simple Korean exchange."
+    },
+    "s8-travel-u7-l3": {
+      "title": "On the way to gas station",
+      "subtitle": "gas station in context",
+      "goal": "Use gas station in a simple Korean exchange."
+    },
+    "s8-travel-u7-cp": {
+      "title": "Finding your way going o review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-feelings-u8-l1": {
+      "title": "Talking about freshness",
+      "subtitle": "freshness in context",
+      "goal": "Use freshness in a simple Korean exchange."
+    },
+    "s8-feelings-u8-l2": {
+      "title": "A to be delicious kind of day",
+      "subtitle": "to be delicious in context",
+      "goal": "Use to be delicious in a simple Korean exchange."
+    },
+    "s8-feelings-u8-l3": {
+      "title": "Describing blue color",
+      "subtitle": "blue color in context",
+      "goal": "Use blue color in a simple Korean exchange."
+    },
+    "s8-feelings-u8-cp": {
+      "title": "Rainy-day moods freshnes review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-travel-u8-l1": {
+      "title": "Finding to go around",
+      "subtitle": "to go around in context",
+      "goal": "Use to go around in a simple Korean exchange."
+    },
+    "s8-travel-u8-l2": {
+      "title": "Asking about riverbank",
+      "subtitle": "riverbank in context",
+      "goal": "Use riverbank in a simple Korean exchange."
+    },
+    "s8-travel-u8-cp": {
+      "title": "Getting around town to g review",
+      "subtitle": "Review 19 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-feelings-u9-l1": {
+      "title": "Talking about to grow up",
+      "subtitle": "to grow up in context",
+      "goal": "Use to grow up in a simple Korean exchange."
+    },
+    "s8-feelings-u9-l2": {
+      "title": "A to be dark kind of day",
+      "subtitle": "to be dark in context",
+      "goal": "Use to be dark in a simple Korean exchange."
+    },
+    "s8-feelings-u9-l3": {
+      "title": "Describing to be healthy",
+      "subtitle": "to be healthy in context",
+      "goal": "Use to be healthy in a simple Korean exchange."
+    },
+    "s8-feelings-u9-cp": {
+      "title": "Describing the room to g review",
+      "subtitle": "Review 30 words",
+      "goal": "Recall the words from this unit."
+    },
+    "s8-travel-u9-l1": {
+      "title": "Finding tourist spot",
+      "subtitle": "tourist spot in context",
+      "goal": "Use tourist spot in a simple Korean exchange."
+    },
+    "s8-travel-u9-l2": {
+      "title": "Asking about inside and out",
+      "subtitle": "inside and out in context",
+      "goal": "Use inside and out in a simple Korean exchange."
+    },
+    "s8-travel-u9-cp": {
+      "title": "At the station tourist s review",
+      "subtitle": "Review 18 words",
+      "goal": "Recall the words from this unit."
+    }
+  }
+}
