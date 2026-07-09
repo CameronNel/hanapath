@@ -12270,7 +12270,7 @@ let activeTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTa
 // dashboard; Learn / Practice / Progress each open a submenu of tiles, and a
 // tile opens a focused content screen with a "back to <hub>" bar at the top.
 
-const HUBS = ["learn", "practice", "progress", "sounds"];
+const HUBS = ["learn", "practice", "progress"];
 
 const HUB_DEFS = {
   learn: {
@@ -12616,10 +12616,6 @@ function getActiveLearnLevel(itemId) {
 }
 
 function renderHubMenu(hub) {
-  if (hub === "sounds") {
-    renderSoundTestScreen();
-    return;
-  }
   const def = HUB_DEFS[hub];
   const el = showScreen("menu");
   if (!def || !el) return;
@@ -12644,89 +12640,6 @@ function renderHubMenu(hub) {
   `;
   el.querySelectorAll("[data-hub-item]").forEach((btn) => {
     btn.addEventListener("click", () => openHubItem(hub, btn.dataset.hubItem));
-  });
-}
-
-function renderSoundTestScreen() {
-  const el = showScreen("menu");
-  if (!el) return;
-  
-  const activeCorrect = state.activeCorrectSound || 14;
-  const activeIncorrect = state.activeIncorrectSound || 2;
-
-  const correctRowsHtml = CORRECT_SOUND_DEFS.map((def, idx) => {
-    const opt = idx + 1;
-    return `
-      <button class="sound-option-row${activeCorrect === opt ? " active" : ""}" type="button" data-correct-opt="${opt}">
-        <div class="sound-option-info">
-          <strong>Option ${opt}: ${escapeHtml(def.name)}</strong>
-          <p class="sound-option-desc">${escapeHtml(def.desc)}</p>
-        </div>
-        <span class="sound-option-badge">Use this</span>
-      </button>
-    `;
-  }).join("");
-
-  const incorrectRowsHtml = INCORRECT_SOUND_DEFS.map((def, idx) => {
-    const opt = idx + 1;
-    return `
-      <button class="sound-option-row${activeIncorrect === opt ? " active" : ""}" type="button" data-incorrect-opt="${opt}">
-        <div class="sound-option-info">
-          <strong>Option ${opt}: ${escapeHtml(def.name)}</strong>
-          <p class="sound-option-desc">${escapeHtml(def.desc)}</p>
-        </div>
-        <span class="sound-option-badge">Use this</span>
-      </button>
-    `;
-  }).join("");
-
-  el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Sound Effects Tester</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">HanaPath Audio Lab</h2>
-      <div class="screen-sub" style="margin-bottom:0;">Preview synthesized sound options and select which ones are active in the app. Selection is saved automatically.</div>
-    </div>
-    
-    <div class="card">
-      <div class="eyebrow mb-12">Correct Answer (Right) Options</div>
-      <div style="display:flex; flex-direction:column; gap:12px;">
-        ${correctRowsHtml}
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Incorrect Answer (Wrong) Options</div>
-      <div style="display:flex; flex-direction:column; gap:12px;">
-        ${incorrectRowsHtml}
-      </div>
-    </div>
-  `;
-
-  // Bind selection and play
-  el.querySelectorAll("[data-correct-opt]").forEach((row) => {
-    row.addEventListener("click", () => {
-      const opt = Number(row.dataset.correctOpt);
-      playCorrectSoundOption(opt);
-      state.activeCorrectSound = opt;
-      saveState();
-      // update active classes
-      el.querySelectorAll("[data-correct-opt]").forEach((r) => {
-        r.classList.toggle("active", Number(r.dataset.correctOpt) === opt);
-      });
-    });
-  });
-
-  el.querySelectorAll("[data-incorrect-opt]").forEach((row) => {
-    row.addEventListener("click", () => {
-      const opt = Number(row.dataset.incorrectOpt);
-      playIncorrectSoundOption(opt);
-      state.activeIncorrectSound = opt;
-      saveState();
-      // update active classes
-      el.querySelectorAll("[data-incorrect-opt]").forEach((r) => {
-        r.classList.toggle("active", Number(r.dataset.incorrectOpt) === opt);
-      });
-    });
   });
 }
 
