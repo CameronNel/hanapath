@@ -6989,6 +6989,58 @@ function wordLessonMatchesLevel(meta, level) {
   return true;
 }
 
+function wordPathV2Html() {
+  const next = getNextWordLesson();
+  const activeUnitId = next?.unitId || "";
+  const sections = getWordSections();
+  return `<div class="vocab-path">${sections.map((section) => {
+    const sectionUnits = getWordUnits().filter((unit) => unit.sectionId === section.id).sort((a, b) => a.order - b.order);
+    const unlocked = isWordSectionUnlocked(section);
+    const crowned = sectionUnits.filter(isWordUnitCrowned).length;
+    const sectionOpen = unlocked && (section.id === "s1" || sectionUnits.some((unit) => unit.id === activeUnitId));
+    return `<section class="vocab-path-section ${unlocked ? "is-open" : "is-locked"}">
+      <div class="vocab-path-section-header">
+        <div><div class="eyebrow">Section ${escapeHtml(section.id.toUpperCase())}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
+        <span class="pill ${unlocked ? "accent" : "muted"}">${unlocked ? `${crowned}/${sectionUnits.length} crowned` : "🔒 Locked"}</span>
+      </div>
+      ${unlocked ? (sectionOpen ? sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("") : `<details class="vocab-path-explore"><summary>Explore topics · ${sectionUnits.length} units</summary><div class="vocab-path-unit-list">${sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("")}</div></details>`) : `<div class="vocab-path-lock-note">Finish ${escapeHtml(section.prerequisiteSectionId ? getWordSectionById(section.prerequisiteSectionId)?.name || "the previous section" : "Hangul")} to unlock this section.</div>`}
+    </section>`;
+  }).join("")}</div>`;
+}
+
+function wordPathV2UnitHtml(unit, activeUnitId) {
+  const contentLessons = getWordUnitContentLessons(unit);
+  const checkpoint = getWordLessonById(unit.checkpointId);
+  const crowned = isWordUnitCrowned(unit);
+  const unlocked = isWordUnitUnlocked(unit);
+  const active = unit.id === activeUnitId;
+  const completed = contentLessons.filter((lesson) => isWordLessonCompleted(lesson.id)).length;
+  const lessonRows = [...contentLessons, checkpoint].map((lesson) => {
+    const meta = getWordLessonPathMeta(lesson);
+    return wordLessonRowHtml(lesson, meta);
+  }).join("");
+  return `<article class="vocab-path-unit ${active ? "is-highlighted" : ""} ${crowned ? "is-crowned" : ""} ${!unlocked ? "is-locked" : ""}">
+    <button class="vocab-path-unit-header" type="button" data-word-unit-toggle="${escapeHtml(unit.id)}" aria-expanded="${crowned ? "false" : "true"}">
+      <span class="vocab-path-unit-emoji" aria-hidden="true">${escapeHtml(unit.emoji || "✏️")}</span>
+      <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>${escapeHtml(formatWordLessonCategoryLabel(unit.track))} · ${completed}/${contentLessons.length} lessons</small></span>
+      <span class="pill ${crowned ? "green" : unlocked ? "accent" : "muted"}">${crowned ? "🏆 Crowned" : unlocked ? `${completed}/${contentLessons.length}` : "🔒"}</span>
+    </button>
+    <div class="vocab-path-unit-lessons" data-word-unit-lessons="${escapeHtml(unit.id)}" ${crowned ? "hidden" : ""}>${lessonRows}</div>
+  </article>`;
+}
+
+function bindWordPathUnitToggles(el) {
+  el.querySelectorAll("[data-word-unit-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const lessons = el.querySelector(`[data-word-unit-lessons="${CSS.escape(button.dataset.wordUnitToggle)}"]`);
+      if (!lessons) return;
+      const hidden = lessons.hasAttribute("hidden");
+      if (hidden) lessons.removeAttribute("hidden"); else lessons.setAttribute("hidden", "");
+      button.setAttribute("aria-expanded", hidden ? "true" : "false");
+    });
+  });
+}
+
 function wordPathLessonPanelHtml() {
   const lessons = getWordLessons();
   if (!lessons.length) return "";
@@ -7149,8 +7201,9 @@ function openVocabularySubsection(section, backTarget = "menu") {
   if (section === "lessons") {
     showDetailBarWithBack("learn", "Guided word lessons", back, "Vocabulary");
     el.innerHTML = wordPathLessonPanelHtml();
-    bindWordPathControls(el, () => openVocabularySubsection("lessons", backTarget));
     bindWordLessonRows(el);
+    if (!isWordCurriculumV2()) bindWordPathControls(el, () => openVocabularySubsection("lessons", backTarget));
+    bindWordPathUnitToggles(el);
     return;
   }
 
@@ -7278,14 +7331,17 @@ function wordsHomeContentHtml() {
 
   return `
     ${continueCard}
+    ${isWordCurriculumV2() ? wordPathLessonPanelHtml() : ""}
     ${reviewCard}
-    ${wordBasicsSectionHtml(lessons)}
-    ${wordLessonsSectionHtml(lessons)}
+    ${isWordCurriculumV2() ? "" : wordBasicsSectionHtml(lessons)}
+    ${isWordCurriculumV2() ? "" : wordLessonsSectionHtml(lessons)}
     ${vocabularyStagesSectionHtml()}
   `;
 }
 function bindWordsHomeContent(el) {
   bindVocabularySectionCards(el, "words-home");
+  bindWordLessonRows(el);
+  bindWordPathUnitToggles(el);
   const reviewBtn = el.querySelector("[data-words-start-review]");
   if (reviewBtn) reviewBtn.addEventListener("click", () => openWordReview());
 }
