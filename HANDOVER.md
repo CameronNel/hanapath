@@ -25,6 +25,13 @@ Words unlocks after the alphabet completes, then lesson-by-lesson. A scripted
 cold-learner test verified the chain. Flip to `true` locally (plus a cache
 bump) only for testing convenience; do not ship it enabled.
 
+The v2 Words path also has a separate testing control:
+`TEST_ENABLE_WORD_SECTION_COMPLETION` shows **Complete section (test)**
+buttons and crowns a whole section without playing its lessons. It is guarded
+in both the renderer and handler; set it to **`false`** before any
+learner-facing release. Use it only for local path, checkpoint, migration,
+and downstream-section smoke testing.
+
 ## Alphabet section — complete and protected
 Finished (progression, quiz-pool safety, audio normalization, accessibility,
 dead-code removal, skill-SRS) across earlier PRs; details are in git history.
