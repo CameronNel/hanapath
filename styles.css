@@ -3612,3 +3612,105 @@ li { margin-bottom: 4px; }
   border-color: var(--accent);
   color: #06122b;
 }
+.vocab-path {
+  display: grid;
+  gap: 16px;
+}
+
+.vocab-path-section,
+.vocab-path-unit {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface-1);
+}
+
+.vocab-path-section {
+  padding: 16px;
+}
+
+.vocab-path-section.is-locked {
+  opacity: .78;
+}
+
+.vocab-path-section-header,
+.vocab-path-unit-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vocab-path-section-header {
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.vocab-path-section-title {
+  margin: 2px 0 0;
+  font-size: 1.2rem;
+}
+
+.vocab-path-unit-list {
+  display: grid;
+  gap: 10px;
+}
+
+.vocab-path-unit {
+  overflow: hidden;
+}
+
+.vocab-path-unit.is-highlighted {
+  border-color: var(--line-strong);
+  box-shadow: var(--glow-accent);
+}
+
+.vocab-path-unit-header {
+  width: 100%;
+  padding: 13px 14px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vocab-path-unit-emoji {
+  font-size: 1.35rem;
+}
+
+.vocab-path-unit-copy {
+  display: grid;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.vocab-path-unit-copy strong {
+  font-size: .98rem;
+}
+
+.vocab-path-unit-copy small {
+  color: var(--muted-2);
+}
+
+.vocab-path-unit-lessons {
+  padding: 0 10px 10px;
+}
+
+.vocab-path-unit-lessons[hidden] {
+  display: none;
+}
+
+.vocab-path-explore {
+  margin-top: 10px;
+}
+
+.vocab-path-explore summary {
+  padding: 10px 2px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.vocab-path-lock-note {
+  padding: 10px 0 2px;
+  color: var(--muted-2);
+}
