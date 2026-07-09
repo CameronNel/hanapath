@@ -7054,6 +7054,7 @@ function bindWordPathUnitToggles(el) {
 }
 
 function wordPathLessonPanelHtml() {
+  if (isWordCurriculumV2()) return wordPathV2Html();
   const lessons = getWordLessons();
   if (!lessons.length) return "";
 
