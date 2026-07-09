@@ -5380,7 +5380,7 @@ function openWordsHome() {
 
 function wordReferenceButtonHtml() {
   return '<div class="word-reference-row">' +
-    '<button class="button secondary compact" type="button" data-word-open-reference>📚 View Word Bank</button>' +
+    '<button class="button secondary compact" type="button" data-word-open-reference>Word Bank</button>' +
     '</div>';
 }
 
@@ -5407,7 +5407,7 @@ function openWordExampleOverlay(word) {
       <h2 id="wordExampleTitle" class="word-example-dialog-word" lang="ko">${escapeHtml(word.display || word.korean)}</h2>
       <div class="word-example-dialog-ko" lang="ko">${escapeHtml(word.exampleKo || "")}</div>
       <div class="word-example-dialog-en">${escapeHtml(word.exampleEn || "")}</div>
-      <button class="button primary compact word-example-dialog-hear" type="button" data-word-example-play>▶ Hear example</button>
+      <button class="button primary compact word-example-dialog-hear" type="button" data-word-example-play>▶ Hear in a sentence</button>
     </div>
   `;
   document.body.appendChild(overlay);
@@ -5588,22 +5588,25 @@ function wordLessonStudyHtml(lesson, view) {
         <div class="word-card-heading">
           <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}">${escapeHtml(display)}</button>
           <span class="word-card-pos">${escapeHtml(word.pos)}</span>
-          <button class="word-example-play" type="button" data-word-example-open aria-label="Hear example sentence" title="Hear example sentence">▶</button>
         </div>
         <div class="word-card-meta word-card-meta-primary"><span>${escapeHtml(word.pronunciation)}</span><span>${escapeHtml(word.meaning)}</span></div>
         ${pronunciationLayer ? `<div class="word-card-meta">${escapeHtml(pronunciationLayer)}</div>` : ""}
         ${formsHtml}
         ${wordHonorificCardHtml(word)}
+        <div class="word-example-sentence" lang="ko">
+          <div>${escapeHtml(word.exampleKo)}</div>
+          <div class="word-example-sentence-en">${escapeHtml(word.exampleEn)}</div>
+        </div>
         ${word.usageNote ? `<div class="word-usage-note">${escapeHtml(word.usageNote)}</div>` : ""}
-        <div class="word-card-actions">
+        <div class="word-card-actions word-card-audio-actions">
           <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear word</button>
+          <button class="button secondary compact" type="button" data-word-example-open>▶ Hear in a sentence</button>
         </div>
         <div class="word-card-actions word-card-nav-actions">
           <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
-          ${view.reviewingCheckpoint ? '<button class="button secondary compact" type="button" data-word-return-checkpoint>Return to questions</button>' : ""}
+          <button class="button secondary compact" type="button" data-word-open-reference>Word Bank</button>
           <button class="button primary compact" type="button" data-word-lesson-next>Next: type it →</button>
         </div>
-        ${wordReferenceButtonHtml()}
       </div>
     `;
   }
