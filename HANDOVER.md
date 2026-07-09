@@ -8,7 +8,7 @@ Snapshot for the next contributor (human or agent) picking up this project.
   - `index.html`, `styles.css`
   - `lib/hangul.js`
   - `words_curated_core.js` — 2,028 curated Words rows (`window.HANAPATH_CURATED_WORDS`)
-  - `words_lesson_plan.js` — the Words curriculum (`window.HANAPATH_WORD_LESSONS`)
+  - `words_lesson_plan.js` — the v2 Words curriculum (`window.HANAPATH_WORD_LESSONS`, sections and units)
   - `words_inflect.js` — stem→form generator/recognizer (`window.HANAPATH_INFLECT`)
   - `raw_word_meanings.js`, `korean_5000_claude_ready.csv` — the 5k raw frequency reference
   - `alphabet_skill_srs.js` — alphabet skill-SRS layer
@@ -47,6 +47,11 @@ below.
   - **Gotcha:** the background orbs animate forever — do **not** `await Promise.all(document.getAnimations().map(a => a.finished))` (it never resolves). Use a fixed wait instead.
 
 ## Words section planning
+- **Current live plan:** [`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md).
+  Its hardened owner decisions are binding; the older Words specs below are
+  historical implementation references and must not override it. P1-0 through
+  P1-F are merged; P1-G remains owner acceptance (live-device S1/S2 and
+  migration review).
 - **North star (what/how to teach):** [`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md) — linguistics + pedagogy requirements, a current-status scorecard (§8), milestone reference sheet (§11), and dependency/implementation order (§12).
 - **Implementation plan (how it's built):** [`docs/WORDS_SECTION_MASTER_SPEC.md`](docs/WORDS_SECTION_MASTER_SPEC.md) — schema, SRS, lesson flow, screens; §25 reconciles it with the north star (schema deltas + revised PR order).
 - **Shipped as of 2026-07-04 (PRs #37, #40–#54):** Hangul-first UX, script course, Leitner SRS, W0–W19 lessons (incl. the W17–W19 grammar-mechanics track), a non-laggy Word Bank, a `words_inflect.js` stem→form generator/recognizer (verified against a gold conjugation set), M1 data axes (`senseKey`/`register`/`speechLevel`/`originType`/`hanja`/`irregularFamily`/`morphTag` on every curated row, with `annotationSource` provenance), a Word Bank "Needs curation" queue, a vocab minimal-pair pronunciation drill + browser SpeechRecognition scoring stub, per-item review-event analytics (latency/error-type, feeding a metrics view), the M5 Core 2000 vocabulary expansion (true count now 2,028), and the #54 dedupe/audit-hardening pass (true count 1,918).

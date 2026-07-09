@@ -4,6 +4,13 @@ Date: 2026-07-01
 Repo: `CameronNel/hanapath`  
 Owner intent: alphabet/Hangul is treated as sorted. The next major product-quality push is the Words section.
 
+> **Curriculum v2 addendum (2026-07-09):** The implementation shipped under
+> [`WORDS_CURRICULUM_V2_PLAN.md`](WORDS_CURRICULUM_V2_PLAN.md), including the
+> immutable v1 snapshot, deterministic allocation manifest, migration rules,
+> path UI, and owner-gated acceptance. This older master spec remains a schema
+> and engine reference; do not use its legacy lesson ordering or IDs for new
+> curriculum work.
+
 This file is a Codex-ready implementation plan. It is intentionally detailed. The goal is that a contributor can pick this up, understand the current app, implement the words section without breaking alphabet, and test it like a cold learner.
 
 > **Governing north star:** [`VOCABULARY_TEACHING_SPEC.md`](VOCABULARY_TEACHING_SPEC.md)
