@@ -4419,6 +4419,12 @@ function completeWordSectionForTesting(sectionId) {
   }
   saveState();
 }
+
+function completeAlphabetSectionForTesting() {
+  if (!TEST_ENABLE_WORD_SECTION_COMPLETION) return;
+  state.phaseOneCompleted = phaseOneLessons.map((lesson) => lesson.id);
+  saveState();
+}
 function isWordUnitUnlocked(unit) {
   if (!unit || !isWordSectionUnlocked(getWordSectionById(unit.sectionId))) return false;
   return !unit.prerequisiteUnitId || isWordUnitCrowned(getWordUnitById(unit.prerequisiteUnitId));
@@ -6938,14 +6944,17 @@ function vocabularyStageRowsHtml() {
 function alphabetStagesSectionHtml() {
   const progress = getLearnProgress("alphabet");
   return `
-    <button class="card word-section-card" type="button" data-alphabet-section="stages">
+    <div class="card word-section-card" data-alphabet-section="stages" role="button" tabindex="0">
       <div>
         <div class="eyebrow">Stages</div>
         <div class="study-row-ko">Alphabet stages</div>
         <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo("alphabet", progress.currentStage).detail)}`}</div>
       </div>
-      <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
-    </button>
+      <div class="flex gap-8" style="align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+        <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
+        ${TEST_ENABLE_WORD_SECTION_COMPLETION ? '<button class="button secondary compact" type="button" data-complete-alphabet-section>Complete section (test)</button>' : ""}
+      </div>
+    </div>
   `;
 }
 
@@ -12831,6 +12840,12 @@ function renderLearnStageMenu(itemId) {
   });
   const stageLetterReviewBtn = document.getElementById("stageLetterReviewBtn");
   if (stageLetterReviewBtn) stageLetterReviewBtn.addEventListener("click", () => startLetterReview());
+  const completeAlphabetBtn = el.querySelector("[data-complete-alphabet-section]");
+  if (completeAlphabetBtn) completeAlphabetBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    completeAlphabetSectionForTesting();
+    renderLearnStageMenu("alphabet");
+  });
   // [2026-06-29] Wire the full-alphabet entry card.
   const entireAlphabetBtn = document.getElementById("openEntireAlphabet");
   if (entireAlphabetBtn) entireAlphabetBtn.addEventListener("click", () => openEntireAlphabet());
