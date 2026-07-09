@@ -5697,19 +5697,25 @@ function wordLessonResultHtml(lesson, view) {
 
   const passed = wordLessonPassed(lesson, view);
   const nextLesson = getNextWordLesson();
+  const isCheckpoint = lesson.type === "checkpoint";
+  const resultEyebrow = isCheckpoint && passed ? "Checkpoint complete" : `${escapeHtml(lesson.title)} ${passed ? "complete" : "— almost"}`;
+  const resultTitle = isCheckpoint && passed ? "Unit crowned" : passed ? "Lesson complete" : isCheckpoint ? "Checkpoint not passed yet" : "Good try — review and retry";
+  const resultCopy = passed
+    ? isCheckpoint
+      ? "You cleared this unit checkpoint. The next unit is ready when you are."
+      : "All of these words are now in your spaced review queue. They'll come back at the right time."
+    : `You need ${lesson.pass?.minFirstTryPct ?? 75}% on first tries to pass. The words are saved — review them and retry.`;
   return `
-    <div class="card word-card">
-      <div class="eyebrow">${escapeHtml(lesson.title)} ${passed ? "complete" : "— almost"}</div>
-      <h2 class="screen-title" style="margin-bottom:12px;">${passed ? "Lesson complete" : "Good try — review and retry"}</h2>
+    <div class="card word-card ${isCheckpoint && passed ? "word-checkpoint-crowned" : ""}">
+      <div class="eyebrow">${resultEyebrow}</div>
+      <h2 class="screen-title" style="margin-bottom:12px;">${resultTitle}</h2>
       <div class="word-result-grid">
         <div class="stat-box"><span class="sv">${view.words.length}</span><span class="sl">${lesson.type === "checkpoint" ? "Review words" : "New words"}</span></div>
         <div class="stat-box"><span class="sv">${stats.typedCorrect}/${Math.max(stats.typedTotal, view.words.length)}</span><span class="sl">Typed</span></div>
         <div class="stat-box"><span class="sv">${stats.pct}%</span><span class="sl">First-try</span></div>
         <div class="stat-box"><span class="sv">${getVocabDueCount()}</span><span class="sl">Due for review</span></div>
       </div>
-      <div class="screen-sub" style="margin:12px 0;">${passed
-        ? "All of these words are now in your spaced review queue. They'll come back at the right time."
-        : `You need ${lesson.pass?.minFirstTryPct ?? 75}% on first tries to pass. The words are saved — review them and retry.`}</div>
+      <div class="screen-sub" style="margin:12px 0;">${resultCopy}</div>
       <div class="word-card-actions">
         ${passed && nextLesson ? `<button class="button primary compact" type="button" data-word-lesson-open="${escapeHtml(nextLesson.id)}">Next lesson: ${escapeHtml(nextLesson.title)} →</button>` : ""}
         ${!passed ? `<button class="button primary compact" type="button" data-word-lesson-open="${escapeHtml(lesson.id)}">Retry lesson</button>` : ""}
@@ -7015,6 +7021,12 @@ function wordPathV2UnitHtml(unit, activeUnitId) {
   const unlocked = isWordUnitUnlocked(unit);
   const active = unit.id === activeUnitId;
   const completed = contentLessons.filter((lesson) => isWordLessonCompleted(lesson.id)).length;
+  const unitWordIds = [...contentLessons, checkpoint].flatMap((lesson) => getWordLessonReviewWordIds(lesson));
+  const dueCount = [...new Set(unitWordIds)].filter((wordId) => {
+    const record = getVocabSrsRecord(wordId);
+    return record && !record.isKnown && Number(record.due) > 0 && Number(record.due) <= Date.now();
+  }).length;
+  const dueChip = dueCount ? `<span class="vocab-path-unit-due">${dueCount} due</span>` : "";
   const lessonRows = [...contentLessons, checkpoint].map((lesson) => {
     const meta = getWordLessonPathMeta(lesson);
     return wordLessonRowHtml(lesson, meta);
@@ -7022,7 +7034,7 @@ function wordPathV2UnitHtml(unit, activeUnitId) {
   return `<article class="vocab-path-unit ${active ? "is-highlighted" : ""} ${crowned ? "is-crowned" : ""} ${!unlocked ? "is-locked" : ""}">
     <button class="vocab-path-unit-header" type="button" data-word-unit-toggle="${escapeHtml(unit.id)}" aria-expanded="${crowned ? "false" : "true"}">
       <span class="vocab-path-unit-emoji" aria-hidden="true">${escapeHtml(unit.emoji || "✏️")}</span>
-      <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>${escapeHtml(formatWordLessonCategoryLabel(unit.track))} · ${completed}/${contentLessons.length} lessons</small></span>
+      <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>${escapeHtml(formatWordLessonCategoryLabel(unit.track))} · ${completed}/${contentLessons.length} lessons ${dueChip}</small></span>
       <span class="pill ${crowned ? "green" : unlocked ? "accent" : "muted"}">${crowned ? "🏆 Crowned" : unlocked ? `${completed}/${contentLessons.length}` : "🔒"}</span>
     </button>
     <div class="vocab-path-unit-lessons" data-word-unit-lessons="${escapeHtml(unit.id)}" ${crowned ? "hidden" : ""}>${lessonRows}</div>
