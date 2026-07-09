@@ -2854,6 +2854,10 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // isLessonUnlocked() below and isWordLessonUnlocked() further down for the
 // two places this is consumed. Flip to true only for local testing.
 const TEST_UNLOCK_ALL_STAGES = false;
+// Testing control: show a path button that crowns every lesson in a v2
+// section. Set false before any learner-facing release; the handler is also
+// guarded so a stale button cannot mutate completion when disabled.
+const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -4398,6 +4402,22 @@ function isWordSectionUnlocked(section) {
   if (section.id === "s1") return getAlphabetProgress().complete;
   const previous = getWordSectionById(section.prerequisiteSectionId);
   return Boolean(previous && getWordUnits().filter((unit) => unit.sectionId === previous.id).every(isWordUnitCrowned));
+}
+
+function completeWordSectionForTesting(sectionId) {
+  if (!TEST_ENABLE_WORD_SECTION_COMPLETION) return;
+  const section = getWordSectionById(sectionId);
+  if (!section || !isWordCurriculumV2()) return;
+  const lessonIds = getWordUnits()
+    .filter((unit) => unit.sectionId === section.id)
+    .flatMap((unit) => [...unit.lessonIds, unit.checkpointId])
+    .filter(Boolean);
+  state.vocabLessonCompleted = [...new Set([...(state.vocabLessonCompleted || []), ...lessonIds])];
+  if (state.vocabLessonActive && lessonIds.includes(state.vocabLessonActive)) {
+    state.vocabLessonActive = null;
+    state.vocabLessonSession = null;
+  }
+  saveState();
 }
 function isWordUnitUnlocked(unit) {
   if (!unit || !isWordSectionUnlocked(getWordSectionById(unit.sectionId))) return false;
@@ -7007,7 +7027,10 @@ function wordPathV2Html() {
     return `<section class="vocab-path-section ${unlocked ? "is-open" : "is-locked"}">
       <div class="vocab-path-section-header">
         <div><div class="eyebrow">Section ${escapeHtml(section.id.toUpperCase())}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
-        <span class="pill ${unlocked ? "accent" : "muted"}">${unlocked ? `${crowned}/${sectionUnits.length} crowned` : "🔒 Locked"}</span>
+        <div class="flex gap-8" style="align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+          <span class="pill ${unlocked ? "accent" : "muted"}">${unlocked ? `${crowned}/${sectionUnits.length} crowned` : "🔒 Locked"}</span>
+          ${TEST_ENABLE_WORD_SECTION_COMPLETION ? `<button class="button secondary compact" type="button" data-word-complete-section="${escapeHtml(section.id)}">Complete section (test)</button>` : ""}
+        </div>
       </div>
       ${unlocked ? (sectionOpen ? sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("") : `<details class="vocab-path-explore"><summary>Explore topics · ${sectionUnits.length} units</summary><div class="vocab-path-unit-list">${sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("")}</div></details>`) : `<div class="vocab-path-lock-note">Finish ${escapeHtml(section.prerequisiteSectionId ? getWordSectionById(section.prerequisiteSectionId)?.name || "the previous section" : "Hangul")} to unlock this section.</div>`}
     </section>`;
@@ -7355,6 +7378,13 @@ function bindWordsHomeContent(el) {
   bindVocabularySectionCards(el, "words-home");
   bindWordLessonRows(el);
   bindWordPathUnitToggles(el);
+  el.querySelectorAll("[data-word-complete-section]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      completeWordSectionForTesting(button.dataset.wordCompleteSection);
+      renderVocabulary();
+    });
+  });
   const reviewBtn = el.querySelector("[data-words-start-review]");
   if (reviewBtn) reviewBtn.addEventListener("click", () => openWordReview());
 }
