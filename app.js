@@ -5380,7 +5380,7 @@ function openWordsHome() {
 
 function wordReferenceButtonHtml() {
   return '<div class="word-reference-row">' +
-    '<button class="button secondary compact" type="button" data-word-open-reference>Word Bank</button>' +
+    '<button class="button secondary compact" type="button" data-word-open-reference>📚 Word Bank</button>' +
     '</div>';
 }
 
@@ -5576,7 +5576,6 @@ function wordLessonStudyHtml(lesson, view) {
   if (!word) return "";
   const display = word.display || word.korean;
   const progress = `Word ${step.wordIndex + 1} of ${view.words.length}`;
-  const pronunciationLayer = getWordPronunciationLayerText(word);
 
   if (step.type === "card") {
     const formsHtml = Array.isArray(word.forms) && word.forms.length
@@ -5584,27 +5583,24 @@ function wordLessonStudyHtml(lesson, view) {
       : "";
     return `
       <div class="card word-card">
-        <div class="eyebrow">${escapeHtml(progress)}</div>
-        <div class="word-card-heading">
-          <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}">${escapeHtml(display)}</button>
-          <span class="word-card-pos">${escapeHtml(word.pos)}</span>
+        <div class="word-card-progress-row">
+          <div class="eyebrow">${escapeHtml(progress)}</div>
+          <button class="button secondary compact word-card-bank-button" type="button" data-word-open-reference>📚 Word Bank</button>
         </div>
-        <div class="word-card-meta word-card-meta-primary"><span>${escapeHtml(word.pronunciation)}</span><span>${escapeHtml(word.meaning)}</span></div>
-        ${pronunciationLayer ? `<div class="word-card-meta">${escapeHtml(pronunciationLayer)}</div>` : ""}
+        <div class="word-card-heading">
+          <button class="word-card-ko" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Hear ${escapeHtml(display)}"><span class="word-card-ko-main">${escapeHtml(display)}</span><span class="word-card-ko-rom">${escapeHtml(word.pronunciation)}</span></button>
+        </div>
+        <div class="word-card-definition"><span>${escapeHtml(word.pos)}</span><span aria-hidden="true">|</span><span>${escapeHtml(word.meaning)}</span></div>
         ${formsHtml}
         ${wordHonorificCardHtml(word)}
-        <div class="word-example-sentence" lang="ko">
-          <div>${escapeHtml(word.exampleKo)}</div>
-          <div class="word-example-sentence-en">${escapeHtml(word.exampleEn)}</div>
-        </div>
-        ${word.usageNote ? `<div class="word-usage-note">${escapeHtml(word.usageNote)}</div>` : ""}
+        ${word.usageNote ? `<div class="word-study-note">${escapeHtml(word.usageNote)}</div>` : ""}
         <div class="word-card-actions word-card-audio-actions">
           <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear word</button>
           <button class="button secondary compact" type="button" data-word-example-open>▶ Hear in a sentence</button>
         </div>
         <div class="word-card-actions word-card-nav-actions">
           <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
-          <button class="button secondary compact" type="button" data-word-open-reference>Word Bank</button>
+          <button class="button secondary compact" type="button" data-word-open-reference>📚 Word Bank</button>
           <button class="button primary compact" type="button" data-word-lesson-next>Next: type it →</button>
         </div>
       </div>
