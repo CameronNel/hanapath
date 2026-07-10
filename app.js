@@ -8535,6 +8535,9 @@ function getPhaseOneButtonLabel(source, mode = phaseOneView.mode) {
 }
 
 function getPhaseOneProgressLabel(lesson) {
+  if (phaseOneView.mode === "intro") {
+    return "Before you start";
+  }
   if (phaseOneView.mode === "check") {
     return "Question " + (phaseOneView.questionIndex + 1) + " / " + lesson.questions.length;
   }
@@ -9320,26 +9323,7 @@ function renderPhaseOneConcept(lesson) {
     : concept.wordBreakdown
       ? renderWordBreakdown(concept.wordBreakdown)
       : renderFlashableHangulText(concept.visual).html;
-  const dots = lesson.concepts
-    .map(
-      (_, index) =>
-        '<span class="' +
-        (index === phaseOneView.slideIndex ? "active" : index < phaseOneView.slideIndex ? "done" : "") +
-        '"></span>',
-    )
-    .join("");
-
   els.phaseOneStage.innerHTML =
-    '<div class="lesson-step-row">' +
-    "<span>Learn " +
-    (phaseOneView.slideIndex + 1) +
-    " / " +
-    lesson.concepts.length +
-    "</span>" +
-    '<div class="lesson-dots" aria-hidden="true">' +
-    dots +
-    "</div>" +
-    "</div>" +
     '<p class="alphabet-hangul-hint" id="alphabetHangulHint">Click any Hangul to hear it</p>' +
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="concept-card">' +
