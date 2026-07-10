@@ -9612,23 +9612,12 @@ function renderPhaseOneQuestion(lesson) {
     return;
   }
   restorePhaseOneActions();
-  const cleanCount = phaseOneView.results.filter(Boolean).length;
-
   if (lesson.id === "block-geometry") {
     const visualHtml = renderCheckpointVisualHtml(question);
     const audioHelpersHtml = renderCheckpointAudioHelpers(lesson, question);
 
     els.phaseOneStage.innerHTML =
-      '<div class="lesson-step-row">' +
-      "<span>Checkpoint " +
-      (phaseOneView.questionIndex + 1) +
-      " / " +
-      lesson.questions.length +
-      "</span>" +
-      "<strong>" +
-      cleanCount +
-      " clean</strong>" +
-      "</div>" +
+      '<p class="alphabet-hangul-hint" id="alphabetHangulHint">Click any Hangul to hear it</p>' +
       '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
       '<div class="checkpoint-card">' +
 
@@ -9664,16 +9653,7 @@ function renderPhaseOneQuestion(lesson) {
     const questionVisual = renderFlashableHangulText(question.visual, "checkpoint-token");
 
     els.phaseOneStage.innerHTML =
-      '<div class="lesson-step-row">' +
-      "<span>Checkpoint " +
-      (phaseOneView.questionIndex + 1) +
-      " / " +
-      lesson.questions.length +
-      "</span>" +
-      "<strong>" +
-      cleanCount +
-      " clean</strong>" +
-      "</div>" +
+      '<p class="alphabet-hangul-hint" id="alphabetHangulHint">Click any Hangul to hear it</p>' +
       '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
       '<div class="checkpoint-card">' +
       '<div class="checkpoint-visual" lang="ko" data-phase-one-visual>' +
@@ -9800,7 +9780,7 @@ function renderPhaseOnePlayer() {
     renderPhaseOneResult(lesson);
   }
 
-  const showReference = ["intro", "learn", "result"].includes(phaseOneView.mode);
+  const showReference = ["intro", "learn", "check", "result"].includes(phaseOneView.mode);
   if (els.phaseOneReferenceButton) {
     els.phaseOneReferenceButton.style.display = showReference ? "" : "none";
   }
@@ -9927,7 +9907,6 @@ function answerPhaseOneQuestion(choice, button) {
 // (no-mistake) build counts toward the pass threshold.
 function renderPhaseOneBuildQuestion(lesson, question) {
   restorePhaseOneActions();
-  const cleanCount = phaseOneView.results.filter(Boolean).length;
 
   // Normalize single-syllable and multi-syllable builds to a list of blocks.
   const blocks = Array.isArray(question.blocks)
@@ -9974,16 +9953,7 @@ function renderPhaseOneBuildQuestion(lesson, question) {
     .join("");
 
   els.phaseOneStage.innerHTML =
-    '<div class="lesson-step-row">' +
-    "<span>Checkpoint " +
-    (phaseOneView.questionIndex + 1) +
-    " / " +
-    lesson.questions.length +
-    "</span>" +
-    "<strong>" +
-    cleanCount +
-    " clean</strong>" +
-    "</div>" +
+    '<p class="alphabet-hangul-hint" id="alphabetHangulHint">Click any Hangul to hear it</p>' +
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="checkpoint-card">' +
     "<h4>" +
@@ -13437,11 +13407,17 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     }
     const tile = e.target.closest(".bd-tile");
     if (tile instanceof HTMLButtonElement && !tile.disabled) {
+      const hint = document.getElementById("alphabetHangulHint");
+      if (hint) hint.hidden = true;
       answerPhaseOneBuild(tile.dataset.jamo || "", tile);
       return;
     }
     const btn = e.target.closest(".lesson-option");
-    if (btn instanceof HTMLButtonElement && !btn.disabled) answerPhaseOneQuestion(btn.dataset.option || "", btn);
+    if (btn instanceof HTMLButtonElement && !btn.disabled) {
+      const hint = document.getElementById("alphabetHangulHint");
+      if (hint) hint.hidden = true;
+      answerPhaseOneQuestion(btn.dataset.option || "", btn);
+    }
   });
   // Keyboard activation for tap-to-hear tokens.
   stageEl.addEventListener("keydown", (e) => {
