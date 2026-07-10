@@ -862,7 +862,7 @@ that every raw token is a distinct teachable lesson item.
 
 ### 5.1 P2-0 — Pipeline tooling (one PR) [coder]
 
-- [ ] Build `scripts/words_expansion/` :
+- [x] Build `scripts/words_expansion/` :
   1. **`build_candidate_queue.mjs`** — merge 5k+15k CSVs; drop rows whose
      surface matches any curated `korean`/`display`/inflected form (reuse
      `words_inflect.js` offline); drop non-lexical tokens (particle/ending
@@ -961,7 +961,7 @@ words merely because a newly curated candidate has a high raw rank.
 
 ### 5.4 Progress ledger
 
-- [ ] Create `docs/WORDS_EXPANSION_LEDGER.md` in P2-0: a table of batch PRs —
+- [x] Create `docs/WORDS_EXPANSION_LEDGER.md` in P2-0: a table of batch PRs —
   date, source-range/hash, disposition counts, qualified lemmas, words/senses
   added, cumulative curated count, draft/published pack, audio run/cache
   confirmation, and independent-review result. The scorecard-was-wrong-four-

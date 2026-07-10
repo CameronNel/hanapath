@@ -295,12 +295,12 @@ Grounded in the shipped code (main) as of 2026-07-05. Legend: ✅ solid ·
 |---|---|---|
 | Hangul-first, romanization secondary | ✅ | UX is Hangul-primary; romanization is a support layer |
 | Script → block → batchim course | ✅ | Full alphabet module (drill lab, skill-SRS, 72 audio tokens, batchim) |
-| Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + per-lesson checkpoint ladder + W17–W19 grammar track, then W20–W218 theme stages from the Core-2000 expansion (219 stages / 298 lessons total, strict linear unlock chain — verified intact end to end 2026-07-05) |
+| Staged curriculum word→phrase→sentence | ✅ | W0–W16 thematic stages + per-lesson checkpoint ladder + W17–W19 grammar track, then W20–W218 theme stages from the Core-2000 expansion (Historical v1 baseline: 219 stages / 298 lessons total; Current v2: 283 lessons across 8 sections / 59 units total - live since 2026-07-10) |
 | Lexeme + forms, not flat pairs | ✅ | `forms`/`grammarRole`/`pattern`/`formNote` exist; `words_inflect.js` now provides generator + recognizer coverage |
 | Particles & endings first-class | ✅ | 43 rows are first-class function words, including the 12 M5-era particle/connective rows completed in Track F1 (으로, 에게, 한테, 까지, 부터, 지만, 면서, 도록, 려고, 치고, 조차, 마저); they carry `isFunctionWord`, `grammarRole`, `pattern`, usage notes, and `forms`/`contrastWith` where applicable, so they participate in the Word Bank function filter, function-usage drills, and the audit's function-word gate |
 | Honorifics (subject vs listener) | ✅ | Honorific verb table + W19 lesson, plus the Track D axis (2026-07-04): `honorificRole: subject|listener|humble` on 26 rows and 11 bidirectional plain↔honorific/polite `contrastWith` pairs (the 10 lexical pairs plus 아/어↔아요/어요 — re-derived 2026-07-05; earlier counts said 10), rendered in the Word Bank detail view and lesson cards |
 | SRS backbone | ✅ | Leitner scheduler (`vocabSrs`, 5m/20m/1d/3d/7d…) |
-| Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio — all 8 directions generate, and all 6,105 questions across all 298 lessons passed an answer/options integrity sweep (2026-07-05) |
+| Bidirectional retrieval | ✅ | ko↔meaning, type-ko, sentence-blank, function-usage, audio — all 8 directions generate, and all 6,105 questions across all 298 lessons passed an answer/options integrity sweep (Historical v1 baseline as of 2026-07-05; Current v2 uses the updated 283 lessons structure) |
 | **Declared checkpoints all generatable** | ✅ | Was 24 dead lesson-checkpoint combinations when found (2026-07-05); fixed the same day by Tracks F2–F4: `makeWordSentenceBlank` now consults the inflection engine (generated forms + -아/어 infinitive + stem connectives, with shape-matched conjugated distractors — unblankable rows fell 280 → 44), the 6 structurally dead checkpoints were removed from their lessons, and `audit-words-data.mjs` now **hard-fails** any declared-but-ungeneratable checkpoint so this cannot silently regress |
 | Irregular families as trigger-based | ✅ | W19 track + inline `formNote`; generator/recognizer covers the audited irregular-family gold set |
 | **Sense-level polysemy** | ✅ | 105 lemmas carry genuine multi-sense rows with distinct `senseKey`/`senseNo` (Track B is complete: 바람 wind/wish, 밝다 bright/cheerful-personality, 세다 strong/count, 두다 put-keep/leave-behind; 피다 declined because the fire meaning belongs to 피우다/태우다) |
@@ -318,7 +318,7 @@ Grounded in the shipped code (main) as of 2026-07-05. Legend: ✅ solid ·
 **Cold-learner verification (2026-07-05).** Every ✅ above was re-derived from
 the shipped data and exercised in a scripted browser walkthrough, not taken
 from prior claims: volume/lesson/sense/axis/honorific/audio counts recomputed
-from the data files; question generation run for all 298 lessons (6,105
+from the data files; question generation run for all 298 lessons (historical v1 baseline: 6,105 questions; current v2 uses 283 lessons);
 questions integrity-checked); the alphabet gate, single-lesson unlock, a full
 real-UI play-through of lesson 1 (SRS records + review events written), the
 W17 grammar-track form questions, the final lesson (w218-theme-264), sense
