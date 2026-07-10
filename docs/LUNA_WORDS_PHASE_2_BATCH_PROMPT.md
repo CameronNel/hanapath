@@ -1,5 +1,11 @@
 # Luna Words Phase 2 marathon handoff
 
+> **Superseded for Lane priorities (2026-07-10):** Q01–Q18 are merged and
+> Lane A is frozen at rank 10,000. Take current marching orders from
+> `docs/LUNA_WORDS_PHASE_2_SEMANTIC_PROMPT.md`; this document remains the
+> source for git/PR protocol, marathon rules, semantic rules, verification
+> commands, and the final report format.
+
 > **Owner assignment (2026-07-10): Luna owns this queue again.** Codex reviewed
 > and merged Claude's top-1,000 sweep and first draft lesson. Continue from the
 > verified baseline below. Do not redo completed work.
