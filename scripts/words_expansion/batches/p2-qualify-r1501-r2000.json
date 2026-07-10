@@ -1,0 +1,8 @@
+{
+  "batchId": "p2-qualify-r1501-r2000",
+  "minRank": 1501,
+  "maxRank": 2000,
+  "theme": "Phase 2 qualification sweep: ranks 1501-2000",
+  "skipDecided": true,
+  "overrides": {}
+}
