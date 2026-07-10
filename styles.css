@@ -705,9 +705,15 @@ input, textarea { cursor: text; }
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 18px;
   margin-top: 14px;
   backdrop-filter: blur(16px);
+}
+
+.alphabet-lesson-player {
+  background:
+    radial-gradient(circle at 100% 0, rgba(91,157,255,.12), transparent 40%),
+    var(--panel);
 }
 
 .player-head {
@@ -716,6 +722,41 @@ input, textarea { cursor: text; }
   margin-bottom: 16px;
   gap: 8px;
 }
+.alphabet-lesson-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.alphabet-progress-chip {
+  min-width: 148px;
+  padding: 9px 12px 8px;
+  border: 1px solid rgba(91,157,255,.24);
+  border-radius: 12px;
+  background: rgba(91,157,255,.09);
+}
+.alphabet-progress-chip .eyebrow { margin: 0; }
+.alphabet-progress-track {
+  height: 5px;
+  margin-top: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+}
+.alphabet-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width .25s ease;
+}
+.alphabet-lesson-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px 2px 0;
+}
+.alphabet-lesson-heading .eyebrow { margin: 0; }
 .player-head-top {
   display: flex;
   justify-content: space-between;
@@ -737,16 +778,32 @@ input, textarea { cursor: text; }
   color: var(--text);
   flex-shrink: 0;
 }
+.alphabet-lesson-player .hear-btn {
+  min-height: 42px;
+  padding: 9px 13px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.07);
+  font-weight: 800;
+  white-space: nowrap;
+}
 
 .concept-card {
   background: rgba(255,255,255,.04);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 24px;
+  padding: 20px;
   margin-bottom: 14px;
 }
 .concept-visual {
-  font-size: 2.05rem;
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  border: 1px solid rgba(91,157,255,.16);
+  border-radius: 14px;
+  background: rgba(91,157,255,.10);
+  font-size: clamp(2.4rem, 12vw, 4rem);
   font-family: "Noto Sans KR", sans-serif;
   color: var(--accent);
   margin-bottom: 14px;
@@ -1193,6 +1250,25 @@ button.bd-assembled:hover {
   margin-top: 14px;
   width: 100%;
   align-items: center;
+}
+
+.alphabet-lesson-player .player-actions {
+  margin-top: 16px;
+}
+.alphabet-lesson-player .player-actions > .button {
+  min-height: 50px;
+  flex: 1 1 0;
+  border-radius: 14px;
+  font-size: .95rem;
+  font-weight: 800;
+}
+
+@media (max-width: 420px) {
+  .lesson-player-wrap { padding: 14px; }
+  .alphabet-lesson-topline { align-items: stretch; }
+  .alphabet-progress-chip { min-width: 0; flex: 1 1 auto; }
+  .alphabet-lesson-player .hear-btn { padding-inline: 11px; }
+  .alphabet-lesson-player .player-actions { gap: 8px; }
 }
 
 .player-actions > .button:last-child {

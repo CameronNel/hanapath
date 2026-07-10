@@ -9780,6 +9780,11 @@ function renderPhaseOnePlayer() {
   if (els.phaseOneBackButton) els.phaseOneBackButton.onclick = null;
 
   els.phaseOneStageNumber.textContent = "Stage " + String(phaseOneView.lessonIndex + 1).padStart(2, "0") + " of " + phaseOneLessons.length;
+  const progressBar = document.getElementById("hpProgressBar");
+  if (progressBar) {
+    const progress = getAlphabetProgress();
+    progressBar.style.width = Math.round((progress.completedCount / Math.max(1, progress.total)) * 100) + "%";
+  }
   els.phaseOneStageDuration.textContent = lesson.duration;
   els.phaseOneStageTitle.textContent = lesson.title;
   els.phaseOneStageGoal.textContent = lesson.goal;
@@ -13311,15 +13316,26 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
       ? lesson?.concepts?.[phaseOneView.slideIndex] || lesson?.concepts?.[0] || null
       : lesson?.questions?.[phaseOneView.questionIndex] || lesson?.questions?.[0] || null;
   const initialLabel = getPhaseOneButtonLabel(initialSource);
+  const alphabetProgress = getAlphabetProgress();
+  const completedStages = alphabetProgress.completedCount;
+  const completionPercent = Math.round((completedStages / Math.max(1, alphabetProgress.total)) * 100);
   area.innerHTML = `
-    <div class="lesson-player-wrap" id="lessonPlayerWrap">
+    <div class="lesson-player-wrap alphabet-lesson-player" id="lessonPlayerWrap">
       <div class="player-head">
-        <div class="player-head-top">
-          <div class="eyebrow" id="hpStageNumber">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
+        <div class="alphabet-lesson-topline">
+          <div class="alphabet-progress-chip">
+            <div class="eyebrow" id="hpStageNumber">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
+            <div class="alphabet-progress-track" aria-label="Alphabet progress">
+              <span id="hpProgressBar" style="width:${completionPercent}%"></span>
+            </div>
+          </div>
           <button class="hear-btn" id="hpHearBtn" type="button">▶ ${escapeHtml(initialLabel)}</button>
         </div>
-        <div class="player-title" id="hpStageTitle"></div>
-        <div class="player-goal text-muted fs-sm" id="hpStageGoal"></div>
+        <div class="alphabet-lesson-heading">
+          <div class="eyebrow">Alphabet lesson</div>
+          <div class="player-title" id="hpStageTitle"></div>
+          <div class="player-goal text-muted fs-sm" id="hpStageGoal"></div>
+        </div>
       </div>
       <div id="hpStage"></div>
       <div class="player-actions" id="hpActions">
