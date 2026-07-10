@@ -230,7 +230,17 @@ try {
   assert.strictEqual(coreHashBefore, coreHashAfter, "Dry run must not modify words_curated_core.js.");
 
   // ==========================================
-  // Test 6: Intra-Batch Duplicate ID Protection
+  // Test 6: Real Import Boundary Refusal
+  // ==========================================
+  console.log("Test 6: Verifying real imports remain safely disabled...");
+  assert.throws(() => {
+    execSync(`node scripts/words_expansion/import_batch.mjs --batch ${mockBatchPath} --commit`, { stdio: "pipe" });
+  }, /real Phase 2 imports are currently dry-run-only/, "Commit mode must refuse until the release contract exists.");
+  const coreHashAfterRefusedCommit = crypto.createHash("sha256").update(fs.readFileSync(corePath)).digest("hex");
+  assert.strictEqual(coreHashBefore, coreHashAfterRefusedCommit, "Refused commit must not modify words_curated_core.js.");
+
+  // ==========================================
+  // Test 7: Intra-Batch Duplicate ID Protection
   // ==========================================
   console.log("Test 6: Verifying duplicate IDs within one batch are rejected...");
   fs.writeFileSync(mockBatchPath, JSON.stringify([{ ...validBatchContent[0] }, { ...validBatchContent[0], korean: "다른단어" }]), "utf8");
@@ -239,7 +249,7 @@ try {
   }, /Duplicate curated id/, "A batch must not contain duplicate curated IDs.");
 
   // ==========================================
-  // Test 7: JSONL Support and Frozen-Core Lock
+  // Test 8: JSONL Support and Frozen-Core Lock
   // ==========================================
   console.log("Test 7: Verifying JSONL input and frozen curriculum lock...");
   const jsonlBatchPath = path.join(tempDir, "mock_batch.jsonl");
