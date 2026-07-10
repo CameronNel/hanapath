@@ -1,6 +1,8 @@
 // [2026-07-10] Cache bumped to v306: cap runtime audio caching for the Phase 2 budget.
 const CACHE_NAME = "hanapath-shell-v306";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
+// Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
+const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -119,8 +121,8 @@ self.addEventListener("fetch", (event) => {
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then(async (cache) => {
           await cache.put(event.request, responseClone);
-          if (requestUrl.pathname.startsWith("/audio/")) {
-            const audioRequests = (await cache.keys()).filter((request) => new URL(request.url).pathname.startsWith("/audio/"));
+          if (requestUrl.pathname.startsWith(AUDIO_RUNTIME_PATH_PREFIX)) {
+            const audioRequests = (await cache.keys()).filter((request) => new URL(request.url).pathname.startsWith(AUDIO_RUNTIME_PATH_PREFIX));
             const excess = audioRequests.length - AUDIO_RUNTIME_CACHE_LIMIT;
             for (const request of audioRequests.slice(0, Math.max(0, excess))) {
               await cache.delete(request);

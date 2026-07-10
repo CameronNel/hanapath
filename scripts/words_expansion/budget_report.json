@@ -12,17 +12,17 @@
     "curatedBytes": 1201464,
     "realisticSrsBytes": 798904,
     "shellBytes": 9257556,
-    "shellAssetCount": 57,
+    "shellAssetCount": 58,
     "missingShellAssets": [],
     "cacheName": "hanapath-shell-v306",
     "audioRuntimeEntries": 256
   },
   "browser": {
-    "loadMs": 2550,
+    "loadMs": 5134,
     "title": "HanaPath",
     "offlineTitle": "HanaPath",
     "serviceWorkerReady": true,
     "pageErrors": []
   },
-  "pass": true
+  "pass": false
 }
