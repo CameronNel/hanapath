@@ -41,17 +41,34 @@ reusing them, and never force-push an old local branch over current state.
 
 ## Mission
 
-Phase 2 is administratively swept but semantically unfinished: 77% of decided
-rows are `needs-sense-review`. Your job this marathon is to **resolve that
-pool with real dictionary and corpus evidence**, grow the accepted pool, and
-author coherent draft lessons from it.
+Phase 2 is semantically unfinished: 77% of decided rows are
+`needs-sense-review`. Your job this marathon is to (1) **complete the
+qualification sweep of the entire candidate queue** (owner re-opened Lane A
+on 2026-07-10 — see Lane A below), then (2) **resolve the
+needs-sense-review pool with real dictionary and corpus evidence**, grow the
+accepted pool, and author coherent draft lessons from it.
 
-**Do NOT continue Lane A (Q19+ / ranks 10,001–22,679).** Past rank 5,000 the
-qualification tool routes essentially every row to needs-sense-review, so
-further sweeps add backlog, not decisions. Lane A resumes only if the owner
-explicitly re-opens it.
+## Lane A — finish the sweep, in consolidated batches (do this first)
 
-## Lane S — semantic resolution batches (primary lane)
+Owner decision (2026-07-10): sweep the full queue through rank 22,679. The
+original 500-rank checklist Q19–Q44 is **replaced** by five consolidated
+ranges — past rank 5,000 nearly every row routes to needs-sense-review, so
+500-rank PRs are too thin to review (the owner collapsed 5001–10,000 into
+one PR for the same reason):
+
+- [ ] QA1 ranks 10,001–12,500
+- [ ] QA2 ranks 12,501–15,000
+- [ ] QA3 ranks 15,001–17,500
+- [ ] QA4 ranks 17,501–20,000
+- [ ] QA5 ranks 20,001–22,679
+
+Same qualification contract as before: one config, one deterministically
+regenerated report, append-only decisions, one owner packet, one honest
+ledger row per PR. Use actual source row counts — the queue has rank gaps;
+never fabricate rows. Run these five as one stack, get it merged, then move
+to Lane S.
+
+## Lane S — semantic resolution batches (primary lane after the sweep)
 
 Process the needs-sense-review pool in **ascending rank order** (frequency =
 learner value), 200–250 candidates per PR. Branch names:
@@ -93,8 +110,10 @@ branch. Put `Stack: N of M` and merge order in every PR body.
 
 ## Definition of done for Phase 2
 
-1. Every needs-sense-review record from ranks 1–10,000 has an append-only
-   resolution or a documented evidence gap.
+0. Every source row in the candidate queue (through rank 22,679) has a
+   disposition in the immutable ledger.
+1. Every needs-sense-review record has an append-only resolution or a
+   documented evidence gap, worked in ascending rank order.
 2. The accepted pool is taxonomized into scenario pools (B04).
 3. Every pool of 8+ has a draft, dry-run-passing lesson pack.
 4. All owner-gated items (imports, audio, cache, publishing) are listed in
