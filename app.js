@@ -5624,9 +5624,15 @@ function wordLessonStudyHtml(lesson, view) {
     const target = getWordTypeTarget(word);
     return `
       <div class="card word-card">
-        <div class="eyebrow">${escapeHtml(progress)} · Type it</div>
-        <div class="word-card-meaning" style="margin-top:4px;">Type <strong lang="ko">${escapeHtml(target)}</strong> (${escapeHtml(word.meaningShort)})</div>
-        <div class="word-type-box">
+        <div class="word-card-progress-row">
+          <div class="word-card-progress-tile">
+            <div class="eyebrow">${escapeHtml(progress)} · Type it</div>
+            <div class="word-card-progress-track" aria-hidden="true"><span style="width:${Math.round(((step.wordIndex + 1) / Math.max(1, view.words.length)) * 100)}%;"></span></div>
+          </div>
+          <button class="button secondary compact word-card-bank-button" type="button" data-word-open-reference>📚 Word Bank</button>
+        </div>
+        <div class="word-type-prompt">Type <strong lang="ko">${escapeHtml(target)}</strong> <span>(${escapeHtml(word.meaningShort)})</span></div>
+        <div class="word-type-box word-type-study-box">
           <input class="sentence-input" id="wordTypeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
             placeholder="Type it here" value="${escapeHtml(view.typedValue || "")}" ${view.typedDone ? "disabled" : ""} lang="ko" />
           <div class="fs-xs text-muted-2" style="margin:8px 0 4px;">No Korean keyboard yet? Tap the blocks below.</div>
@@ -5636,9 +5642,11 @@ function wordLessonStudyHtml(lesson, view) {
           </div>
           <div class="word-type-feedback" role="status" aria-live="polite">${view.typedFeedback || ""}</div>
         </div>
-        <div class="word-card-actions">
+        <div class="word-card-actions word-card-audio-actions">
           <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear it</button>
-          ${view.reviewingCheckpoint ? '<button class="button secondary compact" type="button" data-word-return-checkpoint>Return to questions</button>' : ""}
+        </div>
+        <div class="word-card-actions word-card-nav-actions">
+          <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
           ${view.typedDone
             ? `<div class="word-rating-prompt" role="group" aria-label="Rate this word">
                 <div class="word-rating-label">How did that feel?</div>
@@ -5649,7 +5657,6 @@ function wordLessonStudyHtml(lesson, view) {
               </div>`
             : `<button class="button primary compact" type="button" data-word-type-check>Check</button>`}
         </div>
-        ${wordReferenceButtonHtml()}
       </div>
     `;
   }
