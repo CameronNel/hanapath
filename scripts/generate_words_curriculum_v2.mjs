@@ -8,7 +8,7 @@ const scriptsDir = path.join(root, "scripts");
 const allocationPath = path.join(scriptsDir, "curriculum_v2_allocation.json");
 const snapshotPath = path.join(scriptsDir, "curriculum_v1_snapshot.json");
 const namesPath = path.join(scriptsDir, "curriculum_v2_names.json");
-const outputPath = path.join(root, "words_lesson_plan_v2.js");
+const outputPath = path.join(root, "words_lesson_plan.js");
 const lockPath = path.join(scriptsDir, "curriculum_v2_lock.json");
 const reportPath = path.join(scriptsDir, "curriculum_v2_report.md");
 
