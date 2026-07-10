@@ -4,7 +4,7 @@ Snapshot for the next contributor (human or agent) picking up this project.
 
 ## Repo & state
 - **Branch:** `main` is the single source of truth; completed work is merged there, and active work lives on feature branches / draft PRs.
-- **App shape:** vanilla static PWA — **no build step, no framework, no `package.json`**. The core is one large file `app.js` (~13.7k lines) loaded as a plain browser script, plus:
+- **App shape:** vanilla static PWA — **no build step, no framework, no `package.json`**. The core is one large file `app.js` (~17.4k lines) loaded as a plain browser script, plus:
   - `index.html`, `styles.css`
   - `lib/hangul.js`
   - `words_curated_core.js` — 2,028 curated Words rows (`window.HANAPATH_CURATED_WORDS`)
@@ -84,7 +84,7 @@ below.
 - **North star (what/how to teach):** [`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md) — research distillation + adaptation decisions (§1), verified asset inventory (§2), bank schema (§3), closed pattern-tag vocabulary (§4), bands (§5), drill modes (§6, flagship: **Translate & Type** — English shown, learner types the Hangul with a tip/word-bank/next-chunk/reveal helper ladder), SRS (§7), status scorecard (§8), milestone sheet (§9).
 - **Execution queues:** [`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md) owns the current path/hub/runner work (S2-A–S2-G). [`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md) is retained for Track H authored-content work and bank-level audits.
 - **Verbatim research source:** [`docs/SENTENCES_TEACHING_SPEC_SOURCE.md`](docs/SENTENCES_TEACHING_SPEC_SOURCE.md).
-- **Shipped: Track A (bank foundation, PR #98), Sentence Studio, and Tracks B/C/D/E/F/G/I/J1/J2/J3 (2026-07-06 → 08).** Current main tip includes PR #149 and subsequent updates; cache version `v260` / `app.js?v=20260708f`. Live per-sentence facts: bank **2,060 rows**, `band` explicit on all 2,060, `patternTags` explicit on all 2,060.
+- **Shipped: Track A (bank foundation, PR #98), Sentence Studio, and Tracks B/C/D/E/F/G/I/J1/J2/J3 (2026-07-06 → 10).** Current main includes the curriculum-v2 path through S2-F; cache version `v309` / `app.js?v=20260710n` / `styles.css?v=20260710l`. Live per-sentence facts: bank **2,060 rows**, `band` explicit on all 2,060, `patternTags` explicit on all 2,060.
   - Track A: `sentences_core.js` (2,060 rows, 100% explicit annotation), strict audit `scripts/audit-sentences-data.mjs`, app-shell wiring.
   - **Sentence Studio** — the Sentences section is a self-contained hub → 5-question session → summary flow over `HANAPATH_SENTENCES`, with drills (Translate & Type, Word Builder, Dictation, Shadow, Transform), `state.sentencesProgress` per-sentence SRS records, band selector, pattern lessons, and sentence analytics.
   - **This covers roadmap B1–B3, C1–C4, D1–D8, E1–E3, F1–F2, G1–G2, I1–I2, J1–J2.**
