@@ -5580,7 +5580,10 @@ function wordTypedSuccessOverlayHtml(word) {
     <div class="word-typed-success-overlay" role="presentation">
       <div class="word-typed-success-dialog" role="dialog" aria-modal="true" aria-labelledby="wordTypedSuccessTitle">
         <div id="wordTypedSuccessTitle" class="word-typed-success-title">Correct!</div>
-        <div class="word-typed-success-answer" lang="ko">${escapeHtml(getWordTypeTarget(word))}</div>
+        <div class="word-typed-success-answer-row">
+          <div class="word-typed-success-answer" lang="ko">${escapeHtml(getWordTypeTarget(word))}</div>
+          <button class="word-typed-success-play" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Play ${escapeHtml(getWordTypeTarget(word))}" title="Play Hangul">▶</button>
+        </div>
         <div class="word-typed-success-prompt">How did that feel?</div>
         <div class="word-rating-actions word-typed-success-actions">
           <button class="word-rating-button word-rating-hard" type="button" data-word-lesson-rate="hard">Hard</button>
@@ -5642,24 +5645,27 @@ function wordLessonStudyHtml(lesson, view) {
       <div class="card word-card">
         <div class="word-card-progress-row">
           <div class="word-card-progress-tile">
-            <div class="eyebrow">${escapeHtml(progress)} · Type it</div>
+            <div class="eyebrow">${escapeHtml(progress)}</div>
+            <div class="word-card-type-label">Type it</div>
             <div class="word-card-progress-track" aria-hidden="true"><span style="width:${Math.round(((step.wordIndex + 1) / Math.max(1, view.words.length)) * 100)}%;"></span></div>
           </div>
           <button class="button secondary compact word-card-bank-button" type="button" data-word-open-reference>📚 Word Bank</button>
         </div>
-        <div class="word-type-prompt">Type <strong lang="ko">${escapeHtml(target)}</strong> <span>(${escapeHtml(word.meaningShort)})</span></div>
+        <div class="word-type-prompt-row">
+          <div class="word-type-prompt">Type <strong lang="ko">${escapeHtml(target)}</strong><div class="word-type-definition">${escapeHtml(word.meaningShort)}</div></div>
+          <button class="word-type-play" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Play ${escapeHtml(target)}" title="Play Hangul">▶</button>
+        </div>
         <div class="word-type-box word-type-study-box">
-          <input class="sentence-input" id="wordTypeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
-            placeholder="Type it here" value="${escapeHtml(view.typedValue || "")}" ${view.typedDone ? "disabled" : ""} lang="ko" />
+          <div class="word-input-wrap">
+            <input class="sentence-input" id="wordTypeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+              placeholder="Type it here" value="${escapeHtml(view.typedValue || "")}" ${view.typedDone ? "disabled" : ""} lang="ko" />
+            <button class="word-input-erase" type="button" data-word-tile-erase aria-label="Delete last block" ${view.typedDone ? "disabled" : ""}>⌫</button>
+          </div>
           <div class="fs-xs text-muted-2" style="margin:8px 0 4px;">No Korean keyboard yet? Tap the blocks below.</div>
           <div class="word-tile-row">
             ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.typedDone ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
-            <button class="word-tile word-tile-erase" type="button" data-word-tile-erase aria-label="Delete last block" ${view.typedDone ? "disabled" : ""}>⌫</button>
           </div>
           <div class="word-type-feedback" role="status" aria-live="polite">${view.typedFeedback || ""}</div>
-        </div>
-        <div class="word-card-actions word-card-audio-actions">
-          <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear it</button>
         </div>
         ${view.typedDone ? "" : `<div class="word-card-actions word-card-nav-actions">
           <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
