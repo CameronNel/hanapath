@@ -744,7 +744,7 @@ pointers.
   browser; kill the tab mid-lesson, reopen, position + prompts identical;
   `node --check app.js`; all audits green.
 
-- [ ] **S2-B — Curriculum generator + name manifest + audit rewrite** [coder + author]
+- [x] **S2-B — Curriculum generator + name manifest + audit rewrite** [coder + author]
   Build `scripts/generate_sentences_curriculum_v2.mjs` (§3.4–§3.6); author
   `scripts/sentences_curriculum_v2_names.json` (§3.7 — REAL names against
   the report's row lists, no template bootstrap); emit
@@ -756,7 +756,7 @@ pointers.
   generator re-run byte-identical; `--check` passes; self-test proves every
   new check fires; report reviewed by owner (names especially).
 
-- [ ] **S2-C — Switchover: plan swap, unlock, checkpoint runner, migration** [coder]
+- [x] **S2-C — Switchover: plan swap, unlock, checkpoint runner, migration** [coder]
   Rename `sentences_lesson_plan_v2.js` → `sentences_lesson_plan.js` (v1
   content preserved inside as `HANAPATH_SENTENCE_V1_SNAPSHOT`). Implement
   `isSentenceCurriculumV2()`, the §3.8 unlock functions, the §3.10 two-phase

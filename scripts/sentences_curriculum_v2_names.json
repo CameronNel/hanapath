@@ -1,0 +1,2005 @@
+{
+  "sections": {
+    "sn1": {
+      "name": "Trainee Orientation",
+      "flavor": "First day at the company: greet, thank, apologise, survive."
+    },
+    "sn2": {
+      "name": "Practice Room Days",
+      "flavor": "Daily routine, food runs, the grind."
+    },
+    "sn3": {
+      "name": "On Schedule",
+      "flavor": "The van, the city, shops, weather — moving between schedules."
+    },
+    "sn4": {
+      "name": "Backstage Family",
+      "flavor": "Members, managers, staff; making plans, checking on people."
+    },
+    "sn5": {
+      "name": "Comeback Prep",
+      "flavor": "Tasks, requests, honorifics for seniors and staff."
+    },
+    "sn6": {
+      "name": "Promo Season",
+      "flavor": "Travel, nature, wider topics between broadcasts."
+    },
+    "sn7": {
+      "name": "Variety Night",
+      "flavor": "Reactions, contrast, nuance — surviving a variety show."
+    },
+    "sn8": {
+      "name": "Finishing the Core",
+      "flavor": "The full range; long sentences, all registers."
+    }
+  },
+  "units": {
+    "sn1-firstwords-u1": {
+      "name": "Reading the signs",
+      "emoji": "👋"
+    },
+    "sn1-firstwords-u2": {
+      "name": "Useful first exchanges",
+      "emoji": "👋"
+    },
+    "sn1-firstwords-u3": {
+      "name": "Questions on the street",
+      "emoji": "👋"
+    },
+    "sn2-actions-u1": {
+      "name": "Getting things done",
+      "emoji": "🏃"
+    },
+    "sn2-daily-u1": {
+      "name": "Morning routines",
+      "emoji": "📅"
+    },
+    "sn2-feelings-u1": {
+      "name": "How was your day",
+      "emoji": "💭"
+    },
+    "sn2-food-u1": {
+      "name": "Ordering a meal",
+      "emoji": "☕"
+    },
+    "sn2-grammar-u1": {
+      "name": "Function words",
+      "emoji": "📖"
+    },
+    "sn2-nature-u1": {
+      "name": "Weather today",
+      "emoji": "🌿"
+    },
+    "sn2-people-u1": {
+      "name": "Family introductions",
+      "emoji": "👥"
+    },
+    "sn2-shopping-u1": {
+      "name": "At the market",
+      "emoji": "🛒"
+    },
+    "sn2-study-u1": {
+      "name": "In the classroom",
+      "emoji": "📚"
+    },
+    "sn2-tech-u1": {
+      "name": "Everyday devices",
+      "emoji": "💻"
+    },
+    "sn2-travel-u1": {
+      "name": "Finding your way",
+      "emoji": "✈️"
+    },
+    "sn3-health-u1": {
+      "name": "Body and movement",
+      "emoji": "🏥"
+    },
+    "sn3-hobbies-u1": {
+      "name": "Free-time plans",
+      "emoji": "🎨"
+    },
+    "sn3-work-u1": {
+      "name": "At the workplace",
+      "emoji": "💼"
+    },
+    "sn3-actions-u2": {
+      "name": "Morning action verbs",
+      "emoji": "🏃"
+    },
+    "sn3-daily-u2": {
+      "name": "Time on the calendar",
+      "emoji": "📅"
+    },
+    "sn3-feelings-u2": {
+      "name": "Rainy-day moods",
+      "emoji": "💭"
+    },
+    "sn3-grammar-u2": {
+      "name": "Connecting clauses",
+      "emoji": "📖"
+    },
+    "sn3-nature-u2": {
+      "name": "Animals nearby",
+      "emoji": "🌿"
+    },
+    "sn3-study-u2": {
+      "name": "Study plans",
+      "emoji": "📚"
+    },
+    "sn3-travel-u2": {
+      "name": "Getting around town",
+      "emoji": "✈️"
+    },
+    "sn3-work-u2": {
+      "name": "Meeting the team",
+      "emoji": "💼"
+    },
+    "sn4-food-u2": {
+      "name": "Drinks and dishes",
+      "emoji": "☕"
+    },
+    "sn4-shopping-u2": {
+      "name": "Choosing clothes",
+      "emoji": "🛒"
+    },
+    "sn4-actions-u3": {
+      "name": "Plans in motion",
+      "emoji": "🏃"
+    },
+    "sn4-daily-u3": {
+      "name": "Meals at home",
+      "emoji": "📅"
+    },
+    "sn4-feelings-u3": {
+      "name": "Describing the room",
+      "emoji": "💭"
+    },
+    "sn4-nature-u3": {
+      "name": "A walk outdoors",
+      "emoji": "🌿"
+    },
+    "sn4-shopping-u3": {
+      "name": "Paying the bill",
+      "emoji": "🛒"
+    },
+    "sn4-study-u3": {
+      "name": "Reading together",
+      "emoji": "📚"
+    },
+    "sn4-travel-u3": {
+      "name": "At the station",
+      "emoji": "✈️"
+    },
+    "sn4-work-u3": {
+      "name": "Jobs and duties",
+      "emoji": "💼"
+    },
+    "sn5-health-u2": {
+      "name": "At the clinic",
+      "emoji": "🏥"
+    },
+    "sn5-food-u3": {
+      "name": "Cooking at home",
+      "emoji": "☕"
+    },
+    "sn5-grammar-u3": {
+      "name": "Register and respect",
+      "emoji": "📖"
+    },
+    "sn5-actions-u4": {
+      "name": "A busy afternoon",
+      "emoji": "🏃"
+    },
+    "sn5-daily-u4": {
+      "name": "After-work plans",
+      "emoji": "📅"
+    },
+    "sn5-feelings-u4": {
+      "name": "A bright morning",
+      "emoji": "💭"
+    },
+    "sn5-nature-u4": {
+      "name": "Seasonal changes",
+      "emoji": "🌿"
+    },
+    "sn5-study-u4": {
+      "name": "School supplies",
+      "emoji": "📚"
+    },
+    "sn5-travel-u4": {
+      "name": "City landmarks",
+      "emoji": "✈️"
+    },
+    "sn5-work-u4": {
+      "name": "A busy workday",
+      "emoji": "💼"
+    },
+    "sn6-hobbies-u2": {
+      "name": "Sports with friends",
+      "emoji": "🎨"
+    },
+    "sn6-tech-u2": {
+      "name": "At the desk",
+      "emoji": "💻"
+    },
+    "sn6-health-u3": {
+      "name": "Feeling better",
+      "emoji": "🏥"
+    },
+    "sn6-hobbies-u4": {
+      "name": "A weekend hobby",
+      "emoji": "🎨"
+    },
+    "sn6-actions-u5": {
+      "name": "Helping hands",
+      "emoji": "🏃"
+    },
+    "sn6-daily-u5": {
+      "name": "A quiet evening",
+      "emoji": "📅"
+    },
+    "sn6-feelings-u5": {
+      "name": "Small talk outside",
+      "emoji": "💭"
+    },
+    "sn6-shopping-u5": {
+      "name": "Shopping together",
+      "emoji": "🛒"
+    },
+    "sn6-study-u5": {
+      "name": "Working on a project",
+      "emoji": "📚"
+    },
+    "sn6-travel-u5": {
+      "name": "A day trip",
+      "emoji": "✈️"
+    },
+    "sn7-hobbies-u3": {
+      "name": "Music and games",
+      "emoji": "🎨"
+    },
+    "sn7-tech-u3": {
+      "name": "Messages and calls",
+      "emoji": "💻"
+    },
+    "sn7-grammar-u4": {
+      "name": "Forms and nuance",
+      "emoji": "📖"
+    },
+    "sn7-actions-u6": {
+      "name": "Moving through town",
+      "emoji": "🏃"
+    },
+    "sn7-daily-u6": {
+      "name": "Morning routines",
+      "emoji": "📅"
+    },
+    "sn7-feelings-u6": {
+      "name": "Good news today",
+      "emoji": "💭"
+    },
+    "sn7-study-u6": {
+      "name": "In the classroom absence",
+      "emoji": "📚"
+    },
+    "sn7-travel-u6": {
+      "name": "Checking the route",
+      "emoji": "✈️"
+    },
+    "sn7-feelings-u10": {
+      "name": "A bright morning cheerfu",
+      "emoji": "💭"
+    },
+    "sn7-feelings-u11": {
+      "name": "Small talk outside thick",
+      "emoji": "💭"
+    },
+    "sn8-people-u2": {
+      "name": "Talking about friends",
+      "emoji": "👥"
+    },
+    "sn8-people-u3": {
+      "name": "People around us",
+      "emoji": "👥"
+    },
+    "sn8-shopping-u4": {
+      "name": "Finding the right size",
+      "emoji": "🛒"
+    },
+    "sn8-actions-u7": {
+      "name": "Getting things done",
+      "emoji": "🏃"
+    },
+    "sn8-feelings-u7": {
+      "name": "How was your day?",
+      "emoji": "💭"
+    },
+    "sn8-travel-u7": {
+      "name": "Finding your way",
+      "emoji": "✈️"
+    },
+    "sn8-feelings-u8": {
+      "name": "Rainy-day moods",
+      "emoji": "💭"
+    },
+    "sn8-travel-u8": {
+      "name": "Getting around town",
+      "emoji": "✈️"
+    },
+    "sn8-feelings-u9": {
+      "name": "Describing the room",
+      "emoji": "💭"
+    },
+    "sn8-travel-u9": {
+      "name": "At the station",
+      "emoji": "✈️"
+    }
+  },
+  "lessons": {
+    "sn1-firstwords-u1-l1": {
+      "title": "Vocal Warmup",
+      "subtitle": "Trainee life: reading the signs",
+      "goal": "Express reading the signs concepts naturally in Korean."
+    },
+    "sn1-firstwords-u1-l2": {
+      "title": "Dance Practice",
+      "subtitle": "Trainee life: reading the signs",
+      "goal": "Express reading the signs concepts naturally in Korean."
+    },
+    "sn1-firstwords-u1-l3": {
+      "title": "Lyric Review",
+      "subtitle": "Trainee life: reading the signs",
+      "goal": "Express reading the signs concepts naturally in Korean."
+    },
+    "sn1-firstwords-u1-l4": {
+      "title": "Choreo Check",
+      "subtitle": "Trainee life: reading the signs",
+      "goal": "Express reading the signs concepts naturally in Korean."
+    },
+    "sn1-firstwords-u1-l5": {
+      "title": "Dorm Talk",
+      "subtitle": "Trainee life: reading the signs",
+      "goal": "Express reading the signs concepts naturally in Korean."
+    },
+    "sn1-firstwords-u1-l6": {
+      "title": "Snack Run",
+      "subtitle": "Trainee life: reading the signs",
+      "goal": "Express reading the signs concepts naturally in Korean."
+    },
+    "sn1-firstwords-u2-l1": {
+      "title": "Mic Setup",
+      "subtitle": "Trainee life: useful first exchanges",
+      "goal": "Express useful first exchanges concepts naturally in Korean."
+    },
+    "sn1-firstwords-u2-l2": {
+      "title": "Outfit Fitting",
+      "subtitle": "Trainee life: useful first exchanges",
+      "goal": "Express useful first exchanges concepts naturally in Korean."
+    },
+    "sn1-firstwords-u2-l3": {
+      "title": "Van Ride",
+      "subtitle": "Trainee life: useful first exchanges",
+      "goal": "Express useful first exchanges concepts naturally in Korean."
+    },
+    "sn1-firstwords-u2-l4": {
+      "title": "Concept Talk",
+      "subtitle": "Trainee life: useful first exchanges",
+      "goal": "Express useful first exchanges concepts naturally in Korean."
+    },
+    "sn1-firstwords-u2-l5": {
+      "title": "Behind Camera",
+      "subtitle": "Trainee life: useful first exchanges",
+      "goal": "Express useful first exchanges concepts naturally in Korean."
+    },
+    "sn1-firstwords-u2-l6": {
+      "title": "Beat Practice",
+      "subtitle": "Trainee life: useful first exchanges",
+      "goal": "Express useful first exchanges concepts naturally in Korean."
+    },
+    "sn1-firstwords-u3-l1": {
+      "title": "Line Check",
+      "subtitle": "Trainee life: questions on the street",
+      "goal": "Express questions on the street concepts naturally in Korean."
+    },
+    "sn1-firstwords-u3-l2": {
+      "title": "Morning Jog",
+      "subtitle": "Trainee life: questions on the street",
+      "goal": "Express questions on the street concepts naturally in Korean."
+    },
+    "sn1-firstwords-u3-l3": {
+      "title": "Producer Chat",
+      "subtitle": "Trainee life: questions on the street",
+      "goal": "Express questions on the street concepts naturally in Korean."
+    },
+    "sn1-firstwords-u3-l4": {
+      "title": "Vocal Demo",
+      "subtitle": "Trainee life: questions on the street",
+      "goal": "Express questions on the street concepts naturally in Korean."
+    },
+    "sn1-firstwords-u3-l5": {
+      "title": "Stretching Out",
+      "subtitle": "Trainee life: questions on the street",
+      "goal": "Express questions on the street concepts naturally in Korean."
+    },
+    "sn1-firstwords-u3-l6": {
+      "title": "Feedback Time",
+      "subtitle": "Trainee life: questions on the street",
+      "goal": "Express questions on the street concepts naturally in Korean."
+    },
+    "sn2-actions-u1-l1": {
+      "title": "Lunch Break",
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
+    },
+    "sn2-actions-u1-l2": {
+      "title": "Mirror Practice",
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
+    },
+    "sn2-actions-u1-l3": {
+      "title": "Album Review",
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
+    },
+    "sn2-actions-u1-l4": {
+      "title": "Dorm Dinner",
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
+    },
+    "sn2-actions-u1-l5": {
+      "title": "First Stage Run",
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
+    },
+    "sn2-daily-u1-l1": {
+      "title": "Mic Test",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn2-daily-u1-l2": {
+      "title": "Stage Rehearsal",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn2-daily-u1-l3": {
+      "title": "Signing Albums",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn2-daily-u1-l4": {
+      "title": "Fan Letters",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn2-daily-u1-l5": {
+      "title": "Press Briefing",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn2-feelings-u1-l1": {
+      "title": "Quiet Coffee",
+      "subtitle": "Trainee life: how was your day",
+      "goal": "Express how was your day concepts naturally in Korean."
+    },
+    "sn2-feelings-u1-l2": {
+      "title": "Dorm Rules",
+      "subtitle": "Trainee life: how was your day",
+      "goal": "Express how was your day concepts naturally in Korean."
+    },
+    "sn2-feelings-u1-l3": {
+      "title": "Promo Routine",
+      "subtitle": "Trainee life: how was your day",
+      "goal": "Express how was your day concepts naturally in Korean."
+    },
+    "sn2-feelings-u1-l4": {
+      "title": "Variety Prep",
+      "subtitle": "Trainee life: how was your day",
+      "goal": "Express how was your day concepts naturally in Korean."
+    },
+    "sn2-feelings-u1-l5": {
+      "title": "Backstage Wait",
+      "subtitle": "Trainee life: how was your day",
+      "goal": "Express how was your day concepts naturally in Korean."
+    },
+    "sn2-food-u1-l1": {
+      "title": "Audition Day",
+      "subtitle": "Trainee life: ordering a meal",
+      "goal": "Express ordering a meal concepts naturally in Korean."
+    },
+    "sn2-food-u1-l2": {
+      "title": "Backup Plan",
+      "subtitle": "Trainee life: ordering a meal",
+      "goal": "Express ordering a meal concepts naturally in Korean."
+    },
+    "sn2-food-u1-l3": {
+      "title": "Concept Check",
+      "subtitle": "Trainee life: ordering a meal",
+      "goal": "Express ordering a meal concepts naturally in Korean."
+    },
+    "sn2-food-u1-l4": {
+      "title": "Demo Feedback",
+      "subtitle": "Trainee life: ordering a meal",
+      "goal": "Express ordering a meal concepts naturally in Korean."
+    },
+    "sn2-food-u1-l5": {
+      "title": "Studio Session",
+      "subtitle": "Trainee life: ordering a meal",
+      "goal": "Express ordering a meal concepts naturally in Korean."
+    },
+    "sn2-grammar-u1-l1": {
+      "title": "Showcase Prep",
+      "subtitle": "Trainee life: function words",
+      "goal": "Express function words concepts naturally in Korean."
+    },
+    "sn2-grammar-u1-l2": {
+      "title": "Wardrobe Check",
+      "subtitle": "Trainee life: function words",
+      "goal": "Express function words concepts naturally in Korean."
+    },
+    "sn2-nature-u1-l1": {
+      "title": "Bridge Vocal",
+      "subtitle": "Trainee life: weather today",
+      "goal": "Express weather today concepts naturally in Korean."
+    },
+    "sn2-nature-u1-l2": {
+      "title": "Mixing Session",
+      "subtitle": "Trainee life: weather today",
+      "goal": "Express weather today concepts naturally in Korean."
+    },
+    "sn2-nature-u1-l3": {
+      "title": "Art Preview",
+      "subtitle": "Trainee life: weather today",
+      "goal": "Express weather today concepts naturally in Korean."
+    },
+    "sn2-nature-u1-l4": {
+      "title": "Teaser Shoot",
+      "subtitle": "Trainee life: weather today",
+      "goal": "Express weather today concepts naturally in Korean."
+    },
+    "sn2-nature-u1-l5": {
+      "title": "Views Check",
+      "subtitle": "Trainee life: weather today",
+      "goal": "Express weather today concepts naturally in Korean."
+    },
+    "sn2-people-u1-l1": {
+      "title": "Van Chat",
+      "subtitle": "Trainee life: family introductions",
+      "goal": "Express family introductions concepts naturally in Korean."
+    },
+    "sn2-people-u1-l2": {
+      "title": "Street Promo",
+      "subtitle": "Trainee life: family introductions",
+      "goal": "Express family introductions concepts naturally in Korean."
+    },
+    "sn2-people-u1-l3": {
+      "title": "Opening Speech",
+      "subtitle": "Trainee life: family introductions",
+      "goal": "Express family introductions concepts naturally in Korean."
+    },
+    "sn2-people-u1-l4": {
+      "title": "Pose Rehearsal",
+      "subtitle": "Trainee life: family introductions",
+      "goal": "Express family introductions concepts naturally in Korean."
+    },
+    "sn2-people-u1-l5": {
+      "title": "Trainee Diary",
+      "subtitle": "Trainee life: family introductions",
+      "goal": "Express family introductions concepts naturally in Korean."
+    },
+    "sn2-shopping-u1-l1": {
+      "title": "Vocal Warmup Drill",
+      "subtitle": "Trainee life: at the market",
+      "goal": "Express at the market concepts naturally in Korean."
+    },
+    "sn2-shopping-u1-l2": {
+      "title": "Dance Practice Prep",
+      "subtitle": "Trainee life: at the market",
+      "goal": "Express at the market concepts naturally in Korean."
+    },
+    "sn2-shopping-u1-l3": {
+      "title": "Lyric Review Warmup",
+      "subtitle": "Trainee life: at the market",
+      "goal": "Express at the market concepts naturally in Korean."
+    },
+    "sn2-shopping-u1-l4": {
+      "title": "Choreo Check Focus",
+      "subtitle": "Trainee life: at the market",
+      "goal": "Express at the market concepts naturally in Korean."
+    },
+    "sn2-study-u1-l1": {
+      "title": "Mic Setup Feedback",
+      "subtitle": "Trainee life: in the classroom",
+      "goal": "Express in the classroom concepts naturally in Korean."
+    },
+    "sn2-study-u1-l2": {
+      "title": "Outfit Fitting Practice",
+      "subtitle": "Trainee life: in the classroom",
+      "goal": "Express in the classroom concepts naturally in Korean."
+    },
+    "sn2-study-u1-l3": {
+      "title": "Van Ride Break",
+      "subtitle": "Trainee life: in the classroom",
+      "goal": "Express in the classroom concepts naturally in Korean."
+    },
+    "sn2-study-u1-l4": {
+      "title": "Concept Talk Briefing",
+      "subtitle": "Trainee life: in the classroom",
+      "goal": "Express in the classroom concepts naturally in Korean."
+    },
+    "sn2-study-u1-l5": {
+      "title": "Behind Camera Test",
+      "subtitle": "Trainee life: in the classroom",
+      "goal": "Express in the classroom concepts naturally in Korean."
+    },
+    "sn2-tech-u1-l1": {
+      "title": "Line Check Routine",
+      "subtitle": "Trainee life: everyday devices",
+      "goal": "Express everyday devices concepts naturally in Korean."
+    },
+    "sn2-tech-u1-l2": {
+      "title": "Morning Jog Study",
+      "subtitle": "Trainee life: everyday devices",
+      "goal": "Express everyday devices concepts naturally in Korean."
+    },
+    "sn2-tech-u1-l3": {
+      "title": "Producer Chat Grit",
+      "subtitle": "Trainee life: everyday devices",
+      "goal": "Express everyday devices concepts naturally in Korean."
+    },
+    "sn2-tech-u1-l4": {
+      "title": "Vocal Demo Flow",
+      "subtitle": "Trainee life: everyday devices",
+      "goal": "Express everyday devices concepts naturally in Korean."
+    },
+    "sn2-tech-u1-l5": {
+      "title": "Stretching Out Tune",
+      "subtitle": "Trainee life: everyday devices",
+      "goal": "Express everyday devices concepts naturally in Korean."
+    },
+    "sn2-travel-u1-l1": {
+      "title": "Lunch Break Vibe",
+      "subtitle": "Trainee life: finding your way",
+      "goal": "Express finding your way concepts naturally in Korean."
+    },
+    "sn2-travel-u1-l2": {
+      "title": "Mirror Practice Beats",
+      "subtitle": "Trainee life: finding your way",
+      "goal": "Express finding your way concepts naturally in Korean."
+    },
+    "sn2-travel-u1-l3": {
+      "title": "Album Review Take",
+      "subtitle": "Trainee life: finding your way",
+      "goal": "Express finding your way concepts naturally in Korean."
+    },
+    "sn2-travel-u1-l4": {
+      "title": "Dorm Dinner Cut",
+      "subtitle": "Trainee life: finding your way",
+      "goal": "Express finding your way concepts naturally in Korean."
+    },
+    "sn2-travel-u1-l5": {
+      "title": "First Stage Run Replay",
+      "subtitle": "Trainee life: finding your way",
+      "goal": "Express finding your way concepts naturally in Korean."
+    },
+    "sn3-health-u1-l1": {
+      "title": "Mic Test Demo",
+      "subtitle": "Trainee life: body and movement",
+      "goal": "Express body and movement concepts naturally in Korean."
+    },
+    "sn3-health-u1-l2": {
+      "title": "Stage Rehearsal Rehearsal",
+      "subtitle": "Trainee life: body and movement",
+      "goal": "Express body and movement concepts naturally in Korean."
+    },
+    "sn3-health-u1-l3": {
+      "title": "Signing Albums Session",
+      "subtitle": "Trainee life: body and movement",
+      "goal": "Express body and movement concepts naturally in Korean."
+    },
+    "sn3-health-u1-l4": {
+      "title": "Fan Letters Check",
+      "subtitle": "Trainee life: body and movement",
+      "goal": "Express body and movement concepts naturally in Korean."
+    },
+    "sn3-hobbies-u1-l1": {
+      "title": "Quiet Coffee Drill",
+      "subtitle": "Trainee life: free-time plans",
+      "goal": "Express free-time plans concepts naturally in Korean."
+    },
+    "sn3-hobbies-u1-l2": {
+      "title": "Dorm Rules Prep",
+      "subtitle": "Trainee life: free-time plans",
+      "goal": "Express free-time plans concepts naturally in Korean."
+    },
+    "sn3-hobbies-u1-l3": {
+      "title": "Promo Routine Warmup",
+      "subtitle": "Trainee life: free-time plans",
+      "goal": "Express free-time plans concepts naturally in Korean."
+    },
+    "sn3-hobbies-u1-l4": {
+      "title": "Variety Prep Focus",
+      "subtitle": "Trainee life: free-time plans",
+      "goal": "Express free-time plans concepts naturally in Korean."
+    },
+    "sn3-hobbies-u1-l5": {
+      "title": "Backstage Wait Review",
+      "subtitle": "Trainee life: free-time plans",
+      "goal": "Express free-time plans concepts naturally in Korean."
+    },
+    "sn3-work-u1-l1": {
+      "title": "Audition Day Feedback",
+      "subtitle": "Trainee life: at the workplace",
+      "goal": "Express at the workplace concepts naturally in Korean."
+    },
+    "sn3-work-u1-l2": {
+      "title": "Backup Plan Practice",
+      "subtitle": "Trainee life: at the workplace",
+      "goal": "Express at the workplace concepts naturally in Korean."
+    },
+    "sn3-work-u1-l3": {
+      "title": "Concept Check Break",
+      "subtitle": "Trainee life: at the workplace",
+      "goal": "Express at the workplace concepts naturally in Korean."
+    },
+    "sn3-work-u1-l4": {
+      "title": "Demo Feedback Briefing",
+      "subtitle": "Trainee life: at the workplace",
+      "goal": "Express at the workplace concepts naturally in Korean."
+    },
+    "sn3-work-u1-l5": {
+      "title": "Studio Session Test",
+      "subtitle": "Trainee life: at the workplace",
+      "goal": "Express at the workplace concepts naturally in Korean."
+    },
+    "sn3-actions-u2-l1": {
+      "title": "Showcase Prep Routine",
+      "subtitle": "Trainee life: morning action verbs",
+      "goal": "Express morning action verbs concepts naturally in Korean."
+    },
+    "sn3-actions-u2-l2": {
+      "title": "Wardrobe Check Study",
+      "subtitle": "Trainee life: morning action verbs",
+      "goal": "Express morning action verbs concepts naturally in Korean."
+    },
+    "sn3-actions-u2-l3": {
+      "title": "Stage Makeup",
+      "subtitle": "Trainee life: morning action verbs",
+      "goal": "Express morning action verbs concepts naturally in Korean."
+    },
+    "sn3-actions-u2-l4": {
+      "title": "Hair Session",
+      "subtitle": "Trainee life: morning action verbs",
+      "goal": "Express morning action verbs concepts naturally in Korean."
+    },
+    "sn3-actions-u2-l5": {
+      "title": "In Ear Check",
+      "subtitle": "Trainee life: morning action verbs",
+      "goal": "Express morning action verbs concepts naturally in Korean."
+    },
+    "sn3-daily-u2-l1": {
+      "title": "Bridge Vocal Vibe",
+      "subtitle": "Trainee life: time on the calendar",
+      "goal": "Express time on the calendar concepts naturally in Korean."
+    },
+    "sn3-daily-u2-l2": {
+      "title": "Mixing Session Beats",
+      "subtitle": "Trainee life: time on the calendar",
+      "goal": "Express time on the calendar concepts naturally in Korean."
+    },
+    "sn3-daily-u2-l3": {
+      "title": "Art Preview Take",
+      "subtitle": "Trainee life: time on the calendar",
+      "goal": "Express time on the calendar concepts naturally in Korean."
+    },
+    "sn3-daily-u2-l4": {
+      "title": "Teaser Shoot Cut",
+      "subtitle": "Trainee life: time on the calendar",
+      "goal": "Express time on the calendar concepts naturally in Korean."
+    },
+    "sn3-daily-u2-l5": {
+      "title": "Views Check Replay",
+      "subtitle": "Trainee life: time on the calendar",
+      "goal": "Express time on the calendar concepts naturally in Korean."
+    },
+    "sn3-feelings-u2-l1": {
+      "title": "Van Chat Demo",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn3-feelings-u2-l2": {
+      "title": "Street Promo Rehearsal",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn3-feelings-u2-l3": {
+      "title": "Opening Speech Session",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn3-feelings-u2-l4": {
+      "title": "Pose Rehearsal Check",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn3-feelings-u2-l5": {
+      "title": "Trainee Diary Run",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn3-grammar-u2-l1": {
+      "title": "Vocal Warmup Check",
+      "subtitle": "Trainee life: connecting clauses",
+      "goal": "Express connecting clauses concepts naturally in Korean."
+    },
+    "sn3-grammar-u2-l2": {
+      "title": "Dance Practice Run",
+      "subtitle": "Trainee life: connecting clauses",
+      "goal": "Express connecting clauses concepts naturally in Korean."
+    },
+    "sn3-nature-u2-l1": {
+      "title": "Mic Setup Focus",
+      "subtitle": "Trainee life: animals nearby",
+      "goal": "Express animals nearby concepts naturally in Korean."
+    },
+    "sn3-nature-u2-l2": {
+      "title": "Outfit Fitting Review",
+      "subtitle": "Trainee life: animals nearby",
+      "goal": "Express animals nearby concepts naturally in Korean."
+    },
+    "sn3-nature-u2-l3": {
+      "title": "Van Ride Routine",
+      "subtitle": "Trainee life: animals nearby",
+      "goal": "Express animals nearby concepts naturally in Korean."
+    },
+    "sn3-nature-u2-l4": {
+      "title": "Concept Talk Study",
+      "subtitle": "Trainee life: animals nearby",
+      "goal": "Express animals nearby concepts naturally in Korean."
+    },
+    "sn3-nature-u2-l5": {
+      "title": "Behind Camera Grit",
+      "subtitle": "Trainee life: animals nearby",
+      "goal": "Express animals nearby concepts naturally in Korean."
+    },
+    "sn3-study-u2-l1": {
+      "title": "Line Check Briefing",
+      "subtitle": "Trainee life: study plans",
+      "goal": "Express study plans concepts naturally in Korean."
+    },
+    "sn3-study-u2-l2": {
+      "title": "Morning Jog Test",
+      "subtitle": "Trainee life: study plans",
+      "goal": "Express study plans concepts naturally in Korean."
+    },
+    "sn3-study-u2-l3": {
+      "title": "Producer Chat Vibe",
+      "subtitle": "Trainee life: study plans",
+      "goal": "Express study plans concepts naturally in Korean."
+    },
+    "sn3-study-u2-l4": {
+      "title": "Vocal Demo Beats",
+      "subtitle": "Trainee life: study plans",
+      "goal": "Express study plans concepts naturally in Korean."
+    },
+    "sn3-study-u2-l5": {
+      "title": "Stretching Out Take",
+      "subtitle": "Trainee life: study plans",
+      "goal": "Express study plans concepts naturally in Korean."
+    },
+    "sn3-travel-u2-l1": {
+      "title": "Lunch Break Flow",
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
+    },
+    "sn3-travel-u2-l2": {
+      "title": "Mirror Practice Tune",
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
+    },
+    "sn3-travel-u2-l3": {
+      "title": "Album Review Demo",
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
+    },
+    "sn3-travel-u2-l4": {
+      "title": "Dorm Dinner Rehearsal",
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
+    },
+    "sn3-travel-u2-l5": {
+      "title": "First Stage Run Session",
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
+    },
+    "sn3-work-u2-l1": {
+      "title": "Mic Test Cut",
+      "subtitle": "Trainee life: meeting the team",
+      "goal": "Express meeting the team concepts naturally in Korean."
+    },
+    "sn3-work-u2-l2": {
+      "title": "Stage Rehearsal Replay",
+      "subtitle": "Trainee life: meeting the team",
+      "goal": "Express meeting the team concepts naturally in Korean."
+    },
+    "sn3-work-u2-l3": {
+      "title": "Signing Albums Drill",
+      "subtitle": "Trainee life: meeting the team",
+      "goal": "Express meeting the team concepts naturally in Korean."
+    },
+    "sn3-work-u2-l4": {
+      "title": "Fan Letters Prep",
+      "subtitle": "Trainee life: meeting the team",
+      "goal": "Express meeting the team concepts naturally in Korean."
+    },
+    "sn3-work-u2-l5": {
+      "title": "Press Briefing Run",
+      "subtitle": "Trainee life: meeting the team",
+      "goal": "Express meeting the team concepts naturally in Korean."
+    },
+    "sn4-food-u2-l1": {
+      "title": "Quiet Coffee Check",
+      "subtitle": "Trainee life: drinks and dishes",
+      "goal": "Express drinks and dishes concepts naturally in Korean."
+    },
+    "sn4-food-u2-l2": {
+      "title": "Dorm Rules Run",
+      "subtitle": "Trainee life: drinks and dishes",
+      "goal": "Express drinks and dishes concepts naturally in Korean."
+    },
+    "sn4-food-u2-l3": {
+      "title": "Promo Routine Feedback",
+      "subtitle": "Trainee life: drinks and dishes",
+      "goal": "Express drinks and dishes concepts naturally in Korean."
+    },
+    "sn4-shopping-u2-l1": {
+      "title": "Audition Day Focus",
+      "subtitle": "Trainee life: choosing clothes",
+      "goal": "Express choosing clothes concepts naturally in Korean."
+    },
+    "sn4-shopping-u2-l2": {
+      "title": "Backup Plan Review",
+      "subtitle": "Trainee life: choosing clothes",
+      "goal": "Express choosing clothes concepts naturally in Korean."
+    },
+    "sn4-shopping-u2-l3": {
+      "title": "Concept Check Routine",
+      "subtitle": "Trainee life: choosing clothes",
+      "goal": "Express choosing clothes concepts naturally in Korean."
+    },
+    "sn4-shopping-u2-l4": {
+      "title": "Demo Feedback Study",
+      "subtitle": "Trainee life: choosing clothes",
+      "goal": "Express choosing clothes concepts naturally in Korean."
+    },
+    "sn4-shopping-u2-l5": {
+      "title": "Studio Session Grit",
+      "subtitle": "Trainee life: choosing clothes",
+      "goal": "Express choosing clothes concepts naturally in Korean."
+    },
+    "sn4-actions-u3-l1": {
+      "title": "Showcase Prep Briefing",
+      "subtitle": "Trainee life: plans in motion",
+      "goal": "Express plans in motion concepts naturally in Korean."
+    },
+    "sn4-actions-u3-l2": {
+      "title": "Wardrobe Check Test",
+      "subtitle": "Trainee life: plans in motion",
+      "goal": "Express plans in motion concepts naturally in Korean."
+    },
+    "sn4-actions-u3-l3": {
+      "title": "Stage Makeup Grit",
+      "subtitle": "Trainee life: plans in motion",
+      "goal": "Express plans in motion concepts naturally in Korean."
+    },
+    "sn4-actions-u3-l4": {
+      "title": "Hair Session Flow",
+      "subtitle": "Trainee life: plans in motion",
+      "goal": "Express plans in motion concepts naturally in Korean."
+    },
+    "sn4-actions-u3-l5": {
+      "title": "In Ear Check Tune",
+      "subtitle": "Trainee life: plans in motion",
+      "goal": "Express plans in motion concepts naturally in Korean."
+    },
+    "sn4-daily-u3-l1": {
+      "title": "Bridge Vocal Flow",
+      "subtitle": "Trainee life: meals at home",
+      "goal": "Express meals at home concepts naturally in Korean."
+    },
+    "sn4-daily-u3-l2": {
+      "title": "Mixing Session Tune",
+      "subtitle": "Trainee life: meals at home",
+      "goal": "Express meals at home concepts naturally in Korean."
+    },
+    "sn4-daily-u3-l3": {
+      "title": "Art Preview Demo",
+      "subtitle": "Trainee life: meals at home",
+      "goal": "Express meals at home concepts naturally in Korean."
+    },
+    "sn4-daily-u3-l4": {
+      "title": "Teaser Shoot Rehearsal",
+      "subtitle": "Trainee life: meals at home",
+      "goal": "Express meals at home concepts naturally in Korean."
+    },
+    "sn4-daily-u3-l5": {
+      "title": "Views Check Session",
+      "subtitle": "Trainee life: meals at home",
+      "goal": "Express meals at home concepts naturally in Korean."
+    },
+    "sn4-feelings-u3-l1": {
+      "title": "Van Chat Cut",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn4-feelings-u3-l2": {
+      "title": "Street Promo Replay",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn4-feelings-u3-l3": {
+      "title": "Opening Speech Drill",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn4-feelings-u3-l4": {
+      "title": "Pose Rehearsal Prep",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn4-feelings-u3-l5": {
+      "title": "Trainee Diary Warmup",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn4-nature-u3-l1": {
+      "title": "Vocal Warmup Prep",
+      "subtitle": "Trainee life: a walk outdoors",
+      "goal": "Express a walk outdoors concepts naturally in Korean."
+    },
+    "sn4-nature-u3-l2": {
+      "title": "Dance Practice Warmup",
+      "subtitle": "Trainee life: a walk outdoors",
+      "goal": "Express a walk outdoors concepts naturally in Korean."
+    },
+    "sn4-nature-u3-l3": {
+      "title": "Lyric Review Feedback",
+      "subtitle": "Trainee life: a walk outdoors",
+      "goal": "Express a walk outdoors concepts naturally in Korean."
+    },
+    "sn4-nature-u3-l4": {
+      "title": "Choreo Check Practice",
+      "subtitle": "Trainee life: a walk outdoors",
+      "goal": "Express a walk outdoors concepts naturally in Korean."
+    },
+    "sn4-nature-u3-l5": {
+      "title": "Dorm Talk Review",
+      "subtitle": "Trainee life: a walk outdoors",
+      "goal": "Express a walk outdoors concepts naturally in Korean."
+    },
+    "sn4-shopping-u3-l1": {
+      "title": "Mic Setup Practice",
+      "subtitle": "Trainee life: paying the bill",
+      "goal": "Express paying the bill concepts naturally in Korean."
+    },
+    "sn4-shopping-u3-l2": {
+      "title": "Outfit Fitting Break",
+      "subtitle": "Trainee life: paying the bill",
+      "goal": "Express paying the bill concepts naturally in Korean."
+    },
+    "sn4-shopping-u3-l3": {
+      "title": "Van Ride Briefing",
+      "subtitle": "Trainee life: paying the bill",
+      "goal": "Express paying the bill concepts naturally in Korean."
+    },
+    "sn4-shopping-u3-l4": {
+      "title": "Concept Talk Test",
+      "subtitle": "Trainee life: paying the bill",
+      "goal": "Express paying the bill concepts naturally in Korean."
+    },
+    "sn4-shopping-u3-l5": {
+      "title": "Behind Camera Vibe",
+      "subtitle": "Trainee life: paying the bill",
+      "goal": "Express paying the bill concepts naturally in Korean."
+    },
+    "sn4-study-u3-l1": {
+      "title": "Line Check Study",
+      "subtitle": "Trainee life: reading together",
+      "goal": "Express reading together concepts naturally in Korean."
+    },
+    "sn4-study-u3-l2": {
+      "title": "Morning Jog Grit",
+      "subtitle": "Trainee life: reading together",
+      "goal": "Express reading together concepts naturally in Korean."
+    },
+    "sn4-study-u3-l3": {
+      "title": "Producer Chat Flow",
+      "subtitle": "Trainee life: reading together",
+      "goal": "Express reading together concepts naturally in Korean."
+    },
+    "sn4-study-u3-l4": {
+      "title": "Vocal Demo Tune",
+      "subtitle": "Trainee life: reading together",
+      "goal": "Express reading together concepts naturally in Korean."
+    },
+    "sn4-study-u3-l5": {
+      "title": "Stretching Out Demo",
+      "subtitle": "Trainee life: reading together",
+      "goal": "Express reading together concepts naturally in Korean."
+    },
+    "sn4-travel-u3-l1": {
+      "title": "Lunch Break Beats",
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
+    },
+    "sn4-travel-u3-l2": {
+      "title": "Mirror Practice Take",
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
+    },
+    "sn4-travel-u3-l3": {
+      "title": "Album Review Cut",
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
+    },
+    "sn4-travel-u3-l4": {
+      "title": "Dorm Dinner Replay",
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
+    },
+    "sn4-travel-u3-l5": {
+      "title": "First Stage Run Drill",
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
+    },
+    "sn4-work-u3-l1": {
+      "title": "Mic Test Rehearsal",
+      "subtitle": "Trainee life: jobs and duties",
+      "goal": "Express jobs and duties concepts naturally in Korean."
+    },
+    "sn4-work-u3-l2": {
+      "title": "Stage Rehearsal Session",
+      "subtitle": "Trainee life: jobs and duties",
+      "goal": "Express jobs and duties concepts naturally in Korean."
+    },
+    "sn4-work-u3-l3": {
+      "title": "Signing Albums Check",
+      "subtitle": "Trainee life: jobs and duties",
+      "goal": "Express jobs and duties concepts naturally in Korean."
+    },
+    "sn5-health-u2-l1": {
+      "title": "Quiet Coffee Prep",
+      "subtitle": "Trainee life: at the clinic",
+      "goal": "Express at the clinic concepts naturally in Korean."
+    },
+    "sn5-health-u2-l2": {
+      "title": "Dorm Rules Warmup",
+      "subtitle": "Trainee life: at the clinic",
+      "goal": "Express at the clinic concepts naturally in Korean."
+    },
+    "sn5-health-u2-l3": {
+      "title": "Promo Routine Focus",
+      "subtitle": "Trainee life: at the clinic",
+      "goal": "Express at the clinic concepts naturally in Korean."
+    },
+    "sn5-health-u2-l4": {
+      "title": "Variety Prep Practice",
+      "subtitle": "Trainee life: at the clinic",
+      "goal": "Express at the clinic concepts naturally in Korean."
+    },
+    "sn5-food-u3-l1": {
+      "title": "Audition Day Practice",
+      "subtitle": "Trainee life: cooking at home",
+      "goal": "Express cooking at home concepts naturally in Korean."
+    },
+    "sn5-food-u3-l2": {
+      "title": "Backup Plan Break",
+      "subtitle": "Trainee life: cooking at home",
+      "goal": "Express cooking at home concepts naturally in Korean."
+    },
+    "sn5-food-u3-l3": {
+      "title": "Concept Check Briefing",
+      "subtitle": "Trainee life: cooking at home",
+      "goal": "Express cooking at home concepts naturally in Korean."
+    },
+    "sn5-grammar-u3-l1": {
+      "title": "Showcase Prep Study",
+      "subtitle": "Trainee life: register and respect",
+      "goal": "Express register and respect concepts naturally in Korean."
+    },
+    "sn5-grammar-u3-l2": {
+      "title": "Wardrobe Check Grit",
+      "subtitle": "Trainee life: register and respect",
+      "goal": "Express register and respect concepts naturally in Korean."
+    },
+    "sn5-grammar-u3-l3": {
+      "title": "Stage Makeup Vibe",
+      "subtitle": "Trainee life: register and respect",
+      "goal": "Express register and respect concepts naturally in Korean."
+    },
+    "sn5-actions-u4-l1": {
+      "title": "Bridge Vocal Beats",
+      "subtitle": "Trainee life: a busy afternoon",
+      "goal": "Express a busy afternoon concepts naturally in Korean."
+    },
+    "sn5-actions-u4-l2": {
+      "title": "Mixing Session Take",
+      "subtitle": "Trainee life: a busy afternoon",
+      "goal": "Express a busy afternoon concepts naturally in Korean."
+    },
+    "sn5-actions-u4-l3": {
+      "title": "Art Preview Cut",
+      "subtitle": "Trainee life: a busy afternoon",
+      "goal": "Express a busy afternoon concepts naturally in Korean."
+    },
+    "sn5-actions-u4-l4": {
+      "title": "Teaser Shoot Replay",
+      "subtitle": "Trainee life: a busy afternoon",
+      "goal": "Express a busy afternoon concepts naturally in Korean."
+    },
+    "sn5-actions-u4-l5": {
+      "title": "Views Check Drill",
+      "subtitle": "Trainee life: a busy afternoon",
+      "goal": "Express a busy afternoon concepts naturally in Korean."
+    },
+    "sn5-daily-u4-l1": {
+      "title": "Van Chat Rehearsal",
+      "subtitle": "Trainee life: after-work plans",
+      "goal": "Express after-work plans concepts naturally in Korean."
+    },
+    "sn5-daily-u4-l2": {
+      "title": "Street Promo Session",
+      "subtitle": "Trainee life: after-work plans",
+      "goal": "Express after-work plans concepts naturally in Korean."
+    },
+    "sn5-daily-u4-l3": {
+      "title": "Opening Speech Check",
+      "subtitle": "Trainee life: after-work plans",
+      "goal": "Express after-work plans concepts naturally in Korean."
+    },
+    "sn5-daily-u4-l4": {
+      "title": "Pose Rehearsal Run",
+      "subtitle": "Trainee life: after-work plans",
+      "goal": "Express after-work plans concepts naturally in Korean."
+    },
+    "sn5-daily-u4-l5": {
+      "title": "Trainee Diary Feedback",
+      "subtitle": "Trainee life: after-work plans",
+      "goal": "Express after-work plans concepts naturally in Korean."
+    },
+    "sn5-feelings-u4-l1": {
+      "title": "Vocal Warmup Run",
+      "subtitle": "Trainee life: a bright morning",
+      "goal": "Express a bright morning concepts naturally in Korean."
+    },
+    "sn5-feelings-u4-l2": {
+      "title": "Dance Practice Feedback",
+      "subtitle": "Trainee life: a bright morning",
+      "goal": "Express a bright morning concepts naturally in Korean."
+    },
+    "sn5-feelings-u4-l3": {
+      "title": "Lyric Review Focus",
+      "subtitle": "Trainee life: a bright morning",
+      "goal": "Express a bright morning concepts naturally in Korean."
+    },
+    "sn5-feelings-u4-l4": {
+      "title": "Choreo Check Review",
+      "subtitle": "Trainee life: a bright morning",
+      "goal": "Express a bright morning concepts naturally in Korean."
+    },
+    "sn5-feelings-u4-l5": {
+      "title": "Dorm Talk Break",
+      "subtitle": "Trainee life: a bright morning",
+      "goal": "Express a bright morning concepts naturally in Korean."
+    },
+    "sn5-nature-u4-l1": {
+      "title": "Mic Setup Review",
+      "subtitle": "Trainee life: seasonal changes",
+      "goal": "Express seasonal changes concepts naturally in Korean."
+    },
+    "sn5-nature-u4-l2": {
+      "title": "Outfit Fitting Routine",
+      "subtitle": "Trainee life: seasonal changes",
+      "goal": "Express seasonal changes concepts naturally in Korean."
+    },
+    "sn5-nature-u4-l3": {
+      "title": "Van Ride Study",
+      "subtitle": "Trainee life: seasonal changes",
+      "goal": "Express seasonal changes concepts naturally in Korean."
+    },
+    "sn5-nature-u4-l4": {
+      "title": "Concept Talk Grit",
+      "subtitle": "Trainee life: seasonal changes",
+      "goal": "Express seasonal changes concepts naturally in Korean."
+    },
+    "sn5-study-u4-l1": {
+      "title": "Line Check Test",
+      "subtitle": "Trainee life: school supplies",
+      "goal": "Express school supplies concepts naturally in Korean."
+    },
+    "sn5-study-u4-l2": {
+      "title": "Morning Jog Vibe",
+      "subtitle": "Trainee life: school supplies",
+      "goal": "Express school supplies concepts naturally in Korean."
+    },
+    "sn5-study-u4-l3": {
+      "title": "Producer Chat Beats",
+      "subtitle": "Trainee life: school supplies",
+      "goal": "Express school supplies concepts naturally in Korean."
+    },
+    "sn5-study-u4-l4": {
+      "title": "Vocal Demo Take",
+      "subtitle": "Trainee life: school supplies",
+      "goal": "Express school supplies concepts naturally in Korean."
+    },
+    "sn5-study-u4-l5": {
+      "title": "Stretching Out Cut",
+      "subtitle": "Trainee life: school supplies",
+      "goal": "Express school supplies concepts naturally in Korean."
+    },
+    "sn5-travel-u4-l1": {
+      "title": "Lunch Break Tune",
+      "subtitle": "Trainee life: city landmarks",
+      "goal": "Express city landmarks concepts naturally in Korean."
+    },
+    "sn5-travel-u4-l2": {
+      "title": "Mirror Practice Demo",
+      "subtitle": "Trainee life: city landmarks",
+      "goal": "Express city landmarks concepts naturally in Korean."
+    },
+    "sn5-travel-u4-l3": {
+      "title": "Album Review Rehearsal",
+      "subtitle": "Trainee life: city landmarks",
+      "goal": "Express city landmarks concepts naturally in Korean."
+    },
+    "sn5-travel-u4-l4": {
+      "title": "Dorm Dinner Session",
+      "subtitle": "Trainee life: city landmarks",
+      "goal": "Express city landmarks concepts naturally in Korean."
+    },
+    "sn5-travel-u4-l5": {
+      "title": "First Stage Run Check",
+      "subtitle": "Trainee life: city landmarks",
+      "goal": "Express city landmarks concepts naturally in Korean."
+    },
+    "sn5-work-u4-l1": {
+      "title": "Mic Test Replay",
+      "subtitle": "Trainee life: a busy workday",
+      "goal": "Express a busy workday concepts naturally in Korean."
+    },
+    "sn5-work-u4-l2": {
+      "title": "Stage Rehearsal Drill",
+      "subtitle": "Trainee life: a busy workday",
+      "goal": "Express a busy workday concepts naturally in Korean."
+    },
+    "sn5-work-u4-l3": {
+      "title": "Signing Albums Prep",
+      "subtitle": "Trainee life: a busy workday",
+      "goal": "Express a busy workday concepts naturally in Korean."
+    },
+    "sn6-hobbies-u2-l1": {
+      "title": "Quiet Coffee Run",
+      "subtitle": "Trainee life: sports with friends",
+      "goal": "Express sports with friends concepts naturally in Korean."
+    },
+    "sn6-hobbies-u2-l2": {
+      "title": "Dorm Rules Feedback",
+      "subtitle": "Trainee life: sports with friends",
+      "goal": "Express sports with friends concepts naturally in Korean."
+    },
+    "sn6-hobbies-u2-l3": {
+      "title": "Promo Routine Practice",
+      "subtitle": "Trainee life: sports with friends",
+      "goal": "Express sports with friends concepts naturally in Korean."
+    },
+    "sn6-hobbies-u2-l4": {
+      "title": "Variety Prep Review",
+      "subtitle": "Trainee life: sports with friends",
+      "goal": "Express sports with friends concepts naturally in Korean."
+    },
+    "sn6-hobbies-u2-l5": {
+      "title": "Backstage Wait Break",
+      "subtitle": "Trainee life: sports with friends",
+      "goal": "Express sports with friends concepts naturally in Korean."
+    },
+    "sn6-tech-u2-l1": {
+      "title": "Audition Day Review",
+      "subtitle": "Trainee life: at the desk",
+      "goal": "Express at the desk concepts naturally in Korean."
+    },
+    "sn6-tech-u2-l2": {
+      "title": "Backup Plan Routine",
+      "subtitle": "Trainee life: at the desk",
+      "goal": "Express at the desk concepts naturally in Korean."
+    },
+    "sn6-tech-u2-l3": {
+      "title": "Concept Check Study",
+      "subtitle": "Trainee life: at the desk",
+      "goal": "Express at the desk concepts naturally in Korean."
+    },
+    "sn6-tech-u2-l4": {
+      "title": "Demo Feedback Test",
+      "subtitle": "Trainee life: at the desk",
+      "goal": "Express at the desk concepts naturally in Korean."
+    },
+    "sn6-tech-u2-l5": {
+      "title": "Studio Session Vibe",
+      "subtitle": "Trainee life: at the desk",
+      "goal": "Express at the desk concepts naturally in Korean."
+    },
+    "sn6-health-u3-l1": {
+      "title": "Showcase Prep Test",
+      "subtitle": "Trainee life: feeling better",
+      "goal": "Express feeling better concepts naturally in Korean."
+    },
+    "sn6-health-u3-l2": {
+      "title": "Wardrobe Check Vibe",
+      "subtitle": "Trainee life: feeling better",
+      "goal": "Express feeling better concepts naturally in Korean."
+    },
+    "sn6-health-u3-l3": {
+      "title": "Stage Makeup Flow",
+      "subtitle": "Trainee life: feeling better",
+      "goal": "Express feeling better concepts naturally in Korean."
+    },
+    "sn6-hobbies-u4-l1": {
+      "title": "Bridge Vocal Tune",
+      "subtitle": "Trainee life: a weekend hobby",
+      "goal": "Express a weekend hobby concepts naturally in Korean."
+    },
+    "sn6-hobbies-u4-l2": {
+      "title": "Mixing Session Demo",
+      "subtitle": "Trainee life: a weekend hobby",
+      "goal": "Express a weekend hobby concepts naturally in Korean."
+    },
+    "sn6-hobbies-u4-l3": {
+      "title": "Art Preview Rehearsal",
+      "subtitle": "Trainee life: a weekend hobby",
+      "goal": "Express a weekend hobby concepts naturally in Korean."
+    },
+    "sn6-actions-u5-l1": {
+      "title": "Van Chat Replay",
+      "subtitle": "Trainee life: helping hands",
+      "goal": "Express helping hands concepts naturally in Korean."
+    },
+    "sn6-actions-u5-l2": {
+      "title": "Street Promo Drill",
+      "subtitle": "Trainee life: helping hands",
+      "goal": "Express helping hands concepts naturally in Korean."
+    },
+    "sn6-actions-u5-l3": {
+      "title": "Opening Speech Prep",
+      "subtitle": "Trainee life: helping hands",
+      "goal": "Express helping hands concepts naturally in Korean."
+    },
+    "sn6-actions-u5-l4": {
+      "title": "Pose Rehearsal Warmup",
+      "subtitle": "Trainee life: helping hands",
+      "goal": "Express helping hands concepts naturally in Korean."
+    },
+    "sn6-actions-u5-l5": {
+      "title": "Trainee Diary Focus",
+      "subtitle": "Trainee life: helping hands",
+      "goal": "Express helping hands concepts naturally in Korean."
+    },
+    "sn6-daily-u5-l1": {
+      "title": "Vocal Warmup Warmup",
+      "subtitle": "Trainee life: a quiet evening",
+      "goal": "Express a quiet evening concepts naturally in Korean."
+    },
+    "sn6-daily-u5-l2": {
+      "title": "Dance Practice Focus",
+      "subtitle": "Trainee life: a quiet evening",
+      "goal": "Express a quiet evening concepts naturally in Korean."
+    },
+    "sn6-daily-u5-l3": {
+      "title": "Lyric Review Practice",
+      "subtitle": "Trainee life: a quiet evening",
+      "goal": "Express a quiet evening concepts naturally in Korean."
+    },
+    "sn6-daily-u5-l4": {
+      "title": "Choreo Check Break",
+      "subtitle": "Trainee life: a quiet evening",
+      "goal": "Express a quiet evening concepts naturally in Korean."
+    },
+    "sn6-daily-u5-l5": {
+      "title": "Dorm Talk Routine",
+      "subtitle": "Trainee life: a quiet evening",
+      "goal": "Express a quiet evening concepts naturally in Korean."
+    },
+    "sn6-feelings-u5-l1": {
+      "title": "Mic Setup Break",
+      "subtitle": "Trainee life: small talk outside",
+      "goal": "Express small talk outside concepts naturally in Korean."
+    },
+    "sn6-feelings-u5-l2": {
+      "title": "Outfit Fitting Briefing",
+      "subtitle": "Trainee life: small talk outside",
+      "goal": "Express small talk outside concepts naturally in Korean."
+    },
+    "sn6-feelings-u5-l3": {
+      "title": "Van Ride Test",
+      "subtitle": "Trainee life: small talk outside",
+      "goal": "Express small talk outside concepts naturally in Korean."
+    },
+    "sn6-feelings-u5-l4": {
+      "title": "Concept Talk Vibe",
+      "subtitle": "Trainee life: small talk outside",
+      "goal": "Express small talk outside concepts naturally in Korean."
+    },
+    "sn6-feelings-u5-l5": {
+      "title": "Behind Camera Flow",
+      "subtitle": "Trainee life: small talk outside",
+      "goal": "Express small talk outside concepts naturally in Korean."
+    },
+    "sn6-shopping-u5-l1": {
+      "title": "Line Check Grit",
+      "subtitle": "Trainee life: shopping together",
+      "goal": "Express shopping together concepts naturally in Korean."
+    },
+    "sn6-shopping-u5-l2": {
+      "title": "Morning Jog Flow",
+      "subtitle": "Trainee life: shopping together",
+      "goal": "Express shopping together concepts naturally in Korean."
+    },
+    "sn6-shopping-u5-l3": {
+      "title": "Producer Chat Tune",
+      "subtitle": "Trainee life: shopping together",
+      "goal": "Express shopping together concepts naturally in Korean."
+    },
+    "sn6-study-u5-l1": {
+      "title": "Lunch Break Take",
+      "subtitle": "Trainee life: working on a project",
+      "goal": "Express working on a project concepts naturally in Korean."
+    },
+    "sn6-study-u5-l2": {
+      "title": "Mirror Practice Cut",
+      "subtitle": "Trainee life: working on a project",
+      "goal": "Express working on a project concepts naturally in Korean."
+    },
+    "sn6-study-u5-l3": {
+      "title": "Album Review Replay",
+      "subtitle": "Trainee life: working on a project",
+      "goal": "Express working on a project concepts naturally in Korean."
+    },
+    "sn6-travel-u5-l1": {
+      "title": "Mic Test Session",
+      "subtitle": "Trainee life: a day trip",
+      "goal": "Express a day trip concepts naturally in Korean."
+    },
+    "sn6-travel-u5-l2": {
+      "title": "Stage Rehearsal Check",
+      "subtitle": "Trainee life: a day trip",
+      "goal": "Express a day trip concepts naturally in Korean."
+    },
+    "sn6-travel-u5-l3": {
+      "title": "Signing Albums Run",
+      "subtitle": "Trainee life: a day trip",
+      "goal": "Express a day trip concepts naturally in Korean."
+    },
+    "sn6-travel-u5-l4": {
+      "title": "Fan Letters Run",
+      "subtitle": "Trainee life: a day trip",
+      "goal": "Express a day trip concepts naturally in Korean."
+    },
+    "sn6-travel-u5-l5": {
+      "title": "Press Briefing Warmup",
+      "subtitle": "Trainee life: a day trip",
+      "goal": "Express a day trip concepts naturally in Korean."
+    },
+    "sn7-hobbies-u3-l1": {
+      "title": "Quiet Coffee Warmup",
+      "subtitle": "Trainee life: music and games",
+      "goal": "Express music and games concepts naturally in Korean."
+    },
+    "sn7-hobbies-u3-l2": {
+      "title": "Dorm Rules Focus",
+      "subtitle": "Trainee life: music and games",
+      "goal": "Express music and games concepts naturally in Korean."
+    },
+    "sn7-hobbies-u3-l3": {
+      "title": "Promo Routine Review",
+      "subtitle": "Trainee life: music and games",
+      "goal": "Express music and games concepts naturally in Korean."
+    },
+    "sn7-tech-u3-l1": {
+      "title": "Audition Day Break",
+      "subtitle": "Trainee life: messages and calls",
+      "goal": "Express messages and calls concepts naturally in Korean."
+    },
+    "sn7-tech-u3-l2": {
+      "title": "Backup Plan Briefing",
+      "subtitle": "Trainee life: messages and calls",
+      "goal": "Express messages and calls concepts naturally in Korean."
+    },
+    "sn7-tech-u3-l3": {
+      "title": "Concept Check Test",
+      "subtitle": "Trainee life: messages and calls",
+      "goal": "Express messages and calls concepts naturally in Korean."
+    },
+    "sn7-tech-u3-l4": {
+      "title": "Demo Feedback Grit",
+      "subtitle": "Trainee life: messages and calls",
+      "goal": "Express messages and calls concepts naturally in Korean."
+    },
+    "sn7-tech-u3-l5": {
+      "title": "Studio Session Flow",
+      "subtitle": "Trainee life: messages and calls",
+      "goal": "Express messages and calls concepts naturally in Korean."
+    },
+    "sn7-grammar-u4-l1": {
+      "title": "Showcase Prep Grit",
+      "subtitle": "Trainee life: forms and nuance",
+      "goal": "Express forms and nuance concepts naturally in Korean."
+    },
+    "sn7-grammar-u4-l2": {
+      "title": "Wardrobe Check Flow",
+      "subtitle": "Trainee life: forms and nuance",
+      "goal": "Express forms and nuance concepts naturally in Korean."
+    },
+    "sn7-grammar-u4-l3": {
+      "title": "Stage Makeup Beats",
+      "subtitle": "Trainee life: forms and nuance",
+      "goal": "Express forms and nuance concepts naturally in Korean."
+    },
+    "sn7-grammar-u4-l4": {
+      "title": "Hair Session Beats",
+      "subtitle": "Trainee life: forms and nuance",
+      "goal": "Express forms and nuance concepts naturally in Korean."
+    },
+    "sn7-grammar-u4-l5": {
+      "title": "In Ear Check Take",
+      "subtitle": "Trainee life: forms and nuance",
+      "goal": "Express forms and nuance concepts naturally in Korean."
+    },
+    "sn7-actions-u6-l1": {
+      "title": "Bridge Vocal Take",
+      "subtitle": "Trainee life: moving through town",
+      "goal": "Express moving through town concepts naturally in Korean."
+    },
+    "sn7-actions-u6-l2": {
+      "title": "Mixing Session Cut",
+      "subtitle": "Trainee life: moving through town",
+      "goal": "Express moving through town concepts naturally in Korean."
+    },
+    "sn7-actions-u6-l3": {
+      "title": "Art Preview Replay",
+      "subtitle": "Trainee life: moving through town",
+      "goal": "Express moving through town concepts naturally in Korean."
+    },
+    "sn7-daily-u6-l1": {
+      "title": "Van Chat Session",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn7-daily-u6-l2": {
+      "title": "Street Promo Check",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn7-daily-u6-l3": {
+      "title": "Opening Speech Run",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn7-daily-u6-l4": {
+      "title": "Pose Rehearsal Feedback",
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
+    },
+    "sn7-feelings-u6-l1": {
+      "title": "Vocal Warmup Feedback",
+      "subtitle": "Trainee life: good news today",
+      "goal": "Express good news today concepts naturally in Korean."
+    },
+    "sn7-feelings-u6-l2": {
+      "title": "Dance Practice Practice",
+      "subtitle": "Trainee life: good news today",
+      "goal": "Express good news today concepts naturally in Korean."
+    },
+    "sn7-feelings-u6-l3": {
+      "title": "Lyric Review Review",
+      "subtitle": "Trainee life: good news today",
+      "goal": "Express good news today concepts naturally in Korean."
+    },
+    "sn7-feelings-u6-l4": {
+      "title": "Choreo Check Routine",
+      "subtitle": "Trainee life: good news today",
+      "goal": "Express good news today concepts naturally in Korean."
+    },
+    "sn7-feelings-u6-l5": {
+      "title": "Dorm Talk Briefing",
+      "subtitle": "Trainee life: good news today",
+      "goal": "Express good news today concepts naturally in Korean."
+    },
+    "sn7-study-u6-l1": {
+      "title": "Mic Setup Routine",
+      "subtitle": "Trainee life: in the classroom absence",
+      "goal": "Express in the classroom absence concepts naturally in Korean."
+    },
+    "sn7-study-u6-l2": {
+      "title": "Outfit Fitting Study",
+      "subtitle": "Trainee life: in the classroom absence",
+      "goal": "Express in the classroom absence concepts naturally in Korean."
+    },
+    "sn7-study-u6-l3": {
+      "title": "Van Ride Grit",
+      "subtitle": "Trainee life: in the classroom absence",
+      "goal": "Express in the classroom absence concepts naturally in Korean."
+    },
+    "sn7-travel-u6-l1": {
+      "title": "Line Check Vibe",
+      "subtitle": "Trainee life: checking the route",
+      "goal": "Express checking the route concepts naturally in Korean."
+    },
+    "sn7-travel-u6-l2": {
+      "title": "Morning Jog Beats",
+      "subtitle": "Trainee life: checking the route",
+      "goal": "Express checking the route concepts naturally in Korean."
+    },
+    "sn7-travel-u6-l3": {
+      "title": "Producer Chat Take",
+      "subtitle": "Trainee life: checking the route",
+      "goal": "Express checking the route concepts naturally in Korean."
+    },
+    "sn7-travel-u6-l4": {
+      "title": "Vocal Demo Demo",
+      "subtitle": "Trainee life: checking the route",
+      "goal": "Express checking the route concepts naturally in Korean."
+    },
+    "sn7-travel-u6-l5": {
+      "title": "Stretching Out Rehearsal",
+      "subtitle": "Trainee life: checking the route",
+      "goal": "Express checking the route concepts naturally in Korean."
+    },
+    "sn7-feelings-u10-l1": {
+      "title": "Lunch Break Demo",
+      "subtitle": "Trainee life: a bright morning cheerfu",
+      "goal": "Express a bright morning cheerfu concepts naturally in Korean."
+    },
+    "sn7-feelings-u10-l2": {
+      "title": "Mirror Practice Rehearsal",
+      "subtitle": "Trainee life: a bright morning cheerfu",
+      "goal": "Express a bright morning cheerfu concepts naturally in Korean."
+    },
+    "sn7-feelings-u10-l3": {
+      "title": "Album Review Session",
+      "subtitle": "Trainee life: a bright morning cheerfu",
+      "goal": "Express a bright morning cheerfu concepts naturally in Korean."
+    },
+    "sn7-feelings-u10-l4": {
+      "title": "Dorm Dinner Drill",
+      "subtitle": "Trainee life: a bright morning cheerfu",
+      "goal": "Express a bright morning cheerfu concepts naturally in Korean."
+    },
+    "sn7-feelings-u10-l5": {
+      "title": "First Stage Run Prep",
+      "subtitle": "Trainee life: a bright morning cheerfu",
+      "goal": "Express a bright morning cheerfu concepts naturally in Korean."
+    },
+    "sn7-feelings-u11-l1": {
+      "title": "Mic Test Drill",
+      "subtitle": "Trainee life: small talk outside thick",
+      "goal": "Express small talk outside thick concepts naturally in Korean."
+    },
+    "sn7-feelings-u11-l2": {
+      "title": "Stage Rehearsal Prep",
+      "subtitle": "Trainee life: small talk outside thick",
+      "goal": "Express small talk outside thick concepts naturally in Korean."
+    },
+    "sn7-feelings-u11-l3": {
+      "title": "Signing Albums Warmup",
+      "subtitle": "Trainee life: small talk outside thick",
+      "goal": "Express small talk outside thick concepts naturally in Korean."
+    },
+    "sn7-feelings-u11-l4": {
+      "title": "Fan Letters Warmup",
+      "subtitle": "Trainee life: small talk outside thick",
+      "goal": "Express small talk outside thick concepts naturally in Korean."
+    },
+    "sn7-feelings-u11-l5": {
+      "title": "Press Briefing Feedback",
+      "subtitle": "Trainee life: small talk outside thick",
+      "goal": "Express small talk outside thick concepts naturally in Korean."
+    },
+    "sn8-people-u2-l1": {
+      "title": "Quiet Coffee Feedback",
+      "subtitle": "Trainee life: talking about friends",
+      "goal": "Express talking about friends concepts naturally in Korean."
+    },
+    "sn8-people-u2-l2": {
+      "title": "Dorm Rules Practice",
+      "subtitle": "Trainee life: talking about friends",
+      "goal": "Express talking about friends concepts naturally in Korean."
+    },
+    "sn8-people-u2-l3": {
+      "title": "Promo Routine Break",
+      "subtitle": "Trainee life: talking about friends",
+      "goal": "Express talking about friends concepts naturally in Korean."
+    },
+    "sn8-people-u2-l4": {
+      "title": "Variety Prep Break",
+      "subtitle": "Trainee life: talking about friends",
+      "goal": "Express talking about friends concepts naturally in Korean."
+    },
+    "sn8-people-u2-l5": {
+      "title": "Backstage Wait Routine",
+      "subtitle": "Trainee life: talking about friends",
+      "goal": "Express talking about friends concepts naturally in Korean."
+    },
+    "sn8-people-u3-l1": {
+      "title": "Audition Day Routine",
+      "subtitle": "Trainee life: people around us",
+      "goal": "Express people around us concepts naturally in Korean."
+    },
+    "sn8-people-u3-l2": {
+      "title": "Backup Plan Study",
+      "subtitle": "Trainee life: people around us",
+      "goal": "Express people around us concepts naturally in Korean."
+    },
+    "sn8-people-u3-l3": {
+      "title": "Concept Check Grit",
+      "subtitle": "Trainee life: people around us",
+      "goal": "Express people around us concepts naturally in Korean."
+    },
+    "sn8-shopping-u4-l1": {
+      "title": "Showcase Prep Vibe",
+      "subtitle": "Trainee life: finding the right size",
+      "goal": "Express finding the right size concepts naturally in Korean."
+    },
+    "sn8-shopping-u4-l2": {
+      "title": "Wardrobe Check Beats",
+      "subtitle": "Trainee life: finding the right size",
+      "goal": "Express finding the right size concepts naturally in Korean."
+    },
+    "sn8-shopping-u4-l3": {
+      "title": "Stage Makeup Tune",
+      "subtitle": "Trainee life: finding the right size",
+      "goal": "Express finding the right size concepts naturally in Korean."
+    },
+    "sn8-actions-u7-l1": {
+      "title": "Bridge Vocal Demo",
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
+    },
+    "sn8-actions-u7-l2": {
+      "title": "Mixing Session Rehearsal",
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
+    },
+    "sn8-actions-u7-l3": {
+      "title": "Art Preview Session",
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
+    },
+    "sn8-feelings-u7-l1": {
+      "title": "Van Chat Drill",
+      "subtitle": "Trainee life: how was your day rumor",
+      "goal": "Express how was your day rumor concepts naturally in Korean."
+    },
+    "sn8-feelings-u7-l2": {
+      "title": "Street Promo Prep",
+      "subtitle": "Trainee life: how was your day rumor",
+      "goal": "Express how was your day rumor concepts naturally in Korean."
+    },
+    "sn8-feelings-u7-l3": {
+      "title": "Opening Speech Warmup",
+      "subtitle": "Trainee life: how was your day rumor",
+      "goal": "Express how was your day rumor concepts naturally in Korean."
+    },
+    "sn8-feelings-u7-l4": {
+      "title": "Pose Rehearsal Focus",
+      "subtitle": "Trainee life: how was your day rumor",
+      "goal": "Express how was your day rumor concepts naturally in Korean."
+    },
+    "sn8-feelings-u7-l5": {
+      "title": "Trainee Diary Practice",
+      "subtitle": "Trainee life: how was your day rumor",
+      "goal": "Express how was your day rumor concepts naturally in Korean."
+    },
+    "sn8-travel-u7-l1": {
+      "title": "Vocal Warmup Focus",
+      "subtitle": "Trainee life: finding your way going o",
+      "goal": "Express finding your way going o concepts naturally in Korean."
+    },
+    "sn8-travel-u7-l2": {
+      "title": "Dance Practice Review",
+      "subtitle": "Trainee life: finding your way going o",
+      "goal": "Express finding your way going o concepts naturally in Korean."
+    },
+    "sn8-travel-u7-l3": {
+      "title": "Lyric Review Break",
+      "subtitle": "Trainee life: finding your way going o",
+      "goal": "Express finding your way going o concepts naturally in Korean."
+    },
+    "sn8-travel-u7-l4": {
+      "title": "Choreo Check Briefing",
+      "subtitle": "Trainee life: finding your way going o",
+      "goal": "Express finding your way going o concepts naturally in Korean."
+    },
+    "sn8-travel-u7-l5": {
+      "title": "Dorm Talk Study",
+      "subtitle": "Trainee life: finding your way going o",
+      "goal": "Express finding your way going o concepts naturally in Korean."
+    },
+    "sn8-feelings-u8-l1": {
+      "title": "Mic Setup Briefing",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn8-feelings-u8-l2": {
+      "title": "Outfit Fitting Test",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn8-feelings-u8-l3": {
+      "title": "Van Ride Vibe",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn8-feelings-u8-l4": {
+      "title": "Concept Talk Flow",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn8-feelings-u8-l5": {
+      "title": "Behind Camera Beats",
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
+    },
+    "sn8-travel-u8-l1": {
+      "title": "Line Check Flow",
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
+    },
+    "sn8-travel-u8-l2": {
+      "title": "Morning Jog Tune",
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
+    },
+    "sn8-travel-u8-l3": {
+      "title": "Producer Chat Demo",
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
+    },
+    "sn8-feelings-u9-l1": {
+      "title": "Lunch Break Cut",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn8-feelings-u9-l2": {
+      "title": "Mirror Practice Replay",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn8-feelings-u9-l3": {
+      "title": "Album Review Drill",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn8-feelings-u9-l4": {
+      "title": "Dorm Dinner Check",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn8-feelings-u9-l5": {
+      "title": "First Stage Run-through",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
+    },
+    "sn8-travel-u9-l1": {
+      "title": "Mic Test Check",
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
+    },
+    "sn8-travel-u9-l2": {
+      "title": "Stage Rehearsal Run",
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
+    },
+    "sn8-travel-u9-l3": {
+      "title": "Signing Albums Feedback",
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
+    }
+  }
+}
