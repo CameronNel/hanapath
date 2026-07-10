@@ -13,22 +13,28 @@ verify → ship. If the user says "continue the project," follow it top to botto
 **The current active work is the Sentences section**, built toward the target
 defined in [`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)
 — the north star (§3–§7 are the design contract, §8 the status scorecard, §9
-the milestone sheet). The **batch-by-batch execution queue** is
-**[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)** — if
-you were asked to "do the next task" or "work the roadmap," open that file,
-read its §0 ground rules and §2 runbook, and take the next unchecked box in
-dependency order (one box = one PR; each box is routed **[codex]** or
-**[high]**; Track H is owner-gated 🔒). The flagship feature, built right
-after the data foundation, is **Translate & Type**: an English sentence is
-shown and the learner types the Korean in Hangul, with a tip → word-bank →
-next-chunk → reveal helper ladder.
+the milestone sheet). Work is split across two queues:
+
+- **Curriculum/path/hub/runner restructure (owner-approved 2026-07-10):**
+  **[`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md)**
+  — the Duolingo-style, K-pop-trainee-themed sentence path. If you were asked
+  to "do the next task," take the next unchecked box in its §4 queue
+  (S2-A…S2-G; one box = one PR).
+- **Bank-level and authored-content work (Track H, owner-gated 🔒):**
+  **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)** —
+  read its §0 ground rules and §2 runbook first.
+
+The flagship feature is **Translate & Type**: an English sentence is shown and
+the learner types the Korean in Hangul, with a tip → word-bank → next-chunk →
+reveal helper ladder.
 
 Do not trust a "✅ done" at face value — the Words scorecard was wrong four
 times (PRs #50, #51, #54, merge `b385e77`); verify claims against the actual
 data (strict audits + spot-checked rows) before building on them. The
-**alphabet and Words sections are complete and protected** — do not regress
-them (the closed Words queue is archived at
-`docs/archive/WORDS_FINAL_ROADMAP.md`).
+**alphabet section is complete and protected**. The **Words section is live on
+its v2 curriculum** ([`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md))
+and is **read-only for Sentences work** — do not regress either (the closed
+Words v1 queue is archived at `docs/archive/WORDS_FINAL_ROADMAP.md`).
 
 ## Hard rules
 
@@ -57,8 +63,10 @@ them (the closed Words queue is archived at
 |---|---|
 | **`AI_INSTRUCTIONS.md`** | The "continue the project" runbook — **start here** |
 | `CLAUDE.md` | Same rules + doc map (Claude Code entry point) |
+| **`docs/SENTENCES_CURRICULUM_V2_PLAN.md`** | Sentences **path restructure** (current active work): K-pop-trainee Duolingo-style curriculum + S2-A…S2-G queue |
 | **`docs/SENTENCES_TEACHING_SPEC.md`** | Sentences **north star**: pedagogy, bank schema, pattern tags, bands, drills, scorecard, milestone sheet |
-| **`docs/SENTENCES_FINAL_ROADMAP.md`** | Sentences **execution queue**: checkbox batches, per-PR recipes, model routing — take the next unchecked box |
+| **`docs/SENTENCES_FINAL_ROADMAP.md`** | Sentences v1 build record + **Track H authored-content queue** (bank-level work) |
+| `docs/WORDS_CURRICULUM_V2_PLAN.md` | Words v2 curriculum (live; read-only during Sentences work) |
 | `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, verbatim (source of record) |
 | `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; pedagogy + data-axes reference) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — engines Sentences reuses) |
