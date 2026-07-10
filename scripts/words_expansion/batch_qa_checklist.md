@@ -20,7 +20,9 @@ Use this checklist to verify every expansion batch PR before merging. No batch m
   ```
 
 ## 2. Audio Validation Gates
-- [ ] Run audio extraction and verification to generate missing audio keys:
+- [ ] Run the schema-aware, deterministic audio extraction and verification:
+  `node scripts/words_expansion/extract_audio_keys.mjs --out scripts/words_expansion/audio_keys_report.json --missing-out scripts/words_expansion/audio_missing_report.json --strict`
+  Review the missing report; it covers word, form, and example speech fields.
   ```powershell
   python generate_assets.py
   ```

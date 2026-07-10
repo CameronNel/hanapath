@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/words_expansion/extract_audio_keys.mjs",
+  "source": "words_curated_core.js",
+  "missingKeyCount": 0,
+  "missing": []
+}
