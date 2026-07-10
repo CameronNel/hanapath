@@ -231,7 +231,7 @@ const phaseOneLessons = [
     title: "Six anchor vowels",
     shortTitle: "Anchor vowels",
     duration: "5 min",
-    goal: "Own ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ before adding anything fancy.",
+    goal: "Build your first Hangul vowel set.",
     summary: [
       "ㅏ ㅓ ㅗ ㅜ ㅡ ㅣ are your six anchor vowels.",
       "Short stroke right = ㅏ, left = ㅓ; pointing up = ㅗ, down = ㅜ.",
@@ -241,7 +241,7 @@ const phaseOneLessons = [
       {
         kicker: "Before you start",
         title: "Hangul uses syllable blocks",
-        body: "Korean letters do not sit in one long row like English. They are grouped into square syllable blocks. Each block needs a starting consonant seat and a vowel seat.",
+        body: "Korean letters do not sit in one long row like English. They are grouped into square syllable blocks. Each block needs a starting consonant seat and a vowel seat. Start by owning ㅏ, ㅓ, ㅗ, ㅜ, ㅡ, and ㅣ before adding anything fancy.",
         bullets: [
           "A block is one written syllable",
           "Some syllables start with a vowel sound",
