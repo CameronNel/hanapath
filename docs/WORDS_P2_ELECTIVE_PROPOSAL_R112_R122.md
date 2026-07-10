@@ -14,18 +14,21 @@ not publish or alter an elective pack.
 
 | Disposition | Count | Surfaces |
 |---|---:|---|
-| needs-sense-review | 5 | 때문, 어서, 다는, 으면, 해서 |
+| deferred | 5 | 때문, 어서, 다는, 으면, 해서 |
 | covered | 5 | 왜, 여자, 뭐, 위, 좀 |
 | rejected | 1 | 화 |
 | **window total** | **11** | |
 
-The five review candidates are retained rather than treated as teachable
-lemmas. `때문` is the strongest lexical candidate, but its bound-noun behavior
-needs a controlled-vocabulary example decision. `어서`, `다는`, `으면`, and `해서` are
-form/function candidates and must not become vocabulary rows without a
-confirmed canonical lemma and communicative role. The covered rows remain
-linked to their existing curated IDs; the two ambiguous one-syllable forms are
-rejected for this proposal.
+The five source tokens are retained in the qualification history but are not
+teachable elective lemmas. `때문` is grammar-only: teach the bound-noun
+construction `때문에`, and do not create a standalone elective word row.
+`어서` is the source-token form of the `-아서/어서` grammar; defer the
+independent adverb meaning “quickly/please” unless a separate context supports
+it. `다는` is the quotative/attributive grammar form, `으면` is the conditional
+ending `-(으)면`, and `해서` is the `하다 + -아서/어서` grammar form. None may
+be imported as vocabulary rows from this window. The covered rows remain
+linked to their existing curated IDs; `화` remains rejected because no safe
+lexical sense was established.
 
 ## Provisional elective-pack concept
 
@@ -46,14 +49,18 @@ build 6–12 coherent draft units with 8–12 words each. The current window is
 not large enough: it contains zero import-ready new lemmas. It is therefore a
 qualification packet, not a release pack.
 
-## Owner decisions requested
+## Owner decisions recorded
 
-1. Confirm whether `때문` should be authored as a standalone elective item or
-   treated only through the existing connective/grammar teaching surface.
-2. Resolve the canonical lemma and teaching role, if any, for `어서`, `다는`,
-   `으면`, and `해서` using source evidence before authoring examples.
-3. Approve a larger, semantically coherent follow-up range before any JSON row
-   authoring, audio generation, or importer commit is considered.
+1. `때문`: grammar-only; teach `때문에` as a bound-noun construction, with no
+   elective word row.
+2. `어서`: grammar-only in this source context; only consider the independent
+   adverb later if its own context supports “quickly/please.”
+3. `다는`: grammar-only quotative/attributive form.
+4. `으면`: grammar-only conditional ending `-(으)면`.
+5. `해서`: grammar-only `하다 + -아서/어서` form.
+6. A larger, semantically coherent follow-up range may be qualified for a
+   future elective pack, but these five forms remain excluded from vocabulary
+   rows.
 
 No audio run, cache bump, app data mutation, or learner-visible change is part
 of this proposal.
