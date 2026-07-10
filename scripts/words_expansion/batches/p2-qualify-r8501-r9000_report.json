@@ -1,0 +1,3978 @@
+{
+  "batchId": "p2-qualify-r8501-r9000",
+  "range": {
+    "minRank": 8501,
+    "maxRank": 9000,
+    "sourceRows": 396,
+    "skippedAlreadyDecided": 0,
+    "decidedRows": 396
+  },
+  "theme": "Phase 2 qualification sweep: ranks 8501-9000",
+  "counts": {
+    "needs-sense-review": 396
+  },
+  "qualifiedLexicalCandidates": [],
+  "importReadyRows": 0,
+  "records": [
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "체온",
+      "normalizedSurface": "체온",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "칼라",
+      "normalizedSurface": "칼라",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "쿠션",
+      "normalizedSurface": "쿠션",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "쿠퍼",
+      "normalizedSurface": "쿠퍼",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "토로",
+      "normalizedSurface": "토로",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "퇴직",
+      "normalizedSurface": "퇴직",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "트레일러",
+      "normalizedSurface": "트레일러",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "프랑스어",
+      "normalizedSurface": "프랑스어",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "할로윈",
+      "normalizedSurface": "할로윈",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "함유",
+      "normalizedSurface": "함유",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "항생제",
+      "normalizedSurface": "항생제",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "행렬",
+      "normalizedSurface": "행렬",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "화질",
+      "normalizedSurface": "화질",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "가르",
+      "normalizedSurface": "가르",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "가혹",
+      "normalizedSurface": "가혹",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "간다는",
+      "normalizedSurface": "간다는",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "개인전",
+      "normalizedSurface": "개인전",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "고독",
+      "normalizedSurface": "고독",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "고선",
+      "normalizedSurface": "고선",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "고안",
+      "normalizedSurface": "고안",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "광학",
+      "normalizedSurface": "광학",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "교복",
+      "normalizedSurface": "교복",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "구장",
+      "normalizedSurface": "구장",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "군단",
+      "normalizedSurface": "군단",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "권총",
+      "normalizedSurface": "권총",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "농성",
+      "normalizedSurface": "농성",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "니즈",
+      "normalizedSurface": "니즈",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "다름없",
+      "normalizedSurface": "다름없",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "담보",
+      "normalizedSurface": "담보",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "당진",
+      "normalizedSurface": "당진",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "대성",
+      "normalizedSurface": "대성",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "도니",
+      "normalizedSurface": "도니",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "도둑",
+      "normalizedSurface": "도둑",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "도용",
+      "normalizedSurface": "도용",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "동사",
+      "normalizedSurface": "동사",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "두바이",
+      "normalizedSurface": "두바이",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "뒷면",
+      "normalizedSurface": "뒷면",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "떨리",
+      "normalizedSurface": "떨리",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "레나",
+      "normalizedSurface": "레나",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "루피",
+      "normalizedSurface": "루피",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "마신",
+      "normalizedSurface": "마신",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "망토",
+      "normalizedSurface": "망토",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "메르",
+      "normalizedSurface": "메르",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "모른다는",
+      "normalizedSurface": "모른다는",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "밀려",
+      "normalizedSurface": "밀려",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "반포",
+      "normalizedSurface": "반포",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "받아들일",
+      "normalizedSurface": "받아들일",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "버디",
+      "normalizedSurface": "버디",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "벤츠",
+      "normalizedSurface": "벤츠",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "벤치",
+      "normalizedSurface": "벤치",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "보훈",
+      "normalizedSurface": "보훈",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "복종",
+      "normalizedSurface": "복종",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "부류",
+      "normalizedSurface": "부류",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "부턴",
+      "normalizedSurface": "부턴",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "부흥",
+      "normalizedSurface": "부흥",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "비법",
+      "normalizedSurface": "비법",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "비비",
+      "normalizedSurface": "비비",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "뽀뽀",
+      "normalizedSurface": "뽀뽀",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "사나",
+      "normalizedSurface": "사나",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "색채",
+      "normalizedSurface": "색채",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "성희롱",
+      "normalizedSurface": "성희롱",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "세련",
+      "normalizedSurface": "세련",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "소진",
+      "normalizedSurface": "소진",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "솜씨",
+      "normalizedSurface": "솜씨",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "수로",
+      "normalizedSurface": "수로",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "수료",
+      "normalizedSurface": "수료",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "수인",
+      "normalizedSurface": "수인",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "숙청",
+      "normalizedSurface": "숙청",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "숨겨",
+      "normalizedSurface": "숨겨",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "스러울",
+      "normalizedSurface": "스러울",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "스펙트럼",
+      "normalizedSurface": "스펙트럼",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "스폰서",
+      "normalizedSurface": "스폰서",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "시련",
+      "normalizedSurface": "시련",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "시발",
+      "normalizedSurface": "시발",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "신음",
+      "normalizedSurface": "신음",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "쌓여",
+      "normalizedSurface": "쌓여",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "아드",
+      "normalizedSurface": "아드",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "아유",
+      "normalizedSurface": "아유",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "아프가니스탄",
+      "normalizedSurface": "아프가니스탄",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "액정",
+      "normalizedSurface": "액정",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "어휘",
+      "normalizedSurface": "어휘",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "오일",
+      "normalizedSurface": "오일",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "왕관",
+      "normalizedSurface": "왕관",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "왕조",
+      "normalizedSurface": "왕조",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "욕조",
+      "normalizedSurface": "욕조",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "우승자",
+      "normalizedSurface": "우승자",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "위력",
+      "normalizedSurface": "위력",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "윈터",
+      "normalizedSurface": "윈터",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "유공자",
+      "normalizedSurface": "유공자",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "유권자",
+      "normalizedSurface": "유권자",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "의사소통",
+      "normalizedSurface": "의사소통",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "이른다",
+      "normalizedSurface": "이른다",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "이용자",
+      "normalizedSurface": "이용자",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "인조",
+      "normalizedSurface": "인조",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "잊어",
+      "normalizedSurface": "잊어",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "잠금",
+      "normalizedSurface": "잠금",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "제네바",
+      "normalizedSurface": "제네바",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "제물",
+      "normalizedSurface": "제물",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "중화",
+      "normalizedSurface": "중화",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "지나갔",
+      "normalizedSurface": "지나갔",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "짱구",
+      "normalizedSurface": "짱구",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "찔러",
+      "normalizedSurface": "찔러",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "착취",
+      "normalizedSurface": "착취",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "채무",
+      "normalizedSurface": "채무",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "초보",
+      "normalizedSurface": "초보",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "초안",
+      "normalizedSurface": "초안",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "추기경",
+      "normalizedSurface": "추기경",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "클레어",
+      "normalizedSurface": "클레어",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "클린",
+      "normalizedSurface": "클린",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "트레이닝",
+      "normalizedSurface": "트레이닝",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "파생",
+      "normalizedSurface": "파생",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "파커",
+      "normalizedSurface": "파커",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "팽창",
+      "normalizedSurface": "팽창",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "표창",
+      "normalizedSurface": "표창",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "하루하루",
+      "normalizedSurface": "하루하루",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "학계",
+      "normalizedSurface": "학계",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "한층",
+      "normalizedSurface": "한층",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "했잖아",
+      "normalizedSurface": "했잖아",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "회상",
+      "normalizedSurface": "회상",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "훌쩍",
+      "normalizedSurface": "훌쩍",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "강점기",
+      "normalizedSurface": "강점기",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "개정안",
+      "normalizedSurface": "개정안",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "거슬러",
+      "normalizedSurface": "거슬러",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "거창",
+      "normalizedSurface": "거창",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "경이",
+      "normalizedSurface": "경이",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "경호원",
+      "normalizedSurface": "경호원",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "경희대",
+      "normalizedSurface": "경희대",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "계수",
+      "normalizedSurface": "계수",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "고구마",
+      "normalizedSurface": "고구마",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "공대",
+      "normalizedSurface": "공대",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "공로",
+      "normalizedSurface": "공로",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "공존",
+      "normalizedSurface": "공존",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "관제",
+      "normalizedSurface": "관제",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "구했",
+      "normalizedSurface": "구했",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "국사",
+      "normalizedSurface": "국사",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "귀여워",
+      "normalizedSurface": "귀여워",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "그랜트",
+      "normalizedSurface": "그랜트",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "기수",
+      "normalizedSurface": "기수",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "김천",
+      "normalizedSurface": "김천",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "꺼야",
+      "normalizedSurface": "꺼야",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "나눴",
+      "normalizedSurface": "나눴",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "남원",
+      "normalizedSurface": "남원",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "내셔널",
+      "normalizedSurface": "내셔널",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "누락",
+      "normalizedSurface": "누락",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "닌텐도",
+      "normalizedSurface": "닌텐도",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "단체장",
+      "normalizedSurface": "단체장",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "대역",
+      "normalizedSurface": "대역",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "등극",
+      "normalizedSurface": "등극",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "디렉터",
+      "normalizedSurface": "디렉터",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "따랐",
+      "normalizedSurface": "따랐",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "라틴",
+      "normalizedSurface": "라틴",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "리가",
+      "normalizedSurface": "리가",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "리온",
+      "normalizedSurface": "리온",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "리포트",
+      "normalizedSurface": "리포트",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "마나",
+      "normalizedSurface": "마나",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "마사",
+      "normalizedSurface": "마사",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "막혀",
+      "normalizedSurface": "막혀",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "매너",
+      "normalizedSurface": "매너",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "면담",
+      "normalizedSurface": "면담",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "명곡",
+      "normalizedSurface": "명곡",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "명분",
+      "normalizedSurface": "명분",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "모기",
+      "normalizedSurface": "모기",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "모셔",
+      "normalizedSurface": "모셔",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "무작위",
+      "normalizedSurface": "무작위",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "미스터리",
+      "normalizedSurface": "미스터리",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "미얀마",
+      "normalizedSurface": "미얀마",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "받아들였",
+      "normalizedSurface": "받아들였",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "발레",
+      "normalizedSurface": "발레",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "발산",
+      "normalizedSurface": "발산",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "발표회",
+      "normalizedSurface": "발표회",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "배트",
+      "normalizedSurface": "배트",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "버블",
+      "normalizedSurface": "버블",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "변기",
+      "normalizedSurface": "변기",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "보인다고",
+      "normalizedSurface": "보인다고",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "부도",
+      "normalizedSurface": "부도",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "부름",
+      "normalizedSurface": "부름",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "부총리",
+      "normalizedSurface": "부총리",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "뿌듯",
+      "normalizedSurface": "뿌듯",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "사슬",
+      "normalizedSurface": "사슬",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "사신",
+      "normalizedSurface": "사신",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "상반기",
+      "normalizedSurface": "상반기",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "상용",
+      "normalizedSurface": "상용",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "새삼",
+      "normalizedSurface": "새삼",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "서초",
+      "normalizedSurface": "서초",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "서포터",
+      "normalizedSurface": "서포터",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "세미",
+      "normalizedSurface": "세미",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "수락",
+      "normalizedSurface": "수락",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "시국",
+      "normalizedSurface": "시국",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "실태",
+      "normalizedSurface": "실태",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "아껴",
+      "normalizedSurface": "아껴",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "아르바이트",
+      "normalizedSurface": "아르바이트",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "아무거",
+      "normalizedSurface": "아무거",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "아주머니",
+      "normalizedSurface": "아주머니",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "악수",
+      "normalizedSurface": "악수",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "악의",
+      "normalizedSurface": "악의",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "안중근",
+      "normalizedSurface": "안중근",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "양해",
+      "normalizedSurface": "양해",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "에로",
+      "normalizedSurface": "에로",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "오른손",
+      "normalizedSurface": "오른손",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "올드",
+      "normalizedSurface": "올드",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "외형",
+      "normalizedSurface": "외형",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "요트",
+      "normalizedSurface": "요트",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "원한",
+      "normalizedSurface": "원한",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "원화",
+      "normalizedSurface": "원화",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "유가족",
+      "normalizedSurface": "유가족",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "인포",
+      "normalizedSurface": "인포",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "일러",
+      "normalizedSurface": "일러",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "자택",
+      "normalizedSurface": "자택",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "장기간",
+      "normalizedSurface": "장기간",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "장편",
+      "normalizedSurface": "장편",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "재킷",
+      "normalizedSurface": "재킷",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "전담",
+      "normalizedSurface": "전담",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "제대",
+      "normalizedSurface": "제대",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "조셉",
+      "normalizedSurface": "조셉",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "주교",
+      "normalizedSurface": "주교",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "주임",
+      "normalizedSurface": "주임",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "줄리엣",
+      "normalizedSurface": "줄리엣",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "지뢰",
+      "normalizedSurface": "지뢰",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "지쳐",
+      "normalizedSurface": "지쳐",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "진공",
+      "normalizedSurface": "진공",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "쪽지",
+      "normalizedSurface": "쪽지",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "처한",
+      "normalizedSurface": "처한",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "청각",
+      "normalizedSurface": "청각",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "총수",
+      "normalizedSurface": "총수",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "추위",
+      "normalizedSurface": "추위",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "치가",
+      "normalizedSurface": "치가",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "카리스마",
+      "normalizedSurface": "카리스마",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "캠핑",
+      "normalizedSurface": "캠핑",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "크리스틴",
+      "normalizedSurface": "크리스틴",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "클라이언트",
+      "normalizedSurface": "클라이언트",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "태워",
+      "normalizedSurface": "태워",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "텔레",
+      "normalizedSurface": "텔레",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "토스",
+      "normalizedSurface": "토스",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "토양",
+      "normalizedSurface": "토양",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "퇴사",
+      "normalizedSurface": "퇴사",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "평온",
+      "normalizedSurface": "평온",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "폭격",
+      "normalizedSurface": "폭격",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "폭동",
+      "normalizedSurface": "폭동",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "필사",
+      "normalizedSurface": "필사",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "할려고",
+      "normalizedSurface": "할려고",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "홍준표",
+      "normalizedSurface": "홍준표",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "흘려",
+      "normalizedSurface": "흘려",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "가르시아",
+      "normalizedSurface": "가르시아",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "감찰",
+      "normalizedSurface": "감찰",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "강인",
+      "normalizedSurface": "강인",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "거니",
+      "normalizedSurface": "거니",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "걸려서",
+      "normalizedSurface": "걸려서",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "격렬",
+      "normalizedSurface": "격렬",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "견인",
+      "normalizedSurface": "견인",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "경상",
+      "normalizedSurface": "경상",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "고양시",
+      "normalizedSurface": "고양시",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "공황",
+      "normalizedSurface": "공황",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "과천",
+      "normalizedSurface": "과천",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "교역",
+      "normalizedSurface": "교역",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "구라",
+      "normalizedSurface": "구라",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "구형",
+      "normalizedSurface": "구형",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "귀하",
+      "normalizedSurface": "귀하",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "그간",
+      "normalizedSurface": "그간",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "근사",
+      "normalizedSurface": "근사",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "나루토",
+      "normalizedSurface": "나루토",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "나르",
+      "normalizedSurface": "나르",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "날카로운",
+      "normalizedSurface": "날카로운",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "넘겼",
+      "normalizedSurface": "넘겼",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "넘어갈",
+      "normalizedSurface": "넘어갈",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "넥센",
+      "normalizedSurface": "넥센",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "누워서",
+      "normalizedSurface": "누워서",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "눈동자",
+      "normalizedSurface": "눈동자",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "는디",
+      "normalizedSurface": "는디",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "대나무",
+      "normalizedSurface": "대나무",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "대지진",
+      "normalizedSurface": "대지진",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "댄서",
+      "normalizedSurface": "댄서",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "데려다",
+      "normalizedSurface": "데려다",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "데이브",
+      "normalizedSurface": "데이브",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "도깨비",
+      "normalizedSurface": "도깨비",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "도련",
+      "normalizedSurface": "도련",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "동탄",
+      "normalizedSurface": "동탄",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "두루",
+      "normalizedSurface": "두루",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "라스트",
+      "normalizedSurface": "라스트",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "라임",
+      "normalizedSurface": "라임",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "마야",
+      "normalizedSurface": "마야",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "마코토",
+      "normalizedSurface": "마코토",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "막말",
+      "normalizedSurface": "막말",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "망설",
+      "normalizedSurface": "망설",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "망하",
+      "normalizedSurface": "망하",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "모방",
+      "normalizedSurface": "모방",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "몰려",
+      "normalizedSurface": "몰려",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "물자",
+      "normalizedSurface": "물자",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "민속",
+      "normalizedSurface": "민속",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "바람직",
+      "normalizedSurface": "바람직",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "바스",
+      "normalizedSurface": "바스",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "발동",
+      "normalizedSurface": "발동",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "발현",
+      "normalizedSurface": "발현",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "법무",
+      "normalizedSurface": "법무",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "복부",
+      "normalizedSurface": "복부",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "브이",
+      "normalizedSurface": "브이",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "블러드",
+      "normalizedSurface": "블러드",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "블리자드",
+      "normalizedSurface": "블리자드",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "비장",
+      "normalizedSurface": "비장",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "비춰",
+      "normalizedSurface": "비춰",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "빅토리아",
+      "normalizedSurface": "빅토리아",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "빈곤",
+      "normalizedSurface": "빈곤",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "사치",
+      "normalizedSurface": "사치",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "살림",
+      "normalizedSurface": "살림",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "생산량",
+      "normalizedSurface": "생산량",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "생전",
+      "normalizedSurface": "생전",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "서리",
+      "normalizedSurface": "서리",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "선우",
+      "normalizedSurface": "선우",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "성형",
+      "normalizedSurface": "성형",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "셰프",
+      "normalizedSurface": "셰프",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "소아",
+      "normalizedSurface": "소아",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "송파",
+      "normalizedSurface": "송파",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "수백만",
+      "normalizedSurface": "수백만",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "수질",
+      "normalizedSurface": "수질",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "순정",
+      "normalizedSurface": "순정",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "스무",
+      "normalizedSurface": "스무",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "스티",
+      "normalizedSurface": "스티",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "신형",
+      "normalizedSurface": "신형",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "암튼",
+      "normalizedSurface": "암튼",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "언약",
+      "normalizedSurface": "언약",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "엉망",
+      "normalizedSurface": "엉망",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "에어",
+      "normalizedSurface": "에어",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "연주자",
+      "normalizedSurface": "연주자",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "영남",
+      "normalizedSurface": "영남",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "외우",
+      "normalizedSurface": "외우",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "우시",
+      "normalizedSurface": "우시",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "우현",
+      "normalizedSurface": "우현",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "우호",
+      "normalizedSurface": "우호",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "울림",
+      "normalizedSurface": "울림",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "원단",
+      "normalizedSurface": "원단",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "은밀",
+      "normalizedSurface": "은밀",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "이승만",
+      "normalizedSurface": "이승만",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "이은",
+      "normalizedSurface": "이은",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "자부심",
+      "normalizedSurface": "자부심",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "장녀",
+      "normalizedSurface": "장녀",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "재수",
+      "normalizedSurface": "재수",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "전라북도",
+      "normalizedSurface": "전라북도",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "전래",
+      "normalizedSurface": "전래",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "정립",
+      "normalizedSurface": "정립",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "정형",
+      "normalizedSurface": "정형",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "제니퍼",
+      "normalizedSurface": "제니퍼",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "조수",
+      "normalizedSurface": "조수",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "종업원",
+      "normalizedSurface": "종업원",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "죄수",
+      "normalizedSurface": "죄수",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "주심",
+      "normalizedSurface": "주심",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "중기",
+      "normalizedSurface": "중기",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "중량",
+      "normalizedSurface": "중량",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "중형",
+      "normalizedSurface": "중형",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "지네",
+      "normalizedSurface": "지네",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "지오",
+      "normalizedSurface": "지오",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "지팡이",
+      "normalizedSurface": "지팡이",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "진진",
+      "normalizedSurface": "진진",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "차종",
+      "normalizedSurface": "차종",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "처장",
+      "normalizedSurface": "처장",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "첨가",
+      "normalizedSurface": "첨가",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "치러",
+      "normalizedSurface": "치러",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "코레",
+      "normalizedSurface": "코레",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "테리",
+      "normalizedSurface": "테리",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "토론토",
+      "normalizedSurface": "토론토",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "퇴장",
+      "normalizedSurface": "퇴장",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "프라임",
+      "normalizedSurface": "프라임",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "픽업",
+      "normalizedSurface": "픽업",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "하룻밤",
+      "normalizedSurface": "하룻밤",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "한꺼번에",
+      "normalizedSurface": "한꺼번에",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "함장",
+      "normalizedSurface": "함장",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "헤매",
+      "normalizedSurface": "헤매",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "현관",
+      "normalizedSurface": "현관",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "협동",
+      "normalizedSurface": "협동",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "호박",
+      "normalizedSurface": "호박",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "활동가",
+      "normalizedSurface": "활동가",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "개표",
+      "normalizedSurface": "개표",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "거려",
+      "normalizedSurface": "거려",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "건들",
+      "normalizedSurface": "건들",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "검색어",
+      "normalizedSurface": "검색어",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "공립",
+      "normalizedSurface": "공립",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "광주시",
+      "normalizedSurface": "광주시",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "교섭",
+      "normalizedSurface": "교섭",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "권역",
+      "normalizedSurface": "권역",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "급성",
+      "normalizedSurface": "급성",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "기업인",
+      "normalizedSurface": "기업인",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "까닭",
+      "normalizedSurface": "까닭",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "껴안",
+      "normalizedSurface": "껴안",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "남학생",
+      "normalizedSurface": "남학생",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "냉각",
+      "normalizedSurface": "냉각",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "냉동",
+      "normalizedSurface": "냉동",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "넘어지",
+      "normalizedSurface": "넘어지",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "넥슨",
+      "normalizedSurface": "넥슨",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "노이즈",
+      "normalizedSurface": "노이즈",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "다지",
+      "normalizedSurface": "다지",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "도넛",
+      "normalizedSurface": "도넛",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "독일어",
+      "normalizedSurface": "독일어",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "동호회",
+      "normalizedSurface": "동호회",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "드레",
+      "normalizedSurface": "드레",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "드셨",
+      "normalizedSurface": "드셨",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "또래",
+      "normalizedSurface": "또래",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "라든가",
+      "normalizedSurface": "라든가",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r8501-r9000",
+      "sourceFileHash": "ce8e5f08929b413f46c9f949e1f56957e35a903fe1432cc048c8081ed575df5a",
+      "sourceRowKey": "레즈비언",
+      "normalizedSurface": "레즈비언",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    }
+  ]
+}
