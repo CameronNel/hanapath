@@ -3903,6 +3903,32 @@ li { margin-bottom: 4px; }
   padding-top: 14px;
   border-top: 1px solid var(--line);
 }
+.sentence-path {
+  margin-top: 10px;
+}
+.sentence-path .vocab-path-unit.is-crowned {
+  border-color: rgba(236,179,85,.42);
+}
+.sentence-path .sentence-path-checkpoint {
+  border-color: rgba(236,179,85,.28);
+  background: rgba(236,179,85,.06);
+}
+.sentence-path .sentence-path-checkpoint .study-row-ko::before {
+  content: "★ ";
+  color: var(--warn);
+}
+.sentence-continue-hero,
+.sentence-locked-hero {
+  border-color: rgba(91,157,255,.28);
+  background: linear-gradient(135deg, rgba(91,157,255,.13), rgba(108,124,255,.07));
+}
+.sentence-locked-hero {
+  border-style: dashed;
+}
+.sentence-continue-hero .button,
+.sentence-locked-hero .button {
+  min-width: 150px;
+}
 @media (max-width: 480px) {
   .sent-session .word-card-progress-row {
     gap: 6px;

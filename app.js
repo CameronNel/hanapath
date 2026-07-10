@@ -15419,7 +15419,129 @@ function sentenceStudioLockedHtml() {
   `;
 }
 
+let sentenceWordOwnerUnitMap = null;
+
+function getSentenceWordOwnerUnitMap() {
+  if (sentenceWordOwnerUnitMap) return sentenceWordOwnerUnitMap;
+  sentenceWordOwnerUnitMap = new Map();
+  getWordUnits().forEach((wordUnit) => {
+    getWordUnitContentLessons(wordUnit).forEach((lesson) => {
+      getWordLessonReviewWordIds(lesson).forEach((wordId) => {
+        if (!sentenceWordOwnerUnitMap.has(wordId)) sentenceWordOwnerUnitMap.set(wordId, wordUnit);
+      });
+    });
+  });
+  return sentenceWordOwnerUnitMap;
+}
+
+function getSentenceBlockingWordUnitId(unit, metWords) {
+  initSentenceUnitFocusWordsMap();
+  const focusWords = sentenceUnitFocusWordsMap.get(unit?.id) || new Set();
+  const wordOwnerMap = getSentenceWordOwnerUnitMap();
+  for (const wordId of focusWords) {
+    if (metWords.has(wordId)) continue;
+    const owner = wordOwnerMap.get(wordId);
+    if (owner) return owner;
+  }
+  return null;
+}
+
+function sentencePathLessonRowHtml(lesson, unlocked, completed, active) {
+  const isCheckpoint = lesson.type === "checkpoint";
+  const label = isCheckpoint ? "Stage rehearsal" : (completed ? "Complete" : active ? "Next up" : "Lesson");
+  const rowClass = `study-row ss-mode ${isCheckpoint ? "sentence-path-checkpoint" : ""} ${active ? "is-highlighted" : ""}`;
+  return `<button class="${rowClass}" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : "disabled"}>
+    <div>
+      <div class="study-row-ko" style="${unlocked ? "" : "opacity:.55;"}">${escapeHtml(lesson.title || lesson.id)}</div>
+      <div class="study-row-sub" style="${unlocked ? "" : "opacity:.55;"}">${escapeHtml(lesson.subtitle || lesson.goal || "Sentence practice")}</div>
+    </div>
+    <span class="pill ${completed ? "accent" : unlocked ? "muted" : "muted"}">${completed ? "Done" : unlocked ? label : "Locked"}</span>
+  </button>`;
+}
+
+function sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, progress) {
+  const contentLessons = getSentenceUnitContentLessons(unit);
+  const checkpoint = getSentenceLessonById(unit.checkpointId);
+  const lessons = [...contentLessons, checkpoint].filter(Boolean);
+  const completed = lessons.filter((lesson) => completedSet.has(lesson.id)).length;
+  const crowned = isSentenceUnitCrowned(unit, completedSet);
+  const unlocked = isSentenceUnitUnlocked(unit, metWords);
+  const due = lessons.filter((lesson) => {
+    const record = progress?.results?.[lesson.id];
+    return record?.seen > 0 && Number(record.due || 0) <= Date.now() && !completedSet.has(lesson.id);
+  }).length;
+  const blockingWordUnit = !unlocked ? getSentenceBlockingWordUnitId(unit, metWords) : null;
+  const lessonRows = lessons.map((lesson) => sentencePathLessonRowHtml(
+    lesson,
+    unlocked && isSentenceLessonUnlockedV2(lesson, metWords, completedSet),
+    completedSet.has(lesson.id),
+    lesson.id === activeLessonId,
+  )).join("");
+  const lockNote = blockingWordUnit
+    ? `<div class="vocab-path-lock-note">Learn <strong>${escapeHtml(blockingWordUnit.name)}</strong> in Words first.
+        <button class="button secondary compact" type="button" data-ss-goto="vocabulary" aria-label="Open Words for ${escapeHtml(blockingWordUnit.name)}">Open Words</button></div>`
+    : `<div class="vocab-path-lock-note">Meet the focus words from the Words path to unlock this unit.</div>`;
+  return `<article class="vocab-path-unit ${crowned ? "is-crowned" : ""} ${!unlocked ? "is-locked" : ""}">
+    <button class="vocab-path-unit-header" type="button" data-sentence-unit-toggle="${escapeHtml(unit.id)}" aria-expanded="${unlocked && !crowned ? "true" : "false"}">
+      <span class="vocab-path-unit-emoji" aria-hidden="true">${escapeHtml(unit.emoji || "•")}</span>
+      <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>Words twin · ${completed}/${lessons.length - 1} lessons</small></span>
+      ${due ? `<span class="pill accent sentence-path-due">${due} due</span>` : ""}
+      <span class="pill ${crowned ? "green" : unlocked ? "accent" : "muted"}">${crowned ? "Crowned" : unlocked ? `${completed}/${lessons.length - 1}` : "Locked"}</span>
+    </button>
+    <div class="vocab-path-unit-lessons" data-sentence-unit-lessons="${escapeHtml(unit.id)}" ${unlocked && !crowned ? "" : "hidden"}>
+      ${unlocked ? lessonRows : lockNote}
+    </div>
+  </article>`;
+}
+
+function sentencePathHtml(metWords, completedSet, activeLessonId, progress) {
+  const sections = getSentenceSections().slice().sort((a, b) => a.order - b.order);
+  return `<div class="vocab-path sentence-path">${sections.map((section) => {
+    const units = getSentenceUnits().filter((unit) => unit.sectionId === section.id).sort((a, b) => a.order - b.order);
+    const unlockedUnits = units.filter((unit) => isSentenceUnitUnlocked(unit, metWords));
+    const crowned = units.filter((unit) => isSentenceUnitCrowned(unit, completedSet)).length;
+    const sectionOpen = unlockedUnits.some((unit) => unit.id === getSentenceLessonById(activeLessonId)?.unitId) || section.id === "sn1";
+    return `<section class="vocab-path-section ${unlockedUnits.length ? "is-open" : "is-locked"}">
+      <div class="vocab-path-section-header">
+        <div><div class="eyebrow">Section ${escapeHtml(section.id.toUpperCase())}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
+        <span class="pill ${unlockedUnits.length ? "accent" : "muted"}">${unlockedUnits.length ? `${crowned}/${units.length} crowned` : "Locked"}</span>
+      </div>
+      ${unlockedUnits.length && sectionOpen
+        ? `<div class="vocab-path-unit-list">${units.map((unit) => sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, progress)).join("")}</div>`
+        : unlockedUnits.length
+          ? `<details class="vocab-path-explore"><summary>Explore topics · ${units.length} units</summary><div class="vocab-path-unit-list">${units.map((unit) => sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, progress)).join("")}</div></details>`
+          : `<div class="vocab-path-lock-note">Finish the Words path to open sentence practice.</div>`}
+    </section>`;
+  }).join("")}</div>`;
+}
+
+function sentenceStudioHubV2Html() {
+  const rows = getSentenceBankRows();
+  const progress = getSentencesProgress();
+  const metWords = getMetWords();
+  const completedSet = new Set(progress.completedLessons || []);
+  const nextLesson = getNextSentenceLesson(metWords, completedSet);
+  const units = getSentenceUnits();
+  const unlockedUnits = units.filter((unit) => isSentenceUnitUnlocked(unit, metWords));
+  const dueCount = getTotalDueSentencesCount();
+  const analytics = getSentenceAnalyticsSnapshot();
+  const continueHtml = nextLesson
+    ? `<div class="card continue-hero sentence-continue-hero"><div class="eyebrow">Continue Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(nextLesson.title || "Next sentence lesson")}</h2><div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(nextLesson.goal || nextLesson.subtitle || "Keep the line moving.")}</div><button class="button primary compact" type="button" data-ss-lesson="${escapeHtml(nextLesson.id)}">Start lesson</button></div>`
+    : unlockedUnits.length
+      ? `<div class="card continue-hero"><div class="eyebrow">Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">Path complete</h2><div class="screen-sub" style="margin-bottom:0;">Review due lines or keep practising freely.</div></div>`
+      : `<div class="card continue-hero sentence-locked-hero"><div class="eyebrow">Start with Words</div><h2 class="screen-title" style="margin-bottom:8px;">Learn the words, then say the lines.</h2><div class="screen-sub" style="margin-bottom:12px;">Your sentence path opens as you meet the focus words in Words.</div><button class="button primary compact" type="button" data-ss-goto="vocabulary">Open Words</button></div>`;
+  const modeCards = SENTENCE_MODES.map((mode) => {
+    const available = mode.id !== "transform" || getSentenceTransformRowsForBand(progress.band).length >= SENTENCE_SESSION_LENGTH;
+    return `<button class="study-row ss-mode" type="button" data-ss-start="${escapeHtml(mode.id)}" ${available ? "" : "disabled"}><div><div class="study-row-ko">${escapeHtml(mode.label)}</div><div class="study-row-sub">${escapeHtml(available ? mode.sub : "More transform-ready sentences are needed for this path.")}</div></div><span class="pill muted">${escapeHtml(mode.tag)}</span></button>`;
+  }).join("");
+  return `${continueHtml}
+    <div class="card"><div class="eyebrow">Sentence path</div><div class="screen-sub" style="margin-bottom:12px;">${rows.length} lines across ${units.length} Words-twin units. Finish a lesson to unlock the next line.</div>${sentencePathHtml(metWords, completedSet, nextLesson?.id || "", progress)}</div>
+    <div class="card"><div class="flex-between mb-12"><div><div class="eyebrow">Free practice</div><div class="screen-sub" style="margin-bottom:0;">Choose a drill outside the guided path.</div></div><span class="pill ${dueCount ? "accent" : "muted"}">${dueCount} due</span></div><div class="study-list">${modeCards}</div></div>
+    <div class="card"><div class="flex-between mb-12"><div><div class="eyebrow">Sentence insights</div><div class="screen-sub" style="margin-bottom:0;">Your review trail stays attached to each line.</div></div><span class="pill muted">${analytics.total} events</span></div><div class="stats-grid"><div class="stat-box"><span class="sv">${analytics.correctPct}%</span><span class="sl">Accuracy</span></div><div class="stat-box"><span class="sv">${analytics.avgLatencyLabel}</span><span class="sl">Avg latency</span></div><div class="stat-box"><span class="sv">${analytics.helperUses}</span><span class="sl">Helpers used</span></div></div></div>`;
+}
+
 function sentenceStudioHubHtml() {
+  if (isSentenceCurriculumV2()) return sentenceStudioHubV2Html();
   const rows = getSentenceBankRows();
   if (!rows.length) {
     return `
@@ -16589,6 +16711,15 @@ function bindSentenceSessionRoot(root) {
 }
 
 function bindSentenceStudioEvents(el) {
+  el.querySelectorAll("[data-sentence-unit-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const lessons = el.querySelector(`[data-sentence-unit-lessons="${CSS.escape(button.dataset.sentenceUnitToggle)}"]`);
+      if (!lessons) return;
+      const hidden = lessons.hasAttribute("hidden");
+      if (hidden) lessons.removeAttribute("hidden"); else lessons.setAttribute("hidden", "");
+      button.setAttribute("aria-expanded", hidden ? "true" : "false");
+    });
+  });
   el.querySelectorAll("[data-ss-goto]").forEach((btn) => {
     btn.addEventListener("click", () => showTab(btn.dataset.ssGoto));
   });

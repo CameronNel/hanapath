@@ -1,12 +1,12 @@
 // [2026-07-10] Cache bumped to v306: cap runtime audio caching for the Phase 2 budget.
-const CACHE_NAME = "hanapath-shell-v307";
+const CACHE_NAME = "hanapath-shell-v308";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260710j",
+  "./styles.css?v=20260710k",
   "./lib/hangul.js",
   "./audio_map.js?v=20260709g",
   "./words_curated_core.js?v=20260705e",
@@ -15,7 +15,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260710j",
-  "./app.js?v=20260710k",
+  "./app.js?v=20260710l",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
