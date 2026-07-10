@@ -23,6 +23,25 @@ const VALID_MORPH_TAGS = new Set([
 const HANGUL_RE = /[가-힣ㄱ-ㅎㅏ-ㅣ]/;
 const LATIN_RE = /[a-zA-Z]/;
 
+function loadBatch(batchPath) {
+  const content = fs.readFileSync(batchPath, "utf8");
+  if (path.extname(batchPath).toLowerCase() === ".jsonl") {
+    const rows = [];
+    for (const [index, line] of content.split(/\r?\n/).entries()) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      try {
+        rows.push(JSON.parse(trimmed));
+      } catch (error) {
+        throw new Error(`Invalid JSONL record at line ${index + 1}: ${error.message}`);
+      }
+    }
+    return rows;
+  }
+  const parsed = JSON.parse(content);
+  return Array.isArray(parsed) ? parsed : [parsed];
+}
+
 function loadCuratedWords() {
   const wordsPath = path.join(root, "words_curated_core.js");
   const wordsSource = fs.readFileSync(wordsPath, "utf8");
@@ -30,6 +49,43 @@ function loadCuratedWords() {
   vm.createContext(context);
   vm.runInContext(wordsSource, context);
   return context.window.HANAPATH_CURATED_WORDS || [];
+}
+
+function loadPlan(planPath) {
+  const context = { window: {} };
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(planPath, "utf8"), context);
+  return {
+    sections: context.window.HANAPATH_WORD_SECTIONS || [],
+    units: context.window.HANAPATH_WORD_UNITS || [],
+    lessons: context.window.HANAPATH_WORD_LESSONS || []
+  };
+}
+
+function assertCoreLock(planPath) {
+  const lockPath = path.join(root, "scripts", "curriculum_v2_lock.json");
+  const lock = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+  if (!lock.immutable) throw new Error("Curriculum v2 lock is not marked immutable.");
+
+  const plan = loadPlan(planPath);
+  const lockedPlan = {
+    sections: plan.sections,
+    units: plan.units,
+    lessons: plan.lessons.map((lesson) => ({
+      id: lesson.id,
+      unitId: lesson.unitId,
+      type: lesson.type,
+      title: lesson.title,
+      subtitle: lesson.subtitle,
+      wordIds: lesson.newWordIds || [],
+      reviewWordIds: lesson.reviewWordIds || []
+    }))
+  };
+  for (const key of ["sections", "units", "lessons"]) {
+    if (JSON.stringify(lockedPlan[key]) !== JSON.stringify(lock[key])) {
+      throw new Error(`Frozen v2 ${key} do not match scripts/curriculum_v2_lock.json.`);
+    }
+  }
 }
 
 function validateRow(row, existingIds, existingSurfaces) {
@@ -43,6 +99,13 @@ function validateRow(row, existingIds, existingSurfaces) {
   if (!row.meaning) errors.push(`${label}: missing meaning`);
   if (!row.pos || !VALID_POS.has(row.pos)) errors.push(`${label}: invalid or missing pos "${row.pos}"`);
   if (!row.lessonGroup) errors.push(`${label}: missing lessonGroup`);
+  if (!row.track || typeof row.track !== "string") errors.push(`${label}: missing track`);
+  if (!Number.isInteger(row.rawFrequencyRank) || row.rawFrequencyRank < 1) errors.push(`${label}: invalid or missing rawFrequencyRank`);
+  if (!row.frequencyBand || typeof row.frequencyBand !== "string") errors.push(`${label}: missing frequencyBand`);
+  if (!row.canonicalLemma || !HANGUL_RE.test(row.canonicalLemma)) errors.push(`${label}: missing or non-Hangul canonicalLemma`);
+  if (!row.sourceProvenance || typeof row.sourceProvenance !== "object" || !row.sourceProvenance.sourceFileHash || !row.sourceProvenance.sourceRowKey) {
+    errors.push(`${label}: missing sourceProvenance.sourceFileHash/sourceRowKey`);
+  }
   if (!row.pronunciation) errors.push(`${label}: missing pronunciation`);
 
   if (!row.register || !VALID_REGISTERS.has(row.register)) {
@@ -99,12 +162,14 @@ function validateRow(row, existingIds, existingSurfaces) {
 function run(args) {
   const options = {
     batch: null,
+    plan: path.join(root, "words_lesson_plan.js"),
     dryRun: true,
     commit: false
   };
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--batch") options.batch = args[++i];
+    else if (args[i] === "--plan") options.plan = args[++i];
     else if (args[i] === "--commit") {
       options.commit = true;
       options.dryRun = false;
@@ -125,15 +190,13 @@ function run(args) {
   }
 
   console.log("Loading batch file...");
-  let batchData;
+  let newWords;
   try {
-    batchData = JSON.parse(fs.readFileSync(options.batch, "utf8"));
+    newWords = loadBatch(options.batch);
   } catch (e) {
-    console.error(`Error parsing batch JSON: ${e.message}`);
+    console.error(`Error parsing batch JSON/JSONL: ${e.message}`);
     process.exit(1);
   }
-
-  const newWords = Array.isArray(batchData) ? batchData : [batchData];
   console.log(`Loaded ${newWords.length} words to import.`);
 
   console.log("Loading existing curated words...");
@@ -151,6 +214,7 @@ function run(args) {
       failed = true;
       allErrors.push(...errors);
     }
+    if (word.id) existingIds.add(word.id);
   }
 
   if (failed) {
@@ -160,6 +224,13 @@ function run(args) {
   }
 
   console.log("Validation PASSED. All batch items are well-formed.");
+
+  try {
+    assertCoreLock(options.plan);
+  } catch (error) {
+    console.error(`Core lock validation FAILED: ${error.message}`);
+    process.exit(1);
+  }
 
   // Check boundary: lesson plan mutation is locked to draft elective packs
   console.log("\n[Product Boundary Audit]");

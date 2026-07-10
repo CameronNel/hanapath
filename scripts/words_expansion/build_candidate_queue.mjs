@@ -109,6 +109,16 @@ function loadDecisions(decisionsPath, hashes) {
     
     decisions.set(key, record);
   }
+
+  const currentHashes = new Set(Object.keys(hashes));
+  for (const record of decisions.values()) {
+    if (!record.sourceFileHash || !currentHashes.has(record.sourceFileHash)) {
+      throw new Error(`Source hash mismatch for decision ${record.sourceRowKey || "(missing row key)"}: ${record.sourceFileHash || "(missing hash)"} is not one of the current inputs.`);
+    }
+    if (!record.sourceRowKey) {
+      throw new Error(`Decision for ${record.sourceFileHash} is missing sourceRowKey.`);
+    }
+  }
   return decisions;
 }
 

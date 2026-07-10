@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import assert from "node:assert";
+import crypto from "node:crypto";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -95,12 +96,28 @@ try {
     execSync(`node scripts/words_expansion/build_candidate_queue.mjs --validate --decisions ${decisionsPath}`, { stdio: "pipe" });
   }, /Invalid status/, "Should throw error on invalid decision status.");
 
+  fs.writeFileSync(
+    decisionsPath,
+    `{"sourceFileHash":"stale-hash","sourceRowKey":"이","status":"rejected","reason":"test"}\n`,
+    "utf8"
+  );
+  assert.throws(() => {
+    execSync(`node scripts/words_expansion/build_candidate_queue.mjs --input5k ${mock5kPath} --input15k ${mock15kPath} --validate --decisions ${decisionsPath}`, { stdio: "pipe" });
+  }, /Source hash mismatch/, "Should report a decision whose source hash does not match the active inputs.");
+
   // ==========================================
   // Test 3: Existing Curated IDs Overwrite Protection
   // ==========================================
   console.log("Test 3: Verifying import validation rejects duplicate curated IDs...");
   
   const mockBatchPath = path.join(tempDir, "mock_batch.json");
+  const requiredExpansionFields = {
+    track: "study",
+    rawFrequencyRank: 9999,
+    frequencyBand: "expansion",
+    canonicalLemma: "새단어",
+    sourceProvenance: { sourceFileHash: "test-hash", sourceRowKey: "새단어" }
+  };
   // w0001_hangul is an existing curated word ID
   const invalidBatchContent = [
     {
@@ -124,7 +141,8 @@ try {
         originType: "explicit",
         morphTag: "explicit",
         hanja: "absent"
-      }
+      },
+      ...requiredExpansionFields
     }
   ];
   fs.writeFileSync(mockBatchPath, JSON.stringify(invalidBatchContent), "utf8");
@@ -160,7 +178,8 @@ try {
         originType: "explicit",
         morphTag: "explicit",
         hanja: "absent"
-      }
+      },
+      ...requiredExpansionFields
     }
   ];
   fs.writeFileSync(mockBatchPath, JSON.stringify(invalidSchemaContent), "utf8");
@@ -196,7 +215,8 @@ try {
         originType: "explicit",
         morphTag: "explicit",
         hanja: "absent"
-      }
+      },
+      ...requiredExpansionFields
     }
   ];
   fs.writeFileSync(mockBatchPath, JSON.stringify(validBatchContent), "utf8");
@@ -209,6 +229,30 @@ try {
   const coreHashAfter = crypto.createHash("sha256").update(fs.readFileSync(corePath)).digest("hex");
   assert.strictEqual(coreHashBefore, coreHashAfter, "Dry run must not modify words_curated_core.js.");
 
+  // ==========================================
+  // Test 6: Intra-Batch Duplicate ID Protection
+  // ==========================================
+  console.log("Test 6: Verifying duplicate IDs within one batch are rejected...");
+  fs.writeFileSync(mockBatchPath, JSON.stringify([{ ...validBatchContent[0] }, { ...validBatchContent[0], korean: "다른단어" }]), "utf8");
+  assert.throws(() => {
+    execSync(`node scripts/words_expansion/import_batch.mjs --batch ${mockBatchPath} --dry-run`, { stdio: "pipe" });
+  }, /Duplicate curated id/, "A batch must not contain duplicate curated IDs.");
+
+  // ==========================================
+  // Test 7: JSONL Support and Frozen-Core Lock
+  // ==========================================
+  console.log("Test 7: Verifying JSONL input and frozen curriculum lock...");
+  const jsonlBatchPath = path.join(tempDir, "mock_batch.jsonl");
+  fs.writeFileSync(jsonlBatchPath, `${JSON.stringify(validBatchContent[0])}\n`, "utf8");
+  execSync(`node scripts/words_expansion/import_batch.mjs --batch ${jsonlBatchPath} --dry-run`, { stdio: "pipe" });
+
+  const planCopyPath = path.join(tempDir, "words_lesson_plan_mutated.js");
+  const planSource = fs.readFileSync(path.join(root, "words_lesson_plan.js"), "utf8");
+  fs.writeFileSync(planCopyPath, planSource.replace('"title": "Read it aloud"', '"title": "Mutated frozen title"'), "utf8");
+  assert.throws(() => {
+    execSync(`node scripts/words_expansion/import_batch.mjs --batch ${jsonlBatchPath} --plan ${planCopyPath} --dry-run`, { stdio: "pipe" });
+  }, /Core lock validation FAILED/, "A changed frozen lesson must be rejected before import.");
+
   console.log("\nALL TESTS PASSED SUCCESSFULLY!");
 } catch (e) {
   console.error(`\nTEST RUN FAILED: ${e.message}`);
@@ -216,4 +260,3 @@ try {
 } finally {
   cleanupTempDir();
 }
-import crypto from "node:crypto";
