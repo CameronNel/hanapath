@@ -14,14 +14,14 @@ not publish or alter an elective pack.
 
 | Disposition | Count | Surfaces |
 |---|---:|---|
-| needs-sense-review | 4 | 때문, 다는, 으면, 해서 |
+| needs-sense-review | 5 | 때문, 어서, 다는, 으면, 해서 |
 | covered | 5 | 왜, 여자, 뭐, 위, 좀 |
-| rejected | 2 | 화, 건 |
+| rejected | 1 | 화 |
 | **window total** | **11** | |
 
-The four review candidates are retained rather than treated as teachable
+The five review candidates are retained rather than treated as teachable
 lemmas. `때문` is the strongest lexical candidate, but its bound-noun behavior
-needs a controlled-vocabulary example decision. `다는`, `으면`, and `해서` are
+needs a controlled-vocabulary example decision. `어서`, `다는`, `으면`, and `해서` are
 form/function candidates and must not become vocabulary rows without a
 confirmed canonical lemma and communicative role. The covered rows remain
 linked to their existing curated IDs; the two ambiguous one-syllable forms are
@@ -50,8 +50,8 @@ qualification packet, not a release pack.
 
 1. Confirm whether `때문` should be authored as a standalone elective item or
    treated only through the existing connective/grammar teaching surface.
-2. Resolve the canonical lemma and teaching role, if any, for `다는`, `으면`,
-   and `해서` using source evidence before authoring examples.
+2. Resolve the canonical lemma and teaching role, if any, for `어서`, `다는`,
+   `으면`, and `해서` using source evidence before authoring examples.
 3. Approve a larger, semantically coherent follow-up range before any JSON row
    authoring, audio generation, or importer commit is considered.
 
