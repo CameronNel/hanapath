@@ -3822,3 +3822,32 @@ li { margin-bottom: 4px; }
   padding: 10px 0 2px;
   color: var(--muted-2);
 }
+
+/* Sentences Curriculum v2 styling */
+.sent-card-ko {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.35rem, 5vw, 1.8rem);
+  line-height: 1.4;
+  color: var(--text);
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0;
+}
+.sent-card-ko:hover {
+  background: rgba(91, 157, 255, 0.08);
+}
+.sent-type-box {
+  margin-top: 22px;
+}
+.sent-type-box .sentence-input {
+  width: 100%;
+  padding-right: 54px;
+  letter-spacing: normal;
+}

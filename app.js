@@ -3009,6 +3009,7 @@ function loadState() {
     // band, per-sentence practice records, and a session counter. Additive —
     // older saved states get the defaults via getSentencesProgress().
     sentencesProgress: { band: 1, results: {}, sessionsDone: 0 },
+    sentenceLessonSession: null,
     speakDone: false,
     resetArmed: false,
   };
@@ -4621,8 +4622,18 @@ function buildWordReferenceRows() {
   wordReferenceReady = true;
 }
 
+function migrateSentencesState() {
+  if (!state.sentencesProgress || typeof state.sentencesProgress !== "object") {
+    state.sentencesProgress = {};
+  }
+  if (!state.sentenceLessonSession || typeof state.sentenceLessonSession !== "object" || Array.isArray(state.sentenceLessonSession)) {
+    state.sentenceLessonSession = null;
+  }
+}
+
 function initWordBanks() {
   migrateVocabState();
+  migrateSentencesState();
   buildWordReferenceRows();
 }
 
@@ -6676,7 +6687,7 @@ function wordBankDetailHtml(row) {
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.voiceText || word.korean)}">▶ Hear word</button>
         <button class="button secondary compact" type="button" data-word-detail-hear="${escapeHtml(word.exampleVoiceText || word.exampleKo)}">▶ Hear example</button>
       </div>
-      
+
       <div class="speaking-practice-area" data-speaking-target="${escapeHtml(word.voiceText || word.korean)}" data-speaking-label="${escapeHtml(word.display || word.korean)}" style="margin:12px 0; padding:12px; border:1px dashed var(--accent-text); border-radius:6px; background:rgba(128,128,128,0.05); text-align:center;">
         <button class="button secondary compact" type="button" onclick="handleSpeakingPractice(this)">
           🎤 Practice Speaking (Beta)
@@ -8949,12 +8960,12 @@ function proceedSpeak(text, options, resolve) {
 
     if (audioUrl) {
       const audio = new Audio(audioUrl);
-      
+
       audio.onended = () => {
         if (currentCustomAudio === audio) currentCustomAudio = null;
         resolve();
       };
-      
+
       audio.onerror = () => {
         console.warn(`Failed to play ${audioUrl}`);
         if (currentCustomAudio === audio) currentCustomAudio = null;
@@ -8971,7 +8982,7 @@ function proceedSpeak(text, options, resolve) {
       console.warn(`No pre-generated audio found for: "${cleanText}"`);
     }
   }
-  
+
   fallbackSpeak(text, resolve);
 }
 
@@ -9241,7 +9252,7 @@ let checkpointPlaybackId = 0;
 
 function getQuestionComponents(question) {
   const components = [];
-  
+
   if (question.visual && String(question.visual).includes("+")) {
     String(question.visual)
       .split("+")
@@ -9251,7 +9262,7 @@ function getQuestionComponents(question) {
           components.push(trimmed);
         }
       });
-  } 
+  }
   else if (question.type === "build") {
     if (Array.isArray(question.blocks)) {
       question.blocks.forEach(block => {
@@ -9264,23 +9275,23 @@ function getQuestionComponents(question) {
       if (question.vowel) components.push(question.vowel);
       if (question.batchim) components.push(question.batchim);
     }
-  } 
+  }
   else if (question.visual && /^[가-힣]+$/.test(String(question.visual).trim())) {
     const text = String(question.visual).trim();
     if (window.Hangul) {
       components.push(...window.Hangul.disassemble(text));
     }
   }
-  
+
   return components.filter(Boolean);
 }
 
 function renderCheckpointVisualHtml(question) {
   const visualText = String(question.visual || "").trim();
   const components = getQuestionComponents(question);
-  
+
   let html = '<div class="checkpoint-visual-container">';
-  
+
   if (visualText.includes("+")) {
     html += '<div class="components-breakdown">';
     const parts = visualText.split("+");
@@ -9305,7 +9316,7 @@ function renderCheckpointVisualHtml(question) {
       html += '</div>';
     }
   }
-  
+
   html += '</div>';
   return html;
 }
@@ -9336,20 +9347,20 @@ function renderCheckpointAudioHelpers(lesson, question) {
   const targetText = isBlockGeometry || isBuildQuestion ? (question.voiceText || question.target || question.answer || "") : "";
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
   const hasComponents = components.length > 0;
-  
+
   let html = '<div class="checkpoint-audio-helpers" style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: 100%;">';
-  
+
   if (hasTarget) {
     html += '<button class="button secondary compact" type="button" data-checkpoint-speak-target="' + escapeHtml(targetText) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear target</button>';
   }
-  
+
   if (hasComponents) {
     html += '<button class="button secondary compact" type="button" data-checkpoint-speak-components="' + escapeHtml(components.join(",")) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear building blocks</button>';
   }
-  
+
   // Quick Reference button for ALL phase one stage checkpoints
   html += '<button class="button secondary compact" type="button" data-checkpoint-open-reference style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">📖 View Alphabet Reference</button>';
-  
+
   html += '</div>';
   return html;
 }
@@ -9371,14 +9382,14 @@ function bindCheckpointAudioHelpers(container, lesson) {
       checkpointPlaybackId += 1;
       const tokenId = checkpointPlaybackId;
       const text = targetBtn.getAttribute("data-checkpoint-speak-target") || "";
-      
+
       container.querySelectorAll(".visual-comp, [data-visual-target]").forEach(el => el.classList.remove("active-highlight"));
-      
+
       const targetEl = container.querySelector("[data-visual-target]");
       if (targetEl) targetEl.classList.add("active-highlight");
-      
+
       await speak(text);
-      
+
       if (tokenId === checkpointPlaybackId && targetEl) {
         targetEl.classList.remove("active-highlight");
       }
@@ -9389,23 +9400,23 @@ function bindCheckpointAudioHelpers(container, lesson) {
     componentsBtn.addEventListener("click", async () => {
       const tokenId = ++checkpointPlaybackId;
       const parts = (componentsBtn.getAttribute("data-checkpoint-speak-components") || "").split(",").filter(Boolean);
-      
+
       container.querySelectorAll(".visual-comp, [data-visual-target]").forEach(el => el.classList.remove("active-highlight"));
-      
+
       for (let i = 0; i < parts.length; i++) {
         if (tokenId !== checkpointPlaybackId) return;
         const speakText = speakableForChunk(parts[i]);
-        
+
         const compEl = container.querySelector(`.visual-comp[data-comp-index="${i}"]`);
         if (compEl) compEl.classList.add("active-highlight");
-        
+
         await Promise.all([
           speak(speakText, { preserveSequence: true }),
           new Promise((resolve) => window.setTimeout(resolve, 800))
         ]);
-        
+
         if (compEl) compEl.classList.remove("active-highlight");
-        
+
         if (tokenId !== checkpointPlaybackId) return;
         await new Promise((resolve) => window.setTimeout(resolve, 200));
       }
@@ -9435,7 +9446,7 @@ function renderPhaseOneQuestion(lesson) {
   if (lesson.id === "block-geometry") {
     const visualHtml = renderCheckpointVisualHtml(question);
     const audioHelpersHtml = renderCheckpointAudioHelpers(lesson, question);
-    
+
     els.phaseOneStage.innerHTML =
       '<div class="lesson-step-row">' +
       "<span>Checkpoint " +
@@ -9449,7 +9460,7 @@ function renderPhaseOneQuestion(lesson) {
       "</div>" +
       '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
       '<div class="checkpoint-card">' +
-      
+
       '<div class="checkpoint-split-layout">' +
         '<div class="checkpoint-left-pane">' +
           visualHtml +
@@ -9473,7 +9484,7 @@ function renderPhaseOneQuestion(lesson) {
           "</div>" +
         '</div>' +
       '</div>' +
-      
+
       '<div class="lesson-feedback" id="phaseOneFeedback" aria-live="polite"></div>' +
       "</div>";
 
@@ -12114,7 +12125,7 @@ function renderTypeQuestion(question, quizOptions) {
     vkKeyboard.addEventListener("click", (e) => {
       const btn = e.target.closest(".vk-key");
       if (!btn) return;
-      
+
       const currentJamos = window.Hangul ? window.Hangul.disassemble(input.value) : input.value.split("");
 
       if (btn.id === `${ids.options}VkShift`) {
@@ -13638,18 +13649,18 @@ window.renderPronunciationDrill = function() {
       <div style="height:6px; background:var(--border-color); border-radius:3px; overflow:hidden; margin-bottom:16px;">
         <div style="width:${progressPercent}%; height:100%; background:var(--accent-text); transition:width 0.3s ease;"></div>
       </div>
-      
+
       <div style="text-align:center; padding:24px 0;">
         <button class="button primary" type="button" style="padding:16px 24px; font-size:1.1rem; border-radius:50px;" onclick="speakPronDrillTarget()">
           🔊 Replay Audio
         </button>
         <div class="fs-xs text-muted-2" style="margin-top:8px;">Tap Replay to listen to the word</div>
       </div>
-      
+
       <div class="senses-buttons" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:12px; margin-top:16px;">
         ${optionsHtml}
       </div>
-      
+
       ${feedbackAreaHtml}
     </div>
   `;
@@ -14440,6 +14451,80 @@ function getSentencesProgress() {
   return p;
 }
 
+function serializeSentenceLessonSession(session) {
+  if (!session || !session.lessonId || session.phase === "summary") return null;
+  return {
+    version: 1,
+    modeId: session.modeId,
+    lessonId: session.lessonId,
+    lessonTitle: session.lessonTitle || "",
+    rows: session.rows.map((row) => row.id),
+    index: session.index,
+    phase: session.phase,
+    typed: session.typed || "",
+    attempts: session.attempts || 0,
+    helperLevel: session.helperLevel || 0,
+    helperUsed: session.helperUsed || [],
+    helperTilePool: session.helperTilePool || [],
+    revealedTokenCount: session.revealedTokenCount || 0,
+    lockedPrefix: session.lockedPrefix || "",
+    builtTiles: session.builtTiles || [],
+    tilePool: session.tilePool || [],
+    transforms: session.transforms || {},
+    autoPlayed: Boolean(session.autoPlayed),
+    questionStartedAt: Number(session.questionStartedAt) || 0,
+    results: session.results || [],
+  };
+}
+
+function rehydrateSentenceLessonSession(snapshot) {
+  if (!snapshot || snapshot.version !== 1) return null;
+  if (typeof snapshot.lessonId !== "string") return null;
+  if (!Array.isArray(snapshot.rows)) return null;
+
+  const bankRows = getSentenceBankRows();
+  const byId = new Map(bankRows.map((row) => [row.id, row]));
+  const rows = snapshot.rows.map((id) => byId.get(id)).filter(Boolean);
+  if (rows.length !== snapshot.rows.length) return null;
+
+  if (!Number.isInteger(snapshot.index) || snapshot.index < 0 || snapshot.index >= rows.length) return null;
+
+  const validPhases = new Set(["question", "feedback", "summary"]);
+  if (!validPhases.has(snapshot.phase)) return null;
+
+  return {
+    modeId: snapshot.modeId,
+    lessonId: snapshot.lessonId,
+    lessonTitle: snapshot.lessonTitle || "",
+    rows: rows,
+    index: snapshot.index,
+    phase: snapshot.phase,
+    typed: snapshot.typed || "",
+    attempts: snapshot.attempts || 0,
+    helperLevel: snapshot.helperLevel || 0,
+    helperUsed: Array.isArray(snapshot.helperUsed) ? snapshot.helperUsed : [],
+    helperTilePool: Array.isArray(snapshot.helperTilePool) ? snapshot.helperTilePool : [],
+    revealedTokenCount: snapshot.revealedTokenCount || 0,
+    lockedPrefix: snapshot.lockedPrefix || "",
+    builtTiles: Array.isArray(snapshot.builtTiles) ? snapshot.builtTiles : [],
+    tilePool: Array.isArray(snapshot.tilePool) ? snapshot.tilePool : [],
+    transforms: snapshot.transforms && typeof snapshot.transforms === "object" ? snapshot.transforms : {},
+    speech: null,
+    autoPlayed: Boolean(snapshot.autoPlayed),
+    questionStartedAt: Number(snapshot.questionStartedAt) || 0,
+    results: Array.isArray(snapshot.results) ? snapshot.results : [],
+  };
+}
+
+function persistSentenceLessonSession(session = sentenceStudioSession) {
+  if (!session || !session.lessonId || session.phase === "summary") {
+    state.sentenceLessonSession = null;
+  } else {
+    state.sentenceLessonSession = serializeSentenceLessonSession(session);
+  }
+  saveState();
+}
+
 function normalizeSentenceReviewResult(result, isCorrect) {
   const raw = String(result || "").toLowerCase();
   if (raw === "correct" || raw === "incorrect" || raw === "revealed" || raw === "self-marked") return raw;
@@ -14576,7 +14661,7 @@ function getUnmetFocusWordsCountForBand(band) {
   const rows = getSentenceBankRows();
   const metWords = getMetWords();
   const bandRows = rows.filter(row => row.band === band);
-  
+
   const unmetWords = new Set();
   for (const row of bandRows) {
     if (Array.isArray(row.focusWordIds)) {
@@ -14671,13 +14756,13 @@ function pickSentenceSessionRows(band, count = SENTENCE_SESSION_LENGTH) {
   const progress = getSentencesProgress();
   const results = progress.results;
   const now = Date.now();
-  
+
   const candidates = getSentenceRowsForBand(band);
-  
+
   const due = [];
   const unseen = [];
   const seenNotDue = [];
-  
+
   for (const row of candidates) {
     const record = results[row.id];
     if (!record || !record.seen) {
@@ -14691,18 +14776,18 @@ function pickSentenceSessionRows(band, count = SENTENCE_SESSION_LENGTH) {
       }
     }
   }
-  
+
   due.sort((a, b) => a.due - b.due || a.rnd - b.rnd);
   unseen.sort((a, b) => a.rnd - b.rnd);
   seenNotDue.sort((a, b) => a.due - b.due || a.rnd - b.rnd);
-  
+
   const selected = [];
-  
+
   for (const item of due) {
     if (selected.length >= count) break;
     selected.push(item.row);
   }
-  
+
   const newQuota = Math.max(0, (progress.newPerDay !== undefined ? progress.newPerDay : 5) - getNewSentencesCountToday());
   let newDrawn = 0;
   for (const item of unseen) {
@@ -14711,19 +14796,19 @@ function pickSentenceSessionRows(band, count = SENTENCE_SESSION_LENGTH) {
     selected.push(item.row);
     newDrawn++;
   }
-  
+
   for (const item of seenNotDue) {
     if (selected.length >= count) break;
     selected.push(item.row);
   }
-  
+
   for (const item of unseen) {
     if (selected.length >= count) break;
     if (!selected.includes(item.row)) {
       selected.push(item.row);
     }
   }
-  
+
   return selected;
 }
 
@@ -14747,12 +14832,12 @@ function sentenceTokenDiffHtml(row, typed) {
     .filter(Boolean)
     .map(t => t.replace(/[.,!?;:"'`~(){}\[\]<>\/·-]+$/g, "").trim())
     .filter(Boolean);
-  
+
   const m = targetTokens.length;
   const n = typedTokens.length;
-  
+
   const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
-  
+
   for (let i = 1; i <= m; i++) {
     const tClean = normalizeKoreanAnswer(targetTokens[i - 1], { ignoreSpaces: true });
     for (let j = 1; j <= n; j++) {
@@ -14764,7 +14849,7 @@ function sentenceTokenDiffHtml(row, typed) {
       }
     }
   }
-  
+
   const matchedTargetIndices = new Set();
   let i = m, j = n;
   while (i > 0 && j > 0) {
@@ -14780,7 +14865,7 @@ function sentenceTokenDiffHtml(row, typed) {
       j--;
     }
   }
-  
+
   return targetTokens
     .map((tok, idx) => {
       const ok = matchedTargetIndices.has(idx);
@@ -14904,6 +14989,7 @@ function startSentenceStudioSession(modeId) {
     results: [], // { id, mode, correct, revealed, helpersUsed }
   };
   prepareSentenceQuestion();
+  persistSentenceLessonSession();
   renderPracticeView();
 }
 
@@ -14957,6 +15043,7 @@ function startSentenceLessonSession(lessonId) {
     results: [],
   };
   prepareSentenceQuestion();
+  persistSentenceLessonSession();
   renderPracticeView();
 }
 
@@ -15022,17 +15109,17 @@ function recordSentenceResult(row, correct, revealed, meta = {}) {
   const progress = getSentencesProgress();
   const results = progress.results;
   const record = results[row.id] || (results[row.id] = { seen: 0, correct: 0, streak: 0, last: 0, box: 0, due: 0, lapses: 0 });
-  
+
   record.seen += 1;
   record.last = Date.now();
   if (!record.firstSeen) {
     record.firstSeen = record.last;
   }
-  
+
   if (correct) {
     record.correct += 1;
     record.streak += 1;
-    
+
     const hasHelpers = sentenceStudioSession.helperUsed.length > 0;
     if (!hasHelpers) {
       record.box = Math.min((record.box || 0) + 1, VOCAB_SRS_INTERVALS.length - 1);
@@ -15062,7 +15149,7 @@ function recordSentenceResult(row, correct, revealed, meta = {}) {
     speechScore: meta.speechScore || null,
     at: record.last,
   });
-  
+
   sentenceStudioSession.results.push({
     id: row.id,
     mode,
@@ -15112,6 +15199,7 @@ function advanceSentenceSession() {
     session.index += 1;
     prepareSentenceQuestion();
   }
+  persistSentenceLessonSession();
   renderPracticeView();
 }
 
@@ -15120,6 +15208,7 @@ function exitSentenceStudioSession() {
   stopSpeech();
   sentenceStudioSession = null;
   sentenceLessonView = null;
+  persistSentenceLessonSession(null);
   renderPracticeView();
 }
 
@@ -15156,7 +15245,7 @@ function sentenceStudioHubHtml() {
     seenTotal += progress.results[id].seen;
     correctTotal += progress.results[id].correct;
   });
-  
+
   const dueCount = getTotalDueSentencesCount();
 
   const bandChips = Array.from({ length: SENTENCE_BAND_COUNT }, (_, i) => i + 1)
@@ -15218,7 +15307,7 @@ function sentenceStudioHubHtml() {
         </div>
       `)
       .join("");
-      
+
     previewHtml = `
       <div class="card">
         <div class="flex-between mb-12">
@@ -15367,26 +15456,27 @@ function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "", includeRev
   const prefix = session.lockedPrefix
     ? `<div class="ss-locked-prefix" lang="ko"><span>Hinted start</span>${escapeHtml(session.lockedPrefix)}</div>`
     : "";
-  // In translate mode the helper ladder already ends in a "Reveal" rung, so the
-  // generic "Show answer" button is suppressed there to avoid two identical
-  // reveal controls; dictation (no ladder) keeps it.
   const revealButton = includeReveal
-    ? `<button class="button secondary compact" type="button" data-ss-reveal>Show answer</button>`
+    ? `<button class="button secondary compact" type="button" data-sentence-reveal>Show answer</button>`
     : "";
   return `
-    <div class="word-type-box">
+    <div class="word-type-box sent-type-box">
       ${prefix}
-      <input class="sentence-input" id="ssTypedInput" type="text" autocomplete="off" autocapitalize="off"
-        spellcheck="false" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(session.typed)}" lang="ko" />
+      <div class="word-input-wrap">
+        <input class="sentence-input" id="ssTypedInput" type="text" autocomplete="off" autocapitalize="off"
+          spellcheck="false" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(session.typed)}" lang="ko" />
+        <button class="word-input-erase" type="button" data-sentence-helper-erase aria-label="Delete last block">⌫</button>
+      </div>
       <div class="word-type-feedback" role="status" aria-live="polite">${session.attempts
         ? `<strong>Not yet.</strong> Try again, or reveal it. <span class="fs-xs">(Spacing and punctuation don't count against you.)</span>`
         : ""}</div>
     </div>
     ${helperHtml}
-    <div class="word-card-actions">
-      <button class="button primary compact" type="button" data-ss-check>Check</button>
-      ${revealButton}
+    <div class="word-card-actions word-card-nav-actions">
+      <button class="button secondary compact" type="button" data-sentence-exit>Exit</button>
+      <button class="button primary compact" type="button" data-sentence-check>Check</button>
     </div>
+    ${revealButton ? `<div class="word-card-actions" style="margin-top: 8px; justify-content: center;">${revealButton}</div>` : ""}
   `;
 }
 
@@ -15424,13 +15514,13 @@ function getSentenceHelperTilePool(session, row) {
 
 function sentenceWordBankHelperHtml(session, row) {
   const tiles = getSentenceHelperTilePool(session, row)
-    .map((tile) => `<button class="word-tile" type="button" data-ss-helper-tile="${escapeHtml(tile)}" lang="ko">${escapeHtml(tile)}</button>`)
+    .map((tile) => `<button class="word-tile" type="button" data-sentence-helper-tile="${escapeHtml(tile)}" lang="ko">${escapeHtml(tile)}</button>`)
     .join("");
   return `
     <div class="ss-helper-panel">
       <div class="ss-helper-title">Word bank</div>
       <div class="word-tile-row">${tiles}
-        <button class="word-tile word-tile-erase" type="button" data-ss-helper-erase aria-label="Delete last Korean block">⌫</button>
+        <button class="word-tile word-tile-erase" type="button" data-sentence-helper-erase aria-label="Delete last Korean block">⌫</button>
       </div>
     </div>
   `;
@@ -15439,17 +15529,16 @@ function sentenceWordBankHelperHtml(session, row) {
 function sentenceHelperLadderHtml(session, row) {
   if (sentenceQuestionMode(session) !== "translate") return "";
   const helperButtons = [
-    { id: "tip", label: "Tip", disabled: session.helperLevel >= 1 },
+    { id: "tip", label: "Tip", disabled: false },
     { id: "wordBank", label: "Word bank", disabled: session.helperLevel >= 2 },
     { id: "nextChunk", label: "Next chunk", disabled: session.revealedTokenCount >= (row.tokens || []).length },
     { id: "reveal", label: "Reveal", disabled: false },
   ].map((helper) => `
-    <button class="button secondary compact" type="button" data-ss-helper="${helper.id}" ${helper.disabled ? "disabled" : ""}>${escapeHtml(helper.label)}</button>
+    <button class="button secondary compact" type="button" data-sentence-helper="${helper.id}" ${helper.disabled ? "disabled" : ""}>${escapeHtml(helper.label)}</button>
   `).join("");
   return `
     <div class="ss-helper-ladder" aria-label="Translate helpers">
       <div class="word-card-actions ss-helper-actions">${helperButtons}</div>
-      ${session.helperLevel >= 1 ? sentenceHelperTipHtml(row) : ""}
       ${session.helperLevel >= 2 ? sentenceWordBankHelperHtml(session, row) : ""}
     </div>
   `;
@@ -15458,40 +15547,66 @@ function sentenceHelperLadderHtml(session, row) {
 function sentenceQuestionHtml(session) {
   const row = session.rows[session.index];
   const mode = sentenceQuestionMode(session);
-  const step = `${session.index + 1} of ${session.rows.length}`;
+  const progressLabel = `Line ${session.index + 1} of ${session.rows.length}`;
+  const progressPct = Math.round(((session.index + 1) / Math.max(1, session.rows.length)) * 100);
+
+  let innerContent = "";
 
   if (mode === "transform") {
     const transform = getSentenceTransformForSessionRow(session, row);
     if (!transform) {
-      return `
-        <div class="card">
-          ${sentenceSessionDotsHtml(session)}
-          <div class="eyebrow">Transform / ${step}</div>
-          <div class="screen-sub" style="margin-bottom:12px;">No transform candidate was available for this sentence.</div>
-          <button class="button primary compact" type="button" data-ss-reveal>Skip</button>
+      innerContent = `
+        <div class="word-card-progress-row">
+          <div class="word-card-progress-tile">
+            <div class="eyebrow">${escapeHtml(progressLabel)}</div>
+            <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPct}%;"></span></div>
+          </div>
+          <button class="button secondary compact word-card-bank-button" type="button" data-sentence-exit>📚 Sentence Bank</button>
+        </div>
+        <div class="screen-sub" style="margin: 20px 0 12px;">No transform candidate was available for this sentence.</div>
+        <div class="word-card-actions word-card-nav-actions">
+          <button class="button secondary compact" type="button" data-sentence-exit>Exit</button>
+          <button class="button primary compact" type="button" data-sentence-reveal>Skip</button>
         </div>
       `;
-    }
-    const tiles = (session.helperTilePool || [])
-      .map((tile) => `<button class="word-tile" type="button" data-ss-helper-tile="${escapeHtml(tile)}" lang="ko">${escapeHtml(tile)}</button>`)
-      .join("");
-    return `
-      <div class="card" data-ss-id="${row.id}">
-        ${sentenceSessionDotsHtml(session)}
-        <div class="eyebrow">Transform / ${step}</div>
-        <div class="ss-prompt" lang="ko">${escapeHtml(row.korean)}</div>
-        <div class="screen-sub" style="margin-bottom:4px;">${escapeHtml(transform.prompt)} for <strong lang="ko">${escapeHtml(transform.sourceSurface)}</strong>.</div>
+    } else {
+      const tiles = (session.helperTilePool || [])
+        .map((tile) => `<button class="word-tile" type="button" data-sentence-helper-tile="${escapeHtml(tile)}" lang="ko">${escapeHtml(tile)}</button>`)
+        .join("");
+      innerContent = `
+        <div class="word-card-progress-row">
+          <div class="word-card-progress-tile">
+            <div class="eyebrow">${escapeHtml(progressLabel)}</div>
+            <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPct}%;"></span></div>
+          </div>
+          <button class="button secondary compact word-card-bank-button" type="button" data-sentence-exit>📚 Sentence Bank</button>
+        </div>
+        <div class="word-card-heading">
+          <div class="word-card-ko-tile">
+            <button class="sent-card-ko" type="button" lang="ko" data-sentence-play aria-label="Hear ${escapeHtml(row.korean)}">
+              <span class="word-card-ko-main">${escapeHtml(row.korean)}</span>
+              <span class="word-card-ko-rom">${escapeHtml(approximateSentenceRomanization(row.korean))}</span>
+            </button>
+            <button class="word-card-ko-play" type="button" lang="ko" data-sentence-play aria-label="Play ${escapeHtml(row.korean)}" title="Play Hangul">▶</button>
+          </div>
+        </div>
+        <div class="word-card-definition" style="align-items: center; flex-wrap: wrap; gap: 6px 8px;">
+          <div style="display: inline-flex; gap: 4px; flex-wrap: wrap;">
+            ${(row.patternTags || []).map(tag => `<span class="pill muted" style="text-transform: none; font-size: 0.65rem; padding: 2px 8px;">${escapeHtml(tag)}</span>`).join("")}
+          </div>
+          <span aria-hidden="true">|</span>
+          <span>Transform</span>
+        </div>
+        <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(transform.prompt)} for <strong lang="ko">${escapeHtml(transform.sourceSurface)}</strong>.</div>
         ${sentenceAnswerBoxHtml(session, "Type the transformed Korean sentence", `
           <div class="ss-helper-panel">
             <div class="ss-helper-title">Word bank</div>
             <div class="word-tile-row">${tiles}</div>
           </div>
         `)}
-      </div>
-    `;
-  }
-
-  if (mode === "shadow") {
+      `;
+    }
+  } else if (mode === "shadow") {
     const speech = session.speech || {};
     const scoreHtml = speech.score
       ? `<div class="ss-helper-panel">${speakingScoreHtml(row.korean, speech.transcript || "", speech.score)}</div>`
@@ -15501,93 +15616,156 @@ function sentenceQuestionHtml(session) {
     const words = (row.sourceWordIds || []).map(id => curatedWordsById.get(id)).filter(Boolean);
     const soundNotes = words.map(w => w.soundNote).filter(Boolean);
     const soundNoteHtml = soundNotes.length
-      ? `<div class="ss-sound-note-panel" style="margin-top: 8px; padding: 10px; border-radius: var(--radius-xs); background: rgba(91,157,255,.08); border-left: 3px solid var(--accent); font-size: 0.9rem;">
-           <div style="font-weight: bold; margin-bottom: 4px; color: var(--accent-text);">Pronunciation Note</div>
+      ? `<div class="ss-sound-note-panel" style="margin: 8px 0; padding: 10px; border-radius: var(--radius-xs); background: rgba(91,157,255,.08); border-left: 3px solid var(--accent); font-size: 0.9rem;">
+           <div style="font-weight: bold; margin-bottom: 4px; color: var(--accent);">Pronunciation Note</div>
            ${soundNotes.map(note => `<div class="screen-sub" style="margin-bottom: 0; color: var(--text);">${escapeHtml(note)}</div>`).join("")}
          </div>`
       : "";
     const promptPulse = session.showRepeatPrompt
-      ? `<div class="ss-repeat-prompt pulsing" style="margin: 12px 0; font-weight: bold; color: var(--accent-text); text-align: center; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      ? `<div class="ss-repeat-prompt pulsing" style="margin: 12px 0; font-weight: bold; color: var(--accent); text-align: center; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
            <span style="animation: flash-pulse .72s infinite;">🎙️</span> Repeat aloud now!
          </div>`
       : `<div class="ss-repeat-prompt" style="margin: 12px 0; color: var(--text-muted); text-align: center; font-size: 0.95rem; opacity: 0.6;">
            Listening to the pronunciation...
          </div>`;
-    return `
-      <div class="card" data-ss-id="${row.id}">
-        ${sentenceSessionDotsHtml(session)}
-        <div class="eyebrow">Shadow / ${step}</div>
-        <div class="ss-prompt" lang="ko">${escapeHtml(row.korean)}</div>
-        <div class="screen-sub" style="margin-bottom:4px;">${escapeHtml(row.english)}</div>
-        ${soundNoteHtml}
-        ${promptPulse}
-        <div class="word-card-actions" style="margin-bottom:8px;">
-          <button class="button secondary compact" type="button" data-ss-play>Play</button>
-          <button class="button secondary compact" type="button" data-ss-slow>Slow replay</button>
-          <button class="button secondary compact" type="button" data-ss-record>${speech.listening ? "Listening..." : "Record attempt"}</button>
+    innerContent = `
+      <div class="word-card-progress-row">
+        <div class="word-card-progress-tile">
+          <div class="eyebrow">${escapeHtml(progressLabel)}</div>
+          <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPct}%;"></span></div>
         </div>
-        ${scoreHtml}
-        <div class="word-card-actions">
-          <button class="button primary compact" type="button" data-ss-selfmark="correct">I said it</button>
-          <button class="button secondary compact" type="button" data-ss-selfmark="incorrect">Need practice</button>
+        <button class="button secondary compact word-card-bank-button" type="button" data-sentence-exit>📚 Sentence Bank</button>
+      </div>
+      <div class="word-card-heading">
+        <div class="word-card-ko-tile">
+          <button class="sent-card-ko" type="button" lang="ko" data-sentence-play aria-label="Hear ${escapeHtml(row.korean)}">
+            <span class="word-card-ko-main">${escapeHtml(row.korean)}</span>
+            <span class="word-card-ko-rom">${escapeHtml(approximateSentenceRomanization(row.korean))}</span>
+          </button>
+          <button class="word-card-ko-play" type="button" lang="ko" data-sentence-play aria-label="Play ${escapeHtml(row.korean)}" title="Play Hangul">▶</button>
         </div>
       </div>
-    `;
-  }
-
-  if (mode === "translate") {
-    return `
-      <div class="card" data-ss-id="${row.id}">
-        ${sentenceSessionDotsHtml(session)}
-        <div class="eyebrow">Translate &amp; Type · ${step}</div>
-        <div class="ss-prompt">${escapeHtml(row.english)}</div>
-        <div class="screen-sub" style="margin-bottom:4px;">Type the Korean sentence.</div>
-        ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요", sentenceHelperLadderHtml(session, row), false)}
+      <div class="word-card-definition" style="align-items: center; flex-wrap: wrap; gap: 6px 8px;">
+        <div style="display: inline-flex; gap: 4px; flex-wrap: wrap;">
+          ${(row.patternTags || []).map(tag => `<span class="pill muted" style="text-transform: none; font-size: 0.65rem; padding: 2px 8px;">${escapeHtml(tag)}</span>`).join("")}
+        </div>
+        <span aria-hidden="true">|</span>
+        <span>${escapeHtml(row.english)}</span>
+      </div>
+      ${soundNoteHtml}
+      ${promptPulse}
+      <div class="word-card-actions word-card-audio-actions">
+        <button class="button secondary compact" type="button" data-sentence-play>▶ Play</button>
+        <button class="button secondary compact" type="button" data-sentence-slow>↻ Slow replay</button>
+        <button class="button secondary compact" type="button" data-sentence-record>${speech.listening ? "Listening..." : "🎙️ Record attempt"}</button>
+      </div>
+      ${scoreHtml}
+      <div class="word-card-actions word-card-nav-actions">
+        <button class="button secondary compact" type="button" data-sentence-selfmark="incorrect">Need practice</button>
+        <button class="button primary compact" type="button" data-sentence-selfmark="correct">I said it</button>
       </div>
     `;
-  }
-
-  if (mode === "build") {
+  } else if (mode === "translate") {
+    innerContent = `
+      <div class="word-card-progress-row">
+        <div class="word-card-progress-tile">
+          <div class="eyebrow">${escapeHtml(progressLabel)}</div>
+          <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPct}%;"></span></div>
+        </div>
+        <button class="button secondary compact word-card-bank-button" type="button" data-sentence-exit>📚 Sentence Bank</button>
+      </div>
+      <div class="word-card-heading">
+        <div class="word-card-ko-tile" style="background: rgba(91,157,255,.04); border-color: rgba(91,157,255,.08); padding: 16px;">
+          <div style="font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 700; color: var(--text); line-height: 1.4;">${escapeHtml(row.english)}</div>
+        </div>
+      </div>
+      <div class="word-card-definition" style="align-items: center; flex-wrap: wrap; gap: 6px 8px;">
+        <div style="display: inline-flex; gap: 4px; flex-wrap: wrap;">
+          ${(row.patternTags || []).map(tag => `<span class="pill muted" style="text-transform: none; font-size: 0.65rem; padding: 2px 8px;">${escapeHtml(tag)}</span>`).join("")}
+        </div>
+        <span aria-hidden="true">|</span>
+        <span>Translate &amp; Type</span>
+      </div>
+      ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요", sentenceHelperLadderHtml(session, row), false)}
+    `;
+  } else if (mode === "build") {
     const built = session.builtTiles
       .map((poolIndex, orderIndex) =>
-        `<button class="word-tile" type="button" data-ss-built="${orderIndex}" lang="ko">${escapeHtml(session.tilePool[poolIndex])}</button>`)
+        `<button class="word-tile" type="button" data-sentence-built="${orderIndex}" lang="ko">${escapeHtml(session.tilePool[poolIndex])}</button>`)
       .join("");
     const pool = session.tilePool
       .map((tile, poolIndex) => {
         const usedAlready = session.builtTiles.includes(poolIndex);
-        return `<button class="word-tile" type="button" data-ss-tile="${poolIndex}" lang="ko" ${usedAlready ? "disabled" : ""}>${escapeHtml(tile)}</button>`;
+        return `<button class="word-tile" type="button" data-sentence-tile="${poolIndex}" lang="ko" ${usedAlready ? "disabled" : ""}>${escapeHtml(tile)}</button>`;
       })
       .join("");
-    return `
-      <div class="card" data-ss-id="${row.id}">
-        ${sentenceSessionDotsHtml(session)}
-        <div class="eyebrow">Word Builder · ${step}</div>
-        <div class="ss-prompt">${escapeHtml(row.english)}</div>
-        <div class="screen-sub" style="margin-bottom:4px;">Tap the Korean words in order. Two tiles don't belong.</div>
-        <div class="ss-build-answer">${built || `<span class="fs-xs text-muted-2">Your sentence appears here</span>`}</div>
-        <div class="word-tile-row">${pool}</div>
-        <div class="word-type-feedback" role="status" aria-live="polite">${session.attempts
-          ? "<strong>Not yet.</strong> Check the word order — tap a placed word to remove it."
-          : ""}</div>
-        <div class="word-card-actions">
-          <button class="button primary compact" type="button" data-ss-check ${session.builtTiles.length ? "" : "disabled"}>Check</button>
-          <button class="button secondary compact" type="button" data-ss-reveal>Show answer</button>
+    innerContent = `
+      <div class="word-card-progress-row">
+        <div class="word-card-progress-tile">
+          <div class="eyebrow">${escapeHtml(progressLabel)}</div>
+          <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPct}%;"></span></div>
+        </div>
+        <button class="button secondary compact word-card-bank-button" type="button" data-sentence-exit>📚 Sentence Bank</button>
+      </div>
+      <div class="word-card-heading">
+        <div class="word-card-ko-tile" style="background: rgba(91,157,255,.04); border-color: rgba(91,157,255,.08); padding: 16px;">
+          <div style="font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 700; color: var(--text); line-height: 1.4;">${escapeHtml(row.english)}</div>
         </div>
       </div>
+      <div class="word-card-definition" style="align-items: center; flex-wrap: wrap; gap: 6px 8px;">
+        <div style="display: inline-flex; gap: 4px; flex-wrap: wrap;">
+          ${(row.patternTags || []).map(tag => `<span class="pill muted" style="text-transform: none; font-size: 0.65rem; padding: 2px 8px;">${escapeHtml(tag)}</span>`).join("")}
+        </div>
+        <span aria-hidden="true">|</span>
+        <span>Word Builder</span>
+      </div>
+      <div class="ss-build-answer" style="margin: 16px 0; min-height: 48px; padding: 10px; border-radius: 12px; border: 1px dashed var(--line); display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center;">
+        ${built || `<span class="fs-xs text-muted-2">Your sentence appears here</span>`}
+      </div>
+      <div class="word-tile-row">${pool}</div>
+      <div class="word-type-feedback" role="status" aria-live="polite" style="min-height: 20px; font-size: 0.85rem; margin-top: 8px;">
+        ${session.attempts ? "<strong>Not yet.</strong> Check the word order — tap a placed word to remove it." : ""}
+      </div>
+      <div class="word-card-actions word-card-nav-actions">
+        <button class="button secondary compact" type="button" data-sentence-exit>Exit</button>
+        <button class="button primary compact" type="button" data-sentence-check ${session.builtTiles.length ? "" : "disabled"}>Check</button>
+      </div>
+      <div class="word-card-actions" style="margin-top: 8px; justify-content: center;">
+        <button class="button secondary compact" type="button" data-sentence-reveal>Show answer</button>
+      </div>
+    `;
+  } else {
+    // listen (dictation)
+    innerContent = `
+      <div class="word-card-progress-row">
+        <div class="word-card-progress-tile">
+          <div class="eyebrow">${escapeHtml(progressLabel)}</div>
+          <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPct}%;"></span></div>
+        </div>
+        <button class="button secondary compact word-card-bank-button" type="button" data-sentence-exit>📚 Sentence Bank</button>
+      </div>
+      <div class="word-card-heading">
+        <div class="word-card-ko-tile" style="background: rgba(91,157,255,.04); border-color: rgba(91,157,255,.08); padding: 24px; text-align: center;">
+          <span class="big-glyph" style="font-size: 2.5rem; color: var(--accent);">♪</span>
+        </div>
+      </div>
+      <div class="word-card-definition" style="align-items: center; flex-wrap: wrap; gap: 6px 8px;">
+        <div style="display: inline-flex; gap: 4px; flex-wrap: wrap;">
+          ${(row.patternTags || []).map(tag => `<span class="pill muted" style="text-transform: none; font-size: 0.65rem; padding: 2px 8px;">${escapeHtml(tag)}</span>`).join("")}
+        </div>
+        <span aria-hidden="true">|</span>
+        <span>Dictation</span>
+      </div>
+      <div class="word-card-actions word-card-audio-actions">
+        <button class="button secondary compact" type="button" data-sentence-play>▶ Play sentence</button>
+      </div>
+      ${sentenceAnswerBoxHtml(session, "들리는 대로 써 보세요")}
     `;
   }
 
-  // listen (dictation)
   return `
-    <div class="card" data-ss-id="${row.id}">
-      ${sentenceSessionDotsHtml(session)}
-      <div class="eyebrow">Dictation · ${step}</div>
-      <div class="ss-prompt"><span class="big-glyph">♪</span></div>
-      <div class="screen-sub" style="margin-bottom:4px;">Listen, then type the Korean sentence you heard.</div>
-      <div class="word-card-actions" style="margin-bottom:4px;">
-        <button class="button secondary compact" type="button" data-ss-play>▶ Play sentence</button>
-      </div>
-      ${sentenceAnswerBoxHtml(session, "들리는 대로 써 보세요")}
+    <div class="card word-card" id="sentenceSessionRoot">
+      ${innerContent}
     </div>
   `;
 }
@@ -15600,22 +15778,74 @@ function sentenceFeedbackHtml(session) {
   const transform = mode === "transform" ? getSentenceTransformForSessionRow(session, row) : null;
   const targetRow = transform ? { ...row, korean: transform.expected, tokens: transform.tokens } : row;
   const answerText = transform ? transform.expected : row.korean;
+  const progressLabel = `Line ${session.index + 1} of ${session.rows.length}`;
+  const progressPct = Math.round(((session.index + 1) / Math.max(1, session.rows.length)) * 100);
+
   const diff = !result.correct && attempt && mode !== "build" && mode !== "shadow"
     ? `<div class="fs-xs text-muted-2" style="margin:10px 0 4px;">You typed: <span lang="ko">${escapeHtml(attempt)}</span></div>
        <div class="ss-diff">${sentenceTokenDiffHtml(targetRow, attempt)}</div>`
     : "";
-  return `
-    <div class="card">
-      ${sentenceSessionDotsHtml(session)}
-      <div class="eyebrow">${result.correct ? "Correct" : "The answer"}</div>
-      <div class="ss-result ${result.correct ? "ss-result-good" : "ss-result-bad"}">${result.correct ? "잘했어요! Nice." : "Here's the sentence:"}</div>
-      <div class="ss-sentence" lang="ko">${escapeHtml(answerText)}</div>
-      <div class="screen-sub" style="margin-bottom:4px;">${escapeHtml(row.english)}</div>
-      ${diff}
-      <div class="word-card-actions">
-        <button class="button secondary compact" type="button" data-ss-hear>▶ Hear it</button>
-        <button class="button primary compact" type="button" data-ss-next>${session.index + 1 >= session.rows.length ? "Finish" : "Next"}</button>
+
+  let feedbackActions = "";
+  if (result.correct) {
+    feedbackActions = `
+      <div class="word-rating-prompt">
+        <div class="word-rating-label">How did it feel?</div>
+        <div class="word-rating-actions">
+          <button class="word-rating-button word-rating-hard" type="button" data-sentence-rate="hard">Hard</button>
+          <button class="word-rating-button word-rating-known" type="button" data-sentence-rate="known">Known</button>
+        </div>
       </div>
+    `;
+  } else {
+    feedbackActions = `
+      <div class="word-card-actions word-card-nav-actions">
+        <button class="button secondary compact" type="button" data-sentence-exit>Exit</button>
+        <button class="button primary compact" type="button" data-sentence-next>${session.index + 1 >= session.rows.length ? "Finish" : "Next"}</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="card word-card" id="sentenceSessionRoot">
+      <div class="word-card-progress-row">
+        <div class="word-card-progress-tile">
+          <div class="eyebrow">${escapeHtml(progressLabel)}</div>
+          <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPct}%;"></span></div>
+        </div>
+        <button class="button secondary compact word-card-bank-button" type="button" data-sentence-exit>📚 Sentence Bank</button>
+      </div>
+
+      <div class="word-card-heading">
+        <div class="word-card-ko-tile">
+          <button class="sent-card-ko" type="button" lang="ko" data-sentence-play aria-label="Hear ${escapeHtml(answerText)}">
+            <span class="word-card-ko-main">${escapeHtml(answerText)}</span>
+            <span class="word-card-ko-rom">${escapeHtml(approximateSentenceRomanization(targetRow.voiceText || targetRow.korean))}</span>
+          </button>
+          <button class="word-card-ko-play" type="button" lang="ko" data-sentence-play aria-label="Play ${escapeHtml(answerText)}" title="Play Hangul">▶</button>
+        </div>
+      </div>
+
+      <div class="word-card-definition" style="align-items: center; flex-wrap: wrap; gap: 6px 8px;">
+        <div style="display: inline-flex; gap: 4px; flex-wrap: wrap;">
+          ${(row.patternTags || []).map(tag => `<span class="pill muted" style="text-transform: none; font-size: 0.65rem; padding: 2px 8px;">${escapeHtml(tag)}</span>`).join("")}
+        </div>
+        <span aria-hidden="true">|</span>
+        <span>${escapeHtml(row.english)}</span>
+      </div>
+
+      <div class="ss-result ${result.correct ? "ss-result-good" : "ss-result-bad"}" style="margin: 14px 8px 4px; font-weight: bold; color: ${result.correct ? "var(--accent-2)" : "var(--accent-4)"};">
+        ${result.correct ? "잘했어요! Nice." : "Here's the sentence:"}
+      </div>
+
+      ${diff}
+
+      <div class="word-card-actions word-card-audio-actions">
+        <button class="button secondary compact" type="button" data-sentence-play>▶ Hear it</button>
+        <button class="button secondary compact" type="button" data-sentence-slow>↻ Hear it slow</button>
+      </div>
+
+      ${feedbackActions}
     </div>
   `;
 }
@@ -15626,7 +15856,7 @@ function sentenceSummaryHtml(session) {
   const lessonPassed = session.lessonId && correct >= passCount;
   const rowsHtml = session.rows
     .map((row, i) => `
-      <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
+      <div class="study-row" data-sentence-preview-speak="${escapeHtml(row.voiceText || row.korean)}" style="cursor: pointer;">
         <div>
           <div class="study-row-ko" lang="ko">${escapeHtml(row.korean)}</div>
           <div class="study-row-sub">${escapeHtml(row.english)}</div>
@@ -15636,18 +15866,22 @@ function sentenceSummaryHtml(session) {
     `)
     .join("");
   return `
-    <div class="card">
+    <div class="card word-card" id="sentenceSessionRoot">
       <div class="eyebrow">Session complete</div>
       <h2 class="screen-title" style="margin-bottom:8px;">${correct} of ${session.rows.length} correct</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${correct === session.rows.length
         ? "Perfect run. These sentences will come back less often."
         : "Missed sentences come back sooner in your next sessions."}</div>
       <div class="study-list">${rowsHtml}</div>
-      <div class="word-card-actions" style="margin-top:12px;">
-        <button class="button primary compact" type="button" data-ss-again>Practice again</button>
-        ${session.lessonId ? `<button class="button secondary compact" type="button" data-ss-lesson-back="${escapeHtml(session.lessonId)}">${lessonPassed ? "Back to lessons" : "Review concept"}</button>` : ""}
-        <button class="button secondary compact" type="button" data-ss-exit>Back to Sentence Studio</button>
+      <div class="word-card-actions word-card-nav-actions" style="margin-top:12px;">
+        <button class="button primary compact" type="button" data-sentence-again>Practice again</button>
+        <button class="button secondary compact" type="button" data-sentence-exit>Exit</button>
       </div>
+      ${session.lessonId ? `
+        <div class="word-card-actions" style="margin-top: 8px; justify-content: center;">
+          <button class="button secondary compact" type="button" data-sentence-lesson-back="${escapeHtml(session.lessonId)}">${lessonPassed ? "Back to lessons" : "Review concept"}</button>
+        </div>
+      ` : ""}
     </div>
   `;
 }
@@ -15660,6 +15894,10 @@ function renderPracticeView() {
   refreshProgressionState();
   currentQuizScope = "sentences";
   state.studio = "sentences";
+
+  if (!sentenceStudioSession && state.sentenceLessonSession) {
+    sentenceStudioSession = rehydrateSentenceLessonSession(state.sentenceLessonSession);
+  }
 
   if (!isStudioUnlocked("sentences")) {
     sentenceStudioSession = null;
@@ -15758,6 +15996,89 @@ function updateSentenceLockedPrefix(session) {
   }
 }
 
+let sentenceOverlayEscapeHandler = null;
+
+function closeSentenceOverlay() {
+  const overlay = document.querySelector("[data-sentence-overlay]");
+  if (overlay) overlay.remove();
+  if (sentenceOverlayEscapeHandler) {
+    document.removeEventListener("keydown", sentenceOverlayEscapeHandler);
+    sentenceOverlayEscapeHandler = null;
+  }
+}
+
+function handleSentenceOverlayEscape(event) {
+  if (event.key === "Escape") {
+    closeSentenceOverlay();
+  }
+}
+
+function openSentenceTipOverlay(row) {
+  closeSentenceOverlay();
+  const overlay = document.createElement("div");
+  overlay.className = "word-example-overlay";
+  overlay.dataset.sentenceOverlay = "true";
+
+  const tags = Array.isArray(row.patternTags) ? row.patternTags : [];
+  const tagTips = tags
+    .map((tag) => PATTERN_TAG_INFO[tag])
+    .filter(Boolean)
+    .slice(0, 4)
+    .map((tip) => `<li>${escapeHtml(tip)}</li>`)
+    .join("");
+  const grammarTip = row.grammarTip ? `<li>${escapeHtml(row.grammarTip)}</li>` : "";
+  const tipContent = tagTips || grammarTip ? tagTips + grammarTip : "<li>Start with the main noun, then find the ending that makes the sentence polite.</li>";
+
+  overlay.innerHTML = `
+    <div class="word-example-dialog" role="dialog" aria-modal="true">
+      <button class="word-example-close" type="button" data-sentence-overlay-close aria-label="Close dialog">×</button>
+      <div class="eyebrow" style="margin-bottom: 12px;">Grammar Tips</div>
+      <ul class="ss-tip-list" style="text-align: left; padding-left: 20px; font-size: 0.95rem; line-height: 1.5; color: var(--text);">${tipContent}</ul>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  sentenceOverlayEscapeHandler = handleSentenceOverlayEscape;
+  document.addEventListener("keydown", sentenceOverlayEscapeHandler);
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay || event.target.closest("[data-sentence-overlay-close]")) {
+      closeSentenceOverlay();
+    }
+  });
+}
+
+function openSentenceSlowOverlay(row) {
+  closeSentenceOverlay();
+  const overlay = document.createElement("div");
+  overlay.className = "word-example-overlay";
+  overlay.dataset.sentenceOverlay = "true";
+
+  overlay.innerHTML = `
+    <div class="word-example-dialog" role="dialog" aria-modal="true">
+      <button class="word-example-close" type="button" data-sentence-overlay-close aria-label="Close dialog">×</button>
+      <div class="eyebrow" style="margin-bottom: 12px;">Slow Replay</div>
+      <button class="sent-card-ko" style="text-align: center; border-radius: 8px;" type="button" lang="ko" data-sentence-slow-play-btn aria-label="Play slow">${escapeHtml(row.korean)}</button>
+      <div class="word-example-dialog-en" style="margin-top: 12px;">${escapeHtml(row.english)}</div>
+      <button class="button primary compact" style="margin-top: 20px;" type="button" data-sentence-slow-play-btn>▶ Play slow</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const playSlow = () => void speakSentenceSlow(row.voiceText || row.korean);
+  sentenceOverlayEscapeHandler = handleSentenceOverlayEscape;
+  document.addEventListener("keydown", sentenceOverlayEscapeHandler);
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay || event.target.closest("[data-sentence-overlay-close]")) {
+      closeSentenceOverlay();
+      return;
+    }
+    if (event.target.closest("[data-sentence-slow-play-btn]")) {
+      playSlow();
+    }
+  });
+  playSlow();
+}
+
 function useSentenceHelper(helper) {
   const session = sentenceStudioSession;
   if (!session || session.phase !== "question" || sentenceQuestionMode(session) !== "translate") return;
@@ -15765,6 +16086,7 @@ function useSentenceHelper(helper) {
   if (helper === "tip") {
     session.helperLevel = Math.max(session.helperLevel, 1);
     markSentenceHelperUsed("tip");
+    openSentenceTipOverlay(row);
   } else if (helper === "wordBank") {
     session.helperLevel = Math.max(session.helperLevel, 2);
     markSentenceHelperUsed("wordBank");
@@ -15778,8 +16100,10 @@ function useSentenceHelper(helper) {
     }
   } else if (helper === "reveal") {
     finishSentenceQuestion(false, true);
+    persistSentenceLessonSession();
     return;
   }
+  persistSentenceLessonSession();
   renderPracticeView();
 }
 
@@ -15863,6 +16187,163 @@ function startSentenceSpeechScoring() {
   }
 }
 
+function bindSentenceSessionRoot(root) {
+  if (!root) return;
+  const session = sentenceStudioSession;
+  if (!session) return;
+  const row = session.rows[session.index];
+
+  const input = root.querySelector("#ssTypedInput");
+  if (input) {
+    input.addEventListener("input", () => {
+      if (session.lockedPrefix && !input.value.startsWith(session.lockedPrefix)) {
+        const suffix = input.value.replace(session.lockedPrefix, "");
+        input.value = session.lockedPrefix + suffix;
+      }
+      session.typed = input.value;
+      persistSentenceLessonSession();
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitSentenceAnswer();
+        persistSentenceLessonSession();
+      }
+    });
+    if (session.phase === "question" && !session.attempts) input.focus();
+  }
+
+  root.addEventListener("click", (event) => {
+    const speakBtn = event.target.closest("[data-speak]");
+    if (speakBtn && root.contains(speakBtn)) {
+      flashElement(speakBtn);
+      void speak(speakBtn.dataset.speak || "");
+      return;
+    }
+    const playBtn = event.target.closest("[data-sentence-play]");
+    if (playBtn && root.contains(playBtn)) {
+      clearSentenceSessionTimeouts();
+      session.showRepeatPrompt = true;
+      void speak(row.voiceText || row.korean);
+      renderPracticeView();
+      return;
+    }
+    const slowBtn = event.target.closest("[data-sentence-slow]");
+    if (slowBtn && root.contains(slowBtn)) {
+      clearSentenceSessionTimeouts();
+      session.showRepeatPrompt = true;
+      openSentenceSlowOverlay(row);
+      renderPracticeView();
+      return;
+    }
+    const recordBtn = event.target.closest("[data-sentence-record]");
+    if (recordBtn && root.contains(recordBtn)) {
+      clearSentenceSessionTimeouts();
+      session.showRepeatPrompt = true;
+      startSentenceSpeechScoring();
+      return;
+    }
+    const selfmarkBtn = event.target.closest("[data-sentence-selfmark]");
+    if (selfmarkBtn && root.contains(selfmarkBtn)) {
+      const correct = selfmarkBtn.dataset.sentenceSelfmark === "correct";
+      const speechScore = session.speech && session.speech.score ? session.speech.score : null;
+      finishSentenceQuestion(correct, false, { speechScore });
+      persistSentenceLessonSession();
+      return;
+    }
+    const nextBtn = event.target.closest("[data-sentence-next]");
+    if (nextBtn && root.contains(nextBtn)) {
+      advanceSentenceSession();
+      return;
+    }
+    const againBtn = event.target.closest("[data-sentence-again]");
+    if (againBtn && root.contains(againBtn)) {
+      startSentenceStudioSession(session.modeId);
+      return;
+    }
+    const exitBtn = event.target.closest("[data-sentence-exit]");
+    if (exitBtn && root.contains(exitBtn)) {
+      exitSentenceStudioSession();
+      return;
+    }
+    const lessonBackBtn = event.target.closest("[data-sentence-lesson-back]");
+    if (lessonBackBtn && root.contains(lessonBackBtn)) {
+      sentenceStudioSession = null;
+      openSentenceLesson(lessonBackBtn.dataset.sentenceLessonBack);
+      return;
+    }
+    const checkBtn = event.target.closest("[data-sentence-check]");
+    if (checkBtn && root.contains(checkBtn)) {
+      submitSentenceAnswer();
+      persistSentenceLessonSession();
+      return;
+    }
+    const revealBtn = event.target.closest("[data-sentence-reveal]");
+    if (revealBtn && root.contains(revealBtn)) {
+      const meta = {};
+      if (sentenceQuestionMode(session) === "transform") {
+        const transform = getSentenceTransformForSessionRow(session, row);
+        if (transform) meta.transformId = transform.id;
+      }
+      finishSentenceQuestion(false, true, meta);
+      persistSentenceLessonSession();
+      return;
+    }
+    const tileBtn = event.target.closest("[data-sentence-tile]");
+    if (tileBtn && root.contains(tileBtn) && !tileBtn.disabled) {
+      session.builtTiles.push(Number(tileBtn.dataset.sentenceTile));
+      persistSentenceLessonSession();
+      renderPracticeView();
+      return;
+    }
+    const builtBtn = event.target.closest("[data-sentence-built]");
+    if (builtBtn && root.contains(builtBtn)) {
+      session.builtTiles.splice(Number(builtBtn.dataset.sentenceBuilt), 1);
+      persistSentenceLessonSession();
+      renderPracticeView();
+      return;
+    }
+    const helperBtn = event.target.closest("[data-sentence-helper]");
+    if (helperBtn && root.contains(helperBtn)) {
+      useSentenceHelper(helperBtn.dataset.sentenceHelper);
+      return;
+    }
+    const helperTileBtn = event.target.closest("[data-sentence-helper-tile]");
+    if (helperTileBtn && root.contains(helperTileBtn)) {
+      markSentenceHelperUsed("wordBank");
+      appendSentenceTypedToken(session, helperTileBtn.dataset.sentenceHelperTile || "");
+      persistSentenceLessonSession();
+      renderPracticeView();
+      return;
+    }
+    const helperEraseBtn = event.target.closest("[data-sentence-helper-erase]");
+    if (helperEraseBtn && root.contains(helperEraseBtn)) {
+      const prefix = session.lockedPrefix || "";
+      const tail = String(session.typed || "").slice(prefix.length).trimEnd();
+      const parts = tail ? tail.split(/\s+/) : [];
+      parts.pop();
+      session.typed = prefix + parts.join(" ");
+      persistSentenceLessonSession();
+      renderPracticeView();
+      return;
+    }
+    const previewSpeak = event.target.closest("[data-sentence-preview-speak]");
+    if (previewSpeak && root.contains(previewSpeak)) {
+      speak(previewSpeak.dataset.sentencePreviewSpeak || "");
+      return;
+    }
+    const rateBtn = event.target.closest("[data-sentence-rate]");
+    if (rateBtn && root.contains(rateBtn)) {
+      root.querySelectorAll("[data-sentence-rate]").forEach((btn) => btn.disabled = true);
+      rateBtn.classList.add("is-selected");
+      window.setTimeout(() => {
+        if (sentenceStudioSession === session) advanceSentenceSession();
+      }, 520);
+      return;
+    }
+  });
+}
+
 function bindSentenceStudioEvents(el) {
   el.querySelectorAll("[data-ss-goto]").forEach((btn) => {
     btn.addEventListener("click", () => showTab(btn.dataset.ssGoto));
@@ -15893,119 +16374,10 @@ function bindSentenceStudioEvents(el) {
     rowEl.addEventListener("click", () => speak(rowEl.dataset.ssPreviewSpeak || ""));
   });
 
-  const session = sentenceStudioSession;
-  if (!session) return;
-
-  const input = el.querySelector("#ssTypedInput");
-  if (input) {
-    input.addEventListener("input", () => {
-      if (session.lockedPrefix && !input.value.startsWith(session.lockedPrefix)) {
-        const suffix = input.value.replace(session.lockedPrefix, "");
-        input.value = session.lockedPrefix + suffix;
-      }
-      session.typed = input.value;
-    });
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        submitSentenceAnswer();
-      }
-    });
-    if (session.phase === "question" && !session.attempts) input.focus();
+  const sessionRoot = el.querySelector("#sentenceSessionRoot");
+  if (sessionRoot) {
+    bindSentenceSessionRoot(sessionRoot);
   }
-  el.querySelectorAll("[data-ss-tile]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      session.builtTiles.push(Number(btn.dataset.ssTile));
-      renderPracticeView();
-    });
-  });
-  el.querySelectorAll("[data-ss-built]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      session.builtTiles.splice(Number(btn.dataset.ssBuilt), 1);
-      renderPracticeView();
-    });
-  });
-  el.querySelectorAll("[data-ss-helper]").forEach((btn) => {
-    btn.addEventListener("click", () => useSentenceHelper(btn.dataset.ssHelper));
-  });
-  el.querySelectorAll("[data-ss-helper-tile]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      markSentenceHelperUsed("wordBank");
-      appendSentenceTypedToken(session, btn.dataset.ssHelperTile || "");
-      renderPracticeView();
-    });
-  });
-  el.querySelectorAll("[data-ss-helper-erase]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const prefix = session.lockedPrefix || "";
-      const tail = String(session.typed || "").slice(prefix.length).trimEnd();
-      const parts = tail ? tail.split(/\s+/) : [];
-      parts.pop();
-      session.typed = prefix + parts.join(" ");
-      renderPracticeView();
-    });
-  });
-  el.querySelectorAll("[data-ss-check]").forEach((btn) => {
-    btn.addEventListener("click", submitSentenceAnswer);
-  });
-  el.querySelectorAll("[data-ss-reveal]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const meta = {};
-      if (sentenceQuestionMode(session) === "transform") {
-        const row = session.rows[session.index];
-        const transform = getSentenceTransformForSessionRow(session, row);
-        if (transform) meta.transformId = transform.id;
-      }
-      finishSentenceQuestion(false, true, meta);
-    });
-  });
-  el.querySelectorAll("[data-ss-play], [data-ss-hear]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      clearSentenceSessionTimeouts();
-      session.showRepeatPrompt = true;
-      const row = session.rows[session.index];
-      speak(row.voiceText || row.korean);
-      renderPracticeView();
-    });
-  });
-  el.querySelectorAll("[data-ss-slow]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      clearSentenceSessionTimeouts();
-      session.showRepeatPrompt = true;
-      const row = session.rows[session.index];
-      speakSentenceSlow(row.voiceText || row.korean);
-      renderPracticeView();
-    });
-  });
-  el.querySelectorAll("[data-ss-record]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      clearSentenceSessionTimeouts();
-      session.showRepeatPrompt = true;
-      startSentenceSpeechScoring();
-    });
-  });
-  el.querySelectorAll("[data-ss-selfmark]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const correct = btn.dataset.ssSelfmark === "correct";
-      const speechScore = session.speech && session.speech.score ? session.speech.score : null;
-      finishSentenceQuestion(correct, false, { speechScore });
-    });
-  });
-  el.querySelectorAll("[data-ss-next]").forEach((btn) => {
-    btn.addEventListener("click", advanceSentenceSession);
-  });
-  el.querySelectorAll("[data-ss-again]").forEach((btn) => {
-    btn.addEventListener("click", () => startSentenceStudioSession(session.modeId));
-  });
-  el.querySelectorAll("[data-ss-exit]").forEach((btn) => {
-    btn.addEventListener("click", exitSentenceStudioSession);
-  });
-  el.querySelectorAll("[data-ss-lesson-back]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      sentenceStudioSession = null;
-      openSentenceLesson(btn.dataset.ssLessonBack);
-    });
-  });
 }
 
 function renderVocabulary() {
@@ -16450,7 +16822,7 @@ function registerServiceWorker() {
   const hadController = Boolean(navigator.serviceWorker.controller);
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (!hadController || reloadingForUpdate) return;
-    
+
     // Check which screen is currently visible in the DOM
     const activeScreen = document.querySelector(".screen:not([hidden])");
     const activeScreenId = activeScreen ? activeScreen.id.replace("screen-", "") : "";
