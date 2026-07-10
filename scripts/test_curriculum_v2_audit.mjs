@@ -4,13 +4,16 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const planSource = fs.readFileSync(path.join(root, "words_lesson_plan_v2.js"), "utf8");
+const planSource = fs.readFileSync(path.join(root, "words_lesson_plan.js"), "utf8");
 const wordsSource = fs.readFileSync(path.join(root, "words_curated_core.js"), "utf8");
 function loadPlan() {
   const context = { window: {}, console };
   vm.createContext(context);
   vm.runInContext(wordsSource, context);
   vm.runInContext(planSource, context);
+  if (!context.window.HANAPATH_WORD_SECTIONS || !context.window.HANAPATH_WORD_SECTIONS.length) {
+    throw new Error("Plan does not contain HANAPATH_WORD_SECTIONS - has it been reverted to v1 schema?");
+  }
   return { words: context.window.HANAPATH_CURATED_WORDS, units: context.window.HANAPATH_WORD_UNITS, lessons: context.window.HANAPATH_WORD_LESSONS };
 }
 function validate(plan) {
