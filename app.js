@@ -13934,6 +13934,8 @@ let hangulWritingState = {
   guideVisible: true,
   checking: false,
   strokes: [],
+  mode: "free", // "free" | "trace" (trace only offered when a stroke guide exists)
+  animating: false,
 };
 
 function getHangulWritingUnit(unitId = hangulWritingState.unitId) {
@@ -13946,10 +13948,177 @@ function isHangulWritingUnitUnlocked(unit) {
 }
 
 function getHangulStrokeGuide(glyph) {
-  // OPUS(W1): return authored stroke-order guide data for this glyph from
-  // hangul_strokes.js, or null when no guide exists (shell falls back to a
-  // faint-font glyph under the ink).
-  return null;
+  // W1: return the authored jamo stroke-order guide from hangul_strokes.js, or
+  // null when no guide exists (the shell then falls back to a faint-font glyph
+  // under the ink). Syllable blocks have no jamo entry, so they return null —
+  // block-layout composition is W1b/W2 territory.
+  const bank = (typeof window !== "undefined" && window.HANGUL_STROKES) || null;
+  if (!bank) return null;
+  const entry = bank[glyph];
+  if (!entry || !Array.isArray(entry.strokes) || !entry.strokes.length) return null;
+  return entry;
+}
+
+// Scale a normalized guide stroke ([x,y] in a 0–1 box) to canvas pixel points.
+function scaleHangulStroke(stroke, canvas) {
+  return stroke.map((p) => ({ x: p[0] * canvas.width, y: p[1] * canvas.height }));
+}
+
+// Draw the authored guide strokes with numbered start badges. `completed`
+// strokes render as "done", the `activeIndex` stroke is emphasized as the next
+// one to trace, and `emphasize` recolors everything for the self-check compare.
+function drawHangulGuideStrokes(ctx, canvas, guide, opts) {
+  const options = opts || {};
+  const showNumbers = options.showNumbers !== false;
+  const completed = options.completed || 0;
+  const activeIndex = typeof options.activeIndex === "number" ? options.activeIndex : -1;
+  const emphasize = Boolean(options.emphasize);
+  const W = canvas.width;
+  const baseWidth = Math.max(6, W * 0.03);
+  const badgeR = Math.max(9, W * 0.032);
+
+  ctx.save();
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  guide.strokes.forEach((stroke, i) => {
+    const pts = scaleHangulStroke(stroke, canvas);
+    if (!pts.length) return;
+    let color = "rgba(127, 127, 127, 0.26)";
+    let width = baseWidth;
+    if (emphasize) {
+      color = "rgba(122, 92, 255, 0.5)";
+    } else if (i < completed) {
+      color = "rgba(56, 176, 120, 0.6)";
+    } else if (i === activeIndex) {
+      color = "rgba(122, 92, 255, 0.8)";
+      width = baseWidth * 1.12;
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let j = 1; j < pts.length; j += 1) ctx.lineTo(pts[j].x, pts[j].y);
+    ctx.stroke();
+
+    if (showNumbers) {
+      const bx = pts[0].x;
+      const by = pts[0].y;
+      ctx.beginPath();
+      ctx.fillStyle = i === activeIndex ? "rgba(122, 92, 255, 0.95)" : "rgba(90, 90, 110, 0.55)";
+      ctx.arc(bx, by, badgeR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = `bold ${Math.round(badgeR * 1.15)}px system-ui, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(i + 1), bx, by);
+    }
+  });
+  ctx.restore();
+}
+
+function hangulPolylineLength(pts) {
+  let total = 0;
+  for (let i = 1; i < pts.length; i += 1) {
+    total += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+  }
+  return total;
+}
+
+// Draw the first `frac` (0–1) of a polyline by arc length; returns the head
+// point so the animator can draw a moving nib.
+function drawHangulPartialStroke(ctx, pts, frac) {
+  if (pts.length < 2) return pts[0] || null;
+  const target = hangulPolylineLength(pts) * Math.max(0, Math.min(1, frac));
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  let acc = 0;
+  let head = pts[0];
+  for (let i = 1; i < pts.length; i += 1) {
+    const seg = Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+    if (acc + seg <= target || seg === 0) {
+      ctx.lineTo(pts[i].x, pts[i].y);
+      head = pts[i];
+      acc += seg;
+    } else {
+      const r = (target - acc) / seg;
+      head = {
+        x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * r,
+        y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * r,
+      };
+      ctx.lineTo(head.x, head.y);
+      break;
+    }
+  }
+  ctx.stroke();
+  return head;
+}
+
+let hangulWatchRaf = null;
+
+function stopHangulWatch() {
+  if (hangulWatchRaf !== null) {
+    cancelAnimationFrame(hangulWatchRaf);
+    hangulWatchRaf = null;
+  }
+  hangulWritingState.animating = false;
+}
+
+// Animate the guide one stroke at a time on the canvas (requestAnimationFrame,
+// no libraries). Ink drawing is blocked while animating; the view settles back
+// to the normal render when the demo finishes.
+function watchHangulGuide(canvas, guide) {
+  stopHangulWatch();
+  hangulWritingState.animating = true;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width;
+  const strokes = guide.strokes.map((stroke) => scaleHangulStroke(stroke, canvas));
+  const perStrokeMs = 650;
+  const gapMs = 180;
+  const start = performance.now();
+
+  const frame = (now) => {
+    const t = now - start;
+    ctx.clearRect(0, 0, W, canvas.height);
+    drawHangulGuideStrokes(ctx, canvas, guide, { showNumbers: true, completed: 0, activeIndex: -1 });
+
+    ctx.save();
+    ctx.strokeStyle = "#7a5cff";
+    ctx.lineWidth = Math.max(6, W * 0.032);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    let done = true;
+    let head = null;
+    for (let i = 0; i < strokes.length; i += 1) {
+      const strokeStart = i * (perStrokeMs + gapMs);
+      if (t < strokeStart) {
+        done = false;
+        break;
+      }
+      const frac = Math.min(1, (t - strokeStart) / perStrokeMs);
+      head = drawHangulPartialStroke(ctx, strokes[i], frac);
+      if (frac < 1) {
+        done = false;
+        break;
+      }
+    }
+    if (head) {
+      ctx.fillStyle = "#7a5cff";
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, Math.max(5, W * 0.02), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    if (done) {
+      hangulWatchRaf = null;
+      hangulWritingState.animating = false;
+      drawHangulWritingCanvas(canvas);
+      return;
+    }
+    hangulWatchRaf = requestAnimationFrame(frame);
+  };
+  hangulWatchRaf = requestAnimationFrame(frame);
 }
 
 function gradeHangulDrawing(glyph, strokes) {
@@ -13966,9 +14135,21 @@ function drawHangulWritingCanvas(canvas) {
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (hangulWritingState.guideVisible || hangulWritingState.checking) {
-    const unit = getHangulWritingUnit();
-    const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
+  const unit = getHangulWritingUnit();
+  const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
+  const guide = glyph ? getHangulStrokeGuide(glyph) : null;
+  const tracing = hangulWritingState.mode === "trace" && Boolean(guide);
+
+  if (guide && (hangulWritingState.guideVisible || hangulWritingState.checking || tracing)) {
+    // Numbered stroke-order guide (replaces the W0 faint-font glyph).
+    drawHangulGuideStrokes(ctx, canvas, guide, {
+      showNumbers: true,
+      completed: tracing ? hangulWritingState.strokes.length : 0,
+      activeIndex: tracing && !hangulWritingState.checking ? hangulWritingState.strokes.length : -1,
+      emphasize: hangulWritingState.checking, // self-check: recolor the whole guide as the reference
+    });
+  } else if (!guide && (hangulWritingState.guideVisible || hangulWritingState.checking)) {
+    // W0 fallback: faint-font glyph for glyphs without authored stroke data.
     ctx.save();
     ctx.fillStyle = hangulWritingState.checking ? "rgba(122, 92, 255, 0.35)" : "rgba(127, 127, 127, 0.18)";
     ctx.font = `${Math.round(canvas.height * 0.72)}px "Noto Sans KR", sans-serif`;
@@ -14007,7 +14188,7 @@ function bindHangulWritingCanvas(canvas) {
   };
 
   canvas.addEventListener("pointerdown", (event) => {
-    if (hangulWritingState.checking) return;
+    if (hangulWritingState.checking || hangulWritingState.animating) return;
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
     activeStroke = [pointFromEvent(event)];
@@ -14023,10 +14204,34 @@ function bindHangulWritingCanvas(canvas) {
     drawHangulWritingCanvas(canvas);
   });
   const finishStroke = () => {
+    if (!activeStroke) return;
     activeStroke = null;
+    // Tracing mode (W1): advance the highlighted "next stroke" per pointer-up.
+    // No grading yet — this only tracks stroke count/order visually.
+    if (hangulWritingState.mode === "trace") {
+      drawHangulWritingCanvas(canvas);
+      updateHangulTraceStatus();
+    }
   };
   canvas.addEventListener("pointerup", finishStroke);
   canvas.addEventListener("pointercancel", finishStroke);
+}
+
+// Refresh the "stroke X of N" line without a full DOM rebuild (called on each
+// traced pointer-up). No-op when the status element or guide is absent.
+function updateHangulTraceStatus() {
+  const status = document.getElementById("writingTraceStatus");
+  if (!status) return;
+  const unit = getHangulWritingUnit();
+  const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
+  const guide = glyph ? getHangulStrokeGuide(glyph) : null;
+  if (!guide) return;
+  const total = guide.strokes.length;
+  const done = Math.min(hangulWritingState.strokes.length, total);
+  status.textContent =
+    done >= total
+      ? `All ${total} stroke${total === 1 ? "" : "s"} traced ✓ — clear to trace again, or check your work.`
+      : `Trace stroke ${done + 1} of ${total} (follow the highlighted line and its number).`;
 }
 
 function renderHangulWritingUnitPicker(el) {
@@ -14065,7 +14270,7 @@ function renderHangulWritingUnitPicker(el) {
   el.querySelector("#writingBackToHub").addEventListener("click", () => goHub("practice"));
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, guideVisible: true, checking: false, strokes: [] };
+      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, guideVisible: true, checking: false, strokes: [], mode: "free", animating: false };
       renderHangulWriting();
     });
   });
@@ -14075,6 +14280,17 @@ function renderHangulWritingPractice(el, unit) {
   const glyph = unit.glyphs[hangulWritingState.glyphIndex];
   const total = unit.glyphs.length;
   const position = hangulWritingState.glyphIndex + 1;
+  const guide = getHangulStrokeGuide(glyph);
+  const tracing = hangulWritingState.mode === "trace" && Boolean(guide);
+
+  const subText = guide
+    ? `Letter ${position} of ${total}. Watch the stroke order, trace each numbered stroke, then check your drawing.`
+    : `Letter ${position} of ${total}. Trace over the guide, then check your drawing.`;
+
+  const guideTools = guide
+    ? `<button class="button secondary compact" type="button" id="writingWatch">▶ Watch</button>
+        <button class="button ${tracing ? "primary" : "secondary"} compact" type="button" id="writingTraceToggle">${tracing ? "Exit tracing" : "Trace strokes"}</button>`
+    : "";
 
   el.innerHTML = `
     <div class="card">
@@ -14083,16 +14299,18 @@ function renderHangulWritingPractice(el, unit) {
       <h2 class="screen-title writing-target" lang="ko">${escapeHtml(glyph)}
         <button class="button secondary compact" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear ${escapeHtml(glyph)}">🔊</button>
       </h2>
-      <div class="screen-sub" style="margin-bottom:0;">Letter ${position} of ${total}. Trace over the guide, then check your drawing.</div>
+      <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(subText)}</div>
     </div>
     <div class="card writing-canvas-card">
       <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Drawing area for ${escapeHtml(glyph)}"></canvas>
       <div class="writing-toolbar">
-        <button class="button secondary compact" type="button" id="writingGuideToggle">${hangulWritingState.guideVisible ? "Hide guide" : "Show guide"}</button>
+        ${guideTools}
+        <button class="button secondary compact" type="button" id="writingGuideToggle" ${tracing ? "disabled" : ""}>${hangulWritingState.guideVisible ? "Hide guide" : "Show guide"}</button>
         <button class="button secondary compact" type="button" id="writingUndo">Undo</button>
         <button class="button secondary compact" type="button" id="writingClear">Clear</button>
         <button class="button primary compact" type="button" id="writingCheck" ${hangulWritingState.strokes.length ? "" : "disabled"}>Check</button>
       </div>
+      ${guide ? `<div class="fs-sm text-muted-2" id="writingTraceStatus" ${tracing ? "" : "hidden"}></div>` : ""}
       <div class="writing-check-row" id="writingCheckRow" ${hangulWritingState.checking ? "" : "hidden"}>
         <div class="fs-sm">Compare your ink with the reference. How did it go?</div>
         <div class="writing-toolbar">
@@ -14106,15 +14324,33 @@ function renderHangulWritingPractice(el, unit) {
   const canvas = el.querySelector("#writingCanvas");
   drawHangulWritingCanvas(canvas);
   bindHangulWritingCanvas(canvas);
+  if (tracing) updateHangulTraceStatus();
 
   const rerender = () => renderHangulWriting();
   el.querySelector("#writingBackToUnits").addEventListener("click", () => {
     hangulWritingState.unitId = null;
+    hangulWritingState.mode = "free";
     rerender();
   });
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
+  const watchBtn = el.querySelector("#writingWatch");
+  if (watchBtn) {
+    watchBtn.addEventListener("click", () => {
+      if (guide) watchHangulGuide(canvas, guide);
+    });
+  }
+  const traceToggle = el.querySelector("#writingTraceToggle");
+  if (traceToggle) {
+    traceToggle.addEventListener("click", () => {
+      stopHangulWatch();
+      hangulWritingState.mode = tracing ? "free" : "trace";
+      hangulWritingState.strokes = [];
+      hangulWritingState.checking = false;
+      rerender();
+    });
+  }
   el.querySelector("#writingGuideToggle").addEventListener("click", () => {
     hangulWritingState.guideVisible = !hangulWritingState.guideVisible;
     rerender();
@@ -14132,6 +14368,7 @@ function renderHangulWritingPractice(el, unit) {
   el.querySelector("#writingCheck").addEventListener("click", () => {
     // OPUS(W2): call gradeHangulDrawing(glyph, strokes) here and show its
     // verdict; the self-check row stays as the fallback for null grades.
+    stopHangulWatch();
     hangulWritingState.checking = true;
     rerender();
   });
@@ -14145,12 +14382,14 @@ function renderHangulWritingPractice(el, unit) {
     recordHangulWritingResult(glyph, "got-it");
     hangulWritingState.strokes = [];
     hangulWritingState.checking = false;
+    hangulWritingState.mode = "free";
     hangulWritingState.glyphIndex = (hangulWritingState.glyphIndex + 1) % unit.glyphs.length;
     rerender();
   });
 }
 
 function renderHangulWriting() {
+  stopHangulWatch(); // cancel any in-flight stroke animation before rebuilding the DOM
   refreshProgressionState();
   activeHub = "practice";
   setNavActive("practice");
