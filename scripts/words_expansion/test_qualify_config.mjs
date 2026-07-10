@@ -1,12 +1,21 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { qualifyWithConfig, qualify } from "./qualify_elective_range.mjs";
 
-// 1. Config-driven run over a real undecided range with explicit overrides.
+// An empty ledger keeps this test independent of which real batches have
+// landed; the real ledger is only used for the skip-decided assertion below.
+const emptyLedger = path.join(os.tmpdir(), "test_qualify_config_empty_ledger.jsonl");
+fs.writeFileSync(emptyLedger, "# test ledger\n", "utf8");
+
+// 1. Config-driven run over a range with explicit overrides.
 const report = qualifyWithConfig({
   batchId: "test-config-r77-r95",
   minRank: 77,
   maxRank: 95,
   theme: "Test batch",
+  decisionsPath: emptyLedger,
   overrides: {
     "한다": {
       status: "inflected",
@@ -40,19 +49,19 @@ assert.ok(decided.range.skippedAlreadyDecided >= 11);
 
 // 3. Guardrails fail loudly.
 assert.throws(
-  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", overrides: { "님": { status: "accepted", canonicalLemma: "님", reason: "Attempt to override a heuristically flagged row." } } }),
+  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", decisionsPath: emptyLedger, overrides: { "님": { status: "accepted", canonicalLemma: "님", reason: "Attempt to override a heuristically flagged row." } } }),
   /heuristically flagged/
 );
 assert.throws(
-  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", overrides: { "한다": { status: "accepted", reason: "Accepted rows must always carry a canonical lemma." } } }),
+  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", decisionsPath: emptyLedger, overrides: { "한다": { status: "accepted", reason: "Accepted rows must always carry a canonical lemma." } } }),
   /canonicalLemma/
 );
 assert.throws(
-  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", overrides: { "없는표면": { status: "rejected", reason: "Overrides must target real undecided candidates." } } }),
+  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", decisionsPath: emptyLedger, overrides: { "없는표면": { status: "rejected", reason: "Overrides must target real undecided candidates." } } }),
   /not an undecided candidate/
 );
 assert.throws(
-  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", overrides: { "한다": { status: "inflected", parentId: "not_a_real_id", reason: "Parent ids must resolve to curated rows." } } }),
+  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", decisionsPath: emptyLedger, overrides: { "한다": { status: "inflected", parentId: "not_a_real_id", reason: "Parent ids must resolve to curated rows." } } }),
   /not a curated row id/
 );
 
