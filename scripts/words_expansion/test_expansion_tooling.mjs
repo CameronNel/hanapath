@@ -255,6 +255,10 @@ try {
   const coreHashAfterInvalidPack = crypto.createHash("sha256").update(fs.readFileSync(corePath)).digest("hex");
   assert.strictEqual(coreHashBefore, coreHashAfterInvalidPack, "Invalid pack contract must not modify words_curated_core.js.");
 
+  assert.throws(() => {
+    execSync(`node scripts/words_expansion/import_batch.mjs --batch ${mockBatchPath} --core-file ${mockBatchPath} --dry-run`, { stdio: "pipe" });
+  }, /Unknown option: --core-file/, "The importer must reject output-path overrides.");
+
   // ==========================================
   // Test 7: Intra-Batch Duplicate ID Protection
   // ==========================================

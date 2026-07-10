@@ -233,8 +233,7 @@ function run(args) {
     dryRun: true,
     commit: false,
     packManifest: null,
-    releaseManifest: null,
-    coreFile: path.join(root, "words_curated_core.js")
+    releaseManifest: null
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -248,7 +247,7 @@ function run(args) {
       options.commit = false;
     } else if (args[i] === "--pack-manifest") options.packManifest = path.resolve(args[++i]);
     else if (args[i] === "--release-manifest") options.releaseManifest = path.resolve(args[++i]);
-    else if (args[i] === "--core-file") options.coreFile = path.resolve(args[++i]);
+    else throw new Error(`Unknown option: ${args[i]}`);
   }
 
   if (!options.batch) {
@@ -342,7 +341,7 @@ function run(args) {
 
   if (options.commit) {
     console.log("\nCommitting changes to words_curated_core.js...");
-    const coreFilePath = options.coreFile;
+    const coreFilePath = path.join(root, "words_curated_core.js");
     let coreContent = fs.readFileSync(coreFilePath, "utf8");
 
     // We look for the closing ]; of the array in the IIFE
