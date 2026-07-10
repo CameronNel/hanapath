@@ -8554,6 +8554,10 @@ function getPhaseOneProgressPercent(lesson) {
   if (phaseOneView.mode === "result") {
     return 100;
   }
+  if (phaseOneView.mode === "intro") {
+    const introCards = getPhaseOneIntroCards(lesson);
+    return Math.round(((phaseOneView.introIndex + 1) / Math.max(1, introCards.length)) * 100);
+  }
   return Math.round(((phaseOneView.mode === "intro" ? 1 : phaseOneView.slideIndex + 1) / Math.max(1, lesson.concepts.length)) * 100);
 }
 // Refresh the checkpoint Hear button label after an answer is recorded.
@@ -9350,7 +9354,7 @@ function renderPhaseOneConcept(lesson) {
   els.phaseOneBackButton.textContent =
     phaseOneView.slideIndex > 0 || getPhaseOneIntroCards(lesson).length > 0
       ? "Prev card"
-      : "Lessons";
+      : "Return to lessons";
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.slideIndex === lesson.concepts.length - 1
@@ -9365,22 +9369,8 @@ function renderPhaseOneIntro(lesson) {
   const introCards = getPhaseOneIntroCards(lesson);
   const introCard = introCards[phaseOneView.introIndex] || introCards[0] || null;
   const bullets = Array.isArray(introCard?.bullets) ? introCard.bullets.filter(Boolean) : [];
-  const dots = introCards
-    .map(
-      (_, index) =>
-        '<span class="' +
-        (index === phaseOneView.introIndex ? "active" : index < phaseOneView.introIndex ? "done" : "") +
-        '"></span>',
-    )
-    .join("");
-
   els.phaseOneStage.innerHTML =
-    '<div class="lesson-step-row">' +
-    "<span>Before you start</span>" +
-    '<div class="lesson-dots" aria-hidden="true">' +
-    dots +
-    "</div>" +
-    "</div>" +
+    '<p class="alphabet-hangul-hint intro-hangul-hint">Tap any Hangul to hear it</p>' +
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="lesson-intro-card concept-card">' +
     (introCard?.kicker ? '<p class="concept-kicker">' + escapeHtml(introCard.kicker) + "</p>" : "") +
@@ -9411,7 +9401,7 @@ function renderPhaseOneIntro(lesson) {
   els.phaseOneBackButton.textContent =
     phaseOneView.introIndex > 0
       ? "Prev card"
-      : "Lessons";
+      : "Return to lessons";
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.introIndex === introCards.length - 1 ? "Start lesson" : "Next card";
@@ -13283,9 +13273,10 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
           <button class="button secondary compact word-card-bank-button alphabet-reference-button" id="hpReferenceBtn" type="button">📚 Hangul Reference</button>
         </div>
         <div class="alphabet-lesson-heading">
-          <div class="eyebrow">Alphabet lesson</div>
-          <div class="player-title" id="hpStageTitle"></div>
-          <div class="player-goal text-muted fs-sm" id="hpStageGoal"></div>
+          <div class="alphabet-lesson-heading-line">
+            <div class="eyebrow">Alphabet lesson</div>
+            <div class="player-title" id="hpStageTitle"></div>
+          </div>
         </div>
       </div>
       <div id="hpStage"></div>
@@ -13299,7 +13290,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   els.phaseOneStageNumber   = document.getElementById("hpStageNumber");
   els.phaseOneStageDuration = { textContent: "" };
   els.phaseOneStageTitle    = document.getElementById("hpStageTitle");
-  els.phaseOneStageGoal     = document.getElementById("hpStageGoal");
+  els.phaseOneStageGoal     = { textContent: "" };
   els.phaseOneHearButton    = document.getElementById("hpHearBtn");
   els.phaseOneReferenceButton = document.getElementById("hpReferenceBtn");
   els.phaseOneStage         = document.getElementById("hpStage");
@@ -13522,7 +13513,7 @@ function renderCompleteInPlayer(index) {
   if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
   if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
   if (els.phaseOneBackButton) {
-    els.phaseOneBackButton.textContent = "Lessons";
+    els.phaseOneBackButton.textContent = "Return to lessons";
     els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
   }
 

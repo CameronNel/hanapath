@@ -763,6 +763,12 @@ input, textarea { cursor: text; }
   gap: 4px;
   padding: 2px 2px 0;
 }
+.alphabet-lesson-heading-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .alphabet-lesson-heading .eyebrow { margin: 0; }
 .player-head-top {
   display: flex;
