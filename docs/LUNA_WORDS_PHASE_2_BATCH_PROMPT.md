@@ -1,4 +1,9 @@
-# Luna - Words Phase 2 active handoff
+# Words Phase 2 active handoff
+
+> **Ownership note (2026-07-10):** the owner reassigned this queue from Luna to
+> **Claude Code**. The rules below still bind whoever works the queue. The
+> import-boundary hardening task is complete (PR #184); current work is
+> large-range qualification plus the first owner-review authoring packet.
 
 Work only on HanaPath Words Phase 2. Read `AI_INSTRUCTIONS.md`, `CLAUDE.md`,
 `HANDOVER.md`, and `docs/WORDS_CURRICULUM_V2_PLAN.md` section 5 before editing.
