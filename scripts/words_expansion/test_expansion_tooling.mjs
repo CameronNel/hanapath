@@ -230,14 +230,30 @@ try {
   assert.strictEqual(coreHashBefore, coreHashAfter, "Dry run must not modify words_curated_core.js.");
 
   // ==========================================
-  // Test 6: Real Import Boundary Refusal
+  // Test 6: Real Import Boundary Requires Release Contract
   // ==========================================
-  console.log("Test 6: Verifying real imports remain safely disabled...");
+  console.log("Test 6: Verifying real imports require the release contract...");
   assert.throws(() => {
     execSync(`node scripts/words_expansion/import_batch.mjs --batch ${mockBatchPath} --commit`, { stdio: "pipe" });
-  }, /real Phase 2 imports are currently dry-run-only/, "Commit mode must refuse until the release contract exists.");
+  }, /requires --pack-manifest and --release-manifest/, "Commit mode must refuse without both release manifests.");
   const coreHashAfterRefusedCommit = crypto.createHash("sha256").update(fs.readFileSync(corePath)).digest("hex");
   assert.strictEqual(coreHashBefore, coreHashAfterRefusedCommit, "Refused commit must not modify words_curated_core.js.");
+
+  const invalidPackManifestPath = path.join(tempDir, "invalid_pack.json");
+  const releaseManifestPath = path.join(tempDir, "release.json");
+  fs.writeFileSync(invalidPackManifestPath, JSON.stringify({
+    packId: "elective-test",
+    status: "published",
+    wordIds: [validBatchContent[0].id],
+    units: [{ id: "elective-test-u1", wordIds: [validBatchContent[0].id] }],
+    coreLockSha256: "invalid"
+  }), "utf8");
+  fs.writeFileSync(releaseManifestPath, JSON.stringify({}), "utf8");
+  assert.throws(() => {
+    execSync(`node scripts/words_expansion/import_batch.mjs --batch ${mockBatchPath} --pack-manifest ${invalidPackManifestPath} --release-manifest ${releaseManifestPath} --commit`, { stdio: "pipe" });
+  }, /Draft pack validation FAILED/, "Commit mode must validate the draft pack before writing.");
+  const coreHashAfterInvalidPack = crypto.createHash("sha256").update(fs.readFileSync(corePath)).digest("hex");
+  assert.strictEqual(coreHashBefore, coreHashAfterInvalidPack, "Invalid pack contract must not modify words_curated_core.js.");
 
   // ==========================================
   // Test 7: Intra-Batch Duplicate ID Protection

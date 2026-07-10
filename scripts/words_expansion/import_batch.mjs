@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -49,6 +50,72 @@ function loadCuratedWords() {
   vm.createContext(context);
   vm.runInContext(wordsSource, context);
   return context.window.HANAPATH_CURATED_WORDS || [];
+}
+
+function sha256File(filePath) {
+  return crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
+}
+
+function loadJson(filePath, label) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch (error) {
+    throw new Error(`Invalid ${label} JSON: ${error.message}`);
+  }
+}
+
+function validateDraftPack(packPath, newWords, curated, planPath) {
+  const pack = loadJson(packPath, "draft pack manifest");
+  const errors = [];
+  if (!pack.packId || typeof pack.packId !== "string") errors.push("packId is required");
+  if (pack.status !== "draft") errors.push('status must be "draft"');
+  if (!Array.isArray(pack.wordIds)) errors.push("wordIds must be an array");
+  if (!Array.isArray(pack.units) || pack.units.length < 1) errors.push("units must contain at least one draft unit");
+  const batchIds = new Set(newWords.map((word) => word.id));
+  const coreIds = new Set(curated.map((word) => word.id));
+  const plan = loadPlan(planPath);
+  const frozenWordIds = new Set(plan.lessons.flatMap((lesson) => [
+    ...(lesson.newWordIds || []), ...(lesson.reviewWordIds || [])
+  ]));
+  if (Array.isArray(pack.wordIds)) {
+    if (new Set(pack.wordIds).size !== pack.wordIds.length) errors.push("wordIds must be unique");
+    if (pack.wordIds.some((id) => !batchIds.has(id)) || pack.wordIds.length !== batchIds.size) errors.push("wordIds must contain exactly the imported batch ids");
+    if (pack.wordIds.some((id) => coreIds.has(id) || frozenWordIds.has(id))) errors.push("draft pack overlaps frozen/core word ids");
+  }
+  const unitWordIds = new Set();
+  for (const unit of pack.units || []) {
+    if (!unit.id || !Array.isArray(unit.wordIds) || unit.wordIds.length < 1) {
+      errors.push("each draft unit requires an id and non-empty wordIds");
+      continue;
+    }
+    for (const id of unit.wordIds) {
+      if (!batchIds.has(id)) errors.push(`draft unit ${unit.id} references a non-batch word: ${id}`);
+      if (unitWordIds.has(id)) errors.push(`draft word appears in multiple units: ${id}`);
+      unitWordIds.add(id);
+    }
+  }
+  if (unitWordIds.size !== batchIds.size) errors.push("draft units must cover every imported word exactly once");
+  const expectedLock = sha256File(path.join(root, "scripts", "curriculum_v2_lock.json"));
+  if (pack.coreLockSha256 !== expectedLock) errors.push("coreLockSha256 does not match the frozen curriculum lock");
+  if (errors.length) throw new Error(`Draft pack validation FAILED: ${errors.join("; ")}`);
+  return pack;
+}
+
+function validateReleaseManifest(releasePath, newWords) {
+  const release = loadJson(releasePath, "audio/cache release manifest");
+  const errors = [];
+  if (release.status !== "owner-approved") errors.push('status must be "owner-approved"');
+  if (release.audioGenerated !== true) errors.push("audioGenerated must be true");
+  if (release.missingKeysCount !== 0) errors.push("missingKeysCount must be 0");
+  if (release.audioMapSha256 !== sha256File(path.join(root, "audio_map.js"))) errors.push("audioMapSha256 does not match audio_map.js");
+  const sw = fs.readFileSync(path.join(root, "sw.js"), "utf8");
+  const cacheMatch = sw.match(/const CACHE_NAME\s*=\s*["']([^"']+)["']/);
+  if (!cacheMatch || release.cacheName !== cacheMatch[1]) errors.push("cacheName does not match sw.js CACHE_NAME");
+  const versions = [...fs.readFileSync(path.join(root, "index.html"), "utf8").matchAll(/[?&]v=([0-9]+)/g)].map((match) => match[1]);
+  if (!release.assetVersion || versions.length === 0 || versions.some((version) => version !== String(release.assetVersion))) errors.push("assetVersion must match every indexed asset query version");
+  if (release.batchWordCount !== newWords.length) errors.push("batchWordCount does not match imported rows");
+  if (errors.length) throw new Error(`Audio/cache release validation FAILED: ${errors.join("; ")}`);
+  return release;
 }
 
 function loadPlan(planPath) {
@@ -164,7 +231,10 @@ function run(args) {
     batch: null,
     plan: path.join(root, "words_lesson_plan.js"),
     dryRun: true,
-    commit: false
+    commit: false,
+    packManifest: null,
+    releaseManifest: null,
+    coreFile: path.join(root, "words_curated_core.js")
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -176,7 +246,9 @@ function run(args) {
     } else if (args[i] === "--dry-run") {
       options.dryRun = true;
       options.commit = false;
-    }
+    } else if (args[i] === "--pack-manifest") options.packManifest = path.resolve(args[++i]);
+    else if (args[i] === "--release-manifest") options.releaseManifest = path.resolve(args[++i]);
+    else if (args[i] === "--core-file") options.coreFile = path.resolve(args[++i]);
   }
 
   if (!options.batch) {
@@ -233,14 +305,19 @@ function run(args) {
   }
 
   if (options.commit) {
-    console.error("\nREFUSED: real Phase 2 imports are currently dry-run-only.");
-    console.error("The commit boundary is disabled until an owner-approved elective-pack schema and release manifest enforce:");
-    console.error("  - draft elective-pack placement and validation");
-    console.error("  - append-only lock regression for core and pack artifacts");
-    console.error("  - owner-run audio generation plus missing-key verification");
-    console.error("  - final cache/query-version changes after audio completes");
-    console.error("Use --dry-run to qualify and review a batch; no files were modified.");
-    process.exit(1);
+    if (!options.packManifest || !options.releaseManifest) {
+      console.error("REFUSED: --commit requires --pack-manifest and --release-manifest.");
+      console.error("The manifests prove draft-pack placement, frozen-core lock, owner audio coverage, and final cache/version state.");
+      process.exit(1);
+    }
+    try {
+      validateDraftPack(options.packManifest, newWords, curated, options.plan);
+      validateReleaseManifest(options.releaseManifest, newWords);
+    } catch (error) {
+      console.error(error.message);
+      process.exit(1);
+    }
+    console.log("Release contract passed: draft pack, frozen-core lock, audio coverage, and cache/version state are recorded.");
   }
 
   // Check boundary: lesson plan mutation is locked to draft elective packs
@@ -265,7 +342,7 @@ function run(args) {
 
   if (options.commit) {
     console.log("\nCommitting changes to words_curated_core.js...");
-    const coreFilePath = path.join(root, "words_curated_core.js");
+    const coreFilePath = options.coreFile;
     let coreContent = fs.readFileSync(coreFilePath, "utf8");
 
     // We look for the closing ]; of the array in the IIFE
