@@ -233,10 +233,9 @@
       "reason": "오다 + connective -아서 (having come); covered by the curated lemma, grammar belongs to the -아서 surface. No row."
     },
     "공부": {
-      "status": "merged",
-      "canonicalLemma": "공부하다",
-      "parentId": "w_m6_1097_gongbuhada",
-      "reason": "Noun base of curated 공부하다 (to study). A separate 공부 noun row would duplicate the gloss; teach the noun use on the existing row (공부를 하다)."
+      "status": "accepted",
+      "canonicalLemma": "공부",
+      "reason": "Independent noun meaning study or studying; distinct in part of speech and use from the curated verb 공부하다 (to study), so it needs its own reviewed row rather than being merged away."
     },
     "시켜": {
       "status": "inflected",
