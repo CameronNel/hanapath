@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/words_expansion/check_budgets.mjs",
+  "budgets": {
+    "curatedBytes": 1572864,
+    "realisticSrsBytes": 5767168,
+    "shellBytes": 12582912,
+    "audioRuntimeEntries": 256,
+    "mobileLoadMs": 5000
+  },
+  "measurements": {
+    "curatedBytes": 1201464,
+    "realisticSrsBytes": 798904,
+    "shellBytes": 9257556,
+    "shellAssetCount": 57,
+    "missingShellAssets": [],
+    "cacheName": "hanapath-shell-v306",
+    "audioRuntimeEntries": 256
+  },
+  "browser": {
+    "loadMs": 2550,
+    "title": "HanaPath",
+    "offlineTitle": "HanaPath",
+    "serviceWorkerReady": true,
+    "pageErrors": []
+  },
+  "pass": true
+}
