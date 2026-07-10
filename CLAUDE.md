@@ -39,10 +39,9 @@ Do not assume "done" or "not done" from memory or from a checkmark: **verify
 scorecard claims against the actual data** (the Words scorecard was wrong four
 times: PRs #50, #51, #54, and the b385e77 merge loss).
 
-Words Phase 2 expansion plumbing is assigned to **Gemini** under
-`docs/GEMINI_FLASH_3_5_LOW_HANGING_FRUITS_PROMPT.md`. Any semantic,
-learner-facing, or owner-gated follow-up must be handed to **Luna**; it is not
-part of the active Sentences queue.
+Gemini completed Words Phase 2 P2-0 tooling. **Luna** now owns the active Words
+queue in `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`; this is not part of the
+active Sentences queue.
 
 ## Document map (what to read for what)
 
