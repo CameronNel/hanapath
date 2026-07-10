@@ -18,11 +18,11 @@
     "audioRuntimeEntries": 256
   },
   "browser": {
-    "loadMs": 5134,
+    "loadMs": 2542,
     "title": "HanaPath",
     "offlineTitle": "HanaPath",
     "serviceWorkerReady": true,
     "pageErrors": []
   },
-  "pass": false
+  "pass": true
 }
