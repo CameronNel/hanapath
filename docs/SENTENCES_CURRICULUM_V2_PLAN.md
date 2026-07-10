@@ -777,7 +777,7 @@ pointers.
   `completedLessonsLegacy` stashed, path starts fresh (legacy lessons do
   NOT map — §3.11); no console errors; audits green; cache bumped.
 
-- [ ] **S2-D — Path UI** [coder]
+- [x] **S2-D — Path UI** [coder]
   Rebuild the hub per §3.9: continue hero, `sentencePathHtml` sections/units
   (shared `.vocab-path-*` CSS), locked-unit Words deep-links, free-practice
   strip below, flat lesson list deleted.
@@ -788,13 +788,13 @@ pointers.
   mobile-width sane; **the path is reachable from the Studio tab on first
   load** (reachability check); cache bumped.
 
-- [ ] **S2-E — Polish pass** [coder + author]
+- [x] **S2-E — Polish pass** [coder + author]
   Crowning moment for checkpoints; unit emoji finalized (no ✏️); per-unit
   due-count chips (optional); intro copy in the trainee voice; empty
   states; copy review of all goals/subtitles in context.
   *Accept:* owner eyeballs the path end-to-end; no audit regressions.
 
-- [ ] **S2-F — Docs + pointers** [coder]
+- [x] **S2-F — Docs + pointers** [coder]
   Dated supersession addendum in `docs/SENTENCES_TEACHING_SPEC.md` (§8
   scorecard rows 4/8 updated honestly); `docs/SENTENCES_FINAL_ROADMAP.md`
   banner pointing curriculum/hub work here (Track H stays there, §5);

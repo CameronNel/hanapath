@@ -11,6 +11,10 @@
 > draft, verified per spec §10. Update this file's checkbox and the spec's §8
 > scorecard **in the same PR** as the work.
 
+> **Path-work supersession (2026-07-10):** curriculum, hub, and runner work is
+> now owned by [`SENTENCES_CURRICULUM_V2_PLAN.md`](SENTENCES_CURRICULUM_V2_PLAN.md).
+> Use this roadmap for Track H authored-content work and its bank-level audits.
+
 ---
 
 ## 0. Ground rules (inherited from the Words build — they earned their scars)

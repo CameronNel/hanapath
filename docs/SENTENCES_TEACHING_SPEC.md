@@ -217,6 +217,11 @@ All modes draw from the bank and grade into the sentence SRS.
 
 ## §8 Status scorecard
 
+> **Phase 1 path update (2026-07-10):** the Sentence Studio hub now uses the
+> curriculum-v2 path from `docs/SENTENCES_CURRICULUM_V2_PLAN.md`, including
+> unit gating, checkpoint crowns, continuation, and Words unlock guidance.
+> Owner acceptance of the complete sn1 → sn2 progression remains open in S2-G.
+
 Update this table in the same PR as the work it describes. **Claims here must
 be re-derived from data, not copied forward.**
 
@@ -225,11 +230,11 @@ be re-derived from data, not copied forward.**
 | 1 | Sentence bank `sentences_core.js` + extractor | ✅ done |
 | 2 | Sentence audit `scripts/audit-sentences-data.mjs` | ✅ done |
 | 3 | Translate & Type drill (Eng → typed Hangul + helper ladder) | 🟡 **core + helper ladder done; B3 partial** — Translate mode is live with the Tip → Word bank → Next chunk → Reveal helpers and helper tracking, and #108 shipped LCS token-diff feedback; **real positional alignment + near-miss diff (B3)** is still an extension — markers `EXTENSION (roadmap B3)` remain in `app.js` |
-| 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the legacy level-rail shell is gone; `renderPracticeView` is now the self-contained **Sentence Studio** (hub → session → summary) reading from the bank. |
+| 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the self-contained **Sentence Studio** now includes the curriculum-v2 path hub, continuation hero, guided unit progression, checkpoint crowns, due/free practice, and insights. |
 | 5 | Sentence SRS (`state.sentencesProgress`) | ✅ done — Leitner scheduling + due dates (C3) fully built and scheduled |
 | 6 | i+1 gating via `focusWordIds` | ✅ done — new-sentence queue restricted to known words (C2) |
 | 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows explicit; **accuracy sweep complete for all s0001–s2060** (finished 2026-07-07). |
-| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ✅ **done** — 12 pattern-cluster units fully playable, with linear lesson gating/progression wired in Sentence Studio |
+| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ✅ **done** — 12 curriculum-v2 pattern-cluster units are playable, with Words-based unit gating, linear lesson progression, collapsible path UI, and checkpoint crowns wired in Sentence Studio |
 | 9 | Shadow mode + speech-stub wiring for sentences | ✅ **done** — automated listen → slow replay → prompt timing flow, SpeechRecognition transcript grading, and soundNote details surfaced |
 | 10 | Transform drill (inflection engine) | ✅ **done** — inflected surface replacement via `HANAPATH_INFLECT`, deck and mixed session integration at band ≥3, and SRS grading integration |
 | 11 | Authored expansion batches (gap-driven) | ❌ not started (owner-gated volume) |
