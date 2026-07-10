@@ -232,6 +232,17 @@ function run(args) {
     process.exit(1);
   }
 
+  if (options.commit) {
+    console.error("\nREFUSED: real Phase 2 imports are currently dry-run-only.");
+    console.error("The commit boundary is disabled until an owner-approved elective-pack schema and release manifest enforce:");
+    console.error("  - draft elective-pack placement and validation");
+    console.error("  - append-only lock regression for core and pack artifacts");
+    console.error("  - owner-run audio generation plus missing-key verification");
+    console.error("  - final cache/query-version changes after audio completes");
+    console.error("Use --dry-run to qualify and review a batch; no files were modified.");
+    process.exit(1);
+  }
+
   // Check boundary: lesson plan mutation is locked to draft elective packs
   console.log("\n[Product Boundary Audit]");
   console.log("  - Core sections (S1-S8) are frozen. No changes will be made to core lesson plans.");
