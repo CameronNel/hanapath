@@ -1,0 +1,1114 @@
+{
+  "batchId": "p2-qualify-r345-r453",
+  "range": {
+    "minRank": 345,
+    "maxRank": 453,
+    "sourceRows": 109
+  },
+  "theme": "Study, work, and social participation",
+  "counts": {
+    "needs-sense-review": 22,
+    "rejected": 26,
+    "covered": 57,
+    "accepted": 3,
+    "inflected": 1
+  },
+  "qualifiedLexicalCandidates": [
+    "관계",
+    "프로그램",
+    "자리"
+  ],
+  "importReadyRows": 0,
+  "records": [
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "어야",
+      "normalizedSurface": "어야",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "이러",
+      "normalizedSurface": "이러",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "재",
+      "normalizedSurface": "재",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "천",
+      "normalizedSurface": "천",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_012_cheon",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "확인",
+      "normalizedSurface": "확인",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_618_hwagin",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "까",
+      "normalizedSurface": "까",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "방",
+      "normalizedSurface": "방",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w1201_bang",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "시키",
+      "normalizedSurface": "시키",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "인간",
+      "normalizedSurface": "인간",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_639_ingan",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "제작",
+      "normalizedSurface": "제작",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_625_jejak",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "테",
+      "normalizedSurface": "테",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "해도",
+      "normalizedSurface": "해도",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "가족",
+      "normalizedSurface": "가족",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_044_gajok",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "계",
+      "normalizedSurface": "계",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "계획",
+      "normalizedSurface": "계획",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_620_gyehoek",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "교육",
+      "normalizedSurface": "교육",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_608_gyoyuk",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "국가",
+      "normalizedSurface": "국가",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_382_gukga",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "대통령",
+      "normalizedSurface": "대통령",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_405_daetongnyeong",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "리",
+      "normalizedSurface": "리",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "문",
+      "normalizedSurface": "문",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w1211_mun",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "문화",
+      "normalizedSurface": "문화",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_412_munhwa",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "배",
+      "normalizedSurface": "배",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_191_bae_boat",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "약",
+      "normalizedSurface": "약",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w1509_yak",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "연구",
+      "normalizedSurface": "연구",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_609_yeongu",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "인지",
+      "normalizedSurface": "인지",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "트",
+      "normalizedSurface": "트",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "결과",
+      "normalizedSurface": "결과",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1000_gyeolgwa",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "다니",
+      "normalizedSurface": "다니",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "도시",
+      "normalizedSurface": "도시",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_195_dosi",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "려고",
+      "normalizedSurface": "려고",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_861_ryeogo",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "바",
+      "normalizedSurface": "바",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "사건",
+      "normalizedSurface": "사건",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1019_sageon",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "상태",
+      "normalizedSurface": "상태",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1030_sangtae",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "조금",
+      "normalizedSurface": "조금",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1031_jogeum",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "참",
+      "normalizedSurface": "참",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "결정",
+      "normalizedSurface": "결정",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_619_gyeoljeong",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "경기",
+      "normalizedSurface": "경기",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "관련",
+      "normalizedSurface": "관련",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1274_gwanryeon",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "그러나",
+      "normalizedSurface": "그러나",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "둘",
+      "normalizedSurface": "둘",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_015_dul",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "모습",
+      "normalizedSurface": "모습",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1032_moseup",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "없이",
+      "normalizedSurface": "없이",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "초",
+      "normalizedSurface": "초",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m2_cho_candle",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "피",
+      "normalizedSurface": "피",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "관계",
+      "normalizedSurface": "관계",
+      "canonicalLemma": "관계",
+      "status": "accepted",
+      "parentId": null,
+      "reason": "Qualified as a standalone lexical candidate for a future study/work/social-participation elective pack; authoring, examples, and owner approval are still required."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "듣",
+      "normalizedSurface": "듣",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "라면",
+      "normalizedSurface": "라면",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_149_ramyeon",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "막",
+      "normalizedSurface": "막",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "무슨",
+      "normalizedSurface": "무슨",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w0906_museun",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "반",
+      "normalizedSurface": "반",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "보여",
+      "normalizedSurface": "보여",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "사이",
+      "normalizedSurface": "사이",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1217_sai",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "생",
+      "normalizedSurface": "생",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "아들",
+      "normalizedSurface": "아들",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_053_adeul",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "얻",
+      "normalizedSurface": "얻",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "이용",
+      "normalizedSurface": "이용",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_622_iyong",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "힘",
+      "normalizedSurface": "힘",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "나오",
+      "normalizedSurface": "나오",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "노래",
+      "normalizedSurface": "노래",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_467_norae_hobby",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "누구",
+      "normalizedSurface": "누구",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w0210_nugu",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "몸",
+      "normalizedSurface": "몸",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w1501_mom",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "상황",
+      "normalizedSurface": "상황",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_654_sanghwang",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "십",
+      "normalizedSurface": "십",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_010_sip",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "포함",
+      "normalizedSurface": "포함",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "프로그램",
+      "normalizedSurface": "프로그램",
+      "canonicalLemma": "프로그램",
+      "status": "accepted",
+      "parentId": null,
+      "reason": "Qualified as a standalone lexical candidate for a future study/work/social-participation elective pack; authoring, examples, and owner approval are still required."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "글",
+      "normalizedSurface": "글",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "기술",
+      "normalizedSurface": "기술",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1136_gisul",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "뜻",
+      "normalizedSurface": "뜻",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1386_tteut",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "마지막",
+      "normalizedSurface": "마지막",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1033_majimak",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "머리",
+      "normalizedSurface": "머리",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_3020_meori_hair",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "이것",
+      "normalizedSurface": "이것",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_362_igeot",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "읽",
+      "normalizedSurface": "읽",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "갖",
+      "normalizedSurface": "갖",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "공개",
+      "normalizedSurface": "공개",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1080_gonggae",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "기록",
+      "normalizedSurface": "기록",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1001_girok",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "부분",
+      "normalizedSurface": "부분",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1034_bubun",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "안녕",
+      "normalizedSurface": "안녕",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "위치",
+      "normalizedSurface": "위치",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1213_wichi",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "의미",
+      "normalizedSurface": "의미",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1002_uimi",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "이미",
+      "normalizedSurface": "이미",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1035_imi",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "전화",
+      "normalizedSurface": "전화",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w0310_jeonhwa",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "지원",
+      "normalizedSurface": "지원",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1081_jiwon",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "질",
+      "normalizedSurface": "질",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "께",
+      "normalizedSurface": "께",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "대학",
+      "normalizedSurface": "대학",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_607_daehak",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "물론",
+      "normalizedSurface": "물론",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1426_mulron",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "여러",
+      "normalizedSurface": "여러",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "개발",
+      "normalizedSurface": "개발",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m6_1082_gaebal",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "괜찮",
+      "normalizedSurface": "괜찮",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "그녀",
+      "normalizedSurface": "그녀",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "드리",
+      "normalizedSurface": "드리",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "러시아",
+      "normalizedSurface": "러시아",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "발견",
+      "normalizedSurface": "발견",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_621_balgyeon",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "새로운",
+      "normalizedSurface": "새로운",
+      "canonicalLemma": null,
+      "status": "inflected",
+      "parentId": null,
+      "reason": "Frequency token is an inflected/conjugated surface; retain the lemma decision for a separate review and do not create a row from this form."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "은데",
+      "normalizedSurface": "은데",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "하루",
+      "normalizedSurface": "하루",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_222_haru",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "그럼",
+      "normalizedSurface": "그럼",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "아무",
+      "normalizedSurface": "아무",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "언제",
+      "normalizedSurface": "언제",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w0610_eonje",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "올",
+      "normalizedSurface": "올",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "인가",
+      "normalizedSurface": "인가",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "자리",
+      "normalizedSurface": "자리",
+      "canonicalLemma": "자리",
+      "status": "accepted",
+      "parentId": null,
+      "reason": "Qualified as a standalone lexical candidate for a future study/work/social-participation elective pack; authoring, examples, and owner approval are still required."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "기억",
+      "normalizedSurface": "기억",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_612_gieok",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "넣",
+      "normalizedSurface": "넣",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "높",
+      "normalizedSurface": "높",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "듯",
+      "normalizedSurface": "듯",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "무",
+      "normalizedSurface": "무",
+      "canonicalLemma": null,
+      "status": "rejected",
+      "parentId": null,
+      "reason": "Raw token is a particle/ending or ambiguous short surface; exclude from vocabulary rows until independent lexical evidence exists."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "발표",
+      "normalizedSurface": "발표",
+      "canonicalLemma": null,
+      "status": "covered",
+      "parentId": "w_m5_613_balpyo",
+      "reason": "Candidate surface is already covered by a curated row; no elective row is proposed."
+    },
+    {
+      "batchId": "p2-qualify-r345-r453",
+      "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
+      "sourceRowKey": "얘기",
+      "normalizedSurface": "얘기",
+      "canonicalLemma": null,
+      "status": "needs-sense-review",
+      "parentId": null,
+      "reason": "No safe standalone lexical decision from the queue alone; preserve for semantic review rather than inventing a lemma or vocabulary row."
+    }
+  ]
+}

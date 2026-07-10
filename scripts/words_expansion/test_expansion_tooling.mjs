@@ -82,7 +82,7 @@ try {
   
   assert.throws(() => {
     execSync(`node scripts/words_expansion/build_candidate_queue.mjs --validate --decisions ${decisionsPath}`, { stdio: "pipe" });
-  }, /Duplicate decision key/, "Should throw error on duplicate decision keys.");
+  }, /Duplicate decision event/, "Should throw error on duplicate decision events.");
 
   // Create decisions log with invalid status
   fs.writeFileSync(
