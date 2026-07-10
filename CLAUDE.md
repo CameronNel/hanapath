@@ -14,12 +14,18 @@ otherwise.
 > The **Sentences section** is being rebuilt toward a specific target, defined
 > in **[`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)** —
 > the source of truth for **what and how** the Sentences section should teach.
-> Before doing Sentences work, read its **status scorecard (§8)** and
-> **milestone sheet (§9)**, then take the next unchecked box in the execution
-> queue **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)**
-> (one box = one PR; owner-gated items are marked 🔒). The flagship feature is
-> **Translate & Type**: English prompt → learner types the Korean in Hangul,
-> with a tip / word-bank / next-chunk / reveal helper ladder.
+> The flagship feature is **Translate & Type**: English prompt → learner types
+> the Korean in Hangul, with a tip / word-bank / next-chunk / reveal helper
+> ladder.
+>
+> **Current active work (owner-approved 2026-07-10):** the Sentences
+> lesson/hub structure is being restructured into a Duolingo-style path per
+> **[`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md)**
+> — for curriculum/path/hub/runner work take the next unchecked box THERE.
+> Bank-level and authored-content work (Track H) still follows
+> **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)**
+> (one box = one PR; owner-gated items are marked 🔒), cross-checked against
+> the spec's **status scorecard (§8)** and **milestone sheet (§9)**.
 
 The **Alphabet section is complete and protected**. The Words section is now
 restructured under the live v2 curriculum plan:
@@ -37,8 +43,9 @@ times: PRs #50, #51, #54, and the b385e77 merge loss).
 
 | Doc | Purpose |
 |---|---|
+| **`docs/SENTENCES_CURRICULUM_V2_PLAN.md`** | Sentences **path restructure**: K-pop-trainee-themed Duolingo-style curriculum plan + execution queue (current active work) |
 | **`docs/SENTENCES_TEACHING_SPEC.md`** | Sentences **north star**: pedagogy, bank schema, pattern tags, bands, drill modes, status scorecard, milestone sheet |
-| **`docs/SENTENCES_FINAL_ROADMAP.md`** | Sentences **execution queue**: checkbox batches, per-PR recipes, model routing — take the next unchecked box |
+| **`docs/SENTENCES_FINAL_ROADMAP.md`** | Sentences v1 build record + **Track H authored-content queue** (bank-level work) |
 | `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, **verbatim** (source of record) |
 | `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; reference for its pedagogy + data axes) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — reuse these engines for Sentences) |
