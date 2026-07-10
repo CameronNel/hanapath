@@ -114,7 +114,11 @@ export function qualifyWithConfig(config, { append = false, reportPath = null } 
     sha256(path.join(root, "korean_supplementary_15k.csv"))
   ]);
 
-  const decisionsPath = path.join(root, "scripts/words_expansion/candidate_decisions.jsonl");
+  // decisionsPath is overridable for tests only; committed batch configs must
+  // never point away from the real ledger.
+  const decisionsPath = config.decisionsPath
+    ? path.resolve(config.decisionsPath)
+    : path.join(root, "scripts/words_expansion/candidate_decisions.jsonl");
   const decidedKeys = loadDecidedKeys(decisionsPath);
 
   const range = queue.filter((candidate) => candidate.rank >= config.minRank && candidate.rank <= config.maxRank);
