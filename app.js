@@ -8533,6 +8533,26 @@ function getPhaseOneButtonLabel(source, mode = phaseOneView.mode) {
   // is "Hear" first and only becomes "Review answer" once an answer is locked in.
   return phaseOneView.answered ? "Review answer" : "Hear";
 }
+
+function getPhaseOneProgressLabel(lesson) {
+  if (phaseOneView.mode === "check") {
+    return "Question " + (phaseOneView.questionIndex + 1) + " / " + lesson.questions.length;
+  }
+  if (phaseOneView.mode === "result") {
+    return "Lesson complete";
+  }
+  return "Learn " + (phaseOneView.mode === "intro" ? 1 : phaseOneView.slideIndex + 1) + " / " + lesson.concepts.length;
+}
+
+function getPhaseOneProgressPercent(lesson) {
+  if (phaseOneView.mode === "check") {
+    return Math.round(((phaseOneView.questionIndex + 1) / Math.max(1, lesson.questions.length)) * 100);
+  }
+  if (phaseOneView.mode === "result") {
+    return 100;
+  }
+  return Math.round(((phaseOneView.mode === "intro" ? 1 : phaseOneView.slideIndex + 1) / Math.max(1, lesson.concepts.length)) * 100);
+}
 // Refresh the checkpoint Hear button label after an answer is recorded.
 function refreshPhaseOneHearLabel() {
   if (els.phaseOneHearButton && phaseOneView.mode === "check") {
@@ -9320,6 +9340,7 @@ function renderPhaseOneConcept(lesson) {
     dots +
     "</div>" +
     "</div>" +
+    '<p class="alphabet-hangul-hint" id="alphabetHangulHint">Click any Hangul to hear it</p>' +
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="concept-card">' +
     '<div class="concept-visual" lang="ko" data-phase-one-visual>' +
@@ -9336,8 +9357,7 @@ function renderPhaseOneConcept(lesson) {
     renderFlashableHangulText(concept.cue, "concept-token").html +
     "</div>" +
     "</div>" +
-    "</div>" +
-    phaseOneReferenceButtonHtml();
+    "</div>";
 
   els.phaseOneBackButton.disabled = false;
   // On the first learn card, "back" steps into the stage's intro cards if it has
@@ -9401,8 +9421,7 @@ function renderPhaseOneIntro(lesson) {
     '<div class="concept-cue">' +
     renderFlashableHangulText(introCard?.cool || lesson.goal, "concept-token").html +
     "</div>" +
-    "</div>" +
-    phaseOneReferenceButtonHtml();
+    "</div>";
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent =
@@ -9750,8 +9769,7 @@ function renderPhaseOneResult(lesson) {
       : "You scored " + percent + "% clean. Reach " + requiredPercent + "% to unlock the next stage.") +
     "</p>" +
     "</div>" +
-    "</div>" +
-    phaseOneReferenceButtonHtml();
+    "</div>";
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent = "Review lesson";
@@ -9779,11 +9797,10 @@ function renderPhaseOnePlayer() {
   if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "";
   if (els.phaseOneBackButton) els.phaseOneBackButton.onclick = null;
 
-  els.phaseOneStageNumber.textContent = "Stage " + String(phaseOneView.lessonIndex + 1).padStart(2, "0") + " of " + phaseOneLessons.length;
+  els.phaseOneStageNumber.textContent = getPhaseOneProgressLabel(lesson);
   const progressBar = document.getElementById("hpProgressBar");
   if (progressBar) {
-    const progress = getAlphabetProgress();
-    progressBar.style.width = Math.round((progress.completedCount / Math.max(1, progress.total)) * 100) + "%";
+    progressBar.style.width = getPhaseOneProgressPercent(lesson) + "%";
   }
   els.phaseOneStageDuration.textContent = lesson.duration;
   els.phaseOneStageTitle.textContent = lesson.title;
@@ -9799,11 +9816,13 @@ function renderPhaseOnePlayer() {
     renderPhaseOneResult(lesson);
   }
 
+  const showReference = ["intro", "learn", "result"].includes(phaseOneView.mode);
+  if (els.phaseOneReferenceButton) {
+    els.phaseOneReferenceButton.style.display = showReference ? "" : "none";
+  }
   if (els.phaseOneHearButton) {
     const hasVoice = !!getPhaseOneVoiceText();
-    // Intro cards get a Hear button only when their copy has a Korean example to
-    // play; otherwise there is nothing to say, so keep it hidden.
-    if (phaseOneView.mode === "intro" && !hasVoice) {
+    if (showReference || !hasVoice) {
       els.phaseOneHearButton.style.display = "none";
       els.phaseOneHearButton.disabled = true;
     } else {
@@ -13324,11 +13343,12 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
       <div class="player-head">
         <div class="alphabet-lesson-topline">
           <div class="alphabet-progress-chip">
-            <div class="eyebrow" id="hpStageNumber">Stage ${String(index + 1).padStart(2, "0")} of ${phaseOneLessons.length}</div>
+            <div class="eyebrow" id="hpStageNumber">Learn 1 / ${lesson?.concepts?.length || 1}</div>
             <div class="alphabet-progress-track" aria-label="Alphabet progress">
               <span id="hpProgressBar" style="width:${completionPercent}%"></span>
             </div>
           </div>
+          <button class="button secondary compact word-card-bank-button alphabet-reference-button" id="hpReferenceBtn" type="button">📚 Hangul Reference</button>
           <button class="hear-btn" id="hpHearBtn" type="button">▶ ${escapeHtml(initialLabel)}</button>
         </div>
         <div class="alphabet-lesson-heading">
@@ -13338,7 +13358,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
         </div>
       </div>
       <div id="hpStage"></div>
-      <div class="player-actions" id="hpActions">
+      <div class="player-actions word-card-nav-actions" id="hpActions">
         <button class="button secondary compact" id="hpBackBtn" type="button">Back</button>
         <button class="button primary compact" id="hpActionBtn" type="button">Next card</button>
       </div>
@@ -13350,6 +13370,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   els.phaseOneStageTitle    = document.getElementById("hpStageTitle");
   els.phaseOneStageGoal     = document.getElementById("hpStageGoal");
   els.phaseOneHearButton    = document.getElementById("hpHearBtn");
+  els.phaseOneReferenceButton = document.getElementById("hpReferenceBtn");
   els.phaseOneStage         = document.getElementById("hpStage");
   els.phaseOneBackButton    = document.getElementById("hpBackBtn");
   els.phaseOneActionButton  = document.getElementById("hpActionBtn");
@@ -13366,6 +13387,10 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
 
   renderPhaseOnePlayer();
 
+  els.phaseOneReferenceButton.addEventListener("click", () => {
+    state.quickRefActive = true;
+    openEntireAlphabet();
+  });
   els.phaseOneHearButton.addEventListener("click", () => {
     void playPhaseOneVoiceSequence();
   });
@@ -13420,6 +13445,8 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     }
     const token = e.target.closest("[data-speak]");
     if (token && stageEl.contains(token)) {
+      const hint = document.getElementById("alphabetHangulHint");
+      if (hint) hint.hidden = true;
       flashElement(token);
       void speak(token.dataset.speak || token.textContent || "");
       return;
@@ -13438,6 +13465,8 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     const token = e.target.closest("[data-speak]");
     if (!token || !stageEl.contains(token)) return;
     e.preventDefault();
+    const hint = document.getElementById("alphabetHangulHint");
+    if (hint) hint.hidden = true;
     flashElement(token);
     void speak(token.dataset.speak || token.textContent || "");
   });

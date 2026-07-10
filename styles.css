@@ -786,6 +786,12 @@ input, textarea { cursor: text; }
   font-weight: 800;
   white-space: nowrap;
 }
+.alphabet-lesson-player .alphabet-reference-button {
+  min-height: 0;
+  padding: 5px 9px;
+  font-size: .78rem;
+  white-space: nowrap;
+}
 
 .concept-card {
   background: rgba(255,255,255,.04);
@@ -1236,6 +1242,12 @@ button.bd-assembled:hover {
 }
 .lesson-dots span.active { background: var(--accent); }
 .lesson-dots span.done   { background: var(--accent-2); }
+.alphabet-hangul-hint {
+  margin: -2px 0 10px;
+  color: var(--muted-2);
+  font-size: .72rem;
+  text-align: center;
+}
 
 .phase-one-action-slot {
   margin: -4px 0 14px;
@@ -1255,12 +1267,21 @@ button.bd-assembled:hover {
 .alphabet-lesson-player .player-actions {
   margin-top: 16px;
 }
-.alphabet-lesson-player .player-actions > .button {
+.alphabet-lesson-player .player-actions.word-card-nav-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.alphabet-lesson-player .player-actions.word-card-nav-actions > .button {
+  width: 100%;
+  min-width: 0;
   min-height: 50px;
-  flex: 1 1 0;
-  border-radius: 14px;
-  font-size: .95rem;
-  font-weight: 800;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 12px;
+  font-size: .88rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 @media (max-width: 420px) {
@@ -1268,7 +1289,7 @@ button.bd-assembled:hover {
   .alphabet-lesson-topline { align-items: stretch; }
   .alphabet-progress-chip { min-width: 0; flex: 1 1 auto; }
   .alphabet-lesson-player .hear-btn { padding-inline: 11px; }
-  .alphabet-lesson-player .player-actions { gap: 8px; }
+  .alphabet-lesson-player .player-actions.word-card-nav-actions { gap: 8px; }
 }
 
 .player-actions > .button:last-child {
