@@ -1,0 +1,380 @@
+{
+  "batchId": "p2-qualify-r454-r1000",
+  "minRank": 454,
+  "maxRank": 1000,
+  "theme": "High-frequency sweep: conversation-glue lemmas, social nouns, and stem/ending cleanup",
+  "skipDecided": true,
+  "overrides": {
+    "여러분": {
+      "status": "accepted",
+      "canonicalLemma": "여러분",
+      "reason": "Address noun 'everyone / all of you' — standalone dictionary lemma, essential for announcements and classroom/broadcast speech; already flagged as a seed in the r345-r453 packet's intent."
+    },
+    "한다고": {
+      "status": "deferred",
+      "reason": "Grammar-only quotative -ㄴ다고 stacked on 하다; matches the owner's grammar-only precedent for 다는/다고."
+    },
+    "시대": {
+      "status": "accepted",
+      "canonicalLemma": "시대",
+      "reason": "Sino-Korean noun 'era / age / period' — standalone lexical item for study/society topics; already flagged as a seed in the r345-r453 packet's intent."
+    },
+    "아닌": {
+      "status": "inflected",
+      "canonicalLemma": "아니다",
+      "reason": "Attributive form of 아니다 (to not be). The copular negative 아니다 is NOT in the curated core — flagged as a high-value future candidate; this form never becomes a row."
+    },
+    "역시": {
+      "status": "accepted",
+      "canonicalLemma": "역시",
+      "reason": "Adverb 'as expected / likewise / after all' — standalone dictionary lemma, very frequent in conversation, not curated; safe elective candidate."
+    },
+    "거의": {
+      "status": "accepted",
+      "canonicalLemma": "거의",
+      "reason": "Adverb 'almost / nearly' — standalone dictionary lemma, core degree adverb, not curated; safe elective candidate."
+    },
+    "됩니다": {
+      "status": "inflected",
+      "canonicalLemma": "되다",
+      "reason": "Formal present of 되다 (to become / be okay). Lemma 되다 is uncurated (already flagged in r1-r344); this conjugation never becomes a row."
+    },
+    "들어가": {
+      "status": "inflected",
+      "canonicalLemma": "들어가다",
+      "reason": "Stem/conjugated surface of 들어가다 (to enter). The lemma is NOT curated — flagged as a high-value future candidate; fragment never a row."
+    },
+    "누가": {
+      "status": "merged",
+      "canonicalLemma": "누구",
+      "parentId": "w0210_nugu",
+      "reason": "Contraction of 누구 + subject particle 가; fully covered by the curated pronoun 누구. Teach as a form of that row, never separately."
+    },
+    "대로": {
+      "status": "deferred",
+      "reason": "Bound-noun grammar pattern ~는 대로 / N + 대로 (as / according to); grammar surface, not a standalone vocabulary row."
+    },
+    "위해서": {
+      "status": "deferred",
+      "reason": "Grammar-only purpose construction ~을/를 위해서; same family as 위해/위한 (deferred in r1-r344)."
+    },
+    "버리": {
+      "status": "inflected",
+      "canonicalLemma": "버리다",
+      "reason": "Truncated stem of 버리다 (to throw away; auxiliary -아/어 버리다 'completely'). Lemma uncurated — flagged as a future candidate with its auxiliary use noted; fragment never a row."
+    },
+    "로서": {
+      "status": "rejected",
+      "reason": "Particle ~(으)로서 (in the capacity of / as); particles are excluded from vocabulary rows — grammar teaching belongs in grammar surfaces."
+    },
+    "그래도": {
+      "status": "accepted",
+      "canonicalLemma": "그래도",
+      "reason": "Conjunctive adverb 'even so / still' — lexicalized standalone dictionary lemma, core conversation glue, not curated; safe elective candidate."
+    },
+    "이게": {
+      "status": "merged",
+      "canonicalLemma": "이것",
+      "parentId": "w_m5_362_igeot",
+      "reason": "Contraction of 이것 + subject particle 이; fully covered by curated 이것/이거. Teach as a spoken form on the existing row."
+    },
+    "힘들": {
+      "status": "inflected",
+      "canonicalLemma": "힘들다",
+      "reason": "Truncated stem of 힘들다 (to be hard/tiring). The lemma is NOT curated — flagged as a high-value future candidate; fragment never a row."
+    },
+    "구나": {
+      "status": "deferred",
+      "reason": "Grammar-only exclamatory ending -구나; grammar surface, not a vocabulary row."
+    },
+    "대해서": {
+      "status": "deferred",
+      "reason": "Grammar-only ~에 대해서 (about/regarding); same family as 대해/대한 (deferred in r1-r344)."
+    },
+    "그런데": {
+      "status": "accepted",
+      "canonicalLemma": "그런데",
+      "reason": "Conjunction 'but / by the way' — standalone dictionary lemma and the parent of colloquial 근데 (merged onto it in r1-r344); core conversation glue, not curated."
+    },
+    "부르": {
+      "status": "inflected",
+      "canonicalLemma": "부르다",
+      "reason": "Truncated stem of 부르다. Two curated senses exist (w_m5_481_bureuda 'to call/sing', w_m5_482_bureuda_full 'to be full') — polysemous parent left null by explicit policy; fragment never a row."
+    },
+    "아야": {
+      "status": "deferred",
+      "reason": "Grammar-only necessity connective -아야; matches the owner's grammar-only precedent for 해야/어야."
+    },
+    "그래": {
+      "status": "accepted",
+      "canonicalLemma": "그래",
+      "reason": "Interjection 'yeah / right / really?' — dictionary lemma (감탄사) and essential conversational responder; intimate register, so the authored row must carry a register note."
+    },
+    "알려": {
+      "status": "inflected",
+      "canonicalLemma": "알리다",
+      "reason": "Conjugated form of 알리다 (to inform/notify, causative of 알다). Lemma uncurated — flagged as a future candidate (알려 주세요 pattern); fragment never a row."
+    },
+    "관한": {
+      "status": "deferred",
+      "reason": "Grammar-only attributive ~에 관한 (concerning, from 관하다); written-register grammar surface, not a vocabulary row."
+    },
+    "따르": {
+      "status": "inflected",
+      "canonicalLemma": "따르다",
+      "reason": "Truncated stem of 따르다 (to follow; to pour) — same lemma decision as 따라 in r1-r344; lemma uncurated and polysemous, preserved for authoring review."
+    },
+    "로부터": {
+      "status": "rejected",
+      "reason": "Particle ~(으)로부터 (from); particles are excluded from vocabulary rows."
+    },
+    "스럽": {
+      "status": "rejected",
+      "reason": "Bound adjectivizing suffix -스럽다 fragment (사랑스럽-, 자연스럽-); never a standalone lexical item."
+    },
+    "잖아": {
+      "status": "deferred",
+      "reason": "Grammar-only shared-knowledge ending -잖아(요); grammar surface, not a vocabulary row."
+    },
+    "후보": {
+      "status": "accepted",
+      "canonicalLemma": "후보",
+      "reason": "Sino-Korean noun 'candidate' — standalone lexical item, news/civic register; safe elective candidate for a society/participation theme."
+    },
+    "한다는": {
+      "status": "deferred",
+      "reason": "Grammar-only quotative-attributive -ㄴ다는 on 하다; same family as 다는 (owner grammar-only precedent)."
+    },
+    "구요": {
+      "status": "deferred",
+      "reason": "Nonstandard spelling of the polite connective ending -고요; grammar surface, not a vocabulary row."
+    },
+    "달러": {
+      "status": "accepted",
+      "canonicalLemma": "달러",
+      "reason": "Loanword noun 'dollar' — standalone lexical item for money/news contexts, not curated; safe elective candidate."
+    },
+    "지요": {
+      "status": "deferred",
+      "reason": "Grammar-only confirmation ending -지요/-죠; grammar surface, not a vocabulary row."
+    },
+    "프로": {
+      "status": "needs-sense-review",
+      "reason": "Polysemous loanword: professional (프로 선수), clipped 프로그램 (broadcast episode), or percent (십 프로); corpus dominance unclear — no safe single-sense row without review."
+    },
+    "가진": {
+      "status": "inflected",
+      "canonicalLemma": "가지다",
+      "reason": "Attributive past of 가지다 (to have/possess). Lemma uncurated — flagged as a high-value future candidate, tied to the 가지 needs-sense-review row in r1-r344; fragment never a row."
+    },
+    "일어나": {
+      "status": "inflected",
+      "canonicalLemma": "일어나다",
+      "reason": "Stem/conjugated surface of 일어나다. Two curated senses exist (w0709_ireonada 'to get up', w_m5_472_ireonada_stand 'to stand up') — polysemous parent left null by explicit policy; fragment never a row."
+    },
+    "어도": {
+      "status": "deferred",
+      "reason": "Grammar-only concessive connective -아/어도 (even if); grammar surface, not a vocabulary row."
+    },
+    "만든": {
+      "status": "inflected",
+      "canonicalLemma": "만들다",
+      "parentId": "w_m5_286_mandeulda",
+      "reason": "Attributive past of curated 만들다 (to make); no row from this form."
+    },
+    "군요": {
+      "status": "deferred",
+      "reason": "Grammar-only polite exclamatory ending -군요; grammar surface, not a vocabulary row."
+    },
+    "뭔가": {
+      "status": "accepted",
+      "canonicalLemma": "뭔가",
+      "reason": "Lexicalized indefinite pronoun 'something' (contraction of 무엇인가), listed as its own dictionary headword and extremely frequent in speech; not curated — safe elective candidate."
+    },
+    "나왔": {
+      "status": "inflected",
+      "canonicalLemma": "나오다",
+      "reason": "Past stem of 나오다. Two curated senses exist (w_m6_3046_naoda_exit 'to come out', w_m6_3047_naoda_media 'to appear on TV') — polysemous parent left null by explicit policy; fragment never a row."
+    },
+    "는데요": {
+      "status": "deferred",
+      "reason": "Grammar-only polite background/contrast ending -는데요; grammar surface, not a vocabulary row."
+    },
+    "이루": {
+      "status": "inflected",
+      "canonicalLemma": "이루다",
+      "reason": "Truncated stem of 이루다 (to achieve/form). Lemma uncurated — flagged as a future candidate (꿈을 이루다); fragment never a row."
+    },
+    "고요": {
+      "status": "deferred",
+      "reason": "Grammar-only polite connective ending -고요; grammar surface, not a vocabulary row."
+    },
+    "그게": {
+      "status": "merged",
+      "canonicalLemma": "그것",
+      "parentId": "w_m5_363_geugeot",
+      "reason": "Contraction of 그것 + subject particle 이; fully covered by curated 그것/그거. Teach as a spoken form on the existing row."
+    },
+    "달리": {
+      "status": "accepted",
+      "canonicalLemma": "달리",
+      "reason": "Adverb 'differently / unlike' — standalone dictionary lemma (달리 생각하다, ~와 달리); authored examples must cover the ~와/과 달리 pattern explicitly. Not curated."
+    },
+    "마시": {
+      "status": "inflected",
+      "canonicalLemma": "마시다",
+      "parentId": "w0510_masida",
+      "reason": "Truncated stem of curated 마시다 (to drink); no row from this fragment."
+    },
+    "와서": {
+      "status": "inflected",
+      "canonicalLemma": "오다",
+      "parentId": "w0410_oda",
+      "reason": "오다 + connective -아서 (having come); covered by the curated lemma, grammar belongs to the -아서 surface. No row."
+    },
+    "공부": {
+      "status": "merged",
+      "canonicalLemma": "공부하다",
+      "parentId": "w_m6_1097_gongbuhada",
+      "reason": "Noun base of curated 공부하다 (to study). A separate 공부 noun row would duplicate the gloss; teach the noun use on the existing row (공부를 하다)."
+    },
+    "시켜": {
+      "status": "inflected",
+      "canonicalLemma": "시키다",
+      "reason": "Conjugated form of 시키다 (to make someone do; to order food). The lemma itself is held needs-sense-review from r345-r453 — this form inherits that pending decision; fragment never a row."
+    },
+    "의해": {
+      "status": "deferred",
+      "reason": "Grammar-only written-register agent marker ~에 의해 (by means of, from 의하다); grammar surface, not a vocabulary row."
+    },
+    "이건": {
+      "status": "merged",
+      "canonicalLemma": "이것",
+      "parentId": "w_m5_362_igeot",
+      "reason": "Contraction of 이것 + topic particle 은; fully covered by curated 이것/이거. Teach as a spoken form on the existing row."
+    },
+    "기다리": {
+      "status": "inflected",
+      "canonicalLemma": "기다리다",
+      "parentId": "w_m5_295_gidarida",
+      "reason": "Truncated stem of curated 기다리다 (to wait); no row from this fragment."
+    },
+    "건데": {
+      "status": "deferred",
+      "reason": "Grammar-only contraction 것 + 인데 (the thing is...); grammar surface, not a vocabulary row."
+    },
+    "다르": {
+      "status": "inflected",
+      "canonicalLemma": "다르다",
+      "parentId": "w_m5_633_dareuda",
+      "reason": "Truncated stem of curated 다르다 (to be different); no row from this fragment."
+    },
+    "만드": {
+      "status": "inflected",
+      "canonicalLemma": "만들다",
+      "parentId": "w_m5_286_mandeulda",
+      "reason": "Tokenizer artifact of 만들다's ㄹ-drop forms (만드는/만드세요); same lemma as 만들/만든. No row."
+    },
+    "재밌": {
+      "status": "inflected",
+      "canonicalLemma": "재미있다",
+      "parentId": "w0807_jaemiitda",
+      "reason": "Truncated stem of 재밌다, the standard colloquial contraction of curated 재미있다 (to be fun); teach the contraction on the existing row. No new row."
+    },
+    "한데": {
+      "status": "deferred",
+      "reason": "Dominantly the grammar form 하다 + -ㄴ데 (background/contrast); the rare noun 한데 (open air / one place) has no corpus support here. Grammar surface, not a row."
+    },
+    "고등": {
+      "status": "rejected",
+      "reason": "Bound Sino-Korean prefix 고등- (high-grade), a tokenization fragment of 고등학교/고등학생; never a standalone lexical item."
+    },
+    "라구": {
+      "status": "deferred",
+      "reason": "Nonstandard colloquial spelling of the quotative ending -라고; grammar surface, not a vocabulary row."
+    },
+    "비슷": {
+      "status": "inflected",
+      "canonicalLemma": "비슷하다",
+      "reason": "Truncated stem of 비슷하다 (to be similar). The lemma is NOT curated — flagged as a high-value future candidate; fragment never a row."
+    },
+    "느끼": {
+      "status": "inflected",
+      "canonicalLemma": "느끼다",
+      "reason": "Truncated stem of 느끼다 (to feel). The lemma is NOT curated — flagged as a high-value future candidate; fragment never a row."
+    },
+    "따라서": {
+      "status": "accepted",
+      "canonicalLemma": "따라서",
+      "reason": "Conjunctive adverb 'therefore / accordingly' — lexicalized standalone dictionary lemma (written/formal register), distinct from the 따르다 inflection; not curated. Safe elective candidate."
+    },
+    "열린": {
+      "status": "inflected",
+      "canonicalLemma": "열리다",
+      "reason": "Attributive past of 열리다 (to be opened / be held), passive of curated 열다 (w1217_yeolda / w_m2_yeolda_hold_event). The passive lemma itself is uncurated — noted for future review; fragment never a row."
+    },
+    "인해": {
+      "status": "deferred",
+      "reason": "Grammar-only causal marker ~로 인해 (due to, from 인하다); written-register grammar surface, not a vocabulary row."
+    },
+    "한편": {
+      "status": "accepted",
+      "canonicalLemma": "한편",
+      "reason": "Sino-Korean noun/adverb 'meanwhile / on the other hand' — standalone dictionary lemma used as a discourse connector in news and writing; not curated. Safe elective candidate."
+    },
+    "냐고": {
+      "status": "deferred",
+      "reason": "Grammar-only interrogative quotative ending -냐고; grammar surface, not a vocabulary row."
+    },
+    "야지": {
+      "status": "deferred",
+      "reason": "Grammar-only colloquial resolution/obligation ending -아야지/-야지; grammar surface, not a vocabulary row."
+    },
+    "그리": {
+      "status": "needs-sense-review",
+      "reason": "Ambiguous between the adverb 그리 (that much, mostly bound to negation: 그리 크지 않다) and tokenization fragments of 그리고/그리다; corpus dominance unclear — preserve for review."
+    },
+    "려면": {
+      "status": "deferred",
+      "reason": "Grammar-only intentional conditional ending -(으)려면 (if one intends to); grammar surface, not a vocabulary row."
+    },
+    "생겼": {
+      "status": "inflected",
+      "canonicalLemma": "생기다",
+      "reason": "Past stem of 생기다 (to come into being; to look like). Lemma uncurated — flagged as a high-value future candidate (일이 생기다, 잘생기다 family); fragment never a row."
+    },
+    "생기": {
+      "status": "inflected",
+      "canonicalLemma": "생기다",
+      "reason": "Truncated stem of 생기다 — same lemma decision as 생겼; lemma uncurated, flagged for future authoring; fragment never a row."
+    },
+    "혹은": {
+      "status": "accepted",
+      "canonicalLemma": "혹은",
+      "reason": "Conjunction 'or / alternatively' — standalone dictionary lemma (written register, contrasts with spoken 아니면); not curated. Safe elective candidate."
+    },
+    "고마워": {
+      "status": "inflected",
+      "canonicalLemma": "고맙다",
+      "reason": "Intimate-register conjugation of 고맙다 (to be thankful). The lemma 고맙다 is NOT curated — flagged as a high-value future candidate (ㅂ-irregular); this form never becomes a row."
+    },
+    "나와": {
+      "status": "inflected",
+      "canonicalLemma": "나오다",
+      "reason": "Conjugated surface of 나오다 — same polysemous-parent decision as 나왔 (w_m6_3046 / w_m6_3047); parent left null by explicit policy; fragment never a row."
+    },
+    "다운": {
+      "status": "needs-sense-review",
+      "reason": "Ambiguous between the bound suffix -다운 (worthy of: 남자다운) and the loanword 다운 (down/download contexts); no safe single-sense row without review."
+    },
+    "멋진": {
+      "status": "inflected",
+      "canonicalLemma": "멋지다",
+      "reason": "Attributive form of 멋지다 (to be cool/stylish). Lemma uncurated — flagged as a high-value future candidate (멋 is the root noun); fragment never a row."
+    },
+    "셔서": {
+      "status": "deferred",
+      "reason": "Grammar-only honorific connective -(으)셔서 (-시- + -어서); grammar surface, not a vocabulary row."
+    }
+  }
+}
