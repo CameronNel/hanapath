@@ -32,8 +32,8 @@ restructured under the live v2 curriculum plan:
 [`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md). Read
 that plan before changing Words; its hardened owner decisions override older
 provisional Words prose. The old Words finalization queue is historical
-(`docs/archive/WORDS_FINAL_ROADMAP.md`). Do not regress either section; the
-audits are the guard.
+(deleted 2026-07-10 with the rest of `docs/archive/`; recover from git history
+if ever needed). Do not regress either section; the audits are the guard.
 
 Do not assume "done" or "not done" from memory or from a checkmark: **verify
 scorecard claims against the actual data** (the Words scorecard was wrong four
@@ -55,7 +55,6 @@ Sentences queue.
 | `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, **verbatim** (source of record) |
 | `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; reference for its pedagogy + data axes) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — reuse these engines for Sentences) |
-| `docs/archive/` | Superseded plans (original blueprint, closed Words roadmap, Words research source) — never work from these |
 | `HANDOVER.md` | Repo snapshot + conventions for the next contributor |
 | `.agents/AGENTS.md` | Offline audio-generation pipeline rules |
 | `README.md` | Product overview + run instructions |
@@ -68,7 +67,7 @@ Sentences queue.
    schemas. Existing curated rows and lessons must keep passing the audits.
 3. **Run the audits** after touching learning data:
    `node scripts/audit-words-data.mjs --strict`,
-   `node scripts/audit-sentences-data.mjs --strict` (once it exists), and
+   `node scripts/audit-sentences-data.mjs --strict`, and
    `node scripts/audit-alphabet-audio.mjs --strict`; run
    `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
    any loaded asset version; `node --check` any JS you edit.

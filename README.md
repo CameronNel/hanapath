@@ -53,7 +53,6 @@ node scripts/audit-app-shell.mjs
 - **[`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)** — the governing north star for the Sentences section, with current path/hub work in [`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md), Track H authored-content work in [`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md), and research in [`docs/SENTENCES_TEACHING_SPEC_SOURCE.md`](docs/SENTENCES_TEACHING_SPEC_SOURCE.md).
 - [`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md) — the north star for the (shipped) Words section.
 - [`docs/WORDS_SECTION_MASTER_SPEC.md`](docs/WORDS_SECTION_MASTER_SPEC.md) — the Words implementation plan (schema/SRS/lesson-flow reference).
-- [`docs/archive/`](docs/archive/README.md) — superseded plans (original blueprint, closed Words roadmap, Words research source).
 - [`HANDOVER.md`](HANDOVER.md) — repo snapshot and conventions.
 
 ## Notes
