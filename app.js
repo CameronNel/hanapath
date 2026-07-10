@@ -15639,7 +15639,7 @@ function sentenceStudyHtml(session) {
   const row = session.rows[session.studyIndex];
   const total = session.rows.length;
   return `
-    <div class="card word-card" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot">
       <div class="eyebrow">Listen and shadow · ${session.studyIndex + 1} of ${total}</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Say the line out loud</h2>
       <div class="word-card-ko-tile">
@@ -15677,14 +15677,15 @@ function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "", includeRev
     ? `<button class="button secondary compact" type="button" data-sentence-reveal>Show answer</button>`
     : "";
   return `
-    <div class="word-type-box sent-type-box">
+    <div class="word-type-box sent-type-box sent-typing-shell">
       ${prefix}
       <div class="word-input-wrap">
         <input class="sentence-input" id="ssTypedInput" type="text" autocomplete="off" autocapitalize="off"
-          spellcheck="false" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(session.typed)}" lang="ko" />
+          spellcheck="false" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(session.typed)}" lang="ko" data-sentence-input />
         <button class="word-input-erase" type="button" data-sentence-helper-erase aria-label="Delete last block">⌫</button>
       </div>
-      <div class="word-type-feedback" role="status" aria-live="polite">${session.attempts
+      <div class="sent-input-hint">No Korean keyboard? Use the Word bank below.</div>
+      <div class="word-type-feedback sent-live-feedback" role="status" aria-live="polite">${session.attempts
         ? `<strong>Not yet.</strong> Try again, or reveal it. <span class="fs-xs">(Spacing and punctuation don't count against you.)</span>`
         : ""}</div>
     </div>
@@ -15981,7 +15982,7 @@ function sentenceQuestionHtml(session) {
   }
 
   return `
-    <div class="card word-card" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot">
       ${innerContent}
     </div>
   `;
@@ -16024,7 +16025,7 @@ function sentenceFeedbackHtml(session) {
   }
 
   return `
-    <div class="card word-card" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot">
       <div class="word-card-progress-row">
         <div class="word-card-progress-tile">
           <div class="eyebrow">${escapeHtml(progressLabel)}</div>
@@ -16086,7 +16087,7 @@ function sentenceSummaryHtml(session) {
     `)
     .join("");
   return `
-    <div class="card word-card" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot">
       <div class="eyebrow">Session complete</div>
       <h2 class="screen-title" style="margin-bottom:8px;">${firstTryCorrect} of ${session.rows.length} first try</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${correct === session.rows.length
@@ -16419,25 +16420,28 @@ function bindSentenceSessionRoot(root) {
   if (!session) return;
   const row = session.rows[session.index];
 
-  const input = root.querySelector("#ssTypedInput");
-  if (input) {
-    input.addEventListener("input", () => {
-      if (session.lockedPrefix && !input.value.startsWith(session.lockedPrefix)) {
-        const suffix = input.value.replace(session.lockedPrefix, "");
-        input.value = session.lockedPrefix + suffix;
-      }
-      session.typed = input.value;
-      persistSentenceLessonSession();
-    });
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        submitSentenceAnswer();
-        persistSentenceLessonSession();
-      }
-    });
-    if (session.phase === "question" && !session.attempts) input.focus();
-  }
+  const input = root.querySelector("[data-sentence-input]");
+  if (input && session.phase === "question" && !session.attempts) input.focus();
+
+  // Keep all session interactions on one delegated root, so rerendering a
+  // prompt never leaves stale input handlers behind.
+  root.addEventListener("input", (event) => {
+    const typedInput = event.target.closest("[data-sentence-input]");
+    if (!typedInput || !root.contains(typedInput)) return;
+    if (session.lockedPrefix && !typedInput.value.startsWith(session.lockedPrefix)) {
+      const suffix = typedInput.value.replace(session.lockedPrefix, "");
+      typedInput.value = session.lockedPrefix + suffix;
+    }
+    session.typed = typedInput.value;
+    persistSentenceLessonSession();
+  });
+  root.addEventListener("keydown", (event) => {
+    const typedInput = event.target.closest("[data-sentence-input]");
+    if (!typedInput || !root.contains(typedInput) || event.key !== "Enter") return;
+    event.preventDefault();
+    submitSentenceAnswer();
+    persistSentenceLessonSession();
+  });
 
   root.addEventListener("click", (event) => {
     const speakBtn = event.target.closest("[data-speak]");

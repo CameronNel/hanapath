@@ -734,7 +734,7 @@ pointers.
 > the §7 verification playbook, including the **reachability check** — the
 > Words path UI once shipped unreachable (§9.3); do not repeat that.
 
-- [ ] **S2-A — Session restyle + resume** [coder]
+- [x] **S2-A — Session restyle + resume** [coder]
   Adopt the guided-Words card language for the EXISTING Studio session
   (hero tile, progress row, nav grid, typing shell, aria-live feedback,
   delegated `data-sentence-*` events) per §3.12, and add
