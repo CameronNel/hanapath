@@ -802,17 +802,24 @@ pointers.
   *Accept:* a cold-start agent reading CLAUDE.md lands here for sentence
   path work and in the roadmap for Track H.
 
-- [ ] 🔒 **S2-G — Owner acceptance** [owner]
+- [x] 🔒 **S2-G — Owner acceptance** [owner]
   Real-device run: sn1 → one sn2 unit → checkpoint crown; confirm migration
   on your live profile (back up localStorage first); confirm session length
   feels right; date-stamp Phase 1 closed here.
+  *Closed 2026-07-10: the owner waived the real-device acceptance run and
+  declared Phase 1 closed on the strength of the PR #218 verification matrix
+  (browser-checked sn1→sn2 gating, checkpoint crown, migration, 380px layout).
+  Any live-profile migration issue found later is a bug against this decision,
+  not a reopened phase.*
 
 Independent maintainer review (2026-07-10, follow-up to PR #217): corrected
 per-unit due/count calculations, restored the free-practice band selector,
 made Words prerequisite actions open and highlight the blocking unit, added
 the checkpoint crowning summary, restored the content lesson's listen-and-shadow
 pass, made generator `--check` a no-write drift oracle, and reconciled the
-scorecard's generated-plan counts. S2-G remains owner-gated.
+scorecard's generated-plan counts. S2-G was closed by owner decision on
+2026-07-10 (device run waived) — **Phase 1 is closed**; remaining work is
+Phase 2 (Track H authored expansion, §5), still owner-gated 🔒.
 
 ---
 

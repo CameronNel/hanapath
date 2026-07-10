@@ -18,10 +18,12 @@ otherwise.
 > the Korean in Hangul, with a tip / word-bank / next-chunk / reveal helper
 > ladder.
 >
-> **Current active work (owner-approved 2026-07-10):** the Sentences
-> lesson/hub structure is being restructured into a Duolingo-style path per
+> **The curriculum-v2 path restructure is shipped and Phase 1 is closed
+> (owner-accepted 2026-07-10):** the Sentences lesson/hub structure now runs
+> the Duolingo-style path from
 > **[`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md)**
-> — for curriculum/path/hub/runner work take the next unchecked box THERE.
+> (S2-A…S2-G all complete). The next work is that plan's **Phase 2 (§5) —
+> authored expansion via Track H, owner-gated 🔒**.
 > Bank-level and authored-content work (Track H) still follows
 > **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)**
 > (one box = one PR; owner-gated items are marked 🔒), cross-checked against
