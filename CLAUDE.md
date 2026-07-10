@@ -39,10 +39,11 @@ Do not assume "done" or "not done" from memory or from a checkmark: **verify
 scorecard claims against the actual data** (the Words scorecard was wrong four
 times: PRs #50, #51, #54, and the b385e77 merge loss).
 
-Gemini completed Words Phase 2 P2-0 tooling. **Claude Code** took over the
-active Words Phase 2 queue from Luna on 2026-07-10 (owner decision); the
-handoff brief in `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md` still states the
-queue's rules. This is not part of the active Sentences queue.
+Gemini completed Words Phase 2 P2-0 tooling; Claude completed the top-1,000
+sweep and first draft pack, which Codex independently reviewed and merged.
+**Luna** owns the remaining Words Phase 2 marathon queue from rank 1001 onward
+in `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`. This is not part of the active
+Sentences queue.
 
 ## Document map (what to read for what)
 
