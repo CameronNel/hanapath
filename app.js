@@ -16155,7 +16155,7 @@ function sentenceQuestionHtml(session) {
   }
 
   return `
-    <div class="card word-card sent-session" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot" data-ss-id="${row.id}">
       ${innerContent}
     </div>
   `;
@@ -16198,7 +16198,7 @@ function sentenceFeedbackHtml(session) {
   }
 
   return `
-    <div class="card word-card sent-session" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot" data-ss-id="${row.id}">
       <div class="word-card-progress-row">
         <div class="word-card-progress-tile">
           <div class="eyebrow">${escapeHtml(progressLabel)}</div>

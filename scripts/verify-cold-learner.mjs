@@ -123,6 +123,7 @@ async function seedPostWordsLearner(page) {
     asked: 25,
     phaseOneCompleted: alphabetLessonIds,
     vocabLessonCompleted: allWordLessonIds,
+    vocabPlanVersion: 2,
     vocabKnownRanks: Array.from({ length: 25 }, (_, index) => index + 1),
     navTab: "today",
     route: { hub: "learn", item: null, stage: null },
@@ -165,14 +166,14 @@ async function answerCurrentQuestion(page, { useHelpers = false, reveal = false 
       if (!row) return [];
       const stripEnd = (token) => String(token).replace(/[.!?...,~]+$/, "");
       const expectedWords = (row.tokens || row.korean.split(/\s+/)).map(stripEnd).filter(Boolean);
-      const tiles = Array.from(document.querySelectorAll("button[data-ss-tile]"));
+      const tiles = Array.from(document.querySelectorAll("button[data-sentence-tile]"));
       const tileTexts = tiles.map((btn) => stripEnd(btn.textContent.trim()));
       const indices = [];
       const used = new Set();
       for (const word of expectedWords) {
         const index = tileTexts.findIndex((text, candidateIndex) => text === word && !used.has(candidateIndex));
         if (index !== -1) {
-          indices.push(tiles[index].getAttribute("data-ss-tile"));
+          indices.push(tiles[index].getAttribute("data-sentence-tile"));
           used.add(index);
         }
       }
@@ -180,24 +181,47 @@ async function answerCurrentQuestion(page, { useHelpers = false, reveal = false 
     }, question.id);
 
     for (const index of clickIndices) {
-      await page.click(`button[data-ss-tile="${index}"]`);
+      await page.click(`button[data-sentence-tile="${index}"]`);
     }
-    await page.click("button[data-ss-check]");
+    await page.click("button[data-sentence-check]");
   } else if (question.mode === "shadow") {
-    await page.click("button[data-ss-selfmark='correct']");
+    await page.click("button[data-sentence-selfmark='correct']");
   } else if (reveal) {
-    await page.click("button[data-ss-reveal]");
+    await page.click("button[data-sentence-reveal]");
   } else {
     if (useHelpers) {
-      await page.click("button[data-ss-helper='tip']");
-      await page.click("button[data-ss-helper='wordBank']");
-      await page.click("button[data-ss-helper='nextChunk']");
+      await page.click("button[data-sentence-helper='tip']");
+      // Close the tip overlay before clicking other helpers to prevent overlay interception
+      await page.click("button[data-sentence-overlay-close]");
+      await page.click("button[data-sentence-helper='wordBank']");
+      await page.click("button[data-sentence-helper='nextChunk']");
     }
-    await page.fill("#ssTypedInput", question.expected);
-    await page.click("button[data-ss-check]");
+    await page.waitForSelector("#ssTypedInput", { state: "visible", timeout: 5000 });
+    await page.evaluate((val) => {
+      const input = document.querySelector("#ssTypedInput");
+      if (input) {
+        input.value = val;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    }, question.expected);
+    await page.click("button[data-sentence-check]");
   }
 
-  await page.waitForSelector("button[data-ss-next]", { state: "visible", timeout: 5000 });
+  // Wait for either the rating buttons or the next button to appear on the feedback screen
+  const rateBtn = page.locator("button[data-sentence-rate='known']");
+  const nextBtn = page.locator("button[data-sentence-next]");
+  await Promise.race([
+    rateBtn.waitFor({ state: "visible", timeout: 5000 }),
+    nextBtn.waitFor({ state: "visible", timeout: 5000 }),
+  ]);
+
+  if (await rateBtn.isVisible()) {
+    await rateBtn.click();
+    await page.waitForTimeout(600); // Allow rate button click animation and slide-out to complete
+  } else {
+    await nextBtn.click();
+  }
+
   return question;
 }
 
@@ -241,7 +265,6 @@ try {
   }
   console.log("PASS: Translate & Type records helper-backed success.");
 
-  await page.click("button[data-ss-next]");
   const unaidedQuestion = await answerCurrentQuestion(page);
   event = await latestSentenceEvent(page);
   if (!event || event.sentenceId !== unaidedQuestion.id || event.result !== "correct" || event.helperCount !== 0) {
@@ -250,16 +273,20 @@ try {
   console.log("PASS: Translate & Type records unaided success.");
 
   await page.evaluate((key) => {
-    const state = JSON.parse(localStorage.getItem(key));
+    const raw = localStorage.getItem(key);
+    console.log("BEFORE FORCING DUE DATES: ", raw);
+    const state = JSON.parse(raw);
     for (const record of Object.values(state.sentencesProgress.results || {})) {
       record.due = Date.now() - 1000;
     }
+    console.log("AFTER FORCING DUE DATES: ", JSON.stringify(state.sentencesProgress.results));
     localStorage.setItem(key, JSON.stringify(state));
   }, storageKey);
   await page.reload();
   await openSentenceStudio(page);
   const dueCountText = await page.textContent("#screen-speak");
-  if (!/Reviews due\s*[\s\S]*?[1-9]/.test(dueCountText)) {
+  console.log("DUE COUNT TEXT IS:", JSON.stringify(dueCountText));
+  if (!/[1-9]\d*\s+due/.test(dueCountText)) {
     throw new Error("Expected at least one sentence review to resurface after forcing due dates into the past.");
   }
   console.log("PASS: due sentence reviews resurface on the hub.");

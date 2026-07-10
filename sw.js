@@ -1,5 +1,5 @@
-// [2026-07-10] Cache bumped to v309: Sentence Studio path review fixes and mobile polish.
-const CACHE_NAME = "hanapath-shell-v309";
+// [2026-07-10] Cache bumped to v310: Add data-ss-id back for cold learner verification.
+const CACHE_NAME = "hanapath-shell-v310";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -15,7 +15,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260710j",
-  "./app.js?v=20260710n",
+  "./app.js?v=20260710p",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
