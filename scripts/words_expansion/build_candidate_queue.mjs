@@ -84,7 +84,10 @@ function loadCuratedWords() {
 
 // Parse decision history
 function loadDecisions(decisionsPath, hashes) {
+  // This is an append-only history: a later batch may replace an earlier
+  // disposition for the same source row, but an event itself may not repeat.
   const decisions = new Map();
+  const decisionEvents = new Set();
   if (!fs.existsSync(decisionsPath)) return decisions;
   
   const lines = fs.readFileSync(decisionsPath, "utf8").split(/\r?\n/);
@@ -100,14 +103,16 @@ function loadDecisions(decisionsPath, hashes) {
     }
     
     const key = `${record.sourceFileHash}:${record.sourceRowKey}`;
-    if (decisions.has(key)) {
-      throw new Error(`Duplicate decision key: ${key} at line ${i + 1}`);
+    const eventKey = `${key}:${record.batchId || "(unspecified)"}`;
+    if (decisionEvents.has(eventKey)) {
+      throw new Error(`Duplicate decision event: ${eventKey} at line ${i + 1}`);
     }
     if (!VALID_STATUSES.has(record.status)) {
       throw new Error(`Invalid status "${record.status}" at line ${i + 1}`);
     }
     
-    decisions.set(key, record);
+    decisionEvents.add(eventKey);
+    decisions.set(key, record); // Later immutable history supersedes earlier disposition.
   }
 
   const currentHashes = new Set(Object.keys(hashes));
