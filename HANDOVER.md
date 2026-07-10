@@ -54,11 +54,11 @@ below.
   - **Gotcha:** the background orbs animate forever — do **not** `await Promise.all(document.getAnimations().map(a => a.finished))` (it never resolves). Use a fixed wait instead.
 
 ## Words section planning
-- **Delegation:** Gemini completed P2-0 tooling. **Luna** owns the active
-  Words Phase 2 queue in `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`. Her first
-  task is to harden the import boundary before qualifying the first elective
-  pack; `import_batch.mjs --commit` is not approved for a real batch yet.
-  Keep this queue separate from Sentences PRs.
+- **Delegation:** **Luna** owns the Words Phase 2 marathon queue in
+  `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`. Tooling, the top-1,000 sweep, and
+  the first coherent draft lesson are complete; she continues at rank 1001,
+  one pushed draft PR per batch, until credits are low. Real imports remain
+  owner-gated. Keep this queue separate from Sentences PRs.
 - **Current live plan:** [`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md).
   Its hardened owner decisions are binding; the older Words specs below are
   historical implementation references and must not override it. P1-0 through

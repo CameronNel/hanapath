@@ -132,10 +132,11 @@ then trust the number. The current honest remaining work is the Sentences
 spec's **§8 scorecard** + the roadmap's checkboxes, re-derived per the
 roadmap's §2.1.
 
-**Words delegation:** Gemini completed P2-0 tooling. **Luna** owns the active
-Words Phase 2 queue in `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`: first harden
-the import boundary, then qualify and propose the first elective-pack batch.
-Do not pull Words work into a Sentences PR.
+**Words delegation:** **Luna** owns the active Words Phase 2 marathon queue in
+`docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`. The import boundary, top-1,000
+qualification sweep, and first coherent draft lesson are complete; continue at
+rank 1001 using one pushed draft PR per batch. Do not pull Words work into a
+Sentences PR.
 
 If the user named a specific task, do that instead.
 
