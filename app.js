@@ -9354,7 +9354,7 @@ function renderPhaseOneConcept(lesson) {
   els.phaseOneActionButton.disabled = false;
   els.phaseOneActionButton.textContent =
     phaseOneView.slideIndex === lesson.concepts.length - 1
-      ? phaseOneView.reviewingCheckpoint ? "Return to questions" : "Start checkpoint"
+      ? phaseOneView.reviewingCheckpoint ? "Return to questions" : "Start questions"
       : "Next card";
   placePhaseOneActions();
   animateMotionScope(els.phaseOneStage);
@@ -9519,6 +9519,8 @@ function renderCheckpointAudioHelpers(lesson, question) {
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
   const hasComponents = components.length > 0;
 
+  if (!hasTarget && !hasComponents) return "";
+
   let html = '<div class="checkpoint-audio-helpers" style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: 100%;">';
 
   if (hasTarget) {
@@ -9528,9 +9530,6 @@ function renderCheckpointAudioHelpers(lesson, question) {
   if (hasComponents) {
     html += '<button class="button secondary compact" type="button" data-checkpoint-speak-components="' + escapeHtml(components.join(",")) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear building blocks</button>';
   }
-
-  // Quick Reference button for ALL phase one stage checkpoints
-  html += '<button class="button secondary compact" type="button" data-checkpoint-open-reference style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">📖 View Alphabet Reference</button>';
 
   html += '</div>';
   return html;
@@ -9650,17 +9649,19 @@ function renderPhaseOneQuestion(lesson) {
 
     bindCheckpointAudioHelpers(els.phaseOneStage, lesson);
   } else {
-    const questionVisual = renderFlashableHangulText(question.visual, "checkpoint-token");
+    const isDirectionalPrompt = question.visual === "right →";
+    const questionVisual = isDirectionalPrompt ? { html: "" } : renderFlashableHangulText(question.visual, "checkpoint-token");
+    const questionPrompt = isDirectionalPrompt ? question.prompt + " →" : question.prompt;
 
     els.phaseOneStage.innerHTML =
       '<p class="alphabet-hangul-hint" id="alphabetHangulHint">Click any Hangul to hear it</p>' +
       '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
       '<div class="checkpoint-card">' +
-      '<div class="checkpoint-visual" lang="ko" data-phase-one-visual>' +
-      questionVisual.html +
-      "</div>" +
+      (questionVisual.html
+        ? '<div class="checkpoint-visual" lang="ko" data-phase-one-visual>' + questionVisual.html + "</div>"
+        : "") +
       "<h4>" +
-      escapeHtml(question.prompt) +
+      escapeHtml(questionPrompt) +
       "</h4>" +
       "<p>" +
       escapeHtml(question.detail) +
@@ -9690,7 +9691,6 @@ function renderPhaseOneQuestion(lesson) {
   els.phaseOneActionButton.textContent =
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
-  addFirstTryNote();
   if (phaseOneView.answered) restoreAnsweredChoiceVisual(question);
   animateMotionScope(els.phaseOneStage);
 }
@@ -9812,22 +9812,6 @@ function renderPhaseOneCourse() {
   renderPhaseOneOverview();
   renderPhaseOneTrack();
   renderPhaseOnePlayer();
-}
-
-// Repaint an already-answered checkpoint after a fresh re-render (e.g. returning
-// from the alphabet quick reference). Without this the question redraws blank
-// with a disabled "Next question" while `phaseOneView.answered` stays true — so
-// option taps are ignored and the learner can neither re-answer nor advance.
-// Beginners are often surprised that fumbling a checkpoint (wrong-then-right)
-// can still fail the stage: the pass score counts only the first attempt on each
-// question. Surface that once, unobtrusively, on every checkpoint card.
-function addFirstTryNote() {
-  const card = els.phaseOneStage && els.phaseOneStage.querySelector(".checkpoint-card");
-  if (!card || card.querySelector(".first-try-note")) return;
-  const note = document.createElement("div");
-  note.className = "first-try-note";
-  note.textContent = "Only your first answer on each question counts toward your score.";
-  card.insertBefore(note, card.firstChild);
 }
 
 function restoreAnsweredChoiceVisual(question) {
@@ -9990,7 +9974,6 @@ function renderPhaseOneBuildQuestion(lesson, question) {
   els.phaseOneActionButton.textContent =
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
-  addFirstTryNote();
   if (phaseOneView.answered) restoreAnsweredBuildVisual(question);
   animateMotionScope(els.phaseOneStage);
 }
@@ -13284,11 +13267,6 @@ function getRequestedLearnLaunch() {
 function mountLessonPlayer(area, index, { onResult } = {}) {
   if (!area) return;
   const lesson = phaseOneLessons[index];
-  const initialSource =
-    phaseOneView.mode === "learn"
-      ? lesson?.concepts?.[phaseOneView.slideIndex] || lesson?.concepts?.[0] || null
-      : lesson?.questions?.[phaseOneView.questionIndex] || lesson?.questions?.[0] || null;
-  const initialLabel = getPhaseOneButtonLabel(initialSource);
   const alphabetProgress = getAlphabetProgress();
   const completedStages = alphabetProgress.completedCount;
   const completionPercent = Math.round((completedStages / Math.max(1, alphabetProgress.total)) * 100);
@@ -13303,7 +13281,6 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
             </div>
           </div>
           <button class="button secondary compact word-card-bank-button alphabet-reference-button" id="hpReferenceBtn" type="button">📚 Hangul Reference</button>
-          <button class="hear-btn" id="hpHearBtn" type="button">▶ ${escapeHtml(initialLabel)}</button>
         </div>
         <div class="alphabet-lesson-heading">
           <div class="eyebrow">Alphabet lesson</div>
@@ -13345,9 +13322,11 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     state.quickRefActive = true;
     openEntireAlphabet();
   });
-  els.phaseOneHearButton.addEventListener("click", () => {
-    void playPhaseOneVoiceSequence();
-  });
+  if (els.phaseOneHearButton) {
+    els.phaseOneHearButton.addEventListener("click", () => {
+      void playPhaseOneVoiceSequence();
+    });
+  }
   els.phaseOneBackButton.addEventListener("click", goBackPhaseOne);
   els.phaseOneActionButton.addEventListener("click", () => {
     const wasResult = phaseOneView.mode === "result";
@@ -13399,23 +13378,17 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     }
     const token = e.target.closest("[data-speak]");
     if (token && stageEl.contains(token)) {
-      const hint = document.getElementById("alphabetHangulHint");
-      if (hint) hint.hidden = true;
       flashElement(token);
       void speak(token.dataset.speak || token.textContent || "");
       return;
     }
     const tile = e.target.closest(".bd-tile");
     if (tile instanceof HTMLButtonElement && !tile.disabled) {
-      const hint = document.getElementById("alphabetHangulHint");
-      if (hint) hint.hidden = true;
       answerPhaseOneBuild(tile.dataset.jamo || "", tile);
       return;
     }
     const btn = e.target.closest(".lesson-option");
     if (btn instanceof HTMLButtonElement && !btn.disabled) {
-      const hint = document.getElementById("alphabetHangulHint");
-      if (hint) hint.hidden = true;
       answerPhaseOneQuestion(btn.dataset.option || "", btn);
     }
   });
@@ -13425,8 +13398,6 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
     const token = e.target.closest("[data-speak]");
     if (!token || !stageEl.contains(token)) return;
     e.preventDefault();
-    const hint = document.getElementById("alphabetHangulHint");
-    if (hint) hint.hidden = true;
     flashElement(token);
     void speak(token.dataset.speak || token.textContent || "");
   });

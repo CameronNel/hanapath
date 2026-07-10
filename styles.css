@@ -723,19 +723,26 @@ input, textarea { cursor: text; }
   gap: 8px;
 }
 .alphabet-lesson-topline {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
 }
 .alphabet-progress-chip {
-  min-width: 148px;
+  min-width: 0;
+  min-height: 64px;
+  box-sizing: border-box;
   padding: 9px 12px 8px;
   border: 1px solid rgba(91,157,255,.24);
   border-radius: 12px;
   background: rgba(91,157,255,.09);
 }
-.alphabet-progress-chip .eyebrow { margin: 0; }
+.alphabet-progress-chip .eyebrow {
+  margin: 0;
+  white-space: nowrap;
+  font-size: .68rem;
+  letter-spacing: .05em;
+}
 .alphabet-progress-track {
   height: 5px;
   margin-top: 7px;
@@ -787,8 +794,12 @@ input, textarea { cursor: text; }
   white-space: nowrap;
 }
 .alphabet-lesson-player .alphabet-reference-button {
-  min-height: 0;
-  padding: 5px 9px;
+  width: 100%;
+  min-width: 0;
+  min-height: 64px;
+  box-sizing: border-box;
+  justify-content: center;
+  padding: 8px 9px;
   font-size: .78rem;
   white-space: nowrap;
 }
@@ -1133,8 +1144,15 @@ button.bd-assembled:hover {
 .checkpoint-card h4 { font-size: 1rem; font-weight: 700; margin: 0 0 6px; }
 .checkpoint-card p  { font-size: .85rem; color: var(--muted); margin: 0 0 14px; }
 
-.lesson-options { display: flex; flex-direction: column; gap: 8px; }
+.lesson-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
 .lesson-option {
+  width: 100%;
+  min-height: 58px;
   padding: 12px 16px;
   background: rgba(255,255,255,.05);
   border: 1.5px solid var(--line);
@@ -3209,7 +3227,7 @@ li { margin-bottom: 4px; }
   gap: 8px;
   align-items: stretch;
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .lesson-option-row .lesson-option {
