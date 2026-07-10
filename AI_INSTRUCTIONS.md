@@ -10,8 +10,8 @@ Build the HanaPath **Sentences** section toward the target defined in
 [`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md). The app is
 a **vanilla static PWA — no framework, no build step.** The **alphabet and
 Words sections are complete and protected** — do not regress them (the Words
-finalization closed 2026-07-05; its historical queue is
-`docs/archive/WORDS_FINAL_ROADMAP.md`).
+finalization closed 2026-07-05; its historical queue was deleted 2026-07-10 —
+recover from git history if needed).
 
 ## Step 0 — Orient (do this first, every time)
 
@@ -125,7 +125,7 @@ content while every audit stayed green — after any merge touching a curated
 data file, diff the merged tip against `main` at the row/field level.)
 
 So before starting or reporting further progress on any milestone: run the
-relevant strict audit (`audit-sentences-data.mjs` once it exists,
+relevant strict audit (`audit-sentences-data.mjs`,
 `audit-words-data.mjs` always) and read its **Annotation sources** output,
 spot-check a few rows in a `node -e` one-liner or a browser reload, and only
 then trust the number. The current honest remaining work is the Sentences
@@ -157,7 +157,7 @@ If the user named a specific task, do that instead.
 
 ```bash
 node --check <file.js>                              # any JS you touched
-node scripts/audit-sentences-data.mjs --strict      # Sentences data (once Track A2 ships)
+node scripts/audit-sentences-data.mjs --strict      # Sentences data
 node scripts/audit-words-data.mjs --strict          # Words data (must stay green)
 node scripts/audit-alphabet-audio.mjs --strict      # audio coverage
 node scripts/audit-app-shell.mjs                    # index.html / sw.js cache-version wiring

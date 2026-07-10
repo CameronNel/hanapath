@@ -34,7 +34,7 @@ data (strict audits + spot-checked rows) before building on them. The
 **alphabet section is complete and protected**. The **Words section is live on
 its v2 curriculum** ([`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md))
 and is **read-only for Sentences work** — do not regress either (the closed
-Words v1 queue is archived at `docs/archive/WORDS_FINAL_ROADMAP.md`).
+Words v1 queue was deleted 2026-07-10; recover from git history if needed).
 
 ## Hard rules
 
@@ -43,7 +43,7 @@ Words v1 queue is archived at `docs/archive/WORDS_FINAL_ROADMAP.md`).
 2. **Additive, backward-compatible** changes to the Words and Sentences data
    schemas. Existing curated rows and lessons must keep passing the audits.
 3. **Run the audits** after touching learning data: `node scripts/audit-words-data.mjs --strict`,
-   `node scripts/audit-sentences-data.mjs --strict` (once it exists),
+   `node scripts/audit-sentences-data.mjs --strict`,
    and `node scripts/audit-alphabet-audio.mjs --strict`; run
    `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
    any loaded asset version; `node --check` any JS you edit.
@@ -70,7 +70,6 @@ Words v1 queue is archived at `docs/archive/WORDS_FINAL_ROADMAP.md`).
 | `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, verbatim (source of record) |
 | `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; pedagogy + data-axes reference) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — engines Sentences reuses) |
-| `docs/archive/` | Superseded plans (closed Words roadmap, original blueprint, Words research source) — never work from these |
 | `HANDOVER.md` | Repo snapshot + conventions |
 | `.agents/AGENTS.md` | Offline audio-generation pipeline rules |
 | `README.md` | Product overview + run instructions |
