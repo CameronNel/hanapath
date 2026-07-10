@@ -15,11 +15,12 @@ defined in [`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)
 — the north star (§3–§7 are the design contract, §8 the status scorecard, §9
 the milestone sheet). Work is split across two queues:
 
-- **Curriculum/path/hub/runner restructure (owner-approved 2026-07-10):**
+- **Curriculum/path/hub/runner restructure — shipped; Phase 1 closed
+  2026-07-10:**
   **[`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md)**
-  — the Duolingo-style, K-pop-trainee-themed sentence path. If you were asked
-  to "do the next task," take the next unchecked box in its §4 queue
-  (S2-A…S2-G; one box = one PR).
+  — the Duolingo-style, K-pop-trainee-themed sentence path. Its §4 queue
+  (S2-A…S2-G) is complete; the next work is its **Phase 2 (§5), owner-gated
+  🔒** — do not start it without owner approval of themes and volume.
 - **Bank-level and authored-content work (Track H, owner-gated 🔒):**
   **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)** —
   read its §0 ground rules and §2 runbook first.

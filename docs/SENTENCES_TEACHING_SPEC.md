@@ -220,7 +220,9 @@ All modes draw from the bank and grade into the sentence SRS.
 > **Phase 1 path update (2026-07-10):** the Sentence Studio hub now uses the
 > curriculum-v2 path from `docs/SENTENCES_CURRICULUM_V2_PLAN.md`, including
 > unit gating, checkpoint crowns, continuation, and Words unlock guidance.
-> Owner acceptance of the complete sn1 → sn2 progression remains open in S2-G.
+> S2-G closed 2026-07-10 by owner decision (real-device run waived); Phase 1
+> of the curriculum-v2 plan is complete. Next up is its Phase 2 (Track H
+> authored expansion), owner-gated.
 
 Update this table in the same PR as the work it describes. **Claims here must
 be re-derived from data, not copied forward.**

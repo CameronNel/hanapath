@@ -89,10 +89,11 @@ than guessing.
 
 ## Step 2 — Pick the next task
 
-**Sentence curriculum/path/hub/runner work (current active queue):** take the
-next unchecked box in §4 of
+**Sentence curriculum/path/hub/runner work:** the §4 queue of
 [`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md)
-(S2-A…S2-G; one box = one PR; owner-approved 2026-07-10).
+(S2-A…S2-G) is **complete — Phase 1 closed 2026-07-10**. The next Sentences
+work is that plan's Phase 2 (§5, authored expansion via Track H), which is
+owner-gated 🔒.
 
 **Bank-level / authored-content work:** the batch-by-batch execution queue is
 [`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md). Read its
