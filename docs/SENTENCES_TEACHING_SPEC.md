@@ -234,7 +234,7 @@ be re-derived from data, not copied forward.**
 | 5 | Sentence SRS (`state.sentencesProgress`) | ✅ done — Leitner scheduling + due dates (C3) fully built and scheduled |
 | 6 | i+1 gating via `focusWordIds` | ✅ done — new-sentence queue restricted to known words (C2) |
 | 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows explicit; **accuracy sweep complete for all s0001–s2060** (finished 2026-07-07). |
-| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ✅ **done** — 12 curriculum-v2 pattern-cluster units are playable, with Words-based unit gating, linear lesson progression, collapsible path UI, and checkpoint crowns wired in Sentence Studio |
+| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ✅ **done** — 75 curriculum-v2 units (333 content lessons + 75 checkpoints) are playable, with Words-based unit gating, linear lesson progression, collapsible path UI, and checkpoint crowns wired in Sentence Studio |
 | 9 | Shadow mode + speech-stub wiring for sentences | ✅ **done** — automated listen → slow replay → prompt timing flow, SpeechRecognition transcript grading, and soundNote details surfaced |
 | 10 | Transform drill (inflection engine) | ✅ **done** — inflected surface replacement via `HANAPATH_INFLECT`, deck and mixed session integration at band ≥3, and SRS grading integration |
 | 11 | Authored expansion batches (gap-driven) | ❌ not started (owner-gated volume) |

@@ -807,6 +807,13 @@ pointers.
   on your live profile (back up localStorage first); confirm session length
   feels right; date-stamp Phase 1 closed here.
 
+Independent maintainer review (2026-07-10, follow-up to PR #217): corrected
+per-unit due/count calculations, restored the free-practice band selector,
+made Words prerequisite actions open and highlight the blocking unit, added
+the checkpoint crowning summary, restored the content lesson's listen-and-shadow
+pass, made generator `--check` a no-write drift oracle, and reconciled the
+scorecard's generated-plan counts. S2-G remains owner-gated.
+
 ---
 
 ## 5. Phase 2 — authored expansion (Track H, re-anchored; owner-gated 🔒)

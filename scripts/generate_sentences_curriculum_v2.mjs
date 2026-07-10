@@ -4,7 +4,9 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, "..");
+const root = process.env.HANAPATH_ROOT
+  ? path.resolve(process.env.HANAPATH_ROOT)
+  : path.resolve(__dirname, "..");
 const scriptsDir = path.join(root, "scripts");
 
 const sentencesCorePath = path.join(root, "sentences_core.js");
@@ -461,19 +463,9 @@ const outputCode = `// HanaPath sentences curriculum v2. Generated deterministic
 })();
 `;
 
-fs.writeFileSync(sentencesPlanV2Path, outputCode, "utf8");
-console.log("Wrote sentences_lesson_plan.js");
-
-// Write sentences_curriculum_v2_names.json back (in case we bootstrapped it)
-fs.writeFileSync(sentencesNamesPath, JSON.stringify(sentencesNames, null, 2) + "\n", "utf8");
-console.log("Wrote sentences_curriculum_v2_names.json");
-
-// Write lock file
 const lockContent = {
   schemaSha256: crypto.createHash("sha256").update(outputCode).digest("hex")
 };
-fs.writeFileSync(lockPath, JSON.stringify(lockContent, null, 2) + "\n", "utf8");
-console.log("Wrote sentences_curriculum_v2_lock.json");
 
 // Generate v2 report markdown
 const reportLines = [
@@ -504,5 +496,24 @@ for (const unit of sentenceUnits) {
   reportLines.push("");
 }
 
-fs.writeFileSync(reportPath, reportLines.join("\n"), "utf8");
-console.log("Wrote sentences_curriculum_v2_report.md");
+const outputs = [
+  { path: sentencesPlanV2Path, label: "sentences_lesson_plan.js", content: outputCode },
+  { path: sentencesNamesPath, label: "sentences_curriculum_v2_names.json", content: JSON.stringify(sentencesNames, null, 2) + "\n" },
+  { path: lockPath, label: "sentences_curriculum_v2_lock.json", content: JSON.stringify(lockContent, null, 2) + "\n" },
+  { path: reportPath, label: "sentences_curriculum_v2_report.md", content: reportLines.join("\n") },
+];
+
+if (process.argv.includes("--check")) {
+  const drifted = outputs.filter(({ path: outputPath, content }) => !fs.existsSync(outputPath) || fs.readFileSync(outputPath, "utf8") !== content);
+  if (drifted.length) {
+    console.error(`Sentences curriculum v2 output drift: ${drifted.map(({ label }) => label).join(", ")}. Run node scripts/generate_sentences_curriculum_v2.mjs and commit the regenerated files.`);
+    process.exitCode = 1;
+  } else {
+    console.log("Sentences curriculum v2 outputs match the deterministic generator.");
+  }
+} else {
+  outputs.forEach(({ path: outputPath, label, content }) => {
+    fs.writeFileSync(outputPath, content, "utf8");
+    console.log(`Wrote ${label}`);
+  });
+}

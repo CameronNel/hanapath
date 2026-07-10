@@ -41,6 +41,35 @@ function expectAuditFailure(label, mutateSource, mutateNames = (source) => sourc
   }
 }
 
+function expectGeneratorCheckFailure() {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "hanapath-sentence-generator-"));
+  try {
+    fs.mkdirSync(path.join(tempRoot, "scripts"));
+    for (const relativePath of ["sentences_core.js", "words_lesson_plan.js", "sentences_lesson_plan.js"]) {
+      fs.copyFileSync(path.join(root, relativePath), path.join(tempRoot, relativePath));
+    }
+    for (const relativePath of ["curriculum_v2_names.json", "sentences_curriculum_v2_names.json", "sentences_curriculum_v2_lock.json", "sentences_curriculum_v2_report.md"]) {
+      fs.copyFileSync(path.join(root, "scripts", relativePath), path.join(tempRoot, "scripts", relativePath));
+    }
+    const planPath = path.join(tempRoot, "sentences_lesson_plan.js");
+    fs.appendFileSync(planPath, "\n// deliberate self-test drift\n", "utf8");
+    const driftedSource = fs.readFileSync(planPath, "utf8");
+    const result = spawnSync(process.execPath, [path.join(root, "scripts", "generate_sentences_curriculum_v2.mjs"), "--check"], {
+      cwd: root,
+      encoding: "utf8",
+      env: { ...process.env, HANAPATH_ROOT: tempRoot },
+    });
+    if (result.status === 0 || !/output drift/.test(result.stderr)) {
+      throw new Error("Self-test error: generator --check accepted a drifted output.");
+    }
+    if (fs.readFileSync(planPath, "utf8") !== driftedSource) {
+      throw new Error("Self-test error: generator --check rewrote a drifted output.");
+    }
+  } finally {
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+}
+
 expectAuditFailure("duplicate sentence in content lessons", (source) => {
   return source.replace('"s0001",\n      "s0002",', '"s0001",\n      "s0001",\n      "s0002",');
 });
@@ -50,5 +79,6 @@ expectAuditFailure("missing sentence in checkpoint", (source) => {
 });
 
 expectAuditFailure("forbidden numeral/roman suffix in title", (source) => source, (source) => source.replace('"title": "Vocal Warmup"', '"title": "Vocal Practice II"'));
+expectGeneratorCheckFailure();
 
-console.log("Sentences curriculum v2 self-test passed: three invalid copies rejected by the production audit.");
+console.log("Sentences curriculum v2 self-test passed: three invalid copies rejected by the production audit and generator --check rejects drift without writing.");

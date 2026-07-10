@@ -4720,12 +4720,27 @@ function isSentenceUnitCrowned(unit, completedSet) {
   return activeCompleted.has(unit.checkpointId);
 }
 
-function getNextSentenceLesson(metWords, completedSet) {
+function getNextSentenceLesson(metWords, completedSet, progress) {
   const activeMet = metWords || getMetWords();
-  const activeCompleted = completedSet || new Set(getSentencesProgress().completedLessons || []);
-  return getSentenceLessons().find((lesson) => {
+  const activeProgress = progress || getSentencesProgress();
+  const activeCompleted = completedSet || new Set(activeProgress.completedLessons || []);
+  const available = getSentenceLessons().filter((lesson) => {
     return !activeCompleted.has(lesson.id) && isSentenceLessonUnlockedV2(lesson, activeMet, activeCompleted);
-  }) || null;
+  });
+  if (!available.length) return null;
+
+  // Keep the continuation hero in the learner's active unit instead of
+  // jumping back to the first incomplete lesson elsewhere in plan order.
+  const recentLessonId = activeProgress.reviewEvents
+    .slice()
+    .reverse()
+    .find((event) => event.lessonId)?.lessonId;
+  const recentUnitId = getSentenceLessonById(recentLessonId)?.unitId;
+  const recentUnit = getSentenceUnitById(recentUnitId);
+  const recentUnitInProgress = recentUnit
+    && !isSentenceUnitCrowned(recentUnit, activeCompleted)
+    && getSentenceUnitContentLessons(recentUnit).some((lesson) => activeCompleted.has(lesson.id));
+  return (recentUnitInProgress && available.find((lesson) => lesson.unitId === recentUnitId)) || available[0];
 }
 
 function completeSentenceSectionForTesting(sectionId) {
@@ -12599,7 +12614,7 @@ const HUB_DEFS = {
     items: [
       { id: "alphabet",   icon: "🎯", title: "Alphabet quiz",   sub: "Match letters to their sounds.", custom: "alphabetPractice" },
       { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
-      { id: "sentences",  icon: "🎯", title: "Sentence quiz",   sub: "Order and type full sentences.", target: "practice" },
+      { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Follow the guided path or practise full sentences.", target: "practice" },
       { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
       { id: "pronunciation", icon: "🎧", title: "Pronunciation drill", sub: "Train your ears on tensed/aspirated consonants & minimal pairs.", custom: "pronunciationDrill" },
     ],
@@ -14787,10 +14802,13 @@ function getMetWords() {
   return metWords;
 }
 
+let sentenceEarlyWordIdsCache = null;
 function getSentenceEarlyWordIds() {
+  if (sentenceEarlyWordIdsCache) return sentenceEarlyWordIdsCache;
   const snapshot = window.HANAPATH_WORD_V1_SNAPSHOT;
   const lessons = snapshot && snapshot.lessons && typeof snapshot.lessons === "object" ? snapshot.lessons : {};
-  return new Set(Object.entries(lessons).filter(([id]) => /^(w0|w1|w2)-/.test(id)).flatMap(([, ids]) => Array.isArray(ids) ? ids : []));
+  sentenceEarlyWordIdsCache = new Set(Object.entries(lessons).filter(([id]) => /^(w0|w1|w2)-/.test(id)).flatMap(([, ids]) => Array.isArray(ids) ? ids : []));
+  return sentenceEarlyWordIdsCache;
 }
 
 function isSentenceAvailable(row, metWords) {
@@ -14882,10 +14900,10 @@ function getDueSentenceCountForBand(band) {
   return count;
 }
 
-function getSentenceAnalyticsSnapshot() {
-  const progress = getSentencesProgress();
+function getSentenceAnalyticsSnapshot(activeProgress = null, activeRows = null) {
+  const progress = activeProgress || getSentencesProgress();
   const events = progress.reviewEvents || [];
-  const rowsById = new Map(getSentenceBankRows().map((row) => [row.id, row]));
+  const rowsById = new Map((activeRows || getSentenceBankRows()).map((row) => [row.id, row]));
   const validEvents = events.filter((event) => rowsById.has(event.sentenceId));
   const total = validEvents.length;
   const correct = validEvents.filter((event) => event.result === "correct").length;
@@ -15228,7 +15246,7 @@ function startSentenceLessonSession(lessonId) {
     questionStartedAt: 0,
     results: [],
   };
-  prepareSentenceQuestion();
+  if (sentenceStudioSession.phase === "question") prepareSentenceQuestion();
   persistSentenceLessonSession();
   renderPracticeView();
 }
@@ -15463,13 +15481,14 @@ function sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, prog
   const contentLessons = getSentenceUnitContentLessons(unit);
   const checkpoint = getSentenceLessonById(unit.checkpointId);
   const lessons = [...contentLessons, checkpoint].filter(Boolean);
-  const completed = lessons.filter((lesson) => completedSet.has(lesson.id)).length;
+  const completed = contentLessons.filter((lesson) => completedSet.has(lesson.id)).length;
   const crowned = isSentenceUnitCrowned(unit, completedSet);
   const unlocked = isSentenceUnitUnlocked(unit, metWords);
-  const due = lessons.filter((lesson) => {
-    const record = progress?.results?.[lesson.id];
-    return record?.seen > 0 && Number(record.due || 0) <= Date.now() && !completedSet.has(lesson.id);
-  }).length;
+  const due = Array.from(new Set(contentLessons.flatMap((lesson) => lesson.sentenceIds || [])))
+    .filter((sentenceId) => {
+      const record = progress?.results?.[sentenceId];
+      return record?.seen > 0 && Number(record.due || 0) <= Date.now();
+    }).length;
   const blockingWordUnit = !unlocked ? getSentenceBlockingWordUnitId(unit, metWords) : null;
   const lessonRows = lessons.map((lesson) => sentencePathLessonRowHtml(
     lesson,
@@ -15479,13 +15498,13 @@ function sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, prog
   )).join("");
   const lockNote = blockingWordUnit
     ? `<div class="vocab-path-lock-note">Learn <strong>${escapeHtml(blockingWordUnit.name)}</strong> in Words first.
-        <button class="button secondary compact" type="button" data-ss-goto="vocabulary" aria-label="Open Words for ${escapeHtml(blockingWordUnit.name)}">Open Words</button></div>`
+        <button class="button secondary compact" type="button" data-ss-word-unit="${escapeHtml(blockingWordUnit.id)}" aria-label="Open Words for ${escapeHtml(blockingWordUnit.name)}">Open Words</button></div>`
     : `<div class="vocab-path-lock-note">Meet the focus words from the Words path to unlock this unit.</div>`;
   return `<article class="vocab-path-unit ${crowned ? "is-crowned" : ""} ${!unlocked ? "is-locked" : ""}">
     <button class="vocab-path-unit-header" type="button" data-sentence-unit-toggle="${escapeHtml(unit.id)}" aria-expanded="${unlocked && !crowned ? "true" : "false"}">
       <span class="vocab-path-unit-emoji" aria-hidden="true">${escapeHtml(unit.emoji || "•")}</span>
       <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>Words twin · ${completed}/${lessons.length - 1} lessons</small></span>
-      ${due ? `<span class="pill accent sentence-path-due">${due} due</span>` : ""}
+      ${due ? `<span class="pill accent sentence-path-due">${due} line${due === 1 ? "" : "s"} due</span>` : ""}
       <span class="pill ${crowned ? "green" : unlocked ? "accent" : "muted"}">${crowned ? "Crowned" : unlocked ? `${completed}/${lessons.length - 1}` : "Locked"}</span>
     </button>
     <div class="vocab-path-unit-lessons" data-sentence-unit-lessons="${escapeHtml(unit.id)}" ${unlocked && !crowned ? "" : "hidden"}>
@@ -15496,14 +15515,14 @@ function sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, prog
 
 function sentencePathHtml(metWords, completedSet, activeLessonId, progress) {
   const sections = getSentenceSections().slice().sort((a, b) => a.order - b.order);
-  return `<div class="vocab-path sentence-path">${sections.map((section) => {
+  return `<div class="vocab-path sentence-path sent-path">${sections.map((section) => {
     const units = getSentenceUnits().filter((unit) => unit.sectionId === section.id).sort((a, b) => a.order - b.order);
     const unlockedUnits = units.filter((unit) => isSentenceUnitUnlocked(unit, metWords));
     const crowned = units.filter((unit) => isSentenceUnitCrowned(unit, completedSet)).length;
     const sectionOpen = unlockedUnits.some((unit) => unit.id === getSentenceLessonById(activeLessonId)?.unitId) || section.id === "sn1";
     return `<section class="vocab-path-section ${unlockedUnits.length ? "is-open" : "is-locked"}">
       <div class="vocab-path-section-header">
-        <div><div class="eyebrow">Section ${escapeHtml(section.id.toUpperCase())}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
+        <div><div class="eyebrow">Section ${section.order}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
         <span class="pill ${unlockedUnits.length ? "accent" : "muted"}">${unlockedUnits.length ? `${crowned}/${units.length} crowned` : "Locked"}</span>
       </div>
       ${unlockedUnits.length && sectionOpen
@@ -15517,26 +15536,58 @@ function sentencePathHtml(metWords, completedSet, activeLessonId, progress) {
 
 function sentenceStudioHubV2Html() {
   const rows = getSentenceBankRows();
+  if (!rows.length) {
+    return `<div class="card"><div class="eyebrow">Practice · Sentences</div><h2 class="screen-title" style="margin-bottom:8px;">Sentence Studio</h2><div class="screen-sub" style="margin-bottom:0;">The sentence bank failed to load. Reload the app to try again.</div></div>`;
+  }
   const progress = getSentencesProgress();
   const metWords = getMetWords();
+  const availableRows = rows.filter((row) => isSentenceAvailable(row, metWords));
   const completedSet = new Set(progress.completedLessons || []);
-  const nextLesson = getNextSentenceLesson(metWords, completedSet);
+  const nextLesson = getNextSentenceLesson(metWords, completedSet, progress);
   const units = getSentenceUnits();
   const unlockedUnits = units.filter((unit) => isSentenceUnitUnlocked(unit, metWords));
-  const dueCount = getTotalDueSentencesCount();
-  const analytics = getSentenceAnalyticsSnapshot();
-  const continueHtml = nextLesson
-    ? `<div class="card continue-hero sentence-continue-hero"><div class="eyebrow">Continue Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(nextLesson.title || "Next sentence lesson")}</h2><div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(nextLesson.goal || nextLesson.subtitle || "Keep the line moving.")}</div><button class="button primary compact" type="button" data-ss-lesson="${escapeHtml(nextLesson.id)}">Start lesson</button></div>`
-    : unlockedUnits.length
-      ? `<div class="card continue-hero"><div class="eyebrow">Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">Path complete</h2><div class="screen-sub" style="margin-bottom:0;">Review due lines or keep practising freely.</div></div>`
-      : `<div class="card continue-hero sentence-locked-hero"><div class="eyebrow">Start with Words</div><h2 class="screen-title" style="margin-bottom:8px;">Learn the words, then say the lines.</h2><div class="screen-sub" style="margin-bottom:12px;">Your sentence path opens as you meet the focus words in Words.</div><button class="button primary compact" type="button" data-ss-goto="vocabulary">Open Words</button></div>`;
+  const now = Date.now();
+  const dueCount = availableRows.filter((row) => {
+    const record = progress.results[row.id];
+    return record?.seen > 0 && Number(record.due || 0) <= now;
+  }).length;
+  const analytics = getSentenceAnalyticsSnapshot(progress, rows);
+  let firstBlockingUnit = null;
+  for (const unit of units) {
+    if (isSentenceUnitUnlocked(unit, metWords)) continue;
+    firstBlockingUnit = getSentenceBlockingWordUnitId(unit, metWords);
+    if (firstBlockingUnit) break;
+  }
+  const pathComplete = units.length > 0 && units.every((unit) => isSentenceUnitCrowned(unit, completedSet));
+  const continueHtml = dueCount >= SENTENCE_SESSION_LENGTH
+    ? `<div class="card continue-hero sentence-continue-hero"><div class="eyebrow">Reviews are due</div><h2 class="screen-title" style="margin-bottom:8px;">Bring ${dueCount} lines back.</h2><div class="screen-sub" style="margin-bottom:12px;">A short mixed session will start with the lines that need you most.</div><button class="button primary compact" type="button" data-ss-start="mixed">Review now</button></div>`
+    : nextLesson
+      ? `<div class="card continue-hero sentence-continue-hero"><div class="eyebrow">Continue Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(nextLesson.title || "Next sentence lesson")}</h2><div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(nextLesson.goal || nextLesson.subtitle || "Keep the line moving.")}</div><button class="button primary compact" type="button" data-ss-lesson="${escapeHtml(nextLesson.id)}">Start lesson</button></div>`
+      : pathComplete
+        ? `<div class="card continue-hero"><div class="eyebrow">Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">Path complete</h2><div class="screen-sub" style="margin-bottom:0;">Review due lines or keep practising freely.</div></div>`
+        : `<div class="card continue-hero sentence-locked-hero"><div class="eyebrow">${unlockedUnits.length ? "Next up in Words" : "Start with Words"}</div><h2 class="screen-title" style="margin-bottom:8px;">${unlockedUnits.length ? "Meet the next words to open more lines." : "Learn the words, then say the lines."}</h2><div class="screen-sub" style="margin-bottom:12px;">Your sentence path opens as you meet the focus words in Words.</div><button class="button primary compact" type="button" ${firstBlockingUnit ? `data-ss-word-unit="${escapeHtml(firstBlockingUnit.id)}"` : `data-ss-goto="vocabulary"`}>${firstBlockingUnit ? `Open ${escapeHtml(firstBlockingUnit.name)}` : "Open Words"}</button></div>`;
+  const bandChips = Array.from({ length: SENTENCE_BAND_COUNT }, (_, index) => index + 1)
+    .map((band) => {
+      const count = rows.filter((row) => row.band === band).length;
+      const availableAtBand = availableRows.filter((row) => row.band === band).length;
+      const availableCount = availableAtBand >= SENTENCE_SESSION_LENGTH
+        ? availableAtBand
+        : availableRows.filter((row) => row.band <= band).length;
+      const locked = availableCount < SENTENCE_SESSION_LENGTH;
+      return `<button class="filter-chip ${progress.band === band ? "active" : ""}" type="button" data-ss-band="${band}" ${locked ? "disabled" : ""}>Band ${band}${locked ? " · Locked" : ` · ${count}`}</button>`;
+    }).join("");
+  const selectedBandRows = availableRows.filter((row) => row.band === progress.band);
+  const sessionRows = selectedBandRows.length >= SENTENCE_SESSION_LENGTH
+    ? selectedBandRows
+    : selectedBandRows.concat(availableRows.filter((row) => row.band < progress.band));
+  const transformAvailable = sessionRows.filter((row) => buildSentenceTransformForRow(row)).length >= SENTENCE_SESSION_LENGTH;
   const modeCards = SENTENCE_MODES.map((mode) => {
-    const available = mode.id !== "transform" || getSentenceTransformRowsForBand(progress.band).length >= SENTENCE_SESSION_LENGTH;
+    const available = mode.id !== "transform" || transformAvailable;
     return `<button class="study-row ss-mode" type="button" data-ss-start="${escapeHtml(mode.id)}" ${available ? "" : "disabled"}><div><div class="study-row-ko">${escapeHtml(mode.label)}</div><div class="study-row-sub">${escapeHtml(available ? mode.sub : "More transform-ready sentences are needed for this path.")}</div></div><span class="pill muted">${escapeHtml(mode.tag)}</span></button>`;
   }).join("");
   return `${continueHtml}
     <div class="card"><div class="eyebrow">Sentence path</div><div class="screen-sub" style="margin-bottom:12px;">${rows.length} lines across ${units.length} Words-twin units. Finish a lesson to unlock the next line.</div>${sentencePathHtml(metWords, completedSet, nextLesson?.id || "", progress)}</div>
-    <div class="card"><div class="flex-between mb-12"><div><div class="eyebrow">Free practice</div><div class="screen-sub" style="margin-bottom:0;">Choose a drill outside the guided path.</div></div><span class="pill ${dueCount ? "accent" : "muted"}">${dueCount} due</span></div><div class="study-list">${modeCards}</div></div>
+    <div class="card"><div class="flex-between mb-12"><div><div class="eyebrow">Free practice</div><div class="screen-sub" style="margin-bottom:0;">Choose a band, then drill outside the guided path.</div></div><span class="pill ${dueCount ? "accent" : "muted"}">${dueCount} due</span></div><div class="ss-band-row mb-12">${bandChips}</div><div class="study-list">${modeCards}</div></div>
     <div class="card"><div class="flex-between mb-12"><div><div class="eyebrow">Sentence insights</div><div class="screen-sub" style="margin-bottom:0;">Your review trail stays attached to each line.</div></div><span class="pill muted">${analytics.total} events</span></div><div class="stats-grid"><div class="stat-box"><span class="sv">${analytics.correctPct}%</span><span class="sl">Accuracy</span></div><div class="stat-box"><span class="sv">${analytics.avgLatencyLabel}</span><span class="sl">Avg latency</span></div><div class="stat-box"><span class="sv">${analytics.helperUses}</span><span class="sl">Helpers used</span></div></div></div>`;
 }
 
@@ -16104,7 +16155,7 @@ function sentenceQuestionHtml(session) {
   }
 
   return `
-    <div class="card word-card sent-session" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot" data-ss-id="${row.id}">
       ${innerContent}
     </div>
   `;
@@ -16147,7 +16198,7 @@ function sentenceFeedbackHtml(session) {
   }
 
   return `
-    <div class="card word-card sent-session" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot" data-ss-id="${row.id}">
       <div class="word-card-progress-row">
         <div class="word-card-progress-tile">
           <div class="eyebrow">${escapeHtml(progressLabel)}</div>
@@ -16193,10 +16244,32 @@ function sentenceFeedbackHtml(session) {
 function sentenceSummaryHtml(session) {
   const correct = session.results.filter((r) => r.correct).length;
   const lesson = session.lessonId ? getSentenceLessonById(session.lessonId) : null;
+  const isCheckpoint = lesson?.type === "checkpoint";
   const requiredPct = Number(lesson?.pass?.minFirstTryPct || 75);
   const firstTryCorrect = session.results.filter((r) => r.firstTry).length;
   const firstTryPct = session.rows.length ? Math.round((firstTryCorrect / session.rows.length) * 100) : 0;
   const lessonPassed = Boolean(session.lessonId) && firstTryPct >= requiredPct;
+  const resultEyebrow = isCheckpoint && lessonPassed
+    ? "Checkpoint complete"
+    : session.lessonId
+      ? `${escapeHtml(lesson?.title || "Sentence lesson")} ${lessonPassed ? "complete" : "— almost"}`
+      : "Session complete";
+  const resultTitle = isCheckpoint && lessonPassed
+    ? "Unit crowned"
+    : session.lessonId
+      ? lessonPassed ? "Lesson complete" : isCheckpoint ? "Checkpoint not passed yet" : "Good try — review and retry"
+      : `${firstTryCorrect} of ${session.rows.length} first try`;
+  const resultCopy = session.lessonId
+    ? lessonPassed
+      ? isCheckpoint
+        ? "Stage rehearsal passed. This unit is crowned, and its next line is ready on the path."
+        : "You passed on first-try accuracy. Keep the line moving."
+      : isCheckpoint
+        ? `This checkpoint was not passed yet. You need ${requiredPct}% first-try accuracy, and these lines are saved for review.`
+        : `You need ${requiredPct}% first-try accuracy to pass. Missed lines are saved for review.`
+    : correct === session.rows.length
+      ? "Perfect run. These sentences will come back less often."
+      : "Missed lines are saved for review.";
   const rowsHtml = session.rows
     .map((row, i) => `
       <div class="study-row" data-sentence-preview-speak="${escapeHtml(row.voiceText || row.korean)}" style="cursor: pointer;">
@@ -16209,12 +16282,10 @@ function sentenceSummaryHtml(session) {
     `)
     .join("");
   return `
-    <div class="card word-card sent-session" id="sentenceSessionRoot">
-      <div class="eyebrow">Session complete</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">${firstTryCorrect} of ${session.rows.length} first try</h2>
-      <div class="screen-sub" style="margin-bottom:12px;">${correct === session.rows.length
-        ? "Perfect run. These sentences will come back less often."
-        : `You need ${requiredPct}% first-try accuracy to pass. Missed lines are saved for review.`}</div>
+    <div class="card word-card sent-session ${isCheckpoint && lessonPassed ? "word-checkpoint-crowned" : ""}" id="sentenceSessionRoot">
+      <div class="eyebrow">${resultEyebrow}</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">${resultTitle}</h2>
+      <div class="screen-sub" style="margin-bottom:12px;">${resultCopy}</div>
       <div class="study-list">${rowsHtml}</div>
       <div class="word-card-actions word-card-nav-actions" style="margin-top:12px;">
         <button class="button primary compact" type="button" data-sentence-again>Practice again</button>
@@ -16722,6 +16793,20 @@ function bindSentenceStudioEvents(el) {
   });
   el.querySelectorAll("[data-ss-goto]").forEach((btn) => {
     btn.addEventListener("click", () => showTab(btn.dataset.ssGoto));
+  });
+  el.querySelectorAll("[data-ss-word-unit]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const unitId = btn.dataset.ssWordUnit;
+      openVocabularySubsection("lessons", "words-home");
+      const unitButton = document.querySelector(`[data-word-unit-toggle="${CSS.escape(unitId)}"]`);
+      const lessons = document.querySelector(`[data-word-unit-lessons="${CSS.escape(unitId)}"]`);
+      if (lessons) lessons.removeAttribute("hidden");
+      if (unitButton) {
+        unitButton.setAttribute("aria-expanded", "true");
+        unitButton.scrollIntoView({ block: "center", behavior: "smooth" });
+        flashElement(unitButton);
+      }
+    });
   });
   el.querySelectorAll("[data-ss-band]").forEach((btn) => {
     btn.addEventListener("click", () => {
