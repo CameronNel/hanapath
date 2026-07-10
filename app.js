@@ -2858,6 +2858,9 @@ const TEST_UNLOCK_ALL_STAGES = false;
 // section. Set false before any learner-facing release; the handler is also
 // guarded so a stale button cannot mutate completion when disabled.
 const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
+// Sentence-path equivalent of the Words section test helper. This remains off
+// in the shipped app; it only supports deterministic local path smoke tests.
+const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -4647,12 +4650,22 @@ function getSentenceUnitContentLessons(unit) {
 }
 
 const sentenceUnitFocusWordsMap = new Map();
+let sentenceBankByIdCache = null;
+let sentenceBankByIdSource = null;
+function getSentenceBankById() {
+  const rows = getSentenceBankRows();
+  if (sentenceBankByIdSource !== rows) {
+    sentenceBankByIdSource = rows;
+    sentenceBankByIdCache = new Map(rows.map((row) => [row.id, row]));
+  }
+  return sentenceBankByIdCache;
+}
 function initSentenceUnitFocusWordsMap() {
   if (sentenceUnitFocusWordsMap.size > 0) return;
   const units = getSentenceUnits();
   const lessons = getSentenceLessons();
   const rows = getSentenceBankRows();
-  const rowsById = new Map(rows.map(r => [r.id, r]));
+  const rowsById = getSentenceBankById();
   for (const unit of units) {
     const focusWords = new Set();
     const uLessons = lessons.filter(l => l.unitId === unit.id && l.type === "content");
@@ -4715,6 +4728,21 @@ function getNextSentenceLesson(metWords, completedSet) {
   }) || null;
 }
 
+function completeSentenceSectionForTesting(sectionId) {
+  if (!TEST_ENABLE_SENTENCE_SECTION_COMPLETION || !isSentenceCurriculumV2()) return;
+  const section = getSentenceSectionById(sectionId);
+  if (!section) return;
+  const lessonIds = getSentenceUnits()
+    .filter((unit) => unit.sectionId === section.id)
+    .flatMap((unit) => [...unit.lessonIds, unit.checkpointId])
+    .filter(Boolean);
+  const progress = getSentencesProgress();
+  progress.completedLessons = [...new Set([...(progress.completedLessons || []), ...lessonIds])];
+  state.sentenceLessonSession = null;
+  sentenceStudioSession = null;
+  saveState();
+}
+
 function getLegacyCompletedSentenceIds(legacyLessonIds) {
   const snapshot = window.HANAPATH_SENTENCE_V1_SNAPSHOT;
   const ids = new Set();
@@ -4740,20 +4768,12 @@ function migrateSentencesState() {
   const progress = getSentencesProgress();
   if (isSentenceCurriculumV2() && Number(progress.planVersion || 1) < 2) {
     const legacyLessonIds = [...(progress.completedLessons || [])];
-    const creditedSentenceIds = getLegacyCompletedSentenceIds(legacyLessonIds);
     progress.completedLessons = [];
     for (const lesson of getSentenceLessons()) {
       if (lesson.type !== "content") continue;
       const sIds = lesson.sentenceIds || [];
-      if (sIds.length && sIds.every((id) => creditedSentenceIds.has(id))) {
+      if (sIds.length && sIds.every((id) => Number(progress.results[id]?.seen || 0) > 0)) {
         progress.completedLessons.push(lesson.id);
-      }
-    }
-    const completedSet = new Set(progress.completedLessons);
-    for (const unit of getSentenceUnits()) {
-      const uLessons = getSentenceUnitContentLessons(unit);
-      if (uLessons.length && uLessons.every((lesson) => completedSet.has(lesson.id))) {
-        progress.completedLessons.push(unit.checkpointId);
       }
     }
     progress.completedLessonsLegacy = legacyLessonIds;
@@ -14562,7 +14582,7 @@ function getSentenceLessonById(lessonId) {
 }
 
 function getSentenceLessonRows(lesson) {
-  const byId = new Map(getSentenceBankRows().map((row) => [row.id, row]));
+  const byId = getSentenceBankById();
   const ids = lesson?.type === "checkpoint" ? (lesson.reviewSentenceIds || []) : (lesson?.sentenceIds || []);
   return ids.map((id) => byId.get(id)).filter(Boolean);
 }
@@ -14588,10 +14608,13 @@ function getSentencesProgress() {
 function serializeSentenceLessonSession(session) {
   if (!session || !session.lessonId || session.phase === "summary") return null;
   return {
-    version: 1,
+    version: 2,
     modeId: session.modeId,
     lessonId: session.lessonId,
     lessonTitle: session.lessonTitle || "",
+    lessonType: session.lessonType || "content",
+    studyIndex: session.studyIndex || 0,
+    drillPlan: session.drillPlan || [],
     rows: session.rows.map((row) => row.id),
     index: session.index,
     phase: session.phase,
@@ -14612,24 +14635,27 @@ function serializeSentenceLessonSession(session) {
 }
 
 function rehydrateSentenceLessonSession(snapshot) {
-  if (!snapshot || snapshot.version !== 1) return null;
+  if (!snapshot || snapshot.version !== 2) return null;
   if (typeof snapshot.lessonId !== "string") return null;
   if (!Array.isArray(snapshot.rows)) return null;
 
   const bankRows = getSentenceBankRows();
-  const byId = new Map(bankRows.map((row) => [row.id, row]));
+  const byId = getSentenceBankById();
   const rows = snapshot.rows.map((id) => byId.get(id)).filter(Boolean);
   if (rows.length !== snapshot.rows.length) return null;
 
   if (!Number.isInteger(snapshot.index) || snapshot.index < 0 || snapshot.index >= rows.length) return null;
 
-  const validPhases = new Set(["question", "feedback", "summary"]);
+  const validPhases = new Set(["study", "question", "feedback", "summary"]);
   if (!validPhases.has(snapshot.phase)) return null;
 
   return {
     modeId: snapshot.modeId,
     lessonId: snapshot.lessonId,
     lessonTitle: snapshot.lessonTitle || "",
+    lessonType: snapshot.lessonType === "checkpoint" ? "checkpoint" : "content",
+    studyIndex: Number.isInteger(snapshot.studyIndex) && snapshot.studyIndex >= 0 ? snapshot.studyIndex : 0,
+    drillPlan: Array.isArray(snapshot.drillPlan) ? snapshot.drillPlan : [],
     rows: rows,
     index: snapshot.index,
     phase: snapshot.phase,
@@ -15153,17 +15179,40 @@ function openSentenceLesson(lessonId) {
 function startSentenceLessonSession(lessonId) {
   const lesson = getSentenceLessonById(lessonId);
   if (!lesson || !isSentenceLessonUnlocked(lesson)) return;
-  const rows = getSentenceLessonRows(lesson);
+  let rows = getSentenceLessonRows(lesson);
+  if (lesson.type === "checkpoint") {
+    const progress = getSentencesProgress();
+    const maxPrompts = Math.max(1, Number(lesson.promptBounds?.max) || rows.length);
+    rows = rows
+      .slice()
+      .sort((a, b) => {
+        const aRecord = progress.results[a.id] || {};
+        const bRecord = progress.results[b.id] || {};
+        return (Number(aRecord.box) || 0) - (Number(bRecord.box) || 0)
+          || (Number(aRecord.due) || 0) - (Number(bRecord.due) || 0)
+          || a.id.localeCompare(b.id);
+      })
+      .slice(0, maxPrompts);
+  }
   if (!rows.length) return;
+  const drillPlan = lesson.type === "content"
+    ? (Array.isArray(lesson.drillPlan) ? lesson.drillPlan : [])
+    : rows.map((row, index) => ({
+      sentenceId: row.id,
+      mode: index === rows.length - 1 ? "listen" : index === rows.length - 2 ? "build" : "translate",
+    }));
   stopSpeech();
   sentenceLessonView = null;
   sentenceStudioSession = {
     modeId: "lesson",
     lessonId,
     lessonTitle: lesson.title,
+    lessonType: lesson.type === "checkpoint" ? "checkpoint" : "content",
+    studyIndex: 0,
+    drillPlan,
     rows,
     index: 0,
-    phase: "question",
+    phase: lesson.type === "content" && isSentenceCurriculumV2() ? "study" : "question",
     typed: "",
     attempts: 0,
     helperLevel: 0,
@@ -15185,7 +15234,11 @@ function startSentenceLessonSession(lessonId) {
 }
 
 function sentenceQuestionMode(session = sentenceStudioSession) {
-  if (session.modeId === "lesson") return session.index % 2 === 0 ? "translate" : "build";
+  if (session.modeId === "lesson") {
+    const configured = (session.drillPlan || []).find((entry) => entry.sentenceId === session.rows[session.index]?.id)?.mode;
+    if (configured === "transform" && !buildSentenceTransformForRow(session.rows[session.index])) return "build";
+    return configured || (session.index % 2 === 0 ? "translate" : "build");
+  }
   if (session.modeId !== "mixed") return session.modeId;
   const progress = getSentencesProgress();
   let mode = ["translate", "build", "listen", "shadow"][session.index % 4];
@@ -15292,6 +15345,7 @@ function recordSentenceResult(row, correct, revealed, meta = {}) {
     mode,
     correct,
     revealed,
+    firstTry: Boolean(correct && !revealed && sentenceStudioSession.attempts === 0),
     helpersUsed,
     latencyMs,
     transformId: meta.transformId || null,
@@ -15325,9 +15379,12 @@ function advanceSentenceSession() {
     const progress = getSentencesProgress();
     progress.sessionsDone += 1;
     if (session.lessonId) {
-      const correct = session.results.filter((result) => result.correct).length;
-      const passCount = Math.ceil(session.rows.length * 0.67);
-      if (correct >= passCount && !progress.completedLessons.includes(session.lessonId)) {
+      const lesson = getSentenceLessonById(session.lessonId);
+      const requiredPct = Number(lesson?.pass?.minFirstTryPct || 75);
+      const firstTryPct = session.rows.length
+        ? (session.results.filter((result) => result.firstTry).length / session.rows.length) * 100
+        : 0;
+      if (firstTryPct >= requiredPct && !progress.completedLessons.includes(session.lessonId)) {
         progress.completedLessons.push(session.lessonId);
       }
     }
@@ -15574,6 +15631,29 @@ function sentenceLessonIntroHtml(lesson) {
     <div class="card">
       <div class="eyebrow mb-12">Examples</div>
       <div class="study-list">${examples}</div>
+    </div>
+  `;
+}
+
+function sentenceStudyHtml(session) {
+  const row = session.rows[session.studyIndex];
+  const total = session.rows.length;
+  return `
+    <div class="card word-card" id="sentenceSessionRoot">
+      <div class="eyebrow">Listen and shadow · ${session.studyIndex + 1} of ${total}</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Say the line out loud</h2>
+      <div class="word-card-ko-tile">
+        <button class="sent-card-ko" type="button" lang="ko" data-sentence-play aria-label="Hear ${escapeHtml(row.korean)}">
+          <span class="word-card-ko-main">${escapeHtml(row.korean)}</span>
+          <span class="word-card-ko-rom">${escapeHtml(approximateSentenceRomanization(row.voiceText || row.korean))}</span>
+        </button>
+        <button class="word-card-ko-play" type="button" lang="ko" data-sentence-play aria-label="Play ${escapeHtml(row.korean)}">▶</button>
+      </div>
+      <div class="screen-sub" style="margin:14px 0;">${escapeHtml(row.english)}</div>
+      <div class="word-card-actions word-card-nav-actions">
+        <button class="button secondary compact" type="button" data-sentence-exit>Exit</button>
+        <button class="button primary compact" type="button" data-sentence-study-next>${session.studyIndex + 1 >= total ? "Start practice" : "Next line"}</button>
+      </div>
     </div>
   `;
 }
@@ -15989,8 +16069,11 @@ function sentenceFeedbackHtml(session) {
 
 function sentenceSummaryHtml(session) {
   const correct = session.results.filter((r) => r.correct).length;
-  const passCount = session.lessonId ? Math.ceil(session.rows.length * 0.67) : 0;
-  const lessonPassed = session.lessonId && correct >= passCount;
+  const lesson = session.lessonId ? getSentenceLessonById(session.lessonId) : null;
+  const requiredPct = Number(lesson?.pass?.minFirstTryPct || 75);
+  const firstTryCorrect = session.results.filter((r) => r.firstTry).length;
+  const firstTryPct = session.rows.length ? Math.round((firstTryCorrect / session.rows.length) * 100) : 0;
+  const lessonPassed = Boolean(session.lessonId) && firstTryPct >= requiredPct;
   const rowsHtml = session.rows
     .map((row, i) => `
       <div class="study-row" data-sentence-preview-speak="${escapeHtml(row.voiceText || row.korean)}" style="cursor: pointer;">
@@ -16005,10 +16088,10 @@ function sentenceSummaryHtml(session) {
   return `
     <div class="card word-card" id="sentenceSessionRoot">
       <div class="eyebrow">Session complete</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">${correct} of ${session.rows.length} correct</h2>
+      <h2 class="screen-title" style="margin-bottom:8px;">${firstTryCorrect} of ${session.rows.length} first try</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${correct === session.rows.length
         ? "Perfect run. These sentences will come back less often."
-        : "Missed sentences come back sooner in your next sessions."}</div>
+        : `You need ${requiredPct}% first-try accuracy to pass. Missed lines are saved for review.`}</div>
       <div class="study-list">${rowsHtml}</div>
       <div class="word-card-actions word-card-nav-actions" style="margin-top:12px;">
         <button class="button primary compact" type="button" data-sentence-again>Practice again</button>
@@ -16044,6 +16127,8 @@ function renderPracticeView() {
     el.innerHTML = lesson ? sentenceLessonIntroHtml(lesson) : sentenceStudioHubHtml();
   } else if (!sentenceStudioSession) {
     el.innerHTML = sentenceStudioHubHtml();
+  } else if (sentenceStudioSession.phase === "study") {
+    el.innerHTML = sentenceStudyHtml(sentenceStudioSession);
   } else if (sentenceStudioSession.phase === "question") {
     el.innerHTML = sentenceQuestionHtml(sentenceStudioSession);
   } else if (sentenceStudioSession.phase === "feedback") {
@@ -16055,7 +16140,11 @@ function renderPracticeView() {
   bindSentenceStudioEvents(el);
 
   const session = sentenceStudioSession;
-  if (session && session.phase === "question" && !session.autoPlayed) {
+  if (session && session.phase === "study" && !session.autoPlayed) {
+    session.autoPlayed = true;
+    const row = session.rows[session.studyIndex];
+    speak(row.voiceText || row.korean);
+  } else if (session && session.phase === "question" && !session.autoPlayed) {
     const qMode = sentenceQuestionMode(session);
     if (qMode === "listen") {
       session.autoPlayed = true;
@@ -16395,7 +16484,21 @@ function bindSentenceSessionRoot(root) {
     }
     const againBtn = event.target.closest("[data-sentence-again]");
     if (againBtn && root.contains(againBtn)) {
-      startSentenceStudioSession(session.modeId);
+      if (session.lessonId) startSentenceLessonSession(session.lessonId);
+      else startSentenceStudioSession(session.modeId);
+      return;
+    }
+    const studyNextBtn = event.target.closest("[data-sentence-study-next]");
+    if (studyNextBtn && root.contains(studyNextBtn)) {
+      if (session.studyIndex + 1 < session.rows.length) {
+        session.studyIndex += 1;
+        session.autoPlayed = false;
+      } else {
+        session.index = 0;
+        prepareSentenceQuestion();
+      }
+      persistSentenceLessonSession();
+      renderPracticeView();
       return;
     }
     const exitBtn = event.target.closest("[data-sentence-exit]");

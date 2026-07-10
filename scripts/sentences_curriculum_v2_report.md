@@ -627,7 +627,7 @@ Total checkpoints: 75
   - **sn7-actions-u6-l2** (Mixing Session Cut): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-actions-u6-l3** (Art Preview Replay): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
-### Unit: sn7-daily-u6 (Morning routines to brea 📅)
+### Unit: sn7-daily-u6 (Morning routines 📅)
 - Section: sn7
 - Twin Words Unit: s7-daily-u6
 - Total rows: 27
@@ -719,7 +719,7 @@ Total checkpoints: 75
   - **sn8-shopping-u4-l2** (Wardrobe Check Beats): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn8-shopping-u4-l3** (Stage Makeup Tune): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
-### Unit: sn8-actions-u7 (Getting things done to p 🏃)
+### Unit: sn8-actions-u7 (Getting things done 🏃)
 - Section: sn8
 - Twin Words Unit: s8-actions-u7
 - Total rows: 20
@@ -728,7 +728,7 @@ Total checkpoints: 75
   - **sn8-actions-u7-l2** (Mixing Session Rehearsal): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn8-actions-u7-l3** (Art Preview Session): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
-### Unit: sn8-feelings-u7 (How was your day rumor 💭)
+### Unit: sn8-feelings-u7 (How was your day? 💭)
 - Section: sn8
 - Twin Words Unit: s8-feelings-u7
 - Total rows: 30
@@ -739,7 +739,7 @@ Total checkpoints: 75
   - **sn8-feelings-u7-l4** (Pose Rehearsal Focus): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn8-feelings-u7-l5** (Trainee Diary Practice): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
-### Unit: sn8-travel-u7 (Finding your way going o ✈️)
+### Unit: sn8-travel-u7 (Finding your way ✈️)
 - Section: sn8
 - Twin Words Unit: s8-travel-u7
 - Total rows: 30
@@ -750,7 +750,7 @@ Total checkpoints: 75
   - **sn8-travel-u7-l4** (Choreo Check Briefing): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn8-travel-u7-l5** (Dorm Talk Study): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
-### Unit: sn8-feelings-u8 (Rainy-day moods freshnes 💭)
+### Unit: sn8-feelings-u8 (Rainy-day moods 💭)
 - Section: sn8
 - Twin Words Unit: s8-feelings-u8
 - Total rows: 30
@@ -761,7 +761,7 @@ Total checkpoints: 75
   - **sn8-feelings-u8-l4** (Concept Talk Flow): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn8-feelings-u8-l5** (Behind Camera Beats): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
-### Unit: sn8-travel-u8 (Getting around town to g ✈️)
+### Unit: sn8-travel-u8 (Getting around town ✈️)
 - Section: sn8
 - Twin Words Unit: s8-travel-u8
 - Total rows: 19
@@ -770,7 +770,7 @@ Total checkpoints: 75
   - **sn8-travel-u8-l2** (Morning Jog Tune): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn8-travel-u8-l3** (Producer Chat Demo): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
-### Unit: sn8-feelings-u9 (Describing the room to g 💭)
+### Unit: sn8-feelings-u9 (Describing the room 💭)
 - Section: sn8
 - Twin Words Unit: s8-feelings-u9
 - Total rows: 30
@@ -779,9 +779,9 @@ Total checkpoints: 75
   - **sn8-feelings-u9-l2** (Mirror Practice Replay): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn8-feelings-u9-l3** (Album Review Drill): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn8-feelings-u9-l4** (Dorm Dinner Check): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn8-feelings-u9-l5** (First Stage Run Run): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn8-feelings-u9-l5** (First Stage Run-through): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
-### Unit: sn8-travel-u9 (At the station tourist s ✈️)
+### Unit: sn8-travel-u9 (At the station ✈️)
 - Section: sn8
 - Twin Words Unit: s8-travel-u9
 - Total rows: 18

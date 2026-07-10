@@ -1,5 +1,5 @@
 // [2026-07-10] Cache bumped to v304: adopt guided-Words card language and add durable Sentences session persistence.
-const CACHE_NAME = "hanapath-shell-v304";
+const CACHE_NAME = "hanapath-shell-v305";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,8 +11,8 @@ const APP_SHELL = [
   "./words_lesson_plan.js?v=20260709f",
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260707i",
-  "./sentences_lesson_plan.js?v=20260707b",
-  "./app.js?v=20260710i",
+  "./sentences_lesson_plan.js?v=20260710j",
+  "./app.js?v=20260710j",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

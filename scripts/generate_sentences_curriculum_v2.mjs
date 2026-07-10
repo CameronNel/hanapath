@@ -196,6 +196,25 @@ if (fs.existsSync(sentencesNamesPath)) {
   };
 }
 
+// Older bootstrapped manifests clipped a few unit names mid-word. Repair those
+// deterministic carry-overs before emitting learner-facing lesson copy.
+const staleCopyRepairs = new Map([
+  ["morning routines to brea", "morning routines"],
+  ["getting things done to p", "getting things done"],
+  ["rainy-day moods freshnes", "rainy-day moods"],
+  ["getting around town to g", "getting around town"],
+  ["describing the room to g", "describing the room"],
+  ["at the station tourist s", "at the station"],
+]);
+for (const meta of Object.values(sentencesNames.lessons || {})) {
+  for (const field of ["title", "subtitle", "goal"]) {
+    if (typeof meta[field] !== "string") continue;
+    for (const [stale, replacement] of staleCopyRepairs) {
+      meta[field] = meta[field].replaceAll(stale, replacement);
+    }
+  }
+}
+
 // 4. Generate lesson plan structures
 const sentenceSections = [];
 for (let i = 1; i <= 8; i++) {

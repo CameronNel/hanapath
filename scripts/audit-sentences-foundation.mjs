@@ -13,8 +13,14 @@ import {
 const require = createRequire(import.meta.url);
 const Inflect = require(join(ROOT, "words_inflect.js"));
 
-const LESSON_FILE = join(ROOT, "sentences_lesson_plan.js");
-const NAMES_FILE = join(ROOT, "scripts", "sentences_curriculum_v2_names.json");
+const planArgIndex = process.argv.indexOf("--plan");
+const LESSON_FILE = planArgIndex >= 0 && process.argv[planArgIndex + 1]
+  ? process.argv[planArgIndex + 1]
+  : join(ROOT, "sentences_lesson_plan.js");
+const namesArgIndex = process.argv.indexOf("--names");
+const NAMES_FILE = namesArgIndex >= 0 && process.argv[namesArgIndex + 1]
+  ? process.argv[namesArgIndex + 1]
+  : join(ROOT, "scripts", "sentences_curriculum_v2_names.json");
 const WORDS_PLAN_FILE = join(ROOT, "words_lesson_plan.js");
 
 const SENTENCE_SESSION_LENGTH = 5;

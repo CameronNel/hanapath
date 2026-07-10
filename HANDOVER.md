@@ -54,6 +54,11 @@ below.
   - **Gotcha:** the background orbs animate forever — do **not** `await Promise.all(document.getAnimations().map(a => a.finished))` (it never resolves). Use a fixed wait instead.
 
 ## Words section planning
+- **Delegation:** Gemini owns the safe, deterministic Words Phase 2 plumbing
+  described in `docs/GEMINI_FLASH_3_5_LOW_HANGING_FRUITS_PROMPT.md`. When that
+  work reaches a semantic, learner-facing, or owner-gated decision, Gemini must
+  trigger a Luna handoff rather than infer the answer. Keep that queue separate
+  from Sentences PRs.
 - **Current live plan:** [`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md).
   Its hardened owner decisions are binding; the older Words specs below are
   historical implementation references and must not override it. P1-0 through

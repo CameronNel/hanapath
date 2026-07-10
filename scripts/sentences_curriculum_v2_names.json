@@ -271,7 +271,7 @@
       "emoji": "🏃"
     },
     "sn7-daily-u6": {
-      "name": "Morning routines to brea",
+      "name": "Morning routines",
       "emoji": "📅"
     },
     "sn7-feelings-u6": {
@@ -307,31 +307,31 @@
       "emoji": "🛒"
     },
     "sn8-actions-u7": {
-      "name": "Getting things done to p",
+      "name": "Getting things done",
       "emoji": "🏃"
     },
     "sn8-feelings-u7": {
-      "name": "How was your day rumor",
+      "name": "How was your day?",
       "emoji": "💭"
     },
     "sn8-travel-u7": {
-      "name": "Finding your way going o",
+      "name": "Finding your way",
       "emoji": "✈️"
     },
     "sn8-feelings-u8": {
-      "name": "Rainy-day moods freshnes",
+      "name": "Rainy-day moods",
       "emoji": "💭"
     },
     "sn8-travel-u8": {
-      "name": "Getting around town to g",
+      "name": "Getting around town",
       "emoji": "✈️"
     },
     "sn8-feelings-u9": {
-      "name": "Describing the room to g",
+      "name": "Describing the room",
       "emoji": "💭"
     },
     "sn8-travel-u9": {
-      "name": "At the station tourist s",
+      "name": "At the station",
       "emoji": "✈️"
     }
   },
@@ -1668,23 +1668,23 @@
     },
     "sn7-daily-u6-l1": {
       "title": "Van Chat Session",
-      "subtitle": "Trainee life: morning routines to brea",
-      "goal": "Express morning routines to brea concepts naturally in Korean."
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
     },
     "sn7-daily-u6-l2": {
       "title": "Street Promo Check",
-      "subtitle": "Trainee life: morning routines to brea",
-      "goal": "Express morning routines to brea concepts naturally in Korean."
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
     },
     "sn7-daily-u6-l3": {
       "title": "Opening Speech Run",
-      "subtitle": "Trainee life: morning routines to brea",
-      "goal": "Express morning routines to brea concepts naturally in Korean."
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
     },
     "sn7-daily-u6-l4": {
       "title": "Pose Rehearsal Feedback",
-      "subtitle": "Trainee life: morning routines to brea",
-      "goal": "Express morning routines to brea concepts naturally in Korean."
+      "subtitle": "Trainee life: morning routines",
+      "goal": "Express morning routines concepts naturally in Korean."
     },
     "sn7-feelings-u6-l1": {
       "title": "Vocal Warmup Feedback",
@@ -1858,18 +1858,18 @@
     },
     "sn8-actions-u7-l1": {
       "title": "Bridge Vocal Demo",
-      "subtitle": "Trainee life: getting things done to p",
-      "goal": "Express getting things done to p concepts naturally in Korean."
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
     },
     "sn8-actions-u7-l2": {
       "title": "Mixing Session Rehearsal",
-      "subtitle": "Trainee life: getting things done to p",
-      "goal": "Express getting things done to p concepts naturally in Korean."
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
     },
     "sn8-actions-u7-l3": {
       "title": "Art Preview Session",
-      "subtitle": "Trainee life: getting things done to p",
-      "goal": "Express getting things done to p concepts naturally in Korean."
+      "subtitle": "Trainee life: getting things done",
+      "goal": "Express getting things done concepts naturally in Korean."
     },
     "sn8-feelings-u7-l1": {
       "title": "Van Chat Drill",
@@ -1923,83 +1923,83 @@
     },
     "sn8-feelings-u8-l1": {
       "title": "Mic Setup Briefing",
-      "subtitle": "Trainee life: rainy-day moods freshnes",
-      "goal": "Express rainy-day moods freshnes concepts naturally in Korean."
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
     },
     "sn8-feelings-u8-l2": {
       "title": "Outfit Fitting Test",
-      "subtitle": "Trainee life: rainy-day moods freshnes",
-      "goal": "Express rainy-day moods freshnes concepts naturally in Korean."
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
     },
     "sn8-feelings-u8-l3": {
       "title": "Van Ride Vibe",
-      "subtitle": "Trainee life: rainy-day moods freshnes",
-      "goal": "Express rainy-day moods freshnes concepts naturally in Korean."
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
     },
     "sn8-feelings-u8-l4": {
       "title": "Concept Talk Flow",
-      "subtitle": "Trainee life: rainy-day moods freshnes",
-      "goal": "Express rainy-day moods freshnes concepts naturally in Korean."
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
     },
     "sn8-feelings-u8-l5": {
       "title": "Behind Camera Beats",
-      "subtitle": "Trainee life: rainy-day moods freshnes",
-      "goal": "Express rainy-day moods freshnes concepts naturally in Korean."
+      "subtitle": "Trainee life: rainy-day moods",
+      "goal": "Express rainy-day moods concepts naturally in Korean."
     },
     "sn8-travel-u8-l1": {
       "title": "Line Check Flow",
-      "subtitle": "Trainee life: getting around town to g",
-      "goal": "Express getting around town to g concepts naturally in Korean."
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
     },
     "sn8-travel-u8-l2": {
       "title": "Morning Jog Tune",
-      "subtitle": "Trainee life: getting around town to g",
-      "goal": "Express getting around town to g concepts naturally in Korean."
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
     },
     "sn8-travel-u8-l3": {
       "title": "Producer Chat Demo",
-      "subtitle": "Trainee life: getting around town to g",
-      "goal": "Express getting around town to g concepts naturally in Korean."
+      "subtitle": "Trainee life: getting around town",
+      "goal": "Express getting around town concepts naturally in Korean."
     },
     "sn8-feelings-u9-l1": {
       "title": "Lunch Break Cut",
-      "subtitle": "Trainee life: describing the room to g",
-      "goal": "Express describing the room to g concepts naturally in Korean."
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
     },
     "sn8-feelings-u9-l2": {
       "title": "Mirror Practice Replay",
-      "subtitle": "Trainee life: describing the room to g",
-      "goal": "Express describing the room to g concepts naturally in Korean."
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
     },
     "sn8-feelings-u9-l3": {
       "title": "Album Review Drill",
-      "subtitle": "Trainee life: describing the room to g",
-      "goal": "Express describing the room to g concepts naturally in Korean."
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
     },
     "sn8-feelings-u9-l4": {
       "title": "Dorm Dinner Check",
-      "subtitle": "Trainee life: describing the room to g",
-      "goal": "Express describing the room to g concepts naturally in Korean."
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
     },
     "sn8-feelings-u9-l5": {
-      "title": "First Stage Run Run",
-      "subtitle": "Trainee life: describing the room to g",
-      "goal": "Express describing the room to g concepts naturally in Korean."
+      "title": "First Stage Run-through",
+      "subtitle": "Trainee life: describing the room",
+      "goal": "Express describing the room concepts naturally in Korean."
     },
     "sn8-travel-u9-l1": {
       "title": "Mic Test Check",
-      "subtitle": "Trainee life: at the station tourist s",
-      "goal": "Express at the station tourist s concepts naturally in Korean."
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
     },
     "sn8-travel-u9-l2": {
       "title": "Stage Rehearsal Run",
-      "subtitle": "Trainee life: at the station tourist s",
-      "goal": "Express at the station tourist s concepts naturally in Korean."
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
     },
     "sn8-travel-u9-l3": {
       "title": "Signing Albums Feedback",
-      "subtitle": "Trainee life: at the station tourist s",
-      "goal": "Express at the station tourist s concepts naturally in Korean."
+      "subtitle": "Trainee life: at the station",
+      "goal": "Express at the station concepts naturally in Korean."
     }
   }
 }

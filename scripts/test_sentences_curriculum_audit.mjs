@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import os from "node:os";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -22,67 +24,31 @@ function loadPlan() {
   };
 }
 
-function validate(plan) {
-  const errors = [];
-  const ids = new Set(plan.sentences.map((r) => r.id));
-  const content = plan.lessons.filter((l) => l.type === "content");
-  const checkpoints = plan.lessons.filter((l) => l.type === "checkpoint");
-
-  // 1. Coverage: every row in exactly one content lesson
-  const occurrence = new Map();
-  for (const lesson of content) {
-    for (const id of lesson.sentenceIds) {
-      occurrence.set(id, (occurrence.get(id) || 0) + 1);
-    }
-  }
-  for (const id of ids) {
-    if (occurrence.get(id) !== 1) {
-      errors.push(`sentence occurrence check failed for ${id}: count is ${occurrence.get(id) || 0}`);
-    }
-  }
-
-  // 2. Checkpoint equality
-  for (const checkpoint of checkpoints) {
-    const unitLessons = content.filter((l) => l.unitId === checkpoint.unitId);
-    const expected = unitLessons.flatMap((l) => l.sentenceIds).sort((a, b) => a.localeCompare(b));
-    const actual = [...(checkpoint.reviewSentenceIds || [])].sort((a, b) => a.localeCompare(b));
-    if (actual.join("\u0000") !== expected.join("\u0000")) {
-      errors.push(`checkpoint review check failed for ${checkpoint.id}`);
-    }
-  }
-
-  // 3. Suffix ban
-  for (const lesson of content) {
-    if (/\b(\d+|II|III|IV|V)\b$/.test(lesson.title)) {
-      errors.push(`numeral/roman suffix check failed for lesson ${lesson.id}: title is "${lesson.title}"`);
-    }
-  }
-
-  return errors;
-}
-
-function expectFailure(label, mutate) {
-  const plan = loadPlan();
-  mutate(plan);
-  const errors = validate(plan);
-  if (!errors.length) {
-    throw new Error(`Self-test error: ${label} mutation was not rejected`);
+function expectAuditFailure(label, mutateSource, mutateNames = (source) => source) {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "hanapath-sentence-audit-"));
+  const tempPlan = path.join(tempDir, "sentences_lesson_plan.js");
+  const tempNames = path.join(tempDir, "sentences_curriculum_v2_names.json");
+  try {
+    fs.writeFileSync(tempPlan, mutateSource(planSource), "utf8");
+    fs.writeFileSync(tempNames, mutateNames(fs.readFileSync(path.join(root, "scripts", "sentences_curriculum_v2_names.json"), "utf8")), "utf8");
+    const result = spawnSync(process.execPath, [path.join(root, "scripts", "audit-sentences-foundation.mjs"), "--strict", "--plan", tempPlan, "--names", tempNames], {
+      cwd: root,
+      encoding: "utf8",
+    });
+    if (result.status === 0) throw new Error(`Self-test error: ${label} mutation was accepted by the production audit`);
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
   }
 }
 
-expectFailure("duplicate sentence in content lessons", (plan) => {
-  const content = plan.lessons.filter((l) => l.type === "content");
-  content[0].sentenceIds.push(content[0].sentenceIds[0]);
+expectAuditFailure("duplicate sentence in content lessons", (source) => {
+  return source.replace('"s0001",\n      "s0002",', '"s0001",\n      "s0001",\n      "s0002",');
 });
 
-expectFailure("missing sentence in checkpoint", (plan) => {
-  const checkpoint = plan.lessons.find((l) => l.type === "checkpoint");
-  checkpoint.reviewSentenceIds.pop();
+expectAuditFailure("missing sentence in checkpoint", (source) => {
+  return source.replace('"s0001",\n      "s0002",\n      "s0003",', '"s0002",\n      "s0003",');
 });
 
-expectFailure("forbidden numeral/roman suffix in title", (plan) => {
-  const content = plan.lessons.find((l) => l.type === "content");
-  content.title = "Vocal Practice II";
-});
+expectAuditFailure("forbidden numeral/roman suffix in title", (source) => source, (source) => source.replace('"title": "Vocal Warmup"', '"title": "Vocal Practice II"'));
 
-console.log("Sentences curriculum v2 self-test passed: three invalid copies rejected.");
+console.log("Sentences curriculum v2 self-test passed: three invalid copies rejected by the production audit.");
