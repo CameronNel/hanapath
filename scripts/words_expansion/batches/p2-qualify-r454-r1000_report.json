@@ -9,11 +9,11 @@
   },
   "theme": "High-frequency sweep: conversation-glue lemmas, social nouns, and stem/ending cleanup",
   "counts": {
-    "accepted": 14,
+    "accepted": 15,
     "covered": 357,
     "deferred": 24,
     "inflected": 31,
-    "merged": 5,
+    "merged": 4,
     "needs-sense-review": 3,
     "rejected": 113
   },
@@ -29,6 +29,7 @@
     "달러",
     "뭔가",
     "달리",
+    "공부",
     "따라서",
     "한편",
     "혹은"
@@ -3380,10 +3381,10 @@
       "sourceFileHash": "4dfba796fd3f2d828c48d78a8a10565e33483b5366af16f2b607ec27d0f714dd",
       "sourceRowKey": "공부",
       "normalizedSurface": "공부",
-      "canonicalLemma": "공부하다",
-      "status": "merged",
-      "parentId": "w_m6_1097_gongbuhada",
-      "reason": "Noun base of curated 공부하다 (to study). A separate 공부 noun row would duplicate the gloss; teach the noun use on the existing row (공부를 하다)."
+      "canonicalLemma": "공부",
+      "status": "accepted",
+      "parentId": null,
+      "reason": "Independent noun meaning study or studying; distinct in part of speech and use from the curated verb 공부하다 (to study), so it needs its own reviewed row rather than being merged away."
     },
     {
       "batchId": "p2-qualify-r454-r1000",

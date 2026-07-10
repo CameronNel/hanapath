@@ -99,6 +99,12 @@ export function qualifyWithConfig(config, { append = false, reportPath = null } 
   }
   const overrides = config.overrides || {};
   const skipDecided = config.skipDecided !== false;
+  if (append && !skipDecided) {
+    throw new Error("Append mode cannot disable skipDecided; immutable ledger rows must never be re-decided.");
+  }
+  if (append && config.decisionsPath) {
+    throw new Error("Append mode always writes to the canonical decisions ledger; decisionsPath is test-only.");
+  }
 
   const queue = JSON.parse(fs.readFileSync(path.join(root, "scripts/words_expansion/candidate_queue.json"), "utf8"));
   const curated = loadGlobal(path.join(root, "words_curated_core.js"), "HANAPATH_CURATED_WORDS");

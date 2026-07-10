@@ -23,8 +23,8 @@ merged candidate queue: 1,000 immutable ledger records, all re-derivable.
 | rejected | 113 | Particles, bound suffixes (스럽, 고등), artifacts |
 | inflected | 31 | Conjugations / truncated stems; lemma recorded, no row |
 | deferred | 24 | Grammar-only endings and constructions (잖아, 군요, 려면, ~에 의해, ~로 인해, …) |
-| accepted | 14 | **여러분, 시대, 역시, 거의, 그래도, 그런데, 그래, 후보, 달러, 뭔가, 달리, 따라서, 한편, 혹은** |
-| merged | 5 | Contractions/bases onto curated rows: 누가→누구, 이게/이건→이것, 그게→그것, 공부→공부하다 |
+| accepted | 15 | **여러분, 시대, 역시, 거의, 그래도, 그런데, 그래, 후보, 달러, 뭔가, 달리, 공부, 따라서, 한편, 혹은** |
+| merged | 4 | Contractions onto curated rows: 누가→누구, 이게/이건→이것, 그게→그것 |
 | needs-sense-review | 3 | 프로 (pro/program/percent), 그리 (adverb vs. fragment), 다운 (-다운 vs. loanword) |
 
 ## Notable evidence
@@ -34,16 +34,17 @@ merged candidate queue: 1,000 immutable ledger records, all re-derivable.
   멋지다 are absent from the curated 2,028 and are recorded as `canonicalLemma`
   on their stem decisions — a ready-made shortlist for a "missing core verbs &
   adjectives" authoring pass.
-- 재밌 is merged onto curated 재미있다 (standard contraction), 공부 onto
-  공부하다 (noun base) — no duplicate glosses invented.
+- 재밌 is an inflected/truncated surface of curated 재미있다 (standard
+  contraction). 공부 is accepted separately because it is an independent noun,
+  not the same lexical row as the curated verb 공부하다.
 - 그래 is accepted with a mandatory intimate-register note; 달리's authored
   examples must cover the ~와/과 달리 pattern.
 
-## Cumulative accepted pool (23 lemmas, ranks 1–1000)
+## Cumulative accepted pool (24 lemmas, ranks 1–1000)
 
 관계, 프로그램, 자리 (r345–r453) · 이런, 그런, 가장, 바로, 사이트, 당신
 (r1–r344) · 여러분, 시대, 역시, 거의, 그래도, 그런데, 그래, 후보, 달러, 뭔가,
-달리, 따라서, 한편, 혹은 (this batch).
+달리, 공부, 따라서, 한편, 혹은 (this batch).
 
 These feed the first elective-pack authoring packet (next PR in the stack);
 zero rows are import-ready until the owner approves that packet and runs the

@@ -1,7 +1,7 @@
 {
   "packId": "ep1-conversation",
   "status": "draft",
-  "name": "Joining the conversation",
+  "name": "Connecting your ideas",
   "coreLockSha256": "390e5dbaf349485188e1ebbc5973d53c2999d192be66108bf109bbd651a8b073",
   "wordIds": [
     "w_m6_597_geureonde",
@@ -15,23 +15,12 @@
     "w_m6_204_baro",
     "w_m6_776_dalli",
     "w_m6_614_geurae",
-    "w_m6_730_mwonga",
-    "w_m6_159_ireon",
-    "w_m6_212_geureon",
-    "w_m6_264_dangsin",
-    "w_m6_455_yeoreobun",
-    "w_m6_389_gwangye",
-    "w_m6_446_jari",
-    "w_m6_466_sidae",
-    "w_m6_645_hubo",
-    "w_m6_409_peurogeuraem",
-    "w_m6_255_saiteu",
-    "w_m6_662_dalleo"
+    "w_m6_730_mwonga"
   ],
   "units": [
     {
       "id": "ep1-conversation-u1",
-      "name": "Joining the conversation",
+      "name": "Connecting your ideas",
       "lessonSplit": {
         "ep1-conversation-u1-l1": {
           "title": "Connecting your ideas",
@@ -41,26 +30,13 @@
             "w_m6_488_geoui", "w_m6_191_gajang", "w_m6_204_baro",
             "w_m6_776_dalli", "w_m6_614_geurae", "w_m6_730_mwonga"
           ]
-        },
-        "ep1-conversation-u1-l2": {
-          "title": "People, places, and talk",
-          "wordIds": [
-            "w_m6_159_ireon", "w_m6_212_geureon", "w_m6_264_dangsin",
-            "w_m6_455_yeoreobun", "w_m6_389_gwangye", "w_m6_446_jari",
-            "w_m6_466_sidae", "w_m6_645_hubo", "w_m6_409_peurogeuraem",
-            "w_m6_255_saiteu", "w_m6_662_dalleo"
-          ]
         }
       },
       "wordIds": [
         "w_m6_597_geureonde", "w_m6_561_geuraedo", "w_m6_929_ttaraseo",
         "w_m6_985_hogeun", "w_m6_942_hanpyeon", "w_m6_474_yeoksi",
         "w_m6_488_geoui", "w_m6_191_gajang", "w_m6_204_baro",
-        "w_m6_776_dalli", "w_m6_614_geurae", "w_m6_730_mwonga",
-        "w_m6_159_ireon", "w_m6_212_geureon", "w_m6_264_dangsin",
-        "w_m6_455_yeoreobun", "w_m6_389_gwangye", "w_m6_446_jari",
-        "w_m6_466_sidae", "w_m6_645_hubo", "w_m6_409_peurogeuraem",
-        "w_m6_255_saiteu", "w_m6_662_dalleo"
+        "w_m6_776_dalli", "w_m6_614_geurae", "w_m6_730_mwonga"
       ]
     }
   ]

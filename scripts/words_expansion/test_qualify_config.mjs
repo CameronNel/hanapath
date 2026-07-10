@@ -64,6 +64,14 @@ assert.throws(
   () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", decisionsPath: emptyLedger, overrides: { "한다": { status: "inflected", parentId: "not_a_real_id", reason: "Parent ids must resolve to curated rows." } } }),
   /not a curated row id/
 );
+assert.throws(
+  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", skipDecided: false, overrides: {} }, { append: true }),
+  /cannot disable skipDecided/
+);
+assert.throws(
+  () => qualifyWithConfig({ batchId: "t", minRank: 77, maxRank: 95, theme: "t", decisionsPath: emptyLedger, overrides: {} }, { append: true }),
+  /decisionsPath is test-only/
+);
 
 // 4. Legacy batch behavior is unchanged.
 const legacy = qualify();
