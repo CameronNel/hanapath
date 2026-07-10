@@ -3930,18 +3930,18 @@ li { margin-bottom: 4px; }
   min-width: 150px;
 }
 @media (max-width: 480px) {
-  .sentence-path .vocab-path-unit-header {
+  .sent-path .vocab-path-unit-header {
     align-items: flex-start;
     flex-wrap: wrap;
   }
-  .sentence-path .vocab-path-unit-copy {
+  .sent-path .vocab-path-unit-copy {
     flex-basis: calc(100% - 48px);
   }
-  .sentence-path .sentence-path-due,
-  .sentence-path .vocab-path-unit-header > .pill:last-child {
+  .sent-path .sentence-path-due,
+  .sent-path .vocab-path-unit-header > .pill:last-child {
     margin-left: 48px;
   }
-  .sentence-path .sentence-path-due + .pill {
+  .sent-path .sentence-path-due + .pill {
     margin-left: 0;
   }
   .sent-session .word-card-progress-row {

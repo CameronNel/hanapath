@@ -15515,14 +15515,14 @@ function sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, prog
 
 function sentencePathHtml(metWords, completedSet, activeLessonId, progress) {
   const sections = getSentenceSections().slice().sort((a, b) => a.order - b.order);
-  return `<div class="vocab-path sentence-path">${sections.map((section) => {
+  return `<div class="vocab-path sentence-path sent-path">${sections.map((section) => {
     const units = getSentenceUnits().filter((unit) => unit.sectionId === section.id).sort((a, b) => a.order - b.order);
     const unlockedUnits = units.filter((unit) => isSentenceUnitUnlocked(unit, metWords));
     const crowned = units.filter((unit) => isSentenceUnitCrowned(unit, completedSet)).length;
     const sectionOpen = unlockedUnits.some((unit) => unit.id === getSentenceLessonById(activeLessonId)?.unitId) || section.id === "sn1";
     return `<section class="vocab-path-section ${unlockedUnits.length ? "is-open" : "is-locked"}">
       <div class="vocab-path-section-header">
-        <div><div class="eyebrow">Section ${escapeHtml(section.id.toUpperCase())}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
+        <div><div class="eyebrow">Section ${section.order}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
         <span class="pill ${unlockedUnits.length ? "accent" : "muted"}">${unlockedUnits.length ? `${crowned}/${units.length} crowned` : "Locked"}</span>
       </div>
       ${unlockedUnits.length && sectionOpen
@@ -16262,9 +16262,11 @@ function sentenceSummaryHtml(session) {
   const resultCopy = session.lessonId
     ? lessonPassed
       ? isCheckpoint
-        ? "Stage rehearsal passed. Your crown is waiting on the path."
+        ? "Stage rehearsal passed. This unit is crowned, and its next line is ready on the path."
         : "You passed on first-try accuracy. Keep the line moving."
-      : `You need ${requiredPct}% first-try accuracy to pass. Missed lines are saved for review.`
+      : isCheckpoint
+        ? `This checkpoint was not passed yet. You need ${requiredPct}% first-try accuracy, and these lines are saved for review.`
+        : `You need ${requiredPct}% first-try accuracy to pass. Missed lines are saved for review.`
     : correct === session.rows.length
       ? "Perfect run. These sentences will come back less often."
       : "Missed lines are saved for review.";
@@ -16802,6 +16804,7 @@ function bindSentenceStudioEvents(el) {
       if (unitButton) {
         unitButton.setAttribute("aria-expanded", "true");
         unitButton.scrollIntoView({ block: "center", behavior: "smooth" });
+        flashElement(unitButton);
       }
     });
   });
