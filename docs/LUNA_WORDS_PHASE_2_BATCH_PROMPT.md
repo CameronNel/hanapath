@@ -1,7 +1,9 @@
 # Luna Words Phase 2 marathon handoff
 
-> **Superseded for Lane priorities (2026-07-10):** Q01–Q18 are merged and
-> Lane A is frozen at rank 10,000. Take current marching orders from
+> **Superseded for Lane priorities (2026-07-10):** Q01–Q18 are merged, and
+> the remaining sweep (ranks 10,001–22,679) is consolidated into five larger
+> batches — the Q19–Q44 checklist below is obsolete. Take current marching
+> orders from
 > `docs/LUNA_WORDS_PHASE_2_SEMANTIC_PROMPT.md`; this document remains the
 > source for git/PR protocol, marathon rules, semantic rules, verification
 > commands, and the final report format.
