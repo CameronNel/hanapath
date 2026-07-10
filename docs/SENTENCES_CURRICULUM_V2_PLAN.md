@@ -19,9 +19,10 @@
 > - `docs/WORDS_CURRICULUM_V2_PLAN.md` is the sibling precedent — this plan
 >   deliberately mirrors its shape and steals its shipped machinery patterns.
 >
-> Line numbers in this doc were verified 2026-07-10 against `main` @
-> `a7cd28b9`. `main` is moving quickly (parallel agents) — **re-grep before
-> relying on any line number.**
+> Function names and behaviors in this doc were verified 2026-07-10 against
+> `main` (hardened same day after a 3-critic adversarial review @ `2a769a02`).
+> `main` is moving quickly (parallel agents) and app.js line numbers drift —
+> **re-grep by function name; treat line numbers as approximate.**
 
 ---
 
@@ -188,8 +189,12 @@ Shipped on `main` and verified working:
 Computed 2026-07-10 against live data (the generator re-derives and the audit
 re-checks all of this):
 - Every `focusWordId` in all 2,060 rows resolves to exactly one Words v2 unit
-  (**0 unmappable**). Define a row's **gating unit** = the latest (in Words
-  path order) unit containing any of its focus words.
+  (**0 unmappable**; each word appears in exactly one unit). Define **path
+  order** = **array index in `HANAPATH_WORD_UNITS`** (verified
+  section-monotonic; do NOT use `unit.order`, which restarts per track and
+  has only 11 distinct values). A row's **gating unit** = the unit with the
+  **max array index** among its focus words' units — deterministic, total,
+  and by construction satisfying the §3.13 cumulative-subset check.
 - **2,018/2,060 (98%)** rows have all focus words inside a single unit; 40
   span two units, 2 span three — the gating-unit rule handles all of them.
 - **Every one of the 75 Words units has sentences**: median 30, max 41
@@ -211,8 +216,9 @@ re-checks all of this):
   in `README.md:36` — update those references.
 - Cache-bump surface: `sentences_lesson_plan.js?v=20260707b`,
   `sentences_core.js?v=20260707i` pinned at `index.html:27-28` AND
-  `sw.js:13-14`; `CACHE_NAME` currently `hanapath-shell-v302`; plus
-  `app.js`/`styles.css` `?v=` strings.
+  `sw.js:13-14`; `CACHE_NAME` was `hanapath-shell-v303` at time of writing —
+  **read `sw.js` before bumping, it moves fast**; plus `app.js`/`styles.css`
+  `?v=` strings.
 
 ---
 
@@ -237,9 +243,20 @@ restructure must **strengthen, not dilute**, each of these:
 Hard limits carried from the spec (line 57) and roadmap Track H2:
 - **No verbatim lyrics or subtitles, ever** (copyright — already rejected).
 - K-pop flavor = *situations and copy*, not brands: **no real idol, group,
-  or company names** in learner-facing strings.
+  company, platform, TV-show, or award-show names** in learner-facing
+  strings (generic nouns — fan-sign, music show, award show, live stream —
+  are the intended register).
 - Bands measure sentence complexity, NOT politeness register (the rejected
   Gemini band sweep is precedent).
+
+**Consciously not carried over** (so future agents don't "fix" it ad hoc):
+diary/free writing (no grader in a static app — Translate & Type is the
+production surface); peer scaffolding/social correction (single-player app —
+encouragement lives in copy); continuous drama/media input (the
+copyright-rejected mining arm — dictation + shadow are the listening
+surface); scored/recorded pronunciation stays in the free **Shadow** mode
+(SpeechRecognition stub) rather than the lesson Phase A, which is
+repeat-aloud only.
 
 ### 3.1 Terminology & hierarchy
 
@@ -251,19 +268,23 @@ Sentence path (inside Sentence Studio)
         └── Checkpoint — "stage rehearsal" over the unit's sentences, 0 new rows
 ```
 
-Phase 1 magnitudes: 2,060 rows / ~6 per lesson ≈ **~345 content lessons +
-75 checkpoints across 75 units and 8 sections**. Exact numbers come from the
-generator; the audit enforces invariants, not totals.
+Phase 1 magnitudes: 2,060 rows under §3.4 even packing ≈ **~331 content
+lessons + 75 checkpoints across 75 units and 8 sections**. Exact numbers
+come from the generator; the audit enforces invariants, not totals.
 
 ### 3.2 The twin topology (the core structural move)
 
 The sentence path **mirrors the shipped Words v2 skeleton unit-for-unit**:
 
 - One sentence unit per Words unit (75), in the same section/order.
-- A sentence row belongs to the unit that is its **gating unit** (§2.7): the
-  latest Words unit (path order) containing any of its focus words. This is
-  deterministic, total (0 unmapped), and 98% of rows land with all their
-  words in that single unit.
+- A sentence row belongs to the unit that is its **gating unit** (§2.7):
+  the focus-word unit with the highest `HANAPATH_WORD_UNITS` array index.
+  Deterministic, total (0 unmapped), and 98% of rows land with all their
+  words in that single unit. Exception: 4 rows in 3 units (`s0045`,
+  `s2021`, `s2041`, `s2045`) depend on a **parallel same-section track**;
+  the generator reassigns each of these to its earlier co-unit so that
+  every unit's words are covered by twin + ancestors + prior sections
+  (audit-checked as a warning).
 - Product story: *finish a Words unit → its sentences open in the Studio —
   "you learned the words; now say the lines."*
 - Words ordering (frequency + usefulness, decision 6) is inherited
@@ -301,11 +322,13 @@ Within each unit (deterministic, no randomness):
 
 1. Collect the unit's rows (gating-unit rule). Sort by `band` ascending,
    then bank id ascending.
-2. Chunk into lessons of **6** (allowed 5–7; fold a trailing chunk of <5
-   into the previous lesson up to 7; a unit with ≤7 rows total becomes one
-   lesson). Units get 1–6 content lessons (thin grammar units: 7→1, 12→2,
-   15→2 lessons — kept whole, NOT merged across units, to preserve the twin
-   mapping).
+2. **Even packing** (naive chunk-of-6 is infeasible — 25 of 75 units leave a
+   2–4-row remainder): `k = ceil(n/7)` lessons (a unit with ≤7 rows becomes
+   one lesson); lesson sizes are `floor(n/k)` and `ceil(n/k)`. Verified
+   feasible against live data for every unit: all sizes land in 5–7, no
+   unit exceeds 6 content lessons (max 41 rows → 7,7,7,7,7,6). Thin grammar
+   units: 7→1, 12→2, 15→3 lessons — kept whole, NOT merged across units, to
+   preserve the twin mapping.
 3. Constraint repair (swap between adjacent lessons in the same unit):
    - No two rows with identical `korean` text in one lesson.
    - Each lesson keeps a band spread ≤2 where possible (warn otherwise).
@@ -313,11 +336,17 @@ Within each unit (deterministic, no randomness):
    - `patternTags` = the up-to-3 most frequent tags among the lesson's rows
      (drives Tip content) — the v1 "every row must match a lesson tag" rule
      is retired (§3.13).
-   - `drillPlan` = deterministic mode per row by index: rows 1,2,4,6 →
-     `translate`; row 3 → `build`; row 5 → `listen` (dictation); for 5-row
-     lessons drop the second translate, for 7-row add one. Rows with band ≥3
-     may substitute `transform` for `build` every other lesson (index
-     parity). Translate stays the majority mode everywhere (§3.0).
+   - `drillPlan` = deterministic mode per row: **translate ≥50% of every
+     lesson** (§3.0), one `build`, one `listen` (dictation). Band-5 rows
+     lean toward `build`/`listen` slots so a unit's final lesson (which
+     band-sorting makes the hardest) isn't a wall of long typed
+     translations — the translate-majority rule still holds per lesson.
+     On **odd lesson indexes within a unit**, the `build`-slot row may be
+     `transform` instead when the row has band ≥3. The generator does NOT
+     verify transform derivability (that needs the inflect engine at
+     runtime); §3.10 requires the runner to fall back `transform → build`
+     when the transform can't be constructed, mirroring the existing
+     mixed-mode fallback.
 5. Checkpoint per unit: `reviewSentenceIds` = every row in the unit's
    content lessons (exact equality, audit-enforced).
 6. Every bank row appears in **exactly one content lesson** (new invariant —
@@ -379,10 +408,21 @@ Rules (audit-enforced where marked):
   - People unit: "Meeting the new manager", "Fan-sign small talk".
   - Grammar units keep instructive names: "Linking your lines",
     "Honorifics for the seniors".
-- **No real idol/group/company names; no lyric fragments** (§3.0).
+- **No real idol/group/company/platform/TV-show/award-show names; no lyric
+  fragments** (§3.0).
+- **Honesty rule**: a title must not promise a scenario the rows don't
+  contain — the bank is generic daily-life content until Phase 2 adds
+  trainee-flavored rows, and band-sorted chunking produces thematic
+  grab-bags. Neutral daily-life scenario names ("Morning fuel", "Kitchen
+  basics") are fine; apply trainee flavor only where the rows support it
+  ("Dinner after practice" works for generic food rows; "Fan-sign small
+  talk" only if greetings/compliments are actually present). The generator
+  report prints each lesson's English glosses beside its proposed name so
+  the S2-B owner review can catch mismatches.
 - Unit names = twin Words unit theme name + real emoji (no placeholder ✏️).
 - Checkpoints auto-named: title `"Stage rehearsal: {unit name}"`, subtitle
-  `"Review all {n} lines"` — unique by construction.
+  `"Prove your {n} lines stick"` — unique by construction (the checkpoint
+  drills 12–18 prompts, so never promise "all {n} lines").
 - Section names per §3.3 table.
 
 ### 3.8 Unlock model
@@ -405,19 +445,34 @@ state), implemented in NEW functions (`isSentenceUnitUnlocked`,
 - **Crowned**: checkpoint passed (§3.10 pass rules).
 - Sections are display grouping + progress headers only.
 - All new unlock functions honor `TEST_UNLOCK_ALL_STAGES` exactly like
-  `isSentenceLessonUnlocked` does today (`app.js:14906`).
-- UI affordance: a locked unit's card shows *which Words unit to finish*
-  ("Learn the words: Café & Restaurant →" deep-links to that Words unit) —
-  this is the twin topology made visible.
+  `isSentenceLessonUnlocked` does today.
+- **Performance mandate**: the naive per-lesson mirror of today's code is
+  quadratic (v1 `isSentenceLessonUnlocked` → `getSentencesProgress` re-sorts
+  up to 5,000 reviewEvents per call; `getMetWords` rebuilds a ~2,000-entry
+  set per call). At ~406 nodes × 75 units per hub render that is real jank.
+  Required shape: compute `getMetWords()` and the progress/completed sets
+  **once per render** and pass them in (the `isSentenceAvailable(row,
+  metWords)` signature is the in-repo precedent); precompute per-unit
+  focus-word unions and a bank by-id map once at plan load (plan data is
+  static); normalize `reviewEvents` on load/push, not on every read.
+- UI affordance: a locked unit's card shows *which Words unit to finish*,
+  computed from the **actual unmet focus words** (each word maps to exactly
+  one Words unit — link the earliest blocking unit). Do NOT hardwire the
+  twin: with the §3.2 reassignment the twin is almost always the blocker,
+  but unmet-word derivation stays correct even if data drifts.
+- Note (intended): a unit can be word-unlocked while the Studio entrance is
+  still K2-locked; the K2 gate wins at the door.
 
 ### 3.9 Hub & path UI
 
 `sentenceStudioHubHtml` is rebuilt (Studio identity preserved — this is a
 new layout of the Studio's own hub, not a clone of the Words tab):
 
-1. **Continue hero** — next sentence lesson (`getNextSentenceLesson()`), or
-   the due-review card when reviews ≥ due threshold (SRS stays the lead
-   motivator, §3.0).
+1. **Continue hero** — next sentence lesson (`getNextSentenceLesson()` =
+   first incomplete unlocked lesson in plan-array order, preferring the unit
+   of the learner's most recent sentence review event when one is
+   in-progress), or the due-review card when reviews ≥ due threshold (SRS
+   stays the lead motivator, §3.0).
 2. **The path** — sections `sn1`–`sn8` with units as collapsible cards:
    new `sentencePathHtml` / `sentencePathUnitHtml` / `bindSentencePathUnitToggles`
    functions that **share the `.vocab-path-*` CSS classes as-is**
@@ -430,6 +485,11 @@ new layout of the Studio's own hub, not a clone of the Words tab):
    unchanged in behavior (they keep `pickSentenceSessionRows`,
    `isSentenceAvailable`, and the band-1 early-word exemption).
 4. Stats/insights link stays (analytics untouched).
+5. **Zero-unlocked-units state is a requirement, not polish**: a learner can
+   reach K2 before crowning any Words unit, at which point ALL 75 units are
+   locked. That first load must show a clear "Start with Words: First
+   Words →" hero (deep-link) above the free-practice strip — never a wall
+   of 75 locked cards. Locked units render as compact single rows.
 
 The flat 12-lesson list dies. `sentenceLessonIntroHtml` is upgraded to the
 Words intro idiom (`.study-list` "How it works" card + `.pill.accent` count
@@ -447,17 +507,32 @@ quiz:
   primary button. This phase embodies the shadowing principle (§3.0).
 - **Phase B — Production pass** (graded; one drill per row per the lesson's
   `drillPlan`): translate-majority mix (§3.4). Helper ladder available on
-  translate prompts as today; every answer writes SRS as today.
-- **Pass**: `{ minFirstTryPct: 75 }` over Phase B — a prompt counts as
-  first-try-correct if the first check succeeds without the Reveal helper
-  (Tip/Word bank/Next chunk are allowed, logged, and keep blocking SRS
-  promotion as today). Fail = summary + "the lines are saved for review" +
-  replayable, exactly the forgiving Words pattern. Completion still pushes
-  to `completedLessons`.
+  translate prompts as today; every answer writes SRS as today. A
+  `transform` prompt whose transform can't be constructed at runtime falls
+  back to `build` (the existing mixed-mode fallback pattern).
+- **Pass**: `{ minFirstTryPct: 75 }` over Phase B. **First-try is NOT
+  derivable from today's records** — an incorrect check currently just
+  increments `session.attempts` and lets the learner retry, and
+  `recordSentenceResult` fires only on eventual success or reveal. The
+  session layer must record `firstTry = (attempts === 0 && !revealed)` into
+  each `results` entry (a behavioral change to the shared
+  `recordSentenceResult` call path, not just UI). Tip/Word bank/Next chunk
+  don't break first-try; Reveal and any failed check do. Pass iff
+  `firstTryCorrect / gradedPrompts ≥ minFirstTryPct/100`, no rounding
+  tricks — worked examples: 6-row lesson → 5 of 6 (same bar as today's
+  ceil(0.67·6)); 12-prompt checkpoint → 10 of 12. Fail = summary + "the
+  lines are saved for review" + replayable, exactly the forgiving Words
+  pattern. Completion still pushes to `completedLessons`.
 
-**Checkpoint** ("stage rehearsal"): no study phase; **12–18 graded prompts**
-(hard bound — see §9.3 for why): all unit rows sorted by SRS weakness
-(lowest box, then due-ness), take the weakest 12–18, drill with the same
+**Checkpoint** ("stage rehearsal"): no study phase; **prompt count =
+clamp(unitRowCount, min(12, unitRowCount), 18)** — the generator emits
+per-unit `promptBounds` accordingly (bounded, see §9.3; a 30-row unit must
+never drill all 30; the 7-row `sn2-grammar-u1` gets `{7,7}` and is a
+replay-style checkpoint until the Phase 2 grammar fills land — accepted).
+Row selection: all unit rows sorted by SRS weakness (lowest box, then
+due-ness, then bank id as the deterministic tie-break), **frozen into the
+session at start and persisted** — answers write SRS mid-session, so
+recomputing on reload would change the remaining prompts. Same
 deterministic mode mix, translate-majority. Pass `{ minFirstTryPct: 80 }`;
 passing crowns the unit (crowning moment reuses the Words result-screen
 pattern). Checkpoint completion is stored in `completedLessons` like any
@@ -486,7 +561,7 @@ window.HANAPATH_SENTENCE_LESSONS = [
     pass: { minFirstTryPct: 75 } },
   { id: "sn2-food-u1-cp", unitId: "sn2-food-u1", type: "checkpoint",
     title: "Stage rehearsal: Café & Restaurant",
-    subtitle: "Review all 31 lines",
+    subtitle: "Prove your 31 lines stick",
     goal: "Prove the whole unit sticks.",
     sentenceIds: [], reviewSentenceIds: [/* all unit rows */],
     promptBounds: { min: 12, max: 18 },
@@ -505,14 +580,24 @@ end-to-end reachability check** (§9.3).
 
 In `getSentencesProgress()`'s normalization (or a sibling
 `migrateSentencesState()` called from the same init path), gate on
-`progress.planVersion < 2`:
+`isSentenceCurriculumV2() && (progress.planVersion || 1) < 2` (the plan-shape
+gate prevents a v1-plan rollback from mis-running the migration —
+`vocabPlanVersion` precedent; note the canonical field name is
+`progress.planVersion`, used consistently in §7):
 
 - Stash `progress.completedLessonsLegacy = completedLessons`.
 - Rebuild `completedLessons`: credit each new **content** lesson whose
-  `sentenceIds` all have `results[id].seen > 0`. (Every drilled sentence has
-  a result record, so legacy lesson completions transfer; generous by
-  design, matching the Words decision.)
+  `sentenceIds` all have `results[id].seen > 0`.
+- **Be honest about what transfers**: the 69 legacy-lesson rows scatter
+  across 32 units, and under 5–7-row packing **zero new lessons are fully
+  covered by them** — a learner who completed all 12 v1 lessons starts the
+  new path fresh. What the migration actually preserves is the per-sentence
+  SRS (`results`), review history, and the `completedLessonsLegacy` record;
+  the seen-rows credit rule exists for heavy free-mode users, not as a v1
+  lesson mapping. Do not claim otherwise in UI copy.
 - Checkpoints are never auto-crowned (Words parity).
+- Clear `state.sentenceLessonSession` (an S2-A-era in-flight session would
+  reference v1 lesson ids).
 - Leave `results`, `reviewEvents`, `band`, `newPerDay` untouched.
 - Set `progress.planVersion = 2`; save once.
 
@@ -546,20 +631,36 @@ code):
   Known #72dda0 pills, `word-rating-pop` overshoot, 520ms auto-advance).
 - **Overlay**: the `openWordExampleOverlay` modal pattern (blurred scrim,
   430px dialog, spring-in) reused for "hear it slow" / tip details.
-- **Events**: ONE delegated listener on the session root routing
-  `data-sentence-*` attributes (mirror `bindWordLessonRoot`); every
-  speakable Korean string is a `<button lang="ko" data-speak>` with
+- **Events**: ONE delegated listener on the **session root** routing
+  `data-sentence-*` attributes (mirror `bindWordLessonRoot`). Scope: the
+  delegation covers session markup only; the hub's existing per-element
+  `data-ss-*` bindings (`bindSentenceStudioEvents`) stay as-is until S2-D
+  rebuilds the hub — no half-renamed dual-namespace binder. Every speakable
+  Korean string is a `<button lang="ko" data-speak>` with
   `aria-label="Hear …"`.
 - **Gotchas** (from the extraction report): `var(--accent-text)` is used but
   never defined — use `var(--accent)`; do NOT copy the legacy
   `.word-example*` / `.word-card-meaning` / `.word-card-meta*` classes; the
   words check step (`wordLessonCheckHtml`) was never restyled — don't copy
-  it, style the sentence check step to match the card language instead.
+  it, style the sentence check step to match the card language instead;
+  `.word-type-study-box .sentence-input` carries word-sized
+  `letter-spacing:.14em` and existing rules can't be edited (invariant 3) —
+  wrap the sentence input in a new `.sent-type-box` container, never in
+  `.word-type-study-box`.
 - **Mid-session save**: `state.sentenceLessonSession` with versioned
   `serializeSentenceLessonView` / `rehydrateSentenceLessonView`
   (validate-or-drop) / `persistSentenceLessonSession`, persisted on every
-  advance, cleared at summary — a direct mirror of `app.js:4286/4316/4353`.
-  Free-mode sessions stay unpersisted (they're 5 prompts).
+  advance, cleared at summary — a direct mirror of the Words trio. "Resume
+  with identical prompts" requires persisting the DERIVED random state, not
+  just an index (the Words serializer persists `questions[]` + `typeTiles`
+  for exactly this reason). Serialize: row ids, phase, step/prompt cursor,
+  drill-plan cursor, typed input, `attempts`, helper state (`helperLevel`,
+  `helperUsed`, `revealedTokenCount`, `lockedPrefix`), `builtTiles` +
+  tile/token pools (shuffled at build time), transform assignments,
+  `results[]`. Checkpoint row selection is frozen at session start (§3.10)
+  and persisted. S2-C bumps the snapshot version so S2-A-era v1-shape
+  sessions are dropped on rehydrate. Free-mode sessions stay unpersisted
+  (they're 5 prompts).
 
 New CSS goes in `styles.css` under a `.sent-*` prefix ONLY where sentence
 needs diverge; shared classes are used as-is, and **no existing CSS rule is
@@ -582,8 +683,12 @@ Hard errors (v2):
 - Checkpoint equality: `reviewSentenceIds` === union of the unit's content
   rows.
 - i+1 well-formedness: for every unit, every row's `focusWordIds` ⊆ the
-  cumulative word set of Words units up to and including the twin (path
-  order) — i.e. the gating-unit computation is reproducible.
+  cumulative word set of Words units up to and including the twin, where
+  path order is the `HANAPATH_WORD_UNITS` **array index** (the exact §2.7
+  definition — generator and audit must share it or the audit fails).
+- Checkpoint `promptBounds` = `{ min(12, rowCount) … min(18, max(12,
+  rowCount)) }` against the unit's actual row count (the fixed 12-min is
+  unsatisfiable for the 7-row grammar unit).
 - Names: global lesson-title uniqueness; numeral/Roman suffix ban.
 - `drillPlan` modes ∈ the closed mode set; `transform` only on band ≥3 rows.
 - No duplicate `korean` surface within one lesson.
@@ -591,8 +696,13 @@ Hard errors (v2):
 
 Warnings (strict-failing):
 - Lesson size outside 5–7 (hard error <3 or >9); unit >6 content lessons;
-  band spread >2 within a lesson; `patternTags` not ⊆ union of row tags;
-  placeholder emoji (✏️) in unit names; title length caps.
+  `patternTags` not ⊆ union of row tags; placeholder emoji (✏️) in unit
+  names; title length caps; a unit whose required focus words are not
+  covered by twin + ancestor units + prior sections (the §3.2 four-row
+  reassignment keeps this clean).
+
+Informational only (printed, never failing — some units span 4 bands and no
+legal 5–7 packing avoids it): band spread >2 within a lesson.
 
 Add a self-test (`scripts/test_sentences_curriculum_audit.mjs`) that mutates
 a copy of the plan and asserts each check fires — and keep it pointed at the
@@ -655,20 +765,28 @@ pointers.
   (§9.3!). Add `TEST_ENABLE_SENTENCE_SECTION_COMPLETION` +
   `completeSentenceSectionForTesting` (parity with the Words test controls,
   `app.js:4410`). The old hub list may render the new lessons as a flat
-  interim list this PR — path UI is S2-D.
-  *Accept:* fresh profile: sn1 units open as s1 words are learned, lessons
-  linear within units, checkpoint crowns; profile with legacy completions:
-  credited lessons show complete, SRS intact, `planVersion: 2`, no console
-  errors; audits green; cache bumped.
+  interim list this PR — path UI is S2-D — but the interim list MUST:
+  (1) route unlock through the new v2 unit-gating functions (the v1
+  array-sequential rule would lock everything behind ~400 predecessors),
+  (2) branch intro/start on `lesson.type` so checkpoints reach the
+  checkpoint runner instead of dead-ending on `sentenceIds: []`,
+  (3) share one memoized bank by-id map (§3.8 performance mandate).
+  *Accept:* fresh profile (K2 satisfied per §7): sn1 units open as s1 words
+  are learned, lessons linear within units, checkpoint crowns; profile with
+  legacy completions: `planVersion: 2`, SRS/results intact,
+  `completedLessonsLegacy` stashed, path starts fresh (legacy lessons do
+  NOT map — §3.11); no console errors; audits green; cache bumped.
 
 - [ ] **S2-D — Path UI** [coder]
   Rebuild the hub per §3.9: continue hero, `sentencePathHtml` sections/units
   (shared `.vocab-path-*` CSS), locked-unit Words deep-links, free-practice
   strip below, flat lesson list deleted.
   *Accept:* browser smoke per §7 (path renders, collapse, locked toast +
-  deep-link jumps to the right Words unit, hero targets the highlighted
-  node); mobile-width sane; **the path is reachable from the Studio tab on
-  first load** (reachability check); cache bumped.
+  deep-link jumps to the Words unit owning the unmet words, hero targets
+  the highlighted node); a fresh K2 profile with zero crowned Words units
+  sees the "Start with Words" hero, not 75 locked cards (§3.9 item 5);
+  mobile-width sane; **the path is reachable from the Studio tab on first
+  load** (reachability check); cache bumped.
 
 - [ ] **S2-E — Polish pass** [coder + author]
   Crowning moment for checkpoints; unit emoji finalized (no ✏️); per-unit
@@ -708,8 +826,8 @@ this plan re-anchors where its output lands. Volume/themes stay owner-set.
   2. **Scenario packs**: new themed units appended to the right section by
      gating unit — this is where the K-pop flavor becomes *content*, not
      just naming: practice-room talk, fan-sign lines, interview reactions,
-     award-show thanks, V-live chat — **original sentences only, no lyrics,
-     no real names** (§3.0).
+     award-show thanks, live-stream chat — **original sentences only, no
+     lyrics, no real names of any kind** (§3.0).
 - **Priority queue**: (1) the 8 thin pattern tags per
   `docs/SENTENCES_GAP_REPORT.md` (~100 rows in 4 batches — makes
   pattern-focused drilling viable); (2) grammar-unit fills; (3) scenario
@@ -763,7 +881,11 @@ node scripts/audit-alphabet-audio.mjs --strict
 node scripts/audit-app-shell.mjs                 # if shell/versions touched
 python -m http.server 8000                       # browser smoke:
 ```
-Browser smoke (fresh profile in a private window + a legacy-state profile):
+Browser smoke (fresh profile in a private window + a legacy-state profile).
+Satisfying K2 on a fresh profile: complete the alphabet via its test button,
+then earn 20 correct answers in the quiz — `state.correct` is only
+incremented by the legacy quiz engine, so Words test controls and
+`TEST_UNLOCK_ALL_STAGES` do NOT open the Studio door for gating tests.
 1. Studio tab loads; **the new UI is actually reachable** (§9.3).
 2. Path renders; locked unit shows the Words deep-link and it navigates.
 3. One full content lesson: shadow pass → production pass → pass/fail
@@ -800,28 +922,29 @@ Browser smoke (fresh profile in a private window + a legacy-state profile):
   41 (`s1-firstwords-u1`); zero empty units.
 - Per-section rows: sn1=115, sn2=322, sn3=315, sn4=283, sn5=258, sn6=255,
   sn7=263, sn8=249 (sum 2,060).
-- Expected output: ~345 content lessons + 75 checkpoints across 75 units;
-  4–6 content lessons for most units; 1–2 for the three thin grammar units.
+- Expected output: ~331 content lessons + 75 checkpoints across 75 units
+  (even packing, §3.4); 4–6 content lessons for most units; 1–3 for the
+  three thin grammar units (7→1, 12→2, 15→3).
 - Legacy layer: 12 lessons, 72 slots, 69 unique rows; pass rule
   `ceil(0.67·N)` = 5-of-6 today.
 - Cold-start (free modes only): 39 band-1 rows via the early-word exemption.
 
 ### 9.2 Key code reference index (verified 2026-07-10, `main` @ `a7cd28b9` — re-grep first)
 
-| What | Where |
+| What | Where (approximate — re-grep by name) |
 |---|---|
-| Studio region | `app.js:14312-15994`; entry `renderPracticeView` 15642 |
-| Hub (replaced S2-D) | `sentenceStudioHubHtml` 15124; intro 15314 |
-| Modes/session | `SENTENCE_MODES` 14332; `sentenceQuestionMode` 14957; picker 14655; length const 14332 region |
-| Helper ladder / checking | 15746 / 15424; `PATTERN_TAG_INFO` 14347; `checkSentenceAnswer` 14718; diff 14727 |
-| SRS write | `recordSentenceResult` 15006 |
-| Progress slice | `getSentencesProgress` 14412; completion push 15097; pass calc 15105 |
-| Unlock (v1) | `isSentenceLessonUnlocked` 14895; K2 gate 3143/3080 |
-| Words read-only helpers | `getMetWords` 14520; `isSentenceAvailable` 14545; early words 14539 |
-| Words v2 patterns to mirror | unlock 4401/4402/4431; feature-detect 4386; migration 4443; session persist 4286/4316/4353; path UI 7124/7146/7173; CSS 3696-3812 |
-| Card design system | `wordLessonStudyHtml` 5578-5682; overlay 5397; intro 5539; delegated events `bindWordLessonRoot` 6020+ |
+| Studio region | `app.js` ~14320–16050; entry `renderPracticeView` ~15657 |
+| Hub (replaced S2-D) | `sentenceStudioHubHtml` ~15139; intro ~15320 |
+| Modes/session | `SENTENCE_MODES` ~14347; `sentenceQuestionMode` ~14963; picker ~14670; `SENTENCE_SESSION_LENGTH` ~14345 |
+| Helper ladder / checking | ~15761 / ~15439; `PATTERN_TAG_INFO` ~14362; `checkSentenceAnswer` ~14733; diff ~14742 |
+| SRS write | `recordSentenceResult` ~15021 |
+| Progress slice | `getSentencesProgress` ~14427; completion push ~15106; pass calc ~15105 |
+| Unlock (v1) | `isSentenceLessonUnlocked` ~14910; K2 gate 3143/3080 |
+| Words read-only helpers | `getMetWords` ~14526; `isSentenceAvailable` ~14551; early words ~14545 |
+| Words v2 patterns to mirror | unlock 4401/4402/4431; feature-detect 4386; migration 4443; session persist 4286/4316/4353; path UI ~7130/~7152/~7179; CSS ~3708-3821 |
+| Card design system | `wordLessonStudyHtml` ~5597; overlay 5397; intro 5539; delegated events `bindWordLessonRoot` ~6027 |
 | Audits | `audit-sentences-data.mjs` (bank); `audit-sentences-foundation.mjs` (12×6 hard-coded — rewrite); words audit auto-detect line 32 |
-| Cache pins | `index.html:27-28`, `sw.js:13-14`, `CACHE_NAME` (v302 today) |
+| Cache pins | `index.html:27-28`, `sw.js:13-14`, `CACHE_NAME` (v303 at write time — always re-read) |
 
 ### 9.3 Lessons from the Words v2 rollout (bake these in)
 
