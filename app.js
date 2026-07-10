@@ -12617,6 +12617,7 @@ const HUB_DEFS = {
       { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Follow the guided path or practise full sentences.", target: "practice" },
       { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
       { id: "pronunciation", icon: "🎧", title: "Pronunciation drill", sub: "Train your ears on tensed/aspirated consonants & minimal pairs.", custom: "pronunciationDrill" },
+      { id: "writing", icon: "✍️", title: "Hangul writing", sub: "Draw letters and syllable blocks by hand.", custom: "hangulWriting" },
     ],
   },
   progress: {
@@ -13229,6 +13230,10 @@ function openHubItem(hub, itemId) {
   }
   if (item.custom === "pronunciationDrill") {
     renderPronunciationDrill();
+    return;
+  }
+  if (item.custom === "hangulWriting") {
+    renderHangulWriting();
     return;
   }
 
@@ -13907,6 +13912,258 @@ window.nextPronDrillQuestion = function() {
 window.quitPronDrill = function() {
   pronDrillState.activePairSet = null;
   renderPronunciationDrill();
+}
+
+// ─── HANGUL WRITING (W0 SHELL — see docs/HANGUL_WRITING_PLAN.md) ─────────────
+// Draw-to-learn practice for the Alphabet section. This is the Phase W0 shell:
+// navigation, unit gating, and a working freehand canvas. Stroke guides,
+// tracing, grading, and persistence are the Opus W1–W3 queue in the plan doc.
+// Writing READS getAlphabetProgress() for unlocks and never writes progress.
+// Scope cap (owner decision): nothing longer than one syllable block here.
+const HANGUL_WRITING_UNITS = [
+  { id: "vowels-basic", eyebrow: "Unit 1", label: "Basic vowels", sub: "The six anchor vowels.", glyphs: ["ㅏ", "ㅓ", "ㅗ", "ㅜ", "ㅡ", "ㅣ"], unlockLessonIndex: 0 },
+  { id: "consonants-basic", eyebrow: "Unit 2", label: "Basic consonants", sub: "The ten base consonant shapes.", glyphs: ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅎ"], unlockLessonIndex: 1 },
+  { id: "blocks-cv", eyebrow: "Unit 3", label: "Simple blocks", sub: "Consonant + vowel in one square.", glyphs: ["가", "나", "도", "무", "비", "소"], unlockLessonIndex: 2 },
+  { id: "jamo-advanced", eyebrow: "Unit 4", label: "Advanced letters", sub: "Y-vowels and aspirated consonants.", glyphs: ["ㅑ", "ㅕ", "ㅛ", "ㅠ", "ㅋ", "ㅌ", "ㅍ", "ㅊ"], unlockLessonIndex: 5 },
+  { id: "blocks-cvc", eyebrow: "Unit 5", label: "Blocks with batchim", sub: "Full syllables with a bottom consonant.", glyphs: ["한", "글", "밥", "산", "강"], unlockLessonIndex: 5 },
+];
+
+let hangulWritingState = {
+  unitId: null,
+  glyphIndex: 0,
+  guideVisible: true,
+  checking: false,
+  strokes: [],
+};
+
+function getHangulWritingUnit(unitId = hangulWritingState.unitId) {
+  return HANGUL_WRITING_UNITS.find((unit) => unit.id === unitId) || null;
+}
+
+function isHangulWritingUnitUnlocked(unit) {
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  return getAlphabetProgress().completedCount > unit.unlockLessonIndex;
+}
+
+function getHangulStrokeGuide(glyph) {
+  // OPUS(W1): return authored stroke-order guide data for this glyph from
+  // hangul_strokes.js, or null when no guide exists (shell falls back to a
+  // faint-font glyph under the ink).
+  return null;
+}
+
+function gradeHangulDrawing(glyph, strokes) {
+  // OPUS(W2): heuristic grading (stroke count, direction, coverage) against
+  // the stroke guide. null → the shell's self-check buttons are the verdict.
+  return null;
+}
+
+function recordHangulWritingResult(glyph, verdict) {
+  // OPUS(W3): persist per-glyph writing results (additive hanapath-v1 key).
+}
+
+function drawHangulWritingCanvas(canvas) {
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (hangulWritingState.guideVisible || hangulWritingState.checking) {
+    const unit = getHangulWritingUnit();
+    const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
+    ctx.save();
+    ctx.fillStyle = hangulWritingState.checking ? "rgba(122, 92, 255, 0.35)" : "rgba(127, 127, 127, 0.18)";
+    ctx.font = `${Math.round(canvas.height * 0.72)}px "Noto Sans KR", sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(glyph, canvas.width / 2, canvas.height / 2 + canvas.height * 0.04);
+    ctx.restore();
+  }
+
+  ctx.save();
+  ctx.strokeStyle = "#7a5cff";
+  ctx.lineWidth = Math.max(6, canvas.width * 0.028);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  hangulWritingState.strokes.forEach((stroke) => {
+    if (stroke.length < 2) return;
+    ctx.beginPath();
+    ctx.moveTo(stroke[0].x, stroke[0].y);
+    for (let i = 1; i < stroke.length; i += 1) {
+      ctx.lineTo(stroke[i].x, stroke[i].y);
+    }
+    ctx.stroke();
+  });
+  ctx.restore();
+}
+
+function bindHangulWritingCanvas(canvas) {
+  let activeStroke = null;
+
+  const pointFromEvent = (event) => {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: ((event.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((event.clientY - rect.top) / rect.height) * canvas.height,
+    };
+  };
+
+  canvas.addEventListener("pointerdown", (event) => {
+    if (hangulWritingState.checking) return;
+    event.preventDefault();
+    canvas.setPointerCapture(event.pointerId);
+    activeStroke = [pointFromEvent(event)];
+    hangulWritingState.strokes.push(activeStroke);
+    const checkButton = document.getElementById("writingCheck");
+    if (checkButton) checkButton.disabled = false;
+    drawHangulWritingCanvas(canvas);
+  });
+  canvas.addEventListener("pointermove", (event) => {
+    if (!activeStroke) return;
+    event.preventDefault();
+    activeStroke.push(pointFromEvent(event));
+    drawHangulWritingCanvas(canvas);
+  });
+  const finishStroke = () => {
+    activeStroke = null;
+  };
+  canvas.addEventListener("pointerup", finishStroke);
+  canvas.addEventListener("pointercancel", finishStroke);
+}
+
+function renderHangulWritingUnitPicker(el) {
+  const unitsHtml = HANGUL_WRITING_UNITS.map((unit) => {
+    const unlocked = isHangulWritingUnitUnlocked(unit);
+    const preview = unit.glyphs.slice(0, 6).join(" ");
+    return `
+      <div class="card writing-unit ${unlocked ? "" : "writing-unit-locked"}">
+        <div class="writing-unit-row">
+          <div>
+            <div class="eyebrow">${escapeHtml(unit.eyebrow)}</div>
+            <h3 class="writing-unit-title">${escapeHtml(unit.label)}</h3>
+            <div class="fs-xs text-muted-2">${escapeHtml(unit.sub)}</div>
+            <div class="writing-unit-preview" lang="ko">${escapeHtml(preview)}</div>
+          </div>
+          ${
+            unlocked
+              ? `<button class="button primary compact" type="button" data-writing-unit="${unit.id}">Practise</button>`
+              : `<span class="writing-unit-lock" title="Finish the matching alphabet stage to unlock">🔒 Locked</span>`
+          }
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="card">
+      <button class="button secondary compact" type="button" id="writingBackToHub">‹ Back to practice</button>
+      <div class="eyebrow" style="margin-top:8px;">Practice · Hangul writing</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Write Hangul by hand</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Draw each letter, then build full syllable blocks. Units unlock as you finish the matching alphabet stages.</div>
+    </div>
+    ${unitsHtml}
+  `;
+
+  el.querySelector("#writingBackToHub").addEventListener("click", () => goHub("practice"));
+  el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, guideVisible: true, checking: false, strokes: [] };
+      renderHangulWriting();
+    });
+  });
+}
+
+function renderHangulWritingPractice(el, unit) {
+  const glyph = unit.glyphs[hangulWritingState.glyphIndex];
+  const total = unit.glyphs.length;
+  const position = hangulWritingState.glyphIndex + 1;
+
+  el.innerHTML = `
+    <div class="card">
+      <button class="button secondary compact" type="button" id="writingBackToUnits">‹ All units</button>
+      <div class="eyebrow" style="margin-top:8px;">Hangul writing · ${escapeHtml(unit.label)}</div>
+      <h2 class="screen-title writing-target" lang="ko">${escapeHtml(glyph)}
+        <button class="button secondary compact" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear ${escapeHtml(glyph)}">🔊</button>
+      </h2>
+      <div class="screen-sub" style="margin-bottom:0;">Letter ${position} of ${total}. Trace over the guide, then check your drawing.</div>
+    </div>
+    <div class="card writing-canvas-card">
+      <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Drawing area for ${escapeHtml(glyph)}"></canvas>
+      <div class="writing-toolbar">
+        <button class="button secondary compact" type="button" id="writingGuideToggle">${hangulWritingState.guideVisible ? "Hide guide" : "Show guide"}</button>
+        <button class="button secondary compact" type="button" id="writingUndo">Undo</button>
+        <button class="button secondary compact" type="button" id="writingClear">Clear</button>
+        <button class="button primary compact" type="button" id="writingCheck" ${hangulWritingState.strokes.length ? "" : "disabled"}>Check</button>
+      </div>
+      <div class="writing-check-row" id="writingCheckRow" ${hangulWritingState.checking ? "" : "hidden"}>
+        <div class="fs-sm">Compare your ink with the reference. How did it go?</div>
+        <div class="writing-toolbar">
+          <button class="button secondary compact" type="button" id="writingAgain">Try again</button>
+          <button class="button primary compact" type="button" id="writingGotIt">Got it →</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const canvas = el.querySelector("#writingCanvas");
+  drawHangulWritingCanvas(canvas);
+  bindHangulWritingCanvas(canvas);
+
+  const rerender = () => renderHangulWriting();
+  el.querySelector("#writingBackToUnits").addEventListener("click", () => {
+    hangulWritingState.unitId = null;
+    rerender();
+  });
+  el.querySelectorAll("[data-speak]").forEach((btn) => {
+    btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
+  });
+  el.querySelector("#writingGuideToggle").addEventListener("click", () => {
+    hangulWritingState.guideVisible = !hangulWritingState.guideVisible;
+    rerender();
+  });
+  el.querySelector("#writingUndo").addEventListener("click", () => {
+    hangulWritingState.strokes.pop();
+    hangulWritingState.checking = false;
+    rerender();
+  });
+  el.querySelector("#writingClear").addEventListener("click", () => {
+    hangulWritingState.strokes = [];
+    hangulWritingState.checking = false;
+    rerender();
+  });
+  el.querySelector("#writingCheck").addEventListener("click", () => {
+    // OPUS(W2): call gradeHangulDrawing(glyph, strokes) here and show its
+    // verdict; the self-check row stays as the fallback for null grades.
+    hangulWritingState.checking = true;
+    rerender();
+  });
+  el.querySelector("#writingAgain").addEventListener("click", () => {
+    recordHangulWritingResult(glyph, "again");
+    hangulWritingState.strokes = [];
+    hangulWritingState.checking = false;
+    rerender();
+  });
+  el.querySelector("#writingGotIt").addEventListener("click", () => {
+    recordHangulWritingResult(glyph, "got-it");
+    hangulWritingState.strokes = [];
+    hangulWritingState.checking = false;
+    hangulWritingState.glyphIndex = (hangulWritingState.glyphIndex + 1) % unit.glyphs.length;
+    rerender();
+  });
+}
+
+function renderHangulWriting() {
+  refreshProgressionState();
+  activeHub = "practice";
+  setNavActive("practice");
+  const el = showScreen("detail");
+  if (!el) return;
+
+  const unit = getHangulWritingUnit();
+  if (!unit || !isHangulWritingUnitUnlocked(unit)) {
+    hangulWritingState.unitId = null;
+    renderHangulWritingUnitPicker(el);
+    return;
+  }
+  renderHangulWritingPractice(el, unit);
 }
 
 // ─── ALPHABET LETTER REVIEW (SRS) ─────────────────────────────────────────────
