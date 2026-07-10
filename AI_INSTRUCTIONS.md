@@ -132,12 +132,10 @@ then trust the number. The current honest remaining work is the Sentences
 spec's **§8 scorecard** + the roadmap's checkboxes, re-derived per the
 roadmap's §2.1.
 
-**Words delegation:** Words v2 core remains frozen. Its remaining Phase 2
-expansion-plumbing work is assigned to **Gemini**, using
-`docs/GEMINI_FLASH_3_5_LOW_HANGING_FRUITS_PROMPT.md`. Gemini must hand off any
-semantic, learner-facing, or owner-gated decision to **Luna** rather than
-guessing; Luna owns that follow-up queue. Do not pull Words work into a
-Sentences PR.
+**Words delegation:** Gemini completed P2-0 tooling. **Luna** owns the active
+Words Phase 2 queue in `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`: first harden
+the import boundary, then qualify and propose the first elective-pack batch.
+Do not pull Words work into a Sentences PR.
 
 If the user named a specific task, do that instead.
 

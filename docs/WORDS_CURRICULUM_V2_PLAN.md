@@ -920,6 +920,18 @@ binding requirements below override it where they conflict.
   whether to compact state/use IndexedDB and cap or explicitly budget audio
   caching before any large batch ships.
 
+### 5.1A Post-P2-0 import boundary (reviewed 2026-07-10)
+
+P2-0's queue builder, decision-ledger validation, dry-run importer, and focused
+tests are present. The current `import_batch.mjs --commit` implementation only
+appends rows to `words_curated_core.js`; it does **not** create or validate a
+draft elective pack and it only prints the required audio/cache follow-up.
+Therefore it is **not approved for a real batch**. Luna must harden this boundary
+before any non-dry import: validate draft-pack placement, preserve the frozen
+S1-S8 lock, and refuse completion until the owner-run audio/cache sequence is
+recorded. Until then, only qualification, decision-ledger, and dry-run work may
+proceed.
+
 ### 5.2 The batch loop (repeating PR recipe)
 
 Each batch = one PR, ~200 words → ~20 lessons → ~6–7 units:

@@ -5,7 +5,10 @@ You are Gemini Flash 3.5: fast, implementation-oriented, and good at high-volume
 recipe-driven work. Your job is to complete a large batch of safe, low-judgment
 tasks without inventing product scope or making semantic guesses.
 
-## Mission
+> **Status (2026-07-10):** This work order is complete. Do not rerun its queue
+> as new work. Hand off to `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md` instead.
+
+## Historical mission
 
 Finish the remaining low-hanging Words-section work after the Words Curriculum v2
 restructure. The live v2 path is already shipped and frozen. Do not redesign it.
@@ -53,11 +56,8 @@ stash, or delete user work.
 
 ## Luna handoff trigger
 
-Gemini owns only the deterministic plumbing in this work order. The moment a
-task requires a Korean semantic judgment, learner-facing copy decision, new
-curriculum/content authoring, or owner approval, stop that item and hand it to
-**Luna** with the file, row range, evidence, and the unresolved decision. Do not
-guess, and do not pull Sentences work into this queue.
+P2-0 is complete. Send Luna to
+`docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`; do not restart this historical queue.
 
 Work in small, independently reviewable batches. You may complete several tightly
 specified low-judgment tasks in one working session, but keep each logical change
