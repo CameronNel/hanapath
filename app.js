@@ -5575,6 +5575,22 @@ function getWordLessonStep(view) {
   return view.steps[view.stepIndex] || null;
 }
 
+function wordTypedSuccessOverlayHtml(word) {
+  return `
+    <div class="word-typed-success-overlay" role="presentation">
+      <div class="word-typed-success-dialog" role="dialog" aria-modal="true" aria-labelledby="wordTypedSuccessTitle">
+        <div id="wordTypedSuccessTitle" class="word-typed-success-title">Correct!</div>
+        <div class="word-typed-success-answer" lang="ko">${escapeHtml(getWordTypeTarget(word))}</div>
+        <div class="word-typed-success-prompt">How did that feel?</div>
+        <div class="word-rating-actions word-typed-success-actions">
+          <button class="word-rating-button word-rating-hard" type="button" data-word-lesson-rate="hard">Hard</button>
+          <button class="word-rating-button word-rating-known" type="button" data-word-lesson-rate="known">Known</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function wordLessonStudyHtml(lesson, view) {
   const step = getWordLessonStep(view);
   if (!step) return "";
@@ -5645,19 +5661,12 @@ function wordLessonStudyHtml(lesson, view) {
         <div class="word-card-actions word-card-audio-actions">
           <button class="button secondary compact" type="button" data-speak="${escapeHtml(word.voiceText || word.korean)}">▶ Hear it</button>
         </div>
-        <div class="word-card-actions word-card-nav-actions">
+        ${view.typedDone ? "" : `<div class="word-card-actions word-card-nav-actions">
           <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
-          ${view.typedDone
-            ? `<div class="word-rating-prompt" role="group" aria-label="Rate this word">
-                <div class="word-rating-label">How did that feel?</div>
-                <div class="word-rating-actions">
-                  <button class="word-rating-button word-rating-hard" type="button" data-word-lesson-rate="hard">Hard</button>
-                  <button class="word-rating-button word-rating-known" type="button" data-word-lesson-rate="known">Known</button>
-                </div>
-              </div>`
-            : `<button class="button primary compact" type="button" data-word-type-check>Check</button>`}
-        </div>
+          <button class="button primary compact" type="button" data-word-type-check>Check</button>
+        </div>`}
       </div>
+      ${view.typedDone ? wordTypedSuccessOverlayHtml(word) : ""}
     `;
   }
 

@@ -3316,6 +3316,22 @@ li { margin-bottom: 4px; }
 @keyframes word-rating-in { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes word-rating-pop { 0% { transform: scale(1); } 45% { transform: scale(1.16) rotate(-3deg); } 100% { transform: scale(1.04); } }
 
+.word-typed-success-overlay {
+  position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center;
+  padding: 24px; background: rgba(5, 10, 24, .78); backdrop-filter: blur(7px);
+  animation: word-example-overlay-in .2s ease both;
+}
+.word-typed-success-dialog {
+  width: min(100%, 430px); padding: 30px 22px 24px; text-align: center;
+  border: 1px solid rgba(126, 169, 255, .3); border-radius: 22px;
+  background: var(--panel, #141b31); box-shadow: 0 22px 70px rgba(0,0,0,.42);
+  animation: word-example-dialog-in .28s cubic-bezier(.2, 1.2, .4, 1) both;
+}
+.word-typed-success-title { color: var(--accent-text); font-size: 1.45rem; font-weight: 900; }
+.word-typed-success-answer { margin-top: 14px; color: var(--text); font-family: "Noto Sans KR", sans-serif; font-size: 2.1rem; font-weight: 900; }
+.word-typed-success-prompt { margin-top: 26px; color: var(--muted); font-size: .86rem; }
+.word-typed-success-actions { margin-top: 10px; }
+
 .word-example-overlay {
   position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center;
   padding: 24px; background: rgba(5, 10, 24, .78); backdrop-filter: blur(7px);
