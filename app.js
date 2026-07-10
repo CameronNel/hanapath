@@ -4622,12 +4622,145 @@ function buildWordReferenceRows() {
   wordReferenceReady = true;
 }
 
+function isSentenceCurriculumV2() {
+  return Array.isArray(window.HANAPATH_SENTENCE_SECTIONS) && Array.isArray(window.HANAPATH_SENTENCE_UNITS);
+}
+
+function getSentenceSections() {
+  return isSentenceCurriculumV2() ? window.HANAPATH_SENTENCE_SECTIONS : [];
+}
+
+function getSentenceUnits() {
+  return isSentenceCurriculumV2() ? window.HANAPATH_SENTENCE_UNITS : [];
+}
+
+function getSentenceSectionById(sectionId) {
+  return getSentenceSections().find((s) => s.id === sectionId) || null;
+}
+
+function getSentenceUnitById(unitId) {
+  return getSentenceUnits().find((u) => u.id === unitId) || null;
+}
+
+function getSentenceUnitContentLessons(unit) {
+  return unit ? unit.lessonIds.map((id) => getSentenceLessonById(id)).filter((lesson) => lesson && lesson.type !== "checkpoint") : [];
+}
+
+const sentenceUnitFocusWordsMap = new Map();
+function initSentenceUnitFocusWordsMap() {
+  if (sentenceUnitFocusWordsMap.size > 0) return;
+  const units = getSentenceUnits();
+  const lessons = getSentenceLessons();
+  const rows = getSentenceBankRows();
+  const rowsById = new Map(rows.map(r => [r.id, r]));
+  for (const unit of units) {
+    const focusWords = new Set();
+    const uLessons = lessons.filter(l => l.unitId === unit.id && l.type === "content");
+    for (const lesson of uLessons) {
+      for (const sid of lesson.sentenceIds || []) {
+        const row = rowsById.get(sid);
+        if (row && Array.isArray(row.focusWordIds)) {
+          for (const wId of row.focusWordIds) {
+            focusWords.add(wId);
+          }
+        }
+      }
+    }
+    sentenceUnitFocusWordsMap.set(unit.id, focusWords);
+  }
+}
+
+function isSentenceUnitUnlocked(unit, metWords) {
+  if (!unit) return false;
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  initSentenceUnitFocusWordsMap();
+  const focusWords = sentenceUnitFocusWordsMap.get(unit.id);
+  if (!focusWords) return true;
+  const activeMetWords = metWords || getMetWords();
+  for (const wId of focusWords) {
+    if (!activeMetWords.has(wId)) return false;
+  }
+  return true;
+}
+
+function isSentenceLessonUnlockedV2(lesson, metWords, completedSet) {
+  if (!lesson) return false;
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  const unit = getSentenceUnitById(lesson.unitId);
+  if (!unit) return false;
+  const activeMetWords = metWords || getMetWords();
+  if (!isSentenceUnitUnlocked(unit, activeMetWords)) return false;
+  const activeCompleted = completedSet || new Set(getSentencesProgress().completedLessons || []);
+  const unitLessons = getSentenceUnitContentLessons(unit);
+  if (lesson.type === "checkpoint") {
+    return unitLessons.every(l => activeCompleted.has(l.id));
+  } else {
+    const idx = unitLessons.findIndex(l => l.id === lesson.id);
+    if (idx <= 0) return true;
+    return activeCompleted.has(unitLessons[idx - 1].id);
+  }
+}
+
+function isSentenceUnitCrowned(unit, completedSet) {
+  if (!unit) return false;
+  const activeCompleted = completedSet || new Set(getSentencesProgress().completedLessons || []);
+  return activeCompleted.has(unit.checkpointId);
+}
+
+function getNextSentenceLesson(metWords, completedSet) {
+  const activeMet = metWords || getMetWords();
+  const activeCompleted = completedSet || new Set(getSentencesProgress().completedLessons || []);
+  return getSentenceLessons().find((lesson) => {
+    return !activeCompleted.has(lesson.id) && isSentenceLessonUnlockedV2(lesson, activeMet, activeCompleted);
+  }) || null;
+}
+
+function getLegacyCompletedSentenceIds(legacyLessonIds) {
+  const snapshot = window.HANAPATH_SENTENCE_V1_SNAPSHOT;
+  const ids = new Set();
+  if (Array.isArray(snapshot)) {
+    for (const lesson of snapshot) {
+      if (legacyLessonIds.includes(lesson.id) && Array.isArray(lesson.sentenceIds)) {
+        for (const sid of lesson.sentenceIds) {
+          ids.add(sid);
+        }
+      }
+    }
+  }
+  return ids;
+}
+
 function migrateSentencesState() {
   if (!state.sentencesProgress || typeof state.sentencesProgress !== "object") {
     state.sentencesProgress = {};
   }
   if (!state.sentenceLessonSession || typeof state.sentenceLessonSession !== "object" || Array.isArray(state.sentenceLessonSession)) {
     state.sentenceLessonSession = null;
+  }
+  const progress = getSentencesProgress();
+  if (isSentenceCurriculumV2() && Number(progress.planVersion || 1) < 2) {
+    const legacyLessonIds = [...(progress.completedLessons || [])];
+    const creditedSentenceIds = getLegacyCompletedSentenceIds(legacyLessonIds);
+    progress.completedLessons = [];
+    for (const lesson of getSentenceLessons()) {
+      if (lesson.type !== "content") continue;
+      const sIds = lesson.sentenceIds || [];
+      if (sIds.length && sIds.every((id) => creditedSentenceIds.has(id))) {
+        progress.completedLessons.push(lesson.id);
+      }
+    }
+    const completedSet = new Set(progress.completedLessons);
+    for (const unit of getSentenceUnits()) {
+      const uLessons = getSentenceUnitContentLessons(unit);
+      if (uLessons.length && uLessons.every((lesson) => completedSet.has(lesson.id))) {
+        progress.completedLessons.push(unit.checkpointId);
+      }
+    }
+    progress.completedLessonsLegacy = legacyLessonIds;
+    progress.planVersion = 2;
+    state.sentenceLessonActive = null;
+    state.sentenceLessonSession = null;
+    saveState();
   }
 }
 
@@ -14430,7 +14563,8 @@ function getSentenceLessonById(lessonId) {
 
 function getSentenceLessonRows(lesson) {
   const byId = new Map(getSentenceBankRows().map((row) => [row.id, row]));
-  return (lesson?.sentenceIds || []).map((id) => byId.get(id)).filter(Boolean);
+  const ids = lesson?.type === "checkpoint" ? (lesson.reviewSentenceIds || []) : (lesson?.sentenceIds || []);
+  return ids.map((id) => byId.get(id)).filter(Boolean);
 }
 
 // Normalized accessor for the Sentences state slice (additive; older saved
@@ -14993,9 +15127,12 @@ function startSentenceStudioSession(modeId) {
   renderPracticeView();
 }
 
-function isSentenceLessonUnlocked(lesson) {
+function isSentenceLessonUnlocked(lesson, metWords, completedSet) {
   if (!lesson) return false;
   if (TEST_UNLOCK_ALL_STAGES) return true;
+  if (isSentenceCurriculumV2()) {
+    return isSentenceLessonUnlockedV2(lesson, metWords, completedSet);
+  }
   const lessons = getSentenceLessons();
   const index = lessons.findIndex((l) => l.id === lesson.id);
   if (index <= 0) return true;

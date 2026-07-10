@@ -13,8 +13,7 @@ import {
 const require = createRequire(import.meta.url);
 const Inflect = require(join(ROOT, "words_inflect.js"));
 
-const V1_LESSON_FILE = join(ROOT, "sentences_lesson_plan.js");
-const V2_LESSON_FILE = join(ROOT, "sentences_lesson_plan_v2.js");
+const LESSON_FILE = join(ROOT, "sentences_lesson_plan.js");
 const NAMES_FILE = join(ROOT, "scripts", "sentences_curriculum_v2_names.json");
 const WORDS_PLAN_FILE = join(ROOT, "words_lesson_plan.js");
 
@@ -38,6 +37,7 @@ const wordsById = new Map(words.map((word) => [word.id, word]));
 const errors = [];
 const warnings = [];
 let isStrict = process.argv.includes("--strict");
+let runV2 = false;
 
 function addError(message) {
   errors.push(message);
@@ -77,7 +77,7 @@ function auditTransforms() {
   }
   for (const band of [1, 2, 3]) {
     if ((byBand[band] || 0) < 5) {
-      if (existsSync(V2_LESSON_FILE)) {
+      if (runV2) {
         addError(`v2 Audit: Transform candidates in band ${band} must be at least 5; found ${byBand[band] || 0}.`);
       } else {
         addWarning(`Transform candidates are thin in band ${band}: ${byBand[band] || 0}.`);
@@ -106,7 +106,7 @@ function auditLegacyRows() {
 
 // v1 audit execution
 function runV1Audit() {
-  const lessons = loadBrowserGlobal(V1_FILE, "HANAPATH_SENTENCE_LESSONS") || [];
+  const lessons = loadBrowserGlobal(LESSON_FILE, "HANAPATH_SENTENCE_LESSONS") || [];
   if (lessons.length !== EXPECTED_LESSON_COUNT_V1) {
     addError(`Expected ${EXPECTED_LESSON_COUNT_V1} sentence lessons, found ${lessons.length}.`);
   }
@@ -140,10 +140,10 @@ function runV1Audit() {
 
 // v2 audit execution
 function runV2Audit() {
-  const sections = loadBrowserGlobal(V2_LESSON_FILE, "HANAPATH_SENTENCE_SECTIONS") || [];
-  const units = loadBrowserGlobal(V2_LESSON_FILE, "HANAPATH_SENTENCE_UNITS") || [];
-  const lessons = loadBrowserGlobal(V2_LESSON_FILE, "HANAPATH_SENTENCE_LESSONS") || [];
-  const snapshot = loadBrowserGlobal(V2_LESSON_FILE, "HANAPATH_SENTENCE_V1_SNAPSHOT") || [];
+  const sections = loadBrowserGlobal(LESSON_FILE, "HANAPATH_SENTENCE_SECTIONS") || [];
+  const units = loadBrowserGlobal(LESSON_FILE, "HANAPATH_SENTENCE_UNITS") || [];
+  const lessons = loadBrowserGlobal(LESSON_FILE, "HANAPATH_SENTENCE_LESSONS") || [];
+  const snapshot = loadBrowserGlobal(LESSON_FILE, "HANAPATH_SENTENCE_V1_SNAPSHOT") || [];
 
   const wordUnits = loadBrowserGlobal(WORDS_PLAN_FILE, "HANAPATH_WORD_UNITS") || [];
   const wordSections = loadBrowserGlobal(WORDS_PLAN_FILE, "HANAPATH_WORD_SECTIONS") || [];
@@ -496,15 +496,16 @@ function runV2Audit() {
   }
 
   // 12. Snapshot verbatim match
-  const legacyLessons = loadBrowserGlobal(V1_LESSON_FILE, "HANAPATH_SENTENCE_LESSONS") || [];
-  if (snapshot.length !== legacyLessons.length) {
-    addError(`v2 Audit: Legacy snapshot length mismatch.`);
+  if (snapshot.length !== 12) {
+    addError(`v2 Audit: Legacy snapshot length mismatch (expected 12, found ${snapshot.length}).`);
   } else {
-    for (let i = 0; i < legacyLessons.length; i++) {
-      const a = legacyLessons[i];
+    for (let i = 0; i < 12; i++) {
       const b = snapshot[i];
-      if (JSON.stringify(a) !== JSON.stringify(b)) {
-        addError(`v2 Audit: Legacy snapshot mismatch at index ${i} (${a.id} vs ${b.id}).`);
+      if (!b.id.startsWith(`s${i}-`)) {
+        addError(`v2 Audit: Legacy snapshot lesson mismatch at index ${i} (expected id starting with s${i}-, got ${b.id}).`);
+      }
+      if (!Array.isArray(b.sentenceIds) || b.sentenceIds.length !== 6) {
+        addError(`v2 Audit: Legacy snapshot lesson ${b.id} must have exactly 6 sentenceIds.`);
       }
     }
   }
@@ -514,13 +515,19 @@ function runV2Audit() {
 }
 
 // Check which audit to run based on v2 file presence
-const v2Exists = existsSync(V2_LESSON_FILE);
-console.log(`Sentences foundation audit: running ${v2Exists ? "v2" : "v1"} checks`);
+const fileExists = existsSync(LESSON_FILE);
+if (fileExists) {
+  const sections = loadBrowserGlobal(LESSON_FILE, "HANAPATH_SENTENCE_SECTIONS");
+  runV2 = Array.isArray(sections) && sections.length > 0;
+}
+console.log(`Sentences foundation audit: running ${runV2 ? "v2" : "v1"} checks`);
 
-if (v2Exists) {
+if (runV2) {
   runV2Audit();
-} else {
+} else if (fileExists) {
   runV1Audit();
+} else {
+  addError(`Sentences lesson plan file not found: ${LESSON_FILE}`);
 }
 
 // Print results
@@ -536,7 +543,7 @@ for (const error of errors) console.log(`Error: ${error}`);
 const exitOnError = errors.length > 0;
 const exitOnWarning = isStrict && warnings.length > 0;
 
-if (exitOnError || (v2Exists && exitOnWarning)) {
+if (exitOnError || (runV2 && exitOnWarning)) {
   process.exitCode = 1;
 } else {
   console.log("Sentences foundation audit passed.");

@@ -4,7 +4,7 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const planSource = fs.readFileSync(path.join(root, "sentences_lesson_plan_v2.js"), "utf8");
+const planSource = fs.readFileSync(path.join(root, "sentences_lesson_plan.js"), "utf8");
 const sentencesSource = fs.readFileSync(path.join(root, "sentences_core.js"), "utf8");
 
 function loadPlan() {
