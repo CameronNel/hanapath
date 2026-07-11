@@ -13904,10 +13904,22 @@ let hangulWritingState = {
   mode: "free", // "free" | "trace" (trace only offered when a stroke guide exists)
   animating: false,
   lastGrade: null, // W2: gradeHangulDrawing() result for the current Check view
+  exercise: "shape", // "shape" (copy the glyph) | "sound" (write what you hear) | "roman" (write from romanization)
 };
 
 function getHangulWritingUnit(unitId = hangulWritingState.unitId) {
   return HANGUL_WRITING_UNITS.find((unit) => unit.id === unitId) || null;
+}
+
+// Romanization prompt for a writing glyph: syllable blocks via the shared
+// revised-romanization decomposition, jamo via the reference atlases.
+function getHangulWritingRoman(glyph) {
+  const syllable = romanizeHangulSyllable(glyph);
+  if (syllable) return syllable;
+  const row =
+    consonantAtlas.find((r) => r.char === glyph) ||
+    vowelAtlas.find((r) => r.char === glyph);
+  return row ? row.name : "";
 }
 
 function isHangulWritingUnitUnlocked(unit) {
@@ -14449,7 +14461,11 @@ function renderHangulWritingUnitPicker(el) {
           </div>
           ${
             unlocked
-              ? `<button class="button primary compact" type="button" data-writing-unit="${unit.id}">Practise</button>`
+              ? `<div class="writing-unit-modes">
+                  <button class="button primary compact" type="button" data-writing-unit="${unit.id}" data-writing-exercise="shape">Shape</button>
+                  <button class="button secondary compact" type="button" data-writing-unit="${unit.id}" data-writing-exercise="sound">Sound</button>
+                  <button class="button secondary compact" type="button" data-writing-unit="${unit.id}" data-writing-exercise="roman">Romanization</button>
+                </div>`
               : `<span class="writing-unit-lock" title="Finish the matching alphabet stage to unlock">🔒 Locked</span>`
           }
         </div>
@@ -14470,7 +14486,10 @@ function renderHangulWritingUnitPicker(el) {
   el.querySelector("#writingBackToHub").addEventListener("click", () => goHub("practice"));
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, guideVisible: true, checking: false, strokes: [], mode: "free", animating: false, lastGrade: null };
+      const exercise = btn.dataset.writingExercise || "shape";
+      // Sound/romanization are recall exercises: the guide starts hidden so
+      // the canvas doesn't give the answer away (all help tools stay available).
+      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, guideVisible: exercise === "shape", checking: false, strokes: [], mode: "free", animating: false, lastGrade: null, exercise };
       renderHangulWriting();
     });
   });
@@ -14478,14 +14497,25 @@ function renderHangulWritingUnitPicker(el) {
 
 function renderHangulWritingPractice(el, unit) {
   const glyph = unit.glyphs[hangulWritingState.glyphIndex];
-  const total = unit.glyphs.length;
-  const position = hangulWritingState.glyphIndex + 1;
   const guide = getHangulStrokeGuide(glyph);
   const tracing = hangulWritingState.mode === "trace" && Boolean(guide);
 
-  const subText = guide
-    ? `Letter ${position} of ${total}. Watch the stroke order, trace each numbered stroke, then check your drawing.`
-    : `Letter ${position} of ${total}. Trace over the guide, then check your drawing.`;
+  // The prompt is ONLY the required cue for the exercise — the glyph (shape),
+  // a speaker (sound), or the romanization — and tapping it plays the audio.
+  const exercise = hangulWritingState.exercise || "shape";
+  const roman = getHangulWritingRoman(glyph);
+  let promptHtml;
+  let promptTip;
+  if (exercise === "sound") {
+    promptHtml = `<button class="writing-prompt" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear the sound to write">🔊</button>`;
+    promptTip = "Tap to hear, then write it";
+  } else if (exercise === "roman" && roman) {
+    promptHtml = `<button class="writing-prompt" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear ${escapeHtml(roman)}">${escapeHtml(roman)}</button>`;
+    promptTip = "Tap to hear";
+  } else {
+    promptHtml = `<button class="writing-prompt" lang="ko" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear ${escapeHtml(glyph)}">${escapeHtml(glyph)}</button>`;
+    promptTip = "Tap to hear";
+  }
 
   const guideTools = guide
     ? `<button class="button secondary compact" type="button" id="writingWatch">▶ Watch</button>
@@ -14523,13 +14553,10 @@ function renderHangulWritingPractice(el, unit) {
   }
 
   el.innerHTML = `
-    <div class="card">
-      <button class="button secondary compact" type="button" id="writingBackToUnits">‹ All units</button>
-      <div class="eyebrow" style="margin-top:8px;">Hangul writing · ${escapeHtml(unit.label)}</div>
-      <h2 class="screen-title writing-target" lang="ko">${escapeHtml(glyph)}
-        <button class="button secondary compact" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear ${escapeHtml(glyph)}">🔊</button>
-      </h2>
-      <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(subText)}</div>
+    <div class="card writing-prompt-card">
+      <button class="button secondary compact writing-prompt-back" type="button" id="writingBackToUnits">‹ All units</button>
+      ${promptHtml}
+      <div class="writing-prompt-tip">${escapeHtml(promptTip)}</div>
     </div>
     <div class="card writing-canvas-card">
       <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Drawing area for ${escapeHtml(glyph)}"></canvas>
