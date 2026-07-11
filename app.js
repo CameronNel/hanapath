@@ -13903,6 +13903,7 @@ let hangulWritingState = {
   strokes: [],
   mode: "free", // "free" | "trace" (trace only offered when a stroke guide exists)
   animating: false,
+  lastGrade: null, // W2: gradeHangulDrawing() result for the current Check view
 };
 
 function getHangulWritingUnit(unitId = hangulWritingState.unitId) {
@@ -14088,11 +14089,219 @@ function watchHangulGuide(canvas, guide) {
   hangulWatchRaf = requestAnimationFrame(frame);
 }
 
-function gradeHangulDrawing(glyph, strokes) {
-  // OPUS(W2): heuristic grading (stroke count, direction, coverage) against
-  // the stroke guide. null → the shell's self-check buttons are the verdict.
-  return null;
+// ── W2 grading engine (docs/HANGUL_WRITING_PLAN.md §7 — normative spec) ──────
+// Pure functions only: no DOM access below until the UI wiring in §7.6/7.7.
+// All grading happens in the guide's normalized 0–1 space on [x, y] pairs.
+const HANGUL_GRADE = {
+  RESAMPLE_POINTS: 32, // both ink and guide strokes resample to this count
+  MIN_POINTS: 3, // ink strokes with fewer raw points are accidental taps
+  MIN_LENGTH: 0.02, // ink strokes shorter than this (normalized) are taps
+  DEDUPE_EPS: 0.002, // drop consecutive raw points closer than this
+  START_RADIUS: 0.35, // start/end distance that maps to score 0
+  PLACEMENT_RADIUS: 0.25,
+  SHAPE_RADIUS: 0.3,
+  PASS_SCORE: 0.72, // per-stroke pass
+  CLOSE_SCORE: 0.6, // whole-glyph "close" floor
+  REJECT_START: 0.35, // hard-reject thresholds (§7.4 reason codes)
+  REJECT_DIRECTION: 0.4,
+  REJECT_LENGTH: 0.45,
+};
+
+// {x, y} canvas ink points → clamped [x, y] pairs in the 0–1 guide space
+// (§7.6b: pointer capture can yield points outside the canvas; clamp for
+// grading only — the stored ink is never mutated).
+function normalizeHangulInkStroke(stroke, canvas) {
+  return stroke.map((p) => [
+    Math.max(0, Math.min(1, p.x / canvas.width)),
+    Math.max(0, Math.min(1, p.y / canvas.height)),
+  ]);
 }
+
+function hangulPairDist(a, b) {
+  return Math.hypot(a[0] - b[0], a[1] - b[1]);
+}
+
+function hangulPairPathLength(pts) {
+  let total = 0;
+  for (let i = 1; i < pts.length; i += 1) total += hangulPairDist(pts[i], pts[i - 1]);
+  return total;
+}
+
+// §7.2: tap rejection + dedupe. Returns the cleaned stroke, or null when the
+// stroke is an accidental tap (too few raw points / too short overall).
+function cleanHangulInkStroke(points) {
+  if (!Array.isArray(points) || points.length < HANGUL_GRADE.MIN_POINTS) return null;
+  if (hangulPairPathLength(points) < HANGUL_GRADE.MIN_LENGTH) return null;
+  const kept = [points[0]];
+  for (let i = 1; i < points.length; i += 1) {
+    if (hangulPairDist(points[i], kept[kept.length - 1]) >= HANGUL_GRADE.DEDUPE_EPS) {
+      kept.push(points[i]);
+    }
+  }
+  return kept.length >= 2 ? kept : null;
+}
+
+// §7.2.3: resample a polyline to exactly `count` points equally spaced by arc
+// length (linear interpolation; zero-length polylines repeat the first point).
+function resampleHangulStroke(points, count) {
+  if (!points.length) return [];
+  const total = hangulPairPathLength(points);
+  if (points.length < 2 || total === 0) {
+    return Array.from({ length: count }, () => [points[0][0], points[0][1]]);
+  }
+  const out = [];
+  const step = total / (count - 1);
+  let segIndex = 0;
+  let distBefore = 0;
+  for (let s = 0; s < count; s += 1) {
+    const target = Math.min(s * step, total);
+    while (
+      segIndex < points.length - 2 &&
+      distBefore + hangulPairDist(points[segIndex + 1], points[segIndex]) < target
+    ) {
+      distBefore += hangulPairDist(points[segIndex + 1], points[segIndex]);
+      segIndex += 1;
+    }
+    const a = points[segIndex];
+    const b = points[segIndex + 1];
+    const segLen = hangulPairDist(a, b) || 1;
+    const r = Math.max(0, Math.min(1, (target - distBefore) / segLen));
+    out.push([a[0] + (b[0] - a[0]) * r, a[1] + (b[1] - a[1]) * r]);
+  }
+  return out;
+}
+
+function hangulMeanPointDistance(a, b) {
+  const n = Math.min(a.length, b.length);
+  if (!n) return Infinity;
+  let sum = 0;
+  for (let i = 0; i < n; i += 1) sum += hangulPairDist(a[i], b[i]);
+  return sum / n;
+}
+
+// §7.3 shape score prep: normalize a stroke to its own bounding box using ONE
+// uniform scale of max(w, h, 0.05), centered on the box center. Per-axis
+// scaling explodes on straight strokes (ㅡ/ㅣ have ~zero height/width).
+function hangulShapeNormalize(pts) {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  pts.forEach((p) => {
+    if (p[0] < minX) minX = p[0];
+    if (p[0] > maxX) maxX = p[0];
+    if (p[1] < minY) minY = p[1];
+    if (p[1] > maxY) maxY = p[1];
+  });
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  const scale = Math.max(maxX - minX, maxY - minY, 0.05);
+  return pts.map((p) => [(p[0] - cx) / scale + 0.5, (p[1] - cy) / scale + 0.5]);
+}
+
+// §7.3 direction score: mean segment-angle agreement mapped to 0–1.
+function hangulDirectionScore(a, b) {
+  let total = 0;
+  let samples = 0;
+  const n = Math.min(a.length, b.length);
+  for (let i = 1; i < n; i += 1) {
+    const ax = a[i][0] - a[i - 1][0];
+    const ay = a[i][1] - a[i - 1][1];
+    const bx = b[i][0] - b[i - 1][0];
+    const by = b[i][1] - b[i - 1][1];
+    const la = Math.hypot(ax, ay);
+    const lb = Math.hypot(bx, by);
+    if (la === 0 || lb === 0) continue;
+    total += ((ax * bx + ay * by) / (la * lb) + 1) / 2;
+    samples += 1;
+  }
+  return samples ? total / samples : 0;
+}
+
+// Score one CLEANED ink stroke against one guide stroke (both [x, y] pair
+// arrays in 0–1 space). Applies §7.3 formulas + weights and the §7.4
+// hard-reject ladder. Returns { score, pass, reason }.
+function scoreHangulStrokeAgainst(inkPts, guidePts) {
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  const N = HANGUL_GRADE.RESAMPLE_POINTS;
+  const U = resampleHangulStroke(inkPts, N);
+  const G = resampleHangulStroke(guidePts, N);
+  const start = clamp(1 - hangulPairDist(U[0], G[0]) / HANGUL_GRADE.START_RADIUS);
+  const end = clamp(1 - hangulPairDist(U[N - 1], G[N - 1]) / HANGUL_GRADE.START_RADIUS);
+  const placement = clamp(1 - hangulMeanPointDistance(U, G) / HANGUL_GRADE.PLACEMENT_RADIUS);
+  const shape = clamp(
+    1 - hangulMeanPointDistance(hangulShapeNormalize(U), hangulShapeNormalize(G)) / HANGUL_GRADE.SHAPE_RADIUS
+  );
+  const direction = hangulDirectionScore(U, G);
+  const lenU = hangulPairPathLength(inkPts);
+  const lenG = hangulPairPathLength(guidePts);
+  const length = lenU && lenG ? Math.min(lenU, lenG) / Math.max(lenU, lenG) : 0;
+  const score =
+    start * 0.15 + end * 0.1 + placement * 0.2 + shape * 0.25 + direction * 0.2 + length * 0.1;
+  let reason = null;
+  if (start < HANGUL_GRADE.REJECT_START) reason = "wrong-start";
+  else if (direction < HANGUL_GRADE.REJECT_DIRECTION) reason = "wrong-direction";
+  else if (length < HANGUL_GRADE.REJECT_LENGTH) reason = "length";
+  else if (score < HANGUL_GRADE.PASS_SCORE) reason = "shape";
+  return { score, pass: reason === null, reason };
+}
+
+// §7.3 closed-stroke rule: circles (ㅇ, the bottom of ㅎ) are graded against
+// the guide stroke forward AND reversed, keeping the better result, so a
+// clockwise circle is not failed on direction. Forward vs reversed only.
+function scoreHangulStroke(inkPts, guidePts) {
+  const forward = scoreHangulStrokeAgainst(inkPts, guidePts);
+  const isClosed = hangulPairDist(guidePts[0], guidePts[guidePts.length - 1]) < 0.05;
+  if (!isClosed) return forward;
+  const reversed = scoreHangulStrokeAgainst(inkPts, guidePts.slice().reverse());
+  if (forward.pass !== reversed.pass) return forward.pass ? forward : reversed;
+  return reversed.score > forward.score ? reversed : forward;
+}
+
+// §7.5 whole-glyph verdict. `strokes` are ALREADY-NORMALIZED [x, y] pair
+// strokes (see normalizeHangulInkStroke). Ink stroke i is graded against
+// guide stroke i — order IS the lesson; no reordering search. Returns null
+// when the glyph has no guide (the self-check flow is then the verdict).
+function gradeHangulDrawing(glyph, strokes) {
+  const guide = getHangulStrokeGuide(glyph);
+  if (!guide) return null;
+  const cleaned = (strokes || [])
+    .map((stroke) => cleanHangulInkStroke(stroke))
+    .filter((stroke) => stroke !== null);
+  const expected = guide.strokes.length;
+  const drawn = cleaned.length;
+  const perStroke = [];
+  const pairs = Math.min(expected, drawn);
+  for (let i = 0; i < pairs; i += 1) {
+    const result = scoreHangulStroke(cleaned[i], guide.strokes[i]);
+    perStroke.push({ index: i, score: result.score, pass: result.pass, reason: result.reason });
+  }
+  let verdict = "again";
+  if (drawn === expected && perStroke.length) {
+    const allPass = perStroke.every((s) => s.pass);
+    const mean = perStroke.reduce((sum, s) => sum + s.score, 0) / perStroke.length;
+    const hardMiss = perStroke.some((s) => s.reason === "wrong-start" || s.reason === "wrong-direction");
+    if (allPass) verdict = "great";
+    else if (mean >= HANGUL_GRADE.CLOSE_SCORE && !hardMiss) verdict = "close";
+  }
+  return { verdict, perStroke, strokeCount: { expected, drawn } };
+}
+
+// §7.6 tracing-mode rejection messages (one at a time, first-hit reason).
+const HANGUL_TRACE_MESSAGES = {
+  "wrong-start": "Start at the numbered dot, then follow the line.",
+  "wrong-direction": "Right shape — wrong direction. Follow the stroke top-to-bottom / left-to-right.",
+  length: "Trace the whole highlighted stroke, end to end.",
+  shape: "Almost — stay closer to the highlighted line and try again.",
+};
+
+// §7.7 short per-stroke labels for the Check verdict lines.
+const HANGUL_CHECK_REASON_LABELS = {
+  "wrong-start": "started in the wrong place",
+  "wrong-direction": "wrong direction",
+  length: "too short or too long",
+  shape: "off the guide shape",
+};
 
 function recordHangulWritingResult(glyph, verdict) {
   // OPUS(W3): persist per-glyph writing results (additive hanapath-v1 key).
@@ -14172,12 +14381,36 @@ function bindHangulWritingCanvas(canvas) {
   });
   const finishStroke = () => {
     if (!activeStroke) return;
+    const finished = activeStroke;
     activeStroke = null;
-    // Tracing mode (W1): advance the highlighted "next stroke" per pointer-up.
-    // No grading yet — this only tracks stroke count/order visually.
-    if (hangulWritingState.mode === "trace") {
-      drawHangulWritingCanvas(canvas);
-      updateHangulTraceStatus();
+    if (hangulWritingState.mode !== "trace") return;
+    // Tracing mode (W2, plan §7.6): grade the just-finished stroke against
+    // the guide stroke at its index. Passes stay inked and advance; fails
+    // are removed with a reason message; accidental taps vanish silently.
+    const unit = getHangulWritingUnit();
+    const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
+    const guide = glyph ? getHangulStrokeGuide(glyph) : null;
+    const index = hangulWritingState.strokes.length - 1;
+    let failMessage = null;
+    if (guide && index < guide.strokes.length) {
+      const cleaned = cleanHangulInkStroke(normalizeHangulInkStroke(finished, canvas));
+      if (!cleaned) {
+        hangulWritingState.strokes.pop(); // silent tap discard (§7.2.1)
+      } else {
+        const result = scoreHangulStroke(cleaned, guide.strokes[index]);
+        if (!result.pass) {
+          hangulWritingState.strokes.pop();
+          failMessage = HANGUL_TRACE_MESSAGES[result.reason] || HANGUL_TRACE_MESSAGES.shape;
+        }
+      }
+      const checkButton = document.getElementById("writingCheck");
+      if (checkButton) checkButton.disabled = !hangulWritingState.strokes.length;
+    }
+    drawHangulWritingCanvas(canvas);
+    updateHangulTraceStatus();
+    if (failMessage) {
+      const status = document.getElementById("writingTraceStatus");
+      if (status) status.textContent = failMessage;
     }
   };
   canvas.addEventListener("pointerup", finishStroke);
@@ -14237,7 +14470,7 @@ function renderHangulWritingUnitPicker(el) {
   el.querySelector("#writingBackToHub").addEventListener("click", () => goHub("practice"));
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, guideVisible: true, checking: false, strokes: [], mode: "free", animating: false };
+      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, guideVisible: true, checking: false, strokes: [], mode: "free", animating: false, lastGrade: null };
       renderHangulWriting();
     });
   });
@@ -14259,6 +14492,36 @@ function renderHangulWritingPractice(el, unit) {
         <button class="button ${tracing ? "primary" : "secondary"} compact" type="button" id="writingTraceToggle">${tracing ? "Exit tracing" : "Trace strokes"}</button>`
     : "";
 
+  // W2 (plan §7.7): the check row shows the heuristic verdict when a grade
+  // exists; glyphs without guides keep the neutral W0 self-check wording.
+  const grade = hangulWritingState.checking ? hangulWritingState.lastGrade : null;
+  let checkRowHtml = `<div class="fs-sm">Compare your ink with the reference. How did it go?</div>`;
+  if (grade) {
+    const counts = grade.strokeCount;
+    let headline;
+    if (grade.verdict === "great") {
+      headline = "✨ Great writing — stroke order and shapes all check out.";
+    } else if (grade.verdict === "close") {
+      headline = "Close! Compare with the reference — check the strokes marked below.";
+    } else if (counts.drawn !== counts.expected) {
+      headline = `You used ${counts.drawn} stroke${counts.drawn === 1 ? "" : "s"} — ${glyph} takes ${counts.expected}. Watch the demo, then try again.`;
+    } else {
+      headline = "Not quite — watch the stroke order and give it another go.";
+    }
+    const failLines =
+      grade.verdict !== "great" && counts.drawn === counts.expected
+        ? grade.perStroke
+            .filter((s) => !s.pass)
+            .slice(0, 2)
+            .map(
+              (s) =>
+                `<div class="fs-xs text-muted-2">Stroke ${s.index + 1}: ${escapeHtml(HANGUL_CHECK_REASON_LABELS[s.reason] || "off the guide shape")}</div>`
+            )
+            .join("")
+        : "";
+    checkRowHtml = `<div class="fs-sm">${escapeHtml(headline)}</div>${failLines}`;
+  }
+
   el.innerHTML = `
     <div class="card">
       <button class="button secondary compact" type="button" id="writingBackToUnits">‹ All units</button>
@@ -14279,7 +14542,7 @@ function renderHangulWritingPractice(el, unit) {
       </div>
       ${guide ? `<div class="fs-sm text-muted-2" id="writingTraceStatus" ${tracing ? "" : "hidden"}></div>` : ""}
       <div class="writing-check-row" id="writingCheckRow" ${hangulWritingState.checking ? "" : "hidden"}>
-        <div class="fs-sm">Compare your ink with the reference. How did it go?</div>
+        ${checkRowHtml}
         <div class="writing-toolbar">
           <button class="button secondary compact" type="button" id="writingAgain">Try again</button>
           <button class="button primary compact" type="button" id="writingGotIt">Got it →</button>
@@ -14333,9 +14596,13 @@ function renderHangulWritingPractice(el, unit) {
     rerender();
   });
   el.querySelector("#writingCheck").addEventListener("click", () => {
-    // OPUS(W2): call gradeHangulDrawing(glyph, strokes) here and show its
-    // verdict; the self-check row stays as the fallback for null grades.
+    // W2 (plan §7.7): advisory heuristic verdict shown in the check row. A
+    // null grade (no stroke guide) keeps the plain W0 self-check wording.
     stopHangulWatch();
+    hangulWritingState.lastGrade = gradeHangulDrawing(
+      glyph,
+      hangulWritingState.strokes.map((stroke) => normalizeHangulInkStroke(stroke, canvas))
+    );
     hangulWritingState.checking = true;
     rerender();
   });
@@ -14343,12 +14610,14 @@ function renderHangulWritingPractice(el, unit) {
     recordHangulWritingResult(glyph, "again");
     hangulWritingState.strokes = [];
     hangulWritingState.checking = false;
+    hangulWritingState.lastGrade = null;
     rerender();
   });
   el.querySelector("#writingGotIt").addEventListener("click", () => {
     recordHangulWritingResult(glyph, "got-it");
     hangulWritingState.strokes = [];
     hangulWritingState.checking = false;
+    hangulWritingState.lastGrade = null;
     hangulWritingState.mode = "free";
     hangulWritingState.glyphIndex = (hangulWritingState.glyphIndex + 1) % unit.glyphs.length;
     rerender();

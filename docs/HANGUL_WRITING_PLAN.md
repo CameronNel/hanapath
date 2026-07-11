@@ -355,8 +355,10 @@ Verification before opening the draft PR (record all of it in the PR body):
 - Serve with python -m http.server 8000 and smoke-test as a cold learner, and
   record the outcome of each of these in the PR body:
   a. Trace ㄱ correctly → stroke accepted, status advances.
-  b. Trace ㄱ backwards (bottom-up then right-to-left) → rejected with the
-     wrong-direction message.
+  b. Trace ㄱ backwards (bottom-up then right-to-left) → rejected (a full
+     reversal starts where the guide ends, so the §7.4 ladder correctly
+     reports wrong-start; wrong-direction fires when the start is near but
+     the path direction disagrees).
   c. Start ㅏ's first stroke in the wrong corner → wrong-start message.
   d. Draw a tiny tap → silently ignored, no message, no advancement.
   e. Draw ㅇ clockwise AND counter-clockwise in tracing mode → both accepted
