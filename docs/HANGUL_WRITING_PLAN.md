@@ -85,13 +85,20 @@ stub comments.
   `{ verdict: "great" | "close" | "again", perStroke: [...], strokeCount: {...} }`.
   Keep the self-grade buttons as fallback for glyphs without guide data.
   Jamo-only: syllable glyphs have no guide until W1b and keep W0 behavior.
-- [ ] **W1b — Advanced jamo + syllable composition.** Author guides for the
-  Unit 4 jamo (ㅑ ㅕ ㅛ ㅠ ㅋ ㅌ ㅍ ㅊ) in `hangul_strokes.js`, then compose
-  syllable guides for the Unit 3/5 glyphs from jamo entries + layout
-  transforms (per-jamo `{ x, y, scaleX, scaleY }` boxes; vertical-vowel,
-  horizontal-vowel, and batchim layouts; per-syllable overrides allowed).
-  Composition is layout transforms only — never re-drawn paths. W2 grading
-  then works on these glyphs with no grading-code changes.
+- [~] **W1b — Advanced jamo + syllable composition.** *(Syllable composition
+  SHIPPED with the position-invariance fix: `composeHangulSyllableGuide()`
+  builds Unit 3/5 guides from jamo strokes + `HANGUL_SYLLABLE_LAYOUTS`
+  boxes — vertical/horizontal × open/closed, jamo bbox-normalized, stroke
+  order initial→medial→final. Also shipped in the same change (owner
+  direction): the wrong-start hard reject is REMOVED, stroke 1 is graded
+  position/scale-FREE, and later strokes are graded against the guide
+  aligned onto the learner's accepted ink via `fitHangulAlignment()` —
+  absolute canvas placement never fails anyone.)*
+  **Remaining:** author guides for the Unit 4 jamo (ㅑ ㅕ ㅛ ㅠ ㅋ ㅌ ㅍ ㅊ)
+  in `hangul_strokes.js`; Unit 4 stays hidden from the picker until then.
+  Compound-vowel layouts (ㅘ ㅙ ㅚ…) also remain unbuilt — the composer
+  returns null for them. Per-syllable layout overrides allowed if a block
+  looks cramped.
 - [ ] **W3 — Progress + polish.** Persist per-glyph writing results in a new
   additive key on the existing `hanapath-v1` state (schema documented in the
   PR; must survive `normalizeState` round-trips and old saves). Unit cards

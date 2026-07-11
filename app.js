@@ -13925,15 +13925,72 @@ function isHangulWritingUnitUnlocked(unit) {
 }
 
 function getHangulStrokeGuide(glyph) {
-  // W1: return the authored jamo stroke-order guide from hangul_strokes.js, or
-  // null when no guide exists (the shell then falls back to a faint-font glyph
-  // under the ink). Syllable blocks have no jamo entry, so they return null —
-  // block-layout composition is W1b/W2 territory.
+  // Jamo come straight from the authored bank in hangul_strokes.js; composed
+  // syllable blocks are assembled on demand from their jamo strokes + block
+  // layout boxes (W1b). Returns null when any needed jamo is unauthored.
   const bank = (typeof window !== "undefined" && window.HANGUL_STROKES) || null;
   if (!bank) return null;
   const entry = bank[glyph];
-  if (!entry || !Array.isArray(entry.strokes) || !entry.strokes.length) return null;
-  return entry;
+  if (entry && Array.isArray(entry.strokes) && entry.strokes.length) return entry;
+  return composeHangulSyllableGuide(glyph, bank);
+}
+
+// ── W1b: syllable-block guides composed from jamo (layout transforms only) ──
+// Each jamo's strokes are normalized to the jamo's own bounding box, then
+// mapped into a layout box chosen by vowel orientation + batchim presence.
+// Stroke order: initial → medial → final (standard block order).
+const HANGUL_SYLLABLE_LAYOUTS = {
+  // [x, y, w, h] boxes in the 0–1 block square.
+  verticalOpen: { initial: [0.16, 0.2, 0.34, 0.55], medial: [0.6, 0.12, 0.28, 0.78] },
+  verticalClosed: { initial: [0.16, 0.1, 0.3, 0.36], medial: [0.56, 0.06, 0.28, 0.42], final: [0.26, 0.58, 0.48, 0.32] },
+  horizontalOpen: { initial: [0.26, 0.08, 0.48, 0.38], medial: [0.12, 0.52, 0.76, 0.36] },
+  horizontalClosed: { initial: [0.28, 0.04, 0.44, 0.28], medial: [0.14, 0.36, 0.72, 0.26], final: [0.26, 0.66, 0.48, 0.3] },
+};
+const hangulSyllableGuideCache = {};
+
+function normalizeHangulJamoStrokes(strokes) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  strokes.forEach((stroke) => stroke.forEach((p) => {
+    if (p[0] < minX) minX = p[0];
+    if (p[0] > maxX) maxX = p[0];
+    if (p[1] < minY) minY = p[1];
+    if (p[1] > maxY) maxY = p[1];
+  }));
+  const w = maxX - minX;
+  const h = maxY - minY;
+  // Degenerate axes (ㅡ has no height, ㅣ no width) map to the box's center.
+  return strokes.map((stroke) => stroke.map((p) => [
+    w > 0.03 ? (p[0] - minX) / w : 0.5,
+    h > 0.03 ? (p[1] - minY) / h : 0.5,
+  ]));
+}
+
+function composeHangulSyllableGuide(glyph, bank) {
+  if (hangulSyllableGuideCache[glyph] !== undefined) return hangulSyllableGuideCache[glyph];
+  let result = null;
+  const parts = decomposeHangul(glyph);
+  if (parts && !VOWEL_FAMILIES.compound.has(parts.medial)) {
+    const hasFinal = Boolean(parts.final);
+    const layout = VOWEL_FAMILIES.vertical.has(parts.medial)
+      ? HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "verticalClosed" : "verticalOpen"]
+      : HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "horizontalClosed" : "horizontalOpen"];
+    const pieces = [
+      { jamo: parts.initial, box: layout.initial },
+      { jamo: parts.medial, box: layout.medial },
+    ];
+    if (hasFinal) pieces.push({ jamo: parts.final, box: layout.final });
+    if (pieces.every((piece) => bank[piece.jamo] && bank[piece.jamo].strokes.length)) {
+      const strokes = [];
+      pieces.forEach(({ jamo, box }) => {
+        normalizeHangulJamoStrokes(bank[jamo].strokes).forEach((stroke) => {
+          strokes.push(stroke.map((p) => [box[0] + p[0] * box[2], box[1] + p[1] * box[3]]));
+        });
+      });
+      result = { type: "syllable", name: glyph, strokes };
+    }
+  }
+  hangulSyllableGuideCache[glyph] = result;
+  return result;
 }
 
 // Scale a normalized guide stroke ([x,y] in a 0–1 box) to canvas pixel points.
@@ -14248,8 +14305,9 @@ function scoreHangulStrokeAgainst(inkPts, guidePts) {
   const score =
     start * 0.15 + end * 0.1 + placement * 0.2 + shape * 0.25 + direction * 0.2 + length * 0.1;
   let reason = null;
-  if (start < HANGUL_GRADE.REJECT_START) reason = "wrong-start";
-  else if (direction < HANGUL_GRADE.REJECT_DIRECTION) reason = "wrong-direction";
+  // No wrong-start hard reject (owner decision 2026-07-11): with an invisible
+  // guide the start point only contributes to the blended score.
+  if (direction < HANGUL_GRADE.REJECT_DIRECTION) reason = "wrong-direction";
   else if (length < HANGUL_GRADE.REJECT_LENGTH) reason = "length";
   else if (score < HANGUL_GRADE.PASS_SCORE) reason = "shape";
   return { score, pass: reason === null, reason };
@@ -14265,6 +14323,69 @@ function scoreHangulStroke(inkPts, guidePts) {
   const reversed = scoreHangulStrokeAgainst(inkPts, guidePts.slice().reverse());
   if (forward.pass !== reversed.pass) return forward.pass ? forward : reversed;
   return reversed.score > forward.score ? reversed : forward;
+}
+
+// Position/scale-FREE scoring for the first stroke of an attempt. With no
+// visible guide the learner may write anywhere on the canvas at any size, so
+// stroke 1 is judged on shape + direction only; where it lands then anchors
+// the rest of the glyph via fitHangulAlignment().
+function scoreHangulStrokeFreeAgainst(inkPts, guidePts) {
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  const N = HANGUL_GRADE.RESAMPLE_POINTS;
+  const U = resampleHangulStroke(inkPts, N);
+  const G = resampleHangulStroke(guidePts, N);
+  const shape = clamp(
+    1 - hangulMeanPointDistance(hangulShapeNormalize(U), hangulShapeNormalize(G)) / HANGUL_GRADE.SHAPE_RADIUS
+  );
+  const direction = hangulDirectionScore(hangulShapeNormalize(U), hangulShapeNormalize(G));
+  const score = shape * 0.55 + direction * 0.45;
+  let reason = null;
+  if (direction < HANGUL_GRADE.REJECT_DIRECTION) reason = "wrong-direction";
+  else if (score < HANGUL_GRADE.PASS_SCORE) reason = "shape";
+  return { score, pass: reason === null, reason };
+}
+
+function scoreHangulStrokeFree(inkPts, guidePts) {
+  const forward = scoreHangulStrokeFreeAgainst(inkPts, guidePts);
+  const isClosed = hangulPairDist(guidePts[0], guidePts[guidePts.length - 1]) < 0.05;
+  if (!isClosed) return forward;
+  const reversed = scoreHangulStrokeFreeAgainst(inkPts, guidePts.slice().reverse());
+  if (forward.pass !== reversed.pass) return forward.pass ? forward : reversed;
+  return reversed.score > forward.score ? reversed : forward;
+}
+
+// Fit a translation + uniform scale mapping the guide onto the learner's
+// accepted ink (strokes 0..count-1), so later strokes are graded relative to
+// where the learner is actually writing, not to absolute canvas coordinates.
+function transformHangulPoints(pts, t) {
+  return pts.map((p) => [p[0] * t.s + t.dx, p[1] * t.s + t.dy]);
+}
+
+function fitHangulAlignment(inkStrokes, guideStrokes, count) {
+  if (!count) return { s: 1, dx: 0, dy: 0 };
+  const N = HANGUL_GRADE.RESAMPLE_POINTS;
+  let lenU = 0;
+  let lenG = 0;
+  let cu = [0, 0];
+  let cg = [0, 0];
+  let samples = 0;
+  for (let i = 0; i < count; i += 1) {
+    lenU += hangulPairPathLength(inkStrokes[i]);
+    lenG += hangulPairPathLength(guideStrokes[i]);
+    const U = resampleHangulStroke(inkStrokes[i], N);
+    const G = resampleHangulStroke(guideStrokes[i], N);
+    for (let j = 0; j < N; j += 1) {
+      cu[0] += U[j][0];
+      cu[1] += U[j][1];
+      cg[0] += G[j][0];
+      cg[1] += G[j][1];
+      samples += 1;
+    }
+  }
+  cu = [cu[0] / samples, cu[1] / samples];
+  cg = [cg[0] / samples, cg[1] / samples];
+  const s = lenG > 0.01 ? Math.max(0.5, Math.min(2, lenU / lenG)) : 1;
+  return { s, dx: cu[0] - s * cg[0], dy: cu[1] - s * cg[1] };
 }
 
 // §7.5 whole-glyph verdict. `strokes` are ALREADY-NORMALIZED [x, y] pair
@@ -14289,7 +14410,7 @@ function gradeHangulDrawing(glyph, strokes) {
   if (drawn === expected && perStroke.length) {
     const allPass = perStroke.every((s) => s.pass);
     const mean = perStroke.reduce((sum, s) => sum + s.score, 0) / perStroke.length;
-    const hardMiss = perStroke.some((s) => s.reason === "wrong-start" || s.reason === "wrong-direction");
+    const hardMiss = perStroke.some((s) => s.reason === "wrong-direction");
     if (allPass) verdict = "great";
     else if (mean >= HANGUL_GRADE.CLOSE_SCORE && !hardMiss) verdict = "close";
   }
@@ -14299,7 +14420,6 @@ function gradeHangulDrawing(glyph, strokes) {
 // Per-stroke rejection tips (one at a time, first-hit reason). The guide is
 // invisible during normal writing, so the tips point at Help! instead of it.
 const HANGUL_TRACE_MESSAGES = {
-  "wrong-start": "Started in the wrong spot — tap Help! to see.",
   "wrong-direction": "Wrong direction — strokes go left→right, top→bottom.",
   length: "Draw the whole stroke in one go.",
   shape: "Almost — try that stroke again, or tap Help!",
@@ -14377,7 +14497,20 @@ function bindHangulWritingCanvas(canvas) {
       if (!cleaned) {
         hangulWritingState.strokes.pop(); // silent tap discard
       } else {
-        const result = scoreHangulStroke(cleaned, guide.strokes[index]);
+        // Stroke 1 is graded position/scale-free (write anywhere, any size);
+        // later strokes are graded against the guide aligned onto the ink
+        // accepted so far, so only RELATIVE placement matters.
+        let result;
+        if (index === 0) {
+          result = scoreHangulStrokeFree(cleaned, guide.strokes[0]);
+        } else {
+          const accepted = hangulWritingState.strokes
+            .slice(0, index)
+            .map((s) => cleanHangulInkStroke(normalizeHangulInkStroke(s, canvas)))
+            .filter(Boolean);
+          const t = fitHangulAlignment(accepted, guide.strokes, accepted.length);
+          result = scoreHangulStroke(cleaned, transformHangulPoints(guide.strokes[index], t));
+        }
         if (!result.pass) {
           hangulWritingState.strokes.pop();
           failMessage = HANGUL_TRACE_MESSAGES[result.reason] || HANGUL_TRACE_MESSAGES.shape;
