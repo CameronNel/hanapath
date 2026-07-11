@@ -69,7 +69,14 @@ stub comments.
   cache bumped). `getHangulStrokeGuide()` consumes it: numbered stroke-order
   hints, animated "Watch" demo, and per-stroke tracing mode.
 - [x] **W2 — Grading heuristic.** *(Shipped: PR #232 grading, PR #233
-  shape/sound/romanization exercise prompts + minimal header, cache v322.)*
+  shape/sound/romanization exercise prompts + minimal header. PR #234 then
+  replaced the §7.6/§7.7 UI surfaces by owner direction: blank canvas (no
+  outline, no visible guide), only two buttons (‹ Menu, Help! = demo
+  animation that fades), every stroke auto-graded on pointer-up, automatic
+  "Well done!" chime → glyph audio → advance on the final stroke, and
+  units without full stroke data hidden from the picker until W1b. The §7
+  scoring engine is unchanged and still normative; read the shipped code
+  before extending. Cache v323.)*
   Implement `gradeHangulDrawing()` without any
   library, following the **normative pipeline spec in §7** exactly (stroke
   cleaning → resampling → per-stroke multi-check scoring → hard rejects →
