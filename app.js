@@ -7234,7 +7234,7 @@ function alphabetStagesSectionHtml() {
       </div>
       <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
     </button>
-    ${TEST_ENABLE_WORD_SECTION_COMPLETION ? '<button class="button secondary compact" type="button" data-complete-alphabet-section>Complete section (test)</button>' : ""}
+    ${TEST_ENABLE_WORD_SECTION_COMPLETION && !progress.complete ? '<button class="button secondary compact" type="button" data-complete-alphabet-section style="justify-self:start;align-self:start;">Complete section (test)</button>' : ""}
   `;
 }
 
@@ -16289,13 +16289,27 @@ function getSentenceBlockingWordUnitId(unit, metWords) {
   return null;
 }
 
+// Learner-facing name for a generated sentence lesson. Plan titles are codes
+// like "S1 · Reading the signs · 3"; inside a unit card that repeats the unit
+// name on every row, so show "Lesson 3" there and "Reading the signs · Lesson 3"
+// anywhere the unit isn't already on screen. Falls back to the stored title.
+function getSentenceLessonDisplayTitle(lesson, withUnit = true) {
+  if (!lesson) return "Sentence lesson";
+  if (lesson.type === "checkpoint") return lesson.title || "Unit check";
+  const unit = getSentenceUnitById(lesson.unitId);
+  if (!unit) return lesson.title || lesson.id;
+  const index = getSentenceUnitContentLessons(unit).findIndex((l) => l.id === lesson.id);
+  if (index < 0) return lesson.title || lesson.id;
+  return withUnit ? `${unit.name} · Lesson ${index + 1}` : `Lesson ${index + 1}`;
+}
+
 function sentencePathLessonRowHtml(lesson, unlocked, completed, active) {
   const isCheckpoint = lesson.type === "checkpoint";
   const label = isCheckpoint ? "Unit check" : (completed ? "Complete" : active ? "Next up" : "Lesson");
   const rowClass = `study-row ss-mode ${isCheckpoint ? "sentence-path-checkpoint" : ""} ${active ? "is-highlighted" : ""}`;
   return `<button class="${rowClass}" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : "disabled"}>
     <div>
-      <div class="study-row-ko" style="${unlocked ? "" : "opacity:.55;"}">${escapeHtml(lesson.title || lesson.id)}</div>
+      <div class="study-row-ko" style="${unlocked ? "" : "opacity:.55;"}">${escapeHtml(getSentenceLessonDisplayTitle(lesson, false))}</div>
       <div class="study-row-sub" style="${unlocked ? "" : "opacity:.55;"}">${escapeHtml(lesson.subtitle || lesson.goal || "Sentence practice")}</div>
     </div>
     <span class="pill ${completed ? "accent" : unlocked ? "muted" : "muted"}">${completed ? "Done" : unlocked ? label : "Locked"}</span>
@@ -16402,7 +16416,7 @@ function sentenceStudioHubV2Html() {
   const continueHtml = dueCount >= SENTENCE_SESSION_LENGTH
     ? `<div class="card continue-hero sentence-continue-hero"><div class="eyebrow">Reviews are due</div><h2 class="screen-title" style="margin-bottom:8px;">Bring ${dueCount} lines back.</h2><div class="screen-sub" style="margin-bottom:12px;">A short mixed session will start with the lines that need you most.</div><button class="button primary compact" type="button" data-ss-start="mixed">Review now</button></div>`
     : nextLesson
-      ? `<div class="card continue-hero sentence-continue-hero"><div class="eyebrow">Continue Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(nextLesson.title || "Next sentence lesson")}</h2><div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(nextLesson.goal || nextLesson.subtitle || "Keep the line moving.")}</div><button class="button primary compact" type="button" data-ss-lesson="${escapeHtml(nextLesson.id)}">Start lesson</button></div>`
+      ? `<div class="card continue-hero sentence-continue-hero"><div class="eyebrow">Continue Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(getSentenceLessonDisplayTitle(nextLesson))}</h2><div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(nextLesson.goal || nextLesson.subtitle || "Keep the line moving.")}</div><button class="button primary compact" type="button" data-ss-lesson="${escapeHtml(nextLesson.id)}">Start lesson</button></div>`
       : pathComplete
         ? `<div class="card continue-hero"><div class="eyebrow">Sentence Studio</div><h2 class="screen-title" style="margin-bottom:8px;">Path complete</h2><div class="screen-sub" style="margin-bottom:0;">Review due lines or keep practising freely.</div></div>`
         : `<div class="card continue-hero sentence-locked-hero"><div class="eyebrow">${unlockedUnits.length ? "Next up in Words" : "Start with Words"}</div><h2 class="screen-title" style="margin-bottom:8px;">${unlockedUnits.length ? "Meet the next words to open more lines." : "Learn the words, then say the lines."}</h2><div class="screen-sub" style="margin-bottom:12px;">Your sentence path opens as you meet the focus words in Words.</div><button class="button primary compact" type="button" ${firstBlockingUnit ? `data-ss-word-unit="${escapeHtml(firstBlockingUnit.id)}"` : `data-ss-goto="vocabulary"`}>${firstBlockingUnit ? `Open ${escapeHtml(firstBlockingUnit.name)}` : "Open Words"}</button></div>`;
@@ -16549,7 +16563,7 @@ function sentenceStudioHubHtml() {
       return `
         <button class="study-row ss-mode" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : "disabled"}>
           <div>
-            <div class="study-row-ko" style="${unlocked ? "" : "opacity: 0.5;"}">${escapeHtml(lesson.title || lesson.id)} ${unlocked ? "" : "🔒"}</div>
+            <div class="study-row-ko" style="${unlocked ? "" : "opacity: 0.5;"}">${escapeHtml(getSentenceLessonDisplayTitle(lesson))} ${unlocked ? "" : "🔒"}</div>
             <div class="study-row-sub" style="${unlocked ? "" : "opacity: 0.5;"}">${escapeHtml(tags)} / ${rowsForLesson.length} sentences</div>
           </div>
           <span class="pill ${complete ? "accent" : "muted"}">${complete ? "Done" : unlocked ? "Lesson" : "Locked"}</span>
@@ -16644,7 +16658,7 @@ function sentenceLessonIntroHtml(lesson) {
         ${firstRow ? `<button class="button secondary compact word-card-bank-button" type="button" data-ss-preview-reference="${escapeHtml(firstRow.id)}">📚 Reference</button>` : ""}
       </div>
       <div class="eyebrow sentence-lesson-kind">Pattern lesson</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(lesson.title || "Sentence pattern")}</h2>
+      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(getSentenceLessonDisplayTitle(lesson))}</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(lesson.concept || "")}</div>
       ${tagTips ? `<ul class="ss-tip-list">${tagTips}</ul>` : ""}
       <div class="word-card-actions word-card-nav-actions" style="margin-top:12px;">
@@ -17042,7 +17056,7 @@ function sentenceSummaryHtml(session) {
   const resultEyebrow = isCheckpoint && lessonPassed
     ? "Checkpoint complete"
     : session.lessonId
-      ? `${escapeHtml(lesson?.title || "Sentence lesson")} ${lessonPassed ? "complete" : "— almost"}`
+      ? `${escapeHtml(getSentenceLessonDisplayTitle(lesson))} ${lessonPassed ? "complete" : "— almost"}`
       : "Session complete";
   const resultTitle = isCheckpoint && lessonPassed
     ? "Unit crowned"
