@@ -2,9 +2,15 @@
 
 > **Status:** Owner-approved plan, written 2026-07-10. This document defines the
 > restructure of the **Sentence Studio** lesson experience into the same
-> Duolingo-style path the Words section shipped in Words Curriculum v2 —
-> **without straying from the K-pop-trainee learning model the section was
-> built around, and without touching the Words section.**
+> Duolingo-style path the Words section shipped in Words Curriculum v2,
+> without touching the Words section.
+>
+> **Owner supersession — 2026-07-11:** the path keeps the evidence-based
+> learning methods associated with intensive Korean study, but the learner UI
+> is no longer K-pop- or trainee-themed. Use plain, descriptive curriculum
+> names and the Words lesson-player language. This supersedes the surface-copy
+> parts of decisions 3, 8, and 9 and §§3.0, 3.3, 3.7, and 3.10; it does not
+> change the bank, topology, progression, drill mix, or SRS contract.
 >
 > **Audience:** a highly capable coding model executing this plan PR by PR.
 > Read §1 (locked decisions), §2 (verified current state), §3 (target design),
@@ -36,9 +42,8 @@ polished lesson-card design language. The owner wants the same "easy flow" for
 Sentences.
 
 Target: a **Duolingo-style sentence path** that mirrors the Words v2 topology
-unit-for-unit ("learn the words, then speak them"), themed as the **K-pop
-trainee journey**, covering **all 2,060 bank sentences** in ~5–7-sentence
-scenario-named lessons with unit checkpoints — while keeping the Sentence
+unit-for-unit ("learn the words, then speak them"), covering **all 2,060 bank
+sentences** in ~5–7-sentence, plainly named lessons with unit checks — while keeping the Sentence
 Studio's own identity (Translate & Type flagship, helper ladder, SRS,
 shadowing, free drill modes).
 
@@ -62,6 +67,7 @@ are from the owner's 2026-07-10 instruction for this plan.
 | 8 | Checkpoint per unit | Every sentence unit ends with a "stage rehearsal" checkpoint over the unit's sentences; passing crowns it (§3.10). Bounded 12–18 prompts — do NOT repeat the Words checkpoint overshoot (§9.3). |
 | 9 | **Stay K-pop-true** | Owner 2026-07-10: *"we built it around how foreign kpop stars learn korean, so don't stray too far away from that."* §3.0 is the fidelity contract. |
 | 10 | **Do not change the Words section** | Owner 2026-07-10. §6 has the explicit do-not-touch list; reuse is by *parallel new code* + shared CSS + read-only calls into existing helpers. |
+| 11 | **Methods, not K-pop theming** | Owner 2026-07-11. Keep retrieval, spacing, shadowing, guided production, and the Words-aligned path. Replace trainee/idol scenario copy with plain learning labels. |
 
 ---
 

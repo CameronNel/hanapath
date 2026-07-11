@@ -12565,7 +12565,7 @@ const HUB_DEFS = {
     items: [
       { id: "alphabet",   icon: "🎯", title: "Alphabet quiz",   sub: "Match letters to their sounds.", custom: "alphabetPractice" },
       { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
-      { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Follow the guided path or practise full sentences.", target: "practice" },
+      { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Review due lines or choose a sentence drill.", target: "practice" },
       { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
       { id: "pronunciation", icon: "🎧", title: "Pronunciation drill", sub: "Train your ears on tensed/aspirated consonants & minimal pairs.", custom: "pronunciationDrill" },
       { id: "writing", icon: "✍️", title: "Hangul writing", sub: "Draw letters and syllable blocks by hand.", custom: "hangulWriting" },
@@ -12924,7 +12924,7 @@ function renderLearnStageMenu(itemId) {
   const el = showScreen("menu");
   if (!el) return;
 
-  const stageRows = Array.from({ length: progress.total }, (_, index) => {
+  const stageRowItems = Array.from({ length: progress.total }, (_, index) => {
     const stageNumber = index + 1;
     const stageInfo = getLearnStageInfo(itemId, stageNumber);
     const status = getLearnStageStatus(itemId, stageNumber);
@@ -12937,7 +12937,7 @@ function renderLearnStageMenu(itemId) {
     const dotText = complete ? "✓" : String(stageNumber).padStart(2, "0");
 
     const lockHint = locked ? ` data-locked-stage="${stageNumber}"` : "";
-    return `
+    return { status, html: `
       <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}"${lockHint}>
         <span class="unit-dot ${dotClass}">${escapeHtml(dotText)}</span>
         <div>
@@ -12946,8 +12946,24 @@ function renderLearnStageMenu(itemId) {
         </div>
         <span class="pill ${pillClass}">${pillLabel}</span>
       </button>
-    `;
-  }).join("");
+    ` };
+  });
+  const stageRows = stageRowItems.map((item) => item.html).join("");
+  const sentenceStageRows = itemId === "sentences"
+    ? (() => {
+      const currentRows = stageRowItems.filter((item) => item.status === "current");
+      const completedRows = stageRowItems.filter((item) => item.status === "complete");
+      const lockedRows = stageRowItems.filter((item) => item.status === "locked");
+      const collapsedGroup = (label, rows, className) => rows.length
+        ? `<details class="stage-collapse ${className}"><summary>${escapeHtml(label)} <span class="pill muted">${rows.length}</span></summary><div class="study-list">${rows.map((item) => item.html).join("")}</div></details>`
+        : "";
+      return `
+        ${currentRows.length ? `<div class="study-list stage-current-list">${currentRows.map((item) => item.html).join("")}</div>` : ""}
+        ${collapsedGroup("Completed stages", completedRows, "is-complete")}
+        ${collapsedGroup("Locked stages", lockedRows, "is-locked")}
+      `;
+    })()
+    : stageRows;
 
   // [2026-06-29] Entry card for the Entire Korean Alphabet board, pinned atop the alphabet stage list.
   const fullAlphabetHtml = itemId === "alphabet"
@@ -13033,7 +13049,7 @@ function renderLearnStageMenu(itemId) {
         <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
       </div>
       <div class="study-list">
-        ${stageRows}
+        ${sentenceStageRows}
       </div>
     </div>`;
 
@@ -16241,7 +16257,7 @@ function getSentenceBlockingWordUnitId(unit, metWords) {
 
 function sentencePathLessonRowHtml(lesson, unlocked, completed, active) {
   const isCheckpoint = lesson.type === "checkpoint";
-  const label = isCheckpoint ? "Stage rehearsal" : (completed ? "Complete" : active ? "Next up" : "Lesson");
+  const label = isCheckpoint ? "Unit check" : (completed ? "Complete" : active ? "Next up" : "Lesson");
   const rowClass = `study-row ss-mode ${isCheckpoint ? "sentence-path-checkpoint" : ""} ${active ? "is-highlighted" : ""}`;
   return `<button class="${rowClass}" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : "disabled"}>
     <div>
@@ -16278,7 +16294,7 @@ function sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, prog
   return `<article class="vocab-path-unit ${crowned ? "is-crowned" : ""} ${!unlocked ? "is-locked" : ""}">
     <button class="vocab-path-unit-header" type="button" data-sentence-unit-toggle="${escapeHtml(unit.id)}" aria-expanded="${unlocked && !crowned ? "true" : "false"}">
       <span class="vocab-path-unit-emoji" aria-hidden="true">${escapeHtml(unit.emoji || "•")}</span>
-      <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>Words twin · ${completed}/${lessons.length - 1} lessons</small></span>
+      <span class="vocab-path-unit-copy"><strong>${escapeHtml(unit.name)}</strong><small>${completed}/${lessons.length - 1} lessons complete</small></span>
       ${due ? `<span class="pill accent sentence-path-due">${due} line${due === 1 ? "" : "s"} due</span>` : ""}
       <span class="pill ${crowned ? "green" : unlocked ? "accent" : "muted"}">${crowned ? "Crowned" : unlocked ? `${completed}/${lessons.length - 1}` : "Locked"}</span>
     </button>
@@ -16290,15 +16306,17 @@ function sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, prog
 
 function sentencePathHtml(metWords, completedSet, activeLessonId, progress) {
   const sections = getSentenceSections().slice().sort((a, b) => a.order - b.order);
-  return `<div class="vocab-path sentence-path sent-path">${sections.map((section) => {
+  const sectionItems = sections.map((section) => {
     const units = getSentenceUnits().filter((unit) => unit.sectionId === section.id).sort((a, b) => a.order - b.order);
     const unlockedUnits = units.filter((unit) => isSentenceUnitUnlocked(unit, metWords));
     const crowned = units.filter((unit) => isSentenceUnitCrowned(unit, completedSet)).length;
-    const sectionOpen = unlockedUnits.some((unit) => unit.id === getSentenceLessonById(activeLessonId)?.unitId) || section.id === "sn1";
-    return `<section class="vocab-path-section ${unlockedUnits.length ? "is-open" : "is-locked"}">
+    const complete = units.length > 0 && crowned === units.length;
+    const locked = unlockedUnits.length === 0;
+    const sectionOpen = unlockedUnits.some((unit) => unit.id === getSentenceLessonById(activeLessonId)?.unitId) || (!complete && !locked);
+    const html = `<section class="vocab-path-section ${locked ? "is-locked" : complete ? "is-complete" : "is-open"}">
       <div class="vocab-path-section-header">
         <div><div class="eyebrow">Section ${section.order}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
-        <span class="pill ${unlockedUnits.length ? "accent" : "muted"}">${unlockedUnits.length ? `${crowned}/${units.length} crowned` : "Locked"}</span>
+        <span class="pill ${complete ? "green" : unlockedUnits.length ? "accent" : "muted"}">${complete ? "Completed" : unlockedUnits.length ? `${crowned}/${units.length} complete` : "Locked"}</span>
       </div>
       ${unlockedUnits.length && sectionOpen
         ? `<div class="vocab-path-unit-list">${units.map((unit) => sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, progress)).join("")}</div>`
@@ -16306,7 +16324,21 @@ function sentencePathHtml(metWords, completedSet, activeLessonId, progress) {
           ? `<details class="vocab-path-explore"><summary>Explore topics · ${units.length} units</summary><div class="vocab-path-unit-list">${units.map((unit) => sentencePathUnitHtml(unit, metWords, completedSet, activeLessonId, progress)).join("")}</div></details>`
           : `<div class="vocab-path-lock-note">Finish the Words path to open sentence practice.</div>`}
     </section>`;
-  }).join("")}</div>`;
+    return { html, complete, locked };
+  });
+
+  const activeSections = sectionItems.filter((item) => !item.complete && !item.locked);
+  const completeSections = sectionItems.filter((item) => item.complete);
+  const lockedSections = sectionItems.filter((item) => item.locked);
+  const collapsedSections = (label, items, className) => items.length
+    ? `<details class="sentence-path-group ${className}"><summary><span>${escapeHtml(label)}</span><span class="pill muted">${items.length}</span></summary><div class="sentence-path-group-body">${items.map((item) => item.html).join("")}</div></details>`
+    : "";
+
+  return `<div class="vocab-path sentence-path sent-path">
+    ${activeSections.map((item) => item.html).join("")}
+    ${collapsedSections("Completed sections", completeSections, "is-complete")}
+    ${collapsedSections("Locked sections", lockedSections, "is-locked")}
+  </div>`;
 }
 
 function sentenceStudioHubV2Html() {
@@ -16326,7 +16358,6 @@ function sentenceStudioHubV2Html() {
     const record = progress.results[row.id];
     return record?.seen > 0 && Number(record.due || 0) <= now;
   }).length;
-  const analytics = getSentenceAnalyticsSnapshot(progress, rows);
   let firstBlockingUnit = null;
   for (const unit of units) {
     if (isSentenceUnitUnlocked(unit, metWords)) continue;
@@ -16360,10 +16391,16 @@ function sentenceStudioHubV2Html() {
     const available = mode.id !== "transform" || transformAvailable;
     return `<button class="study-row ss-mode" type="button" data-ss-start="${escapeHtml(mode.id)}" ${available ? "" : "disabled"}><div><div class="study-row-ko">${escapeHtml(mode.label)}</div><div class="study-row-sub">${escapeHtml(available ? mode.sub : "More transform-ready sentences are needed for this path.")}</div></div><span class="pill muted">${escapeHtml(mode.tag)}</span></button>`;
   }).join("");
-  return `${continueHtml}
-    <div class="card"><div class="eyebrow">Sentence path</div><div class="screen-sub" style="margin-bottom:12px;">${rows.length} lines across ${units.length} Words-twin units. Finish a lesson to unlock the next line.</div>${sentencePathHtml(metWords, completedSet, nextLesson?.id || "", progress)}</div>
-    <div class="card"><div class="flex-between mb-12"><div><div class="eyebrow">Free practice</div><div class="screen-sub" style="margin-bottom:0;">Choose a band, then drill outside the guided path.</div></div><span class="pill ${dueCount ? "accent" : "muted"}">${dueCount} due</span></div><div class="ss-band-row mb-12">${bandChips}</div><div class="study-list">${modeCards}</div></div>
-    <div class="card"><div class="flex-between mb-12"><div><div class="eyebrow">Sentence insights</div><div class="screen-sub" style="margin-bottom:0;">Your review trail stays attached to each line.</div></div><span class="pill muted">${analytics.total} events</span></div><div class="stats-grid"><div class="stat-box"><span class="sv">${analytics.correctPct}%</span><span class="sl">Accuracy</span></div><div class="stat-box"><span class="sv">${analytics.avgLatencyLabel}</span><span class="sl">Avg latency</span></div><div class="stat-box"><span class="sv">${analytics.helperUses}</span><span class="sl">Helpers used</span></div></div></div>`;
+  const guidedPathHtml = `${continueHtml}
+    <div class="card"><div class="eyebrow">Sentence path</div><div class="screen-sub" style="margin-bottom:12px;">${rows.length} lines across ${units.length} guided units. Finish a lesson to unlock the next line.</div>${sentencePathHtml(metWords, completedSet, nextLesson?.id || "", progress)}</div>`;
+  const practiceIntroHtml = dueCount
+    ? `<div class="card continue-hero sentence-continue-hero"><div class="eyebrow">Sentence review</div><h2 class="screen-title" style="margin-bottom:8px;">${dueCount} line${dueCount === 1 ? "" : "s"} ready</h2><div class="screen-sub" style="margin-bottom:12px;">Start with the sentences that are due, then keep practising freely.</div><button class="button primary compact" type="button" data-ss-start="mixed">Review now</button></div>`
+    : `<div class="card"><div class="eyebrow">Practice · Sentences</div><h2 class="screen-title" style="margin-bottom:8px;">Practise full sentences</h2><div class="screen-sub" style="margin-bottom:0;">Type, build, listen, and speak using words you have already learned.</div></div>`;
+  const freePracticeHtml = `<div class="card"><div class="flex-between mb-12"><div><div class="eyebrow">Choose a practice mode</div><div class="screen-sub" style="margin-bottom:0;">Choose a sentence band, then pick how you want to retrieve it.</div></div><span class="pill ${dueCount ? "accent" : "muted"}">${dueCount} due</span></div><div class="ss-band-row mb-12">${bandChips}</div><div class="study-list">${modeCards}</div></div>`;
+
+  return activeHub === "learn"
+    ? guidedPathHtml
+    : `${practiceIntroHtml}${freePracticeHtml}`;
 }
 
 function sentenceStudioHubHtml() {
@@ -17037,7 +17074,7 @@ function sentenceSummaryHtml(session) {
   const resultCopy = session.lessonId
     ? lessonPassed
       ? isCheckpoint
-        ? "Stage rehearsal passed. This unit is crowned, and its next line is ready on the path."
+        ? "Unit check passed. This unit is complete, and its next line is ready on the path."
         : "You passed on first-try accuracy. Keep the line moving."
       : isCheckpoint
         ? `This checkpoint was not passed yet. You need ${requiredPct}% first-try accuracy, and these lines are saved for review.`
@@ -17898,7 +17935,7 @@ function renderProgress() {
     K4: "Independent Korean",
     K5: "Fluency Bridge",
   };
-  const accuracy = state.asked === 0 ? 0 : Math.round((state.correct / state.asked) * 100);
+  const accuracy = state.asked === 0 ? 0 : Math.min(100, Math.round((state.correct / state.asked) * 100));
   const knownWords = Array.isArray(state.vocabKnownRanks) ? state.vocabKnownRanks.length : 0;
   const hardWords = Array.isArray(state.vocabHardRanks) ? state.vocabHardRanks.length : 0;
   const totalMinutes = Number(state.totalMinutes) || 0;
@@ -17912,6 +17949,8 @@ function renderProgress() {
     { done: knownWords >= 20, label: "Marked 20 vocabulary words as known" },
     { done: state.studyDays >= 3, label: "Built a 3-day study streak" },
   ];
+  const sentenceAnalytics = getSentenceAnalyticsSnapshot(getSentencesProgress(), getSentenceBankRows());
+  const sentenceDueCount = getTotalDueSentencesCount();
 
   el.innerHTML = `
     <div class="progress-hero">
@@ -17964,6 +18003,22 @@ function renderProgress() {
         <div class="stat-box"><span class="sv">${state.bestStreak}</span><span class="sl">Best streak</span></div>
         <div class="stat-box"><span class="sv">${hardWords}</span><span class="sl">Hard words</span></div>
         <div class="stat-box"><span class="sv">${state.round}</span><span class="sl">Round</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Sentence progress</div>
+          <div class="screen-sub" style="margin-bottom:0;">Accuracy and helper use across your sentence practice.</div>
+        </div>
+        <span class="pill ${sentenceDueCount ? "accent" : "muted"}">${sentenceDueCount} due</span>
+      </div>
+      <div class="stats-grid" style="margin-bottom:0;">
+        <div class="stat-box"><span class="sv">${sentenceAnalytics.total}</span><span class="sl">Attempts</span></div>
+        <div class="stat-box"><span class="sv">${sentenceAnalytics.correctPct}%</span><span class="sl">Accuracy</span></div>
+        <div class="stat-box"><span class="sv">${sentenceAnalytics.avgLatencyLabel}</span><span class="sl">Avg latency</span></div>
+        <div class="stat-box"><span class="sv">${sentenceAnalytics.helperUses}</span><span class="sl">Helpers used</span></div>
       </div>
     </div>
 

@@ -54,7 +54,7 @@ with no backend**, and stays that way. The bindings:
 | REST endpoints (`/v1/review/queue`, …) | Plain in-app functions over the bank + `state` (no network) |
 | ASR pronunciation scoring | Existing browser `SpeechRecognition` transcript-match stub (accepted as final for this architecture — same decision as Words §9 item 5) |
 | Multi-speaker HVPT audio | **Deferred / owner-gated.** The pipeline generates one voice; a second voice is a pipeline change the owner must approve |
-| K-pop lyric/subtitle mining | **Rejected on copyright grounds.** All sentences are original or already-owned curated content. K-pop/fan-life *theming* of authored sentences (practice rooms, schedules, encouragement) is welcome flavor; verbatim lyrics/subtitles are not |
+| K-pop lyric/subtitle mining | **Rejected on copyright grounds.** All sentences are original or already-owned curated content. Owner decision 2026-07-11 also removes K-pop/trainee surface theming: retain the effective learning methods, but use plain curriculum labels. |
 | CEFR/TOPIK claims | Internal bands 1–5 only; no external-equivalence claims in the UI |
 | Roleplay AI coach | Out of scope (needs a model backend). Scenario *scripts* (fixed branching dialogues) may come later, owner-gated |
 

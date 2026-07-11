@@ -4027,6 +4027,58 @@ li { margin-bottom: 4px; }
 .sentence-path {
   margin-top: 10px;
 }
+.stage-current-list {
+  margin-bottom: 10px;
+}
+.stage-collapse,
+.sentence-path-group {
+  overflow: hidden;
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255,255,255,.025);
+}
+.stage-collapse summary,
+.sentence-path-group > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 11px 13px;
+  color: var(--text);
+  font-size: .86rem;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+.stage-collapse summary::-webkit-details-marker,
+.sentence-path-group > summary::-webkit-details-marker {
+  display: none;
+}
+.stage-collapse summary::before,
+.sentence-path-group > summary::before {
+  content: "+";
+  color: var(--accent);
+  font-size: 1rem;
+}
+.stage-collapse[open] summary::before,
+.sentence-path-group[open] > summary::before {
+  content: "−";
+}
+.stage-collapse .study-list,
+.sentence-path-group-body {
+  display: grid;
+  gap: 8px;
+  padding: 0 10px 10px;
+}
+.sentence-path-group-body .vocab-path-section {
+  margin: 0;
+}
+.stage-collapse.is-locked,
+.sentence-path-group.is-locked {
+  opacity: .82;
+}
 .sentence-path .vocab-path-unit.is-crowned {
   border-color: rgba(236,179,85,.42);
 }

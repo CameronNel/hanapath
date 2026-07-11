@@ -198,16 +198,81 @@ if (fs.existsSync(sentencesNamesPath)) {
   };
 }
 
+// Owner decision (2026-07-11): keep the evidence-based learning methods, but
+// remove the K-pop trainee surface theme. Rebuild the learner-facing manifest
+// deterministically so older generated scenario names cannot return.
+const neutralSections = {
+  sn1: { name: "First Sentences", flavor: "Read and produce short, useful Korean sentences." },
+  sn2: { name: "Daily Sentences", flavor: "Use familiar words in everyday sentence frames." },
+  sn3: { name: "Simple Sentence Order", flavor: "Build longer lines in natural Korean order." },
+  sn4: { name: "People and Plans", flavor: "Talk about people, places, and plans." },
+  sn5: { name: "Actions and Requests", flavor: "Combine actions, requests, and polite forms." },
+  sn6: { name: "Connected Ideas", flavor: "Link ideas across a wider range of topics." },
+  sn7: { name: "Detail and Nuance", flavor: "Notice contrast, register, and subtle meaning." },
+  sn8: { name: "Finishing the Core", flavor: "Use longer sentences across the full core." },
+};
+
+function fitLessonTitle(unitName, sectionNumber, lessonNumber) {
+  const prefix = `S${sectionNumber} · `;
+  const suffix = ` · ${lessonNumber}`;
+  const available = 32 - prefix.length - suffix.length;
+  const clipped = unitName.length <= available ? unitName : unitName.slice(0, available);
+  const fitted = clipped.length < unitName.length && clipped.includes(" ")
+    ? clipped.slice(0, clipped.lastIndexOf(" "))
+    : clipped;
+  return `${prefix}${fitted}${suffix}`;
+}
+
+sentencesNames.sections = neutralSections;
+sentencesNames.units ||= {};
+sentencesNames.lessons ||= {};
+for (const wUnit of wordUnits) {
+  const sUnitId = wUnit.id.replace(/^s/, "sn");
+  const sectionNumber = Number(wUnit.sectionId.replace(/^s/, "")) || 1;
+  const wordsName = wordsNames.units[wUnit.id]?.name || wUnit.name;
+  sentencesNames.units[sUnitId] = {
+    ...(sentencesNames.units[sUnitId] || {}),
+    name: wordsName,
+  };
+
+  const rows = unitRows.get(wUnit.id) || [];
+  const lessonCount = rows.length <= 7 ? 1 : Math.ceil(rows.length / 7);
+  const baseSize = Math.floor(rows.length / lessonCount);
+  const remainder = rows.length % lessonCount;
+  for (let index = 0; index < lessonCount; index++) {
+    const lessonNumber = index + 1;
+    const lessonId = `${sUnitId}-l${lessonNumber}`;
+    const lessonSize = baseSize + (index < remainder ? 1 : 0);
+    sentencesNames.lessons[lessonId] = {
+      title: fitLessonTitle(wordsName, sectionNumber, lessonNumber),
+      subtitle: `${lessonSize} sentences · Listen, build, type`,
+      goal: `Use ${wordsName.toLowerCase()} sentences naturally in Korean.`,
+    };
+  }
+}
+
 // Older bootstrapped manifests clipped a few unit names mid-word. Repair those
 // deterministic carry-overs before emitting learner-facing lesson copy.
 const staleCopyRepairs = new Map([
   ["morning routines to brea", "morning routines"],
+  ["Morning routines to brea", "Morning routines"],
   ["getting things done to p", "getting things done"],
+  ["Getting things done to p", "Getting things done"],
   ["rainy-day moods freshnes", "rainy-day moods"],
+  ["Rainy-day moods freshnes", "Rainy-day moods"],
   ["getting around town to g", "getting around town"],
+  ["Getting around town to g", "Getting around town"],
   ["describing the room to g", "describing the room"],
+  ["Describing the room to g", "Describing the room"],
   ["at the station tourist s", "at the station"],
+  ["At the station tourist s", "At the station"],
 ]);
+for (const meta of Object.values(sentencesNames.units || {})) {
+  if (typeof meta.name !== "string") continue;
+  for (const [stale, replacement] of staleCopyRepairs) {
+    meta.name = meta.name.replaceAll(stale, replacement);
+  }
+}
 for (const meta of Object.values(sentencesNames.lessons || {})) {
   for (const field of ["title", "subtitle", "goal"]) {
     if (typeof meta[field] !== "string") continue;
@@ -337,7 +402,7 @@ for (const wUnit of wordUnits) {
     id: checkpointId,
     unitId: sUnitId,
     type: "checkpoint",
-    title: `Stage rehearsal: ${unitMeta.name}`,
+    title: `Unit check: ${unitMeta.name}`,
     subtitle: `Prove your ${n} lines stick`,
     goal: `Prove the whole unit sticks.`,
     sentenceIds: [],
