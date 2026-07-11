@@ -78,7 +78,7 @@ expectAuditFailure("missing sentence in checkpoint", (source) => {
   return source.replace('"s0001",\n      "s0002",\n      "s0003",', '"s0002",\n      "s0003",');
 });
 
-expectAuditFailure("forbidden numeral/roman suffix in title", (source) => source, (source) => source.replace('"title": "Vocal Warmup"', '"title": "Vocal Practice II"'));
+expectAuditFailure("retired trainee theme in learner copy", (source) => source, (source) => source.replace(/"title": "[^"]+"/, '"title": "Vocal Warmup"'));
 expectGeneratorCheckFailure();
 
 console.log("Sentences curriculum v2 self-test passed: three invalid copies rejected by the production audit and generator --check rejects drift without writing.");

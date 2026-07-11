@@ -407,9 +407,12 @@ function runV2Audit() {
       }
       lessonTitleMap.set(lowerTitle, lesson.id);
 
-      // Suffix ban
-      if (/\b(\d+|II|III|IV|V)\b$/.test(title)) {
-        addError(`v2 Audit: Lesson ${lesson.id} title "${title}" has numeral/Roman suffix.`);
+      // Owner decision 2026-07-11: plain numbered practice labels replace the
+      // former scenario-title contract. Prevent the retired trainee surface
+      // theme from returning while keeping deterministic lesson numbering.
+      const learnerCopy = `${title} ${subtitle} ${goal}`;
+      if (/\b(trainee|choreo|backstage|comeback|promo season|variety night|lyric review|dance practice|vocal warmup)\b/i.test(learnerCopy)) {
+        addError(`v2 Audit: Lesson ${lesson.id} contains retired K-pop/trainee surface copy.`);
       }
 
       // Title length caps
