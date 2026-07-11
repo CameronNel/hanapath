@@ -13898,13 +13898,10 @@ const HANGUL_WRITING_UNITS = [
 let hangulWritingState = {
   unitId: null,
   glyphIndex: 0,
-  guideVisible: true,
-  checking: false,
-  strokes: [],
-  mode: "free", // "free" | "trace" (trace only offered when a stroke guide exists)
-  animating: false,
-  lastGrade: null, // W2: gradeHangulDrawing() result for the current Check view
   exercise: "shape", // "shape" (copy the glyph) | "sound" (write what you hear) | "roman" (write from romanization)
+  strokes: [], // accepted ink strokes only — bad strokes are rejected on pointer-up
+  animating: false, // Help! demo playing
+  celebrating: false, // success sequence playing (input blocked, auto-advance pending)
 };
 
 function getHangulWritingUnit(unitId = hangulWritingState.unitId) {
@@ -14299,20 +14296,13 @@ function gradeHangulDrawing(glyph, strokes) {
   return { verdict, perStroke, strokeCount: { expected, drawn } };
 }
 
-// §7.6 tracing-mode rejection messages (one at a time, first-hit reason).
+// Per-stroke rejection tips (one at a time, first-hit reason). The guide is
+// invisible during normal writing, so the tips point at Help! instead of it.
 const HANGUL_TRACE_MESSAGES = {
-  "wrong-start": "Start at the numbered dot, then follow the line.",
-  "wrong-direction": "Right shape — wrong direction. Follow the stroke top-to-bottom / left-to-right.",
-  length: "Trace the whole highlighted stroke, end to end.",
-  shape: "Almost — stay closer to the highlighted line and try again.",
-};
-
-// §7.7 short per-stroke labels for the Check verdict lines.
-const HANGUL_CHECK_REASON_LABELS = {
-  "wrong-start": "started in the wrong place",
-  "wrong-direction": "wrong direction",
-  length: "too short or too long",
-  shape: "off the guide shape",
+  "wrong-start": "Started in the wrong spot — tap Help! to see.",
+  "wrong-direction": "Wrong direction — strokes go left→right, top→bottom.",
+  length: "Draw the whole stroke in one go.",
+  shape: "Almost — try that stroke again, or tap Help!",
 };
 
 function recordHangulWritingResult(glyph, verdict) {
@@ -14323,30 +14313,8 @@ function drawHangulWritingCanvas(canvas) {
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const unit = getHangulWritingUnit();
-  const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
-  const guide = glyph ? getHangulStrokeGuide(glyph) : null;
-  const tracing = hangulWritingState.mode === "trace" && Boolean(guide);
-
-  if (guide && (hangulWritingState.guideVisible || hangulWritingState.checking || tracing)) {
-    // Numbered stroke-order guide (replaces the W0 faint-font glyph).
-    drawHangulGuideStrokes(ctx, canvas, guide, {
-      showNumbers: true,
-      completed: tracing ? hangulWritingState.strokes.length : 0,
-      activeIndex: tracing && !hangulWritingState.checking ? hangulWritingState.strokes.length : -1,
-      emphasize: hangulWritingState.checking, // self-check: recolor the whole guide as the reference
-    });
-  } else if (!guide && (hangulWritingState.guideVisible || hangulWritingState.checking)) {
-    // W0 fallback: faint-font glyph for glyphs without authored stroke data.
-    ctx.save();
-    ctx.fillStyle = hangulWritingState.checking ? "rgba(122, 92, 255, 0.35)" : "rgba(127, 127, 127, 0.18)";
-    ctx.font = `${Math.round(canvas.height * 0.72)}px "Noto Sans KR", sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(glyph, canvas.width / 2, canvas.height / 2 + canvas.height * 0.04);
-    ctx.restore();
-  }
-
+  // Accepted ink only. No guide, no faint glyph — the writing area stays
+  // blank; the stroke guide appears solely inside the Help! demo animation.
   ctx.save();
   ctx.strokeStyle = "#7a5cff";
   ctx.lineWidth = Math.max(6, canvas.width * 0.028);
@@ -14376,13 +14344,12 @@ function bindHangulWritingCanvas(canvas) {
   };
 
   canvas.addEventListener("pointerdown", (event) => {
-    if (hangulWritingState.checking || hangulWritingState.animating) return;
+    if (hangulWritingState.celebrating) return;
+    stopHangulWatch(); // starting to write cancels the Help! demo
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
     activeStroke = [pointFromEvent(event)];
     hangulWritingState.strokes.push(activeStroke);
-    const checkButton = document.getElementById("writingCheck");
-    if (checkButton) checkButton.disabled = false;
     drawHangulWritingCanvas(canvas);
   });
   canvas.addEventListener("pointermove", (event) => {
@@ -14395,59 +14362,79 @@ function bindHangulWritingCanvas(canvas) {
     if (!activeStroke) return;
     const finished = activeStroke;
     activeStroke = null;
-    if (hangulWritingState.mode !== "trace") return;
-    // Tracing mode (W2, plan §7.6): grade the just-finished stroke against
-    // the guide stroke at its index. Passes stay inked and advance; fails
-    // are removed with a reason message; accidental taps vanish silently.
+    // Every stroke is graded on pointer-up against the guide stroke at its
+    // index (invisible guide). Passes stay; fails fade with a one-line tip;
+    // accidental taps vanish silently. The last passing stroke triggers the
+    // automatic success sequence.
     const unit = getHangulWritingUnit();
     const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
     const guide = glyph ? getHangulStrokeGuide(glyph) : null;
     const index = hangulWritingState.strokes.length - 1;
     let failMessage = null;
+    let completed = false;
     if (guide && index < guide.strokes.length) {
       const cleaned = cleanHangulInkStroke(normalizeHangulInkStroke(finished, canvas));
       if (!cleaned) {
-        hangulWritingState.strokes.pop(); // silent tap discard (§7.2.1)
+        hangulWritingState.strokes.pop(); // silent tap discard
       } else {
         const result = scoreHangulStroke(cleaned, guide.strokes[index]);
         if (!result.pass) {
           hangulWritingState.strokes.pop();
           failMessage = HANGUL_TRACE_MESSAGES[result.reason] || HANGUL_TRACE_MESSAGES.shape;
+        } else if (hangulWritingState.strokes.length === guide.strokes.length) {
+          completed = true;
         }
       }
-      const checkButton = document.getElementById("writingCheck");
-      if (checkButton) checkButton.disabled = !hangulWritingState.strokes.length;
     }
     drawHangulWritingCanvas(canvas);
-    updateHangulTraceStatus();
-    if (failMessage) {
-      const status = document.getElementById("writingTraceStatus");
-      if (status) status.textContent = failMessage;
-    }
+    setHangulWritingTip(failMessage || "");
+    if (completed) celebrateHangulWriting(glyph, unit);
   };
   canvas.addEventListener("pointerup", finishStroke);
-  canvas.addEventListener("pointercancel", finishStroke);
+  canvas.addEventListener("pointercancel", () => {
+    // An interrupted pointer (palm rejection, browser gesture) is not an
+    // attempt: discard the stroke silently instead of grading it.
+    if (!activeStroke) return;
+    activeStroke = null;
+    hangulWritingState.strokes.pop();
+    drawHangulWritingCanvas(canvas);
+  });
 }
 
-// Refresh the "stroke X of N" line without a full DOM rebuild (called on each
-// traced pointer-up). No-op when the status element or guide is absent.
-function updateHangulTraceStatus() {
-  const status = document.getElementById("writingTraceStatus");
-  if (!status) return;
-  const unit = getHangulWritingUnit();
-  const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
-  const guide = glyph ? getHangulStrokeGuide(glyph) : null;
-  if (!guide) return;
-  const total = guide.strokes.length;
-  const done = Math.min(hangulWritingState.strokes.length, total);
-  status.textContent =
-    done >= total
-      ? `All ${total} stroke${total === 1 ? "" : "s"} traced ✓ — clear to trace again, or check your work.`
-      : `Trace stroke ${done + 1} of ${total} (follow the highlighted line and its number).`;
+// One-line status under the canvas: empty by default, a rejection tip on a
+// failed stroke. aria-live so screen readers hear the feedback too.
+function setHangulWritingTip(message) {
+  const tip = document.getElementById("writingTip");
+  if (tip) tip.textContent = message || "";
+}
+
+// Success sequence: "Well done!" toast + chime, then the glyph audio, then
+// auto-advance to the next glyph (back to the unit picker after the last).
+function celebrateHangulWriting(glyph, unit) {
+  hangulWritingState.celebrating = true;
+  recordHangulWritingResult(glyph, "auto-pass");
+  showCorrectToast("Well done!");
+  window.setTimeout(() => { void speak(glyph); }, 600);
+  window.setTimeout(() => {
+    hangulWritingState.celebrating = false;
+    hangulWritingState.strokes = [];
+    if (hangulWritingState.glyphIndex + 1 >= unit.glyphs.length) {
+      hangulWritingState.unitId = null; // unit finished — back to the menu
+    } else {
+      hangulWritingState.glyphIndex += 1;
+    }
+    renderHangulWriting();
+  }, 1600);
 }
 
 function renderHangulWritingUnitPicker(el) {
-  const unitsHtml = HANGUL_WRITING_UNITS.map((unit) => {
+  // Only units whose every glyph has an authored stroke guide are offered —
+  // the auto-grading flow needs the algorithm, so guideless units (syllable
+  // blocks, advanced jamo) stay hidden until their W1b data lands.
+  const readyUnits = HANGUL_WRITING_UNITS.filter((unit) =>
+    unit.glyphs.every((glyph) => getHangulStrokeGuide(glyph))
+  );
+  const unitsHtml = readyUnits.map((unit) => {
     const unlocked = isHangulWritingUnitUnlocked(unit);
     const preview = unit.glyphs.slice(0, 6).join(" ");
     return `
@@ -14478,7 +14465,7 @@ function renderHangulWritingUnitPicker(el) {
       <button class="button secondary compact" type="button" id="writingBackToHub">‹ Back to practice</button>
       <div class="eyebrow" style="margin-top:8px;">Practice · Hangul writing</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Write Hangul by hand</h2>
-      <div class="screen-sub" style="margin-bottom:0;">Draw each letter, then build full syllable blocks. Units unlock as you finish the matching alphabet stages.</div>
+      <div class="screen-sub" style="margin-bottom:0;">Draw each letter by hand. Units unlock as you finish the matching alphabet stages.</div>
     </div>
     ${unitsHtml}
   `;
@@ -14487,9 +14474,7 @@ function renderHangulWritingUnitPicker(el) {
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exercise = btn.dataset.writingExercise || "shape";
-      // Sound/romanization are recall exercises: the guide starts hidden so
-      // the canvas doesn't give the answer away (all help tools stay available).
-      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, guideVisible: exercise === "shape", checking: false, strokes: [], mode: "free", animating: false, lastGrade: null, exercise };
+      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, exercise, strokes: [], animating: false, celebrating: false };
       renderHangulWriting();
     });
   });
@@ -14498,81 +14483,34 @@ function renderHangulWritingUnitPicker(el) {
 function renderHangulWritingPractice(el, unit) {
   const glyph = unit.glyphs[hangulWritingState.glyphIndex];
   const guide = getHangulStrokeGuide(glyph);
-  const tracing = hangulWritingState.mode === "trace" && Boolean(guide);
 
   // The prompt is ONLY the required cue for the exercise — the glyph (shape),
-  // a speaker (sound), or the romanization — and tapping it plays the audio.
+  // a speaker (sound), or the romanization — using the same tap-to-hear token
+  // formatting as the alphabet/words lessons. Tapping it plays the audio.
   const exercise = hangulWritingState.exercise || "shape";
   const roman = getHangulWritingRoman(glyph);
-  let promptHtml;
-  let promptTip;
+  let tokenText = glyph;
+  let tokenLang = ` lang="ko"`;
+  let promptTip = "Tap to hear";
   if (exercise === "sound") {
-    promptHtml = `<button class="writing-prompt" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear the sound to write">🔊</button>`;
+    tokenText = "🔊";
+    tokenLang = "";
     promptTip = "Tap to hear, then write it";
   } else if (exercise === "roman" && roman) {
-    promptHtml = `<button class="writing-prompt" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear ${escapeHtml(roman)}">${escapeHtml(roman)}</button>`;
-    promptTip = "Tap to hear";
-  } else {
-    promptHtml = `<button class="writing-prompt" lang="ko" type="button" data-speak="${escapeHtml(glyph)}" aria-label="Hear ${escapeHtml(glyph)}">${escapeHtml(glyph)}</button>`;
-    promptTip = "Tap to hear";
-  }
-
-  const guideTools = guide
-    ? `<button class="button secondary compact" type="button" id="writingWatch">▶ Watch</button>
-        <button class="button ${tracing ? "primary" : "secondary"} compact" type="button" id="writingTraceToggle">${tracing ? "Exit tracing" : "Trace strokes"}</button>`
-    : "";
-
-  // W2 (plan §7.7): the check row shows the heuristic verdict when a grade
-  // exists; glyphs without guides keep the neutral W0 self-check wording.
-  const grade = hangulWritingState.checking ? hangulWritingState.lastGrade : null;
-  let checkRowHtml = `<div class="fs-sm">Compare your ink with the reference. How did it go?</div>`;
-  if (grade) {
-    const counts = grade.strokeCount;
-    let headline;
-    if (grade.verdict === "great") {
-      headline = "✨ Great writing — stroke order and shapes all check out.";
-    } else if (grade.verdict === "close") {
-      headline = "Close! Compare with the reference — check the strokes marked below.";
-    } else if (counts.drawn !== counts.expected) {
-      headline = `You used ${counts.drawn} stroke${counts.drawn === 1 ? "" : "s"} — ${glyph} takes ${counts.expected}. Watch the demo, then try again.`;
-    } else {
-      headline = "Not quite — watch the stroke order and give it another go.";
-    }
-    const failLines =
-      grade.verdict !== "great" && counts.drawn === counts.expected
-        ? grade.perStroke
-            .filter((s) => !s.pass)
-            .slice(0, 2)
-            .map(
-              (s) =>
-                `<div class="fs-xs text-muted-2">Stroke ${s.index + 1}: ${escapeHtml(HANGUL_CHECK_REASON_LABELS[s.reason] || "off the guide shape")}</div>`
-            )
-            .join("")
-        : "";
-    checkRowHtml = `<div class="fs-sm">${escapeHtml(headline)}</div>${failLines}`;
+    tokenText = roman;
+    tokenLang = "";
   }
 
   el.innerHTML = `
-    <div class="card writing-prompt-card">
-      <button class="button secondary compact writing-prompt-back" type="button" id="writingBackToUnits">‹ All units</button>
-      ${promptHtml}
-      <div class="writing-prompt-tip">${escapeHtml(promptTip)}</div>
-    </div>
-    <div class="card writing-canvas-card">
-      <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Drawing area for ${escapeHtml(glyph)}"></canvas>
-      <div class="writing-toolbar">
-        ${guideTools}
-        <button class="button secondary compact" type="button" id="writingGuideToggle" ${tracing ? "disabled" : ""}>${hangulWritingState.guideVisible ? "Hide guide" : "Show guide"}</button>
-        <button class="button secondary compact" type="button" id="writingUndo">Undo</button>
-        <button class="button secondary compact" type="button" id="writingClear">Clear</button>
-        <button class="button primary compact" type="button" id="writingCheck" ${hangulWritingState.strokes.length ? "" : "disabled"}>Check</button>
-      </div>
-      ${guide ? `<div class="fs-sm text-muted-2" id="writingTraceStatus" ${tracing ? "" : "hidden"}></div>` : ""}
-      <div class="writing-check-row" id="writingCheckRow" ${hangulWritingState.checking ? "" : "hidden"}>
-        ${checkRowHtml}
+    <div class="card">
+      <div class="quiz-card">
+        <div class="quiz-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span></div>
+        <div class="quiz-detail">${escapeHtml(promptTip)}</div>
+        <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
+        <div class="fs-xs text-muted-2" id="writingTip" role="status" aria-live="polite"></div>
         <div class="writing-toolbar">
-          <button class="button secondary compact" type="button" id="writingAgain">Try again</button>
-          <button class="button primary compact" type="button" id="writingGotIt">Got it →</button>
+          <button class="button secondary compact" type="button" id="writingMenu">‹ Menu</button>
+          <button class="button primary compact" type="button" id="writingHelp">Help!</button>
         </div>
       </div>
     </div>
@@ -14581,73 +14519,18 @@ function renderHangulWritingPractice(el, unit) {
   const canvas = el.querySelector("#writingCanvas");
   drawHangulWritingCanvas(canvas);
   bindHangulWritingCanvas(canvas);
-  if (tracing) updateHangulTraceStatus();
+  bindTapToHearToken(el.querySelector("[data-speak]"));
+  if (exercise === "sound") scheduleAutoSpeak(glyph, 260);
 
-  const rerender = () => renderHangulWriting();
-  el.querySelector("#writingBackToUnits").addEventListener("click", () => {
-    hangulWritingState.unitId = null;
-    hangulWritingState.mode = "free";
-    rerender();
-  });
-  el.querySelectorAll("[data-speak]").forEach((btn) => {
-    btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
-  });
-  const watchBtn = el.querySelector("#writingWatch");
-  if (watchBtn) {
-    watchBtn.addEventListener("click", () => {
-      if (guide) watchHangulGuide(canvas, guide);
-    });
-  }
-  const traceToggle = el.querySelector("#writingTraceToggle");
-  if (traceToggle) {
-    traceToggle.addEventListener("click", () => {
-      stopHangulWatch();
-      hangulWritingState.mode = tracing ? "free" : "trace";
-      hangulWritingState.strokes = [];
-      hangulWritingState.checking = false;
-      rerender();
-    });
-  }
-  el.querySelector("#writingGuideToggle").addEventListener("click", () => {
-    hangulWritingState.guideVisible = !hangulWritingState.guideVisible;
-    rerender();
-  });
-  el.querySelector("#writingUndo").addEventListener("click", () => {
-    hangulWritingState.strokes.pop();
-    hangulWritingState.checking = false;
-    rerender();
-  });
-  el.querySelector("#writingClear").addEventListener("click", () => {
-    hangulWritingState.strokes = [];
-    hangulWritingState.checking = false;
-    rerender();
-  });
-  el.querySelector("#writingCheck").addEventListener("click", () => {
-    // W2 (plan §7.7): advisory heuristic verdict shown in the check row. A
-    // null grade (no stroke guide) keeps the plain W0 self-check wording.
+  el.querySelector("#writingMenu").addEventListener("click", () => {
     stopHangulWatch();
-    hangulWritingState.lastGrade = gradeHangulDrawing(
-      glyph,
-      hangulWritingState.strokes.map((stroke) => normalizeHangulInkStroke(stroke, canvas))
-    );
-    hangulWritingState.checking = true;
-    rerender();
+    hangulWritingState.unitId = null;
+    renderHangulWriting();
   });
-  el.querySelector("#writingAgain").addEventListener("click", () => {
-    recordHangulWritingResult(glyph, "again");
-    hangulWritingState.strokes = [];
-    hangulWritingState.checking = false;
-    hangulWritingState.lastGrade = null;
-    rerender();
-  });
-  el.querySelector("#writingGotIt").addEventListener("click", () => {
-    recordHangulWritingResult(glyph, "got-it");
-    hangulWritingState.strokes = [];
-    hangulWritingState.checking = false;
-    hangulWritingState.lastGrade = null;
-    hangulWritingState.mode = "free";
-    hangulWritingState.glyphIndex = (hangulWritingState.glyphIndex + 1) % unit.glyphs.length;
-    rerender();
+  el.querySelector("#writingHelp").addEventListener("click", () => {
+    // Help!: play the stroke demo once, then it fades and the learner is
+    // back to a blank canvas (their accepted ink is redrawn). Not an attempt.
+    if (guide && !hangulWritingState.celebrating) watchHangulGuide(canvas, guide);
   });
 }
 
