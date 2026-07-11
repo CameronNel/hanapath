@@ -1,12 +1,12 @@
-// [2026-07-11] Cache bumped to v331: Sentences player alignment and compact summaries.
-const CACHE_NAME = "hanapath-shell-v331";
+// [2026-07-11] Cache bumped to v335: Alphabet practice hub and shared card shell.
+const CACHE_NAME = "hanapath-shell-v335";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260711e",
+  "./styles.css?v=20260711f",
   "./lib/hangul.js",
   "./audio_map.js?v=20260709g",
   "./words_curated_core.js?v=20260705e",
@@ -16,7 +16,7 @@ const APP_SHELL = [
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260711o",
   "./hangul_strokes.js?v=20260710a",
-  "./app.js?v=20260711i",
+  "./app.js?v=20260711m",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

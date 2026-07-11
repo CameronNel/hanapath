@@ -7226,23 +7226,21 @@ function vocabularyStageRowsHtml() {
 function alphabetStagesSectionHtml() {
   const progress = getLearnProgress("alphabet");
   return `
-    <div class="card word-section-card" data-alphabet-section="stages" role="button" tabindex="0">
+    <button class="card word-section-card" type="button" data-alphabet-section="stages">
       <div>
         <div class="eyebrow">Stages</div>
         <div class="study-row-ko">Alphabet stages</div>
         <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo("alphabet", progress.currentStage).detail)}`}</div>
       </div>
-      <div class="flex gap-8" style="align-items:center; flex-wrap:wrap; justify-content:flex-end;">
-        <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
-        ${TEST_ENABLE_WORD_SECTION_COMPLETION ? '<button class="button secondary compact" type="button" data-complete-alphabet-section>Complete section (test)</button>' : ""}
-      </div>
-    </div>
+      <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
+    </button>
+    ${TEST_ENABLE_WORD_SECTION_COMPLETION ? '<button class="button secondary compact" type="button" data-complete-alphabet-section>Complete section (test)</button>' : ""}
   `;
 }
 
 function alphabetStageRowsHtml() {
   const progress = getLearnProgress("alphabet");
-  return Array.from({ length: progress.total }, (_, index) => {
+  const items = Array.from({ length: progress.total }, (_, index) => {
     const stageNumber = index + 1;
     const stageInfo = getLearnStageInfo("alphabet", stageNumber);
     const status = getLearnStageStatus("alphabet", stageNumber);
@@ -7254,7 +7252,7 @@ function alphabetStageRowsHtml() {
     const dotClass = complete ? "done" : current ? "next" : "lock";
     const dotText = complete ? String.fromCharCode(10003) : String(stageNumber).padStart(2, "0");
     const lockHint = locked ? ` data-locked-stage="${stageNumber}"` : "";
-    return `
+    return { status, html: `
       <button class="study-row stage-row ${status}" type="button" data-learn-stage="${stageNumber}"${lockHint}>
         <span class="unit-dot ${dotClass}">${escapeHtml(dotText)}</span>
         <div>
@@ -7263,8 +7261,17 @@ function alphabetStageRowsHtml() {
         </div>
         <span class="pill ${pillClass}">${pillLabel}</span>
       </button>
-    `;
-  }).join("");
+    ` };
+  });
+  const current = items.filter((item) => item.status === "current");
+  const complete = items.filter((item) => item.status === "complete");
+  const locked = items.filter((item) => item.status === "locked");
+  const group = (label, rows, className) => rows.length
+    ? `<details class="stage-collapse ${className}"><summary>${escapeHtml(label)} <span class="pill muted">${rows.length}</span></summary><div class="study-list">${rows.map((item) => item.html).join("")}</div></details>`
+    : "";
+  return `${current.length ? `<div class="study-list stage-current-list">${current.map((item) => item.html).join("")}</div>` : ""}
+    ${group("Completed stages", complete, "is-complete")}
+    ${group("Locked stages", locked, "is-locked")}`;
 }
 
 function getWordLessonPathMeta(lesson, now = Date.now()) {
@@ -7800,7 +7807,7 @@ function renderQuizCard(scope) {
         <div class="rev-stat"><span class="sv" id="${ids.round}">${state.round}</span><span class="sl">Round</span></div>
         <div class="rev-stat"><span class="sv" id="${ids.streak}">${state.streak}</span><span class="sl">Streak</span></div>
         <div class="rev-stat"><span class="sv" id="${ids.best}">${state.bestStreak}</span><span class="sl">Best</span></div>
-        <div class="rev-stat"><span class="sv" id="${ids.accuracy}">${state.asked === 0 ? "0%" : Math.round(state.correct / state.asked * 100) + "%"}</span><span class="sl">Accuracy</span></div>
+        <div class="rev-stat"><span class="sv" id="${ids.accuracy}">${state.asked === 0 ? "0%" : Math.min(100, Math.round(state.correct / state.asked * 100)) + "%"}</span><span class="sl">Accuracy</span></div>
       </div>
 
       <div class="quiz-card">
@@ -8298,7 +8305,7 @@ function getMasteryLabel(correct) {
 }
 
 function updateStats() {
-  const accuracy = state.asked === 0 ? 0 : Math.round((state.correct / state.asked) * 100);
+  const accuracy = state.asked === 0 ? 0 : Math.min(100, Math.round((state.correct / state.asked) * 100));
   const ids = getQuizIds(getCurrentQuizScope());
   const rnd = document.getElementById(ids.round);
   const str = document.getElementById(ids.streak);
@@ -9490,6 +9497,17 @@ function phaseOneReferenceButtonHtml() {
   return '<div class="phase-one-reference-row" style="margin: 16px 0 0; display: flex; justify-content: center;">' +
     '<button class="button secondary compact" type="button" data-checkpoint-open-reference style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">📖 View Alphabet Reference</button>' +
     '</div>';
+}
+
+function alphabetPracticeProgressHtml(label, current = 0, total = 0) {
+  const safeTotal = Math.max(0, Number(total) || 0);
+  const safeCurrent = safeTotal ? Math.min(safeTotal, Math.max(0, Number(current) || 0)) : 0;
+  const pct = safeTotal ? Math.round((safeCurrent / safeTotal) * 100) : 0;
+  const progressLabel = safeTotal ? `${label} · ${safeCurrent} of ${safeTotal}` : label;
+  return `<div class="word-card-progress-row alphabet-practice-progress">
+    <div class="word-card-progress-tile"><div class="eyebrow">${escapeHtml(progressLabel)}</div><div class="word-card-progress-track" aria-hidden="true"><span style="width:${pct}%;"></span></div></div>
+    <button class="button secondary compact word-card-bank-button alphabet-reference-button" type="button" data-checkpoint-open-reference>📚 Reference</button>
+  </div>`;
 }
 
 function bindAlphabetReferenceButtons(container) {
@@ -10706,12 +10724,12 @@ function renderDrillAudioButtons(question) {
 function renderAlphabetDrillLab() {
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
-  activeHub = "learn";
-  setNavActive("learn");
+  activeHub = "practice";
+  setNavActive("practice");
   drillSession = null;
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("learn", "Alphabet Drill Lab", () => openLearnStageMenu("alphabet"), "Alphabet");
+  showDetailBarWithBack("practice", "Alphabet Drill Lab", () => renderAlphabetPracticeHub(), "Alphabet practice");
   const modeBtns = DRILL_MODES.map((mo, i) =>
     `<button class="drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}" aria-pressed="${i === 0}">
        <div class="study-row-ko">${escapeHtml(mo.label)}</div>
@@ -10726,10 +10744,10 @@ function renderAlphabetDrillLab() {
   if (!state.drillLabSeen) { state.drillLabSeen = true; saveState(); }
   el.innerHTML = `
     <div class="card drill-lab-hero">
+      ${alphabetPracticeProgressHtml("Drill Lab")}
       <div class="eyebrow">Practice · Hangul forever</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Alphabet Drill Lab</h2>
       <div class="screen-sub" style="margin-bottom:0;">Infinite Hangul drills. Pick a mode and a session length.${weakCount ? ` You have <strong>${weakCount}</strong> weak spot${weakCount === 1 ? "" : "s"} logged.` : ""}</div>
-      ${phaseOneReferenceButtonHtml()}
     </div>
     ${firstOpenHint}
     <div class="card drill-lab-picker">
@@ -10767,12 +10785,11 @@ function renderDrillQuestion() {
   const el = showScreen("detail");
   if (!el) return;
   const modeLabel = (DRILL_MODES.find((m) => m.id === s.mode) || {}).label || "Drill";
-  showDetailBarWithBack("learn", modeLabel, () => renderAlphabetDrillLab(), "Drill Lab");
+  showDetailBarWithBack("practice", modeLabel, () => renderAlphabetDrillLab(), "Drill Lab");
   const q = s.current = makeDrillQuestion(s.mode);
   s.answered = false;
   s.buildFilled = [];
   const isBuild = q.interaction === "build";
-  const progress = s.total === Infinity ? `${s.asked + 1}` : `${s.asked + 1} / ${s.total}`;
   const visualSpeakText = getDrillWholeAudioText(q);
   const visualHtml = q.visual && visualSpeakText
     ? `<button class="quiz-visual drill-visual-button" type="button" data-speak="${escapeHtml(visualSpeakText)}" aria-label="Hear ${escapeHtml(visualSpeakText)}"><span>${q.visual}</span></button>`
@@ -10792,18 +10809,18 @@ function renderDrillQuestion() {
          ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" lang="ko">${escapeHtml(o)}</button>`).join("")}
        </div>`;
   el.innerHTML = `
-    <div class="card">
-      <div class="lesson-step-row"><span>${escapeHtml(modeLabel)} · ${progress}</span><strong>${s.correct} correct · streak ${s.streak}</strong></div>
+    <div class="card word-card alphabet-practice-card">
+      ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total)}
+      <div class="alphabet-practice-status">${s.correct} correct · streak ${s.streak}</div>
       ${visualHtml}
       <div class="drill-audio-row">
         ${renderDrillAudioButtons(q)}
-        ${phaseOneReferenceButtonHtml()}
       </div>
       <h3 class="screen-title" style="font-size:1.05rem;margin-bottom:4px;">${escapeHtml(q.prompt)}</h3>
       ${q.detail ? `<div class="screen-sub">${escapeHtml(q.detail)}</div>` : ""}
       ${interactiveHtml}
       <div class="lesson-feedback" id="drillFeedback" aria-live="polite"></div>
-      <div class="flex-between" style="margin-top:12px;gap:10px;">
+      <div class="word-card-actions word-card-nav-actions">
         <button class="button secondary compact" type="button" id="drillEndBtn">End session</button>
         <button class="button primary compact" type="button" id="drillNextBtn" disabled>Next</button>
       </div>
@@ -10936,7 +10953,7 @@ function renderDrillResult() {
   if (!s) return renderAlphabetDrillLab();
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("learn", "Drill complete", () => renderAlphabetDrillLab(), "Drill Lab");
+  showDetailBarWithBack("practice", "Drill complete", () => renderAlphabetDrillLab(), "Drill Lab");
   // `asked` counts questions already advanced past. On a natural finish it equals
   // the session length; on an early End-session the current question counts only
   // if it was answered. (Never +1 on natural completion, which would double-count.)
@@ -10944,16 +10961,20 @@ function renderDrillResult() {
   const accuracy = total ? Math.round((s.correct / total) * 100) : 0;
   const missedList = Object.entries(s.missed).sort((a, b) => b[1] - a[1]).map(([j]) => j);
   el.innerHTML = `
-    <div class="card" style="text-align:center;">
+    <div class="card word-card alphabet-practice-card">
       <div class="eyebrow">Drill complete</div>
       <h2 class="screen-title" style="margin:6px 0 4px;">${accuracy}% accuracy</h2>
       <div class="screen-sub">${s.correct} / ${total} correct · best streak ${s.bestStreak}</div>
       ${missedList.length
         ? `<div class="screen-sub" style="margin-top:10px;">Weak spots this session: <strong lang="ko">${missedList.map(escapeHtml).join(" ")}</strong></div>`
         : `<div class="screen-sub" style="margin-top:10px;">No misses — clean run! 🎉</div>`}
-      <div class="flex-between" style="gap:10px;margin-top:16px;">
-        <button class="button secondary full" type="button" id="drillAgainBtn">Back to Drill Lab</button>
-        <button class="button primary full" type="button" id="drillRepeatBtn">Run it again</button>
+      <div class="word-result-grid sentence-result-grid">
+        <div class="stat-box"><span class="sv">${s.correct}/${total}</span><span class="sl">Correct</span></div>
+        <div class="stat-box"><span class="sv">${s.bestStreak}</span><span class="sl">Best streak</span></div>
+      </div>
+      <div class="word-card-actions word-card-nav-actions">
+        <button class="button secondary compact" type="button" id="drillAgainBtn">Back to Drill Lab</button>
+        <button class="button primary compact" type="button" id="drillRepeatBtn">Run it again</button>
       </div>
     </div>`;
   document.getElementById("drillAgainBtn").addEventListener("click", () => renderAlphabetDrillLab());
@@ -10962,7 +10983,7 @@ function renderDrillResult() {
 
 function openAlphabetDrillLab() {
   refreshProgressionState();
-  state.route = { hub: "learn", item: "alphabet", stage: null };
+  state.route = { hub: "practice", item: "alphabet", stage: null };
   saveState();
   renderAlphabetDrillLab();
 }
@@ -12563,12 +12584,10 @@ const HUB_DEFS = {
     title: "Pick something to practise",
     sub: "Quick quizzes that bring the material back in different forms.",
     items: [
-      { id: "alphabet",   icon: "🎯", title: "Alphabet quiz",   sub: "Match letters to their sounds.", custom: "alphabetPractice" },
+      { id: "alphabet",   icon: "🎯", title: "Alphabet practice", sub: "Review letters, take a quiz, or open Drill Lab.", custom: "alphabetPracticeHub" },
       { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
       { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Review due lines or choose a sentence drill.", target: "practice" },
       { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
-      { id: "pronunciation", icon: "🎧", title: "Pronunciation drill", sub: "Train your ears on tensed/aspirated consonants & minimal pairs.", custom: "pronunciationDrill" },
-      { id: "writing", icon: "✍️", title: "Hangul writing", sub: "Draw letters and syllable blocks by hand.", custom: "hangulWriting" },
     ],
   },
   progress: {
@@ -13009,32 +13028,6 @@ function renderLearnStageMenu(itemId) {
     : "";
   const wordPathHtml = itemId === "vocabulary" ? wordLessonsSectionHtml() : "";
 
-  // Alphabet Drill Lab: permanent, unlocked once the mastery test is done.
-  const drillLabHtml = itemId === "alphabet" && (progress.complete || TEST_UNLOCK_ALL_STAGES)
-    ? `
-    <button class="card alpha-board-entry" type="button" id="openDrillLab">
-      <div class="alpha-board-entry-main">
-        <div class="eyebrow">Practice · Forever</div>
-        <div class="study-row-ko">Alphabet Drill Lab</div>
-        <div class="screen-sub" style="margin-bottom:0;">Infinite Hangul drills — mixed, build, split, letters, batchim, weak spots.</div>
-      </div>
-      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">∞</span>
-    </button>`
-    : "";
-
-  const letterDue = itemId === "alphabet" ? getDueLetterCount() : 0;
-  const letterReviewHtml = letterDue
-    ? `
-    <div class="card letter-review-banner">
-      <div class="flex-between" style="gap:16px;">
-        <div style="display:flex;flex-direction:column;gap:4px;">
-          <div class="eyebrow">Make it stick</div>
-          <div class="screen-sub" style="margin-bottom:0;">${letterDue} letter${letterDue === 1 ? "" : "s"} ready for spaced review.</div>
-        </div>
-        <button class="button primary compact" type="button" id="stageLetterReviewBtn" style="white-space:nowrap;flex-shrink:0;">Review (${letterDue})</button>
-      </div>
-    </div>`
-    : "";
   const stagesHtml = itemId === "vocabulary"
     ? vocabularyStagesSectionHtml()
     : itemId === "alphabet"
@@ -13058,7 +13051,6 @@ function renderLearnStageMenu(itemId) {
     <div class="alphabet-menu-grid">
       ${fullAlphabetHtml}
       ${stagesHtml}
-      ${drillLabHtml}
     </div>`
     : "";
 
@@ -13067,7 +13059,6 @@ function renderLearnStageMenu(itemId) {
       <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
       <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
     </div>
-    ${letterReviewHtml}
     ${itemId === "alphabet" ? alphabetGridHtml : `
       ${wordBankHtml}
       ${wordBasicsHtml}
@@ -13088,8 +13079,6 @@ function renderLearnStageMenu(itemId) {
       openLearnStage(itemId, Number(btn.dataset.learnStage));
     });
   });
-  const stageLetterReviewBtn = document.getElementById("stageLetterReviewBtn");
-  if (stageLetterReviewBtn) stageLetterReviewBtn.addEventListener("click", () => startLetterReview());
   const completeAlphabetBtn = el.querySelector("[data-complete-alphabet-section]");
   if (completeAlphabetBtn) completeAlphabetBtn.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -13099,8 +13088,6 @@ function renderLearnStageMenu(itemId) {
   // [2026-06-29] Wire the full-alphabet entry card.
   const entireAlphabetBtn = document.getElementById("openEntireAlphabet");
   if (entireAlphabetBtn) entireAlphabetBtn.addEventListener("click", () => openEntireAlphabet());
-  const drillLabBtn = document.getElementById("openDrillLab");
-  if (drillLabBtn) drillLabBtn.addEventListener("click", () => openAlphabetDrillLab());
   if (itemId === "alphabet") {
     bindAlphabetSectionCards(el);
   }
@@ -13189,6 +13176,10 @@ function openHubItem(hub, itemId) {
     } else {
       renderAlphabetLearn(); // Hangul finished — show the letter reference.
     }
+    return;
+  }
+  if (item.custom === "alphabetPracticeHub") {
+    renderAlphabetPracticeHub();
     return;
   }
   if (item.custom === "alphabetPractice") {
@@ -13644,6 +13635,43 @@ function renderAlphabetLearn() {
   });
 }
 
+function renderAlphabetPracticeHub() {
+  refreshProgressionState();
+  currentQuizScope = "alphabet";
+  state.studio = "alphabet";
+  activeHub = "practice";
+  setNavActive("practice");
+  state.route = { hub: "practice", item: "alphabet", stage: null };
+  saveState();
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("practice", "Alphabet practice", () => goHub("practice"), "Practice");
+  const due = getDueLetterCount();
+  const mastered = getAlphabetProgress().complete || TEST_UNLOCK_ALL_STAGES;
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Practice · Alphabet</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Choose a practice</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Review what is due, test recognition, or practise reading and writing freely.</div>
+    </div>
+    ${due ? `<button class="card word-section-card" type="button" data-alphabet-practice="review"><div><div class="eyebrow">Make it stick</div><div class="study-row-ko">Letter review</div><div class="screen-sub" style="margin-bottom:0;">${due} letter${due === 1 ? "" : "s"} ready for spaced review.</div></div><span class="pill accent">${due} due</span></button>` : ""}
+    <button class="card word-section-card" type="button" data-alphabet-practice="quiz"><div><div class="eyebrow">Quick check</div><div class="study-row-ko">Alphabet quiz</div><div class="screen-sub" style="margin-bottom:0;">Match each Hangul letter to its sound.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가</span></button>
+    ${mastered ? `<button class="card word-section-card" type="button" data-alphabet-practice="drill"><div><div class="eyebrow">Practice · Forever</div><div class="study-row-ko">Alphabet Drill Lab</div><div class="screen-sub" style="margin-bottom:0;">Mixed, build, split, letters, batchim, and weak spots.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">∞</span></button>` : ""}
+    <button class="card word-section-card" type="button" data-alphabet-practice="pronunciation"><div><div class="eyebrow">Listen closely</div><div class="study-row-ko">Pronunciation drill</div><div class="screen-sub" style="margin-bottom:0;">Train tense, aspirated, and plain consonant contrasts.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">🎧</span></button>
+    <button class="card word-section-card" type="button" data-alphabet-practice="writing"><div><div class="eyebrow">Write it</div><div class="study-row-ko">Hangul writing</div><div class="screen-sub" style="margin-bottom:0;">Draw letters and syllable blocks by hand.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">✍</span></button>
+  `;
+  el.querySelectorAll("[data-alphabet-practice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.alphabetPractice;
+      if (action === "review") startLetterReview();
+      else if (action === "quiz") renderAlphabetPractice();
+      else if (action === "drill") openAlphabetDrillLab();
+      else if (action === "pronunciation") renderPronunciationDrill();
+      else if (action === "writing") renderHangulWriting();
+    });
+  });
+}
+
 function renderAlphabetPractice() {
   refreshProgressionState();
   currentQuizScope = "alphabet";
@@ -13652,14 +13680,17 @@ function renderAlphabetPractice() {
   activeTab = "today";
   const el = showScreen("detail");
   if (!el) return;
+  showDetailBarWithBack("practice", "Alphabet quiz", () => renderAlphabetPracticeHub(), "Alphabet practice");
   el.innerHTML = `
-    <div class="card">
+    <div class="card word-card alphabet-practice-card">
+      ${alphabetPracticeProgressHtml("Alphabet quiz")}
       <div class="eyebrow">Practice · Alphabet</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Alphabet quiz</h2>
       <div class="screen-sub" style="margin-bottom:0;">Match each letter to its sound. Press a number key (1–4) or tap an answer.</div>
     </div>
     ${renderQuizCard("alphabet")}
   `;
+  bindAlphabetReferenceButtons(el);
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
@@ -13728,6 +13759,10 @@ let pronDrillState = {
 window.renderPronunciationDrill = function() {
   const el = showScreen("detail");
   if (!el) return;
+  showDetailBarWithBack("practice", pronDrillState.activePairSet ? "Pronunciation drill" : "Pronunciation", () => {
+    pronDrillState.activePairSet = null;
+    renderAlphabetPracticeHub();
+  }, "Alphabet practice");
 
   if (!pronDrillState.activePairSet) {
     // Render set selector menu
@@ -13745,20 +13780,19 @@ window.renderPronunciationDrill = function() {
 
     el.innerHTML = `
       <div class="card">
-        <button class="button secondary compact" type="button" onclick="goHub('practice')">‹ Back to practice</button>
-        <div class="eyebrow" style="margin-top:8px;">Practice · Pronunciation</div>
+        ${alphabetPracticeProgressHtml("Pronunciation")}
+        <div class="eyebrow" style="margin-top:16px;">Practice · Pronunciation</div>
         <h2 class="screen-title" style="margin-bottom:8px;">Pronunciation Drills</h2>
         <div class="screen-sub">Train your ears to distinguish tensed vs lax consonants and open vs rounded vowels. Click a set below to begin.</div>
       </div>
       ${setsHtml}
     `;
+    bindAlphabetReferenceButtons(el);
     return;
   }
 
   // Render active drill question
-  const set = pronDrillState.activePairSet;
   const q = pronDrillState.currentQuestion;
-  const progressPercent = Math.round((pronDrillState.currentIndex / pronDrillState.questionCount) * 100);
 
   let feedbackAreaHtml = "";
   if (pronDrillState.answered) {
@@ -13798,13 +13832,7 @@ window.renderPronunciationDrill = function() {
 
   el.innerHTML = `
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <button class="button secondary compact" type="button" onclick="quitPronDrill()">Quit Drill</button>
-        <span class="fs-xs text-muted-2">Question ${pronDrillState.currentIndex + 1} of ${pronDrillState.questionCount}</span>
-      </div>
-      <div style="height:6px; background:var(--border-color); border-radius:3px; overflow:hidden; margin-bottom:16px;">
-        <div style="width:${progressPercent}%; height:100%; background:var(--accent-text); transition:width 0.3s ease;"></div>
-      </div>
+      ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.currentIndex + 1, pronDrillState.questionCount)}
 
       <div style="text-align:center; padding:24px 0;">
         <button class="button primary" type="button" style="padding:16px 24px; font-size:1.1rem; border-radius:50px;" onclick="speakPronDrillTarget()">
@@ -13818,8 +13846,13 @@ window.renderPronunciationDrill = function() {
       </div>
 
       ${feedbackAreaHtml}
+
+      <div class="alphabet-practice-toolbar">
+        <button class="button secondary" type="button" onclick="quitPronDrill()">End session</button>
+      </div>
     </div>
   `;
+  bindAlphabetReferenceButtons(el);
 }
 
 window.startPronDrill = function(idx) {
@@ -13878,6 +13911,7 @@ window.nextPronDrillQuestion = function() {
       const score = Math.round((pronDrillState.correctCount / pronDrillState.questionCount) * 100);
       el.innerHTML = `
         <div class="card" style="text-align:center; padding:32px 16px;">
+          ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.questionCount, pronDrillState.questionCount)}
           <div class="eyebrow">Drill Complete</div>
           <h2 style="margin:8px 0 16px 0;">Pronunciation Accuracy</h2>
           <div style="font-size:3rem; font-weight:bold; color:var(--accent-text); margin-bottom:12px;">${score}%</div>
@@ -13885,6 +13919,7 @@ window.nextPronDrillQuestion = function() {
           <button class="button primary" type="button" onclick="quitPronDrill()">Finish Drill</button>
         </div>
       `;
+      bindAlphabetReferenceButtons(el);
     }
   } else {
     generatePronDrillQuestion();
@@ -14610,16 +14645,16 @@ function renderHangulWritingUnitPicker(el) {
   }).join("");
 
   el.innerHTML = `
-    <div class="card">
-      <button class="button secondary compact" type="button" id="writingBackToHub">‹ Back to practice</button>
-      <div class="eyebrow" style="margin-top:8px;">Practice · Hangul writing</div>
+    <div class="card word-card alphabet-practice-card">
+      ${alphabetPracticeProgressHtml("Writing practice")}
+      <div class="eyebrow sentence-lesson-kind">Practice · Hangul writing</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Write Hangul by hand</h2>
       <div class="screen-sub" style="margin-bottom:0;">Draw each letter by hand. Units unlock as you finish the matching alphabet stages.</div>
     </div>
     ${unitsHtml}
   `;
 
-  el.querySelector("#writingBackToHub").addEventListener("click", () => goHub("practice"));
+  bindAlphabetReferenceButtons(el);
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exercise = btn.dataset.writingExercise || "shape";
@@ -14651,13 +14686,14 @@ function renderHangulWritingPractice(el, unit) {
   }
 
   el.innerHTML = `
-    <div class="card">
+    <div class="card word-card alphabet-practice-card">
+      ${alphabetPracticeProgressHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization", hangulWritingState.glyphIndex + 1, unit.glyphs.length)}
       <div class="quiz-card">
         <div class="quiz-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span></div>
         <div class="quiz-detail">${escapeHtml(promptTip)}</div>
         <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
         <div class="fs-xs text-muted-2" id="writingTip" role="status" aria-live="polite"></div>
-        <div class="writing-toolbar">
+        <div class="writing-toolbar word-card-nav-actions">
           <button class="button secondary compact" type="button" id="writingMenu">‹ Menu</button>
           <button class="button primary compact" type="button" id="writingHelp">Help!</button>
         </div>
@@ -14665,6 +14701,7 @@ function renderHangulWritingPractice(el, unit) {
     </div>
   `;
 
+  bindAlphabetReferenceButtons(el);
   const canvas = el.querySelector("#writingCanvas");
   drawHangulWritingCanvas(canvas);
   bindHangulWritingCanvas(canvas);
@@ -14690,6 +14727,7 @@ function renderHangulWriting() {
   setNavActive("practice");
   const el = showScreen("detail");
   if (!el) return;
+  showDetailBarWithBack("practice", "Hangul writing", () => renderAlphabetPracticeHub(), "Alphabet practice");
 
   const unit = getHangulWritingUnit();
   if (!unit || !isHangulWritingUnitUnlocked(unit)) {
@@ -14706,31 +14744,32 @@ let letterReview = { queue: [], index: 0, correct: 0, answered: false };
 function startLetterReview() {
   refreshProgressionState();
   letterReview = { queue: getDueLetters(), index: 0, correct: 0, answered: false };
-  activeHub = "learn";
-  setNavActive("learn");
+  activeHub = "practice";
+  setNavActive("practice");
   renderLetterReview();
 }
 
 function renderLetterReview() {
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("learn", "Alphabet review", () => openLearnStageMenu("alphabet"), "Alphabet");
+  showDetailBarWithBack("practice", "Alphabet review", () => renderAlphabetPracticeHub(), "Alphabet practice");
 
   const total = letterReview.queue.length;
   if (!total || letterReview.index >= total) {
     el.innerHTML = `
-      <div class="card" style="text-align:center;">
+      <div class="card word-card alphabet-practice-card">
         <div class="eyebrow">Alphabet review</div>
-        <h2 class="screen-title" style="margin:6px 0 8px;">${total ? "Review complete 🎉" : "All caught up"}</h2>
+        <h2 class="screen-title" style="margin:6px 0 8px;">${total ? "Review complete" : "All caught up"}</h2>
         <div class="screen-sub">${
           total
             ? `You recalled ${letterReview.correct} of ${total} letters. Each one comes back automatically when it's due.`
             : "No letters are due right now. Finish more alphabet stages or check back later."
         }</div>
-        <button class="button primary full" id="letterReviewDone" type="button" style="margin-top:6px;">Back to stages</button>
+        ${total ? `<div class="word-result-grid sentence-result-grid"><div class="stat-box"><span class="sv">${letterReview.correct}/${total}</span><span class="sl">Correct</span></div><div class="stat-box"><span class="sv">${Math.round((letterReview.correct / total) * 100)}%</span><span class="sl">Accuracy</span></div></div>` : ""}
+        <div class="word-card-actions"><button class="button primary compact" id="letterReviewDone" type="button">Back to Alphabet practice</button></div>
       </div>`;
     const done = document.getElementById("letterReviewDone");
-    if (done) done.addEventListener("click", () => openLearnStageMenu("alphabet"));
+    if (done) done.addEventListener("click", () => renderAlphabetPracticeHub());
     return;
   }
 
@@ -14754,14 +14793,8 @@ function renderLetterReview() {
   letterReview.answered = false;
 
   el.innerHTML = `
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Alphabet review</div>
-          <div class="screen-sub" style="margin-bottom:0;">Letter ${letterReview.index + 1} of ${total} due</div>
-        </div>
-        <span class="pill green">Spaced review</span>
-      </div>
+    <div class="card word-card alphabet-practice-card">
+      ${alphabetPracticeProgressHtml("Spaced review", letterReview.index + 1, total)}
       <div class="quiz-card">
         <div class="quiz-visual" lang="ko"><span class="checkpoint-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakableForChunk(letter))}" data-speak="${escapeHtml(speakableForChunk(letter))}" title="Tap to hear">${escapeHtml(letter)}</span></div>
         <div class="quiz-prompt">Which sound does this letter make?</div>
@@ -14773,6 +14806,7 @@ function renderLetterReview() {
       </div>
     </div>`;
 
+  bindAlphabetReferenceButtons(el);
   scheduleAutoSpeak(speakableForChunk(letter), 220);
   bindTapToHearToken(el.querySelector("[data-speak]"));
   el.querySelectorAll("#letterReviewOptions .option").forEach((btn) => {
