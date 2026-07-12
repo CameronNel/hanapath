@@ -3348,6 +3348,17 @@ li { margin-bottom: 4px; }
   gap: 10px;
   margin-top: 2px;
 }
+/* Lesson-complete top row: next-lesson / all-lessons navigation shown on every
+   non-final alphabet lesson (replays included) instead of the celebration. */
+.lesson-complete-nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.lesson-complete-nav .button {
+  flex: 1;
+  min-width: 0;
+}
 
 /* ─── Words section (word bank + guided word lessons) ─────────────────────── */
 /* [2026-07-02] Entire Korean Word Bank, word cards, tiles, and lesson runner. */
