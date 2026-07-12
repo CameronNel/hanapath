@@ -13462,11 +13462,17 @@ function openLearnLesson(
 }
 
 // Inline complete: keep the player in place, replace hpStage with dots + next card.
+// Only the final alphabet lesson gets the "You can read Hangul!" celebration;
+// every other lesson (first run or replay) gets a plain top row of
+// next-lesson / all-lessons navigation so replays stay uncluttered.
 function renderCompleteInPlayer(index) {
   refreshProgressionState();
+  // Some check modes park the hpActions bar in a slot inside the stage; pull
+  // it back out before the innerHTML swap below would destroy it.
+  restorePhaseOneActions();
   const lesson = phaseOneLessons[index];
-  const nextIndex = getFirstIncompletePhaseOneIndex();
-  const next = phaseOneLessons[nextIndex];
+  const isFinalLesson = index === phaseOneLessons.length - 1;
+  const next = phaseOneLessons[index + 1];
 
   showDetailBarWithBack("learn", `Stage ${String(index + 1).padStart(2, "0")}: ${lesson.shortTitle}`, () => openLearnStageMenu("alphabet"), "Alphabet");
 
@@ -13484,48 +13490,61 @@ function renderCompleteInPlayer(index) {
     : "";
 
   if (!els.phaseOneStage) return;
-  els.phaseOneStage.innerHTML =
-    '<div class="lesson-step-row">' +
-    "<span>Done</span>" +
-    '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
-    "</div>" +
-    summaryHtml +
-    '<div class="card alphabet-complete-panel">' +
-    (next
-      ? '<div class="eyebrow">Keep going</div>' +
-        '<h3 class="screen-title" style="margin-bottom:8px;">Next: ' + escapeHtml(next.shortTitle) + "</h3>" +
-        '<div class="screen-sub" style="margin-bottom:12px;">' + escapeHtml(next.goal) + "</div>" +
-        '<button class="button primary compact" type="button" id="learnNextBtn">Start next lesson</button>'
-      : '<div class="eyebrow">Hangul complete</div>' +
-        '<h3 class="screen-title">You can read Hangul! 🎉</h3>' +
-        '<div class="screen-sub">Keep the alphabet sharp with infinite drills, or move on to vocabulary.</div>' +
-        '<div class="alphabet-complete-actions">' +
-        '<button class="button primary compact" type="button" id="learnDrillLabBtn">Open Drill Lab</button>' +
-        '<button class="button secondary compact" type="button" id="learnNextBtn">Start vocabulary</button>' +
-        '</div>'
-    ) +
-    "</div>" +
-    phaseOneReferenceButtonHtml() +
-    (getDueLetterCount()
-      ? '<div class="card"><div class="flex-between">' +
-        "<div><div class=\"eyebrow\">Make it stick</div>" +
-        '<div class="screen-sub" style="margin-bottom:0;">Spaced review of the letters you\'ve learned.</div></div>' +
-        '<button class="button secondary compact" type="button" id="learnLetterReviewBtn">Review letters (' + getDueLetterCount() + ")</button>" +
-        "</div></div>"
-      : ""
-    );
+  els.phaseOneStage.innerHTML = isFinalLesson
+    ? '<div class="lesson-step-row">' +
+      "<span>Done</span>" +
+      '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
+      "</div>" +
+      summaryHtml +
+      '<div class="card alphabet-complete-panel">' +
+      '<div class="eyebrow">Hangul complete</div>' +
+      '<h3 class="screen-title">You can read Hangul! 🎉</h3>' +
+      '<div class="screen-sub">Keep the alphabet sharp with infinite drills, or move on to vocabulary.</div>' +
+      '<div class="alphabet-complete-actions">' +
+      '<button class="button primary compact" type="button" id="learnDrillLabBtn">Open Drill Lab</button>' +
+      '<button class="button secondary compact" type="button" id="learnVocabBtn">Start vocabulary</button>' +
+      "</div></div>" +
+      phaseOneReferenceButtonHtml() +
+      (getDueLetterCount()
+        ? '<div class="card"><div class="flex-between">' +
+          "<div><div class=\"eyebrow\">Make it stick</div>" +
+          '<div class="screen-sub" style="margin-bottom:0;">Spaced review of the letters you\'ve learned.</div></div>' +
+          '<button class="button secondary compact" type="button" id="learnLetterReviewBtn">Review letters (' + getDueLetterCount() + ")</button>" +
+          "</div></div>"
+        : ""
+      )
+    : '<div class="lesson-complete-nav">' +
+      '<button class="button primary compact" type="button" id="learnNextBtn">Next lesson</button>' +
+      '<button class="button secondary compact" type="button" id="learnAllLessonsBtn">All lessons</button>' +
+      "</div>" +
+      '<div class="lesson-step-row">' +
+      "<span>Done</span>" +
+      '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
+      "</div>" +
+      summaryHtml;
 
   const playerHead = els.phaseOnePlayer && els.phaseOnePlayer.querySelector(".player-head");
   if (playerHead) playerHead.style.display = "none";
   if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
   if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
-  if (els.phaseOneBackButton) {
-    els.phaseOneBackButton.textContent = "Return to lessons";
-    els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
+  if (isFinalLesson) {
+    if (els.phaseOneBackButton) {
+      els.phaseOneBackButton.textContent = "Return to lessons";
+      els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
+    }
+  } else {
+    // The top nav row already covers both directions; drop the whole
+    // bottom action bar so nothing dangles under the summary.
+    const actionsRow = document.getElementById("hpActions");
+    if (actionsRow) actionsRow.style.display = "none";
   }
 
   const nextBtn = document.getElementById("learnNextBtn");
-  if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
+  if (nextBtn && next) nextBtn.addEventListener("click", () => openLearnLesson(index + 1));
+  const allLessonsBtn = document.getElementById("learnAllLessonsBtn");
+  if (allLessonsBtn) allLessonsBtn.addEventListener("click", () => openLearnStageMenu("alphabet"));
+  const vocabBtn = document.getElementById("learnVocabBtn");
+  if (vocabBtn) vocabBtn.addEventListener("click", () => startNextLearn());
   const letterReviewBtn = document.getElementById("learnLetterReviewBtn");
   if (letterReviewBtn) letterReviewBtn.addEventListener("click", () => startLetterReview());
   const drillLabBtn = document.getElementById("learnDrillLabBtn");
