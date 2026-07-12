@@ -14816,9 +14816,7 @@ function drawHangulWritingCanvas(canvas) {
 
 function updateHangulWritingControls() {
   const hasInk = hangulWritingState.strokes.length > 0;
-  const undo = document.getElementById("writingUndo");
   const clear = document.getElementById("writingClear");
-  if (undo) undo.disabled = !hasInk || hangulWritingState.celebrating;
   if (clear) clear.disabled = !hasInk || hangulWritingState.celebrating;
 }
 
@@ -15013,6 +15011,9 @@ function renderHangulWritingUnitPicker(el) {
 function renderHangulWritingPractice(el, unit) {
   const glyph = unit.glyphs[hangulWritingState.glyphIndex];
   const guide = getHangulStrokeGuide(glyph);
+  const progressCurrent = hangulWritingState.glyphIndex + 1;
+  const progressTotal = unit.glyphs.length;
+  const progressPercent = Math.round((progressCurrent / progressTotal) * 100);
 
   // The prompt is ONLY the required cue for the exercise — the glyph (shape),
   // a speaker (sound), or the romanization — using the same tap-to-hear token
@@ -15032,20 +15033,25 @@ function renderHangulWritingPractice(el, unit) {
   }
 
   el.innerHTML = `
-    <div class="card word-card alphabet-practice-card">
-      ${alphabetPracticeProgressHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization", hangulWritingState.glyphIndex + 1, unit.glyphs.length)}
-      <div class="quiz-card">
-        <div class="quiz-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span></div>
+    <div class="card word-card alphabet-practice-card writing-practice-card">
+      <div class="writing-practice-header">
+        <div class="writing-progress-tile">
+          <div class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")}</div>
+          <div class="writing-progress-count">${progressCurrent} of ${progressTotal}</div>
+          <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPercent}%;"></span></div>
+        </div>
+        <button class="button primary writing-next-tile" type="button" id="writingNext">Next <span aria-hidden="true">›</span></button>
+      </div>
+      <div class="quiz-card writing-quiz-card">
+        <div class="quiz-visual writing-prompt-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span></div>
         <div class="quiz-detail">${escapeHtml(promptTip)}</div>
-        <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
+        <div class="writing-canvas-wrap">
+          <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
+          <button class="writing-canvas-action writing-canvas-clear" type="button" id="writingClear" disabled>Erase all</button>
+          <button class="writing-canvas-action writing-canvas-help" type="button" id="writingHelp">Help</button>
+        </div>
         <div class="writing-recognition" id="writingRecognition" role="status" aria-live="polite">
           <span class="writing-recognition-message">Write with your finger or stylus.</span>
-        </div>
-        <div class="writing-toolbar word-card-nav-actions">
-          <button class="button secondary compact" type="button" id="writingMenu">‹ Menu</button>
-          <button class="button secondary compact" type="button" id="writingUndo" disabled>Undo</button>
-          <button class="button secondary compact" type="button" id="writingClear" disabled>Clear</button>
-          <button class="button primary compact" type="button" id="writingHelp">Help!</button>
         </div>
       </div>
     </div>
@@ -15059,21 +15065,17 @@ function renderHangulWritingPractice(el, unit) {
   bindTapToHearToken(el.querySelector("[data-speak]"));
   if (exercise === "sound") scheduleAutoSpeak(glyph, 260);
 
-  el.querySelector("#writingMenu").addEventListener("click", () => {
+  el.querySelector("#writingNext").addEventListener("click", () => {
+    if (hangulWritingState.celebrating) return;
     clearHangulRecognitionTimer();
     stopHangulWatch();
-    hangulWritingState.unitId = null;
+    hangulWritingState.strokes = [];
+    if (hangulWritingState.glyphIndex + 1 >= unit.glyphs.length) {
+      hangulWritingState.unitId = null;
+    } else {
+      hangulWritingState.glyphIndex += 1;
+    }
     renderHangulWriting();
-  });
-  el.querySelector("#writingUndo").addEventListener("click", () => {
-    if (hangulWritingState.celebrating || !hangulWritingState.strokes.length) return;
-    clearHangulRecognitionTimer();
-    stopHangulWatch();
-    hangulWritingState.strokes.pop();
-    drawHangulWritingCanvas(canvas);
-    updateHangulWritingControls();
-    if (hangulWritingState.strokes.length) scheduleHangulWritingRecognition(canvas, glyph, unit);
-    else setHangulRecognitionFeedback("Write with your finger or stylus.");
   });
   el.querySelector("#writingClear").addEventListener("click", () => {
     if (hangulWritingState.celebrating) return;
