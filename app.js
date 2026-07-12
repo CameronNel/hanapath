@@ -3018,6 +3018,8 @@ function loadState() {
     wordQuickRefActive: false,
     wordQuickRefReturn: null,
     letterSrs: {},
+    // Recent completed Hangul-writing sessions for learner-facing comparisons.
+    hangulWritingHistory: [],
     // Sentences section (docs/SENTENCES_TEACHING_SPEC.md): chosen difficulty
     // band, per-sentence practice records, and a session counter. Additive —
     // older saved states get the defaults via getSentencesProgress().
@@ -14210,9 +14212,19 @@ let hangulWritingState = {
   unitId: null,
   glyphIndex: 0,
   exercise: "shape", // "shape" (copy the glyph) | "sound" (write what you hear) | "roman" (write from romanization)
+  repeatTarget: 1,
+  repeatIndex: 0,
   strokes: [], // meaningful learner ink; taps/interrupted pointers are discarded
   animating: false, // Help! demo playing
   celebrating: false, // result sheet open; drawing input is blocked
+  startedAt: null,
+  activeSince: null,
+  elapsedMs: 0,
+  attempts: 0,
+  successes: 0,
+  retries: 0,
+  glyphStats: {},
+  completedSummary: null,
 };
 let hangulRecognitionTimer = null;
 let hangulWritingRecognizerCache = null;
@@ -14226,9 +14238,19 @@ function resetHangulWritingSession() {
     unitId: null,
     glyphIndex: 0,
     exercise: "shape",
+    repeatTarget: 1,
+    repeatIndex: 0,
     strokes: [],
     animating: false,
     celebrating: false,
+    startedAt: null,
+    activeSince: null,
+    elapsedMs: 0,
+    attempts: 0,
+    successes: 0,
+    retries: 0,
+    glyphStats: {},
+    completedSummary: null,
   };
 }
 
@@ -14243,9 +14265,22 @@ function hasActiveHangulWritingSession() {
   );
 }
 
+function pauseHangulWritingSessionTimer() {
+  if (!hangulWritingState.activeSince) return;
+  hangulWritingState.elapsedMs += Math.max(0, Date.now() - hangulWritingState.activeSince);
+  hangulWritingState.activeSince = null;
+}
+
+function resumeHangulWritingSessionTimer() {
+  if (hasActiveHangulWritingSession() && !hangulWritingState.activeSince) {
+    hangulWritingState.activeSince = Date.now();
+  }
+}
+
 function leaveHangulWritingSession() {
   clearHangulRecognitionTimer();
   stopHangulWatch();
+  pauseHangulWritingSessionTimer();
   if (hangulWritingState.celebrating) hangulWritingState.strokes = [];
   hangulWritingState.celebrating = false;
   hangulWritingState.animating = false;
@@ -14260,6 +14295,7 @@ function renderHangulWritingReentryPrompt() {
     return;
   }
   const glyph = unit.glyphs[hangulWritingState.glyphIndex] || "";
+  pauseHangulWritingSessionTimer();
   const exerciseLabel = hangulWritingState.exercise === "sound"
     ? "Write from sound"
     : hangulWritingState.exercise === "roman"
@@ -14273,7 +14309,7 @@ function renderHangulWritingReentryPrompt() {
       <div class="eyebrow">Writing session paused</div>
       <div class="writing-reentry-glyph" lang="ko">${escapeHtml(glyph)}</div>
       <h2 class="screen-title">Continue where you left off?</h2>
-      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)} · ${hangulWritingState.glyphIndex + 1} of ${unit.glyphs.length}</div>
+      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)} · ${hangulWritingState.repeatTarget}× · ${hangulWritingState.glyphIndex + 1} of ${unit.glyphs.length}</div>
       <div class="writing-reentry-actions">
         <button class="button secondary" type="button" id="writingStartNew">Start new session</button>
         <button class="button primary" type="button" id="writingContinue">Continue session</button>
@@ -14285,7 +14321,10 @@ function renderHangulWritingReentryPrompt() {
     resetHangulWritingSession();
     renderHangulWriting();
   });
-  el.querySelector("#writingContinue").addEventListener("click", () => renderHangulWriting());
+  el.querySelector("#writingContinue").addEventListener("click", () => {
+    resumeHangulWritingSessionTimer();
+    renderHangulWriting();
+  });
 }
 
 function enterHangulWriting() {
@@ -14456,18 +14495,28 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
   stopHangulWatch();
   hangulWritingState.celebrating = true;
   updateHangulWritingControls();
+  recordHangulWritingResult(glyph, correct ? "great" : "retry");
   if (correct) {
-    recordHangulWritingResult(glyph, "auto-pass");
     showCorrectToast("Well done!");
     window.setTimeout(() => { void speak(glyph); }, 360);
   }
+
+  const repeatsRemain = correct && hangulWritingState.repeatIndex + 1 < hangulWritingState.repeatTarget;
+  const isFinalGlyph = hangulWritingState.glyphIndex + 1 >= unit.glyphs.length;
+  const nextLabel = !correct
+    ? "Try again"
+    : repeatsRemain
+      ? `Again ${hangulWritingState.repeatIndex + 2}/${hangulWritingState.repeatTarget}`
+      : isFinalGlyph
+        ? "Finish"
+        : "Next";
 
   overlay.className = `writing-result-overlay open ${correct ? "correct" : "retry"}`;
   overlay.innerHTML = `
     <div class="writing-result-sheet" role="dialog" aria-modal="true" aria-labelledby="writingResultTitle">
       <div class="writing-result-actions">
         <button class="writing-result-action retry" type="button" id="writingResultRetry">Retry</button>
-        <button class="writing-result-action next" type="button" id="writingResultNext">Next <span aria-hidden="true">›</span></button>
+        <button class="writing-result-action next" type="button" id="writingResultNext">${escapeHtml(nextLabel)} <span aria-hidden="true">›</span></button>
       </div>
       <div class="writing-result-title" id="writingResultTitle">${correct ? "Shape and stroke order locked in" : "One quick correction"}</div>
       <p class="writing-result-copy">${escapeHtml(detail)}</p>
@@ -14486,11 +14535,21 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
   overlay.querySelector("#writingResultNext").addEventListener("click", () => {
     hangulWritingState.celebrating = false;
     hangulWritingState.strokes = [];
-    if (hangulWritingState.glyphIndex + 1 >= unit.glyphs.length) {
-      hangulWritingState.unitId = null;
-    } else {
-      hangulWritingState.glyphIndex += 1;
+    if (!correct) {
+      renderHangulWriting();
+      return;
     }
+    if (hangulWritingState.repeatIndex + 1 < hangulWritingState.repeatTarget) {
+      hangulWritingState.repeatIndex += 1;
+      renderHangulWriting();
+      return;
+    }
+    hangulWritingState.repeatIndex = 0;
+    if (isFinalGlyph) {
+      completeHangulWritingSession(unit);
+      return;
+    }
+    hangulWritingState.glyphIndex += 1;
     renderHangulWriting();
   });
 }
@@ -14928,7 +14987,61 @@ function gradeHangulDrawing(glyph, strokes) {
 }
 
 function recordHangulWritingResult(glyph, verdict) {
-  // OPUS(W3): persist per-glyph writing results (additive hanapath-v1 key).
+  const correct = verdict === "great";
+  hangulWritingState.attempts += 1;
+  if (correct) hangulWritingState.successes += 1;
+  else hangulWritingState.retries += 1;
+  const previous = hangulWritingState.glyphStats[glyph] || { attempts: 0, successes: 0, retries: 0 };
+  hangulWritingState.glyphStats[glyph] = {
+    attempts: previous.attempts + 1,
+    successes: previous.successes + (correct ? 1 : 0),
+    retries: previous.retries + (correct ? 0 : 1),
+  };
+}
+
+function formatHangulWritingDuration(ms) {
+  const totalSeconds = Math.max(1, Math.round((Number(ms) || 0) / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return minutes ? `${minutes}m ${String(seconds).padStart(2, "0")}s` : `${seconds}s`;
+}
+
+function completeHangulWritingSession(unit) {
+  const completedAt = Date.now();
+  pauseHangulWritingSessionTimer();
+  const durationMs = Math.max(0, hangulWritingState.elapsedMs);
+  const history = Array.isArray(state.hangulWritingHistory) ? state.hangulWritingHistory : [];
+  const prior = [...history].reverse().find((entry) =>
+    entry?.unitId === unit.id &&
+    entry?.exercise === hangulWritingState.exercise &&
+    entry?.repeatTarget === hangulWritingState.repeatTarget
+  ) || null;
+  const attempts = Math.max(1, hangulWritingState.attempts);
+  const summary = {
+    id: `writing-${completedAt}`,
+    unitId: unit.id,
+    unitLabel: unit.label,
+    exercise: hangulWritingState.exercise,
+    repeatTarget: hangulWritingState.repeatTarget,
+    glyphs: [...unit.glyphs],
+    attempts: hangulWritingState.attempts,
+    successes: hangulWritingState.successes,
+    retries: hangulWritingState.retries,
+    accuracy: Math.round((hangulWritingState.successes / attempts) * 100),
+    durationMs,
+    completedAt,
+    glyphStats: { ...hangulWritingState.glyphStats },
+    prior,
+  };
+  const stored = { ...summary };
+  delete stored.prior;
+  state.hangulWritingHistory = [...history, stored].slice(-30);
+  saveState();
+  hangulWritingState.unitId = null;
+  hangulWritingState.strokes = [];
+  hangulWritingState.repeatIndex = 0;
+  hangulWritingState.completedSummary = summary;
+  renderHangulWriting();
 }
 
 function drawHangulWritingCanvas(canvas) {
@@ -15102,6 +15215,112 @@ function bindHangulWritingCanvas(canvas) {
   canvas.addEventListener("lostpointercapture", cancelStroke);
 }
 
+function startHangulWritingSession(unit, exercise, repeatTarget) {
+  hangulWritingState = {
+    unitId: unit.id,
+    glyphIndex: 0,
+    exercise,
+    repeatTarget: Math.max(1, Math.min(3, Number(repeatTarget) || 1)),
+    repeatIndex: 0,
+    strokes: [],
+    animating: false,
+    celebrating: false,
+    startedAt: Date.now(),
+    activeSince: Date.now(),
+    elapsedMs: 0,
+    attempts: 0,
+    successes: 0,
+    retries: 0,
+    glyphStats: {},
+    completedSummary: null,
+  };
+  renderHangulWriting();
+}
+
+function renderHangulWritingMultiplierPicker(el, unit, exercise) {
+  const exerciseLabel = exercise === "sound"
+    ? "Write from sound"
+    : exercise === "roman"
+      ? "Write from romanization"
+      : "Copy the shape";
+  el.innerHTML = `
+    <div class="card word-card alphabet-practice-card writing-multiplier-card">
+      <div class="eyebrow">Before you start</div>
+      <h2 class="screen-title">How many repetitions?</h2>
+      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)}. Every glyph must be drawn correctly this many times before you move on.</div>
+      <div class="writing-multiplier-options">
+        <button class="writing-multiplier-option" type="button" data-writing-multiplier="1"><strong>1×</strong><span>One clean pass</span></button>
+        <button class="writing-multiplier-option primary" type="button" data-writing-multiplier="2"><strong>2×</strong><span>Repeat to lock it in</span></button>
+        <button class="writing-multiplier-option" type="button" data-writing-multiplier="3"><strong>3×</strong><span>Deep practice</span></button>
+      </div>
+      <button class="button secondary compact writing-multiplier-back" type="button" id="writingMultiplierBack">Back to units</button>
+    </div>`;
+  el.querySelectorAll("[data-writing-multiplier]").forEach((button) => {
+    button.addEventListener("click", () => startHangulWritingSession(unit, exercise, Number(button.dataset.writingMultiplier)));
+  });
+  el.querySelector("#writingMultiplierBack").addEventListener("click", () => {
+    resetHangulWritingSession();
+    renderHangulWriting();
+  });
+}
+
+function getHangulWritingImprovement(summary) {
+  const prior = summary.prior;
+  if (!prior) return "First run recorded — finish this setup again to see your improvement.";
+  const notes = [];
+  const timeDelta = Number(prior.durationMs) - Number(summary.durationMs);
+  if (Math.abs(timeDelta) >= 1000) {
+    notes.push(timeDelta > 0
+      ? `${formatHangulWritingDuration(timeDelta)} faster`
+      : `${formatHangulWritingDuration(Math.abs(timeDelta))} more practice time`);
+  }
+  const retryDelta = Number(prior.retries || 0) - Number(summary.retries || 0);
+  if (retryDelta) notes.push(retryDelta > 0 ? `${retryDelta} fewer retries` : `${Math.abs(retryDelta)} more retries`);
+  const accuracyDelta = Number(summary.accuracy || 0) - Number(prior.accuracy || 0);
+  if (accuracyDelta) notes.push(`${Math.abs(accuracyDelta)} points ${accuracyDelta > 0 ? "more" : "less"} accurate`);
+  return notes.length ? `Compared with your last matching run: ${notes.join(" · ")}.` : "You matched your previous run — consistency is becoming a habit.";
+}
+
+function renderHangulWritingCompletion(el, summary) {
+  const unit = HANGUL_WRITING_UNITS.find((item) => item.id === summary.unitId) || null;
+  const glyphRows = summary.glyphs.map((glyph) => {
+    const stats = summary.glyphStats[glyph] || { attempts: 0, successes: 0, retries: 0 };
+    return `<div class="writing-summary-detail-row"><span lang="ko">${escapeHtml(glyph)}</span><span>${stats.successes} clean · ${stats.attempts} attempt${stats.attempts === 1 ? "" : "s"} · ${stats.retries} retr${stats.retries === 1 ? "y" : "ies"}</span></div>`;
+  }).join("");
+  el.innerHTML = `
+    <div class="card word-card alphabet-practice-card writing-summary-card">
+      <div class="lesson-complete-cheer writing-summary-cheer">
+        <span class="lesson-complete-streamers" aria-hidden="true">🎉</span>
+        <div><div class="eyebrow">Writing session complete</div><h2 class="screen-title">Brilliant work — those shapes are yours!</h2></div>
+        <span class="lesson-complete-streamers flip" aria-hidden="true">🎉</span>
+      </div>
+      <div class="writing-summary-stats">
+        <div><strong>${formatHangulWritingDuration(summary.durationMs)}</strong><span>Time</span></div>
+        <div><strong>${summary.attempts}</strong><span>Attempts</span></div>
+        <div><strong>${summary.retries}</strong><span>Retries</span></div>
+        <div><strong>${summary.accuracy}%</strong><span>Clean rate</span></div>
+      </div>
+      <div class="writing-summary-drawn"><span>Drawn ${summary.repeatTarget}× each</span><div>${summary.glyphs.map((glyph) => `<span lang="ko">${escapeHtml(glyph)}</span>`).join("")}</div></div>
+      <div class="writing-summary-improvement">${escapeHtml(getHangulWritingImprovement(summary))}</div>
+      <details class="writing-summary-details">
+        <summary>More session detail</summary>
+        <div class="writing-summary-detail-list">${glyphRows}</div>
+      </details>
+      <div class="writing-summary-actions">
+        <button class="button secondary" type="button" id="writingSummaryChoose">Choose another unit</button>
+        <button class="button primary" type="button" id="writingSummaryAgain" ${unit ? "" : "disabled"}>Repeat this session</button>
+      </div>
+    </div>`;
+  el.querySelector("#writingSummaryChoose").addEventListener("click", () => {
+    resetHangulWritingSession();
+    renderHangulWriting();
+  });
+  el.querySelector("#writingSummaryAgain").addEventListener("click", () => {
+    if (!unit) return;
+    startHangulWritingSession(unit, summary.exercise, summary.repeatTarget);
+  });
+}
+
 function renderHangulWritingUnitPicker(el) {
   // Only units whose every glyph has an authored stroke guide are offered —
   // recognition and stroke coaching need that template, so guideless units
@@ -15149,8 +15368,8 @@ function renderHangulWritingUnitPicker(el) {
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exercise = btn.dataset.writingExercise || "shape";
-      hangulWritingState = { unitId: btn.dataset.writingUnit, glyphIndex: 0, exercise, strokes: [], animating: false, celebrating: false };
-      renderHangulWriting();
+      const unit = getHangulWritingUnit(btn.dataset.writingUnit);
+      if (unit) renderHangulWritingMultiplierPicker(el, unit, exercise);
     });
   });
 }
@@ -15160,7 +15379,12 @@ function renderHangulWritingPractice(el, unit) {
   const guide = getHangulStrokeGuide(glyph);
   const progressCurrent = hangulWritingState.glyphIndex + 1;
   const progressTotal = unit.glyphs.length;
-  const progressPercent = Math.round((progressCurrent / progressTotal) * 100);
+  const completedRepetitions = hangulWritingState.glyphIndex * hangulWritingState.repeatTarget + hangulWritingState.repeatIndex;
+  const totalRepetitions = progressTotal * hangulWritingState.repeatTarget;
+  const progressPercent = Math.round(((completedRepetitions + 1) / totalRepetitions) * 100);
+  const repeatProgress = hangulWritingState.repeatTarget > 1
+    ? ` · pass ${hangulWritingState.repeatIndex + 1}/${hangulWritingState.repeatTarget}`
+    : "";
 
   // The prompt is ONLY the required cue for the exercise — the glyph (shape),
   // a speaker (sound), or the romanization — using the same tap-to-hear token
@@ -15181,7 +15405,7 @@ function renderHangulWritingPractice(el, unit) {
     <div class="card word-card alphabet-practice-card writing-practice-card">
       <div class="writing-practice-header">
         <div class="writing-progress-tile">
-          <div class="writing-progress-line"><span class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")}</span><span class="writing-progress-count">${progressCurrent} of ${progressTotal}</span></div>
+          <div class="writing-progress-line"><span class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")}</span><span class="writing-progress-count">${progressCurrent} of ${progressTotal}${repeatProgress}</span></div>
           <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPercent}%;"></span></div>
         </div>
       </div>
@@ -15235,6 +15459,11 @@ function renderHangulWriting() {
   const el = showScreen("detail");
   if (!el) return;
   showDetailBarWithBack("practice", "Hangul writing", () => leaveHangulWritingSession(), "Alphabet practice");
+
+  if (hangulWritingState.completedSummary) {
+    renderHangulWritingCompletion(el, hangulWritingState.completedSummary);
+    return;
+  }
 
   const unit = getHangulWritingUnit();
   if (!unit || !isHangulWritingUnitUnlocked(unit)) {
