@@ -3027,6 +3027,8 @@ function loadState() {
     sentenceLessonSession: null,
     speakDone: false,
     resetArmed: false,
+    // Settings → Theme colors: accent palette id, see THEME_DEFS.
+    theme: "ocean",
   };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -10587,7 +10589,7 @@ function renderEntireAlphabet() {
 
   const resumeBtnHtml = isQuickRef
     ? `<div style="margin-bottom: 16px;">
-         <button class="button primary" type="button" id="resumeActiveLessonBtn" style="font-size: 0.95rem; padding: 10px 20px; background-color: var(--color-accent-blue, #5b9dff); color: white; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; box-shadow: 0 4px 12px rgba(91, 157, 255, 0.3); transition: all 0.2s ease;">🔙 Return to active lesson (Stage ${String(activeLessonIdx + 1).padStart(2, "0")})</button>
+         <button class="button primary" type="button" id="resumeActiveLessonBtn" style="font-size: 0.95rem; padding: 10px 20px; background-color: var(--color-accent-blue, #5b9dff); color: white; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3); transition: all 0.2s ease;">🔙 Return to active lesson (Stage ${String(activeLessonIdx + 1).padStart(2, "0")})</button>
        </div>`
     : "";
 
@@ -12828,6 +12830,35 @@ const HUB_DEFS = {
   },
 };
 
+// Settings → Theme colors. `swatch` paints the picker dot; the real palette
+// lives in styles.css as a matching `:root[data-theme="<id>"]` block
+// ("ocean" is the default palette, so it has no override block).
+const THEME_DEFS = [
+  { id: "ocean",  name: "Ocean Blue",  swatch: "#5b9dff" },
+  { id: "sakura", name: "Sakura Pink", swatch: "#f472b6" },
+  { id: "mint",   name: "Mint Green",  swatch: "#34d399" },
+  { id: "sunset", name: "Sunset",      swatch: "#fb923c" },
+  { id: "violet", name: "Violet",      swatch: "#a78bfa" },
+  { id: "rose",   name: "Rose",        swatch: "#fb7185" },
+  { id: "gold",   name: "Gold",        swatch: "#fbbf24" },
+  { id: "cyan",   name: "Cyan",        swatch: "#22d3ee" },
+];
+
+const SETTINGS_ICON_SVG = `
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>`;
+
+function applyTheme() {
+  const themeId = THEME_DEFS.some((t) => t.id === state.theme) ? state.theme : "ocean";
+  if (themeId === "ocean") {
+    delete document.documentElement.dataset.theme;
+  } else {
+    document.documentElement.dataset.theme = themeId;
+  }
+}
+
 // Legacy nav names (used by in-screen buttons) → {hub, item}.
 const LEGACY_ROUTE = {
   today:     { hub: "learn" },
@@ -13154,10 +13185,65 @@ function renderHubMenu(hub) {
           <span class="hub-tile-go" aria-hidden="true">›</span>
         </button>
       `).join("")}
+      <button class="hub-tile settings-tile" type="button" data-open-settings>
+        <span class="hub-tile-icon">${SETTINGS_ICON_SVG}</span>
+        <span class="hub-tile-text">
+          <strong>Settings</strong>
+          <small>Theme colors and app preferences.</small>
+        </span>
+        <span class="hub-tile-go" aria-hidden="true">›</span>
+      </button>
     </div>
   `;
   el.querySelectorAll("[data-hub-item]").forEach((btn) => {
     btn.addEventListener("click", () => openHubItem(hub, btn.dataset.hubItem));
+  });
+  el.querySelector("[data-open-settings]").addEventListener("click", () => renderSettingsScreen(hub));
+}
+
+// Settings screen (opened from the settings tile on any hub menu). Currently
+// hosts the theme-color picker; new preference sections slot in below it.
+function renderSettingsScreen(hub = activeHub) {
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBar(hub, "Settings");
+
+  const activeTheme = THEME_DEFS.some((t) => t.id === state.theme) ? state.theme : "ocean";
+  el.innerHTML = `
+    <div class="hub-header">
+      <div class="eyebrow">Preferences</div>
+      <h2 class="screen-title" style="margin-bottom:6px;">Settings</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Make HanaPath feel like yours.</div>
+    </div>
+    <div class="settings-section">
+      <h3 class="settings-section-title">Theme colors</h3>
+      <p class="settings-section-sub">Pick an accent color for buttons, glows, and highlights. Applies instantly.</p>
+      <div class="theme-grid">
+        ${THEME_DEFS.map((theme) => `
+          <button class="theme-swatch ${theme.id === activeTheme ? "active" : ""}" type="button"
+            data-theme-pick="${escapeHtml(theme.id)}"
+            style="--swatch:${theme.swatch}; --swatch-glow:${theme.swatch}55;"
+            aria-pressed="${theme.id === activeTheme}">
+            <span class="theme-swatch-dot">${theme.id === activeTheme ? "✓" : ""}</span>
+            <span class="theme-swatch-name">${escapeHtml(theme.name)}</span>
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `;
+
+  el.querySelectorAll("[data-theme-pick]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.theme = btn.dataset.themePick;
+      saveState();
+      applyTheme();
+      el.querySelectorAll("[data-theme-pick]").forEach((b) => {
+        const active = b === btn;
+        b.classList.toggle("active", active);
+        b.setAttribute("aria-pressed", String(active));
+        b.querySelector(".theme-swatch-dot").textContent = active ? "✓" : "";
+      });
+    });
   });
 }
 
@@ -18982,6 +19068,7 @@ function renderProgress() {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 
 async function init() {
+  applyTheme();
   validatePhaseOneLessons();
   backfillLetterSrs();
 
