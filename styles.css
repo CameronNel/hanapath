@@ -777,6 +777,11 @@ input, textarea { cursor: text; }
   margin-bottom: 2px;
 }
 .player-title  { font-size: 1.1rem; font-weight: 800; }
+.player-title-compact {
+  font-size: .92rem;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
 .player-goal   { font-size: .82rem; color: var(--muted); }
 
 .hear-btn {
@@ -833,6 +838,21 @@ input, textarea { cursor: text; }
   letter-spacing: .03em;
   line-height: 1.15;
   text-align: center;
+}
+.concept-visual-paired {
+  flex-wrap: wrap;
+  gap: 10px 6px;
+  padding-left: 12px;
+  padding-right: 12px;
+  overflow-wrap: anywhere;
+  font-size: clamp(2.1rem, 9vw, 4rem);
+}
+.visual-pair {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
 }
 .concept-token,
 .checkpoint-token {

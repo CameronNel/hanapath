@@ -411,6 +411,7 @@ const phaseOneLessons = [
         kicker: "Breath added",
         title: "See the extra strokes in ㅋ, ㅌ, ㅍ, ㅊ",
         visual: "ㄱ→ㅋ  ㄷ→ㅌ  ㅂ→ㅍ  ㅈ→ㅊ",
+        visualLayout: "paired",
         body: "An added stroke often signals a stronger puff of air. Pairing each aspirated shape with its base shape makes both easier to recall.",
         cue: "카 · 타 · 파 · 차",
         voiceText: "카, 타, 파, 차",
@@ -8980,7 +8981,7 @@ function romanizeHangulChunk(chunk, source, matchIndex) {
   return "";
 }
 
-function renderFlashableHangulText(text, className = "concept-token") {
+function renderFlashableHangulText(text, className = "concept-token", { indexOffset = 0 } = {}) {
   const source = String(text || "");
   const pattern = /[가-힣ㄱ-ㅎㅏ-ㅣ]+/g;
   let lastIndex = 0;
@@ -8999,7 +9000,7 @@ function renderFlashableHangulText(text, className = "concept-token") {
     parts.push(
       '<span class="visual-stack">' +
         hintHtml +
-        `<span class="${className} tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakText)}" title="Tap to hear" data-flash-index="${index}" data-speak="${escapeHtml(speakText)}">${escapeHtml(match[0])}</span>` +
+        `<span class="${className} tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakText)}" title="Tap to hear" data-flash-index="${index + indexOffset}" data-speak="${escapeHtml(speakText)}">${escapeHtml(match[0])}</span>` +
       "</span>",
     );
     index += 1;
@@ -9015,6 +9016,30 @@ function renderFlashableHangulText(text, className = "concept-token") {
   }
 
   return { html: parts.join(""), count: index };
+}
+
+function renderFlashableHangulPairs(text, className = "concept-token") {
+  const source = String(text || "");
+  const pattern = /([가-힣ㄱ-ㅎㅏ-ㅣ]+)\s*→\s*([가-힣ㄱ-ㅎㅏ-ㅣ]+)/g;
+  let lastIndex = 0;
+  let indexOffset = 0;
+  const parts = [];
+
+  for (let match = pattern.exec(source); match; match = pattern.exec(source)) {
+    if (match.index > lastIndex && source.slice(lastIndex, match.index).trim()) {
+      parts.push(escapeHtml(source.slice(lastIndex, match.index)));
+    }
+    const pair = renderFlashableHangulText(`${match[1]}→${match[2]}`, className, { indexOffset });
+    parts.push(`<span class="visual-pair">${pair.html}</span>`);
+    indexOffset += pair.count;
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (!parts.length) return renderFlashableHangulText(source, className);
+  if (lastIndex < source.length && source.slice(lastIndex).trim()) {
+    parts.push(escapeHtml(source.slice(lastIndex)));
+  }
+  return { html: parts.join(""), count: indexOffset };
 }
 
 function getPhaseOneFlashTargets() {
@@ -9329,16 +9354,19 @@ function renderWordBreakdown(blocks) {
 function renderPhaseOneConcept(lesson) {
   restorePhaseOneActions();
   const concept = lesson.concepts[phaseOneView.slideIndex];
+  const conceptVisualRenderer = concept.visualLayout === "paired"
+    ? renderFlashableHangulPairs
+    : renderFlashableHangulText;
   const conceptVisualHtml = concept.diagram
     ? renderBlockDiagrams(concept.diagram)
     : concept.wordBreakdown
       ? renderWordBreakdown(concept.wordBreakdown)
-      : renderFlashableHangulText(concept.visual).html;
+      : conceptVisualRenderer(concept.visual).html;
   els.phaseOneStage.innerHTML =
     '<p class="alphabet-hangul-hint" id="alphabetHangulHint">Click any Hangul to hear it</p>' +
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="concept-card">' +
-    '<div class="concept-visual" lang="ko" data-phase-one-visual>' +
+    `<div class="concept-visual${concept.visualLayout === "paired" ? " concept-visual-paired" : ""}" lang="ko" data-phase-one-visual>` +
     conceptVisualHtml +
     "</div>" +
     '<div class="concept-copy">' +
@@ -13282,7 +13310,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
         <div class="alphabet-lesson-heading">
           <div class="alphabet-lesson-heading-line">
             <div class="eyebrow">Alphabet lesson</div>
-            <div class="player-title" id="hpStageTitle"></div>
+            <div class="player-title${lesson?.id === "base-consonants" ? " player-title-compact" : ""}" id="hpStageTitle"></div>
           </div>
         </div>
       </div>
