@@ -1,13 +1,11 @@
 #!/usr/bin/env node
-// Audit Phase One (alphabet) audio coverage.
+// Audit Phase One and permanent Drill Lab alphabet audio coverage.
 //
 // Collects the Korean strings the app will try to speak during the alphabet
-// path — every `voiceText` sequence in phaseOneLessons, plus the per-letter
-// tap-to-hear syllables from HANGUL_JAMO_SPEAK — normalizes them the same way
-// speak() now does (trim + NFC), and checks them against the keys in
-// audio_map.js. Reports required / present / missing tokens, and flags any
-// AUDIO_MAP keys that are not already NFC-normalized (the ones the normalizer
-// now rescues at runtime).
+// path — every `voiceText` sequence in phaseOneLessons, the per-letter
+// tap-to-hear syllables from HANGUL_JAMO_SPEAK, and the Drill Lab's canonical
+// whole-word / closing-sound samples — normalizes them the same way speak()
+// does (trim + NFC), and checks both map coverage and local file existence.
 //
 // Usage: node scripts/audit-alphabet-audio.mjs [--strict] [--allow-missing=앋]
 //   --strict exits non-zero if any unallowed required token is missing.
@@ -72,6 +70,16 @@ function collectRequired() {
     }
   }
 
+  // 3. Drill Lab whole-word samples and isolated closing-sound anchors.
+  for (const objectName of ["BATCHIM_GROUP_SOUND_SPEAK", "BATCHIM_GROUP_WORD_SAMPLE"]) {
+    const block = appSrc.match(new RegExp(`const ${objectName} = \\{[\\s\\S]*?\\n\\};`));
+    if (!block) continue;
+    for (const m of block[0].matchAll(/:\s*("(?:\\.|[^"\\])*")/g)) {
+      const t = norm(JSON.parse(m[1]));
+      if (t) tokens.add(t);
+    }
+  }
+
   return [...tokens];
 }
 
@@ -81,22 +89,29 @@ const allowedMissing = getAllowedMissingTokens(process.argv.slice(2));
 const audioMap = loadAudioMap();
 
 // Index map keys by NFC form (mirrors lookupAudioUrl in app.js).
-const normalizedKeys = new Set(Object.keys(audioMap).map(norm));
+const normalizedEntries = new Map(Object.entries(audioMap).map(([key, value]) => [norm(key), value]));
+const normalizedKeys = new Set(normalizedEntries.keys());
 const nonNormalizedKeys = Object.keys(audioMap).filter((k) => k !== norm(k));
 
 const required = collectRequired();
 const present = required.filter((t) => normalizedKeys.has(t));
 const missing = required.filter((t) => !normalizedKeys.has(t));
 const unallowedMissing = missing.filter((t) => !allowedMissing.has(t));
+const missingFiles = present.filter((token) => {
+  const assetPath = normalizedEntries.get(token);
+  if (typeof assetPath !== "string" || !assetPath.startsWith("./")) return false;
+  return !fs.existsSync(path.join(ROOT, assetPath.slice(2)));
+});
 
-console.log("Phase One alphabet audio audit");
-console.log("==============================");
+console.log("Alphabet audio audit");
+console.log("====================");
 console.log(`audio_map.js keys : ${Object.keys(audioMap).length}`);
 console.log(`required tokens   : ${required.length}`);
 console.log(`present           : ${present.length}`);
 console.log(`missing           : ${missing.length}`);
 console.log(`allowed missing   : ${missing.length - unallowedMissing.length}`);
 console.log(`unallowed missing : ${unallowedMissing.length}`);
+console.log(`missing files     : ${missingFiles.length}`);
 console.log(`non-NFC map keys  : ${nonNormalizedKeys.length} (rescued by normalizeAudioKey at runtime)`);
 
 if (missing.length) {
@@ -111,6 +126,11 @@ if (nonNormalizedKeys.length) {
   for (const k of nonNormalizedKeys.slice(0, 50)) console.log("  - " + JSON.stringify(k));
   if (nonNormalizedKeys.length > 50) console.log(`  …and ${nonNormalizedKeys.length - 50} more`);
 }
+if (missingFiles.length) {
+  console.log("\nMapped audio with missing local files:");
+  for (const t of missingFiles) console.log("  - " + JSON.stringify(t));
+}
 
-console.log(unallowedMissing.length ? "\nResult: unallowed gaps found (see above)." : "\nResult: all required Phase One audio present or explicitly allowed.");
-process.exit(strict && unallowedMissing.length ? 1 : 0);
+const failed = unallowedMissing.length || missingFiles.length;
+console.log(failed ? "\nResult: alphabet audio gaps found (see above)." : "\nResult: all required alphabet and Drill Lab audio is present.");
+process.exit(strict && failed ? 1 : 0);

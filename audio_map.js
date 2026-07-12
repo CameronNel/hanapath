@@ -25367,5 +25367,6 @@ window.AUDIO_MAP = {
   "No sound": "./audio/f0cdd208a20feeff586c3d10be4abf0b.ogg",
   "잘했어요!": "./audio/6e6331ad4d21cbc5ed44ea51c1468592.ogg",
   "한국어로 써 보세요": "./audio/e4763af58ecf6c9454b057ea3a050163.ogg",
-  "들리는 대로 써 보세요": "./audio/f549ddfe2e06693b856948f90ed08297.ogg"
+  "들리는 대로 써 보세요": "./audio/f549ddfe2e06693b856948f90ed08297.ogg",
+  "짓다, 살다, 나다": "./audio/e91bb050a1416b80b586b94b9920139a.ogg"
 };

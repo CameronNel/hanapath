@@ -153,6 +153,15 @@ const BATCHIM_GROUP_SOUND_SPEAK = {
   p: "\uC555",
   ng: "\uC559",
 };
+const BATCHIM_GROUP_WORD_SAMPLE = {
+  k: "국",
+  n: "눈",
+  t: "곧",
+  l: "달",
+  m: "밤",
+  p: "밥",
+  ng: "공",
+};
 
 // [2026-06-29] Romanization standardized to Revised Romanization (single
 // initials) so the atlas matches LETTER_SOUND; fixes the "g / k" vs "g" drift.
@@ -10650,82 +10659,161 @@ function renderEntireAlphabet() {
 // the existing question generators (all produce valid Hangul); adds session
 // lengths, an End-session control, a result screen, and a weak-spot store.
 const DRILL_MODES = [
-  { id: "mixed", label: "Mixed Drill", sub: "A bit of everything" },
-  { id: "build", label: "Build Blocks", sub: "Pick the syllable the jamo make" },
-  { id: "split", label: "Split Blocks", sub: "Break a block into jamo" },
-  { id: "letters", label: "Letters", sub: "Match a letter to its sound" },
-  { id: "batchim", label: "Batchim", sub: "Final consonant sounds" },
-  { id: "weak", label: "Weak Spots", sub: "Your most-missed letters" },
+  { id: "mixed", label: "Mixed Drill", sub: "Build, split, letters, and batchim" },
+  { id: "build", label: "Build Blocks", sub: "Tap jamo in block order" },
+  { id: "split", label: "Split Blocks", sub: "Find each jamo inside a syllable" },
+  { id: "letters", label: "Letters", sub: "Match letters to reading labels" },
+  { id: "batchim", label: "Batchim", sub: "Match finals to closing sounds" },
+  { id: "weak", label: "Weak Spots", sub: "Review your saved trouble spots" },
 ];
 const DRILL_LENGTHS = [5, 10, 20, "∞"];
 let drillSession = null;
 
 function drillPools() { return ALPHABET_QUIZ_POOLS.reading; }
-function recordWeakSpot(jamo) {
-  if (!jamo || !/^[ㄱ-ㅎㅏ-ㅣ]$/.test(jamo)) return;
+function parseWeakSpotId(value) {
+  const raw = String(value || "").trim();
+  const contextual = /^(letter|batchim):([ㄱ-ㅎㅏ-ㅣ])$/.exec(raw);
+  if (contextual) {
+    const [, kind, jamo] = contextual;
+    if (kind === "letter" && !LETTER_SOUND[jamo]) return null;
+    if (kind === "batchim" && !BATCHIM_FINALS.includes(jamo)) return null;
+    return { id: `${kind}:${jamo}`, kind, jamo };
+  }
+  if (!/^[ㄱ-ㅎㅏ-ㅣ]$/.test(raw)) return null;
+  const kind = LETTER_SOUND[raw] ? "letter" : "batchim";
+  if (kind === "batchim" && !BATCHIM_FINALS.includes(raw)) return null;
+  return { id: `${kind}:${raw}`, kind, jamo: raw };
+}
+function weakSpotId(jamo, kind = "letter") {
+  const value = String(jamo || "");
+  if (!/^[ㄱ-ㅎㅏ-ㅣ]$/.test(value)) return "";
+  if (kind === "batchim") return BATCHIM_FINALS.includes(value) ? `batchim:${value}` : "";
+  return LETTER_SOUND[value] ? `letter:${value}` : "";
+}
+function recordWeakSpot(jamo, kind = "letter") {
+  const id = weakSpotId(jamo, kind);
+  if (!id) return;
   const w = state.alphabetWeakSpots || (state.alphabetWeakSpots = {});
-  w[jamo] = (w[jamo] || 0) + 1;
+  w[id] = (Number(w[id]) || 0) + 1;
   saveState();
 }
 function getWeakSpotList() {
   const w = state.alphabetWeakSpots || {};
-  return Object.entries(w).filter(([, c]) => c > 0).sort((a, b) => b[1] - a[1]).map(([j]) => j);
+  const merged = new Map();
+  Object.entries(w).forEach(([rawId, rawCount]) => {
+    const spot = parseWeakSpotId(rawId);
+    const count = Number(rawCount) || 0;
+    if (!spot || count <= 0) return;
+    const existing = merged.get(spot.id);
+    merged.set(spot.id, { ...spot, count: count + (existing?.count || 0) });
+  });
+  return [...merged.values()].sort((a, b) => b.count - a.count || a.id.localeCompare(b.id));
 }
 function pickWeakSpotForDrill(spots) {
   const recent = Array.isArray(drillSession?.recentWeakKeys) ? drillSession.recentWeakKeys : [];
   const candidates = spots.slice(0, 8);
-  const fresh = candidates.filter((spot) => !recent.includes(spot));
+  const fresh = candidates.filter((spot) => !recent.includes(spot.id));
   const chosen = randomItem(fresh.length ? fresh : candidates);
   if (drillSession && chosen) {
-    drillSession.recentWeakKeys = [chosen, ...recent.filter((spot) => spot !== chosen)].slice(0, Math.min(3, candidates.length));
+    drillSession.recentWeakKeys = [chosen.id, ...recent.filter((id) => id !== chosen.id)].slice(0, Math.min(3, candidates.length));
   }
   return chosen;
 }
 function makeLetterDrillQuestion(forceLetter) {
   const enrolled = getEnrolledLetters();
   const letters = enrolled.length ? enrolled : [...consonantAtlas.map((c) => c.char), ...vowelAtlas.map((v) => v.char)];
-  const letter = forceLetter || randomItem(letters);
+  const letter = forceLetter && letters.includes(forceLetter) && LETTER_SOUND[forceLetter]
+    ? forceLetter
+    : randomItem(letters);
   const sound = LETTER_SOUND[letter] || "";
   const distract = [...new Set(shuffle(letters.filter((l) => l !== letter).map((l) => LETTER_SOUND[l]).filter((s) => s && s !== sound)))].slice(0, 3);
   return {
-    kind: "Letter", prompt: "Which sound does this letter make?", detail: "",
-    visual: `<div class="big-glyph" lang="ko">${escapeHtml(letter)}</div>`,
+    kind: "Letter", prompt: "Which reading label matches this letter?",
+    detail: "Choose the reading label; tap Letter to hear it in a syllable.",
+    visual: `<span class="big-glyph" lang="ko">${escapeHtml(letter)}</span>`,
     options: shuffle([sound, ...distract]), answer: sound,
-    explanation: `${letter} sounds like “${sound}”.`,
-    voiceText: HANGUL_JAMO_SPEAK[letter] || letter, weakKey: letter,
+    explanation: `${letter} uses the reading label “${sound}”.`,
+    voiceText: HANGUL_JAMO_SPEAK[letter] || letter, weakKey: letter, weakKind: "letter",
     drillWholeLabel: "Letter",
   };
 }
-// Short romanization hint for a build prompt. Initial ㅇ is a silent seat; final
-// ㅇ is "ng". Other letters reuse LETTER_SOUND (first variant, no parenthetical).
-function jamoRomanShort(ch, position) {
-  if (ch === "ㅇ") return position === "final" ? "ng" : "";
-  const r = LETTER_SOUND[ch] || "";
-  return r.replace(/\s*\(.*\)/, "").split("/")[0].trim();
+function hasLocalDrillAudio(text) {
+  if (!text || typeof window === "undefined" || typeof window.AUDIO_MAP === "undefined") return true;
+  return Boolean(lookupAudioUrl(text));
+}
+const drillAudioSyllableCache = new Map();
+function getAudioBackedDrillSyllables(pools, withFinal) {
+  const finals = withFinal ? pools.finals.filter(Boolean) : [""];
+  const key = [pools.initials.join(""), pools.medials.join(""), finals.join(""), withFinal ? "closed" : "open"].join("|");
+  if (drillAudioSyllableCache.has(key)) return drillAudioSyllableCache.get(key);
+  const syllables = [];
+  pools.initials.forEach((initial) => {
+    pools.medials.forEach((medial) => {
+      finals.forEach((final) => {
+        const syllable = composeHangul(initial, medial, final);
+        if (syllable && hasLocalDrillAudio(syllable)) syllables.push(syllable);
+      });
+    });
+  });
+  drillAudioSyllableCache.set(key, syllables);
+  return syllables;
+}
+function getBatchimGroupForLetter(letter) {
+  return BATCHIM_GROUPS.find((group) => group.letters.includes(letter)) || null;
+}
+function getBatchimAudioText(letter) {
+  const group = getBatchimGroupForLetter(letter);
+  return group ? BATCHIM_GROUP_SOUND_SPEAK[group.group] || "" : "";
 }
 // Tile-assembly build question: the learner taps jamo in seat order to build a
 // real syllable (like the lesson checkpoints, but generated and infinite).
 function makeBuildTileDrillQuestion(pools) {
-  let initial, medial, final, target, seq, tries = 0;
-  do {
-    initial = randomItem(pools.initials);
-    medial = randomItem(pools.medials);
-    final = (Math.random() < 0.45 && pools.finals.some((f) => f)) ? randomItem(pools.finals.filter((f) => f)) : "";
-    target = composeHangul(initial, medial, final);
-    seq = final ? [initial, medial, final] : [initial, medial];
-  } while (!target && ++tries < 25);
+  const withFinal = Math.random() < 0.45 && pools.finals.some(Boolean);
+  const audioBacked = getAudioBackedDrillSyllables(pools, withFinal);
+  let target = randomItem(audioBacked);
+  if (!target) {
+    target = composeHangul(
+      randomItem(pools.initials),
+      randomItem(pools.medials),
+      withFinal ? randomItem(pools.finals.filter(Boolean)) : "",
+    );
+  }
+  const parts = decomposeHangul(target);
+  const initial = parts.initial;
+  const medial = parts.medial;
+  const final = parts.final;
+  const seq = final ? [initial, medial, final] : [initial, medial];
   const distract = [...new Set([...pools.initials, ...pools.medials, ...pools.finals.filter((f) => f)])].filter((j) => !seq.includes(j));
-  const tray = shuffle([...seq, ...shuffle(distract).slice(0, 3)]);
-  const sound = (jamoRomanShort(initial, "initial") + jamoRomanShort(medial, "medial") + (final ? jamoRomanShort(final, "final") : "")) || target;
+  const tray = shuffle([...new Set([...seq, ...shuffle(distract).slice(0, 3)])]);
+  const reading = romanizeHangulSyllable(target) || target;
   return {
     kind: "Build", interaction: "build",
-    prompt: `Build the block that sounds like “${sound}”`,
+    prompt: `Build the block romanized as “${reading}”`,
     detail: `Tap the letters in order — consonant, then vowel${final ? ", then the final consonant" : ""}.`,
-    target, seq, tray, voiceText: target, weakKey: initial,
+    target, seq, tray, voiceText: target,
     drillWholeLabel: "Syllable",
     drillPartLabel: "Letters",
     explanation: `${seq.join(" + ")} = ${target}.`,
   };
+}
+
+function makeSplitDrillQuestion(pools) {
+  const targets = pools.finals.some(Boolean) ? ["initial", "medial", "final"] : ["initial", "medial"];
+  const target = randomItem(targets);
+  const openSyllables = getAudioBackedDrillSyllables(pools, false);
+  const closedSyllables = pools.finals.some(Boolean) ? getAudioBackedDrillSyllables(pools, true) : [];
+  const candidates = target === "final" ? closedSyllables : [...openSyllables, ...closedSyllables];
+  const question = generateDecomposeQuestion(pools, { target, syllable: randomItem(candidates) || "" });
+  question.weakKey = /^[ㄱ-ㅎㅏ-ㅣ]$/.test(question.answer) ? question.answer : null;
+  question.weakKind = question.drillWeakKind || "letter";
+  question.visual = `<span class="big-glyph" lang="ko">${escapeHtml(question.voiceText)}</span>`;
+  question.detail = "";
+  return question;
+}
+
+function makeWeakSpotDrillQuestion(spot, pools) {
+  if (spot?.kind === "batchim") return generateBatchimQuestion(pools, spot.jamo);
+  return makeLetterDrillQuestion(spot?.jamo);
 }
 
 function makeDrillQuestion(mode) {
@@ -10734,12 +10822,12 @@ function makeDrillQuestion(mode) {
   if (mode === "mixed") m = randomItem(["build", "split", "letters", "batchim"]);
   if (mode === "weak") {
     const spots = getWeakSpotList();
-    if (spots.length) return makeLetterDrillQuestion(pickWeakSpotForDrill(spots));
+    if (spots.length) return makeWeakSpotDrillQuestion(pickWeakSpotForDrill(spots), pools);
     m = randomItem(["build", "split", "letters", "batchim"]);
   }
   let q;
   if (m === "build") { q = makeBuildTileDrillQuestion(pools); }
-  else if (m === "split") { q = { ...generateDecomposeQuestion(pools) }; q.weakKey = /^[ㄱ-ㅎㅏ-ㅣ]$/.test(q.answer) ? q.answer : null; }
+  else if (m === "split") { q = makeSplitDrillQuestion(pools); }
   else if (m === "batchim") { q = { ...generateBatchimQuestion(pools) }; }
   else { q = makeLetterDrillQuestion(); }
   return q;
@@ -10785,14 +10873,14 @@ function renderAlphabetDrillLab() {
   const el = showScreen("detail");
   if (!el) return;
   showDetailBarWithBack("practice", "Alphabet Drill Lab", () => renderAlphabetPracticeHub(), "Alphabet practice");
+  const weakCount = getWeakSpotList().length;
   const modeBtns = DRILL_MODES.map((mo, i) =>
-    `<button class="drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}" aria-pressed="${i === 0}">
-       <div class="study-row-ko">${escapeHtml(mo.label)}</div>
-       <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(mo.sub)}</div>
+    `<button class="drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}" aria-pressed="${i === 0}" ${mo.id === "weak" && !weakCount ? "disabled" : ""}>
+       <div class="section-card-title" lang="en">${escapeHtml(mo.label)}</div>
+       <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(mo.id === "weak" && !weakCount ? "Available after your first miss" : mo.sub)}</div>
      </button>`).join("");
   const lenBtns = DRILL_LENGTHS.map((n, i) =>
     `<button class="alpha-seg${i === 0 ? " active" : ""}" type="button" data-drill-len="${n}" aria-pressed="${i === 0}">${n === "∞" ? "Infinite" : n}</button>`).join("");
-  const weakCount = getWeakSpotList().length;
   const firstOpenHint = !state.drillLabSeen
     ? `<div class="first-try-note">Pick a <strong>mode</strong> (Mixed blends them all), choose how many questions, then Start. Questions generate forever — tap <strong>End session</strong> any time in Infinite. Letters you miss are saved and resurface in <strong>Weak Spots</strong>.</div>`
     : "";
@@ -10844,10 +10932,13 @@ function renderDrillQuestion() {
   const q = s.current = makeDrillQuestion(s.mode);
   s.answered = false;
   s.buildFilled = [];
+  s.currentAttempted = false;
+  s.currentHadMiss = false;
+  s.currentMissIds = [];
   const isBuild = q.interaction === "build";
   const visualSpeakText = getDrillWholeAudioText(q);
   const visualHtml = q.visual && visualSpeakText
-    ? `<button class="quiz-visual drill-visual-button" type="button" data-speak="${escapeHtml(visualSpeakText)}" aria-label="Hear ${escapeHtml(visualSpeakText)}"><span>${q.visual}</span></button>`
+    ? `<button class="quiz-visual drill-visual-button" type="button" data-speak="${escapeHtml(visualSpeakText)}" aria-label="Hear ${escapeHtml(visualSpeakText)}">${q.visual}</button>`
     : q.visual
       ? `<div class="quiz-visual">${q.visual}</div>`
       : "";
@@ -10866,7 +10957,7 @@ function renderDrillQuestion() {
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card">
       ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total)}
-      <div class="alphabet-practice-status">${s.correct} correct · streak ${s.streak}</div>
+      <div class="alphabet-practice-status" id="drillStatus">${s.correct} clean · streak ${s.streak}</div>
       ${visualHtml}
       <div class="drill-audio-row">
         ${renderDrillAudioButtons(q)}
@@ -10890,8 +10981,9 @@ function renderDrillQuestion() {
         void speak(getDrillPartAudioText(q));
         return;
       }
-      for (const part of q.seq || []) {
-        await speak(speakableForChunk(part), { preserveSequence: true });
+      for (const [index, part] of (q.seq || []).entries()) {
+        const partAudio = index === 2 ? getBatchimAudioText(part) : speakableForChunk(part);
+        await speak(partAudio || speakableForChunk(part), { preserveSequence: true });
         await new Promise((resolve) => window.setTimeout(resolve, 180));
       }
     });
@@ -10914,22 +11006,49 @@ function renderDrillQuestion() {
   document.getElementById("drillNextBtn").addEventListener("click", () => { s.asked += 1; renderDrillQuestion(); });
 }
 
+function updateDrillStatus(session) {
+  const status = document.getElementById("drillStatus");
+  if (status && session) status.textContent = `${session.correct} clean · streak ${session.streak}`;
+}
+
+function setDrillFeedback(feedback, tone, lead, body) {
+  if (!feedback) return;
+  feedback.className = `lesson-feedback${tone ? ` ${tone}` : ""}`;
+  feedback.innerHTML = `<strong>${escapeHtml(lead)}</strong>${body ? ` ${escapeHtml(body)}` : ""}`;
+}
+
+function recordDrillMiss(session, jamo, kind = "letter") {
+  if (!session) return;
+  session.currentHadMiss = true;
+  session.streak = 0;
+  updateDrillStatus(session);
+  const id = weakSpotId(jamo, kind);
+  if (!id) return;
+  const recorded = session.currentMissIds || (session.currentMissIds = []);
+  if (recorded.includes(id)) return;
+  recorded.push(id);
+  recordWeakSpot(jamo, kind);
+  session.missed[id] = (session.missed[id] || 0) + 1;
+}
+
 // Tile-assembly answer handler for the Build Blocks drill mode.
 function answerDrillBuild(jamo, tile) {
   const s = drillSession;
   if (!s || s.answered) return;
   const q = s.current;
   const feedback = document.getElementById("drillFeedback");
+  s.currentAttempted = true;
   const filled = s.buildFilled || (s.buildFilled = []);
   const idx = filled.length;
   const seatName = idx === 0 ? "first consonant" : idx === 1 ? "vowel" : "final consonant";
-  speakClickableText(jamo, { preferSoundLabels: true });
+  const tileAudio = idx === 2 ? getBatchimAudioText(jamo) : "";
+  if (tileAudio) void speak(tileAudio);
+  else speakClickableText(jamo, { preferSoundLabels: true });
   if (jamo !== q.seq[idx]) {
     tile.classList.add("wrong");
     setTimeout(() => tile.classList.remove("wrong"), 500);
-    if (q.weakKey) { recordWeakSpot(q.weakKey); s.missed[q.weakKey] = (s.missed[q.weakKey] || 0) + 1; }
-    s.streak = 0;
-    if (feedback) feedback.innerHTML = "<strong>Not yet.</strong> " + escapeHtml("Tap the " + seatName + " next.");
+    recordDrillMiss(s, q.seq[idx], idx === 2 ? "batchim" : "letter");
+    setDrillFeedback(feedback, "wrong", "Not yet.", `Tap the ${seatName} next.`);
     return;
   }
   filled.push(jamo);
@@ -10937,9 +11056,15 @@ function answerDrillBuild(jamo, tile) {
   if (slot) { slot.textContent = jamo; slot.classList.add("filled"); slot.removeAttribute("aria-hidden"); flashElement(slot); }
   if (filled.length >= q.seq.length) {
     s.answered = true;
-    s.correct += 1;
-    s.streak += 1;
+    const clean = !s.currentHadMiss;
+    if (clean) {
+      s.correct += 1;
+      s.streak += 1;
+    } else {
+      s.streak = 0;
+    }
     s.bestStreak = Math.max(s.bestStreak, s.streak);
+    updateDrillStatus(s);
     const assembled = document.querySelector("[data-drill-assembled]");
     if (assembled) {
       assembled.outerHTML =
@@ -10959,11 +11084,11 @@ function answerDrillBuild(jamo, tile) {
       }
     }
     document.querySelectorAll("#drillTray .bd-tile").forEach((t) => { t.disabled = true; });
-    if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(q.explanation || "");
+    setDrillFeedback(feedback, "correct", clean ? "Correct." : "Got it.", q.explanation || "");
     const next = document.getElementById("drillNextBtn");
     if (next) { next.disabled = false; next.textContent = s.total !== Infinity && s.asked + 1 >= s.total ? "See result" : "Next"; }
   } else {
-    if (feedback) feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + (filled.length === 1 ? "vowel" : "final consonant") + ".");
+    setDrillFeedback(feedback, "", "Nice.", `Now the ${filled.length === 1 ? "vowel" : "final consonant"}.`);
   }
 }
 
@@ -10973,6 +11098,13 @@ function speakDrillChoice(choice, question) {
     void speak(BATCHIM_GROUP_SOUND_SPEAK[label]);
     return;
   }
+  if (question?.drillChoiceKind === "batchim") {
+    const finalAudio = getBatchimAudioText(choice);
+    if (finalAudio) {
+      void speak(finalAudio);
+      return;
+    }
+  }
   speakClickableText(choice, { preferSoundLabels: true });
 }
 
@@ -10981,24 +11113,30 @@ function answerDrill(choice, button) {
   if (!s || s.answered) return;
   const q = s.current;
   const feedback = document.getElementById("drillFeedback");
+  s.currentAttempted = true;
   speakDrillChoice(choice, q);
   if (choice !== q.answer) {
     button.classList.add("wrong");
     button.disabled = true;
-    if (q.weakKey) { recordWeakSpot(q.weakKey); s.missed[q.weakKey] = (s.missed[q.weakKey] || 0) + 1; }
-    s.streak = 0;
-    if (feedback) feedback.innerHTML = "<strong>Not yet.</strong> " + escapeHtml(q.explanation || "Try the other answer.");
+    recordDrillMiss(s, q.weakKey, q.weakKind || "letter");
+    setDrillFeedback(feedback, "wrong", "Not yet.", "Try another answer.");
     return;
   }
   s.answered = true;
-  s.correct += 1;
-  s.streak += 1;
+  const clean = !s.currentHadMiss;
+  if (clean) {
+    s.correct += 1;
+    s.streak += 1;
+  } else {
+    s.streak = 0;
+  }
   s.bestStreak = Math.max(s.bestStreak, s.streak);
+  updateDrillStatus(s);
   document.querySelectorAll("#drillOptions .option").forEach((b) => {
     b.disabled = true;
     if ((b.dataset.drillOption || "") === q.answer) b.classList.add("correct");
   });
-  if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(q.explanation || "");
+  setDrillFeedback(feedback, "correct", clean ? "Correct." : "Got it.", q.explanation || "");
   const next = document.getElementById("drillNextBtn");
   if (next) { next.disabled = false; next.textContent = s.total !== Infinity && s.asked + 1 >= s.total ? "See result" : "Next"; }
 }
@@ -11009,22 +11147,34 @@ function renderDrillResult() {
   const el = showScreen("detail");
   if (!el) return;
   showDetailBarWithBack("practice", "Drill complete", () => renderAlphabetDrillLab(), "Drill Lab");
-  // `asked` counts questions already advanced past. On a natural finish it equals
-  // the session length; on an early End-session the current question counts only
-  // if it was answered. (Never +1 on natural completion, which would double-count.)
-  const total = s.asked + (s.answered && s.asked < s.total ? 1 : 0);
+  // `asked` counts questions already advanced past. An early End-session also
+  // counts the current question once the learner has answered or attempted it.
+  const currentWasAttempted = s.currentAttempted && s.asked < s.total;
+  const total = s.asked + (currentWasAttempted ? 1 : 0);
   const accuracy = total ? Math.round((s.correct / total) * 100) : 0;
-  const missedList = Object.entries(s.missed).sort((a, b) => b[1] - a[1]).map(([j]) => j);
+  const missedList = Object.entries(s.missed)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id]) => parseWeakSpotId(id))
+    .filter(Boolean);
+  const missedHtml = missedList
+    .map((spot) => `<span class="drill-missed-chip"><span lang="ko">${escapeHtml(spot.jamo)}</span>${spot.kind === "batchim" ? " final" : ""}</span>`)
+    .join("");
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card">
       <div class="eyebrow">Drill complete</div>
-      <h2 class="screen-title" style="margin:6px 0 4px;">${accuracy}% accuracy</h2>
-      <div class="screen-sub">${s.correct} / ${total} correct · best streak ${s.bestStreak}</div>
+      <h2 class="screen-title" style="margin:6px 0 4px;">${total ? `${accuracy}% first-try accuracy` : "No questions answered"}</h2>
+      <div class="screen-sub">${total ? `${s.correct} / ${total} clean · best streak ${s.bestStreak}` : "No answers were scored."}</div>
       ${missedList.length
-        ? `<div class="screen-sub" style="margin-top:10px;">Weak spots this session: <strong lang="ko">${missedList.map(escapeHtml).join(" ")}</strong></div>`
-        : `<div class="screen-sub" style="margin-top:10px;">No misses — clean run! 🎉</div>`}
+        ? `<div class="screen-sub drill-missed-row">Weak spots this session: <span class="drill-missed-list">${missedHtml}</span></div>`
+        : `<div class="screen-sub" style="margin-top:10px;">${
+            !total
+              ? "No weak spots recorded."
+              : s.correct === total
+                ? "No misses — clean run! 🎉"
+                : "Session ended before the current question was complete."
+          }</div>`}
       <div class="word-result-grid sentence-result-grid">
-        <div class="stat-box"><span class="sv">${s.correct}/${total}</span><span class="sl">Correct</span></div>
+        <div class="stat-box"><span class="sv">${s.correct}/${total}</span><span class="sl">Clean</span></div>
         <div class="stat-box"><span class="sv">${s.bestStreak}</span><span class="sl">Best streak</span></div>
       </div>
       <div class="word-card-actions word-card-nav-actions">
@@ -11118,24 +11268,32 @@ function generateComposeQuestion(pools) {
   };
 }
 
-function generateDecomposeQuestion(pools) {
+function generateDecomposeQuestion(pools, forced = {}) {
   const targetChoices = ["initial", "medial"];
   if (Array.isArray(pools?.finals) && pools.finals.some((item) => item)) {
     targetChoices.push("final");
   }
 
-  const target = randomItem(targetChoices);
+  const target = targetChoices.includes(forced.target) ? forced.target : randomItem(targetChoices);
   let initial;
   let medial;
   let final;
   let syllable;
 
-  do {
-    initial = randomItem(pools.initials);
-    medial = randomItem(pools.medials);
-    final = target === "final" ? randomItem(pools.finals.filter((item) => item !== "")) : randomItem(pools.finals);
-    syllable = composeHangul(initial, medial, final);
-  } while (!syllable || (target === "final" && final === ""));
+  const forcedParts = forced.syllable ? decomposeHangul(forced.syllable) : null;
+  if (forcedParts && (target !== "final" || forcedParts.final)) {
+    ({ initial, medial, final } = forcedParts);
+    syllable = forced.syllable;
+  }
+
+  if (!syllable) {
+    do {
+      initial = randomItem(pools.initials);
+      medial = randomItem(pools.medials);
+      final = target === "final" ? randomItem(pools.finals.filter((item) => item !== "")) : randomItem(pools.finals);
+      syllable = composeHangul(initial, medial, final);
+    } while (!syllable || (target === "final" && final === ""));
+  }
 
   const answerMap = {
     initial,
@@ -11170,7 +11328,9 @@ function generateDecomposeQuestion(pools) {
     voiceText: syllable,
     drillWholeLabel: "Syllable",
     drillPartLabel: target === "medial" ? "Vowel" : target === "final" ? "Final" : "Consonant",
-    drillPartVoiceText: answer,
+    drillPartVoiceText: target === "final" ? getBatchimAudioText(answer) : answer,
+    drillChoiceKind: target === "final" ? "batchim" : "letter",
+    drillWeakKind: target === "final" ? "batchim" : "letter",
   };
 }
 
@@ -11658,23 +11818,32 @@ function generateTenseQuestion(pools) {
   };
 }
 
-function generateBatchimQuestion(pools) {
-  const group = randomItem(BATCHIM_GROUPS);
-  const letter = randomItem(group.letters);
+function generateBatchimQuestion(pools, forcedLetter = "") {
+  const allowedFinals = new Set((pools?.finals || BATCHIM_FINALS).filter(Boolean));
+  const availableGroups = BATCHIM_GROUPS
+    .map((group) => ({ ...group, letters: group.letters.filter((letter) => allowedFinals.has(letter)) }))
+    .filter((group) => group.letters.length > 0);
+  const forcedGroup = forcedLetter
+    ? availableGroups.find((group) => group.letters.includes(forcedLetter))
+    : null;
+  const group = forcedGroup || randomItem(availableGroups);
+  const letter = forcedGroup ? forcedLetter : randomItem(group.letters);
   const answer = group.group;
-  const options = makeTextChoices(answer, BATCHIM_GROUPS.map((item) => item.group), 4);
-  const sample = composeHangul(randomItem(pools.initials), "ㅏ", letter);
+  const options = makeTextChoices(answer, availableGroups.map((item) => item.group), Math.min(4, availableGroups.length));
+  const sample = BATCHIM_GROUP_WORD_SAMPLE[answer] || composeHangul("ㅇ", "ㅏ", letter);
 
   return {
     kind: "Batchim sound",
     mode: "Final consonant groups",
     prompt: `Which closing sound group does ${letter} usually fall into?`,
-    detail: "Batchim often compresses into a smaller set of end sounds.",
-    visual: `<div class="syllable-stack"><span>${escapeHtml(letter)}</span><span>→</span><span>${escapeHtml(answer)}</span></div>`,
+    detail: "Hear the word sample, then match the final letter to its usual closing sound.",
+    visual: `<span class="big-glyph" lang="ko">${escapeHtml(sample)}</span>`,
     options,
     answer,
-    explanation: `${letter} usually closes as ${answer}. Batchim practice makes real Korean reading much easier.`,
+    explanation: `In ${sample}, ${letter} closes as ${answer}. Batchim practice makes real Korean reading much easier.`,
     voiceText: sample,
+    weakKey: letter,
+    weakKind: "batchim",
     drillWholeLabel: "Sample",
     drillPartLabel: "Closing sound",
     drillPartVoiceText: BATCHIM_GROUP_SOUND_SPEAK[answer] || "",
@@ -13746,11 +13915,11 @@ function renderAlphabetPracticeHub() {
       <h2 class="screen-title" style="margin-bottom:8px;">Choose a practice</h2>
       <div class="screen-sub" style="margin-bottom:0;">Review what is due, test recognition, or practise reading and writing freely.</div>
     </div>
-    ${due ? `<button class="card word-section-card" type="button" data-alphabet-practice="review"><div><div class="eyebrow">Make it stick</div><div class="study-row-ko">Letter review</div><div class="screen-sub" style="margin-bottom:0;">${due} letter${due === 1 ? "" : "s"} ready for spaced review.</div></div><span class="pill accent">${due} due</span></button>` : ""}
-    <button class="card word-section-card" type="button" data-alphabet-practice="quiz"><div><div class="eyebrow">Quick check</div><div class="study-row-ko">Alphabet quiz</div><div class="screen-sub" style="margin-bottom:0;">Match each Hangul letter to its sound.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가</span></button>
-    ${mastered ? `<button class="card word-section-card" type="button" data-alphabet-practice="drill"><div><div class="eyebrow">Practice · Forever</div><div class="study-row-ko">Alphabet Drill Lab</div><div class="screen-sub" style="margin-bottom:0;">Mixed, build, split, letters, batchim, and weak spots.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">∞</span></button>` : ""}
-    <button class="card word-section-card" type="button" data-alphabet-practice="pronunciation"><div><div class="eyebrow">Listen closely</div><div class="study-row-ko">Pronunciation drill</div><div class="screen-sub" style="margin-bottom:0;">Train tense, aspirated, and plain consonant contrasts.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">🎧</span></button>
-    <button class="card word-section-card" type="button" data-alphabet-practice="writing"><div><div class="eyebrow">Write it</div><div class="study-row-ko">Hangul writing</div><div class="screen-sub" style="margin-bottom:0;">Draw letters and syllable blocks by hand.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">✍</span></button>
+    ${due ? `<button class="card word-section-card" type="button" data-alphabet-practice="review"><div><div class="eyebrow">Make it stick</div><div class="section-card-title" lang="en">Letter review</div><div class="screen-sub" style="margin-bottom:0;">${due} letter${due === 1 ? "" : "s"} ready for spaced review.</div></div><span class="pill accent">${due} due</span></button>` : ""}
+    <button class="card word-section-card" type="button" data-alphabet-practice="quiz"><div><div class="eyebrow">Quick check</div><div class="section-card-title" lang="en">Alphabet quiz</div><div class="screen-sub" style="margin-bottom:0;">Match each Hangul letter to its sound.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가</span></button>
+    ${mastered ? `<button class="card word-section-card" type="button" data-alphabet-practice="drill"><div><div class="eyebrow">Practice · Forever</div><div class="section-card-title" lang="en">Alphabet Drill Lab</div><div class="screen-sub" style="margin-bottom:0;">Mixed, build, split, letters, batchim, and weak spots.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">∞</span></button>` : ""}
+    <button class="card word-section-card" type="button" data-alphabet-practice="pronunciation"><div><div class="eyebrow">Listen closely</div><div class="section-card-title" lang="en">Pronunciation drill</div><div class="screen-sub" style="margin-bottom:0;">Train tense, aspirated, and plain consonant contrasts.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">🎧</span></button>
+    <button class="card word-section-card" type="button" data-alphabet-practice="writing"><div><div class="eyebrow">Write it</div><div class="section-card-title" lang="en">Hangul writing</div><div class="screen-sub" style="margin-bottom:0;">Draw letters and syllable blocks by hand.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">✍</span></button>
   `;
   el.querySelectorAll("[data-alphabet-practice]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -13825,7 +13994,7 @@ const MINIMAL_PAIRS = [
     description: "Distinguish between open ㅓ (eo) and rounded close-mid ㅗ (o).",
     items: [
       { text: "거", desc: "thing (eo)", rom: "geo", tip: "거 (eo) is open. Drop your jaw, keep your tongue relaxed and lips flat." },
-      { text: "고", desc: "and (o)", rom: "go", tip: "고 (o) is close-mid and rounded. Pucker your lips tightly into an 'o' shape." }
+      { text: "고", desc: "and/then ending (o)", rom: "go", tip: "고 (o) is close-mid and rounded. Pucker your lips tightly into an 'o' shape." }
     ]
   },
   {
