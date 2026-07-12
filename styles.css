@@ -4846,6 +4846,121 @@ li { margin-bottom: 4px; }
   margin-top: 18px;
 }
 .writing-reentry-actions .button { min-height: 52px; }
+.writing-multiplier-card,
+.writing-summary-card {
+  max-width: 560px;
+  margin-inline: auto;
+}
+.writing-multiplier-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 12px;
+}
+.writing-multiplier-option {
+  min-width: 0;
+  min-height: 104px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--text);
+  background: rgba(255,255,255,.045);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  text-align: center;
+}
+.writing-multiplier-option.primary {
+  background: linear-gradient(145deg, rgba(91,157,255,.22), rgba(122,92,255,.13));
+  border-color: rgba(91,157,255,.58);
+}
+.writing-multiplier-option strong { color: var(--accent-2); font-size: 1.45rem; }
+.writing-multiplier-option span { color: var(--muted); font-size: .7rem; line-height: 1.3; }
+.writing-multiplier-back { width: 100%; }
+.writing-summary-card { padding: 16px; }
+.writing-summary-cheer { padding-bottom: 10px; }
+.writing-summary-cheer .screen-title { font-size: 1.12rem; }
+.writing-summary-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+.writing-summary-stats > div {
+  min-width: 0;
+  padding: 9px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  background: rgba(255,255,255,.045);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+.writing-summary-stats strong { color: var(--text); font-size: .9rem; }
+.writing-summary-stats span { color: var(--muted); font-size: .62rem; }
+.writing-summary-drawn {
+  margin-top: 10px;
+  padding: 9px 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(91,157,255,.07);
+  border: 1px solid rgba(91,157,255,.2);
+  border-radius: 11px;
+}
+.writing-summary-drawn > span { color: var(--muted); font-size: .68rem; white-space: nowrap; }
+.writing-summary-drawn > div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
+.writing-summary-drawn > div span {
+  min-width: 29px;
+  padding: 3px 6px;
+  color: var(--text);
+  background: rgba(255,255,255,.06);
+  border-radius: 8px;
+  font: 750 .95rem "Noto Sans KR", sans-serif;
+  text-align: center;
+}
+.writing-summary-improvement {
+  margin-top: 9px;
+  color: #b9f6df;
+  font-size: .72rem;
+  line-height: 1.4;
+  text-align: center;
+}
+.writing-summary-details {
+  margin-top: 9px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  overflow: hidden;
+}
+.writing-summary-details summary {
+  padding: 9px 11px;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.writing-summary-detail-list { padding: 0 10px 8px; }
+.writing-summary-detail-row {
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  color: var(--muted);
+  font-size: .65rem;
+}
+.writing-summary-detail-row > span:first-child { color: var(--text); font: 750 1rem "Noto Sans KR", sans-serif; }
+.writing-summary-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 10px;
+}
+.writing-summary-actions .button { min-height: 45px; font-size: .76rem; }
 @keyframes writing-result-backdrop-in { from { opacity: 0; } }
 @keyframes writing-result-sheet-in { from { opacity: 0; transform: translateY(6px) scale(.98); } }
 @keyframes writing-result-draw { to { stroke-dashoffset: 0; } }
@@ -4871,4 +4986,10 @@ li { margin-bottom: 4px; }
   .writing-canvas-clear { left: 8px; }
   .writing-canvas-help { right: 8px; }
   .writing-reentry-actions { grid-template-columns: 1fr; }
+  .writing-multiplier-options { gap: 7px; }
+  .writing-multiplier-option { min-height: 92px; padding: 10px 6px; }
+  .writing-multiplier-option strong { font-size: 1.25rem; }
+  .writing-summary-card { padding: 12px; }
+  .writing-summary-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .writing-summary-actions { grid-template-columns: 1fr; }
 }
