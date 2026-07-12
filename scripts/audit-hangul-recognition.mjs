@@ -13,6 +13,16 @@ const bank = globalThis.HANGUL_STROKES;
 const API = globalThis.HANAPATH_HANGUL_RECOGNIZER;
 if (!bank || !API?.Recognizer) throw new Error("Writing data or recognizer global did not load.");
 
+const hieutTop = bank["ㅎ"]?.strokes?.[0];
+if (
+  !Array.isArray(hieutTop) ||
+  hieutTop.length < 2 ||
+  Math.abs(hieutTop[0][0] - hieutTop[hieutTop.length - 1][0]) > 0.02 ||
+  hieutTop[hieutTop.length - 1][1] <= hieutTop[0][1]
+) {
+  throw new Error("ㅎ must use the learner-facing upright top-mark variant.");
+}
+
 const recognizer = new API.Recognizer();
 for (const [glyph, guide] of Object.entries(bank)) {
   if (!recognizer.add(glyph, guide.strokes, { augment: true })) throw new Error(`Could not add template ${glyph}`);

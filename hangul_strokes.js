@@ -34,7 +34,7 @@
 //     on the LEFT.
 //   • ㅂ (4): left vertical → right vertical → middle bar → bottom bar. It is
 //     NOT drawn as a box outline.
-//   • ㅎ (3): short top bar → middle bar → circle (ㅇ) underneath.
+//   • ㅎ (3): short upright mark → middle bar → circle (ㅇ) underneath.
 //
 // W1 only ships jamo. Composed syllable blocks return null from
 // getHangulStrokeGuide() for now (block layout composition is W1b/W2).
@@ -184,7 +184,7 @@
       type: "consonant",
       name: "hieut",
       strokes: [
-        [[0.4, 0.12], [0.6, 0.12]],   // short top bar, left → right
+        [[0.5, 0.04], [0.5, 0.22]],   // short upright mark, top → bottom
         [[0.24, 0.36], [0.76, 0.36]], // middle bar, left → right
         circle(0.5, 0.68, 0.2, 14),   // circle underneath, CCW from top
       ],
