@@ -4628,6 +4628,17 @@ li { margin-bottom: 4px; }
   box-shadow: none;
   backdrop-filter: none;
 }
+.writing-canvas-check {
+  top: auto;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 112px;
+  color: #d1fae5;
+  background: rgba(16, 185, 129, .16);
+  border-color: rgba(52, 211, 153, .48);
+}
+.writing-canvas-check:not(:disabled):hover { transform: translateX(-50%); background: rgba(16, 185, 129, .24); }
 .writing-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -4732,6 +4743,8 @@ li { margin-bottom: 4px; }
   color: var(--muted);
   text-align: center;
 }
+.writing-stroke-status.good { color: #a7f3d0; }
+.writing-stroke-status.wrong { color: #fecaca; }
 .writing-result-overlay {
   display: none;
   position: absolute;
@@ -4857,6 +4870,31 @@ li { margin-bottom: 4px; }
   gap: 10px;
   margin: 18px 0 12px;
 }
+.writing-input-mode-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 16px;
+}
+.writing-input-mode {
+  min-width: 0;
+  padding: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--text);
+  background: rgba(255,255,255,.035);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-align: left;
+}
+.writing-input-mode.active {
+  background: rgba(91,157,255,.12);
+  border-color: rgba(91,157,255,.58);
+  box-shadow: inset 0 0 0 1px rgba(91,157,255,.12);
+}
+.writing-input-mode strong { font-size: .78rem; }
+.writing-input-mode span { color: var(--muted); font-size: .65rem; line-height: 1.3; }
 .writing-multiplier-option {
   min-width: 0;
   min-height: 104px;
@@ -4985,8 +5023,10 @@ li { margin-bottom: 4px; }
   .writing-canvas-action { top: 8px; min-height: 31px; padding: 6px 9px; font-size: .68rem; }
   .writing-canvas-clear { left: 8px; }
   .writing-canvas-help { right: 8px; }
+  .writing-canvas-check { bottom: 8px; }
   .writing-reentry-actions { grid-template-columns: 1fr; }
   .writing-multiplier-options { gap: 7px; }
+  .writing-input-mode-picker { gap: 7px; }
   .writing-multiplier-option { min-height: 92px; padding: 10px 6px; }
   .writing-multiplier-option strong { font-size: 1.25rem; }
   .writing-summary-card { padding: 12px; }

@@ -14212,6 +14212,7 @@ let hangulWritingState = {
   unitId: null,
   glyphIndex: 0,
   exercise: "shape", // "shape" (copy the glyph) | "sound" (write what you hear) | "roman" (write from romanization)
+  inputMode: "guided", // "guided" validates each standard stroke; "freehand" checks the finished shape
   repeatTarget: 1,
   repeatIndex: 0,
   strokes: [], // meaningful learner ink; taps/interrupted pointers are discarded
@@ -14238,6 +14239,7 @@ function resetHangulWritingSession() {
     unitId: null,
     glyphIndex: 0,
     exercise: "shape",
+    inputMode: "guided",
     repeatTarget: 1,
     repeatIndex: 0,
     strokes: [],
@@ -14309,7 +14311,7 @@ function renderHangulWritingReentryPrompt() {
       <div class="eyebrow">Writing session paused</div>
       <div class="writing-reentry-glyph" lang="ko">${escapeHtml(glyph)}</div>
       <h2 class="screen-title">Continue where you left off?</h2>
-      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)} · ${hangulWritingState.repeatTarget}× · ${hangulWritingState.glyphIndex + 1} of ${unit.glyphs.length}</div>
+      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)} · ${hangulWritingState.inputMode === "freehand" ? "Freehand" : "Guided"} · ${hangulWritingState.repeatTarget}× · ${hangulWritingState.glyphIndex + 1} of ${unit.glyphs.length}</div>
       <div class="writing-reentry-actions">
         <button class="button secondary" type="button" id="writingStartNew">Start new session</button>
         <button class="button primary" type="button" id="writingContinue">Continue session</button>
@@ -14426,6 +14428,7 @@ function composeHangulSyllableGuide(glyph, bank) {
 // written glyph independently of stroke order; the existing W2 grader remains
 // the separate pedagogy check for standard order and direction.
 const HANGUL_RECOGNITION_MIN_CONFIDENCE = 0.72;
+const HANGUL_FREEHAND_TARGET_CONFIDENCE = 0.82;
 
 function getHangulWritingRecognitionGlyphs() {
   return [...new Set(HANGUL_WRITING_UNITS.flatMap((unit) => unit.glyphs))]
@@ -14530,6 +14533,10 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
     overlay.innerHTML = "";
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
+    const guide = getHangulStrokeGuide(glyph);
+    updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
+      ? "Draw naturally, then tap Check drawing."
+      : `${guide?.strokes?.length || 0} stroke${guide?.strokes?.length === 1 ? "" : "s"} remaining · follow standard order`);
     canvas.focus({ preventScroll: true });
   });
   overlay.querySelector("#writingResultNext").addEventListener("click", () => {
@@ -15014,7 +15021,8 @@ function completeHangulWritingSession(unit) {
   const prior = [...history].reverse().find((entry) =>
     entry?.unitId === unit.id &&
     entry?.exercise === hangulWritingState.exercise &&
-    entry?.repeatTarget === hangulWritingState.repeatTarget
+    entry?.repeatTarget === hangulWritingState.repeatTarget &&
+    (entry?.inputMode || "guided") === hangulWritingState.inputMode
   ) || null;
   const attempts = Math.max(1, hangulWritingState.attempts);
   const summary = {
@@ -15022,6 +15030,7 @@ function completeHangulWritingSession(unit) {
     unitId: unit.id,
     unitLabel: unit.label,
     exercise: hangulWritingState.exercise,
+    inputMode: hangulWritingState.inputMode,
     repeatTarget: hangulWritingState.repeatTarget,
     glyphs: [...unit.glyphs],
     attempts: hangulWritingState.attempts,
@@ -15071,10 +15080,80 @@ function updateHangulWritingControls() {
   const hasInk = hangulWritingState.strokes.length > 0;
   const clear = document.getElementById("writingClear");
   const help = document.getElementById("writingHelp");
+  const check = document.getElementById("writingCheck");
   if (clear) clear.disabled = !hasInk || hangulWritingState.celebrating;
-  [clear, help].forEach((button) => {
+  if (check) check.disabled = !hasInk || hangulWritingState.celebrating;
+  [clear, help, check].forEach((button) => {
     if (button) button.hidden = hangulWritingState.animating;
   });
+}
+
+function updateHangulStrokeStatus(message, tone = "") {
+  const status = document.getElementById("writingStrokeStatus");
+  if (!status) return;
+  status.className = `quiz-detail writing-instruction writing-stroke-status${tone ? ` ${tone}` : ""}`;
+  status.textContent = message;
+}
+
+function getHangulGuidedStrokeHint(stroke, index) {
+  if (!stroke?.length) return `Try stroke ${index + 1} again.`;
+  const first = stroke[0];
+  const last = stroke[stroke.length - 1];
+  const dx = last[0] - first[0];
+  const dy = last[1] - first[1];
+  if (hangulPairDist(first, last) < 0.05) return `Try stroke ${index + 1} again — draw the closed loop.`;
+  if (Math.abs(dx) > Math.abs(dy) * 1.5) return `Try stroke ${index + 1} again — draw ${dx >= 0 ? "left to right" : "right to left"}.`;
+  if (Math.abs(dy) > Math.abs(dx) * 1.5) return `Try stroke ${index + 1} again — draw ${dy >= 0 ? "top to bottom" : "bottom to top"}.`;
+  return `Try stroke ${index + 1} again — follow the shape shown in Help.`;
+}
+
+function validateLatestHangulGuidedStroke(canvas, glyph) {
+  const guide = getHangulStrokeGuide(glyph);
+  const strokes = getNormalizedHangulWritingStrokes(canvas);
+  if (!guide || !strokes.length) return { pass: false, remaining: guide?.strokes?.length || 0 };
+  const index = strokes.length - 1;
+  if (index >= guide.strokes.length) {
+    hangulWritingState.strokes.pop();
+    drawHangulWritingCanvas(canvas);
+    updateHangulStrokeStatus(`All standard strokes are already present — tap Check or retry.`, "wrong");
+    return { pass: false, remaining: 0 };
+  }
+  const result = index === 0
+    ? scoreHangulStrokeFree(strokes[index], guide.strokes[index])
+    : scoreHangulStroke(
+        strokes[index],
+        transformHangulPoints(guide.strokes[index], fitHangulAlignment(strokes, guide.strokes, index)),
+      );
+  if (!result.pass) {
+    hangulWritingState.strokes.pop();
+    drawHangulWritingCanvas(canvas);
+    updateHangulStrokeStatus(getHangulGuidedStrokeHint(guide.strokes[index], index), "wrong");
+    updateHangulWritingControls();
+    return { pass: false, remaining: guide.strokes.length - index };
+  }
+  const remaining = guide.strokes.length - strokes.length;
+  updateHangulStrokeStatus(remaining
+    ? `Nice stroke · ${remaining} stroke${remaining === 1 ? "" : "s"} remaining`
+    : "All strokes placed — checking your writing…", "good");
+  return { pass: true, remaining };
+}
+
+function checkHangulFreehandDrawing(canvas, glyph, unit) {
+  const strokes = getNormalizedHangulWritingStrokes(canvas);
+  if (!strokes.length) {
+    updateHangulStrokeStatus("Draw the whole shape, then tap Check drawing.", "wrong");
+    return;
+  }
+  const matches = recognizeHangulWriting(canvas, 3);
+  const target = matches.find((match) => match.name === glyph) || null;
+  const top = matches[0] || null;
+  const correct = Boolean(target && target.confidence >= HANGUL_FREEHAND_TARGET_CONFIDENCE);
+  const detail = correct
+    ? `Freehand recognized as ${glyph} — your natural shape is clear.`
+    : top
+      ? `This currently looks closest to ${top.name}. Refine the overall shape and check again.`
+      : `HanaPath could not read that shape yet. Make it a little clearer and try again.`;
+  showHangulWritingResult({ glyph, strokes, correct, detail, unit });
 }
 
 function scheduleHangulWritingRecognition(canvas, glyph, unit) {
@@ -15197,8 +15276,18 @@ function bindHangulWritingCanvas(canvas) {
     if (!cleaned) hangulWritingState.strokes.pop();
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
-    if (cleaned && unit && glyph) scheduleHangulWritingRecognition(canvas, glyph, unit);
-    else setHangulRecognitionFeedback("Write with your finger or stylus.");
+    if (!cleaned || !unit || !glyph) {
+      updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
+        ? "Draw naturally, then tap Check drawing."
+        : "Keep going with the next standard stroke.");
+      return;
+    }
+    if (hangulWritingState.inputMode === "freehand") {
+      updateHangulStrokeStatus("Ready when you are · tap Check drawing", "good");
+      return;
+    }
+    const validation = validateLatestHangulGuidedStroke(canvas, glyph);
+    if (validation.pass && validation.remaining === 0) scheduleHangulWritingRecognition(canvas, glyph, unit);
   };
   canvas.addEventListener("pointerup", finishStroke);
   const cancelStroke = () => {
@@ -15209,17 +15298,20 @@ function bindHangulWritingCanvas(canvas) {
     hangulWritingState.strokes.pop();
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
-    setHangulRecognitionFeedback("Write with your finger or stylus.");
+    updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
+      ? "Draw naturally, then tap Check drawing."
+      : "Keep going with the next standard stroke.");
   };
   canvas.addEventListener("pointercancel", cancelStroke);
   canvas.addEventListener("lostpointercapture", cancelStroke);
 }
 
-function startHangulWritingSession(unit, exercise, repeatTarget) {
+function startHangulWritingSession(unit, exercise, repeatTarget, inputMode = "guided") {
   hangulWritingState = {
     unitId: unit.id,
     glyphIndex: 0,
     exercise,
+    inputMode: inputMode === "freehand" ? "freehand" : "guided",
     repeatTarget: Math.max(1, Math.min(3, Number(repeatTarget) || 1)),
     repeatIndex: 0,
     strokes: [],
@@ -15248,6 +15340,10 @@ function renderHangulWritingMultiplierPicker(el, unit, exercise) {
       <div class="eyebrow">Before you start</div>
       <h2 class="screen-title">How many repetitions?</h2>
       <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)}. Every glyph must be drawn correctly this many times before you move on.</div>
+      <div class="writing-input-mode-picker" aria-label="Writing mode">
+        <button class="writing-input-mode active" type="button" data-writing-input-mode="guided" aria-pressed="true"><strong>Guided learning</strong><span>Follow standard strokes with live feedback</span></button>
+        <button class="writing-input-mode" type="button" data-writing-input-mode="freehand" aria-pressed="false"><strong>Freehand</strong><span>Draw naturally, then let HanaPath recognize it</span></button>
+      </div>
       <div class="writing-multiplier-options">
         <button class="writing-multiplier-option" type="button" data-writing-multiplier="1"><strong>1×</strong><span>One clean pass</span></button>
         <button class="writing-multiplier-option primary" type="button" data-writing-multiplier="2"><strong>2×</strong><span>Repeat to lock it in</span></button>
@@ -15255,8 +15351,19 @@ function renderHangulWritingMultiplierPicker(el, unit, exercise) {
       </div>
       <button class="button secondary compact writing-multiplier-back" type="button" id="writingMultiplierBack">Back to units</button>
     </div>`;
+  let selectedInputMode = "guided";
+  el.querySelectorAll("[data-writing-input-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedInputMode = button.dataset.writingInputMode === "freehand" ? "freehand" : "guided";
+      el.querySelectorAll("[data-writing-input-mode]").forEach((option) => {
+        const selected = option.dataset.writingInputMode === selectedInputMode;
+        option.classList.toggle("active", selected);
+        option.setAttribute("aria-pressed", selected ? "true" : "false");
+      });
+    });
+  });
   el.querySelectorAll("[data-writing-multiplier]").forEach((button) => {
-    button.addEventListener("click", () => startHangulWritingSession(unit, exercise, Number(button.dataset.writingMultiplier)));
+    button.addEventListener("click", () => startHangulWritingSession(unit, exercise, Number(button.dataset.writingMultiplier), selectedInputMode));
   });
   el.querySelector("#writingMultiplierBack").addEventListener("click", () => {
     resetHangulWritingSession();
@@ -15300,7 +15407,7 @@ function renderHangulWritingCompletion(el, summary) {
         <div><strong>${summary.retries}</strong><span>Retries</span></div>
         <div><strong>${summary.accuracy}%</strong><span>Clean rate</span></div>
       </div>
-      <div class="writing-summary-drawn"><span>Drawn ${summary.repeatTarget}× each</span><div>${summary.glyphs.map((glyph) => `<span lang="ko">${escapeHtml(glyph)}</span>`).join("")}</div></div>
+      <div class="writing-summary-drawn"><span>${summary.inputMode === "freehand" ? "Freehand" : "Guided"} · ${summary.repeatTarget}× each</span><div>${summary.glyphs.map((glyph) => `<span lang="ko">${escapeHtml(glyph)}</span>`).join("")}</div></div>
       <div class="writing-summary-improvement">${escapeHtml(getHangulWritingImprovement(summary))}</div>
       <details class="writing-summary-details">
         <summary>More session detail</summary>
@@ -15317,7 +15424,7 @@ function renderHangulWritingCompletion(el, summary) {
   });
   el.querySelector("#writingSummaryAgain").addEventListener("click", () => {
     if (!unit) return;
-    startHangulWritingSession(unit, summary.exercise, summary.repeatTarget);
+    startHangulWritingSession(unit, summary.exercise, summary.repeatTarget, summary.inputMode || "guided");
   });
 }
 
@@ -15385,6 +15492,10 @@ function renderHangulWritingPractice(el, unit) {
   const repeatProgress = hangulWritingState.repeatTarget > 1
     ? ` · pass ${hangulWritingState.repeatIndex + 1}/${hangulWritingState.repeatTarget}`
     : "";
+  const isFreehand = hangulWritingState.inputMode === "freehand";
+  const initialStrokeStatus = isFreehand
+    ? "Draw naturally, then tap Check drawing."
+    : `${guide.strokes.length} stroke${guide.strokes.length === 1 ? "" : "s"} remaining · follow standard order`;
 
   // The prompt is ONLY the required cue for the exercise — the glyph (shape),
   // a speaker (sound), or the romanization — using the same tap-to-hear token
@@ -15405,17 +15516,18 @@ function renderHangulWritingPractice(el, unit) {
     <div class="card word-card alphabet-practice-card writing-practice-card">
       <div class="writing-practice-header">
         <div class="writing-progress-tile">
-          <div class="writing-progress-line"><span class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")}</span><span class="writing-progress-count">${progressCurrent} of ${progressTotal}${repeatProgress}</span></div>
+          <div class="writing-progress-line"><span class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")} · ${isFreehand ? "Freehand" : "Guided"}</span><span class="writing-progress-count">${progressCurrent} of ${progressTotal}${repeatProgress}</span></div>
           <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPercent}%;"></span></div>
         </div>
       </div>
       <div class="quiz-card writing-quiz-card">
         <div class="quiz-visual writing-prompt-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span><span class="writing-hear-cue">Tap to hear</span></div>
-        <div class="quiz-detail writing-instruction">Write with your finger or stylus.</div>
+        <div class="quiz-detail writing-instruction writing-stroke-status" id="writingStrokeStatus" aria-live="polite">${escapeHtml(initialStrokeStatus)}</div>
         <div class="writing-canvas-wrap">
           <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
           <button class="writing-canvas-action writing-canvas-clear" type="button" id="writingClear" disabled>Erase all</button>
           <button class="writing-canvas-action writing-canvas-help" type="button" id="writingHelp">Help</button>
+          ${isFreehand ? '<button class="writing-canvas-action writing-canvas-check" type="button" id="writingCheck" disabled>Check drawing</button>' : ""}
         </div>
         <div class="writing-result-overlay" id="writingResultOverlay" aria-live="polite"></div>
       </div>
@@ -15437,14 +15549,16 @@ function renderHangulWritingPractice(el, unit) {
     hangulWritingState.strokes = [];
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
-    setHangulRecognitionFeedback("Canvas cleared · write with your finger or stylus.");
+    updateHangulStrokeStatus(initialStrokeStatus);
   });
+  const check = el.querySelector("#writingCheck");
+  if (check) check.addEventListener("click", () => checkHangulFreehandDrawing(canvas, glyph, unit));
   el.querySelector("#writingHelp").addEventListener("click", () => {
     // Help!: temporarily overlay the stroke demo, then redraw the learner's
     // existing ink. Watching is not counted as an attempt.
     if (guide && !hangulWritingState.celebrating) {
       clearHangulRecognitionTimer();
-      setHangulRecognitionFeedback("Watch the standard strokes, then try it yourself.");
+      updateHangulStrokeStatus("Watch the standard strokes, then try it yourself.");
       watchHangulGuide(canvas, guide);
     }
   });
