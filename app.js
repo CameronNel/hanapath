@@ -13461,10 +13461,22 @@ function openLearnLesson(
   });
 }
 
-// Inline complete: keep the player in place, replace hpStage with dots + next card.
-// Only the final alphabet lesson gets the "You can read Hangul!" celebration;
-// every other lesson (first run or replay) gets a plain top row of
-// next-lesson / all-lessons navigation so replays stay uncluttered.
+// Per-lesson "streamers" line for the lesson-complete screen.
+const PHASE_ONE_COMPLETE_CHEERS = {
+  "anchor-vowels": "You know the six anchor vowels!",
+  "base-consonants": "You know the base consonants!",
+  "block-geometry": "You can build syllable blocks!",
+  "complete-vowels": "You know all 21 vowels!",
+  "strong-consonants": "You know the strong consonants!",
+  "batchim-basics": "You can read batchim!",
+  "reading-graduation": "You can read real Korean words!",
+  "alphabet-mastery": "You can read Hangul!",
+};
+
+// Inline complete: keep the player in place, replace hpStage with the complete
+// layout — cheer banner, restart/next tiles, summary, return tile. Only the
+// final alphabet lesson additionally gets the Drill Lab / reference / review
+// extras; every other lesson (first run or replay) stays uncluttered.
 function renderCompleteInPlayer(index) {
   refreshProgressionState();
   // Some check modes park the hpActions bar in a slot inside the stage; pull
@@ -13476,7 +13488,6 @@ function renderCompleteInPlayer(index) {
 
   showDetailBarWithBack("learn", `Stage ${String(index + 1).padStart(2, "0")}: ${lesson.shortTitle}`, () => openLearnStageMenu("alphabet"), "Alphabet");
 
-  const dots = lesson.concepts.map(() => '<span class="done"></span>').join("");
   const summaryPoints = Array.isArray(lesson.summary) ? lesson.summary.filter(Boolean) : [];
   const summaryHtml = summaryPoints.length
     ? '<div class="lesson-summary-card">' +
@@ -13490,19 +13501,31 @@ function renderCompleteInPlayer(index) {
     : "";
 
   if (!els.phaseOneStage) return;
-  els.phaseOneStage.innerHTML = isFinalLesson
-    ? '<div class="lesson-step-row">' +
-      "<span>Done</span>" +
-      '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
-      "</div>" +
-      summaryHtml +
-      '<div class="card alphabet-complete-panel">' +
-      '<div class="eyebrow">Hangul complete</div>' +
-      '<h3 class="screen-title">You can read Hangul! 🎉</h3>' +
-      '<div class="screen-sub">Keep the alphabet sharp with infinite drills, or move on to vocabulary.</div>' +
-      '<div class="alphabet-complete-actions">' +
-      '<button class="button primary compact" type="button" id="learnDrillLabBtn">Open Drill Lab</button>' +
-      '<button class="button secondary compact" type="button" id="learnVocabBtn">Start vocabulary</button>' +
+
+  const cheer = PHASE_ONE_COMPLETE_CHEERS[lesson.id] || lesson.shortTitle + " — locked in!";
+  const cheerHtml =
+    '<div class="lesson-complete-cheer">' +
+    '<span class="lesson-complete-streamers" aria-hidden="true">🎉</span>' +
+    "<div>" +
+    '<div class="eyebrow">' + (isFinalLesson ? "Hangul complete" : "Lesson complete") + "</div>" +
+    '<h3 class="screen-title">' + escapeHtml(cheer) + "</h3>" +
+    "</div>" +
+    '<span class="lesson-complete-streamers flip" aria-hidden="true">🎉</span>' +
+    "</div>";
+
+  const tilesHtml =
+    '<div class="lesson-complete-tiles">' +
+    '<button class="lesson-complete-tile" type="button" id="learnRestartBtn">Restart lesson</button>' +
+    (isFinalLesson
+      ? '<button class="lesson-complete-tile primary" type="button" id="learnVocabBtn">Start vocabulary</button>'
+      : '<button class="lesson-complete-tile primary" type="button" id="learnNextBtn">Next lesson</button>') +
+    "</div>";
+
+  const finalExtrasHtml = isFinalLesson
+    ? '<div class="card"><div class="flex-between">' +
+      "<div><div class=\"eyebrow\">Practice · Forever</div>" +
+      '<div class="screen-sub" style="margin-bottom:0;">Keep the alphabet sharp with infinite drills.</div></div>' +
+      '<button class="button secondary compact" type="button" id="learnDrillLabBtn">Open Drill Lab</button>' +
       "</div></div>" +
       phaseOneReferenceButtonHtml() +
       (getDueLetterCount()
@@ -13513,32 +13536,27 @@ function renderCompleteInPlayer(index) {
           "</div></div>"
         : ""
       )
-    : '<div class="lesson-complete-nav">' +
-      '<button class="button primary compact" type="button" id="learnNextBtn">Next lesson</button>' +
-      '<button class="button secondary compact" type="button" id="learnAllLessonsBtn">All lessons</button>' +
-      "</div>" +
-      '<div class="lesson-step-row">' +
-      "<span>Done</span>" +
-      '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
-      "</div>" +
-      summaryHtml;
+    : "";
+
+  const returnTileHtml =
+    '<button class="lesson-complete-tile lesson-complete-return" type="button" id="learnAllLessonsBtn">Return to all lessons</button>';
+
+  els.phaseOneStage.innerHTML = cheerHtml + tilesHtml + summaryHtml + finalExtrasHtml + returnTileHtml;
 
   const playerHead = els.phaseOnePlayer && els.phaseOnePlayer.querySelector(".player-head");
   if (playerHead) playerHead.style.display = "none";
-  if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
-  if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
-  if (isFinalLesson) {
-    if (els.phaseOneBackButton) {
-      els.phaseOneBackButton.textContent = "Return to lessons";
-      els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
-    }
-  } else {
-    // The top nav row already covers both directions; drop the whole
-    // bottom action bar so nothing dangles under the summary.
-    const actionsRow = document.getElementById("hpActions");
-    if (actionsRow) actionsRow.style.display = "none";
-  }
+  // The tiles cover navigation in every case; drop the whole bottom action
+  // bar so nothing dangles under the return tile.
+  const actionsRow = document.getElementById("hpActions");
+  if (actionsRow) actionsRow.style.display = "none";
 
+  const restartBtn = document.getElementById("learnRestartBtn");
+  if (restartBtn) {
+    // Full restart from the first card/question. Completion stays recorded —
+    // replays never remove ids from state.phaseOneCompleted — and
+    // trackProgress:false keeps the Learn tab pointed at the real next lesson.
+    restartBtn.addEventListener("click", () => openLearnLesson(index, { resume: false, trackProgress: false }));
+  }
   const nextBtn = document.getElementById("learnNextBtn");
   if (nextBtn && next) nextBtn.addEventListener("click", () => openLearnLesson(index + 1));
   const allLessonsBtn = document.getElementById("learnAllLessonsBtn");

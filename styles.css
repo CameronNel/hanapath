@@ -3348,16 +3348,63 @@ li { margin-bottom: 4px; }
   gap: 10px;
   margin-top: 2px;
 }
-/* Lesson-complete top row: next-lesson / all-lessons navigation shown on every
-   non-final alphabet lesson (replays included) instead of the celebration. */
-.lesson-complete-nav {
+/* Alphabet lesson-complete screen: cheer banner with streamers, big
+   restart/next tiles, and a full-width return tile under the summary. */
+.lesson-complete-cheer {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 6px 4px 16px;
+}
+.lesson-complete-cheer .eyebrow { margin-bottom: 2px; }
+.lesson-complete-cheer .screen-title { margin-bottom: 0; }
+.lesson-complete-streamers {
+  font-size: 1.9rem;
+  line-height: 1;
+  animation: cheer-pop .55s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+.lesson-complete-streamers.flip { transform: scaleX(-1); animation-name: cheer-pop-flip; }
+@keyframes cheer-pop {
+  0% { transform: scale(.3) rotate(-24deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes cheer-pop-flip {
+  0% { transform: scaleX(-1) scale(.3) rotate(-24deg); opacity: 0; }
+  100% { transform: scaleX(-1) scale(1) rotate(0deg); opacity: 1; }
+}
+.lesson-complete-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
   margin-bottom: 14px;
 }
-.lesson-complete-nav .button {
-  flex: 1;
-  min-width: 0;
+.lesson-complete-tile {
+  padding: 20px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, .06);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  font-size: .95rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background .15s ease, box-shadow .15s ease;
+}
+.lesson-complete-tile:hover { background: rgba(255, 255, 255, .1); }
+.lesson-complete-tile.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0d0820;
+  box-shadow: 0 6px 16px rgba(91, 157, 255, .14);
+}
+.lesson-complete-tile.primary:hover { box-shadow: 0 16px 34px rgba(91, 157, 255, .28); }
+.lesson-complete-return {
+  display: block;
+  width: 100%;
+  margin-top: 2px;
 }
 
 /* ─── Words section (word bank + guided word lessons) ─────────────────────── */
