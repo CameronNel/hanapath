@@ -1,12 +1,12 @@
 // [2026-07-11] Cache bumped to v336: friendly sentence lesson display names + tidy alphabet test button.
-const CACHE_NAME = "hanapath-shell-v341";
+const CACHE_NAME = "hanapath-shell-v342";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260712e",
+  "./styles.css?v=20260712f",
   "./lib/hangul.js",
   "./audio_map.js?v=20260709g",
   "./words_curated_core.js?v=20260705e",
