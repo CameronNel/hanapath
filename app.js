@@ -13325,8 +13325,12 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
       void playPhaseOneVoiceSequence();
     });
   }
-  els.phaseOneBackButton.addEventListener("click", goBackPhaseOne);
+  els.phaseOneBackButton.addEventListener("click", () => {
+    if (phaseOneView.mode === "complete") return;
+    goBackPhaseOne();
+  });
   els.phaseOneActionButton.addEventListener("click", () => {
+    if (phaseOneView.mode === "complete") return;
     const wasResult = phaseOneView.mode === "result";
     advancePhaseOne();
     if (!wasResult && phaseOneView.mode === "result" && typeof onResult === "function") {
@@ -13468,6 +13472,8 @@ function renderCompleteInPlayer(index) {
   const nextIndex = getFirstIncompletePhaseOneIndex();
   const next = phaseOneLessons[nextIndex];
 
+  phaseOneView.mode = "complete";
+
   showDetailBarWithBack("learn", `Stage ${String(index + 1).padStart(2, "0")}: ${lesson.shortTitle}`, () => openLearnStageMenu("alphabet"), "Alphabet");
 
   const dots = lesson.concepts.map(() => '<span class="done"></span>').join("");
@@ -13489,8 +13495,10 @@ function renderCompleteInPlayer(index) {
     "<span>Done</span>" +
     '<div class="lesson-dots" aria-hidden="true">' + dots + "</div>" +
     "</div>" +
+    '<div class="lesson-complete-hero"><div class="eyebrow">Lesson complete</div><h2 class="screen-title">You know the ' + escapeHtml(String(lesson.title).toLowerCase()) + '! 🎉</h2></div>' +
+    '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     summaryHtml +
-    '<div class="card alphabet-complete-panel">' +
+    '<div class="card alphabet-complete-panel" hidden>' +
     (next
       ? '<div class="eyebrow">Keep going</div>' +
         '<h3 class="screen-title" style="margin-bottom:8px;">Next: ' + escapeHtml(next.shortTitle) + "</h3>" +
@@ -13506,6 +13514,7 @@ function renderCompleteInPlayer(index) {
     ) +
     "</div>" +
     phaseOneReferenceButtonHtml() +
+    '<button class="button secondary compact alphabet-complete-return" type="button" id="learnReturnBtn">Return to all lessons</button>' +
     (getDueLetterCount()
       ? '<div class="card"><div class="flex-between">' +
         "<div><div class=\"eyebrow\">Make it stick</div>" +
@@ -13517,13 +13526,20 @@ function renderCompleteInPlayer(index) {
 
   const playerHead = els.phaseOnePlayer && els.phaseOnePlayer.querySelector(".player-head");
   if (playerHead) playerHead.style.display = "none";
-  if (els.phaseOneActionButton) els.phaseOneActionButton.style.display = "none";
+  if (els.phaseOneActionButton) {
+    els.phaseOneActionButton.style.display = "";
+    els.phaseOneActionButton.textContent = next ? "Next lesson" : "Open Drill Lab";
+    els.phaseOneActionButton.onclick = next ? () => startNextLearn() : () => openAlphabetDrillLab();
+  }
   if (els.phaseOneHearButton) els.phaseOneHearButton.style.display = "none";
   if (els.phaseOneBackButton) {
-    els.phaseOneBackButton.textContent = "Return to lessons";
-    els.phaseOneBackButton.onclick = () => openLearnStageMenu("alphabet");
+    els.phaseOneBackButton.textContent = "Restart lesson";
+    els.phaseOneBackButton.onclick = () => openLearnLesson(index, { startMode: "intro" });
   }
+  placePhaseOneActions();
 
+  const returnBtn = document.getElementById("learnReturnBtn");
+  if (returnBtn) returnBtn.addEventListener("click", () => openLearnStageMenu("alphabet"));
   const nextBtn = document.getElementById("learnNextBtn");
   if (nextBtn) nextBtn.addEventListener("click", () => startNextLearn());
   const letterReviewBtn = document.getElementById("learnLetterReviewBtn");
