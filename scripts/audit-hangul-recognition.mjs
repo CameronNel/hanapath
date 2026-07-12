@@ -76,6 +76,21 @@ for (const [glyph, guide] of Object.entries(bank)) {
   }
 }
 
+const freehandFailures = [];
+let freehandCases = 0;
+let minimumFreehandConfidence = 1;
+for (const [glyph, guide] of Object.entries(bank)) {
+  const joined = [guide.strokes.flatMap((stroke) => stroke)];
+  const matches = recognizer.recognize(joined, 3);
+  const target = matches.find((match) => match.name === glyph) || null;
+  freehandCases += 1;
+  if (!target || target.confidence < 0.82) {
+    freehandFailures.push({ glyph, matches: matches.map((match) => `${match.name}:${match.confidence.toFixed(3)}`).join(" ") });
+  } else {
+    minimumFreehandConfidence = Math.min(minimumFreehandConfidence, target.confidence);
+  }
+}
+
 console.log("Hangul recognition audit");
 console.log("========================");
 console.log(`algorithm          : ${API.algorithm}`);
@@ -83,10 +98,17 @@ console.log(`templates          : ${Object.keys(bank).length}`);
 console.log(`mobile ink cases   : ${cases}`);
 console.log(`top-1 failures     : ${failures.length}`);
 console.log(`minimum confidence : ${minimumConfidence.toFixed(3)}`);
+console.log(`joined freehand    : ${freehandCases}`);
+console.log(`freehand failures  : ${freehandFailures.length}`);
+console.log(`freehand min conf  : ${minimumFreehandConfidence.toFixed(3)}`);
 
-if (failures.length) {
+if (failures.length || freehandFailures.length) {
   console.log("\nFirst failures:");
   failures.slice(0, 20).forEach((failure) => console.log(`  ${failure.glyph} variant ${failure.variant}: ${failure.matches}`));
+  if (freehandFailures.length) {
+    console.log("\nFreehand failures:");
+    freehandFailures.slice(0, 20).forEach((failure) => console.log(`  ${failure.glyph}: ${failure.matches}`));
+  }
   process.exit(1);
 }
 
