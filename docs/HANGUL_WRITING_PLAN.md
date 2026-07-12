@@ -1,10 +1,10 @@
 # Hangul Writing plan — draw-to-learn for the Alphabet section
 
-> **Status:** W0 (shell, PR #224) and W1 (stroke guides + Watch + tracing for
-> the 16 basic jamo, commit 0637ee6a) are **merged to main**. The remaining
-> queue for **Opus** is W2 → W1b → W3 in §4. The normative grading spec for W2
-> is §7; the verbatim Opus work-order prompt for W2 is §8. One box = one PR,
-> per repo convention.
+> **Status:** W0–W2 and syllable-guide composition are merged. W1b still needs
+> advanced-jamo guides; W3 persistence remains open. The owner approved W4's
+> offline mobile handwriting recognizer on 2026-07-12; its implementation is
+> pending review on `codex/mobile-hangul-recognition`. The normative W2 stroke
+> pedagogy remains §7. One focused change = one PR, per repo convention.
 
 ## 1. Goal
 
@@ -20,9 +20,11 @@ Owner-set scope boundary (2026-07-10):
 
 ## 2. Hard constraints (inherited from CLAUDE.md — restated because they bind every phase)
 
-1. Vanilla/static only. No framework, no bundler, no build step, no new
-   dependencies or libraries (no ML/recognition libraries; hanzi-writer etc. are
-   **not** allowed). Canvas 2D + pointer events only.
+1. Vanilla/static only. No framework, no bundler, no build step. Recognition
+   code must be committed, offline-capable browser JavaScript rather than a
+   cloud service. **Owner exception (2026-07-12):** the New-BSD `$Q` recognizer
+   is approved as a vendored local dependency for the mobile writing rework.
+   Canvas 2D + pointer events remain the input surface.
 2. **The Alphabet section is complete and protected.** Writing is additive: it
    must not change lesson content, quiz decks, `getAlphabetProgress()`
    semantics, or unlock order. Writing *reads* alphabet progress; it never
@@ -105,15 +107,26 @@ stub comments.
   show per-glyph completion. Optional light integration: a "practice writing"
   link from the finished-alphabet reference screen. **No SRS, no XP changes,
   no gating changes** without a separate owner decision.
+- [~] **W4 — Mobile handwriting recognition.** *(Owner-approved 2026-07-12;
+  implemented on `codex/mobile-hangul-recognition`, pending review.)* Vendor a
+  guarded New-BSD `$Q` browser adapter and generate its templates from the
+  existing authored jamo/composed-syllable guides. Let learners keep real
+  finger/stylus ink, report ranked “I read this as…” results, and retain the W2
+  sequence grader as a separate standard stroke-order/direction check. Add
+  touch-coalesced capture, Undo/Clear, accessible live feedback, deterministic
+  recognition stress coverage, and full offline app-shell wiring. Architecture
+  must remain suitable for eventual Google Play packaging.
 
 Anything beyond W3 (writing SRS, Words-section word writing, handwriting
-recognition) is **owner-gated 🔒 — propose, don't build.**
+recognition) is **owner-gated 🔒 — propose, don't build.** W4 is the explicit
+owner-approved exception; it does not authorize word writing or writing SRS.
 
 ## 5. Design decisions already made (don't relitigate)
 
-- **Canvas 2D freehand + authored stroke guides**, not SVG-pointer-capture or
-  third-party recognizers. Grading is heuristic, honest about being heuristic,
-  and always paired with the visual compare-to-reference step.
+- **Canvas 2D freehand + authored stroke guides** remain the source of truth.
+  As of the owner-approved W4 rework, `$Q` identifies the drawn glyph while the
+  authored W2 heuristic separately teaches standard stroke order/direction.
+  Recognition never replaces the pedagogical check or requires a network.
 - Stroke data is **hand-authored static data**, reviewed like curriculum data.
   Format suggestion: per glyph, an array of strokes, each stroke an array of
   normalized `[x, y]` points in a 0–1 box (straight strokes may be 2 points);

@@ -71,6 +71,8 @@ Sentences queue.
    `node scripts/audit-words-data.mjs --strict`,
    `node scripts/audit-sentences-data.mjs --strict`, and
    `node scripts/audit-alphabet-audio.mjs --strict`; run
+   `node scripts/audit-hangul-recognition.mjs` after changing Hangul writing
+   recognition, stroke templates, or its browser adapter; run
    `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
    any loaded asset version; `node --check` any JS you edit.
 4. **Bump caches** when you change `app.js`, `styles.css`, or any loaded data
