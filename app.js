@@ -14535,7 +14535,7 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
     updateHangulWritingControls();
     const guide = getHangulStrokeGuide(glyph);
     updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-      ? "Draw naturally, then tap Check drawing."
+      ? "Draw naturally · pause to auto-check, or tap Check drawing."
       : `${guide?.strokes?.length || 0} stroke${guide?.strokes?.length === 1 ? "" : "s"} remaining · follow standard order`);
     canvas.focus({ preventScroll: true });
   });
@@ -14884,16 +14884,40 @@ function scoreHangulStrokeAgainst(inkPts, guidePts) {
   return { score, pass: reason === null, reason };
 }
 
-// §7.3 closed-stroke rule: circles (ㅇ, the bottom of ㅎ) are graded against
-// the guide stroke forward AND reversed, keeping the better result, so a
-// clockwise circle is not failed on direction. Forward vs reversed only.
+// Closed strokes can begin anywhere around the loop and run in either
+// direction. Generate every cyclic start-point variant in both directions so
+// a learner's circle is judged by its shape, not where their finger landed.
+function getHangulClosedStrokeVariants(guidePts) {
+  if (!Array.isArray(guidePts) || guidePts.length < 3) return [guidePts];
+  const core = hangulPairDist(guidePts[0], guidePts[guidePts.length - 1]) < 0.05
+    ? guidePts.slice(0, -1)
+    : [...guidePts];
+  const variants = [];
+  [core, [...core].reverse()].forEach((ordered) => {
+    for (let offset = 0; offset < ordered.length; offset += 1) {
+      const rotated = [...ordered.slice(offset), ...ordered.slice(0, offset)];
+      variants.push([...rotated, rotated[0]]);
+    }
+  });
+  return variants;
+}
+
+function bestHangulStrokeScore(inkPts, guideVariants, scorer) {
+  return guideVariants.reduce((best, guide) => {
+    const candidate = scorer(inkPts, guide);
+    if (!best) return candidate;
+    if (candidate.pass !== best.pass) return candidate.pass ? candidate : best;
+    return candidate.score > best.score ? candidate : best;
+  }, null);
+}
+
+// §7.3 closed-stroke rule: circles (ㅇ, the bottom of ㅎ) are invariant to
+// both drawing direction and starting position.
 function scoreHangulStroke(inkPts, guidePts) {
   const forward = scoreHangulStrokeAgainst(inkPts, guidePts);
   const isClosed = hangulPairDist(guidePts[0], guidePts[guidePts.length - 1]) < 0.05;
   if (!isClosed) return forward;
-  const reversed = scoreHangulStrokeAgainst(inkPts, guidePts.slice().reverse());
-  if (forward.pass !== reversed.pass) return forward.pass ? forward : reversed;
-  return reversed.score > forward.score ? reversed : forward;
+  return bestHangulStrokeScore(inkPts, getHangulClosedStrokeVariants(guidePts), scoreHangulStrokeAgainst);
 }
 
 // Position/scale-FREE scoring for the first stroke of an attempt. With no
@@ -14920,9 +14944,7 @@ function scoreHangulStrokeFree(inkPts, guidePts) {
   const forward = scoreHangulStrokeFreeAgainst(inkPts, guidePts);
   const isClosed = hangulPairDist(guidePts[0], guidePts[guidePts.length - 1]) < 0.05;
   if (!isClosed) return forward;
-  const reversed = scoreHangulStrokeFreeAgainst(inkPts, guidePts.slice().reverse());
-  if (forward.pass !== reversed.pass) return forward.pass ? forward : reversed;
-  return reversed.score > forward.score ? reversed : forward;
+  return bestHangulStrokeScore(inkPts, getHangulClosedStrokeVariants(guidePts), scoreHangulStrokeFreeAgainst);
 }
 
 // Fit a translation + uniform scale mapping the guide onto the learner's
@@ -15114,8 +15136,9 @@ function validateLatestHangulGuidedStroke(canvas, glyph) {
   const index = strokes.length - 1;
   if (index >= guide.strokes.length) {
     hangulWritingState.strokes.pop();
+    recordHangulWritingResult(glyph, "retry");
     drawHangulWritingCanvas(canvas);
-    updateHangulStrokeStatus(`All standard strokes are already present — tap Check or retry.`, "wrong");
+    updateHangulStrokeStatus("That extra stroke was not needed — wait for the current check.", "wrong");
     return { pass: false, remaining: 0 };
   }
   const result = index === 0
@@ -15126,6 +15149,7 @@ function validateLatestHangulGuidedStroke(canvas, glyph) {
       );
   if (!result.pass) {
     hangulWritingState.strokes.pop();
+    recordHangulWritingResult(glyph, "retry");
     drawHangulWritingCanvas(canvas);
     updateHangulStrokeStatus(getHangulGuidedStrokeHint(guide.strokes[index], index), "wrong");
     updateHangulWritingControls();
@@ -15139,9 +15163,11 @@ function validateLatestHangulGuidedStroke(canvas, glyph) {
 }
 
 function checkHangulFreehandDrawing(canvas, glyph, unit) {
+  if (hangulWritingState.celebrating) return;
+  clearHangulRecognitionTimer();
   const strokes = getNormalizedHangulWritingStrokes(canvas);
   if (!strokes.length) {
-    updateHangulStrokeStatus("Draw the whole shape, then tap Check drawing.", "wrong");
+    updateHangulStrokeStatus("Draw the whole shape first.", "wrong");
     return;
   }
   const matches = recognizeHangulWriting(canvas, 3);
@@ -15154,6 +15180,23 @@ function checkHangulFreehandDrawing(canvas, glyph, unit) {
       ? `This currently looks closest to ${top.name}. Refine the overall shape and check again.`
       : `HanaPath could not read that shape yet. Make it a little clearer and try again.`;
   showHangulWritingResult({ glyph, strokes, correct, detail, unit });
+}
+
+function scheduleHangulFreehandAutoCheck(canvas, glyph, unit) {
+  clearHangulRecognitionTimer();
+  updateHangulStrokeStatus("Pause when finished · checking automatically…", "good");
+  hangulRecognitionTimer = window.setTimeout(() => {
+    hangulRecognitionTimer = null;
+    const activeUnit = getHangulWritingUnit();
+    if (
+      hangulWritingState.inputMode !== "freehand" ||
+      hangulWritingState.celebrating ||
+      !activeUnit ||
+      activeUnit.id !== unit.id ||
+      activeUnit.glyphs[hangulWritingState.glyphIndex] !== glyph
+    ) return;
+    checkHangulFreehandDrawing(canvas, glyph, unit);
+  }, 1100);
 }
 
 function scheduleHangulWritingRecognition(canvas, glyph, unit) {
@@ -15278,12 +15321,12 @@ function bindHangulWritingCanvas(canvas) {
     updateHangulWritingControls();
     if (!cleaned || !unit || !glyph) {
       updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-        ? "Draw naturally, then tap Check drawing."
+        ? "Draw naturally · pause to auto-check, or tap Check drawing."
         : "Keep going with the next standard stroke.");
       return;
     }
     if (hangulWritingState.inputMode === "freehand") {
-      updateHangulStrokeStatus("Ready when you are · tap Check drawing", "good");
+      scheduleHangulFreehandAutoCheck(canvas, glyph, unit);
       return;
     }
     const validation = validateLatestHangulGuidedStroke(canvas, glyph);
@@ -15299,7 +15342,7 @@ function bindHangulWritingCanvas(canvas) {
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
     updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-      ? "Draw naturally, then tap Check drawing."
+      ? "Draw naturally · pause to auto-check, or tap Check drawing."
       : "Keep going with the next standard stroke.");
   };
   canvas.addEventListener("pointercancel", cancelStroke);
@@ -15494,7 +15537,7 @@ function renderHangulWritingPractice(el, unit) {
     : "";
   const isFreehand = hangulWritingState.inputMode === "freehand";
   const initialStrokeStatus = isFreehand
-    ? "Draw naturally, then tap Check drawing."
+    ? "Draw naturally · pause to auto-check, or tap Check drawing."
     : `${guide.strokes.length} stroke${guide.strokes.length === 1 ? "" : "s"} remaining · follow standard order`;
 
   // The prompt is ONLY the required cue for the exercise — the glyph (shape),
