@@ -4587,7 +4587,7 @@ li { margin-bottom: 4px; }
   gap: 6px;
 }
 .writing-canvas {
-  width: min(100%, 360px);
+  width: 100%;
   aspect-ratio: 1;
   height: auto;
   border-radius: 16px;
@@ -4595,8 +4595,34 @@ li { margin-bottom: 4px; }
   touch-action: none;
   cursor: crosshair;
   display: block;
+  margin: 0;
+}
+.writing-canvas-wrap {
+  position: relative;
+  width: min(100%, 340px);
   margin: 8px auto 0;
 }
+.writing-canvas-action {
+  position: absolute;
+  top: 10px;
+  z-index: 2;
+  min-height: 34px;
+  padding: 7px 11px;
+  color: var(--text);
+  background: rgba(10, 18, 39, .82);
+  border: 1px solid rgba(125, 168, 255, .3);
+  border-radius: 10px;
+  font-size: .72rem;
+  font-weight: 750;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 18px rgba(4, 9, 24, .2);
+}
+.writing-canvas-action:disabled { opacity: .4; }
+.writing-canvas-action:not(:disabled):hover { border-color: var(--accent); background: rgba(32, 52, 88, .9); }
+.writing-canvas-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.writing-canvas-clear { left: 10px; }
+.writing-canvas-help { right: 10px; }
 .writing-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -4644,6 +4670,78 @@ li { margin-bottom: 4px; }
   font: 700 .9rem "Noto Sans KR", sans-serif;
 }
 .writing-recognition-chip.primary { border-color: var(--accent); background: rgba(91,157,255,.14); }
+
+.writing-practice-header {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+  align-items: stretch;
+}
+.writing-progress-tile,
+.writing-next-tile {
+  min-height: 82px;
+  border-radius: 14px;
+}
+.writing-progress-tile {
+  padding: 12px 14px;
+  background: rgba(91, 157, 255, .08);
+  border: 1px solid rgba(91, 157, 255, .3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+}
+.writing-progress-count {
+  margin: 3px 0 8px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+.writing-next-tile {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: .92rem;
+}
+.writing-next-tile span { font-size: 1.25rem; line-height: 1; }
+.writing-prompt-visual {
+  min-height: 112px;
+  margin-bottom: 8px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(255,255,255,.035);
+}
+.writing-prompt-visual .checkpoint-token {
+  font-size: 2.75rem;
+  line-height: 1;
+}
+.writing-quiz-card .quiz-detail {
+  margin-bottom: 4px;
+  font-size: .78rem;
+}
 @media (max-width: 420px) {
-  .writing-toolbar.word-card-nav-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .writing-practice-card { padding: 12px; }
+  .writing-practice-header { gap: 8px; margin-bottom: 10px; }
+  .writing-progress-tile,
+  .writing-next-tile { min-height: 72px; }
+  .writing-progress-tile { padding: 9px 11px; }
+  .writing-progress-count { margin: 2px 0 6px; font-size: .72rem; }
+  .writing-quiz-card { padding: 12px; }
+  .writing-prompt-visual { min-height: 82px; padding: 10px; margin-bottom: 5px; }
+  .writing-prompt-visual .checkpoint-token { font-size: 2.25rem; }
+  .writing-canvas-wrap { width: min(100%, 278px); margin-top: 6px; }
+  .writing-recognition {
+    width: min(100%, 278px);
+    min-height: 38px;
+    margin-top: 6px;
+    padding: 6px 9px;
+    font-size: .7rem;
+  }
+  .writing-canvas-action { top: 8px; min-height: 31px; padding: 6px 9px; font-size: .68rem; }
+  .writing-canvas-clear { left: 8px; }
+  .writing-canvas-help { right: 8px; }
 }
