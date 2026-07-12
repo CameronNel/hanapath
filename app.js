@@ -14535,7 +14535,7 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
     updateHangulWritingControls();
     const guide = getHangulStrokeGuide(glyph);
     updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-      ? "Draw naturally, then tap Check drawing."
+      ? "Draw naturally · pause to auto-check, or tap Check drawing."
       : `${guide?.strokes?.length || 0} stroke${guide?.strokes?.length === 1 ? "" : "s"} remaining · follow standard order`);
     canvas.focus({ preventScroll: true });
   });
@@ -15163,9 +15163,11 @@ function validateLatestHangulGuidedStroke(canvas, glyph) {
 }
 
 function checkHangulFreehandDrawing(canvas, glyph, unit) {
+  if (hangulWritingState.celebrating) return;
+  clearHangulRecognitionTimer();
   const strokes = getNormalizedHangulWritingStrokes(canvas);
   if (!strokes.length) {
-    updateHangulStrokeStatus("Draw the whole shape, then tap Check drawing.", "wrong");
+    updateHangulStrokeStatus("Draw the whole shape first.", "wrong");
     return;
   }
   const matches = recognizeHangulWriting(canvas, 3);
@@ -15178,6 +15180,23 @@ function checkHangulFreehandDrawing(canvas, glyph, unit) {
       ? `This currently looks closest to ${top.name}. Refine the overall shape and check again.`
       : `HanaPath could not read that shape yet. Make it a little clearer and try again.`;
   showHangulWritingResult({ glyph, strokes, correct, detail, unit });
+}
+
+function scheduleHangulFreehandAutoCheck(canvas, glyph, unit) {
+  clearHangulRecognitionTimer();
+  updateHangulStrokeStatus("Pause when finished · checking automatically…", "good");
+  hangulRecognitionTimer = window.setTimeout(() => {
+    hangulRecognitionTimer = null;
+    const activeUnit = getHangulWritingUnit();
+    if (
+      hangulWritingState.inputMode !== "freehand" ||
+      hangulWritingState.celebrating ||
+      !activeUnit ||
+      activeUnit.id !== unit.id ||
+      activeUnit.glyphs[hangulWritingState.glyphIndex] !== glyph
+    ) return;
+    checkHangulFreehandDrawing(canvas, glyph, unit);
+  }, 1100);
 }
 
 function scheduleHangulWritingRecognition(canvas, glyph, unit) {
@@ -15302,12 +15321,12 @@ function bindHangulWritingCanvas(canvas) {
     updateHangulWritingControls();
     if (!cleaned || !unit || !glyph) {
       updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-        ? "Draw naturally, then tap Check drawing."
+        ? "Draw naturally · pause to auto-check, or tap Check drawing."
         : "Keep going with the next standard stroke.");
       return;
     }
     if (hangulWritingState.inputMode === "freehand") {
-      updateHangulStrokeStatus("Ready when you are · tap Check drawing", "good");
+      scheduleHangulFreehandAutoCheck(canvas, glyph, unit);
       return;
     }
     const validation = validateLatestHangulGuidedStroke(canvas, glyph);
@@ -15323,7 +15342,7 @@ function bindHangulWritingCanvas(canvas) {
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
     updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-      ? "Draw naturally, then tap Check drawing."
+      ? "Draw naturally · pause to auto-check, or tap Check drawing."
       : "Keep going with the next standard stroke.");
   };
   canvas.addEventListener("pointercancel", cancelStroke);
@@ -15518,7 +15537,7 @@ function renderHangulWritingPractice(el, unit) {
     : "";
   const isFreehand = hangulWritingState.inputMode === "freehand";
   const initialStrokeStatus = isFreehand
-    ? "Draw naturally, then tap Check drawing."
+    ? "Draw naturally · pause to auto-check, or tap Check drawing."
     : `${guide.strokes.length} stroke${guide.strokes.length === 1 ? "" : "s"} remaining · follow standard order`;
 
   // The prompt is ONLY the required cue for the exercise — the glyph (shape),

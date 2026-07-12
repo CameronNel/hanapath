@@ -4629,8 +4629,8 @@ li { margin-bottom: 4px; }
   backdrop-filter: none;
 }
 .writing-canvas-check {
-  top: auto;
-  bottom: 10px;
+  top: 10px;
+  bottom: auto;
   left: 50%;
   transform: translateX(-50%);
   min-width: 112px;
@@ -5017,13 +5017,15 @@ li { margin-bottom: 4px; }
   .writing-progress-line { margin-bottom: 5px; }
   .writing-progress-count { font-size: .66rem; }
   .writing-quiz-card { padding: 12px; }
-  .writing-prompt-visual { min-height: 82px; padding: 10px; margin-bottom: 5px; }
-  .writing-prompt-visual .checkpoint-token { font-size: 2.25rem; }
-  .writing-canvas-wrap { width: min(100%, 278px); margin-top: 6px; }
+  .writing-prompt-visual { min-height: 62px; padding: 7px 10px; margin-bottom: 3px; }
+  .writing-prompt-visual .checkpoint-token { font-size: 1.9rem; }
+  .writing-hear-cue { font-size: .66rem; }
+  .writing-quiz-card .writing-instruction { font-size: .7rem; margin-bottom: 2px; }
+  .writing-canvas-wrap { width: min(100%, 296px); margin-top: 4px; }
   .writing-canvas-action { top: 8px; min-height: 31px; padding: 6px 9px; font-size: .68rem; }
   .writing-canvas-clear { left: 8px; }
   .writing-canvas-help { right: 8px; }
-  .writing-canvas-check { bottom: 8px; }
+  .writing-canvas-check { top: 8px; bottom: auto; }
   .writing-reentry-actions { grid-template-columns: 1fr; }
   .writing-multiplier-options { gap: 7px; }
   .writing-input-mode-picker { gap: 7px; }
