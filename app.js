@@ -9557,14 +9557,14 @@ function renderCheckpointAudioHelpers(lesson, question) {
 
   if (!hasTarget && !hasComponents) return "";
 
-  let html = '<div class="checkpoint-audio-helpers" style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; width: 100%;">';
+  let html = '<div class="checkpoint-audio-helpers">';
 
   if (hasTarget) {
-    html += '<button class="button secondary compact" type="button" data-checkpoint-speak-target="' + escapeHtml(targetText) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear target</button>';
+    html += '<button class="checkpoint-audio-tile" type="button" data-checkpoint-speak-target="' + escapeHtml(targetText) + '"><span class="checkpoint-audio-icon" aria-hidden="true">▶</span><span class="checkpoint-audio-copy"><strong>Hear target</strong><small>Full syllable</small></span></button>';
   }
 
   if (hasComponents) {
-    html += '<button class="button secondary compact" type="button" data-checkpoint-speak-components="' + escapeHtml(components.join(",")) + '" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">🔊 Hear building blocks</button>';
+    html += '<button class="checkpoint-audio-tile" type="button" data-checkpoint-speak-components="' + escapeHtml(components.join(",")) + '"><span class="checkpoint-audio-icon checkpoint-audio-icon-parts" aria-hidden="true">••</span><span class="checkpoint-audio-copy"><strong>Hear building blocks</strong><small>Sound by sound</small></span></button>';
   }
 
   html += '</div>';
@@ -9669,7 +9669,7 @@ function renderPhaseOneQuestion(lesson) {
               .map(
                 (option) =>
                   '<div class="lesson-option-row">' +
-                    '<button class="lesson-option" type="button" data-option="' + escapeHtml(option) + '">' + escapeHtml(option) + '</button>' +
+                    '<button class="lesson-option" type="button" lang="ko" data-option="' + escapeHtml(option) + '"><span class="lesson-option-hangul">' + escapeHtml(option) + '</span></button>' +
                     (option !== "No letter" && option !== "To the right" && option !== "Below the consonant" && option !== "On the floor" && option !== "Above the block"
                       ? '<button class="button secondary compact speak-option-btn" type="button" data-speak-option="' + escapeHtml(option) + '" aria-label="Hear option ' + escapeHtml(option) + '">🔊</button>'
                       : '') +
@@ -9856,7 +9856,10 @@ function restoreAnsweredChoiceVisual(question) {
     b.disabled = true;
     if ((b.dataset.option || "") === question.answer) b.classList.add("correct");
   });
-  if (feedback) feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation || "");
+  if (feedback) {
+    feedback.classList.add("correct");
+    feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation || "");
+  }
   els.phaseOneActionButton.disabled = false;
   refreshPhaseOneHearLabel();
 }
@@ -9899,6 +9902,7 @@ function answerPhaseOneQuestion(choice, button) {
     button.classList.add("wrong");
     button.disabled = true;
     const rule = question.explanation || question.detail || "Use the shape clue and try another answer.";
+    feedback.className = "lesson-feedback wrong";
     feedback.innerHTML = "<strong>Not yet.</strong> " + escapeHtml(rule);
     showRetryToast(rule);
     speakClickableText(choice, { preferSoundLabels: true });
@@ -9913,6 +9917,7 @@ function answerPhaseOneQuestion(choice, button) {
       optionButton.classList.add("correct");
     }
   });
+  feedback.className = "lesson-feedback correct";
   feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation);
   showCorrectToast();
   speakClickableText(choice, { preferSoundLabels: true });

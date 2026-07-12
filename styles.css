@@ -1209,6 +1209,16 @@ button.bd-assembled:hover {
   min-height: 0;
 }
 .lesson-feedback:not(:empty) { background: rgba(255,255,255,.05); }
+.lesson-feedback.correct:not(:empty) {
+  color: #b9f6df;
+  background: linear-gradient(135deg, rgba(45, 212, 191, .18), rgba(34, 197, 94, .1));
+  border: 1px solid rgba(45, 212, 191, .4);
+  box-shadow: 0 10px 24px rgba(16, 185, 129, .1);
+}
+.lesson-feedback.wrong:not(:empty) {
+  background: rgba(248, 113, 113, .1);
+  border: 1px solid rgba(248, 113, 113, .25);
+}
 
 .letter-review-banner {
   background: rgba(45, 212, 191, .08);
@@ -3228,10 +3238,14 @@ li { margin-bottom: 4px; }
 
 .visual-comp {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 8px;
+  min-width: 58px;
+  padding: 10px 14px;
+  border-radius: 14px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1.5px dashed transparent;
+  color: var(--text);
+  background: linear-gradient(145deg, rgba(91, 157, 255, .13), rgba(167, 139, 250, .08));
+  border: 1px solid rgba(125, 168, 255, .3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 10px 24px rgba(4, 13, 36, .2);
   line-height: 1.2;
 }
 
@@ -3262,16 +3276,114 @@ li { margin-bottom: 4px; }
 }
 
 .lesson-option-row .speak-option-btn {
-  width: 46px;
-  height: 46px;
+  width: 34px;
+  height: auto;
+  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border-radius: var(--radius-xs);
+  border-radius: 10px;
   padding: 0;
   margin-bottom: 0 !important;
-  font-size: 1.1rem;
+  font-size: .88rem;
+  color: #9fc5ff;
+  background: rgba(91, 157, 255, .08);
+  border-color: rgba(125, 168, 255, .22);
+}
+
+.checkpoint-right-pane .lesson-option-row {
+  gap: 7px;
+}
+
+.checkpoint-right-pane .lesson-option {
+  min-height: 58px;
+  padding: 8px 10px;
+  text-align: center;
+  background: linear-gradient(145deg, rgba(91, 157, 255, .13), rgba(167, 139, 250, .08));
+  border-color: rgba(125, 168, 255, .3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 8px 20px rgba(4, 13, 36, .18);
+}
+
+.lesson-option-hangul {
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.checkpoint-audio-helpers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  margin: 2px 0 0;
+}
+
+.checkpoint-audio-tile {
+  min-width: 0;
+  min-height: 64px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  color: var(--text);
+  background: linear-gradient(145deg, rgba(91, 157, 255, .12), rgba(255, 255, 255, .035));
+  border: 1px solid rgba(125, 168, 255, .26);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 8px 20px rgba(4, 13, 36, .16);
+  transition: transform var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
+}
+
+.checkpoint-audio-tile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(91, 157, 255, .55);
+  background: linear-gradient(145deg, rgba(91, 157, 255, .2), rgba(255, 255, 255, .05));
+}
+
+.checkpoint-audio-tile:active { transform: scale(.98); }
+
+.checkpoint-audio-tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.checkpoint-audio-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  color: #dbeafe;
+  background: rgba(91, 157, 255, .2);
+  border: 1px solid rgba(125, 168, 255, .36);
+  border-radius: 10px;
+  font-size: .68rem;
+}
+
+.checkpoint-audio-icon-parts {
+  letter-spacing: 1px;
+  font-size: .72rem;
+}
+
+.checkpoint-audio-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.checkpoint-audio-copy strong {
+  font-size: .78rem;
+  line-height: 1.2;
+}
+
+.checkpoint-audio-copy small {
+  color: var(--muted);
+  font-size: .66rem;
+  line-height: 1.2;
 }
 
 @media (max-width: 680px) {
@@ -3287,6 +3399,26 @@ li { margin-bottom: 4px; }
     padding-bottom: 20px;
     min-height: auto;
   }
+  .checkpoint-visual-container {
+    margin-bottom: 6px;
+  }
+  .checkpoint-audio-helpers {
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 390px) {
+  .checkpoint-audio-tile {
+    padding: 9px;
+    gap: 7px;
+  }
+  .checkpoint-audio-icon {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+  }
+  .checkpoint-audio-copy strong { font-size: .72rem; }
+  .checkpoint-audio-copy small { font-size: .61rem; }
 }
 
 /* Alphabet Drill Lab mode picker */
