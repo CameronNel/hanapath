@@ -14358,6 +14358,66 @@ function setHangulRecognitionFeedback(message, matches = [], tone = "") {
   panel.innerHTML = `<span class="writing-recognition-message">${escapeHtml(message)}</span>${guesses ? `<span class="writing-recognition-guesses" aria-label="Recognition guesses">${guesses}</span>` : ""}`;
 }
 
+function hangulWritingResultSvg(strokes, glyph) {
+  const lines = strokes.map((stroke, index) => {
+    const points = stroke.map((point) => {
+      const x = Math.max(0, Math.min(100, Number(point[0]) * 100));
+      const y = Math.max(0, Math.min(100, Number(point[1]) * 100));
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    }).join(" ");
+    return `<polyline class="writing-result-stroke" pathLength="1" style="--stroke-index:${index}" points="${points}"></polyline>`;
+  }).join("");
+  return `<svg class="writing-result-visual" viewBox="0 0 100 100" role="img" aria-label="Your drawing becoming ${escapeHtml(glyph)}">${lines}<text class="writing-result-glyph" x="50" y="58" text-anchor="middle" lang="ko">${escapeHtml(glyph)}</text></svg>`;
+}
+
+function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
+  const overlay = document.getElementById("writingResultOverlay");
+  const canvas = document.getElementById("writingCanvas");
+  if (!overlay || !canvas) return;
+
+  clearHangulRecognitionTimer();
+  stopHangulWatch();
+  hangulWritingState.celebrating = true;
+  updateHangulWritingControls();
+  if (correct) {
+    recordHangulWritingResult(glyph, "auto-pass");
+    showCorrectToast("Well done!");
+    window.setTimeout(() => { void speak(glyph); }, 360);
+  }
+
+  overlay.className = `writing-result-overlay open ${correct ? "correct" : "retry"}`;
+  overlay.innerHTML = `
+    <div class="writing-result-sheet" role="dialog" aria-modal="true" aria-labelledby="writingResultTitle">
+      <div class="writing-result-actions">
+        <button class="writing-result-action retry" type="button" id="writingResultRetry">Retry</button>
+        <button class="writing-result-action next" type="button" id="writingResultNext">Next <span aria-hidden="true">›</span></button>
+      </div>
+      <div class="writing-result-title" id="writingResultTitle">${correct ? "Shape and stroke order locked in" : "One quick correction"}</div>
+      <p class="writing-result-copy">${escapeHtml(detail)}</p>
+      ${hangulWritingResultSvg(strokes, glyph)}
+    </div>`;
+
+  overlay.querySelector("#writingResultRetry").addEventListener("click", () => {
+    hangulWritingState.celebrating = false;
+    hangulWritingState.strokes = [];
+    overlay.className = "writing-result-overlay";
+    overlay.innerHTML = "";
+    drawHangulWritingCanvas(canvas);
+    updateHangulWritingControls();
+    canvas.focus({ preventScroll: true });
+  });
+  overlay.querySelector("#writingResultNext").addEventListener("click", () => {
+    hangulWritingState.celebrating = false;
+    hangulWritingState.strokes = [];
+    if (hangulWritingState.glyphIndex + 1 >= unit.glyphs.length) {
+      hangulWritingState.unitId = null;
+    } else {
+      hangulWritingState.glyphIndex += 1;
+    }
+    renderHangulWriting();
+  });
+}
+
 // Scale a normalized guide stroke ([x,y] in a 0–1 box) to canvas pixel points.
 function scaleHangulStroke(stroke, canvas) {
   return stroke.map((p) => ({ x: p[0] * canvas.width, y: p[1] * canvas.height }));
@@ -14843,11 +14903,16 @@ function scheduleHangulWritingRecognition(canvas, glyph, unit) {
     const top = matches[0] || null;
     const grade = gradeHangulDrawing(glyph, currentStrokes);
     const readableTarget = top?.name === glyph && top.confidence >= HANGUL_RECOGNITION_MIN_CONFIDENCE;
-    const standardWriting = grade && (grade.verdict === "great" || grade.verdict === "close");
+    const standardWriting = grade?.verdict === "great";
 
     if (readableTarget && standardWriting) {
-      setHangulRecognitionFeedback(`Recognized as ${glyph} · standard strokes confirmed`, matches, "correct");
-      celebrateHangulWriting(glyph, unit);
+      showHangulWritingResult({
+        glyph,
+        strokes: currentStrokes,
+        correct: true,
+        detail: `Nice work — your ${glyph} is readable, balanced, and follows the standard stroke order.`,
+        unit,
+      });
       return;
     }
 
@@ -14858,15 +14923,27 @@ function scheduleHangulWritingRecognition(canvas, glyph, unit) {
         : grade?.strokeCount?.drawn !== grade?.strokeCount?.expected
           ? `I can read it. Standard writing uses ${grade.strokeCount.expected} strokes.`
           : "I can read it. Check the standard stroke order with Help!";
-      setHangulRecognitionFeedback(detail, matches, "close");
+      showHangulWritingResult({ glyph, strokes: currentStrokes, correct: false, detail, unit });
       return;
     }
 
     if (!top || top.confidence < HANGUL_RECOGNITION_MIN_CONFIDENCE) {
-      setHangulRecognitionFeedback("I’m not sure yet · try a clearer shape or use Help!", matches, "wrong");
+      showHangulWritingResult({
+        glyph,
+        strokes: currentStrokes,
+        correct: false,
+        detail: `Your strokes have the right energy — tighten the shape so it resolves clearly into ${glyph}.`,
+        unit,
+      });
       return;
     }
-    setHangulRecognitionFeedback(`I read this as ${top.name} · undo or clear and try again`, matches, "wrong");
+    showHangulWritingResult({
+      glyph,
+      strokes: currentStrokes,
+      correct: false,
+      detail: `That currently reads as ${top.name}. Replay the shape, then aim for the clean structure of ${glyph}.`,
+      unit,
+    });
   }, 140);
 }
 
@@ -14932,27 +15009,6 @@ function bindHangulWritingCanvas(canvas) {
   };
   canvas.addEventListener("pointercancel", cancelStroke);
   canvas.addEventListener("lostpointercapture", cancelStroke);
-}
-
-// Success sequence: "Well done!" toast + chime, then the glyph audio, then
-// auto-advance to the next glyph (back to the unit picker after the last).
-function celebrateHangulWriting(glyph, unit) {
-  clearHangulRecognitionTimer();
-  hangulWritingState.celebrating = true;
-  updateHangulWritingControls();
-  recordHangulWritingResult(glyph, "auto-pass");
-  showCorrectToast("Well done!");
-  window.setTimeout(() => { void speak(glyph); }, 600);
-  window.setTimeout(() => {
-    hangulWritingState.celebrating = false;
-    hangulWritingState.strokes = [];
-    if (hangulWritingState.glyphIndex + 1 >= unit.glyphs.length) {
-      hangulWritingState.unitId = null; // unit finished — back to the menu
-    } else {
-      hangulWritingState.glyphIndex += 1;
-    }
-    renderHangulWriting();
-  }, 1600);
 }
 
 function renderHangulWritingUnitPicker(el) {
@@ -15022,11 +15078,9 @@ function renderHangulWritingPractice(el, unit) {
   const roman = getHangulWritingRoman(glyph);
   let tokenText = glyph;
   let tokenLang = ` lang="ko"`;
-  let promptTip = "Tap to hear";
   if (exercise === "sound") {
     tokenText = "🔊";
     tokenLang = "";
-    promptTip = "Tap to hear, then write it";
   } else if (exercise === "roman" && roman) {
     tokenText = roman;
     tokenLang = "";
@@ -15036,23 +15090,19 @@ function renderHangulWritingPractice(el, unit) {
     <div class="card word-card alphabet-practice-card writing-practice-card">
       <div class="writing-practice-header">
         <div class="writing-progress-tile">
-          <div class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")}</div>
-          <div class="writing-progress-count">${progressCurrent} of ${progressTotal}</div>
+          <div class="writing-progress-line"><span class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")}</span><span class="writing-progress-count">${progressCurrent} of ${progressTotal}</span></div>
           <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPercent}%;"></span></div>
         </div>
-        <button class="button primary writing-next-tile" type="button" id="writingNext">Next <span aria-hidden="true">›</span></button>
       </div>
       <div class="quiz-card writing-quiz-card">
-        <div class="quiz-visual writing-prompt-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span></div>
-        <div class="quiz-detail">${escapeHtml(promptTip)}</div>
+        <div class="quiz-visual writing-prompt-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span><span class="writing-hear-cue">Tap to hear</span></div>
+        <div class="quiz-detail writing-instruction">Write with your finger or stylus.</div>
         <div class="writing-canvas-wrap">
           <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
           <button class="writing-canvas-action writing-canvas-clear" type="button" id="writingClear" disabled>Erase all</button>
           <button class="writing-canvas-action writing-canvas-help" type="button" id="writingHelp">Help</button>
         </div>
-        <div class="writing-recognition" id="writingRecognition" role="status" aria-live="polite">
-          <span class="writing-recognition-message">Write with your finger or stylus.</span>
-        </div>
+        <div class="writing-result-overlay" id="writingResultOverlay" aria-live="polite"></div>
       </div>
     </div>
   `;
@@ -15065,18 +15115,6 @@ function renderHangulWritingPractice(el, unit) {
   bindTapToHearToken(el.querySelector("[data-speak]"));
   if (exercise === "sound") scheduleAutoSpeak(glyph, 260);
 
-  el.querySelector("#writingNext").addEventListener("click", () => {
-    if (hangulWritingState.celebrating) return;
-    clearHangulRecognitionTimer();
-    stopHangulWatch();
-    hangulWritingState.strokes = [];
-    if (hangulWritingState.glyphIndex + 1 >= unit.glyphs.length) {
-      hangulWritingState.unitId = null;
-    } else {
-      hangulWritingState.glyphIndex += 1;
-    }
-    renderHangulWriting();
-  });
   el.querySelector("#writingClear").addEventListener("click", () => {
     if (hangulWritingState.celebrating) return;
     clearHangulRecognitionTimer();
