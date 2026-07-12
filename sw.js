@@ -1,5 +1,5 @@
-// [2026-07-12] Cache bumped to v359: animated Hangul-writing result sheet.
-const CACHE_NAME = "hanapath-shell-v359";
+// [2026-07-12] Cache bumped to v360: hide writing controls during Help playback.
+const CACHE_NAME = "hanapath-shell-v360";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -17,7 +17,7 @@ const APP_SHELL = [
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260711o",
   "./hangul_strokes.js?v=20260710a",
-  "./app.js?v=20260712u",
+  "./app.js?v=20260712v",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

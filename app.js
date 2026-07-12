@@ -14521,6 +14521,7 @@ function stopHangulWatch() {
     hangulWatchRaf = null;
   }
   hangulWritingState.animating = false;
+  updateHangulWritingControls();
 }
 
 // Animate the guide one stroke at a time on the canvas (requestAnimationFrame,
@@ -14529,6 +14530,7 @@ function stopHangulWatch() {
 function watchHangulGuide(canvas, guide) {
   stopHangulWatch();
   hangulWritingState.animating = true;
+  updateHangulWritingControls();
   const ctx = canvas.getContext("2d");
   const W = canvas.width;
   const strokes = guide.strokes.map((stroke) => scaleHangulStroke(stroke, canvas));
@@ -14572,6 +14574,7 @@ function watchHangulGuide(canvas, guide) {
     if (done) {
       hangulWatchRaf = null;
       hangulWritingState.animating = false;
+      updateHangulWritingControls();
       drawHangulWritingCanvas(canvas);
       return;
     }
@@ -14877,7 +14880,11 @@ function drawHangulWritingCanvas(canvas) {
 function updateHangulWritingControls() {
   const hasInk = hangulWritingState.strokes.length > 0;
   const clear = document.getElementById("writingClear");
+  const help = document.getElementById("writingHelp");
   if (clear) clear.disabled = !hasInk || hangulWritingState.celebrating;
+  [clear, help].forEach((button) => {
+    if (button) button.hidden = hangulWritingState.animating;
+  });
 }
 
 function scheduleHangulWritingRecognition(canvas, glyph, unit) {
