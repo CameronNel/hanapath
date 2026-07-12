@@ -1178,6 +1178,7 @@ button.bd-assembled:hover {
 }
 .lesson-option {
   width: 100%;
+  min-width: 0;
   min-height: 58px;
   padding: 12px 16px;
   background: rgba(255,255,255,.05);
@@ -1185,8 +1186,16 @@ button.bd-assembled:hover {
   border-radius: var(--radius-xs);
   color: var(--text);
   font-size: .9rem;
+  font-family: "Outfit", "Noto Sans KR", sans-serif;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: normal;
   text-align: left;
   transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out), transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2) var(--ease-out);
+}
+.lesson-option:lang(ko) {
+  font-family: "Noto Sans KR", "Outfit", sans-serif;
+  word-break: keep-all;
 }
 .lesson-option:hover:not(:disabled)  { border-color: var(--accent); background: rgba(91, 157, 255,.1); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(91, 157, 255,.12); }
 .lesson-option:active:not(:disabled) { transform: scale(.98); transition-duration: var(--dur-1); }
@@ -1735,15 +1744,23 @@ button.bd-assembled:hover {
 }
 
 .option {
+  min-width: 0;
   padding: 13px 10px;
   background: rgba(255,255,255,.05);
   border: 1.5px solid var(--line);
   border-radius: var(--radius-xs);
   color: var(--text);
   font-size: .88rem;
-  font-family: "Noto Sans KR", "Outfit", sans-serif;
+  font-family: "Outfit", "Noto Sans KR", sans-serif;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: normal;
   transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out), transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2) var(--ease-out);
   text-align: center;
+}
+.option:lang(ko) {
+  font-family: "Noto Sans KR", "Outfit", sans-serif;
+  word-break: keep-all;
 }
 .option:hover:not(:disabled)  { border-color: var(--accent); background: rgba(91, 157, 255,.1); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(91, 157, 255,.12); }
 .option:active:not(:disabled) { transform: scale(.97); transition-duration: var(--dur-1); }
@@ -2995,6 +3012,7 @@ li { margin-bottom: 4px; }
 .alpha-key.flash-pulse { background: var(--accent); color: #06122b; }
 .alpha-key-glyph { font-family: "Noto Sans KR", sans-serif; font-size: 1.4rem; font-weight: 700; line-height: 1; }
 .alpha-key-sub { font-size: .62rem; color: var(--muted); font-weight: 600; }
+.alpha-key-sub:lang(en) { font-family: "Outfit", "Noto Sans KR", sans-serif; letter-spacing: normal; }
 .alpha-key.selected .alpha-key-sub { color: var(--text); }
 .alpha-key.control {
   flex: 1.4 1 0;
@@ -3052,6 +3070,7 @@ li { margin-bottom: 4px; }
 .alpha-list-letter.flash-pulse { background: var(--accent); color: #06122b; }
 .alpha-list-glyph { font-family: "Noto Sans KR", sans-serif; font-size: 1.6rem; font-weight: 700; line-height: 1; }
 .alpha-list-sub { font-size: .72rem; color: var(--muted); font-weight: 600; }
+.alpha-list-sub:lang(en) { font-family: "Outfit", "Noto Sans KR", sans-serif; letter-spacing: normal; }
 .alpha-list-letter.selected .alpha-list-sub { color: var(--text); }
 
 /* Full-width detail bar (was a floating 360px tile that right-flushed to a
@@ -3305,11 +3324,24 @@ li { margin-bottom: 4px; }
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 8px 20px rgba(4, 13, 36, .18);
 }
 
-.lesson-option-hangul {
+.lesson-option-label {
+  display: block;
+  width: 100%;
+  min-width: 0;
   font-family: "Noto Sans KR", sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   line-height: 1;
+  white-space: nowrap;
+}
+
+.lesson-option-label:lang(en) {
+  font-family: "Outfit", "Noto Sans KR", sans-serif;
+  font-size: .84rem;
+  line-height: 1.2;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .checkpoint-audio-helpers {

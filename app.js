@@ -5929,7 +5929,7 @@ function wordLessonCheckHtml(lesson, view) {
             if (option === question.answer) classes.push("correct");
             else if (option === view.selectedChoice) classes.push("wrong");
           }
-          return `<button class="${classes.join(" ")}" type="button" data-word-choice="${escapeHtml(option)}" ${view.answered ? "disabled" : ""} lang="ko">${escapeHtml(option)}</button>`;
+          return `<button class="${classes.join(" ")}" type="button" data-word-choice="${escapeHtml(option)}" ${view.answered ? "disabled" : ""} ${textLanguageAttr(option)}>${escapeHtml(option)}</button>`;
         }).join("")}
       </div>
     `;
@@ -7861,6 +7861,15 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+const HANGUL_TEXT_PATTERN = /[\u1100-\u11ff\u3130-\u318f\ua960-\ua97f\uac00-\ud7af\ud7b0-\ud7ff]/;
+
+// Answer tiles appear throughout Alphabet, Words, Sentences, Listening, and
+// review flows. Mark their actual content language so Latin labels use the
+// app's English font/spacing while Hangul keeps its Korean typography.
+function textLanguageAttr(value) {
+  return HANGUL_TEXT_PATTERN.test(String(value || "")) ? 'lang="ko"' : 'lang="en"';
+}
+
 // Icon-only "▶" hear button. `dataAttr` is the data-* the relevant click
 // handler listens on (data-speak / data-vocab-hear / data-alpha-speak). The
 // aria-label gives screen readers a real name instead of just "▶".
@@ -9187,21 +9196,33 @@ function proceedSpeak(text, options, resolve) {
 
     if (audioUrl) {
       const audio = new Audio(audioUrl);
+      let settled = false;
 
-      audio.onended = () => {
+      const finish = () => {
+        if (settled) return;
+        settled = true;
         if (currentCustomAudio === audio) currentCustomAudio = null;
         resolve();
       };
 
+      // Resolve the shared speech promise when playback stops naturally or is
+      // interrupted, so local highlight cleanup can run immediately.
+      audio.onended = finish;
+      audio.onpause = finish;
+
       audio.onerror = () => {
         console.warn(`Failed to play ${audioUrl}`);
         if (currentCustomAudio === audio) currentCustomAudio = null;
+        if (settled) return;
+        settled = true;
         fallbackSpeak(text, resolve);
       };
 
       currentCustomAudio = audio;
       audio.play().catch(e => {
         if (currentCustomAudio === audio) currentCustomAudio = null;
+        if (settled) return;
+        settled = true;
         fallbackSpeak(text, resolve);
       });
       return;
@@ -9667,13 +9688,14 @@ function renderPhaseOneQuestion(lesson) {
           '<div class="lesson-options">' +
             shuffle([...question.options])
               .map(
-                (option) =>
-                  '<div class="lesson-option-row">' +
-                    '<button class="lesson-option" type="button" lang="ko" data-option="' + escapeHtml(option) + '"><span class="lesson-option-hangul">' + escapeHtml(option) + '</span></button>' +
+                (option) => {
+                  return '<div class="lesson-option-row">' +
+                    '<button class="lesson-option" type="button" ' + textLanguageAttr(option) + ' data-option="' + escapeHtml(option) + '"><span class="lesson-option-label">' + escapeHtml(option) + '</span></button>' +
                     (option !== "No letter" && option !== "To the right" && option !== "Below the consonant" && option !== "On the floor" && option !== "Above the block"
                       ? '<button class="button secondary compact speak-option-btn" type="button" data-speak-option="' + escapeHtml(option) + '" aria-label="Hear option ' + escapeHtml(option) + '">🔊</button>'
                       : '') +
-                  '</div>'
+                  '</div>';
+                }
               )
               .join("") +
           "</div>" +
@@ -9707,7 +9729,7 @@ function renderPhaseOneQuestion(lesson) {
       shuffle([...question.options])
         .map(
           (option) =>
-            '<button class="lesson-option" type="button" data-option="' +
+            '<button class="lesson-option" type="button" ' + textLanguageAttr(option) + ' data-option="' +
             escapeHtml(option) +
             '">' +
             escapeHtml(option) +
@@ -10390,7 +10412,7 @@ function alphabetKeyHtml(ch, { wide = false } = {}) {
   return `
     <button class="alpha-key${wide ? " wide" : ""}${ch === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(ch)}" lang="ko" aria-label="${escapeHtml(jamoDemo(ch))}">
       <span class="alpha-key-glyph">${escapeHtml(ch)}</span>
-      ${sub ? `<span class="alpha-key-sub">${escapeHtml(sub)}</span>` : ""}
+      ${sub ? `<span class="alpha-key-sub" ${textLanguageAttr(sub)}>${escapeHtml(sub)}</span>` : ""}
     </button>`;
 }
 
@@ -10416,7 +10438,7 @@ function renderAlphabetKeyboardBoard() {
     return `
     <button class="alpha-key compound${char === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(char)}" lang="ko" aria-label="${escapeHtml(jamoDemo(char))}">
       <span class="alpha-key-glyph">${escapeHtml(char)}</span>
-      ${sub ? `<span class="alpha-key-sub">${escapeHtml(sub)}</span>` : ""}
+      ${sub ? `<span class="alpha-key-sub" ${textLanguageAttr(sub)}>${escapeHtml(sub)}</span>` : ""}
     </button>`;
   }).join("");
 
@@ -10452,7 +10474,7 @@ function renderAlphabetListBoard() {
           return `
           <button class="alpha-list-letter${ch === alphabetBoardSelected ? " selected" : ""}" type="button" data-alpha-letter="${escapeHtml(ch)}" lang="ko" aria-label="${escapeHtml(jamoDemo(ch))}">
             <span class="alpha-list-glyph">${escapeHtml(ch)}</span>
-            ${sub ? `<span class="alpha-list-sub">${escapeHtml(sub)}</span>` : ""}
+            ${sub ? `<span class="alpha-list-sub" ${textLanguageAttr(sub)}>${escapeHtml(sub)}</span>` : ""}
           </button>`;
         }).join("")}
       </div>
@@ -10839,7 +10861,7 @@ function renderDrillQuestion() {
          ${q.tray.map((j) => `<button class="bd-tile" type="button" data-drill-jamo="${escapeHtml(j)}" lang="ko" aria-label="Korean letter ${escapeHtml(j)}">${escapeHtml(j)}</button>`).join("")}
        </div>`
     : `<div class="quiz-options" id="drillOptions">
-         ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" lang="ko">${escapeHtml(o)}</button>`).join("")}
+         ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" ${textLanguageAttr(o)}>${escapeHtml(o)}</button>`).join("")}
        </div>`;
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card">
@@ -12067,7 +12089,7 @@ function renderChoiceQuestion(question, quizOptions) {
           classes.push("wrong");
         }
       }
-      return `<button class="${classes.join(" ")}" type="button" data-option="${escapeHtml(option)}" ${currentAnswered ? "disabled" : ""}>${escapeHtml(option)}</button>`;
+      return `<button class="${classes.join(" ")}" type="button" data-option="${escapeHtml(option)}" ${currentAnswered ? "disabled" : ""} ${textLanguageAttr(option)}>${escapeHtml(option)}</button>`;
     })
     .join("");
 
@@ -14870,7 +14892,7 @@ function renderLetterReview() {
         <div class="quiz-prompt">Which sound does this letter make?</div>
         <div class="quiz-detail">Tap the letter above to hear it again.</div>
         <div class="quiz-options" id="letterReviewOptions">
-          ${opts.map((o) => `<button class="option" type="button" data-sound="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join("")}
+          ${opts.map((o) => `<button class="option" type="button" data-sound="${escapeHtml(o)}" ${textLanguageAttr(o)}>${escapeHtml(o)}</button>`).join("")}
         </div>
         <div class="quiz-feedback" id="letterReviewFeedback" role="status" aria-live="polite"></div>
       </div>
