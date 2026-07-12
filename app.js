@@ -13914,10 +13914,10 @@ window.renderPronunciationDrill = function() {
       else if (pronDrillState.selectedOption.text === opt.text) btnClass = "danger";
     }
     return `
-      <button class="button ${btnClass}" type="button" style="padding:16px; font-size:1.2rem; font-family:inherit;"
+      <button class="button ${btnClass} pronunciation-option" type="button"
         ${pronDrillState.answered ? "disabled" : ""} onclick="submitPronDrillAnswer('${escapeHtml(opt.text)}')">
-        ${escapeHtml(opt.text)}
-        <div class="fs-xs" style="font-weight:normal; margin-top:4px; opacity:0.8;">${escapeHtml(opt.desc)}</div>
+        <span class="pronunciation-option-ko" lang="ko">${escapeHtml(opt.text)}</span>
+        <span class="pronunciation-option-desc" lang="en">${escapeHtml(opt.desc)}</span>
       </button>
     `;
   }).join("");

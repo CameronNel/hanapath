@@ -3013,6 +3013,7 @@ li { margin-bottom: 4px; }
 .alpha-key-glyph { font-family: "Noto Sans KR", sans-serif; font-size: 1.4rem; font-weight: 700; line-height: 1; }
 .alpha-key-sub { font-size: .62rem; color: var(--muted); font-weight: 600; }
 .alpha-key-sub:lang(en) { font-family: "Outfit", "Noto Sans KR", sans-serif; letter-spacing: normal; }
+.alpha-key-sub:lang(ko) { font-family: "Noto Sans KR", "Outfit", sans-serif; letter-spacing: normal; }
 .alpha-key.selected .alpha-key-sub { color: var(--text); }
 .alpha-key.control {
   flex: 1.4 1 0;
@@ -3071,6 +3072,7 @@ li { margin-bottom: 4px; }
 .alpha-list-glyph { font-family: "Noto Sans KR", sans-serif; font-size: 1.6rem; font-weight: 700; line-height: 1; }
 .alpha-list-sub { font-size: .72rem; color: var(--muted); font-weight: 600; }
 .alpha-list-sub:lang(en) { font-family: "Outfit", "Noto Sans KR", sans-serif; letter-spacing: normal; }
+.alpha-list-sub:lang(ko) { font-family: "Noto Sans KR", "Outfit", sans-serif; letter-spacing: normal; }
 .alpha-list-letter.selected .alpha-list-sub { color: var(--text); }
 
 /* Full-width detail bar (was a floating 360px tile that right-flushed to a
@@ -3491,6 +3493,21 @@ li { margin-bottom: 4px; }
 .drill-mode-card.selected { border-color: var(--accent); background: rgba(91,157,255,.14); }
 @media (max-width: 820px) { .drill-mode-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 420px) { .drill-mode-grid { grid-template-columns: 1fr; } }
+.pronunciation-option {
+  min-width: 0;
+  min-height: 98px;
+  padding: 16px;
+  flex-direction: column;
+  overflow-wrap: anywhere;
+}
+.pronunciation-option-ko {
+  font: 700 1.2rem / 1.2 "Noto Sans KR", "Outfit", sans-serif;
+}
+.pronunciation-option-desc {
+  margin-top: 4px;
+  font: 500 .72rem / 1.25 "Outfit", "Noto Sans KR", sans-serif;
+  opacity: .8;
+}
 .drill-audio-row {
   display: flex;
   flex-wrap: wrap;
