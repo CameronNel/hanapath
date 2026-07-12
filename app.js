@@ -14912,7 +14912,12 @@ function scheduleHangulWritingRecognition(canvas, glyph, unit) {
     const readableTarget = top?.name === glyph && top.confidence >= HANGUL_RECOGNITION_MIN_CONFIDENCE;
     const standardWriting = grade?.verdict === "great";
 
-    if (readableTarget && standardWriting) {
+    // This exercise names the target in advance, so the target-specific grader
+    // is authoritative: it checks the requested glyph's shape, placement,
+    // stroke count, order and direction. The broad $Q classifier must not turn
+    // a strong target match into a false negative merely because another glyph
+    // ranks slightly higher in its all-glyph comparison.
+    if (standardWriting) {
       showHangulWritingResult({
         glyph,
         strokes: currentStrokes,
@@ -14923,13 +14928,15 @@ function scheduleHangulWritingRecognition(canvas, glyph, unit) {
       return;
     }
 
-    if (readableTarget) {
+    if (grade) {
       const failed = grade?.perStroke?.find((stroke) => !stroke.pass);
       const detail = failed?.reason === "wrong-direction"
         ? "I can read it. Now use the standard stroke direction."
         : grade?.strokeCount?.drawn !== grade?.strokeCount?.expected
           ? `I can read it. Standard writing uses ${grade.strokeCount.expected} strokes.`
-          : "I can read it. Check the standard stroke order with Help!";
+          : readableTarget
+            ? "I can read it. Check the standard stroke order with Help!"
+            : `You are close to ${glyph}. Replay the guide and tighten the stroke placement.`;
       showHangulWritingResult({ glyph, strokes: currentStrokes, correct: false, detail, unit });
       return;
     }
