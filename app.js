@@ -13415,7 +13415,7 @@ function openHubItem(hub, itemId) {
     return;
   }
   if (item.custom === "hangulWriting") {
-    renderHangulWriting();
+    enterHangulWriting();
     return;
   }
 
@@ -13928,7 +13928,7 @@ function renderAlphabetPracticeHub() {
       else if (action === "quiz") renderAlphabetPractice();
       else if (action === "drill") openAlphabetDrillLab();
       else if (action === "pronunciation") renderPronunciationDrill();
-      else if (action === "writing") renderHangulWriting();
+      else if (action === "writing") enterHangulWriting();
     });
   });
 }
@@ -14212,13 +14212,90 @@ let hangulWritingState = {
   exercise: "shape", // "shape" (copy the glyph) | "sound" (write what you hear) | "roman" (write from romanization)
   strokes: [], // meaningful learner ink; taps/interrupted pointers are discarded
   animating: false, // Help! demo playing
-  celebrating: false, // success sequence playing (input blocked, auto-advance pending)
+  celebrating: false, // result sheet open; drawing input is blocked
 };
 let hangulRecognitionTimer = null;
 let hangulWritingRecognizerCache = null;
 
 function getHangulWritingUnit(unitId = hangulWritingState.unitId) {
   return HANGUL_WRITING_UNITS.find((unit) => unit.id === unitId) || null;
+}
+
+function resetHangulWritingSession() {
+  hangulWritingState = {
+    unitId: null,
+    glyphIndex: 0,
+    exercise: "shape",
+    strokes: [],
+    animating: false,
+    celebrating: false,
+  };
+}
+
+function hasActiveHangulWritingSession() {
+  const unit = getHangulWritingUnit();
+  return Boolean(
+    unit &&
+    isHangulWritingUnitUnlocked(unit) &&
+    Number.isInteger(hangulWritingState.glyphIndex) &&
+    hangulWritingState.glyphIndex >= 0 &&
+    hangulWritingState.glyphIndex < unit.glyphs.length
+  );
+}
+
+function leaveHangulWritingSession() {
+  clearHangulRecognitionTimer();
+  stopHangulWatch();
+  if (hangulWritingState.celebrating) hangulWritingState.strokes = [];
+  hangulWritingState.celebrating = false;
+  hangulWritingState.animating = false;
+  renderAlphabetPracticeHub();
+}
+
+function renderHangulWritingReentryPrompt() {
+  const unit = getHangulWritingUnit();
+  if (!unit) {
+    resetHangulWritingSession();
+    renderHangulWriting();
+    return;
+  }
+  const glyph = unit.glyphs[hangulWritingState.glyphIndex] || "";
+  const exerciseLabel = hangulWritingState.exercise === "sound"
+    ? "Write from sound"
+    : hangulWritingState.exercise === "roman"
+      ? "Write from romanization"
+      : "Copy the shape";
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("practice", "Hangul writing", () => renderAlphabetPracticeHub(), "Alphabet practice");
+  el.innerHTML = `
+    <div class="card word-card alphabet-practice-card writing-reentry-card">
+      <div class="eyebrow">Writing session paused</div>
+      <div class="writing-reentry-glyph" lang="ko">${escapeHtml(glyph)}</div>
+      <h2 class="screen-title">Continue where you left off?</h2>
+      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)} · ${hangulWritingState.glyphIndex + 1} of ${unit.glyphs.length}</div>
+      <div class="writing-reentry-actions">
+        <button class="button secondary" type="button" id="writingStartNew">Start new session</button>
+        <button class="button primary" type="button" id="writingContinue">Continue session</button>
+      </div>
+    </div>`;
+  el.querySelector("#writingStartNew").addEventListener("click", () => {
+    clearHangulRecognitionTimer();
+    stopHangulWatch();
+    resetHangulWritingSession();
+    renderHangulWriting();
+  });
+  el.querySelector("#writingContinue").addEventListener("click", () => renderHangulWriting());
+}
+
+function enterHangulWriting() {
+  refreshProgressionState();
+  if (hasActiveHangulWritingSession()) {
+    renderHangulWritingReentryPrompt();
+    return;
+  }
+  resetHangulWritingSession();
+  renderHangulWriting();
 }
 
 // Romanization prompt for a writing glyph: syllable blocks via the shared
@@ -15157,7 +15234,7 @@ function renderHangulWriting() {
   setNavActive("practice");
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Hangul writing", () => renderAlphabetPracticeHub(), "Alphabet practice");
+  showDetailBarWithBack("practice", "Hangul writing", () => leaveHangulWritingSession(), "Alphabet practice");
 
   const unit = getHangulWritingUnit();
   if (!unit || !isHangulWritingUnitUnlocked(unit)) {

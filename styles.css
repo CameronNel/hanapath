@@ -4820,6 +4820,32 @@ li { margin-bottom: 4px; }
   transform-origin: center;
   animation: writing-result-glyph-in 220ms cubic-bezier(.2,.85,.3,1.15) 500ms forwards;
 }
+.writing-reentry-card {
+  max-width: 520px;
+  margin-inline: auto;
+  text-align: center;
+}
+.writing-reentry-glyph {
+  width: 72px;
+  height: 72px;
+  margin: 12px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: linear-gradient(145deg, rgba(91, 157, 255, .15), rgba(167, 139, 250, .08));
+  border: 1px solid rgba(125, 168, 255, .32);
+  border-radius: 18px;
+  font: 800 2.5rem/1 "Noto Sans KR", sans-serif;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 12px 28px rgba(4, 13, 36, .18);
+}
+.writing-reentry-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+.writing-reentry-actions .button { min-height: 52px; }
 @keyframes writing-result-backdrop-in { from { opacity: 0; } }
 @keyframes writing-result-sheet-in { from { opacity: 0; transform: translateY(6px) scale(.98); } }
 @keyframes writing-result-draw { to { stroke-dashoffset: 0; } }
@@ -4844,4 +4870,5 @@ li { margin-bottom: 4px; }
   .writing-canvas-action { top: 8px; min-height: 31px; padding: 6px 9px; font-size: .68rem; }
   .writing-canvas-clear { left: 8px; }
   .writing-canvas-help { right: 8px; }
+  .writing-reentry-actions { grid-template-columns: 1fr; }
 }
