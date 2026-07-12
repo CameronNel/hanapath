@@ -14884,16 +14884,40 @@ function scoreHangulStrokeAgainst(inkPts, guidePts) {
   return { score, pass: reason === null, reason };
 }
 
-// §7.3 closed-stroke rule: circles (ㅇ, the bottom of ㅎ) are graded against
-// the guide stroke forward AND reversed, keeping the better result, so a
-// clockwise circle is not failed on direction. Forward vs reversed only.
+// Closed strokes can begin anywhere around the loop and run in either
+// direction. Generate every cyclic start-point variant in both directions so
+// a learner's circle is judged by its shape, not where their finger landed.
+function getHangulClosedStrokeVariants(guidePts) {
+  if (!Array.isArray(guidePts) || guidePts.length < 3) return [guidePts];
+  const core = hangulPairDist(guidePts[0], guidePts[guidePts.length - 1]) < 0.05
+    ? guidePts.slice(0, -1)
+    : [...guidePts];
+  const variants = [];
+  [core, [...core].reverse()].forEach((ordered) => {
+    for (let offset = 0; offset < ordered.length; offset += 1) {
+      const rotated = [...ordered.slice(offset), ...ordered.slice(0, offset)];
+      variants.push([...rotated, rotated[0]]);
+    }
+  });
+  return variants;
+}
+
+function bestHangulStrokeScore(inkPts, guideVariants, scorer) {
+  return guideVariants.reduce((best, guide) => {
+    const candidate = scorer(inkPts, guide);
+    if (!best) return candidate;
+    if (candidate.pass !== best.pass) return candidate.pass ? candidate : best;
+    return candidate.score > best.score ? candidate : best;
+  }, null);
+}
+
+// §7.3 closed-stroke rule: circles (ㅇ, the bottom of ㅎ) are invariant to
+// both drawing direction and starting position.
 function scoreHangulStroke(inkPts, guidePts) {
   const forward = scoreHangulStrokeAgainst(inkPts, guidePts);
   const isClosed = hangulPairDist(guidePts[0], guidePts[guidePts.length - 1]) < 0.05;
   if (!isClosed) return forward;
-  const reversed = scoreHangulStrokeAgainst(inkPts, guidePts.slice().reverse());
-  if (forward.pass !== reversed.pass) return forward.pass ? forward : reversed;
-  return reversed.score > forward.score ? reversed : forward;
+  return bestHangulStrokeScore(inkPts, getHangulClosedStrokeVariants(guidePts), scoreHangulStrokeAgainst);
 }
 
 // Position/scale-FREE scoring for the first stroke of an attempt. With no
@@ -14920,9 +14944,7 @@ function scoreHangulStrokeFree(inkPts, guidePts) {
   const forward = scoreHangulStrokeFreeAgainst(inkPts, guidePts);
   const isClosed = hangulPairDist(guidePts[0], guidePts[guidePts.length - 1]) < 0.05;
   if (!isClosed) return forward;
-  const reversed = scoreHangulStrokeFreeAgainst(inkPts, guidePts.slice().reverse());
-  if (forward.pass !== reversed.pass) return forward.pass ? forward : reversed;
-  return reversed.score > forward.score ? reversed : forward;
+  return bestHangulStrokeScore(inkPts, getHangulClosedStrokeVariants(guidePts), scoreHangulStrokeFreeAgainst);
 }
 
 // Fit a translation + uniform scale mapping the guide onto the learner's
@@ -15114,8 +15136,9 @@ function validateLatestHangulGuidedStroke(canvas, glyph) {
   const index = strokes.length - 1;
   if (index >= guide.strokes.length) {
     hangulWritingState.strokes.pop();
+    recordHangulWritingResult(glyph, "retry");
     drawHangulWritingCanvas(canvas);
-    updateHangulStrokeStatus(`All standard strokes are already present — tap Check or retry.`, "wrong");
+    updateHangulStrokeStatus("That extra stroke was not needed — wait for the current check.", "wrong");
     return { pass: false, remaining: 0 };
   }
   const result = index === 0
@@ -15126,6 +15149,7 @@ function validateLatestHangulGuidedStroke(canvas, glyph) {
       );
   if (!result.pass) {
     hangulWritingState.strokes.pop();
+    recordHangulWritingResult(glyph, "retry");
     drawHangulWritingCanvas(canvas);
     updateHangulStrokeStatus(getHangulGuidedStrokeHint(guide.strokes[index], index), "wrong");
     updateHangulWritingControls();
