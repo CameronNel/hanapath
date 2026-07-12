@@ -4606,10 +4606,44 @@ li { margin-bottom: 4px; }
 }
 .writing-toolbar.word-card-nav-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: min(100%, 360px);
+  margin: 10px auto 0;
 }
-#writingTip {
+.writing-recognition {
+  width: min(100%, 360px);
+  min-height: 48px;
+  margin: 8px auto 0;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.05);
+  color: var(--muted);
   text-align: center;
-  min-height: 1.1em;
-  margin-top: 6px;
+  font-size: .78rem;
+  line-height: 1.35;
+}
+.writing-recognition.working { border-color: rgba(91,157,255,.4); }
+.writing-recognition.correct { border-color: rgba(56,176,120,.55); background: rgba(56,176,120,.1); color: var(--text); }
+.writing-recognition.close { border-color: rgba(255,190,92,.52); background: rgba(255,190,92,.08); color: var(--text); }
+.writing-recognition.wrong { border-color: rgba(255,111,145,.46); background: rgba(255,111,145,.08); color: var(--text); }
+.writing-recognition-message { min-width: 0; }
+.writing-recognition-guesses { display: inline-flex; align-items: center; gap: 5px; }
+.writing-recognition-chip {
+  min-width: 30px;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,255,255,.05);
+  color: var(--text);
+  font: 700 .9rem "Noto Sans KR", sans-serif;
+}
+.writing-recognition-chip.primary { border-color: var(--accent); background: rgba(91,157,255,.14); }
+@media (max-width: 420px) {
+  .writing-toolbar.word-card-nav-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

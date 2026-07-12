@@ -161,6 +161,7 @@ node --check <file.js>                              # any JS you touched
 node scripts/audit-sentences-data.mjs --strict      # Sentences data
 node scripts/audit-words-data.mjs --strict          # Words data (must stay green)
 node scripts/audit-alphabet-audio.mjs --strict      # audio coverage
+node scripts/audit-hangul-recognition.mjs           # mobile writing recognition
 node scripts/audit-app-shell.mjs                    # index.html / sw.js cache-version wiring
 python -m http.server 8000                           # then open index.html, smoke-test + check console
 ```

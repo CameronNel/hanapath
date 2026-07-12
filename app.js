@@ -14193,10 +14193,9 @@ window.quitPronDrill = function() {
   renderPronunciationDrill();
 }
 
-// ─── HANGUL WRITING (W0 SHELL — see docs/HANGUL_WRITING_PLAN.md) ─────────────
-// Draw-to-learn practice for the Alphabet section. This is the Phase W0 shell:
-// navigation, unit gating, and a working freehand canvas. Stroke guides,
-// tracing, grading, and persistence are the Opus W1–W3 queue in the plan doc.
+// ─── HANGUL WRITING (see docs/HANGUL_WRITING_PLAN.md) ────────────────────────
+// Draw-to-learn practice for the Alphabet section: authored stroke guides,
+// offline $Q glyph recognition, standard stroke-order coaching, and unit gating.
 // Writing READS getAlphabetProgress() for unlocks and never writes progress.
 // Scope cap (owner decision): nothing longer than one syllable block here.
 const HANGUL_WRITING_UNITS = [
@@ -14211,10 +14210,12 @@ let hangulWritingState = {
   unitId: null,
   glyphIndex: 0,
   exercise: "shape", // "shape" (copy the glyph) | "sound" (write what you hear) | "roman" (write from romanization)
-  strokes: [], // accepted ink strokes only — bad strokes are rejected on pointer-up
+  strokes: [], // meaningful learner ink; taps/interrupted pointers are discarded
   animating: false, // Help! demo playing
   celebrating: false, // success sequence playing (input blocked, auto-advance pending)
 };
+let hangulRecognitionTimer = null;
+let hangulWritingRecognizerCache = null;
 
 function getHangulWritingUnit(unitId = hangulWritingState.unitId) {
   return HANGUL_WRITING_UNITS.find((unit) => unit.id === unitId) || null;
@@ -14303,6 +14304,58 @@ function composeHangulSyllableGuide(glyph, bank) {
   }
   hangulSyllableGuideCache[glyph] = result;
   return result;
+}
+
+// Owner-approved mobile recognition layer (2026-07-12). $Q identifies the
+// written glyph independently of stroke order; the existing W2 grader remains
+// the separate pedagogy check for standard order and direction.
+const HANGUL_RECOGNITION_MIN_CONFIDENCE = 0.72;
+
+function getHangulWritingRecognitionGlyphs() {
+  return [...new Set(HANGUL_WRITING_UNITS.flatMap((unit) => unit.glyphs))]
+    .filter((glyph) => Boolean(getHangulStrokeGuide(glyph)));
+}
+
+function getHangulWritingRecognizer() {
+  if (hangulWritingRecognizerCache) return hangulWritingRecognizerCache;
+  const API = typeof window !== "undefined" ? window.HANAPATH_HANGUL_RECOGNIZER : null;
+  if (!API?.Recognizer) return null;
+  const recognizer = new API.Recognizer();
+  getHangulWritingRecognitionGlyphs().forEach((glyph) => {
+    const guide = getHangulStrokeGuide(glyph);
+    if (guide) recognizer.add(glyph, guide.strokes, { augment: true });
+  });
+  hangulWritingRecognizerCache = recognizer;
+  return recognizer;
+}
+
+function getNormalizedHangulWritingStrokes(canvas) {
+  return hangulWritingState.strokes
+    .map((stroke) => cleanHangulInkStroke(normalizeHangulInkStroke(stroke, canvas)))
+    .filter(Boolean);
+}
+
+function recognizeHangulWriting(canvas, limit = 3) {
+  const recognizer = getHangulWritingRecognizer();
+  if (!recognizer) return [];
+  return recognizer.recognize(getNormalizedHangulWritingStrokes(canvas), limit);
+}
+
+function clearHangulRecognitionTimer() {
+  if (hangulRecognitionTimer !== null) {
+    window.clearTimeout(hangulRecognitionTimer);
+    hangulRecognitionTimer = null;
+  }
+}
+
+function setHangulRecognitionFeedback(message, matches = [], tone = "") {
+  const panel = document.getElementById("writingRecognition");
+  if (!panel) return;
+  panel.className = `writing-recognition${tone ? ` ${tone}` : ""}`;
+  const guesses = matches.slice(0, 3)
+    .map((match, index) => `<span class="writing-recognition-chip${index === 0 ? " primary" : ""}" lang="ko">${escapeHtml(match.name)}</span>`)
+    .join("");
+  panel.innerHTML = `<span class="writing-recognition-message">${escapeHtml(message)}</span>${guesses ? `<span class="writing-recognition-guesses" aria-label="Recognition guesses">${guesses}</span>` : ""}`;
 }
 
 // Scale a normalized guide stroke ([x,y] in a 0–1 box) to canvas pixel points.
@@ -14667,7 +14720,7 @@ function scoreHangulStrokeFree(inkPts, guidePts) {
 }
 
 // Fit a translation + uniform scale mapping the guide onto the learner's
-// accepted ink (strokes 0..count-1), so later strokes are graded relative to
+// earlier ink (strokes 0..count-1), so later strokes are graded relative to
 // where the learner is actually writing, not to absolute canvas coordinates.
 function transformHangulPoints(pts, t) {
   return pts.map((p) => [p[0] * t.s + t.dx, p[1] * t.s + t.dy]);
@@ -14715,7 +14768,12 @@ function gradeHangulDrawing(glyph, strokes) {
   const perStroke = [];
   const pairs = Math.min(expected, drawn);
   for (let i = 0; i < pairs; i += 1) {
-    const result = scoreHangulStroke(cleaned[i], guide.strokes[i]);
+    const result = i === 0
+      ? scoreHangulStrokeFree(cleaned[i], guide.strokes[i])
+      : scoreHangulStroke(
+          cleaned[i],
+          transformHangulPoints(guide.strokes[i], fitHangulAlignment(cleaned, guide.strokes, i)),
+        );
     perStroke.push({ index: i, score: result.score, pass: result.pass, reason: result.reason });
   }
   let verdict = "again";
@@ -14729,14 +14787,6 @@ function gradeHangulDrawing(glyph, strokes) {
   return { verdict, perStroke, strokeCount: { expected, drawn } };
 }
 
-// Per-stroke rejection tips (one at a time, first-hit reason). The guide is
-// invisible during normal writing, so the tips point at Help! instead of it.
-const HANGUL_TRACE_MESSAGES = {
-  "wrong-direction": "Wrong direction — strokes go left→right, top→bottom.",
-  length: "Draw the whole stroke in one go.",
-  shape: "Almost — try that stroke again, or tap Help!",
-};
-
 function recordHangulWritingResult(glyph, verdict) {
   // OPUS(W3): persist per-glyph writing results (additive hanapath-v1 key).
 }
@@ -14745,7 +14795,7 @@ function drawHangulWritingCanvas(canvas) {
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Accepted ink only. No guide, no faint glyph — the writing area stays
+  // Learner ink only. No guide, no faint glyph — the writing area stays
   // blank; the stroke guide appears solely inside the Help! demo animation.
   ctx.save();
   ctx.strokeStyle = "#7a5cff";
@@ -14764,6 +14814,64 @@ function drawHangulWritingCanvas(canvas) {
   ctx.restore();
 }
 
+function updateHangulWritingControls() {
+  const hasInk = hangulWritingState.strokes.length > 0;
+  const undo = document.getElementById("writingUndo");
+  const clear = document.getElementById("writingClear");
+  if (undo) undo.disabled = !hasInk || hangulWritingState.celebrating;
+  if (clear) clear.disabled = !hasInk || hangulWritingState.celebrating;
+}
+
+function scheduleHangulWritingRecognition(canvas, glyph, unit) {
+  clearHangulRecognitionTimer();
+  const guide = getHangulStrokeGuide(glyph);
+  const strokes = getNormalizedHangulWritingStrokes(canvas);
+  if (!strokes.length || !guide) {
+    setHangulRecognitionFeedback("Write with your finger or stylus.");
+    return;
+  }
+  if (strokes.length < guide.strokes.length) {
+    setHangulRecognitionFeedback(`${strokes.length} of ${guide.strokes.length} standard strokes · keep going`);
+    return;
+  }
+
+  setHangulRecognitionFeedback("Reading your writing…", [], "working");
+  hangulRecognitionTimer = window.setTimeout(() => {
+    hangulRecognitionTimer = null;
+    const activeUnit = getHangulWritingUnit();
+    if (!activeUnit || activeUnit.id !== unit.id || activeUnit.glyphs[hangulWritingState.glyphIndex] !== glyph) return;
+    const currentStrokes = getNormalizedHangulWritingStrokes(canvas);
+    const matches = recognizeHangulWriting(canvas, 3);
+    const top = matches[0] || null;
+    const grade = gradeHangulDrawing(glyph, currentStrokes);
+    const readableTarget = top?.name === glyph && top.confidence >= HANGUL_RECOGNITION_MIN_CONFIDENCE;
+    const standardWriting = grade && (grade.verdict === "great" || grade.verdict === "close");
+
+    if (readableTarget && standardWriting) {
+      setHangulRecognitionFeedback(`Recognized as ${glyph} · standard strokes confirmed`, matches, "correct");
+      celebrateHangulWriting(glyph, unit);
+      return;
+    }
+
+    if (readableTarget) {
+      const failed = grade?.perStroke?.find((stroke) => !stroke.pass);
+      const detail = failed?.reason === "wrong-direction"
+        ? "I can read it. Now use the standard stroke direction."
+        : grade?.strokeCount?.drawn !== grade?.strokeCount?.expected
+          ? `I can read it. Standard writing uses ${grade.strokeCount.expected} strokes.`
+          : "I can read it. Check the standard stroke order with Help!";
+      setHangulRecognitionFeedback(detail, matches, "close");
+      return;
+    }
+
+    if (!top || top.confidence < HANGUL_RECOGNITION_MIN_CONFIDENCE) {
+      setHangulRecognitionFeedback("I’m not sure yet · try a clearer shape or use Help!", matches, "wrong");
+      return;
+    }
+    setHangulRecognitionFeedback(`I read this as ${top.name} · undo or clear and try again`, matches, "wrong");
+  }, 140);
+}
+
 function bindHangulWritingCanvas(canvas) {
   let activeStroke = null;
 
@@ -14777,86 +14885,63 @@ function bindHangulWritingCanvas(canvas) {
 
   canvas.addEventListener("pointerdown", (event) => {
     if (hangulWritingState.celebrating) return;
+    if (event.isPrimary === false) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (activeStroke) return;
+    clearHangulRecognitionTimer();
     stopHangulWatch(); // starting to write cancels the Help! demo
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
     activeStroke = [pointFromEvent(event)];
     hangulWritingState.strokes.push(activeStroke);
+    setHangulRecognitionFeedback("Writing…", [], "working");
     drawHangulWritingCanvas(canvas);
+    updateHangulWritingControls();
   });
   canvas.addEventListener("pointermove", (event) => {
     if (!activeStroke) return;
     event.preventDefault();
-    activeStroke.push(pointFromEvent(event));
+    const events = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : [event];
+    (events.length ? events : [event]).forEach((sample) => activeStroke.push(pointFromEvent(sample)));
     drawHangulWritingCanvas(canvas);
   });
   const finishStroke = () => {
     if (!activeStroke) return;
     const finished = activeStroke;
     activeStroke = null;
-    // Every stroke is graded on pointer-up against the guide stroke at its
-    // index (invisible guide). Passes stay; fails fade with a one-line tip;
-    // accidental taps vanish silently. The last passing stroke triggers the
-    // automatic success sequence.
+    // Keep meaningful ink so $Q can identify what the learner actually wrote.
+    // Stroke-order coaching is evaluated separately after recognition; taps
+    // and interrupted pointers still disappear silently.
     const unit = getHangulWritingUnit();
     const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
-    const guide = glyph ? getHangulStrokeGuide(glyph) : null;
-    const index = hangulWritingState.strokes.length - 1;
-    let failMessage = null;
-    let completed = false;
-    if (guide && index < guide.strokes.length) {
-      const cleaned = cleanHangulInkStroke(normalizeHangulInkStroke(finished, canvas));
-      if (!cleaned) {
-        hangulWritingState.strokes.pop(); // silent tap discard
-      } else {
-        // Stroke 1 is graded position/scale-free (write anywhere, any size);
-        // later strokes are graded against the guide aligned onto the ink
-        // accepted so far, so only RELATIVE placement matters.
-        let result;
-        if (index === 0) {
-          result = scoreHangulStrokeFree(cleaned, guide.strokes[0]);
-        } else {
-          const accepted = hangulWritingState.strokes
-            .slice(0, index)
-            .map((s) => cleanHangulInkStroke(normalizeHangulInkStroke(s, canvas)))
-            .filter(Boolean);
-          const t = fitHangulAlignment(accepted, guide.strokes, accepted.length);
-          result = scoreHangulStroke(cleaned, transformHangulPoints(guide.strokes[index], t));
-        }
-        if (!result.pass) {
-          hangulWritingState.strokes.pop();
-          failMessage = HANGUL_TRACE_MESSAGES[result.reason] || HANGUL_TRACE_MESSAGES.shape;
-        } else if (hangulWritingState.strokes.length === guide.strokes.length) {
-          completed = true;
-        }
-      }
-    }
+    const cleaned = cleanHangulInkStroke(normalizeHangulInkStroke(finished, canvas));
+    if (!cleaned) hangulWritingState.strokes.pop();
     drawHangulWritingCanvas(canvas);
-    setHangulWritingTip(failMessage || "");
-    if (completed) celebrateHangulWriting(glyph, unit);
+    updateHangulWritingControls();
+    if (cleaned && unit && glyph) scheduleHangulWritingRecognition(canvas, glyph, unit);
+    else setHangulRecognitionFeedback("Write with your finger or stylus.");
   };
   canvas.addEventListener("pointerup", finishStroke);
-  canvas.addEventListener("pointercancel", () => {
+  const cancelStroke = () => {
     // An interrupted pointer (palm rejection, browser gesture) is not an
     // attempt: discard the stroke silently instead of grading it.
     if (!activeStroke) return;
     activeStroke = null;
     hangulWritingState.strokes.pop();
     drawHangulWritingCanvas(canvas);
-  });
-}
-
-// One-line status under the canvas: empty by default, a rejection tip on a
-// failed stroke. aria-live so screen readers hear the feedback too.
-function setHangulWritingTip(message) {
-  const tip = document.getElementById("writingTip");
-  if (tip) tip.textContent = message || "";
+    updateHangulWritingControls();
+    setHangulRecognitionFeedback("Write with your finger or stylus.");
+  };
+  canvas.addEventListener("pointercancel", cancelStroke);
+  canvas.addEventListener("lostpointercapture", cancelStroke);
 }
 
 // Success sequence: "Well done!" toast + chime, then the glyph audio, then
 // auto-advance to the next glyph (back to the unit picker after the last).
 function celebrateHangulWriting(glyph, unit) {
+  clearHangulRecognitionTimer();
   hangulWritingState.celebrating = true;
+  updateHangulWritingControls();
   recordHangulWritingResult(glyph, "auto-pass");
   showCorrectToast("Well done!");
   window.setTimeout(() => { void speak(glyph); }, 600);
@@ -14874,8 +14959,8 @@ function celebrateHangulWriting(glyph, unit) {
 
 function renderHangulWritingUnitPicker(el) {
   // Only units whose every glyph has an authored stroke guide are offered —
-  // the auto-grading flow needs the algorithm, so guideless units (syllable
-  // blocks, advanced jamo) stay hidden until their W1b data lands.
+  // recognition and stroke coaching need that template, so guideless units
+  // (currently advanced jamo) stay hidden until their W1b data lands.
   const readyUnits = HANGUL_WRITING_UNITS.filter((unit) =>
     unit.glyphs.every((glyph) => getHangulStrokeGuide(glyph))
   );
@@ -14910,7 +14995,7 @@ function renderHangulWritingUnitPicker(el) {
       ${alphabetPracticeProgressHtml("Writing practice")}
       <div class="eyebrow sentence-lesson-kind">Practice · Hangul writing</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Write Hangul by hand</h2>
-      <div class="screen-sub" style="margin-bottom:0;">Draw each letter by hand. Units unlock as you finish the matching alphabet stages.</div>
+      <div class="screen-sub" style="margin-bottom:0;">Write with your finger or stylus. HanaPath reads the character and checks standard stroke order.</div>
     </div>
     ${unitsHtml}
   `;
@@ -14953,9 +15038,13 @@ function renderHangulWritingPractice(el, unit) {
         <div class="quiz-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span></div>
         <div class="quiz-detail">${escapeHtml(promptTip)}</div>
         <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
-        <div class="fs-xs text-muted-2" id="writingTip" role="status" aria-live="polite"></div>
+        <div class="writing-recognition" id="writingRecognition" role="status" aria-live="polite">
+          <span class="writing-recognition-message">Write with your finger or stylus.</span>
+        </div>
         <div class="writing-toolbar word-card-nav-actions">
           <button class="button secondary compact" type="button" id="writingMenu">‹ Menu</button>
+          <button class="button secondary compact" type="button" id="writingUndo" disabled>Undo</button>
+          <button class="button secondary compact" type="button" id="writingClear" disabled>Clear</button>
           <button class="button primary compact" type="button" id="writingHelp">Help!</button>
         </div>
       </div>
@@ -14966,22 +15055,48 @@ function renderHangulWritingPractice(el, unit) {
   const canvas = el.querySelector("#writingCanvas");
   drawHangulWritingCanvas(canvas);
   bindHangulWritingCanvas(canvas);
+  updateHangulWritingControls();
   bindTapToHearToken(el.querySelector("[data-speak]"));
   if (exercise === "sound") scheduleAutoSpeak(glyph, 260);
 
   el.querySelector("#writingMenu").addEventListener("click", () => {
+    clearHangulRecognitionTimer();
     stopHangulWatch();
     hangulWritingState.unitId = null;
     renderHangulWriting();
   });
+  el.querySelector("#writingUndo").addEventListener("click", () => {
+    if (hangulWritingState.celebrating || !hangulWritingState.strokes.length) return;
+    clearHangulRecognitionTimer();
+    stopHangulWatch();
+    hangulWritingState.strokes.pop();
+    drawHangulWritingCanvas(canvas);
+    updateHangulWritingControls();
+    if (hangulWritingState.strokes.length) scheduleHangulWritingRecognition(canvas, glyph, unit);
+    else setHangulRecognitionFeedback("Write with your finger or stylus.");
+  });
+  el.querySelector("#writingClear").addEventListener("click", () => {
+    if (hangulWritingState.celebrating) return;
+    clearHangulRecognitionTimer();
+    stopHangulWatch();
+    hangulWritingState.strokes = [];
+    drawHangulWritingCanvas(canvas);
+    updateHangulWritingControls();
+    setHangulRecognitionFeedback("Canvas cleared · write with your finger or stylus.");
+  });
   el.querySelector("#writingHelp").addEventListener("click", () => {
-    // Help!: play the stroke demo once, then it fades and the learner is
-    // back to a blank canvas (their accepted ink is redrawn). Not an attempt.
-    if (guide && !hangulWritingState.celebrating) watchHangulGuide(canvas, guide);
+    // Help!: temporarily overlay the stroke demo, then redraw the learner's
+    // existing ink. Watching is not counted as an attempt.
+    if (guide && !hangulWritingState.celebrating) {
+      clearHangulRecognitionTimer();
+      setHangulRecognitionFeedback("Watch the standard strokes, then try it yourself.");
+      watchHangulGuide(canvas, guide);
+    }
   });
 }
 
 function renderHangulWriting() {
+  clearHangulRecognitionTimer();
   stopHangulWatch(); // cancel any in-flight stroke animation before rebuilding the DOM
   refreshProgressionState();
   activeHub = "practice";
