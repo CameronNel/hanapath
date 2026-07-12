@@ -4623,6 +4623,11 @@ li { margin-bottom: 4px; }
 .writing-canvas-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .writing-canvas-clear { left: 10px; }
 .writing-canvas-help { right: 10px; }
+.writing-canvas-help {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
 .writing-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -4672,39 +4677,32 @@ li { margin-bottom: 4px; }
 .writing-recognition-chip.primary { border-color: var(--accent); background: rgba(91,157,255,.14); }
 
 .writing-practice-header {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 12px;
-  align-items: stretch;
-}
-.writing-progress-tile,
-.writing-next-tile {
-  min-height: 82px;
-  border-radius: 14px;
+  margin-bottom: 8px;
 }
 .writing-progress-tile {
-  padding: 12px 14px;
+  min-height: 42px;
+  padding: 8px 12px;
   background: rgba(91, 157, 255, .08);
   border: 1px solid rgba(91, 157, 255, .3);
+  border-radius: 12px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
 }
+.writing-progress-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+.writing-progress-line .eyebrow { font-size: .68rem; }
 .writing-progress-count {
-  margin: 3px 0 8px;
+  margin: 0;
   color: var(--muted);
-  font-size: .78rem;
+  font-size: .7rem;
   font-weight: 750;
   line-height: 1.2;
 }
-.writing-next-tile {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: .92rem;
-}
-.writing-next-tile span { font-size: 1.25rem; line-height: 1; }
 .writing-prompt-visual {
   min-height: 112px;
   margin-bottom: 8px;
@@ -4712,35 +4710,137 @@ li { margin-bottom: 4px; }
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   border-radius: 14px;
   background: rgba(255,255,255,.035);
+}
+.writing-hear-cue {
+  color: var(--muted);
+  font-family: inherit;
+  font-size: .72rem;
+  font-weight: 650;
+  white-space: nowrap;
 }
 .writing-prompt-visual .checkpoint-token {
   font-size: 2.75rem;
   line-height: 1;
 }
-.writing-quiz-card .quiz-detail {
+.writing-quiz-card { position: relative; }
+.writing-quiz-card .writing-instruction {
   margin-bottom: 4px;
   font-size: .78rem;
+  color: var(--muted);
+  text-align: center;
+}
+.writing-result-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  padding: 12px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 10, 25, .68);
+  border-radius: inherit;
+  backdrop-filter: blur(5px);
+}
+.writing-result-overlay.open {
+  display: flex;
+  animation: writing-result-backdrop-in 140ms ease-out both;
+}
+.writing-result-sheet {
+  width: min(100%, 300px);
+  padding: 12px;
+  background: linear-gradient(155deg, rgba(28, 39, 68, .98), rgba(15, 24, 45, .98));
+  border: 1px solid rgba(125, 168, 255, .32);
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0,0,0,.34);
+  animation: writing-result-sheet-in 180ms cubic-bezier(.2,.9,.3,1.1) both;
+}
+.writing-result-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.writing-result-action {
+  min-height: 38px;
+  border-radius: 10px;
+  font-size: .76rem;
+  font-weight: 800;
+}
+.writing-result-action.retry {
+  color: #fecaca;
+  background: rgba(239, 68, 68, .13);
+  border: 1px solid rgba(248, 113, 113, .48);
+}
+.writing-result-action.next {
+  color: #d1fae5;
+  background: rgba(16, 185, 129, .15);
+  border: 1px solid rgba(52, 211, 153, .48);
+}
+.writing-result-title {
+  margin-top: 10px;
+  color: var(--text);
+  font-size: .86rem;
+  font-weight: 850;
+  text-align: center;
+}
+.writing-result-overlay.correct .writing-result-title { color: #a7f3d0; }
+.writing-result-overlay.retry .writing-result-title { color: #fecaca; }
+.writing-result-copy {
+  margin: 4px 0 6px;
+  color: var(--muted);
+  font-size: .7rem;
+  line-height: 1.35;
+  text-align: center;
+}
+.writing-result-visual {
+  width: 92px;
+  height: 92px;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+.writing-result-stroke {
+  fill: none;
+  stroke: #8b7cff;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: writing-result-draw 300ms ease-out calc(var(--stroke-index) * 50ms) forwards,
+             writing-result-ink-out 160ms ease-in 520ms forwards;
+}
+.writing-result-glyph {
+  fill: var(--text);
+  font: 800 52px "Noto Sans KR", sans-serif;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: writing-result-glyph-in 220ms cubic-bezier(.2,.85,.3,1.15) 500ms forwards;
+}
+@keyframes writing-result-backdrop-in { from { opacity: 0; } }
+@keyframes writing-result-sheet-in { from { opacity: 0; transform: translateY(6px) scale(.98); } }
+@keyframes writing-result-draw { to { stroke-dashoffset: 0; } }
+@keyframes writing-result-ink-out { to { opacity: 0; transform: scale(.94); transform-origin: center; } }
+@keyframes writing-result-glyph-in { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .writing-result-overlay.open,
+  .writing-result-sheet,
+  .writing-result-stroke,
+  .writing-result-glyph { animation-duration: 1ms !important; animation-delay: 0ms !important; }
 }
 @media (max-width: 420px) {
   .writing-practice-card { padding: 12px; }
-  .writing-practice-header { gap: 8px; margin-bottom: 10px; }
-  .writing-progress-tile,
-  .writing-next-tile { min-height: 72px; }
-  .writing-progress-tile { padding: 9px 11px; }
-  .writing-progress-count { margin: 2px 0 6px; font-size: .72rem; }
+  .writing-practice-header { margin-bottom: 7px; }
+  .writing-progress-tile { min-height: 38px; padding: 7px 10px; }
+  .writing-progress-line { margin-bottom: 5px; }
+  .writing-progress-count { font-size: .66rem; }
   .writing-quiz-card { padding: 12px; }
   .writing-prompt-visual { min-height: 82px; padding: 10px; margin-bottom: 5px; }
   .writing-prompt-visual .checkpoint-token { font-size: 2.25rem; }
   .writing-canvas-wrap { width: min(100%, 278px); margin-top: 6px; }
-  .writing-recognition {
-    width: min(100%, 278px);
-    min-height: 38px;
-    margin-top: 6px;
-    padding: 6px 9px;
-    font-size: .7rem;
-  }
   .writing-canvas-action { top: 8px; min-height: 31px; padding: 6px 9px; font-size: .68rem; }
   .writing-canvas-clear { left: 8px; }
   .writing-canvas-help { right: 8px; }
