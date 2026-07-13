@@ -1,5 +1,5 @@
-// [2026-07-13] Cache bumped to v367: compact writing prompt and freehand auto-check.
-const CACHE_NAME = "hanapath-shell-v368";
+// [2026-07-13] Cache bumped to v369: premium first-run app introduction shell.
+const CACHE_NAME = "hanapath-shell-v369";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -7,6 +7,7 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260713b",
+  "./app_intro.css?v=20260713a",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260712a",
   "./audio_map.js?v=20260712a",
@@ -17,6 +18,7 @@ const APP_SHELL = [
   "./sentences_core.js?v=20260707i",
   "./sentences_lesson_plan.js?v=20260711o",
   "./hangul_strokes.js?v=20260712b",
+  "./app_intro.js?v=20260713a",
   "./app.js?v=20260713c",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
