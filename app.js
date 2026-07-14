@@ -5497,6 +5497,7 @@ function buildWordLessonQuestions(lesson, words) {
 }
 
 function initWordLessonView(lesson) {
+  resetLessonMotion("word");
   const words = getWordLessonWords(lesson);
   const steps = [];
   if (lesson.type !== "checkpoint") words.forEach((word, index) => {
@@ -5534,6 +5535,7 @@ function openWordLesson(lessonId, { resume = false } = {}) {
     showRetryToast("Finish the previous word lesson to unlock this one.");
     return;
   }
+  queueScreenMotion("forward", 1, { replace: false });
   stopSpeech();
   if (!resume || !wordLessonView || wordLessonView.lessonId !== lesson.id) {
     wordLessonView = resume ? rehydrateWordLessonView(state.vocabLessonSession, lesson) : null;
@@ -5582,6 +5584,8 @@ function openWordReview() {
     resultSaved: false,
     reviewingCheckpoint: false,
   };
+  resetLessonMotion("word");
+  queueScreenMotion("forward", 1, { replace: false });
   renderWordLesson();
 }
 
@@ -5737,8 +5741,22 @@ function renderWordLesson() {
   else if (view.mode === "check") inner = wordLessonCheckHtml(lesson, view);
   else inner = wordLessonResultHtml(lesson, view);
 
-  el.innerHTML = `<div id="wordLessonRoot">${inner}</div>`;
-  bindWordLessonRoot(el.querySelector("#wordLessonRoot"));
+  el.innerHTML = `<div id="wordLessonRoot" data-lesson-motion-root>${inner}</div>`;
+  const root = el.querySelector("#wordLessonRoot");
+  bindWordLessonRoot(root);
+  const frameIndex = view.mode === "intro"
+    ? 0
+    : view.mode === "study"
+      ? 100 + view.stepIndex
+      : view.mode === "check"
+        ? 1000 + view.questionIndex
+        : 2000;
+  animateLessonFrame(root, "word", {
+    key: `${view.mode}:${view.mode === "study" ? view.stepIndex : view.mode === "check" ? view.questionIndex : 0}`,
+    order: frameIndex,
+    phase: view.mode === "check" && view.answered ? "feedback" : view.mode,
+    complete: view.mode === "result",
+  });
 }
 
 function getWordLessonIntroGoal(lesson) {
@@ -5992,57 +6010,126 @@ function getWordLessonResultStats(view) {
   return { total, firstTryCorrect, pct, typedTotal, typedCorrect };
 }
 
+function completionIconSvg(icon = "check") {
+  if (icon === "crown") {
+    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M11 20l13 10 8-18 8 18 13-10-5 28H16z"/><path d="M17 52h30"/></svg>`;
+  }
+  if (icon === "spark") {
+    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8c2 13 9 20 22 22-13 2-20 9-22 22-2-13-9-20-22-22 13-2 20-9 22-22z"/><path d="M50 7v10M45 12h10"/></svg>`;
+  }
+  if (icon === "retry") {
+    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 23a19 19 0 1 1-2 20"/><path d="M9 14v16h16"/></svg>`;
+  }
+  return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 33l11 11 25-27"/></svg>`;
+}
+
+function completionConfettiHtml(enabled = true) {
+  if (!enabled) return "";
+  return `<div class="completion-confetti" aria-hidden="true">${Array.from({ length: 16 }, (_, index) => `<i style="--piece:${index}"></i>`).join("")}</div>`;
+}
+
+function premiumCompletionHtml({
+  id = "",
+  tone = "success",
+  icon = "check",
+  eyebrow = "Complete",
+  title = "Beautiful work",
+  copy = "",
+  score = null,
+  stats = [],
+  detailsHtml = "",
+  actionsHtml = "",
+  className = "",
+  celebrate = tone === "success" || tone === "crown",
+} = {}) {
+  const safeTone = ["success", "crown", "neutral", "retry"].includes(tone) ? tone : "neutral";
+  const statsHtml = stats.length
+    ? `<div class="completion-stats">${stats.map((stat) => `
+        <div class="completion-stat">
+          <span class="completion-stat-value">${escapeHtml(String(stat.value ?? "—"))}</span>
+          <span class="completion-stat-label">${escapeHtml(String(stat.label || ""))}</span>
+        </div>`).join("")}</div>`
+    : "";
+  const scoreHtml = score
+    ? `<div class="completion-score">
+        <strong>${escapeHtml(String(score.value ?? ""))}</strong>
+        <span>${escapeHtml(String(score.label || ""))}</span>
+      </div>`
+    : "";
+  return `
+    <section${id ? ` id="${escapeHtml(id)}"` : ""} class="completion-stage completion-stage--${safeTone} ${className}" data-lesson-motion-root>
+      <div class="completion-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+      ${completionConfettiHtml(celebrate)}
+      <div class="completion-hero" role="status" aria-live="polite">
+        <div class="completion-emblem" aria-hidden="true">
+          <span class="completion-emblem-ring"></span>
+          <span class="completion-emblem-ring completion-emblem-ring--outer"></span>
+          <span class="completion-emblem-icon">${completionIconSvg(icon)}</span>
+        </div>
+        <div class="completion-kicker"><span></span>${escapeHtml(String(eyebrow))}<span></span></div>
+        <h2 class="completion-title">${escapeHtml(String(title))}</h2>
+        ${copy ? `<p class="completion-copy">${escapeHtml(String(copy))}</p>` : ""}
+      </div>
+      ${scoreHtml}
+      ${statsHtml}
+      ${detailsHtml ? `<div class="completion-details">${detailsHtml}</div>` : ""}
+      ${actionsHtml ? `<div class="completion-actions">${actionsHtml}</div>` : ""}
+    </section>`;
+}
+
 function wordLessonResultHtml(lesson, view) {
   const stats = getWordLessonResultStats(view);
   if (view.isReview) {
-    return `
-      <div class="card word-card">
-        <div class="eyebrow">Review complete</div>
-        <h2 class="screen-title" style="margin-bottom:12px;">Nice work</h2>
-        <div class="word-result-grid">
-          <div class="stat-box"><span class="sv">${stats.total}</span><span class="sl">Reviewed</span></div>
-          <div class="stat-box"><span class="sv">${stats.firstTryCorrect}</span><span class="sl">Correct</span></div>
-          <div class="stat-box"><span class="sv">${stats.total - stats.firstTryCorrect}</span><span class="sl">Missed</span></div>
-          <div class="stat-box"><span class="sv">${getVocabDueCount()}</span><span class="sl">Still due</span></div>
-        </div>
-        <div class="screen-sub" style="margin:12px 0;">Missed words reset to a 5-minute review. Correct words moved further out.</div>
-        <div class="word-card-actions">
-          <button class="button primary compact" type="button" data-word-lesson-done>Back to Words</button>
-          <button class="button secondary compact" type="button" data-word-open-reference>📚 Open Word Bank</button>
-        </div>
-      </div>
-    `;
+    return premiumCompletionHtml({
+      tone: "neutral",
+      icon: "spark",
+      eyebrow: "Review complete",
+      title: "Nice work",
+      copy: "Missed words return in five minutes. Correct words moved further out.",
+      score: { value: `${stats.pct}%`, label: "First-try accuracy" },
+      stats: [
+        { value: stats.total, label: "Reviewed" },
+        { value: stats.firstTryCorrect, label: "Correct" },
+        { value: stats.total - stats.firstTryCorrect, label: "To revisit" },
+        { value: getVocabDueCount(), label: "Still due" },
+      ],
+      actionsHtml: `
+        <button class="button primary compact" type="button" data-word-lesson-done>Back to Words</button>
+        <button class="button secondary compact" type="button" data-word-open-reference>📚 Open Word Bank</button>`,
+      className: "word-card",
+    });
   }
 
   const passed = wordLessonPassed(lesson, view);
   const nextLesson = getNextWordLesson();
   const isCheckpoint = lesson.type === "checkpoint";
-  const resultEyebrow = isCheckpoint && passed ? "Checkpoint complete" : `${escapeHtml(lesson.title)} ${passed ? "complete" : "— almost"}`;
+  const resultEyebrow = isCheckpoint && passed ? "Checkpoint complete" : `${lesson.title} ${passed ? "complete" : "— almost"}`;
   const resultTitle = isCheckpoint && passed ? "Unit crowned" : passed ? "Lesson complete" : isCheckpoint ? "Checkpoint not passed yet" : "Good try — review and retry";
   const resultCopy = passed
     ? isCheckpoint
       ? "You cleared this unit checkpoint. The next unit is ready when you are."
       : "All of these words are now in your spaced review queue. They'll come back at the right time."
     : `You need ${lesson.pass?.minFirstTryPct ?? 75}% on first tries to pass. The words are saved — review them and retry.`;
-  return `
-    <div class="card word-card ${isCheckpoint && passed ? "word-checkpoint-crowned" : ""}">
-      <div class="eyebrow">${resultEyebrow}</div>
-      <h2 class="screen-title" style="margin-bottom:12px;">${resultTitle}</h2>
-      <div class="word-result-grid">
-        <div class="stat-box"><span class="sv">${view.words.length}</span><span class="sl">${lesson.type === "checkpoint" ? "Review words" : "New words"}</span></div>
-        <div class="stat-box"><span class="sv">${stats.typedCorrect}/${Math.max(stats.typedTotal, view.words.length)}</span><span class="sl">Typed</span></div>
-        <div class="stat-box"><span class="sv">${stats.pct}%</span><span class="sl">First-try</span></div>
-        <div class="stat-box"><span class="sv">${getVocabDueCount()}</span><span class="sl">Due for review</span></div>
-      </div>
-      <div class="screen-sub" style="margin:12px 0;">${resultCopy}</div>
-      <div class="word-card-actions">
-        ${passed && nextLesson ? `<button class="button primary compact" type="button" data-word-lesson-open="${escapeHtml(nextLesson.id)}">Next lesson: ${escapeHtml(nextLesson.title)} →</button>` : ""}
-        ${!passed ? `<button class="button primary compact" type="button" data-word-lesson-open="${escapeHtml(lesson.id)}">Retry lesson</button>` : ""}
-        <button class="button secondary compact" type="button" data-word-lesson-done>Back to Words</button>
-        <button class="button secondary compact" type="button" data-word-open-reference>📚 Open Word Bank</button>
-      </div>
-    </div>
-  `;
+  return premiumCompletionHtml({
+    tone: passed ? (isCheckpoint ? "crown" : "success") : "retry",
+    icon: passed ? (isCheckpoint ? "crown" : "check") : "retry",
+    eyebrow: resultEyebrow,
+    title: resultTitle,
+    copy: resultCopy,
+    score: { value: `${stats.pct}%`, label: "First-try accuracy" },
+    stats: [
+      { value: view.words.length, label: lesson.type === "checkpoint" ? "Review words" : "New words" },
+      { value: `${stats.typedCorrect}/${Math.max(stats.typedTotal, view.words.length)}`, label: "Typed" },
+      { value: getVocabDueCount(), label: "Due for review" },
+    ],
+    actionsHtml: `
+      ${passed && nextLesson ? `<button class="button primary compact" type="button" data-word-lesson-open="${escapeHtml(nextLesson.id)}">Next lesson: ${escapeHtml(nextLesson.title)} →</button>` : ""}
+      ${!passed ? `<button class="button primary compact" type="button" data-word-lesson-open="${escapeHtml(lesson.id)}">Retry lesson</button>` : ""}
+      <button class="button secondary compact" type="button" data-word-lesson-done>Back to Words</button>
+      <button class="button secondary compact" type="button" data-word-open-reference>📚 Open Word Bank</button>`,
+    className: `word-card ${isCheckpoint && passed ? "word-checkpoint-crowned" : ""}`,
+    celebrate: passed,
+  });
 }
 
 function wordLessonPassed(lesson, view) {
@@ -6361,7 +6448,11 @@ function bindWordLessonRoot(root) {
     }
     const openLessonBtn = event.target.closest("[data-word-lesson-open]");
     if (openLessonBtn) { openWordLesson(openLessonBtn.dataset.wordLessonOpen); return; }
-    if (event.target.closest("[data-word-lesson-done]")) { stopSpeech(); openWordsHome(); }
+    if (event.target.closest("[data-word-lesson-done]")) {
+      queueScreenMotion("back", -1);
+      stopSpeech();
+      openWordsHome();
+    }
   });
 
   const input = root.querySelector("#wordTypeInput");
@@ -8409,6 +8500,7 @@ function isPhaseOneLessonUnlocked(index) {
 }
 
 function resetPhaseOneView(index, mode = "intro", options = {}) {
+  resetLessonMotion("alphabet");
   phaseOneView = {
     lessonIndex: index,
     mode,
@@ -9403,6 +9495,30 @@ function renderWordBreakdown(blocks) {
   return `<div class="bd-word-row">${cols.join("")}</div>`;
 }
 
+function animatePhaseOneFrame() {
+  const phase = phaseOneView.mode === "check" && phaseOneView.answered ? "feedback" : phaseOneView.mode;
+  const order = phaseOneView.mode === "intro"
+    ? phaseOneView.introIndex
+    : phaseOneView.mode === "learn"
+      ? 100 + phaseOneView.slideIndex
+      : phaseOneView.mode === "check"
+        ? 1000 + phaseOneView.questionIndex
+        : 2000;
+  const frameIndex = phaseOneView.mode === "intro"
+    ? phaseOneView.introIndex
+    : phaseOneView.mode === "learn"
+      ? phaseOneView.slideIndex
+      : phaseOneView.mode === "check"
+        ? phaseOneView.questionIndex
+        : 0;
+  animateLessonFrame(els.phaseOneStage, "alphabet", {
+    key: `${phaseOneView.mode}:${frameIndex}`,
+    order,
+    phase,
+    complete: phaseOneView.mode === "result" && phaseOneView.passed,
+  });
+}
+
 function renderPhaseOneConcept(lesson) {
   restorePhaseOneActions();
   const concept = lesson.concepts[phaseOneView.slideIndex];
@@ -9448,7 +9564,7 @@ function renderPhaseOneConcept(lesson) {
       ? phaseOneView.reviewingCheckpoint ? "Return to questions" : "Start questions"
       : "Next card";
   placePhaseOneActions();
-  animateMotionScope(els.phaseOneStage);
+  animatePhaseOneFrame();
 }
 
 function renderPhaseOneIntro(lesson) {
@@ -9493,7 +9609,7 @@ function renderPhaseOneIntro(lesson) {
   els.phaseOneActionButton.textContent =
     phaseOneView.introIndex === introCards.length - 1 ? "Start lesson" : "Next card";
   placePhaseOneActions();
-  animateMotionScope(els.phaseOneStage);
+  animatePhaseOneFrame();
 }
 
 let checkpointPlaybackId = 0;
@@ -9781,7 +9897,7 @@ function renderPhaseOneQuestion(lesson) {
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
   if (phaseOneView.answered) restoreAnsweredChoiceVisual(question);
-  animateMotionScope(els.phaseOneStage);
+  animatePhaseOneFrame();
 }
 
 function renderPhaseOneResult(lesson) {
@@ -9800,29 +9916,22 @@ function renderPhaseOneResult(lesson) {
     refreshProgressionState();
   }
 
-  els.phaseOneStage.innerHTML =
-    '<div class="result-card ' +
-    (passed ? "passed" : "retry") +
-    '">' +
-    '<span class="result-score">' +
-    cleanCount +
-    "/" +
-    total +
-    "</span>" +
-    "<div>" +
-    '<p class="concept-kicker">' +
-    (passed ? "Stage cleared" : "One more clean run") +
-    "</p>" +
-    "<h4>" +
-    (passed ? escapeHtml(lesson.shortTitle) + " is locked in" : "Review, then hit the checkpoint again") +
-    "</h4>" +
-    "<p>" +
-    (passed
-      ? "You answered " + percent + "% correctly on the first try. The next stage is now open."
-      : "You scored " + percent + "% clean. Reach " + requiredPercent + "% to unlock the next stage.") +
-    "</p>" +
-    "</div>" +
-    "</div>";
+  els.phaseOneStage.innerHTML = premiumCompletionHtml({
+    tone: passed ? "success" : "retry",
+    icon: passed ? "check" : "retry",
+    eyebrow: passed ? "Stage cleared" : "One more clean run",
+    title: passed ? `${lesson.shortTitle} is locked in` : "Review, then try the checkpoint again",
+    copy: passed
+      ? `You answered ${percent}% correctly on the first try. The next stage is now open.`
+      : `You scored ${percent}% clean. Reach ${requiredPercent}% to unlock the next stage.`,
+    score: { value: `${percent}%`, label: "First-try accuracy" },
+    stats: [
+      { value: `${cleanCount}/${total}`, label: "Clean answers" },
+      { value: `${requiredPercent}%`, label: "Pass target" },
+    ],
+    celebrate: passed,
+    className: "alphabet-checkpoint-result",
+  });
 
   els.phaseOneBackButton.disabled = false;
   els.phaseOneBackButton.textContent = "Review lesson";
@@ -9835,7 +9944,7 @@ function renderPhaseOneResult(lesson) {
 
   renderPhaseOneOverview();
   renderPhaseOneTrack();
-  animateMotionScope(els.phaseOneStage);
+  animatePhaseOneFrame();
 }
 
 function renderPhaseOnePlayer() {
@@ -10069,7 +10178,7 @@ function renderPhaseOneBuildQuestion(lesson, question) {
     phaseOneView.questionIndex === lesson.questions.length - 1 ? "See result" : "Next question";
   placePhaseOneActions();
   if (phaseOneView.answered) restoreAnsweredBuildVisual(question);
-  animateMotionScope(els.phaseOneStage);
+  animatePhaseOneFrame();
 }
 
 function answerPhaseOneBuild(jamo, tile) {
@@ -10974,6 +11083,8 @@ function renderAlphabetDrillLab() {
 }
 
 function startDrillSession(mode, len) {
+  resetLessonMotion("drill");
+  queueScreenMotion("forward", 1, { replace: false });
   drillSession = {
     mode, len, total: len === "∞" ? Infinity : len,
     asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, recentWeakKeys: [], letterCoverageQueue: [],
@@ -11015,7 +11126,7 @@ function renderDrillQuestion() {
          ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" ${textLanguageAttr(o)}>${escapeHtml(o)}</button>`).join("")}
        </div>`;
   el.innerHTML = `
-    <div class="card word-card alphabet-practice-card">
+    <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
       ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total)}
       <div class="alphabet-practice-status" id="drillStatus">${s.correct} clean · streak ${s.streak}</div>
       ${visualHtml}
@@ -11064,6 +11175,11 @@ function renderDrillQuestion() {
   }
   document.getElementById("drillEndBtn").addEventListener("click", () => renderDrillResult());
   document.getElementById("drillNextBtn").addEventListener("click", () => { s.asked += 1; renderDrillQuestion(); });
+  animateLessonFrame(el.querySelector("[data-lesson-motion-root]"), "drill", {
+    key: `question:${s.asked}`,
+    order: s.asked,
+    phase: "question",
+  });
 }
 
 function updateDrillStatus(session) {
@@ -11219,35 +11335,49 @@ function renderDrillResult() {
   const missedHtml = missedList
     .map((spot) => `<span class="drill-missed-chip"><span lang="ko">${escapeHtml(spot.jamo)}</span>${spot.kind === "batchim" ? " final" : ""}</span>`)
     .join("");
-  el.innerHTML = `
-    <div class="card word-card alphabet-practice-card">
-      <div class="eyebrow">Drill complete</div>
-      <h2 class="screen-title" style="margin:6px 0 4px;">${total ? `${accuracy}% first-try accuracy` : "No questions answered"}</h2>
-      <div class="screen-sub">${total ? `${s.correct} / ${total} clean · best streak ${s.bestStreak}` : "No answers were scored."}</div>
-      ${missedList.length
-        ? `<div class="screen-sub drill-missed-row">Weak spots this session: <span class="drill-missed-list">${missedHtml}</span></div>`
-        : `<div class="screen-sub" style="margin-top:10px;">${
-            !total
-              ? "No weak spots recorded."
-              : s.correct === total
-                ? "No misses — clean run! 🎉"
-                : "Session ended before the current question was complete."
-          }</div>`}
-      <div class="word-result-grid sentence-result-grid">
-        <div class="stat-box"><span class="sv">${s.correct}/${total}</span><span class="sl">Clean</span></div>
-        <div class="stat-box"><span class="sv">${s.bestStreak}</span><span class="sl">Best streak</span></div>
-      </div>
-      <div class="word-card-actions word-card-nav-actions">
-        <button class="button secondary compact" type="button" id="drillAgainBtn">Back to Drill Lab</button>
-        <button class="button primary compact" type="button" id="drillRepeatBtn">Run it again</button>
-      </div>
-    </div>`;
-  document.getElementById("drillAgainBtn").addEventListener("click", () => renderAlphabetDrillLab());
+  const detailsHtml = missedList.length
+    ? `<div class="completion-note"><strong>Focus for next time</strong><span class="drill-missed-list">${missedHtml}</span></div>`
+    : `<div class="completion-note"><strong>${!total ? "Session paused" : s.correct === total ? "Clean run" : "Keep building"}</strong><span>${
+        !total
+          ? "No weak spots were recorded."
+          : s.correct === total
+            ? "No misses this time."
+            : "The session ended before the current question was complete."
+      }</span></div>`;
+  el.innerHTML = premiumCompletionHtml({
+    tone: !total ? "neutral" : accuracy >= 80 ? "success" : "retry",
+    icon: !total ? "spark" : accuracy >= 80 ? "check" : "retry",
+    eyebrow: "Drill complete",
+    title: total ? `${accuracy}% first-try accuracy` : "No questions answered",
+    copy: total ? `${s.correct} of ${total} answered cleanly. Your best streak was ${s.bestStreak}.` : "No answers were scored in this run.",
+    score: { value: total ? `${accuracy}%` : "—", label: "First-try accuracy" },
+    stats: [
+      { value: `${s.correct}/${total}`, label: "Clean" },
+      { value: s.bestStreak, label: "Best streak" },
+    ],
+    detailsHtml,
+    actionsHtml: `
+      <button class="button secondary compact" type="button" id="drillAgainBtn">Back to Drill Lab</button>
+      <button class="button primary compact" type="button" id="drillRepeatBtn">Run it again</button>`,
+    className: "alphabet-practice-card",
+    celebrate: total > 0 && accuracy >= 80,
+  });
+  document.getElementById("drillAgainBtn").addEventListener("click", () => {
+    queueScreenMotion("back", -1);
+    renderAlphabetDrillLab();
+  });
   document.getElementById("drillRepeatBtn").addEventListener("click", () => startDrillSession(s.mode, s.len));
+  animateLessonFrame(el.querySelector(".completion-stage"), "drill", {
+    key: "complete",
+    order: 2000,
+    phase: "complete",
+    complete: true,
+  });
 }
 
 function openAlphabetDrillLab() {
   refreshProgressionState();
+  queueScreenMotion("forward", 1, { replace: false });
   state.route = { hub: "practice", item: "alphabet", stage: null };
   saveState();
   renderAlphabetDrillLab();
@@ -12949,8 +13079,156 @@ const MOTION_SELECTORS = [
   ".concept-card",
   ".checkpoint-card",
   ".result-card",
+  ".completion-stage",
   ".review-card",
 ].join(", ");
+
+const SCREEN_MOTION_KINDS = new Set(["launch", "hub", "tab", "forward", "back", "completion"]);
+const SCREEN_MOTION_CLASSES = [
+  "screen-motion-enter",
+  "screen-motion-launch",
+  "screen-motion-hub",
+  "screen-motion-tab",
+  "screen-motion-forward",
+  "screen-motion-back",
+  "screen-motion-completion",
+  "motion-reverse",
+];
+const ITEM_MOTION_CLASSES = [
+  "motion-rise",
+  "motion-cascade",
+  "motion-focus",
+  "motion-return",
+  "motion-lesson-forward",
+  "motion-lesson-back",
+  "motion-lesson-section",
+  "motion-answer",
+  "motion-complete",
+];
+
+let pendingScreenMotion = null;
+let screenExitTimer = 0;
+let screenExitNode = null;
+const lessonMotionFrames = new Map();
+
+function motionIsReduced() {
+  return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+}
+
+function queueScreenMotion(kind = "forward", direction = 1, { replace = true } = {}) {
+  if (!replace && pendingScreenMotion) return;
+  const visibleScreen = getVisibleScreen();
+  const visibleRect = visibleScreen?.getBoundingClientRect();
+  pendingScreenMotion = {
+    kind: SCREEN_MOTION_KINDS.has(kind) ? kind : "forward",
+    direction: direction < 0 ? -1 : 1,
+    fromRect: visibleRect
+      ? { top: visibleRect.top, left: visibleRect.left, width: visibleRect.width, height: visibleRect.height }
+      : null,
+  };
+}
+
+function takeScreenMotion(fallbackKind = "forward") {
+  const motion = pendingScreenMotion || { kind: fallbackKind, direction: 1 };
+  pendingScreenMotion = null;
+  return motion;
+}
+
+function getVisibleScreen() {
+  return document.querySelector(".screen:not([hidden]):not(.screen-motion-exit)");
+}
+
+function finishScreenExit() {
+  if (screenExitTimer) {
+    window.clearTimeout(screenExitTimer);
+    screenExitTimer = 0;
+  }
+  if (!screenExitNode) return;
+  screenExitNode.hidden = true;
+  screenExitNode.innerHTML = "";
+  screenExitNode.classList.remove("screen-motion-exit", "screen-motion-exit-launch", "screen-motion-exit-forward", "screen-motion-exit-back", "screen-motion-exit-tab", "screen-motion-exit-hub", "screen-motion-exit-completion", "motion-reverse");
+  screenExitNode.removeAttribute("aria-hidden");
+  screenExitNode.inert = false;
+  screenExitNode.style.removeProperty("--screen-top");
+  screenExitNode.style.removeProperty("--screen-left");
+  screenExitNode.style.removeProperty("--screen-width");
+  screenExitNode.style.removeProperty("--screen-height");
+  screenExitNode = null;
+}
+
+function beginScreenExit(screen, motion) {
+  finishScreenExit();
+  if (!screen || motionIsReduced()) {
+    if (screen) {
+      screen.hidden = true;
+      screen.innerHTML = "";
+    }
+    return;
+  }
+
+  const rect = motion.fromRect || screen.getBoundingClientRect();
+  // The outgoing screen remains visible for a fraction of a second while the
+  // destination arrives. Strip descendant ids so the incoming renderer can
+  // safely reuse its legacy getElementById hooks during that overlap.
+  screen.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
+  screen.setAttribute("aria-hidden", "true");
+  screen.inert = true;
+  screen.style.setProperty("--screen-top", `${rect.top}px`);
+  screen.style.setProperty("--screen-left", `${rect.left}px`);
+  screen.style.setProperty("--screen-width", `${rect.width}px`);
+  screen.style.setProperty("--screen-height", `${rect.height}px`);
+  screen.classList.add("screen-motion-exit", `screen-motion-exit-${motion.kind}`);
+  if (motion.direction < 0) screen.classList.add("motion-reverse");
+  screenExitNode = screen;
+  screenExitTimer = window.setTimeout(finishScreenExit, 420);
+}
+
+function playScreenEntrance(screen, motion) {
+  if (!screen || motionIsReduced()) return;
+  SCREEN_MOTION_CLASSES.forEach((className) => screen.classList.remove(className));
+  void screen.offsetWidth;
+  screen.dataset.motionKind = motion.kind;
+  screen.classList.add("screen-motion-enter", `screen-motion-${motion.kind}`);
+  if (motion.direction < 0) screen.classList.add("motion-reverse");
+  window.setTimeout(() => {
+    SCREEN_MOTION_CLASSES.forEach((className) => screen.classList.remove(className));
+  }, 720);
+}
+
+function resetLessonMotion(channel) {
+  lessonMotionFrames.delete(channel);
+}
+
+function animateLessonFrame(scope, channel, frame) {
+  if (!scope || !frame) return;
+  const previous = lessonMotionFrames.get(channel) || null;
+  lessonMotionFrames.set(channel, frame);
+  if (motionIsReduced()) return;
+
+  if (previous && previous.key === frame.key) {
+    const feedback = scope.querySelector(
+      ".lesson-feedback.correct, .lesson-feedback.wrong, .quiz-feedback.correct, .quiz-feedback.wrong, .word-type-feedback.correct, .word-type-feedback.wrong, .ss-result, .sent-live-feedback:not(:empty)",
+    );
+    if (feedback) playMotion(feedback, "motion-feedback-pop", 520);
+    return;
+  }
+
+  const direction = previous && Number(frame.order) < Number(previous.order) ? -1 : 1;
+  let variant = direction < 0 ? "lesson-back" : "lesson-forward";
+  if (!previous || previous.phase !== frame.phase) variant = "lesson-section";
+  if (frame.phase === "feedback") variant = "answer";
+  if (frame.complete) variant = "complete";
+
+  scope.classList.remove("lesson-frame-enter", "lesson-frame-forward", "lesson-frame-back", "lesson-frame-section", "lesson-frame-answer", "lesson-frame-complete");
+  void scope.offsetWidth;
+  scope.classList.add("lesson-frame-enter", `lesson-frame-${variant.replace("lesson-", "")}`);
+  scope.style.setProperty("--lesson-direction", String(direction));
+  window.setTimeout(() => {
+    scope.classList.remove("lesson-frame-enter", "lesson-frame-forward", "lesson-frame-back", "lesson-frame-section", "lesson-frame-answer", "lesson-frame-complete");
+    scope.style.removeProperty("--lesson-direction");
+  }, frame.complete ? 980 : 620);
+  animateMotionScope(scope, MOTION_SELECTORS, variant === "complete" ? 52 : 26, variant);
+}
 
 function playMotion(node, className, cleanupMs) {
   if (!node) return;
@@ -12962,28 +13240,34 @@ function playMotion(node, className, cleanupMs) {
   }, cleanupMs);
 }
 
-function animateMotionScope(scope, selectors = MOTION_SELECTORS, stepMs = 42) {
+function animateMotionScope(scope, selectors = MOTION_SELECTORS, stepMs = 42, variant = "rise") {
   if (!scope) return;
+  if (motionIsReduced()) return;
   const items = [...scope.querySelectorAll(selectors)];
   if (!items.length) return;
 
   items.forEach((item, index) => {
     item.classList.remove("motion-enter");
+    ITEM_MOTION_CLASSES.forEach((className) => item.classList.remove(className));
     item.style.setProperty("--motion-delay", `${Math.min(index, 12) * stepMs}ms`);
   });
 
   void scope.offsetWidth;
 
   items.forEach((item, index) => {
-    item.classList.add("motion-enter");
+    item.classList.add("motion-enter", `motion-${variant}`);
     window.setTimeout(() => {
       item.classList.remove("motion-enter");
+      ITEM_MOTION_CLASSES.forEach((className) => item.classList.remove(className));
       item.style.removeProperty("--motion-delay");
-    }, 780 + index * stepMs);
+    }, (variant === "complete" ? 980 : 780) + index * stepMs);
   });
 }
 
 function setNavActive(hub) {
+  const nav = document.querySelector(".bottom-nav");
+  const navIndex = Math.max(0, HUBS.indexOf(hub));
+  if (nav) nav.style.setProperty("--nav-index", String(navIndex));
   document.querySelectorAll(".nav-btn").forEach((b) => {
     b.classList.toggle("active", b.dataset.nav === hub);
   });
@@ -13000,20 +13284,41 @@ function showScreen(screenId) {
   }
 
   const targetId = "screen-" + screenId;
+  const currentScreen = getVisibleScreen();
+  const isSameScreen = currentScreen?.id === targetId;
+  const hasRequestedMotion = Boolean(pendingScreenMotion);
+  const motion = takeScreenMotion(isSameScreen ? "hub" : "forward");
+  const shouldAnimate = !isSameScreen || hasRequestedMotion;
+  if (currentScreen && !isSameScreen) beginScreenExit(currentScreen, motion);
   // Hide every screen and empty the inactive ones. Inactive screens keep their
   // quiz cards in the DOM otherwise, and the alphabet quiz on Home shares its
   // element IDs with the alphabet practice screen — getElementById would then
   // write into the hidden copy. Each screen is fully re-rendered when shown.
   document.querySelectorAll(".screen").forEach((s) => {
+    if (s === screenExitNode) return;
     s.hidden = true;
     if (s.id !== targetId) s.innerHTML = "";
   });
   const screen = document.getElementById(targetId);
   if (screen) {
     screen.hidden = false;
+    screen.removeAttribute("aria-hidden");
+    screen.inert = false;
     screen.scrollTop = 0;
-    playMotion(screen, "screen-enter", 420);
-    window.requestAnimationFrame(() => animateMotionScope(screen));
+    if (shouldAnimate) {
+      playScreenEntrance(screen, motion);
+      const itemVariant = motion.kind === "hub" || motion.kind === "tab"
+        ? "cascade"
+        : motion.kind === "back"
+          ? "return"
+          : motion.kind === "completion"
+            ? "complete"
+            : "focus";
+      window.requestAnimationFrame(() => {
+        if (screen.querySelector("[data-lesson-motion-root]")) return;
+        animateMotionScope(screen, MOTION_SELECTORS, motion.kind === "hub" ? 48 : 34, itemVariant);
+      });
+    }
   }
   return screen;
 }
@@ -13048,7 +13353,10 @@ function showDetailBar(hub, itemTitle) {
     <button class="back-btn" type="button">‹ ${escapeHtml(label)}</button>
     ${itemTitle ? `<span class="detail-bar-title">${escapeHtml(itemTitle)}</span>` : ""}
   `;
-  bar.querySelector(".back-btn").addEventListener("click", () => goHub(hub));
+  bar.querySelector(".back-btn").addEventListener("click", () => {
+    queueScreenMotion("back", -1);
+    goHub(hub);
+  });
   bar.hidden = false;
   playMotion(bar, "bar-enter", 320);
 }
@@ -13068,6 +13376,7 @@ function showDetailBarWithBack(hub, itemTitle, onBack = null, backLabel = null) 
     ${itemTitle ? `<span class="detail-bar-title">${escapeHtml(itemTitle)}</span>` : ""}
   `;
   bar.querySelector(".back-btn").addEventListener("click", () => {
+    queueScreenMotion("back", -1);
     if (typeof onBack === "function") {
       onBack();
       return;
@@ -13254,9 +13563,15 @@ function renderHubMenu(hub) {
     </div>
   `;
   el.querySelectorAll("[data-hub-item]").forEach((btn) => {
-    btn.addEventListener("click", () => openHubItem(hub, btn.dataset.hubItem));
+    btn.addEventListener("click", () => {
+      queueScreenMotion("forward", 1);
+      openHubItem(hub, btn.dataset.hubItem);
+    });
   });
-  el.querySelector("[data-open-settings]").addEventListener("click", () => renderSettingsScreen(hub));
+  el.querySelector("[data-open-settings]").addEventListener("click", () => {
+    queueScreenMotion("forward", 1);
+    renderSettingsScreen(hub);
+  });
 }
 
 // Settings screen (opened from the settings tile on any hub menu). Currently
@@ -13446,6 +13761,7 @@ function renderLearnStageMenu(itemId) {
         showRetryToast(`Finish "${currentStageInfo.title}" to unlock this stage.`);
         return;
       }
+      queueScreenMotion("forward", 1);
       openLearnStage(itemId, Number(btn.dataset.learnStage));
     });
   });
@@ -13476,6 +13792,7 @@ function openLearnStageMenu(itemId) {
   if (!item) return;
 
   refreshProgressionState();
+  queueScreenMotion("forward", 1, { replace: false });
   activeHub = "learn";
   setNavActive("learn");
   state.route = { hub: "learn", item: itemId, stage: null };
@@ -13489,6 +13806,7 @@ function openLearnStageContent(itemId, stageNumber) {
   if (!item) return;
 
   const stageInfo = getLearnStageInfo(itemId, stageNumber);
+  queueScreenMotion("forward", 1, { replace: false });
   activeHub = "learn";
   setNavActive("learn");
   state.learnInProgress = false;
@@ -13784,6 +14102,7 @@ function openLearnLesson(
     startQuestionIndex = 0,
   } = {},
 ) {
+  queueScreenMotion("forward", 1, { replace: false });
   let idx = index;
   if (!phaseOneLessons[idx]) { startNextLearn(); return; }
   if (!getAlphabetProgress().isLessonUnlocked(idx)) {
@@ -13819,7 +14138,7 @@ function openLearnLesson(
   // The player head already shows the stage, title and goal, and the back bar
   // shows the stage too — so no separate header card here (avoids the cramped,
   // triple-titled look).
-  el.innerHTML = `<div id="learnLessonArea"></div>`;
+  el.innerHTML = `<div id="learnLessonArea" data-lesson-motion-root></div>`;
   mountLessonPlayer(document.getElementById("learnLessonArea"), idx, {
     onResult: (passed) => {
       if (passed) {
@@ -13873,16 +14192,6 @@ function renderCompleteInPlayer(index) {
   if (!els.phaseOneStage) return;
 
   const cheer = PHASE_ONE_COMPLETE_CHEERS[lesson.id] || lesson.shortTitle + " — locked in!";
-  const cheerHtml =
-    '<div class="lesson-complete-cheer">' +
-    '<span class="lesson-complete-streamers" aria-hidden="true">🎉</span>' +
-    "<div>" +
-    '<div class="eyebrow">' + (isFinalLesson ? "Hangul complete" : "Lesson complete") + "</div>" +
-    '<h3 class="screen-title">' + escapeHtml(cheer) + "</h3>" +
-    "</div>" +
-    '<span class="lesson-complete-streamers flip" aria-hidden="true">🎉</span>' +
-    "</div>";
-
   const tilesHtml =
     '<div class="lesson-complete-tiles">' +
     '<button class="lesson-complete-tile" type="button" id="learnRestartBtn">Restart lesson</button>' +
@@ -13911,7 +14220,32 @@ function renderCompleteInPlayer(index) {
   const returnTileHtml =
     '<button class="lesson-complete-tile lesson-complete-return" type="button" id="learnAllLessonsBtn">Return to all lessons</button>';
 
-  els.phaseOneStage.innerHTML = cheerHtml + tilesHtml + summaryHtml + finalExtrasHtml + returnTileHtml;
+  const cleanCount = phaseOneView.results.filter(Boolean).length;
+  const totalQuestions = lesson.questions.length;
+  const accuracy = totalQuestions ? Math.round((cleanCount / totalQuestions) * 100) : 100;
+  els.phaseOneStage.innerHTML = premiumCompletionHtml({
+    tone: isFinalLesson ? "crown" : "success",
+    icon: isFinalLesson ? "crown" : "check",
+    eyebrow: isFinalLesson ? "Hangul complete" : `Stage ${String(index + 1).padStart(2, "0")} complete`,
+    title: cheer,
+    copy: isFinalLesson
+      ? "Every Hangul stage is complete. Your vocabulary path is ready."
+      : "That stage is locked in, and the next one is now open.",
+    score: { value: `${accuracy}%`, label: "First-try accuracy" },
+    stats: [
+      { value: `${cleanCount}/${totalQuestions}`, label: "Clean answers" },
+      { value: `${index + 1}/${phaseOneLessons.length}`, label: "Hangul stages" },
+    ],
+    detailsHtml: summaryHtml + finalExtrasHtml,
+    actionsHtml: tilesHtml + returnTileHtml,
+    className: "alphabet-completion-stage",
+  });
+  animateLessonFrame(els.phaseOneStage, "alphabet", {
+    key: `complete:${index}`,
+    order: 2100,
+    phase: "complete",
+    complete: true,
+  });
 
   const playerHead = els.phaseOnePlayer && els.phaseOnePlayer.querySelector(".player-head");
   if (playerHead) playerHead.style.display = "none";
@@ -13930,7 +14264,10 @@ function renderCompleteInPlayer(index) {
   const nextBtn = document.getElementById("learnNextBtn");
   if (nextBtn && next) nextBtn.addEventListener("click", () => openLearnLesson(index + 1));
   const allLessonsBtn = document.getElementById("learnAllLessonsBtn");
-  if (allLessonsBtn) allLessonsBtn.addEventListener("click", () => openLearnStageMenu("alphabet"));
+  if (allLessonsBtn) allLessonsBtn.addEventListener("click", () => {
+    queueScreenMotion("back", -1);
+    openLearnStageMenu("alphabet");
+  });
   const vocabBtn = document.getElementById("learnVocabBtn");
   if (vocabBtn) vocabBtn.addEventListener("click", () => startNextLearn());
   const letterReviewBtn = document.getElementById("learnLetterReviewBtn");
@@ -13978,6 +14315,19 @@ function renderLearnComplete(index) {
 function goHub(hub) {
   refreshProgressionState();
   if (!HUBS.includes(hub)) hub = "learn";
+  const previousHub = activeHub;
+  const currentScreen = getVisibleScreen();
+  if (!pendingScreenMotion) {
+    if (!currentScreen) {
+      queueScreenMotion("launch", 1);
+    } else if (previousHub !== hub) {
+      const previousIndex = Math.max(0, HUBS.indexOf(previousHub));
+      const nextIndex = Math.max(0, HUBS.indexOf(hub));
+      queueScreenMotion("tab", nextIndex >= previousIndex ? 1 : -1);
+    } else {
+      queueScreenMotion("hub", -1);
+    }
+  }
   activeHub = hub;
   setNavActive(hub);
   hideDetailBar();
@@ -14238,7 +14588,7 @@ window.renderPronunciationDrill = function() {
   }).join("");
 
   el.innerHTML = `
-    <div class="card">
+    <div class="card" data-lesson-motion-root>
       ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.currentIndex + 1, pronDrillState.questionCount)}
 
       <div style="text-align:center; padding:24px 0;">
@@ -14260,9 +14610,16 @@ window.renderPronunciationDrill = function() {
     </div>
   `;
   bindAlphabetReferenceButtons(el);
+  animateLessonFrame(el.querySelector("[data-lesson-motion-root]"), "pronunciation", {
+    key: `question:${pronDrillState.currentIndex}`,
+    order: pronDrillState.currentIndex,
+    phase: pronDrillState.answered ? "feedback" : "question",
+  });
 }
 
 window.startPronDrill = function(idx) {
+  resetLessonMotion("pronunciation");
+  queueScreenMotion("forward", 1, { replace: false });
   const set = MINIMAL_PAIRS[idx];
   pronDrillState = {
     activePairSet: set,
@@ -14316,17 +14673,27 @@ window.nextPronDrillQuestion = function() {
     const el = showScreen("detail");
     if (el) {
       const score = Math.round((pronDrillState.correctCount / pronDrillState.questionCount) * 100);
-      el.innerHTML = `
-        <div class="card" style="text-align:center; padding:32px 16px;">
-          ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.questionCount, pronDrillState.questionCount)}
-          <div class="eyebrow">Drill Complete</div>
-          <h2 style="margin:8px 0 16px 0;">Pronunciation Accuracy</h2>
-          <div style="font-size:3rem; font-weight:bold; color:var(--accent-text); margin-bottom:12px;">${score}%</div>
-          <div class="screen-sub" style="margin-bottom:24px;">You got ${pronDrillState.correctCount} correct out of ${pronDrillState.questionCount} questions.</div>
-          <button class="button primary" type="button" onclick="quitPronDrill()">Finish Drill</button>
-        </div>
-      `;
+      el.innerHTML = premiumCompletionHtml({
+        tone: score >= 80 ? "success" : "retry",
+        icon: score >= 80 ? "check" : "retry",
+        eyebrow: "Pronunciation drill complete",
+        title: score >= 80 ? "Your ear is getting sharper" : "One more listening pass",
+        copy: `You identified ${pronDrillState.correctCount} of ${pronDrillState.questionCount} sound contrasts correctly.`,
+        score: { value: `${score}%`, label: "Pronunciation accuracy" },
+        stats: [
+          { value: `${pronDrillState.correctCount}/${pronDrillState.questionCount}`, label: "Correct" },
+          { value: pronDrillState.questionCount - pronDrillState.correctCount, label: "To revisit" },
+        ],
+        actionsHtml: '<button class="button primary" type="button" onclick="quitPronDrill()">Finish drill</button>',
+        celebrate: score >= 80,
+      });
       bindAlphabetReferenceButtons(el);
+      animateLessonFrame(el.querySelector(".completion-stage"), "pronunciation", {
+        key: "complete",
+        order: 2000,
+        phase: "complete",
+        complete: true,
+      });
     }
   } else {
     generatePronDrillQuestion();
@@ -15494,6 +15861,8 @@ function bindHangulWritingCanvas(canvas) {
 }
 
 function startHangulWritingSession(unit, exercise, repeatTarget, inputMode = "guided") {
+  resetLessonMotion("writing");
+  queueScreenMotion("forward", 1, { replace: false });
   hangulWritingState = {
     unitId: unit.id,
     glyphIndex: 0,
@@ -15523,7 +15892,7 @@ function renderHangulWritingMultiplierPicker(el, unit, exercise) {
       ? "Write from romanization"
       : "Copy the shape";
   el.innerHTML = `
-    <div class="card word-card alphabet-practice-card writing-multiplier-card">
+    <div class="card word-card alphabet-practice-card writing-multiplier-card" data-lesson-motion-root>
       <div class="eyebrow">Before you start</div>
       <h2 class="screen-title">How many repetitions?</h2>
       <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)}. Every glyph must be drawn correctly this many times before you move on.</div>
@@ -15556,6 +15925,11 @@ function renderHangulWritingMultiplierPicker(el, unit, exercise) {
     resetHangulWritingSession();
     renderHangulWriting();
   });
+  animateLessonFrame(el.querySelector("[data-lesson-motion-root]"), "writing", {
+    key: `setup:${unit.id}:${exercise}`,
+    order: 10,
+    phase: "setup",
+  });
 }
 
 function getHangulWritingImprovement(summary) {
@@ -15581,30 +15955,30 @@ function renderHangulWritingCompletion(el, summary) {
     const stats = summary.glyphStats[glyph] || { attempts: 0, successes: 0, retries: 0 };
     return `<div class="writing-summary-detail-row"><span lang="ko">${escapeHtml(glyph)}</span><span>${stats.successes} clean · ${stats.attempts} attempt${stats.attempts === 1 ? "" : "s"} · ${stats.retries} retr${stats.retries === 1 ? "y" : "ies"}</span></div>`;
   }).join("");
-  el.innerHTML = `
-    <div class="card word-card alphabet-practice-card writing-summary-card">
-      <div class="lesson-complete-cheer writing-summary-cheer">
-        <span class="lesson-complete-streamers" aria-hidden="true">🎉</span>
-        <div><div class="eyebrow">Writing session complete</div><h2 class="screen-title">Brilliant work — those shapes are yours!</h2></div>
-        <span class="lesson-complete-streamers flip" aria-hidden="true">🎉</span>
-      </div>
-      <div class="writing-summary-stats">
-        <div><strong>${formatHangulWritingDuration(summary.durationMs)}</strong><span>Time</span></div>
-        <div><strong>${summary.attempts}</strong><span>Attempts</span></div>
-        <div><strong>${summary.retries}</strong><span>Retries</span></div>
-        <div><strong>${summary.accuracy}%</strong><span>Clean rate</span></div>
-      </div>
+  el.innerHTML = premiumCompletionHtml({
+    tone: "success",
+    icon: "spark",
+    eyebrow: "Writing session complete",
+    title: "Brilliant work — those shapes are yours",
+    copy: getHangulWritingImprovement(summary),
+    score: { value: `${summary.accuracy}%`, label: "Clean rate" },
+    stats: [
+      { value: formatHangulWritingDuration(summary.durationMs), label: "Time" },
+      { value: summary.attempts, label: "Attempts" },
+      { value: summary.retries, label: "Retries" },
+      { value: summary.glyphs.length, label: "Shapes" },
+    ],
+    detailsHtml: `
       <div class="writing-summary-drawn"><span>${summary.inputMode === "freehand" ? "Freehand" : "Guided"} · ${summary.repeatTarget}× each</span><div>${summary.glyphs.map((glyph) => `<span lang="ko">${escapeHtml(glyph)}</span>`).join("")}</div></div>
-      <div class="writing-summary-improvement">${escapeHtml(getHangulWritingImprovement(summary))}</div>
       <details class="writing-summary-details">
         <summary>More session detail</summary>
         <div class="writing-summary-detail-list">${glyphRows}</div>
-      </details>
-      <div class="writing-summary-actions">
-        <button class="button secondary" type="button" id="writingSummaryChoose">Choose another unit</button>
-        <button class="button primary" type="button" id="writingSummaryAgain" ${unit ? "" : "disabled"}>Repeat this session</button>
-      </div>
-    </div>`;
+      </details>`,
+    actionsHtml: `
+      <button class="button secondary" type="button" id="writingSummaryChoose">Choose another unit</button>
+      <button class="button primary" type="button" id="writingSummaryAgain" ${unit ? "" : "disabled"}>Repeat this session</button>`,
+    className: "word-card alphabet-practice-card writing-summary-card",
+  });
   el.querySelector("#writingSummaryChoose").addEventListener("click", () => {
     resetHangulWritingSession();
     renderHangulWriting();
@@ -15612,6 +15986,12 @@ function renderHangulWritingCompletion(el, summary) {
   el.querySelector("#writingSummaryAgain").addEventListener("click", () => {
     if (!unit) return;
     startHangulWritingSession(unit, summary.exercise, summary.repeatTarget, summary.inputMode || "guided");
+  });
+  animateLessonFrame(el.querySelector(".completion-stage"), "writing", {
+    key: "complete",
+    order: 2000,
+    phase: "complete",
+    complete: true,
   });
 }
 
@@ -15666,6 +16046,11 @@ function renderHangulWritingUnitPicker(el) {
       if (unit) renderHangulWritingMultiplierPicker(el, unit, exercise);
     });
   });
+  animateLessonFrame(el, "writing", {
+    key: "unit-picker",
+    order: 0,
+    phase: "picker",
+  });
 }
 
 function renderHangulWritingPractice(el, unit) {
@@ -15700,7 +16085,7 @@ function renderHangulWritingPractice(el, unit) {
   }
 
   el.innerHTML = `
-    <div class="card word-card alphabet-practice-card writing-practice-card">
+    <div class="card word-card alphabet-practice-card writing-practice-card" data-lesson-motion-root>
       <div class="writing-practice-header">
         <div class="writing-progress-tile">
           <div class="writing-progress-line"><span class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")} · ${isFreehand ? "Freehand" : "Guided"}</span><span class="writing-progress-count">${progressCurrent} of ${progressTotal}${repeatProgress}</span></div>
@@ -15749,6 +16134,11 @@ function renderHangulWritingPractice(el, unit) {
       watchHangulGuide(canvas, guide);
     }
   });
+  animateLessonFrame(el.querySelector("[data-lesson-motion-root]"), "writing", {
+    key: `practice:${hangulWritingState.glyphIndex}:${hangulWritingState.repeatIndex}`,
+    order: 100 + completedRepetitions,
+    phase: "practice",
+  });
 }
 
 function renderHangulWriting() {
@@ -15780,6 +16170,8 @@ let letterReview = { queue: [], index: 0, correct: 0, answered: false };
 
 function startLetterReview() {
   refreshProgressionState();
+  resetLessonMotion("letter-review");
+  queueScreenMotion("forward", 1, { replace: false });
   letterReview = { queue: getDueLetters(), index: 0, correct: 0, answered: false };
   activeHub = "practice";
   setNavActive("practice");
@@ -15793,20 +16185,35 @@ function renderLetterReview() {
 
   const total = letterReview.queue.length;
   if (!total || letterReview.index >= total) {
-    el.innerHTML = `
-      <div class="card word-card alphabet-practice-card">
-        <div class="eyebrow">Alphabet review</div>
-        <h2 class="screen-title" style="margin:6px 0 8px;">${total ? "Review complete" : "All caught up"}</h2>
-        <div class="screen-sub">${
-          total
-            ? `You recalled ${letterReview.correct} of ${total} letters. Each one comes back automatically when it's due.`
-            : "No letters are due right now. Finish more alphabet stages or check back later."
-        }</div>
-        ${total ? `<div class="word-result-grid sentence-result-grid"><div class="stat-box"><span class="sv">${letterReview.correct}/${total}</span><span class="sl">Correct</span></div><div class="stat-box"><span class="sv">${Math.round((letterReview.correct / total) * 100)}%</span><span class="sl">Accuracy</span></div></div>` : ""}
-        <div class="word-card-actions"><button class="button primary compact" id="letterReviewDone" type="button">Back to Alphabet practice</button></div>
-      </div>`;
+    const accuracy = total ? Math.round((letterReview.correct / total) * 100) : 0;
+    el.innerHTML = premiumCompletionHtml({
+      tone: total ? "success" : "neutral",
+      icon: total ? "check" : "spark",
+      eyebrow: "Alphabet review",
+      title: total ? "Review complete" : "All caught up",
+      copy: total
+        ? `You recalled ${letterReview.correct} of ${total} letters. Each one returns automatically when it's due.`
+        : "No letters are due right now. Finish more alphabet stages or check back later.",
+      score: total ? { value: `${accuracy}%`, label: "Recall accuracy" } : null,
+      stats: total ? [
+        { value: `${letterReview.correct}/${total}`, label: "Correct" },
+        { value: total - letterReview.correct, label: "To revisit" },
+      ] : [],
+      actionsHtml: '<button class="button primary compact" id="letterReviewDone" type="button">Back to Alphabet practice</button>',
+      className: "word-card alphabet-practice-card",
+      celebrate: total > 0,
+    });
     const done = document.getElementById("letterReviewDone");
-    if (done) done.addEventListener("click", () => renderAlphabetPracticeHub());
+    if (done) done.addEventListener("click", () => {
+      queueScreenMotion("back", -1);
+      renderAlphabetPracticeHub();
+    });
+    animateLessonFrame(el.querySelector(".completion-stage"), "letter-review", {
+      key: "complete",
+      order: 2000,
+      phase: "complete",
+      complete: true,
+    });
     return;
   }
 
@@ -15830,7 +16237,7 @@ function renderLetterReview() {
   letterReview.answered = false;
 
   el.innerHTML = `
-    <div class="card word-card alphabet-practice-card">
+    <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
       ${alphabetPracticeProgressHtml("Spaced review", letterReview.index + 1, total)}
       <div class="quiz-card">
         <div class="quiz-visual" lang="ko"><span class="checkpoint-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakableForChunk(letter))}" data-speak="${escapeHtml(speakableForChunk(letter))}" title="Tap to hear">${escapeHtml(letter)}</span></div>
@@ -15848,6 +16255,11 @@ function renderLetterReview() {
   bindTapToHearToken(el.querySelector("[data-speak]"));
   el.querySelectorAll("#letterReviewOptions .option").forEach((btn) => {
     btn.addEventListener("click", () => answerLetterReview(btn, letter, sound));
+  });
+  animateLessonFrame(el.querySelector("[data-lesson-motion-root]"), "letter-review", {
+    key: `question:${letterReview.index}`,
+    order: letterReview.index,
+    phase: "question",
   });
 }
 
@@ -17002,6 +17414,8 @@ function getSentenceTransformForSessionRow(session, row) {
 
 function startSentenceStudioSession(modeId) {
   stopSpeech();
+  resetLessonMotion("sentence");
+  queueScreenMotion("forward", 1, { replace: false });
   const progress = getSentencesProgress();
   const rows = modeId === "transform"
     ? pickSentenceTransformRows(progress.band)
@@ -17050,6 +17464,7 @@ function isSentenceLessonUnlocked(lesson, metWords, completedSet) {
 function openSentenceLesson(lessonId) {
   const lesson = getSentenceLessonById(lessonId);
   if (!lesson || !isSentenceLessonUnlocked(lesson)) return;
+  queueScreenMotion("forward", 1, { replace: false });
   stopSpeech();
   sentenceStudioSession = null;
   sentenceLessonView = { lessonId };
@@ -17075,6 +17490,8 @@ function startSentenceLessonSession(lessonId) {
       .slice(0, maxPrompts);
   }
   if (!rows.length) return;
+  resetLessonMotion("sentence");
+  queueScreenMotion("forward", 1, { replace: false });
   const drillPlan = lesson.type === "content"
     ? (Array.isArray(lesson.drillPlan) ? lesson.drillPlan : [])
     : rows.map((row, index) => ({
@@ -17280,6 +17697,7 @@ function advanceSentenceSession() {
 function exitSentenceStudioSession() {
   clearSentenceSessionTimeouts();
   stopSpeech();
+  queueScreenMotion("back", -1);
   sentenceStudioSession = null;
   sentenceLessonView = null;
   persistSentenceLessonSession(null);
@@ -17714,7 +18132,7 @@ function sentenceStudyHtml(session) {
   const row = session.rows[session.studyIndex];
   const total = session.rows.length;
   return `
-    <div class="card word-card sent-session" id="sentenceSessionRoot">
+    <div class="card word-card sent-session" id="sentenceSessionRoot" data-lesson-motion-root>
       ${sentenceSessionProgressHtml(session.studyIndex + 1, total, "Listen and shadow")}
       <h2 class="screen-title" style="margin-bottom:8px;">Say the line out loud</h2>
       <div class="word-card-ko-tile">
@@ -18010,7 +18428,7 @@ function sentenceQuestionHtml(session) {
   }
 
   return `
-    <div class="card word-card sent-session" id="sentenceSessionRoot" data-ss-id="${row.id}">
+    <div class="card word-card sent-session" id="sentenceSessionRoot" data-lesson-motion-root data-ss-id="${row.id}">
       ${innerContent}
     </div>
   `;
@@ -18051,7 +18469,7 @@ function sentenceFeedbackHtml(session) {
   }
 
   return `
-    <div class="card word-card sent-session" id="sentenceSessionRoot" data-ss-id="${row.id}">
+    <div class="card word-card sent-session" id="sentenceSessionRoot" data-lesson-motion-root data-ss-id="${row.id}">
       ${sentenceSessionProgressHtml(session.index + 1, session.rows.length, "Feedback")}
 
       <div class="word-card-heading">
@@ -18093,7 +18511,7 @@ function sentenceSummaryHtml(session) {
   const resultEyebrow = isCheckpoint && lessonPassed
     ? "Checkpoint complete"
     : session.lessonId
-      ? `${escapeHtml(getSentenceLessonDisplayTitle(lesson))} ${lessonPassed ? "complete" : "— almost"}`
+      ? `${getSentenceLessonDisplayTitle(lesson)} ${lessonPassed ? "complete" : "— almost"}`
       : "Session complete";
   const resultTitle = isCheckpoint && lessonPassed
     ? "Unit crowned"
@@ -18130,24 +18548,26 @@ function sentenceSummaryHtml(session) {
          <button class="button primary compact" type="button" data-sentence-again>Retry lesson</button>`
     : `<button class="button secondary compact" type="button" data-sentence-exit>Back to Practice</button>
        <button class="button primary compact" type="button" data-sentence-again>Practice again</button>`;
-  return `
-    <div class="card word-card sent-session ${isCheckpoint && lessonPassed ? "word-checkpoint-crowned" : ""}" id="sentenceSessionRoot">
-      <div class="eyebrow">${resultEyebrow}</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">${resultTitle}</h2>
-      <div class="screen-sub" style="margin-bottom:12px;">${resultCopy}</div>
-      <div class="word-result-grid sentence-result-grid">
-        <div class="stat-box"><span class="sv">${firstTryCorrect}/${session.rows.length}</span><span class="sl">First try</span></div>
-        <div class="stat-box"><span class="sv">${correct}/${session.rows.length}</span><span class="sl">Correct</span></div>
-      </div>
-      <details class="sentence-summary-details">
-        <summary><span>Review the ${session.rows.length} lines</span><span class="pill muted">${correct}/${session.rows.length}</span></summary>
-        <div class="study-list">${rowsHtml}</div>
-      </details>
-      <div class="word-card-actions word-card-nav-actions" style="margin-top:12px;">
-        ${summaryActions}
-      </div>
-    </div>
-  `;
+  return premiumCompletionHtml({
+    id: "sentenceSessionRoot",
+    tone: session.lessonId ? (lessonPassed ? (isCheckpoint ? "crown" : "success") : "retry") : "neutral",
+    icon: session.lessonId ? (lessonPassed ? (isCheckpoint ? "crown" : "check") : "retry") : "spark",
+    eyebrow: resultEyebrow,
+    title: resultTitle,
+    copy: resultCopy,
+    score: { value: `${firstTryPct}%`, label: "First-try accuracy" },
+    stats: [
+      { value: `${firstTryCorrect}/${session.rows.length}`, label: "First try" },
+      { value: `${correct}/${session.rows.length}`, label: "Correct" },
+    ],
+    detailsHtml: `<details class="sentence-summary-details">
+      <summary><span>Review the ${session.rows.length} lines</span><span class="pill muted">${correct}/${session.rows.length}</span></summary>
+      <div class="study-list">${rowsHtml}</div>
+    </details>`,
+    actionsHtml: summaryActions,
+    className: `word-card sent-session ${isCheckpoint && lessonPassed ? "word-checkpoint-crowned" : ""}`,
+    celebrate: Boolean(session.lessonId ? lessonPassed : correct === session.rows.length),
+  });
 }
 
 // --- Sentence Studio: render + events ---------------------------------------
@@ -18184,6 +18604,22 @@ function renderPracticeView() {
   bindSentenceStudioEvents(el);
 
   const session = sentenceStudioSession;
+  if (session) {
+    const frameIndex = session.phase === "study" ? session.studyIndex : session.index;
+    const order = session.phase === "study"
+      ? 100 + session.studyIndex
+      : session.phase === "question"
+        ? 1000 + session.index * 2
+        : session.phase === "feedback"
+          ? 1001 + session.index * 2
+          : 2000;
+    animateLessonFrame(el.querySelector("#sentenceSessionRoot"), "sentence", {
+      key: `${session.phase}:${frameIndex}`,
+      order,
+      phase: session.phase,
+      complete: session.phase === "summary",
+    });
+  }
   if (session && session.phase === "study" && !session.autoPlayed) {
     session.autoPlayed = true;
     const row = session.rows[session.studyIndex];
@@ -19167,6 +19603,9 @@ async function init() {
   if (appDiv) appDiv.hidden = false;
   document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
+      const previousIndex = Math.max(0, HUBS.indexOf(activeHub));
+      const nextIndex = Math.max(0, HUBS.indexOf(btn.dataset.nav));
+      queueScreenMotion("tab", nextIndex >= previousIndex ? 1 : -1);
       if (btn.dataset.nav === "learn") tapLearnTab();
       else goHub(btn.dataset.nav);
     });
