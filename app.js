@@ -748,7 +748,7 @@ const phaseOneLessons = [
       {
         prompt: "Which vowel is the y-version of ㅏ?",
         detail: "Look for the doubled short stroke.",
-        visual: "ㅏ → ㅑ",
+        visual: "ㅏ + y-glide",
         options: ["ㅑ", "ㅕ", "ㅛ", "ㅠ"],
         answer: "ㅑ",
         explanation: "Adding a second short stroke turns ㅏ into ㅑ.",
@@ -784,7 +784,7 @@ const phaseOneLessons = [
       {
         prompt: "Which vowel is the y-version of ㅜ?",
         detail: "Look for the doubled short stroke.",
-        visual: "ㅜ → ㅠ",
+        visual: "ㅜ + y-glide",
         options: ["ㅠ", "ㅛ", "ㅑ", "ㅕ"],
         answer: "ㅠ",
         explanation: "A second short stroke turns ㅜ into ㅠ (yu).",
@@ -1312,7 +1312,7 @@ const phaseOneLessons = [
       {
         prompt: "Which vowel is the y-version of ㅗ?",
         detail: "Look for the doubled short stroke.",
-        visual: "ㅗ → ㅛ",
+        visual: "ㅗ + y-glide",
         options: ["ㅛ", "ㅠ", "ㅑ", "ㅕ"],
         answer: "ㅛ",
         explanation: "A second short stroke turns ㅗ into ㅛ (yo).",
@@ -5427,6 +5427,24 @@ function getWordLessonWords(lesson) {
   return getWordLessonReviewWordIds(lesson).map((id) => curatedWordsById.get(id)).filter(Boolean);
 }
 
+// Specialized checkpoints (forms, function words, sentence blanks) are not
+// viable for every row. Keep those richer questions, but never let a word
+// disappear from its lesson check just because one specialized generator
+// returned null. Every lesson word receives at least one meaning check.
+function ensureEveryWordTested(questions, words) {
+  const testedIds = new Set(questions.map((question) => question.wordId).filter(Boolean));
+  words.forEach((word) => {
+    if (testedIds.has(word.id)) return;
+    const fallback = generateWordQuestionFor(word, "koToMeaning")
+      || generateWordQuestionFor(word, "meaningToKo");
+    if (fallback) {
+      questions.push(fallback);
+      testedIds.add(word.id);
+    }
+  });
+  return questions;
+}
+
 // Checkpoint question list for a lesson: recognition first, then recall,
 // typed recall, and context. Generated once per session and kept on the
 // volatile view so quick-reference return restores the exact same question.
@@ -5454,7 +5472,7 @@ function buildWordLessonQuestions(lesson, words) {
       }
       selected.forEach((word) => push(word, "context"));
     }
-    return questions;
+    return ensureEveryWordTested(questions, words);
   }
 
   if (checkpoints.includes("ko-to-meaning")) words.forEach((word) => push(word, "koToMeaning"));
@@ -5475,7 +5493,7 @@ function buildWordLessonQuestions(lesson, words) {
   if (checkpoints.includes("function-usage")) {
     words.forEach((word) => push(word, "functionUsage"));
   }
-  return questions;
+  return ensureEveryWordTested(questions, words);
 }
 
 function initWordLessonView(lesson) {
@@ -5845,8 +5863,8 @@ function wordLessonStudyHtml(lesson, view) {
           <button class="button secondary compact word-card-bank-button" type="button" data-word-open-reference>📚 Word Bank</button>
         </div>
         <div class="word-type-prompt-row">
-          <div class="word-type-prompt">Type <strong lang="ko">${escapeHtml(target)}</strong><div class="word-type-definition">${escapeHtml(word.meaningShort)}</div></div>
-          <button class="word-type-play" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Play ${escapeHtml(target)}" title="Play Hangul">▶</button>
+          <div class="word-type-prompt">Type the Korean for <strong>“${escapeHtml(word.meaningShort)}”</strong><div class="word-type-definition">Listen, then recall it without the spelling shown.</div></div>
+          <button class="word-type-play" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Play the Korean prompt" title="Play prompt">▶</button>
         </div>
         <div class="word-type-box word-type-study-box">
           <div class="word-input-wrap">
@@ -10396,9 +10414,8 @@ function alphabetDetailHtml(ch) {
       </div>
       <button class="alpha-detail-play" type="button" data-alpha-letter="${escapeHtml(ch)}" aria-label="Play sound">▶</button>
     </div>
-    <p class="alpha-detail-note">${escapeHtml(info.note || "")}</p>
+    <p class="alpha-detail-note">${escapeHtml(info.note || "")} <span class="alpha-detail-example"><strong>Example:</strong> <span lang="ko">${escapeHtml(info.example || jamoDemo(ch))}</span></span></p>
     ${JAMO_VOICING_NOTE[ch] ? `<p class="alpha-detail-voicing">💡 ${escapeHtml(JAMO_VOICING_NOTE[ch])}</p>` : ""}
-    <p class="alpha-detail-example"><strong>Example:</strong> <span lang="ko">${escapeHtml(info.example || jamoDemo(ch))}</span></p>
   `;
 }
 
@@ -10457,7 +10474,7 @@ function renderAlphabetKeyboardBoard() {
 
   return `
     <div class="card alpha-keyboard">
-      <div class="screen-sub" style="margin-bottom:10px;">Korean 2-set (Dubeolsik) layout — the real keyboard you'll type on. Tap a key to hear it; tap <strong>Shift</strong> for the tense letters.</div>
+      <div class="alpha-board-help">Korean 2-set keyboard · tap a key to hear it · Shift shows tense letters</div>
       ${rows}
       <div class="alpha-compound-head">
         <div>
@@ -10472,8 +10489,8 @@ function renderAlphabetKeyboardBoard() {
 }
 
 function renderAlphabetListBoard() {
-  return ALPHABET_LIST_GROUPS.map((group, index) => `
-    <div class="card">
+  return `<div class="alpha-list-board">${ALPHABET_LIST_GROUPS.map((group, index) => `
+    <div class="card alpha-list-group">
       <div class="alpha-group-head">
         <div>
           <div class="eyebrow">${escapeHtml(group.title)}</div>
@@ -10492,7 +10509,7 @@ function renderAlphabetListBoard() {
         }).join("")}
       </div>
     </div>
-  `).join("");
+  `).join("")}</div>`;
 }
 
 function renderAlphabetBoardMarkup() {
@@ -10588,28 +10605,30 @@ function renderEntireAlphabet() {
   if (!alphabetBoardSelected) alphabetBoardSelected = "ㄱ";
 
   const resumeBtnHtml = isQuickRef
-    ? `<div style="margin-bottom: 16px;">
-         <button class="button primary" type="button" id="resumeActiveLessonBtn" style="font-size: 0.95rem; padding: 10px 20px; background-color: var(--color-accent-blue, #5b9dff); color: white; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3); transition: all 0.2s ease;">🔙 Return to active lesson (Stage ${String(activeLessonIdx + 1).padStart(2, "0")})</button>
-       </div>`
+    ? `<button class="button primary compact alpha-reference-resume" type="button" id="resumeActiveLessonBtn">🔙 Return to Stage ${String(activeLessonIdx + 1).padStart(2, "0")}</button>`
     : "";
 
   el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Reference · Full alphabet</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">The entire Korean alphabet</h2>
-      <div class="screen-sub" style="margin-bottom:12px;">All 19 consonants and 21 vowels in one place. Tap any letter to hear it.</div>
-      ${resumeBtnHtml}
-      <div class="alpha-controls">
-        <select id="alphaModeSelect" class="alpha-select" aria-label="Display mode">
-          <option value="keyboard" ${mode === "keyboard" ? "selected" : ""}>⌨ Keyboard</option>
-          <option value="list" ${mode === "list" ? "selected" : ""}>☰ List</option>
-        </select>
-        <select id="alphaLabelsSelect" class="alpha-select" aria-label="Letter labels">
-          <option value="none" ${labels === "none" ? "selected" : ""}>∅ Hide</option>
-          <option value="roman" ${labels === "roman" ? "selected" : ""}>Aa Sound</option>
-          <option value="phonetic" ${labels === "phonetic" ? "selected" : ""}>k→g Phonetic</option>
-          <option value="name" ${labels === "name" ? "selected" : ""}>가 Name</option>
-        </select>
+    <div class="card alpha-reference-header">
+      <div class="alpha-reference-copy">
+        <div class="eyebrow">Reference · Full alphabet</div>
+        <h2 class="screen-title">The entire Korean alphabet</h2>
+        <div class="screen-sub">19 consonants · 21 vowels · tap any letter to hear it</div>
+      </div>
+      <div class="alpha-reference-actions">
+        ${resumeBtnHtml}
+        <div class="alpha-controls">
+          <select id="alphaModeSelect" class="alpha-select" aria-label="Display mode">
+            <option value="keyboard" ${mode === "keyboard" ? "selected" : ""}>⌨ Keyboard</option>
+            <option value="list" ${mode === "list" ? "selected" : ""}>☰ List</option>
+          </select>
+          <select id="alphaLabelsSelect" class="alpha-select" aria-label="Letter labels">
+            <option value="none" ${labels === "none" ? "selected" : ""}>∅ Hide labels</option>
+            <option value="roman" ${labels === "roman" ? "selected" : ""}>Aa Sound</option>
+            <option value="phonetic" ${labels === "phonetic" ? "selected" : ""}>k→g Phonetic</option>
+            <option value="name" ${labels === "name" ? "selected" : ""}>가 Name</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="card alpha-detail" id="alphaBoardDetail" role="status" aria-live="polite" aria-label="Selected letter">${alphabetDetailHtml(alphabetBoardSelected)}</div>
@@ -10666,11 +10685,12 @@ const DRILL_MODES = [
   { id: "mixed", label: "Mixed Drill", sub: "Build, split, letters, and batchim" },
   { id: "build", label: "Build Blocks", sub: "Tap jamo in block order" },
   { id: "split", label: "Split Blocks", sub: "Find each jamo inside a syllable" },
-  { id: "letters", label: "Letters", sub: "Match letters to reading labels" },
+  { id: "letters", label: "Letters", sub: "Every learned letter, symbol ↔ sound" },
   { id: "batchim", label: "Batchim", sub: "Match finals to closing sounds" },
   { id: "weak", label: "Weak Spots", sub: "Review your saved trouble spots" },
 ];
 const DRILL_LENGTHS = [5, 10, 20, "∞"];
+const ALPHABET_LETTER_QUESTION_DIRECTIONS = ["letter-to-sound", "sound-to-letter"];
 let drillSession = null;
 
 function drillPools() { return ALPHABET_QUIZ_POOLS.reading; }
@@ -10723,23 +10743,56 @@ function pickWeakSpotForDrill(spots) {
   }
   return chosen;
 }
-function makeLetterDrillQuestion(forceLetter) {
+function makeLetterDrillQuestion(forceLetter, forceDirection = "") {
   const enrolled = getEnrolledLetters();
   const letters = enrolled.length ? enrolled : [...consonantAtlas.map((c) => c.char), ...vowelAtlas.map((v) => v.char)];
   const letter = forceLetter && letters.includes(forceLetter) && LETTER_SOUND[forceLetter]
     ? forceLetter
     : randomItem(letters);
+  const direction = ALPHABET_LETTER_QUESTION_DIRECTIONS.includes(forceDirection)
+    ? forceDirection
+    : randomItem(ALPHABET_LETTER_QUESTION_DIRECTIONS);
   const sound = LETTER_SOUND[letter] || "";
-  const distract = [...new Set(shuffle(letters.filter((l) => l !== letter).map((l) => LETTER_SOUND[l]).filter((s) => s && s !== sound)))].slice(0, 3);
+  const otherLetters = shuffle(letters.filter((item) => item !== letter && LETTER_SOUND[item] !== sound));
+  const asksForLetter = direction === "sound-to-letter";
+  const distract = asksForLetter
+    ? otherLetters.slice(0, 3)
+    : [...new Set(otherLetters.map((item) => LETTER_SOUND[item]).filter(Boolean))].slice(0, 3);
   return {
-    kind: "Letter", prompt: "Which reading label matches this letter?",
-    detail: "Choose the reading label; tap Letter to hear it in a syllable.",
-    visual: `<span class="big-glyph" lang="ko">${escapeHtml(letter)}</span>`,
-    options: shuffle([sound, ...distract]), answer: sound,
+    kind: "Letter",
+    prompt: asksForLetter
+      ? "Which Hangul letter matches this reading label?"
+      : "Which reading label matches this Hangul letter?",
+    detail: asksForLetter
+      ? "Recall the symbol from its sound clue. Tap the clue to hear it."
+      : "Recall the sound from the symbol. Tap the letter to hear it.",
+    visual: asksForLetter
+      ? `<span class="drill-reading-label" lang="en">${escapeHtml(sound)}</span>`
+      : `<span class="big-glyph" lang="ko">${escapeHtml(letter)}</span>`,
+    options: shuffle([asksForLetter ? letter : sound, ...distract]),
+    answer: asksForLetter ? letter : sound,
     explanation: `${letter} uses the reading label “${sound}”.`,
     voiceText: HANGUL_JAMO_SPEAK[letter] || letter, weakKey: letter, weakKind: "letter",
-    drillWholeLabel: "Letter",
+    drillWholeLabel: asksForLetter ? "Sound clue" : "Letter",
+    coverageJamo: letter,
+    coverageDirection: direction,
   };
+}
+
+// Letters mode is a coverage deck, not a random draw. It interleaves one
+// shuffled pass in each direction, so both question shapes appear even in a
+// short session and every enrolled jamo is covered both ways before a repeat.
+function nextLetterCoverageTarget() {
+  if (!drillSession) return null;
+  if (!Array.isArray(drillSession.letterCoverageQueue) || !drillSession.letterCoverageQueue.length) {
+    const enrolled = getEnrolledLetters();
+    const letters = enrolled.length ? enrolled : [...consonantAtlas.map((c) => c.char), ...vowelAtlas.map((v) => v.char)];
+    const passes = ALPHABET_LETTER_QUESTION_DIRECTIONS.map((direction) =>
+      shuffle([...letters]).map((letter) => ({ letter, direction })),
+    );
+    drillSession.letterCoverageQueue = letters.flatMap((_, index) => passes.map((pass) => pass[index]));
+  }
+  return drillSession.letterCoverageQueue.shift() || null;
 }
 function hasLocalDrillAudio(text) {
   if (!text || typeof window === "undefined" || typeof window.AUDIO_MAP === "undefined") return true;
@@ -10833,7 +10886,10 @@ function makeDrillQuestion(mode) {
   if (m === "build") { q = makeBuildTileDrillQuestion(pools); }
   else if (m === "split") { q = makeSplitDrillQuestion(pools); }
   else if (m === "batchim") { q = { ...generateBatchimQuestion(pools) }; }
-  else { q = makeLetterDrillQuestion(); }
+  else {
+    const target = m === "letters" ? nextLetterCoverageTarget() : null;
+    q = makeLetterDrillQuestion(target?.letter, target?.direction);
+  }
   return q;
 }
 
@@ -10920,7 +10976,7 @@ function renderAlphabetDrillLab() {
 function startDrillSession(mode, len) {
   drillSession = {
     mode, len, total: len === "∞" ? Infinity : len,
-    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, recentWeakKeys: [],
+    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, recentWeakKeys: [], letterCoverageQueue: [],
   };
   renderDrillQuestion();
 }
@@ -11249,7 +11305,9 @@ function getQuestionVisual(question) {
     return question.visual;
   }
 
-  return `<div class="big-glyph">${escapeHtml(question.answer)}</div>`;
+  // Never fall back to rendering the answer. A missing visual should stay a
+  // neutral prompt rather than silently turning the question into copying.
+  return '<div class="big-glyph" aria-hidden="true">?</div>';
 }
 
 function generateComposeQuestion(pools) {
