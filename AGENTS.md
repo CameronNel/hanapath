@@ -4,6 +4,13 @@ You are working in **HanaPath**, a **vanilla static Korean-learning PWA**: no
 framework, no bundler, **no build step**, no `package.json`. `app.js` is one large
 plain browser script loaded via `<script defer>`.
 
+**Owner-approved native-packaging exception (2026-07-16):** keep the canonical
+root app vanilla and build-free, but an isolated `mobile/` Capacitor project may
+use its own package/build/native tooling for Android Google Play and later
+iOS/iPadOS packaging. The governing execution brief is
+[`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md).
+Browser/PWA support remains first-class.
+
 ## Start here
 
 **Read [`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md) first.** It is the step-by-step
@@ -39,8 +46,10 @@ Words v1 queue was deleted 2026-07-10; recover from git history if needed).
 
 ## Hard rules
 
-1. **Stay vanilla/static.** No framework, bundler, or build step. Data files are
-   plain browser globals loaded before `app.js`.
+1. **Keep the canonical app vanilla/static.** No framework, bundler, or build
+   step in the root web app. Data files are plain browser globals loaded before
+   `app.js`. Native packaging is allowed only inside the isolated `mobile/`
+   project governed by `docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`.
 2. **Additive, backward-compatible** changes to the Words and Sentences data
    schemas. Existing curated rows and lessons must keep passing the audits.
 3. **Run the audits** after touching learning data: `node scripts/audit-words-data.mjs --strict`,
@@ -68,6 +77,7 @@ Words v1 queue was deleted 2026-07-10; recover from git history if needed).
 | **`docs/SENTENCES_TEACHING_SPEC.md`** | Sentences **north star**: pedagogy, bank schema, pattern tags, bands, drills, scorecard, milestone sheet |
 | **`docs/SENTENCES_FINAL_ROADMAP.md`** | Sentences v1 build record + **Track H authored-content queue** (bank-level work) |
 | `docs/WORDS_CURRICULUM_V2_PLAN.md` | Words v2 curriculum (live; read-only during Sentences work) |
+| **`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`** | Owner-approved Capacitor/Android/Google Play implementation handover; keep the browser/PWA and later iOS compatibility |
 | `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, verbatim (source of record) |
 | `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; pedagogy + data-axes reference) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — engines Sentences reuses) |
