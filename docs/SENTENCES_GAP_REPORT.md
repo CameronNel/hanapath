@@ -2,84 +2,72 @@
 
 This report outlines the distribution of sentences across the 37 closed pattern tags and 5 difficulty bands, identifying thin cells (<10 sentences) and proposing expansion batches to address coverage gaps.
 
-**Total Sentences scanned:** 2007
+**Total Sentences scanned:** 2113
 
 ## 1. Coverage Matrix (patternTags × band)
 
 | Pattern Tag | Band 1 | Band 2 | Band 3 | Band 4 | Band 5 | Total |
 |---|---|---|---|---|---|---|
-| `topic-neun` | 47 | 35 | 51 | 96 | 208 | **437** |
-| `subject-i-ga` | 175 | 88 | 98 | 191 | 291 | **843** |
-| `object-eul-reul` | 157 | 150 | 164 | 263 | 386 | **1120** |
-| `location-e` | 57 | 46 | 52 | 79 | 189 | **423** |
-| `location-eseo` | 38 | 37 | 41 | 69 | 87 | **272** |
-| `direction-euro` | 20 | 16 | 28 | 63 | 95 | **222** |
-| `possessive-ui` | 5 | 15 | 32 | 86 | 133 | **271** |
-| `with-hago-wa` | 2 | 17 | 12 | 27 | 46 | **104** |
-| `only-man` | 0 | 2 | 0 | 3 | 2 | **7** |
-| `also-do` | 1 | 1 | 6 | 5 | 9 | **22** |
-| `from-buteo` | 0 | 2 | 0 | 1 | 2 | **5** |
-| `until-kkaji` | 0 | 2 | 1 | 2 | 2 | **7** |
-| `present-polite` | 330 | 182 | 149 | 229 | 394 | **1284** |
-| `past-polite` | 27 | 44 | 135 | 145 | 187 | **538** |
-| `future-geoyeyo` | 2 | 0 | 3 | 3 | 0 | **8** |
-| `formal-nida` | 5 | 2 | 6 | 18 | 22 | **53** |
-| `copula-ieyo` | 45 | 15 | 18 | 33 | 47 | **158** |
-| `copula-negative-anieyo` | 0 | 0 | 0 | 0 | 0 | **0** |
-| `question-polite` | 31 | 4 | 5 | 2 | 3 | **45** |
-| `imperative-seyo` | 18 | 9 | 9 | 20 | 25 | **81** |
-| `propositive-eyo` | 0 | 0 | 0 | 1 | 1 | **2** |
-| `neg-an` | 4 | 2 | 4 | 9 | 10 | **29** |
-| `neg-mot` | 0 | 1 | 3 | 2 | 6 | **12** |
+| `topic-neun` | 53 | 71 | 52 | 80 | 183 | **439** |
+| `subject-i-ga` | 183 | 93 | 99 | 177 | 285 | **837** |
+| `object-eul-reul` | 159 | 165 | 168 | 258 | 392 | **1142** |
+| `location-e` | 54 | 47 | 42 | 58 | 125 | **326** |
+| `location-eseo` | 38 | 39 | 42 | 70 | 87 | **276** |
+| `direction-euro` | 20 | 16 | 25 | 42 | 45 | **148** |
+| `possessive-ui` | 5 | 14 | 32 | 81 | 133 | **265** |
+| `with-hago-wa` | 2 | 15 | 14 | 24 | 40 | **95** |
+| `only-man` | 3 | 5 | 1 | 2 | 1 | **12** |
+| `also-do` | 1 | 1 | 6 | 4 | 10 | **22** |
+| `from-buteo` | 0 | 8 | 1 | 1 | 2 | **12** |
+| `until-kkaji` | 0 | 7 | 1 | 2 | 2 | **12** |
+| `present-polite` | 333 | 213 | 129 | 138 | 210 | **1023** |
+| `past-polite` | 38 | 55 | 144 | 178 | 260 | **675** |
+| `future-geoyeyo` | 2 | 7 | 5 | 3 | 0 | **17** |
+| `formal-nida` | 7 | 2 | 8 | 19 | 38 | **74** |
+| `copula-ieyo` | 50 | 15 | 18 | 29 | 51 | **163** |
+| `copula-negative-anieyo` | 3 | 8 | 0 | 0 | 0 | **11** |
+| `question-polite` | 34 | 5 | 5 | 2 | 2 | **48** |
+| `imperative-seyo` | 21 | 11 | 8 | 16 | 24 | **80** |
+| `propositive-eyo` | 4 | 7 | 0 | 1 | 1 | **13** |
+| `neg-an` | 4 | 2 | 4 | 3 | 4 | **17** |
+| `neg-mot` | 0 | 5 | 3 | 1 | 4 | **13** |
 | `neg-ji-anta` | 1 | 4 | 4 | 10 | 7 | **26** |
-| `and-go` | 1 | 20 | 21 | 69 | 78 | **189** |
-| `but-jiman` | 1 | 0 | 1 | 3 | 1 | **6** |
-| `because-aseo` | 3 | 7 | 11 | 35 | 26 | **82** |
-| `if-myeon` | 0 | 3 | 6 | 16 | 27 | **52** |
-| `when-ttae` | 0 | 2 | 9 | 12 | 23 | **46** |
+| `and-go` | 1 | 6 | 14 | 55 | 56 | **132** |
+| `but-jiman` | 1 | 6 | 2 | 3 | 1 | **13** |
+| `because-aseo` | 1 | 7 | 15 | 39 | 32 | **94** |
+| `if-myeon` | 0 | 3 | 6 | 15 | 26 | **50** |
+| `when-ttae` | 0 | 1 | 10 | 12 | 22 | **45** |
 | `want-go-sipda` | 0 | 1 | 4 | 1 | 6 | **12** |
-| `can-su-itda` | 0 | 0 | 2 | 1 | 8 | **11** |
-| `must-ya-dwaeda` | 0 | 1 | 7 | 4 | 16 | **28** |
-| `honorific-si` | 20 | 14 | 9 | 22 | 35 | **100** |
-| `counter-phrase` | 4 | 21 | 20 | 25 | 70 | **140** |
-| `time-expression` | 21 | 26 | 79 | 49 | 70 | **245** |
+| `can-su-itda` | 0 | 1 | 2 | 1 | 10 | **14** |
+| `must-ya-dwaeda` | 0 | 1 | 7 | 5 | 16 | **29** |
+| `honorific-si` | 31 | 16 | 10 | 23 | 34 | **114** |
+| `counter-phrase` | 2 | 20 | 20 | 5 | 23 | **70** |
+| `time-expression` | 23 | 52 | 83 | 49 | 89 | **296** |
 | `comparison-boda` | 0 | 0 | 2 | 4 | 6 | **12** |
-| `existence-itda` | 24 | 24 | 17 | 22 | 49 | **136** |
+| `existence-itda` | 25 | 13 | 11 | 9 | 14 | **72** |
 
 ## 2. Low Coverage Tags (<10 sentences total)
 
 The following tags have critically low overall sentence coverage across all bands:
 
-- `only-man` (7 sentences total: Band 1: 0, Band 2: 2, Band 3: 0, Band 4: 3, Band 5: 2)
-- `from-buteo` (5 sentences total: Band 1: 0, Band 2: 2, Band 3: 0, Band 4: 1, Band 5: 2)
-- `until-kkaji` (7 sentences total: Band 1: 0, Band 2: 2, Band 3: 1, Band 4: 2, Band 5: 2)
-- `future-geoyeyo` (8 sentences total: Band 1: 2, Band 2: 0, Band 3: 3, Band 4: 3, Band 5: 0)
-- `copula-negative-anieyo` (0 sentences total: Band 1: 0, Band 2: 0, Band 3: 0, Band 4: 0, Band 5: 0)
-- `propositive-eyo` (2 sentences total: Band 1: 0, Band 2: 0, Band 3: 0, Band 4: 1, Band 5: 1)
-- `but-jiman` (6 sentences total: Band 1: 1, Band 2: 0, Band 3: 1, Band 4: 3, Band 5: 1)
+*No tags have fewer than 10 sentences total. All tags meet the minimum baseline.*
 
 ## 3. Thin Cells (<5 sentences in target bands)
 
 The following pattern tags have very thin coverage (fewer than 5 sentences) in specific bands where they should naturally appear:
 
-- `only-man` in **Band 2** (2 sentences)
-- `only-man` in **Band 3** (0 sentences)
+- `only-man` in **Band 3** (1 sentences)
 - `also-do` in **Band 1** (1 sentences)
 - `also-do` in **Band 2** (1 sentences)
-- `from-buteo` in **Band 3** (0 sentences)
+- `from-buteo` in **Band 3** (1 sentences)
 - `from-buteo` in **Band 4** (1 sentences)
 - `until-kkaji` in **Band 3** (1 sentences)
 - `until-kkaji` in **Band 4** (2 sentences)
-- `future-geoyeyo` in **Band 3** (3 sentences)
 - `future-geoyeyo` in **Band 4** (3 sentences)
-- `copula-negative-anieyo` in **Band 1** (0 sentences)
-- `copula-negative-anieyo` in **Band 2** (0 sentences)
-- `question-polite` in **Band 2** (4 sentences)
-- `propositive-eyo` in **Band 2** (0 sentences)
+- `copula-negative-anieyo` in **Band 1** (3 sentences)
 - `propositive-eyo` in **Band 3** (0 sentences)
 - `neg-an` in **Band 2** (2 sentences)
 - `neg-an` in **Band 3** (4 sentences)
-- `neg-mot` in **Band 2** (1 sentences)
 - `neg-mot` in **Band 3** (3 sentences)
 - `neg-ji-anta` in **Band 3** (4 sentences)
 - `but-jiman` in **Band 4** (3 sentences)
@@ -88,7 +76,6 @@ The following pattern tags have very thin coverage (fewer than 5 sentences) in s
 - `want-go-sipda` in **Band 4** (1 sentences)
 - `can-su-itda` in **Band 3** (2 sentences)
 - `can-su-itda` in **Band 4** (1 sentences)
-- `must-ya-dwaeda` in **Band 4** (4 sentences)
 - `comparison-boda` in **Band 3** (2 sentences)
 - `comparison-boda` in **Band 4** (4 sentences)
 
