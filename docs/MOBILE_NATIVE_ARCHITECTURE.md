@@ -1,10 +1,11 @@
 # Mobile native architecture record (M0)
 
-> Status: **M4 scaffolding — protected signed-release pipeline** on top of
+> Status: **M4 scaffolding + M3 code-side proof of concept** on top of
 > M1 (reproducible Capacitor Android shell) and M2 code (back contract,
 > progress export/import, device-test checklist; the real-device evidence in
-> `MOBILE_DEVICE_TEST_CHECKLIST.md` remains open, as does M3, which needs
-> hardware). The app ID
+> `MOBILE_DEVICE_TEST_CHECKLIST.md` remains open). M3 now has the native
+> Korean ML Kit adapter, explicit model-download UX, `$Q` fallback, and shared
+> comparison report; provider selection still needs real-device evidence. The app ID
 > `io.github.cameronnel.hanapath` is baked into the generated project but is
 > **provisional until the owner marks decision #1 confirmed** in
 > [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md) — it only
@@ -40,7 +41,7 @@ Canonical HanaPath HTML/CSS/JS (repo root — unchanged rules)
 | Node | **22.x LTS** | v22.22.2 verified in the build environment |
 | Java | **21 (OpenJDK)** | 21.0.10 verified; matches Capacitor 8 / current AGP requirements |
 | Android target SDK | **API 35+ (Android 15)** | Current Play requirement for new apps; re-verify before every release |
-| Android min SDK | **23** | Capacitor 8 default floor unless higher required; also the ML Kit Digital Ink minimum |
+| Android min SDK | **24** | Tracked Capacitor 8 project floor; ML Kit Digital Ink itself requires API 23+ |
 | Android Studio | Not required for CI builds | Gradle wrapper + command line is the canonical build path; Studio is optional local tooling |
 
 Re-verify all rows against official docs at M1 before generating the project;
@@ -81,7 +82,11 @@ none of these numbers is authoritative forever.
 5. **Recognition**: `$Q` stays the web implementation and universal fallback.
    ML Kit Digital Ink (`ko`) may become the preferred *native* recognizer only
    by passing the comparison gate in handover §10.3, measured by a shared
-   fixture harness.
+   fixture harness. The M3 proof of concept is opt-in diagnostics only: it uses
+   a narrow `HangulRecognition` Capacitor plugin, on-demand model download,
+   real pointer timestamps, writing-area context, and a cancellable JSON report
+   containing candidates, target rank, false accepts, latency, and fallback
+   rate. It does not affect learner pass/fail decisions before device sign-off.
 6. **No new permissions** in the foundation; CI fails on unexpected manifest
    permissions (handover §9.3).
 7. **Milestone PRs M0→M6** as sequenced in handover §16; every native PR
@@ -115,8 +120,10 @@ artifacts. Owner setup and the release runbook live in
 
 ## 6. What blocks the next milestones
 
-- **M2 device evidence + M3 (ML Kit comparison)** — real Android hardware;
-  the matrix to execute is `MOBILE_DEVICE_TEST_CHECKLIST.md`.
+- **M2 device evidence + M3 provider decision** — real Android hardware; the
+  code-side ML Kit proof of concept is present, but the comparison matrix and
+  fallback scenarios in `MOBILE_DEVICE_TEST_CHECKLIST.md` must be executed
+  before ML Kit can become authoritative.
 - **M4 first signed build** — owner actions in
   [`play-store/SIGNING_AND_RELEASE.md`](play-store/SIGNING_AND_RELEASE.md):
   generate the upload keystore, create the protected `google-play-release`

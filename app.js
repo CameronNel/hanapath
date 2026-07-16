@@ -16,6 +16,15 @@ function isHanaPathNative() {
   return getHanaPathRuntime() === "native";
 }
 
+function getHanaPathNativePlugin(name) {
+  if (!isHanaPathNative()) return null;
+  try {
+    return window.Capacitor?.Plugins?.[name] || null;
+  } catch (error) {
+    return null;
+  }
+}
+
 const INITIALS = [
   "ㄱ",
   "ㄲ",
@@ -3084,6 +3093,9 @@ function loadState() {
     // Free-drawing preferences. Grading uses stroke centre-lines, so visible
     // ink width never changes recognition accuracy.
     writingLineWidth: 14,
+    // ML Kit is an explicit native-only opt-in while M3 device evidence is
+    // still open. $Q remains authoritative for learner grading everywhere.
+    useMLKit: false,
     reduceMotion: false,
   };
   try {
@@ -15253,6 +15265,578 @@ function recognizeHangulWriting(canvas, limit = 3) {
   return recognizer.recognize(getNormalizedHangulWritingStrokes(canvas), limit);
 }
 
+function validateWritingStrokes(strokes) {
+  if (!Array.isArray(strokes) || strokes.length === 0) {
+    return "Invalid or empty strokes payload";
+  }
+  if (strokes.length > 500) {
+    return "Payload size exceeds maximum allowed strokes (500)";
+  }
+  let totalPoints = 0;
+  for (let i = 0; i < strokes.length; i++) {
+    const stroke = strokes[i];
+    if (!Array.isArray(stroke)) {
+      return "Malformed JSON payload: stroke is not an array";
+    }
+    if (stroke.length === 0) {
+      return "Stroke must contain at least one point";
+    }
+    if (stroke.length > 1000) {
+      return "Stroke point count exceeds maximum (1000)";
+    }
+    totalPoints += stroke.length;
+    if (totalPoints > 20000) {
+      return "Payload point count exceeds maximum (20000)";
+    }
+    for (let j = 0; j < stroke.length; j++) {
+      const p = stroke[j];
+      if (p === null || typeof p !== "object" || !("x" in p) || !("y" in p) || !("t" in p)) {
+        return "Missing coordinates or timestamp field";
+      }
+      const x = Number(p.x);
+      const y = Number(p.y);
+      const t = Number(p.t);
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(t)) {
+        return "Non-finite coordinates or timestamps detected";
+      }
+      if (x < -1000 || x > 5000 || y < -1000 || y > 5000) {
+        return "Coordinates out of reasonable bounds";
+      }
+    }
+  }
+  return null;
+}
+
+const HangulNativeRecognizer = {
+  getPlugin() {
+    return getHanaPathNativePlugin("HangulRecognition");
+  },
+
+  async checkModelStatus() {
+    const plugin = this.getPlugin();
+    if (!plugin) {
+      return { downloaded: false, downloading: false, error: "bridge_missing" };
+    }
+    try {
+      return await plugin.checkModelStatus();
+    } catch (e) {
+      return { downloaded: false, downloading: false, error: e.message || String(e) };
+    }
+  },
+
+  async downloadModel() {
+    const plugin = this.getPlugin();
+    if (!plugin) {
+      return { status: "error", error: "bridge_missing" };
+    }
+    try {
+      return await plugin.downloadModel();
+    } catch (e) {
+      return { status: "error", error: e.message || String(e) };
+    }
+  },
+
+  async recognize(strokes, width = 480, height = 480) {
+    const plugin = this.getPlugin();
+    if (!plugin) {
+      return this.normalizeResult("mlkit", null, 0, "bridge_missing");
+    }
+    const validationError = validateWritingStrokes(strokes);
+    if (validationError) {
+      return this.normalizeResult("mlkit", null, 0, validationError);
+    }
+    const startTime = performance.now();
+    try {
+      const res = await plugin.recognize({ strokes, width, height });
+      const latencyMs = Math.round(performance.now() - startTime);
+      return this.normalizeResult("mlkit", res, latencyMs, null);
+    } catch (e) {
+      const latencyMs = Math.round(performance.now() - startTime);
+      return this.normalizeResult("mlkit", null, latencyMs, e.message || String(e));
+    }
+  },
+
+  normalizeResult(provider, rawResult, latencyMs, error) {
+    const ready = Boolean(rawResult && rawResult.ready);
+    return {
+      provider: provider,
+      ready: ready,
+      candidates: rawResult && Array.isArray(rawResult.candidates) ? rawResult.candidates.map(c => ({
+        name: String(c.name || ""),
+        // ML Kit text models do not expose confidence scores. Keep absence as
+        // null rather than presenting a fabricated 0% confidence value.
+        score: c.score !== null && c.score !== undefined && Number.isFinite(Number(c.score))
+          ? Number(c.score)
+          : null,
+      })) : [],
+      latencyMs: latencyMs,
+      error: error,
+      fallbackReason: error ? String(error) : (!ready ? "model_not_ready" : null)
+    };
+  }
+};
+
+async function recognizeHangulInkWithProvider({
+  provider,
+  strokes,
+  writingArea = { width: 480, height: 480 },
+  limit = 3,
+}) {
+  const width = Number(writingArea?.width);
+  const height = Number(writingArea?.height);
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+    return {
+      provider,
+      ready: false,
+      candidates: [],
+      latencyMs: 0,
+      error: "invalid_writing_area",
+      fallbackReason: "invalid_writing_area",
+    };
+  }
+  if (provider === "mlkit") {
+    return HangulNativeRecognizer.recognize(strokes, width, height);
+  }
+
+  const startedAt = performance.now();
+  const recognizer = getHangulWritingRecognizer();
+  if (!recognizer) {
+    return {
+      provider: "$q",
+      ready: false,
+      candidates: [],
+      latencyMs: Math.round(performance.now() - startedAt),
+      error: "recognizer_missing",
+      fallbackReason: "recognizer_missing",
+    };
+  }
+  const normalized = (Array.isArray(strokes) ? strokes : [])
+    .map((stroke) => cleanHangulInkStroke(normalizeHangulInkStroke(stroke, { width, height })))
+    .filter(Boolean);
+  const matches = recognizer.recognize(normalized, limit);
+  return {
+    provider: "$q",
+    ready: true,
+    candidates: matches.map((match) => ({ name: match.name, score: match.confidence })),
+    latencyMs: Math.round(performance.now() - startedAt),
+    error: null,
+    fallbackReason: null,
+  };
+}
+
+let mlkitSessionId = 0;
+
+function runParallelMLKitRecognition(canvas) {
+  if (!isHanaPathNative() || state.useMLKit !== true) return;
+  const currentSessionId = ++mlkitSessionId;
+
+  const rawStrokes = hangulWritingState.strokes.map(stroke =>
+    stroke.map(p => ({ x: p.x, y: p.y, t: p.t }))
+  );
+
+  recognizeHangulInkWithProvider({
+    provider: "mlkit",
+    strokes: rawStrokes,
+    writingArea: { width: canvas.width, height: canvas.height },
+  }).then((res) => {
+    if (currentSessionId !== mlkitSessionId) return;
+
+    const feedbackPanel = document.getElementById("writingRecognition");
+    if (!feedbackPanel) return;
+
+    let diagnosticHtml = "";
+    if (res.ready && res.candidates.length) {
+      const topCand = res.candidates[0];
+      const scoreLabel = Number.isFinite(topCand.score) ? ` · score ${topCand.score.toFixed(3)}` : "";
+      diagnosticHtml = `<div class="mlkit-diagnostic-info" style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 4px;">
+        ML Kit diagnostic: ${escapeHtml(topCand.name)}${scoreLabel} · ${res.latencyMs}ms · $Q still grades this attempt
+      </div>`;
+    } else if (res.error) {
+      diagnosticHtml = `<div class="mlkit-diagnostic-info" style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 4px; color: #ff8888;">
+        ML Kit diagnostic unavailable: ${escapeHtml(res.error)} · $Q still grades this attempt
+      </div>`;
+    }
+
+    const diagContainer = feedbackPanel.querySelector(".mlkit-diagnostic-info");
+    if (diagContainer) {
+      diagContainer.outerHTML = diagnosticHtml;
+    } else if (diagnosticHtml) {
+      feedbackPanel.insertAdjacentHTML("beforeend", diagnosticHtml);
+    }
+  });
+}
+
+function updateNativeRecognitionUI() {
+  const statusEl = document.getElementById("nativeRecognitionStatus");
+  const actionsEl = document.getElementById("nativeRecognitionActions");
+  if (!statusEl || !actionsEl) return;
+
+  HangulNativeRecognizer.checkModelStatus().then((status) => {
+    if (status.error) {
+      statusEl.textContent = `Status: Unresolved (${status.error})`;
+      actionsEl.innerHTML = `
+        <button class="button secondary compact" type="button" id="nativeRetryCheck">Retry check</button>
+      `;
+      document.getElementById("nativeRetryCheck")?.addEventListener("click", () => {
+        statusEl.textContent = "Checking status...";
+        updateNativeRecognitionUI();
+      });
+      return;
+    }
+
+    if (status.downloading) {
+      statusEl.textContent = "Status: Downloading on-device model... (approx. 20 MiB)";
+      actionsEl.innerHTML = `
+        <button class="button secondary compact" type="button" disabled>Downloading...</button>
+      `;
+      window.setTimeout(updateNativeRecognitionUI, 3000);
+      return;
+    }
+
+    if (status.downloaded) {
+      const active = state.useMLKit === true;
+      statusEl.innerHTML = active
+        ? `Status: Model installed. <span style="color:var(--text-success); font-weight:bold;">● Diagnostics enabled</span> — $Q still grades learner attempts.`
+        : "Status: Model installed. ML Kit diagnostics are disabled; $Q is active.";
+      actionsEl.innerHTML = `
+        <button class="button secondary compact" type="button" id="nativeToggleMLKit">${active ? "Disable diagnostics" : "Enable diagnostics"}</button>
+        ${active ? '<button class="button secondary compact" type="button" id="nativeRunHarness">Run device comparison</button>' : ""}
+      `;
+      document.getElementById("nativeToggleMLKit")?.addEventListener("click", () => {
+        state.useMLKit = !active;
+        saveState();
+        updateNativeRecognitionUI();
+      });
+      document.getElementById("nativeRunHarness")?.addEventListener("click", () => {
+        runHangulRecognitionComparison();
+      });
+    } else {
+      statusEl.textContent = "Status: Optional on-device model not downloaded (approx. 20 MiB size).";
+      actionsEl.innerHTML = `
+        <button class="button primary compact" type="button" id="nativeDownloadModel">Download model</button>
+        <button class="button secondary compact" type="button" id="nativeDeclineModel">Not now — keep using $Q</button>
+      `;
+      document.getElementById("nativeDownloadModel")?.addEventListener("click", () => {
+        statusEl.textContent = "Requesting download...";
+        actionsEl.innerHTML = `<button class="button secondary compact" type="button" disabled>Downloading...</button>`;
+        HangulNativeRecognizer.downloadModel().then((res) => {
+          if (res.status === "success") {
+            state.useMLKit = true;
+            saveState();
+          } else {
+            alert("Model download failed: " + (res.error || "unknown error"));
+          }
+          updateNativeRecognitionUI();
+        });
+      });
+      document.getElementById("nativeDeclineModel")?.addEventListener("click", () => {
+        state.useMLKit = false;
+        saveState();
+        statusEl.textContent = "Using standard $Q recognizer. You can download the model anytime.";
+        actionsEl.innerHTML = `
+          <button class="button primary compact" type="button" id="nativeDownloadModel">Download model</button>
+        `;
+        document.getElementById("nativeDownloadModel")?.addEventListener("click", () => {
+          statusEl.textContent = "Requesting download...";
+          HangulNativeRecognizer.downloadModel().then((res) => {
+            if (res.status === "success") {
+              state.useMLKit = true;
+              saveState();
+            } else {
+              alert("Model download failed: " + (res.error || "unknown error"));
+            }
+            updateNativeRecognitionUI();
+          });
+        });
+      });
+    }
+  });
+}
+
+function runHangulRecognitionComparison() {
+  const overlay = document.createElement("div");
+  overlay.className = "writing-result-overlay open correct";
+  overlay.style.zIndex = "10000";
+  overlay.innerHTML = `
+    <div class="writing-result-sheet" role="dialog" aria-modal="true" style="max-width: 600px; width: 90%;">
+      <div class="writing-result-title">Recognition Comparison Harness</div>
+      <p class="writing-result-copy" id="harnessProgress">Preparing fixtures...</p>
+      <div id="harnessContent" style="display:none; width: 100%;">
+        <textarea id="harnessReportText" style="width: 100%; height: 250px; font-family: monospace; font-size: 0.75rem; background: var(--bg-card); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; box-sizing: border-box;" readonly></textarea>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:12px;">
+        <button class="button primary compact" id="harnessCopyReport" type="button" hidden>Copy report</button>
+        <button class="button secondary compact" id="harnessClose" type="button">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const progressEl = overlay.querySelector("#harnessProgress");
+  const contentEl = overlay.querySelector("#harnessContent");
+  const reportTextEl = overlay.querySelector("#harnessReportText");
+  const copyButton = overlay.querySelector("#harnessCopyReport");
+  const closeButton = overlay.querySelector("#harnessClose");
+  let cancelled = false;
+
+  closeButton.addEventListener("click", () => {
+    cancelled = true;
+    overlay.remove();
+  });
+
+  copyButton.addEventListener("click", () => {
+    reportTextEl.select();
+    navigator.clipboard.writeText(reportTextEl.value)
+      .then(() => alert("Report copied to clipboard."))
+      .catch(() => alert("Clipboard access was unavailable. Select and copy the report text manually."));
+  });
+
+  const bank = window.HANGUL_STROKES || {};
+  const jamos = Object.keys(bank);
+  const fixtures = [];
+
+  const ROUGH_NATURAL_HAN = [
+    [[0.24, 0.04], [0.24, 0.2]],
+    [[0.08, 0.17], [0.18, 0.18], [0.31, 0.19], [0.43, 0.17]],
+    [[0.16, 0.3], [0.11, 0.36], [0.1, 0.48], [0.15, 0.55], [0.28, 0.56], [0.37, 0.5], [0.4, 0.4], [0.36, 0.32], [0.25, 0.3], [0.16, 0.3], [0.13, 0.46], [0.14, 0.65], [0.16, 0.82], [0.19, 0.91], [0.39, 0.91]],
+    [[0.69, 0.22], [0.69, 0.84]],
+    [[0.69, 0.49], [0.9, 0.49]],
+  ];
+  fixtures.push({ id: "rough_han", target: "한", strokes: ROUGH_NATURAL_HAN, isNegative: false });
+
+  function interpolatePoints(stroke, pointsPerSegment = 9) {
+    const out = [];
+    for (let i = 1; i < stroke.length; i += 1) {
+      const a = stroke[i - 1];
+      const b = stroke[i];
+      for (let step = i === 1 ? 0 : 1; step <= pointsPerSegment; step += 1) {
+        const t = step / pointsPerSegment;
+        out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+      }
+    }
+    return out.length ? out : stroke.map((p) => [...p]);
+  }
+
+  function strokeLen(stroke) {
+    let total = 0;
+    for (let i = 1; i < stroke.length; i += 1) {
+      total += Math.hypot(stroke[i][0] - stroke[i - 1][0], stroke[i][1] - stroke[i - 1][1]);
+    }
+    return total;
+  }
+
+  function splitOneStroke(strokes) {
+    const dense = strokes.map((s) => interpolatePoints(s));
+    let strokeIndex = 0;
+    for (let i = 1; i < dense.length; i += 1) {
+      if (strokeLen(dense[i]) > strokeLen(dense[strokeIndex])) strokeIndex = i;
+    }
+    const stroke = dense[strokeIndex];
+    const halfLength = strokeLen(stroke) / 2;
+    let travelled = 0;
+    let splitIndex = 1;
+    for (let i = 1; i < stroke.length - 1; i += 1) {
+      travelled += Math.hypot(stroke[i][0] - stroke[i - 1][0], stroke[i][1] - stroke[i - 1][1]);
+      splitIndex = i;
+      if (travelled >= halfLength) break;
+    }
+    splitIndex = Math.max(1, Math.min(stroke.length - 2, splitIndex));
+    return [
+      ...dense.slice(0, strokeIndex),
+      stroke.slice(0, splitIndex + 1),
+      stroke.slice(splitIndex),
+      ...dense.slice(strokeIndex + 1),
+    ];
+  }
+
+  function mergeTwoAdjacentStrokes(strokes) {
+    if (strokes.length < 2) return null;
+    const dense = strokes.map((s) => interpolatePoints(s));
+    let best = null;
+    for (let i = 0; i < dense.length - 1; i += 1) {
+      for (const reverseFirst of [false, true]) {
+        for (const reverseSecond of [false, true]) {
+          const first = reverseFirst ? dense[i].slice().reverse() : dense[i].slice();
+          const second = reverseSecond ? dense[i + 1].slice().reverse() : dense[i + 1].slice();
+          const gap = Math.hypot(first[first.length - 1][0] - second[0][0], first[first.length - 1][1] - second[0][1]);
+          if (!best || gap < best.gap) best = { index: i, first, second, gap };
+        }
+      }
+    }
+    return [
+      ...dense.slice(0, best.index),
+      [...best.first, ...best.second],
+      ...dense.slice(best.index + 2),
+    ];
+  }
+
+  for (const glyph of jamos) {
+    const strokes = bank[glyph].strokes;
+    fixtures.push({ id: `jamo_authored_${glyph}`, target: glyph, strokes, isNegative: false });
+
+    const split = splitOneStroke(strokes);
+    fixtures.push({ id: `jamo_split_${glyph}`, target: glyph, strokes: split, isNegative: false });
+
+    const merged = mergeTwoAdjacentStrokes(strokes);
+    if (merged) {
+      fixtures.push({ id: `jamo_merge_${glyph}`, target: glyph, strokes: merged, isNegative: false });
+    }
+
+    for (const other of jamos) {
+      if (other !== glyph) {
+        fixtures.push({ id: `neg_${glyph}_vs_${other}`, target: other, strokes, isNegative: true });
+      }
+    }
+  }
+
+  const results = [];
+  let index = 0;
+
+  async function processNext() {
+    if (cancelled) return;
+    if (index >= fixtures.length) {
+      const mlkitReady = results.filter((row) => row.mlkit.ready);
+      const mlkitFallbackCount = results.length - mlkitReady.length;
+      const mlkitLatencies = mlkitReady.map((row) => row.mlkit.latencyMs).sort((a, b) => a - b);
+      const average = (values) => values.length
+        ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
+        : null;
+      const percentile95 = mlkitLatencies.length
+        ? mlkitLatencies[Math.min(mlkitLatencies.length - 1, Math.ceil(mlkitLatencies.length * 0.95) - 1)]
+        : null;
+      const report = {
+        schemaVersion: 1,
+        generatedAt: new Date().toISOString(),
+        runtime: isHanaPathNative() ? "android-native" : "web",
+        model: "mlkit-digital-ink-ko",
+        device: {
+          userAgent: navigator.userAgent,
+          viewport: { width: window.innerWidth, height: window.innerHeight },
+          devicePixelRatio: window.devicePixelRatio || 1,
+          assetVersion: (() => {
+            const src = document.querySelector('script[src*="app.js"]')?.src;
+            return src ? new URL(src, window.location.href).searchParams.get("v") : null;
+          })(),
+        },
+        authority: "$Q remains authoritative until the M3 real-device gate is signed off",
+        summary: {
+          fixtureCount: results.length,
+          positiveCount: results.filter((row) => !row.isNegative).length,
+          negativeCount: results.filter((row) => row.isNegative).length,
+          qFalseAcceptCount: results.filter((row) => row.q.falseAccept).length,
+          mlkitFalseAcceptCount: results.filter((row) => row.mlkit.falseAccept).length,
+          mlkitReadyCount: mlkitReady.length,
+          mlkitFallbackCount,
+          mlkitFallbackRate: results.length ? mlkitFallbackCount / results.length : 1,
+          mlkitAverageLatencyMs: average(mlkitLatencies),
+          mlkitP95LatencyMs: percentile95,
+        },
+        results,
+      };
+      progressEl.textContent = `Completed ${fixtures.length} fixtures.`;
+      reportTextEl.value = JSON.stringify(report, null, 2);
+      contentEl.style.display = "block";
+      copyButton.hidden = false;
+      closeButton.textContent = "Close";
+      return;
+    }
+
+    const fix = fixtures[index];
+    progressEl.textContent = `Running comparison: ${index + 1} of ${fixtures.length} (${Math.round((index + 1) / fixtures.length * 100)}%)`;
+
+    let timeAcc = 0;
+    const mlKitStrokes = fix.strokes.map(stroke =>
+      stroke.map(p => {
+        const x = (Array.isArray(p) ? p[0] : p.x) * 480;
+        const y = (Array.isArray(p) ? p[1] : p.y) * 480;
+        timeAcc += 16;
+        return { x, y, t: timeAcc };
+      })
+    );
+
+    const qStrokesInput = fix.strokes.map(stroke =>
+      stroke.map(p => {
+        const px = Array.isArray(p) ? p[0] : p.x;
+        const py = Array.isArray(p) ? p[1] : p.y;
+        return { x: px * 480, y: py * 480 };
+      })
+    );
+    const qRaw = await recognizeHangulInkWithProvider({
+      provider: "$q",
+      strokes: qStrokesInput,
+      writingArea: { width: 480, height: 480 },
+      limit: jamos.length,
+    });
+    const qMatches = qRaw.candidates;
+
+    const qRankIndex = qMatches.findIndex(m => m.name === fix.target);
+    const qTop = qMatches[0] || null;
+    const qSecond = qMatches[1] || null;
+    const qMargin = qTop ? (qSecond ? qTop.score - qSecond.score : 1) : 0;
+    const qAccepted = Boolean(
+      qTop?.name === fix.target
+      && qTop.score >= HANGUL_FREEHAND_TARGET_CONFIDENCE
+      && (qMargin >= HANGUL_FREEHAND_MIN_MARGIN || qTop.score >= 0.96)
+    );
+
+    const qResult = {
+      provider: "$q",
+      ready: qRaw.ready,
+      latencyMs: qRaw.latencyMs,
+      candidates: qMatches.slice(0, 3),
+      rank: qRankIndex >= 0 ? qRankIndex + 1 : -1,
+      falseAccept: fix.isNegative && qAccepted,
+      fallbackReason: qRaw.fallbackReason,
+    };
+
+    let mlKitResult = null;
+    if (isHanaPathNative() && state.useMLKit === true) {
+      const mlKitRaw = await recognizeHangulInkWithProvider({
+        provider: "mlkit",
+        strokes: mlKitStrokes,
+        writingArea: { width: 480, height: 480 },
+      });
+      const mlKitRankIndex = mlKitRaw.candidates.findIndex(m => m.name === fix.target);
+      const mlKitTop = mlKitRaw.candidates[0] || null;
+      const mlKitAccepted = mlKitRaw.ready && mlKitTop?.name === fix.target;
+
+      mlKitResult = {
+        provider: "mlkit",
+        ready: mlKitRaw.ready,
+        latencyMs: mlKitRaw.latencyMs,
+        candidates: mlKitRaw.candidates.slice(0, 3),
+        rank: mlKitRankIndex >= 0 ? mlKitRankIndex + 1 : -1,
+        falseAccept: fix.isNegative && mlKitAccepted,
+        fallbackReason: mlKitRaw.fallbackReason
+      };
+    } else {
+      mlKitResult = {
+        provider: "mlkit",
+        ready: false,
+        latencyMs: 0,
+        candidates: [],
+        rank: -1,
+        falseAccept: false,
+        fallbackReason: isHanaPathNative() ? "mlkit_disabled" : "desktop_pending"
+      };
+    }
+
+    results.push({
+      fixtureId: fix.id,
+      target: fix.target,
+      isNegative: fix.isNegative,
+      strokesCount: fix.strokes.length,
+      q: qResult,
+      mlkit: mlKitResult
+    });
+
+    index++;
+    window.setTimeout(processNext, 0);
+  }
+
+  processNext();
+}
+
 function getHangulComponentStrokes(jamo) {
   const bank = (typeof window !== "undefined" && window.HANGUL_STROKES) || null;
   if (!bank) return null;
@@ -16036,9 +16620,11 @@ function checkHangulFreehandDrawing(canvas, glyph, unit, { silentFailure = false
   if (!correct && silentFailure) {
     setHangulRecognitionFeedback(top ? `Maybe ${top.name} — keep drawing` : "Try a clearer shape", top ? "close" : "wrong");
     updateHangulStrokeStatus("Keep drawing until the whole shape reads clearly.");
+    runParallelMLKitRecognition(canvas);
     return;
   }
   showHangulWritingResult({ glyph, strokes, correct, detail, unit });
+  runParallelMLKitRecognition(canvas);
 }
 
 function scheduleHangulFreehandAutoCheck(canvas, glyph, unit) {
@@ -16065,6 +16651,7 @@ function bindHangulWritingCanvas(canvas) {
     return {
       x: ((event.clientX - rect.left) / rect.width) * canvas.width,
       y: ((event.clientY - rect.top) / rect.height) * canvas.height,
+      t: Date.now(),
     };
   };
 
@@ -16276,6 +16863,23 @@ function renderHangulWritingUnitPicker(el) {
   }).join("");
 
   const sourceMeta = getWritingSourceMeta();
+  let nativeSettingsHtml = "";
+  if (isHanaPathNative()) {
+    nativeSettingsHtml = `
+      <div class="card native-recognition-card" style="margin-top:16px;">
+        <div class="eyebrow">Native Extension</div>
+        <h3 class="writing-unit-title">On-Device Handwriting Recognition</h3>
+        <p class="fs-xs text-muted-2" style="margin-bottom:12px;">
+          Download the optional Google ML Kit handwriting model (approx. 20 MiB) to run advanced recognition directly on your device.
+        </p>
+        <div id="nativeRecognitionStatus" class="fs-xs" style="margin-bottom:12px; font-weight:500; color:var(--text-muted-2);">
+          Checking status...
+        </div>
+        <div id="nativeRecognitionActions" class="writing-unit-modes" style="margin-top:8px;"></div>
+      </div>
+    `;
+  }
+
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card">
       ${alphabetPracticeProgressHtml("Writing practice")}
@@ -16283,8 +16887,13 @@ function renderHangulWritingUnitPicker(el) {
       <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(sourceMeta.title)}</h2>
       <div class="screen-sub" style="margin-bottom:0;">Draw with your finger or stylus. Shape recognition is stroke-count tolerant, and Help remains available as an optional reference.</div>
     </div>
+    ${nativeSettingsHtml}
     ${unitsHtml || '<div class="card"><div class="screen-sub" style="margin-bottom:0;">Complete a little more learning first so HanaPath can build a writing set from this section.</div></div>'}
   `;
+
+  if (isHanaPathNative()) {
+    updateNativeRecognitionUI();
+  }
 
   bindAlphabetReferenceButtons(el);
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
@@ -19991,7 +20600,7 @@ function handleHanaPathBackAction() {
 
 function registerNativeBackButton() {
   if (!isHanaPathNative()) return;
-  const appPlugin = window.Capacitor && window.Capacitor.Plugins ? window.Capacitor.Plugins.App : null;
+  const appPlugin = getHanaPathNativePlugin("App");
   if (!appPlugin || typeof appPlugin.addListener !== "function") {
     console.warn("HanaPath: @capacitor/app plugin unavailable; system back will use WebView defaults.");
     return;

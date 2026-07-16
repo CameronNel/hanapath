@@ -45,6 +45,17 @@ requireAppSource(
     && appSource.includes("isHangulFreehandRecognitionMatch(matches, glyph, strokes)"),
   "completed syllables do not reach the target-aware component fallback",
 );
+requireAppSource(
+  appSource.includes("async function recognizeHangulInkWithProvider")
+    && appSource.includes('provider: "mlkit"')
+    && appSource.includes('provider: "$q"'),
+  "the M3 comparison does not use the shared provider boundary",
+);
+requireAppSource(
+  appSource.includes("state.useMLKit !== true")
+    && appSource.includes("$Q still grades this attempt"),
+  "ML Kit diagnostics are not explicitly opt-in or may appear authoritative before device sign-off",
+);
 
 function scanJavaScript(source, start, stop) {
   let quote = "";
@@ -140,8 +151,12 @@ const compositionDeclarations = [
   "HANGUL_FREEHAND_COMPONENT_AVG_CONFIDENCE",
   "HANGUL_FREEHAND_COMPONENT_MAX_RANK",
   "hangulComponentRecognizerCache",
+  "HangulNativeRecognizer",
 ].map(extractDeclaration);
 const compositionFunctions = [
+  "getHanaPathRuntime",
+  "isHanaPathNative",
+  "getHanaPathNativePlugin",
   "decomposeHangul",
   "normalizeHangulJamoStrokes",
   "getComposableJamoStrokes",
@@ -158,12 +173,13 @@ const compositionFunctions = [
   "getHangulTargetComponentMatches",
   "isHangulTargetAwareRecognitionMatch",
   "isHangulFreehandRecognitionMatch",
+  "validateWritingStrokes",
 ].map(extractFunction);
 const createCompositionApi = new Function(
   "window",
-  `"use strict";\n${compositionDeclarations.join("\n")}\n${compositionFunctions.join("\n")}\nreturn { getHangulStrokeGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch };\n//# sourceURL=hanapath-app-composition-audit.js`,
+  `"use strict";\n${compositionDeclarations.join("\n")}\n${compositionFunctions.join("\n")}\nreturn { getHangulStrokeGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch, validateWritingStrokes, HangulNativeRecognizer };\n//# sourceURL=hanapath-app-composition-audit.js`,
 );
-const { getHangulStrokeGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch } = createCompositionApi(globalThis);
+const { getHangulStrokeGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch, validateWritingStrokes, HangulNativeRecognizer } = createCompositionApi(globalThis);
 
 function guideProblem(guide) {
   if (!guide || typeof guide !== "object") return "guide is missing";
@@ -567,6 +583,72 @@ if (compositionFailureCount || freeDrawingContractProblems.length || positiveFai
       console.log(`  drew ${confuser.source}, prompt ${confuser.prompt} · ${confuser.variant}: rank ${confuser.rank}, ${confuser.confidence.toFixed(3)}`);
     });
   }
+  process.exit(1);
+}
+
+// Verification unit tests for validation, normalization, and fallback.
+const providerAuditErrors = [];
+
+const runValTest = (input, expectedErr) => {
+  const err = validateWritingStrokes(input);
+  if (expectedErr === null) {
+    if (err !== null) providerAuditErrors.push(`Expected validation to pass but got: "${err}"`);
+  } else {
+    if (err === null) providerAuditErrors.push(`Expected validation error "${expectedErr}" but got success`);
+    else if (!err.includes(expectedErr)) providerAuditErrors.push(`Expected validation error containing "${expectedErr}" but got "${err}"`);
+  }
+};
+
+runValTest(null, "Invalid or empty strokes payload");
+runValTest([], "Invalid or empty strokes payload");
+runValTest([[{ x: 10, y: 20, t: 100 }]], null);
+runValTest([[]], "Stroke must contain at least one point");
+
+const tooManyStrokes = Array(501).fill([[{ x: 10, y: 20, t: 100 }]]);
+runValTest(tooManyStrokes, "Payload size exceeds maximum allowed strokes (500)");
+
+const tooManyPoints = [Array(1001).fill({ x: 10, y: 20, t: 100 })];
+runValTest(tooManyPoints, "Stroke point count exceeds maximum (1000)");
+
+const tooManyTotalPoints = Array(21).fill(null).map(() => Array(1000).fill({ x: 10, y: 20, t: 100 }));
+runValTest(tooManyTotalPoints, "Payload point count exceeds maximum (20000)");
+
+runValTest([[{ y: 20, t: 100 }]], "Missing coordinates or timestamp field");
+runValTest([[{ x: 10, t: 100 }]], "Missing coordinates or timestamp field");
+runValTest([[{ x: 10, y: 20 }]], "Missing coordinates or timestamp field");
+
+runValTest([[{ x: NaN, y: 20, t: 100 }]], "Non-finite coordinates or timestamps detected");
+runValTest([[{ x: 10, y: Infinity, t: 100 }]], "Non-finite coordinates or timestamps detected");
+
+runValTest([[{ x: -1001, y: 20, t: 100 }]], "Coordinates out of reasonable bounds");
+runValTest([[{ x: 10, y: 5001, t: 100 }]], "Coordinates out of reasonable bounds");
+
+const norm1 = HangulNativeRecognizer.normalizeResult("mlkit", { ready: true, candidates: [{ name: "한", score: 0.88 }] }, 15, null);
+if (norm1.provider !== "mlkit" || !norm1.ready || norm1.candidates.length !== 1 || norm1.candidates[0].name !== "한" || norm1.candidates[0].score !== 0.88 || norm1.latencyMs !== 15 || norm1.error !== null || norm1.fallbackReason !== null) {
+  providerAuditErrors.push("Normalization failed for valid result: " + JSON.stringify(norm1));
+}
+
+const normErr = HangulNativeRecognizer.normalizeResult("mlkit", null, 0, "some_error");
+if (normErr.ready || normErr.error !== "some_error" || normErr.fallbackReason !== "some_error") {
+  providerAuditErrors.push("Normalization failed for error result: " + JSON.stringify(normErr));
+}
+
+const normNoScore = HangulNativeRecognizer.normalizeResult("mlkit", { ready: true, candidates: [{ name: "한" }] }, 8, null);
+if (normNoScore.candidates[0]?.score !== null) {
+  providerAuditErrors.push("Missing ML Kit text score was not preserved as null: " + JSON.stringify(normNoScore));
+}
+
+await HangulNativeRecognizer.recognize([[{ x: 10, y: 20, t: 100 }]]).then((res) => {
+  if (res.ready || res.error !== "bridge_missing" || res.fallbackReason !== "bridge_missing") {
+    providerAuditErrors.push("Fallback recognize did not fail closed on desktop: " + JSON.stringify(res));
+  }
+}).catch((e) => {
+  providerAuditErrors.push("Fallback recognize threw exception: " + String(e));
+});
+
+if (providerAuditErrors.length) {
+  console.log("\nProvider normalization/validation audit failures:");
+  providerAuditErrors.forEach(err => console.log(`  ${err}`));
   process.exit(1);
 }
 
