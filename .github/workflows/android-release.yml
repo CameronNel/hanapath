@@ -1,0 +1,256 @@
+name: Android signed release
+
+# Protected manual release workflow (handover §13.2, milestone M4).
+# Produces a Play-upload-ready signed AAB from a clean checkout of main:
+# full audit gate → deterministic mobile/www rebuild → version injection →
+# upload-key signing from environment secrets → signature/identity
+# verification → artifacts (AAB + SHA-256 checksums + verification report).
+#
+# Owner setup (keystore generation, GitHub environment, secrets) is
+# documented in docs/play-store/SIGNING_AND_RELEASE.md. This workflow only
+# builds and verifies; uploading to the Play Console stays a deliberate
+# owner action (handover §13.3).
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: "User-visible version, MAJOR.MINOR or MAJOR.MINOR.PATCH (e.g. 1.0.0)"
+        required: true
+        type: string
+      versionCode:
+        description: "Integer versionCode; must be greater than every previously released code (android-release/* tags)"
+        required: true
+        type: string
+      releaseChannel:
+        description: "Play track this build is intended for"
+        required: true
+        type: choice
+        options: [internal]
+        default: internal
+      releaseNotes:
+        description: "Optional short release notes (stored as an artifact next to the AAB)"
+        required: false
+        type: string
+        default: ""
+
+# contents: write is needed only to push the android-release/<versionCode>
+# tag that makes the monotonic version-code guard durable.
+permissions:
+  contents: write
+
+# Serialize releases; never cancel one mid-signing.
+concurrency:
+  group: android-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Audit, build, sign, and verify release AAB
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: google-play-release
+    env:
+      VERSION_NAME: ${{ inputs.versionName }}
+      VERSION_CODE: ${{ inputs.versionCode }}
+      RELEASE_CHANNEL: ${{ inputs.releaseChannel }}
+    steps:
+      - name: Checkout (full history for tags and main check)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require signing secrets
+        env:
+          KS_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          KS_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          KS_STOREPASS: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
+          KS_KEYPASS: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+        run: |
+          missing=""
+          [ -n "$KS_B64" ] || missing="$missing ANDROID_UPLOAD_KEYSTORE_BASE64"
+          [ -n "$KS_ALIAS" ] || missing="$missing ANDROID_UPLOAD_KEY_ALIAS"
+          [ -n "$KS_STOREPASS" ] || missing="$missing ANDROID_UPLOAD_STORE_PASSWORD"
+          [ -n "$KS_KEYPASS" ] || missing="$missing ANDROID_UPLOAD_KEY_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "Missing secrets in the google-play-release environment:$missing" >&2
+            echo "Follow docs/play-store/SIGNING_AND_RELEASE.md to create the keystore and secrets." >&2
+            exit 1
+          fi
+
+      - name: Validate version inputs
+        run: |
+          if ! echo "$VERSION_NAME" | grep -Eq '^[0-9]+\.[0-9]+(\.[0-9]+)?$'; then
+            echo "versionName '$VERSION_NAME' must be MAJOR.MINOR or MAJOR.MINOR.PATCH" >&2
+            exit 1
+          fi
+          if ! echo "$VERSION_CODE" | grep -Eq '^[1-9][0-9]*$'; then
+            echo "versionCode '$VERSION_CODE' must be a positive integer" >&2
+            exit 1
+          fi
+
+      - name: Require the release commit to be on main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "Releases must be built from a commit on main (handover §13.2); HEAD $(git rev-parse HEAD) is not." >&2
+            exit 1
+          fi
+          echo "Releasing commit $(git rev-parse HEAD)"
+
+      - name: Enforce monotonic versionCode (android-release/* tags)
+        run: |
+          last=$(git tag -l 'android-release/*' | sed 's|^android-release/||' | grep -E '^[0-9]+$' | sort -n | tail -1)
+          last=${last:-0}
+          echo "Highest released versionCode so far: $last"
+          if [ "$VERSION_CODE" -le "$last" ]; then
+            echo "versionCode $VERSION_CODE must be greater than the last released code $last" >&2
+            exit 1
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Static app checks
+        run: |
+          node --check app.js
+          node --check sw.js
+          node scripts/audit-app-shell.mjs
+
+      - name: Learning-data audits
+        run: |
+          node scripts/audit-words-data.mjs --strict
+          node scripts/audit-sentences-data.mjs --strict
+          node scripts/audit-alphabet-audio.mjs --strict
+          node scripts/audit-hangul-recognition.mjs
+
+      - name: Install mobile dependencies
+        working-directory: mobile
+        run: npm ci
+
+      - name: Generate allowlisted web payload
+        working-directory: mobile
+        run: npm run prepare:web
+
+      - name: Audit mobile package
+        run: node scripts/audit-mobile-package.mjs
+
+      - name: Sync Capacitor Android project
+        working-directory: mobile
+        run: npx cap sync android
+
+      - name: Inject release version
+        working-directory: mobile
+        run: node scripts/version-android.mjs "$VERSION_NAME" "$VERSION_CODE"
+
+      - name: Restore upload keystore
+        env:
+          KS_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          KS_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          KS_STOREPASS: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
+        run: |
+          umask 077
+          printf '%s' "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload-keystore.jks"
+          if [ ! -s "$RUNNER_TEMP/upload-keystore.jks" ]; then
+            echo "Decoded keystore is empty — check ANDROID_UPLOAD_KEYSTORE_BASE64" >&2
+            exit 1
+          fi
+          # Fail fast if the store password or alias is wrong (output discarded).
+          keytool -list -keystore "$RUNNER_TEMP/upload-keystore.jks" \
+            -storepass "$KS_STOREPASS" -alias "$KS_ALIAS" > /dev/null
+
+      - name: Build signed release AAB
+        working-directory: mobile/android
+        env:
+          HANAPATH_UPLOAD_KEYSTORE_FILE: ${{ runner.temp }}/upload-keystore.jks
+          HANAPATH_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          HANAPATH_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
+          HANAPATH_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:bundleRelease --no-daemon
+
+      - name: Verify merged release manifest (identity, version, permissions)
+        run: |
+          merged=$(find mobile/android/app/build/intermediates/merged_manifests -path '*release*' -name AndroidManifest.xml | sort | head -1)
+          if [ -z "$merged" ]; then echo "merged release manifest not found" >&2; exit 1; fi
+          echo "Merged manifest: $merged"
+          grep -q 'package="io.github.cameronnel.hanapath"' "$merged" || { echo "package id mismatch" >&2; exit 1; }
+          grep -q "android:versionCode=\"$VERSION_CODE\"" "$merged" || { echo "versionCode $VERSION_CODE missing from merged manifest" >&2; exit 1; }
+          grep -q "android:versionName=\"$VERSION_NAME\"" "$merged" || { echo "versionName $VERSION_NAME missing from merged manifest" >&2; exit 1; }
+          # Only <uses-permission> elements grant permissions (same contract as
+          # the PR build workflow); INTERNET and the app's own signature-level
+          # receiver-hardening permission are the full allowlist.
+          perms=$(grep -oE '<uses-permission(-sdk-23)?[^>]*android:name="[^"]*"' "$merged" | grep -oE '"[^"]*"$' | tr -d '"' | sort -u || true)
+          echo "Declared uses-permissions:"
+          echo "${perms:-<none>}"
+          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected permissions in merged release manifest:" >&2
+            echo "$unexpected" >&2
+            exit 1
+          fi
+
+      - name: Verify AAB signature and write checksums + report
+        run: |
+          aab=mobile/android/app/build/outputs/bundle/release/app-release.aab
+          if [ ! -f "$aab" ]; then echo "signed AAB not found at $aab" >&2; exit 1; fi
+          jarsigner -verify -strict "$aab"
+          mkdir -p release-out
+          cp "$aab" "release-out/hanapath-$VERSION_NAME-c$VERSION_CODE.aab"
+          (cd release-out && sha256sum "hanapath-$VERSION_NAME-c$VERSION_CODE.aab" > "hanapath-$VERSION_NAME-c$VERSION_CODE.aab.sha256")
+          {
+            echo "HanaPath Android release verification report"
+            echo "commit: $(git rev-parse HEAD)"
+            echo "versionName: $VERSION_NAME"
+            echo "versionCode: $VERSION_CODE"
+            echo "channel: $RELEASE_CHANNEL"
+            echo "applicationId: io.github.cameronnel.hanapath"
+            echo "targetSdk: $(grep -oE 'targetSdkVersion\s*=\s*[0-9]+' mobile/android/variables.gradle)"
+            echo "minSdk: $(grep -oE 'minSdkVersion\s*=\s*[0-9]+' mobile/android/variables.gradle)"
+            echo "aabSize: $(stat -c%s "$aab") bytes"
+            echo "sha256: $(cut -d' ' -f1 "release-out/hanapath-$VERSION_NAME-c$VERSION_CODE.aab.sha256")"
+            echo "signature: jarsigner -verify -strict passed"
+            echo "Signing certificate (public fingerprints):"
+            keytool -printcert -jarfile "$aab" | grep -E 'SHA1:|SHA256:|Owner:|Valid' || true
+          } > release-out/release-report.txt
+          cat release-out/release-report.txt
+          cp mobile/www-manifest.json release-out/www-manifest.json
+
+      - name: Save release notes
+        if: ${{ inputs.releaseNotes != '' }}
+        env:
+          RELEASE_NOTES: ${{ inputs.releaseNotes }}
+        run: printf '%s\n' "$RELEASE_NOTES" > release-out/release-notes.txt
+
+      - name: Upload signed release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanapath-android-release-${{ inputs.versionName }}-c${{ inputs.versionCode }}
+          path: release-out/
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Record release tag (monotonic guard)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "android-release/$VERSION_CODE" -m "HanaPath Android $VERSION_NAME (versionCode $VERSION_CODE, channel $RELEASE_CHANNEL)"
+          git push origin "refs/tags/android-release/$VERSION_CODE"
+
+      - name: Delete temporary signing material
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/upload-keystore.jks" ]; then
+            shred -u "$RUNNER_TEMP/upload-keystore.jks" 2>/dev/null || rm -f "$RUNNER_TEMP/upload-keystore.jks"
+          fi

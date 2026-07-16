@@ -16,10 +16,29 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        // Upload-key signing (handover §13.2/§14). Populated only when the
+        // protected release workflow — or the owner's machine — exports the
+        // HANAPATH_UPLOAD_* environment variables. PR builds, debug builds,
+        // and plain local builds have none of them set and keep producing an
+        // unsigned release exactly as before. The keystore itself is never
+        // committed (.gitignore blocks *.jks/*.keystore).
+        if (System.getenv("HANAPATH_UPLOAD_KEYSTORE_FILE")) {
+            upload {
+                storeFile file(System.getenv("HANAPATH_UPLOAD_KEYSTORE_FILE"))
+                storePassword System.getenv("HANAPATH_UPLOAD_STORE_PASSWORD")
+                keyAlias System.getenv("HANAPATH_UPLOAD_KEY_ALIAS")
+                keyPassword System.getenv("HANAPATH_UPLOAD_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (System.getenv("HANAPATH_UPLOAD_KEYSTORE_FILE")) {
+                signingConfig signingConfigs.upload
+            }
         }
     }
 }

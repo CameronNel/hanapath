@@ -1,8 +1,10 @@
 # Mobile native architecture record (M0)
 
-> Status: **M1 — reproducible Capacitor Android shell** (mobile/ project,
-> allowlisted `mobile/www` generation, native service-worker bypass, vendored
-> fonts, package audit, PR debug-build workflow). The app ID
+> Status: **M4 scaffolding — protected signed-release pipeline** on top of
+> M1 (reproducible Capacitor Android shell) and M2 code (back contract,
+> progress export/import, device-test checklist; the real-device evidence in
+> `MOBILE_DEVICE_TEST_CHECKLIST.md` remains open, as does M3, which needs
+> hardware). The app ID
 > `io.github.cameronnel.hanapath` is baked into the generated project but is
 > **provisional until the owner marks decision #1 confirmed** in
 > [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md) — it only
@@ -99,13 +101,26 @@ cd android && ./gradlew assembleDebug   # requires an Android SDK
 `.github/workflows/android-build.yml` runs this same pipeline (plus lint,
 unit tests, a merged-manifest permission check, and the full web audits) on
 every PR that touches mobile or canonical runtime files, and uploads the
-debug APK as an artifact. It uses no signing secrets; the protected signed
-release workflow is milestone M4.
+debug APK as an artifact. It uses no signing secrets.
+
+`.github/workflows/android-release.yml` (M4) is the protected
+`workflow_dispatch` release path: it re-runs the full audit gate from a clean
+`main` checkout, injects `versionName`/`versionCode` via
+`mobile/scripts/version-android.mjs` (with a monotonic guard backed by
+`android-release/<versionCode>` tags), signs the AAB with the owner's upload
+key restored from `google-play-release` environment secrets, verifies
+signature/identity/permissions, and uploads the AAB + checksums + report as
+artifacts. Owner setup and the release runbook live in
+[`play-store/SIGNING_AND_RELEASE.md`](play-store/SIGNING_AND_RELEASE.md).
 
 ## 6. What blocks the next milestones
 
-- **M2 (mobile integration hardening)** — nothing; needs real-device evidence
-  (safe areas, back button, Korean IME, audio lifecycle).
+- **M2 device evidence + M3 (ML Kit comparison)** — real Android hardware;
+  the matrix to execute is `MOBILE_DEVICE_TEST_CHECKLIST.md`.
+- **M4 first signed build** — owner actions in
+  [`play-store/SIGNING_AND_RELEASE.md`](play-store/SIGNING_AND_RELEASE.md):
+  generate the upload keystore, create the protected `google-play-release`
+  environment, add the four `ANDROID_UPLOAD_*` secrets.
 - **M5 (Play Console)** — the owner decisions still marked ⏳ in
   [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md), including
   final confirmation of the provisional package ID.
