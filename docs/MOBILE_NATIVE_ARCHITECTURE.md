@@ -88,7 +88,10 @@ none of these numbers is authoritative forever.
    containing candidates, target rank, false accepts, latency, and fallback
    rate. It does not affect learner pass/fail decisions before device sign-off.
 6. **No new permissions** in the foundation; CI fails on unexpected manifest
-   permissions (handover §9.3).
+   permissions (handover §9.3). The ML Kit dependency transitively contributes
+   WorkManager permissions; HanaPath removes those declarations in its app
+   manifest so the merged artifact remains `INTERNET`-only. The M3 device
+   matrix must therefore cover interrupted and backgrounded downloads.
 7. **Milestone PRs M0→M6** as sequenced in handover §16; every native PR
    re-runs the full web audit gate (§12.2).
 
