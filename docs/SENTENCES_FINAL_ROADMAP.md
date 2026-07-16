@@ -67,7 +67,9 @@ Each box below carries its routing: **[codex]** or **[high]**.
 - [x] **Track E** — Pattern micro-lessons: 12 units playable
 - [x] **Track F** — Shadow & speak modes
 - [x] **Track G** — Transform drill (inflection engine)
-- [ ] **Track H** — 🔒 Authored expansion batches (owner sets volume/themes)
+- [ ] **Track H** — Authored expansion batches (🔓 owner-unlocked 2026-07-16;
+  queue + rules in `OPUS_TRACK_H_BATCH_PROMPT.md`; scenario themes still
+  owner-picked per batch)
 - [~] **Track I** — Legacy mini-bank migration done (#109); **dead-code removal still pending** (`getSentenceStudyBank()`/`makeSentence*` remain in `app.js` — Listening tab still uses them)
 - [x] **Track J** — Close-out: analytics, honest docs, scripted cold-learner test
 
@@ -420,9 +422,12 @@ them. One PR per box; browser-play each unit before shipping.
 
 ---
 
-## 10. Track H — 🔒 Authored expansion (owner-gated volume)
+## 10. Track H — Authored expansion (🔓 owner-unlocked 2026-07-16)
 
-**Precondition:** owner approves themes + batch count. Coverage first:
+**Precondition (met):** owner unlocked Track H on 2026-07-16 for the
+priority queue in the v2 plan §5; the per-batch work order is
+[`OPUS_TRACK_H_BATCH_PROMPT.md`](OPUS_TRACK_H_BATCH_PROMPT.md). Scenario-pack
+themes are still approved per batch. Coverage first:
 
 - [x] **H1** [high] Gap report: extend the audit (or a sibling script) to print a patternTags × band coverage matrix and the list of §4 tags with <10 sentences; propose batch contents from it. No data change — the PR is the report + proposal in `docs/`.
 - [ ] **H2…Hn** [high authors, codex applies audio steps] Batches of ~40–60 **original** sentences filling the thinnest cells (expected thin: clause linkers, future, formal register, honorific-si). Rules: copyright-safe original text only (K-pop/fan-life *theming* welcome — practice rooms, schedules, encouragement — verbatim lyrics/subtitles never); every new row needs `grammarTip`, explicit axes, `acceptAlso` where a natural variant exists; **audio must be generated** (`python generate_assets.py`) and `audit-alphabet-audio --strict` + the sentences audit green; ids continue the frozen sequence with `source: "authored"`.

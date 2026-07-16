@@ -829,10 +829,13 @@ Phase 2 (Track H authored expansion, §5), still owner-gated 🔒.
 
 ---
 
-## 5. Phase 2 — authored expansion (Track H, re-anchored; owner-gated 🔒)
+## 5. Phase 2 — authored expansion (Track H; 🔓 owner-unlocked 2026-07-16)
 
 Track H from `docs/SENTENCES_FINAL_ROADMAP.md` remains the content pipeline;
-this plan re-anchors where its output lands. Volume/themes stay owner-set.
+this plan re-anchors where its output lands. The owner unlocked the priority
+queue below on 2026-07-16 (executor + rules:
+`docs/OPUS_TRACK_H_BATCH_PROMPT.md`); scenario-pack themes stay owner-picked
+per batch.
 
 - **Batch shape** (unchanged mechanics): author original rows (ids `s2061+`,
   full bank schema, all audit fields) → `python generate_assets.py` (owner)
@@ -923,7 +926,7 @@ incremented by the legacy quiz engine, so Words test controls and
 
 | Item | Owner-gated? | Note |
 |---|---|---|
-| Track H batch volume/themes | 🔒 | §5; gap report is the shopping list |
+| Track H batch volume/themes | 🔓 queue unlocked 2026-07-16; themes per batch | §5; gap report is the shopping list; work order: `OPUS_TRACK_H_BATCH_PROMPT.md` |
 | B3 Translate & Type positional/near-miss diff | no | `EXTENSION (roadmap B3)` markers in app.js; unrelated to the restructure — do not bundle |
 | Track I dead-code removal (`getSentenceStudyBank`/`makeSentence*`) | no | Blocked on Listening tab repoint; unchanged by this plan |
 | Listening-tab runtime verification (54 `.find()` lookups) | no | Outstanding since 2026-07-07 handover |
