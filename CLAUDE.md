@@ -9,6 +9,13 @@ HanaPath is a **vanilla static Korean-learning PWA**: no framework, no bundler,
 loaded via `<script defer>`. Keep it that way unless the owner explicitly asks
 otherwise.
 
+**Owner-approved native-packaging exception (2026-07-16):** the canonical web
+app remains vanilla and build-free, but an isolated `mobile/` Capacitor project
+may contain its own package/build/native tooling for Android Google Play and a
+later iOS/iPadOS shell. Follow
+[`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md);
+do not turn the root app into a framework project or remove browser/PWA support.
+
 ## The Sentences section has a governing north star (current active work)
 
 > The **Sentences section** is being rebuilt toward a specific target, defined
@@ -57,14 +64,17 @@ Sentences queue.
 | `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, **verbatim** (source of record) |
 | `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; reference for its pedagogy + data axes) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — reuse these engines for Sentences) |
+| **`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`** | Owner-approved Capacitor/Android/Google Play execution handover; preserves browser/PWA and later iOS compatibility |
 | `HANDOVER.md` | Repo snapshot + conventions for the next contributor |
 | `.agents/AGENTS.md` | Offline audio-generation pipeline rules |
 | `README.md` | Product overview + run instructions |
 
 ## Hard rules for any agent
 
-1. **Stay vanilla/static.** No framework, bundler, or build step. Data files are
-   plain browser globals loaded before `app.js`.
+1. **Keep the canonical app vanilla/static.** No framework, bundler, or build
+   step in the root web app. Data files are plain browser globals loaded before
+   `app.js`. The only approved exception is isolated native packaging under
+   `mobile/`, governed by `docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`.
 2. **Additive, backward-compatible changes** to the Words and Sentences data
    schemas. Existing curated rows and lessons must keep passing the audits.
 3. **Run the audits** after touching learning data:
