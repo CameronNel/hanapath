@@ -5,6 +5,7 @@ __pycache__/
 
 # Native packaging (mobile/) — generated output and local tooling state
 mobile/www/
+mobile/www-manifest.json
 mobile/android/.gradle/
 mobile/android/app/build/
 mobile/android/build/

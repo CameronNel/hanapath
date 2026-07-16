@@ -1,3 +1,21 @@
+// Single platform boundary for every web-vs-native difference (see
+// docs/MOBILE_NATIVE_ARCHITECTURE.md §4.3). Never test window.Capacitor
+// anywhere else in this file — route new platform differences through here.
+function getHanaPathRuntime() {
+  try {
+    if (window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform()) {
+      return "native";
+    }
+  } catch (error) {
+    // Fall through: an unexpected bridge shape must never break the browser app.
+  }
+  return "web";
+}
+
+function isHanaPathNative() {
+  return getHanaPathRuntime() === "native";
+}
+
 const INITIALS = [
   "ㄱ",
   "ㄲ",
@@ -19879,6 +19897,12 @@ async function init() {
 }
 
 function registerServiceWorker() {
+  if (isHanaPathNative()) {
+    // The Capacitor app ships its own versioned copy of the web assets and is
+    // updated through installed-app updates; a service worker inside the native
+    // WebView would only add a second, competing update path.
+    return;
+  }
   if (!("serviceWorker" in navigator) || !window.isSecureContext) {
     return;
   }
