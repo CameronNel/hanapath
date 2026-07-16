@@ -1,9 +1,13 @@
 # Mobile native architecture record (M0)
 
-> Status: **M0 — Decisions and rules** (this document). No Android project is
-> generated yet; that is M1, gated on the owner confirming the permanent
-> package ID in [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md).
-> The governing execution brief is
+> Status: **M1 — reproducible Capacitor Android shell** (mobile/ project,
+> allowlisted `mobile/www` generation, native service-worker bypass, vendored
+> fonts, package audit, PR debug-build workflow). The app ID
+> `io.github.cameronnel.hanapath` is baked into the generated project but is
+> **provisional until the owner marks decision #1 confirmed** in
+> [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md) — it only
+> becomes permanent at Play Console app creation (M5), and changing it before
+> then is a small mechanical edit. The governing execution brief is
 > [`FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](FABLE_MOBILE_PLAY_STORE_HANDOVER.md).
 
 ## 1. Architecture in one paragraph
@@ -81,10 +85,27 @@ none of these numbers is authoritative forever.
 7. **Milestone PRs M0→M6** as sequenced in handover §16; every native PR
    re-runs the full web audit gate (§12.2).
 
-## 5. What blocks M1
+## 5. Build and verify (M1)
 
-Only the owner decisions marked ⏳ in
-[`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md) — primarily
-the **permanent package ID**. Everything else in M1 (prepare script, www
-allowlist, service-worker bypass, local fonts, package audit, Android
-project) is specified and ready to execute once that ID is confirmed.
+```bash
+cd mobile
+npm ci                 # pinned Capacitor 8.4.2 toolchain
+npm run prepare:web    # generate allowlisted mobile/www + deterministic manifest
+npm run verify:web     # scripts/audit-mobile-package.mjs (www + Android contract)
+npx cap sync android   # copy payload into the tracked Android project
+cd android && ./gradlew assembleDebug   # requires an Android SDK
+```
+
+`.github/workflows/android-build.yml` runs this same pipeline (plus lint,
+unit tests, a merged-manifest permission check, and the full web audits) on
+every PR that touches mobile or canonical runtime files, and uploads the
+debug APK as an artifact. It uses no signing secrets; the protected signed
+release workflow is milestone M4.
+
+## 6. What blocks the next milestones
+
+- **M2 (mobile integration hardening)** — nothing; needs real-device evidence
+  (safe areas, back button, Korean IME, audio lifecycle).
+- **M5 (Play Console)** — the owner decisions still marked ⏳ in
+  [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md), including
+  final confirmation of the provisional package ID.

@@ -1,0 +1,13 @@
+{
+  "appId": "io.github.cameronnel.hanapath",
+  "appName": "HanaPath",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  }
+}
