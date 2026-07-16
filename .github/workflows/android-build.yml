@@ -94,12 +94,20 @@ jobs:
 
       - name: Verify merged manifest permissions
         run: |
-          merged=$(find mobile/android/app/build/intermediates/merged_manifests -name AndroidManifest.xml | head -1)
-          if [ -z "$merged" ]; then echo "merged manifest not found" >&2; exit 1; fi
+          merged=$(find mobile/android/app/build/intermediates/merged_manifests -path '*debug*' -name AndroidManifest.xml | sort | head -1)
+          if [ -z "$merged" ]; then echo "merged debug manifest not found" >&2; exit 1; fi
           echo "Merged manifest: $merged"
-          perms=$(grep -o 'android.permission.[A-Z_]*' "$merged" | sort -u)
-          echo "Declared permissions:"; echo "$perms"
-          unexpected=$(echo "$perms" | grep -v '^android.permission.INTERNET$' || true)
+          # Only <uses-permission> elements grant the app permissions. Other
+          # android.permission.* strings in the merged manifest (for example a
+          # library receiver protected by android:permission="...DUMP") are
+          # requirements imposed on callers, not grants, and must not fail this.
+          perms=$(grep -oE '<uses-permission(-sdk-23)?[^>]*android:name="[^"]*"' "$merged" | grep -oE '"[^"]*"$' | tr -d '"' | sort -u || true)
+          echo "Declared uses-permissions:"
+          echo "${perms:-<none>}"
+          # Allowed: INTERNET (Capacitor default; future optional model download)
+          # and the app's own signature-level DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+          # that androidx.core adds as receiver-export hardening.
+          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
           if [ -n "$unexpected" ]; then
             echo "Unexpected permissions in merged manifest:" >&2
             echo "$unexpected" >&2
