@@ -1,6 +1,7 @@
 # Mobile native architecture record (M0)
 
-> Status: **M4 scaffolding + M3 code-side proof of concept** on top of
+> Status: **M5 drafts + M4 scaffolding + M3 code-side proof of concept** on
+> top of
 > M1 (reproducible Capacitor Android shell) and M2 code (back contract,
 > progress export/import, device-test checklist; the real-device evidence in
 > `MOBILE_DEVICE_TEST_CHECKLIST.md` remains open). M3 now has the native
@@ -131,6 +132,10 @@ artifacts. Owner setup and the release runbook live in
   [`play-store/SIGNING_AND_RELEASE.md`](play-store/SIGNING_AND_RELEASE.md):
   generate the upload keystore, create the protected `google-play-release`
   environment, add the four `ANDROID_UPLOAD_*` secrets.
-- **M5 (Play Console)** — the owner decisions still marked ⏳ in
-  [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md), including
-  final confirmation of the provisional package ID.
+- **M5 (Play Console)** — drafts are done (privacy page, Data Safety
+  answers, store-listing text, internal-testing runbook in
+  [`play-store/`](play-store/)); what remains is owner-only: the decisions
+  still marked ⏳ in
+  [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md) (including
+  final confirmation of the provisional package ID), the developer account,
+  and executing the runbook.
