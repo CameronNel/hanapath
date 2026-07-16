@@ -15069,6 +15069,16 @@ const HANGUL_COMPOUND_FINAL_PARTS = {
 };
 const hangulSyllableGuideCache = {};
 
+function getHangulSyllableLayout(parts) {
+  if (!parts) return null;
+  const family = VOWEL_FAMILIES.compound.has(parts.medial)
+    ? "compound"
+    : VOWEL_FAMILIES.vertical.has(parts.medial)
+      ? "vertical"
+      : "horizontal";
+  return HANGUL_SYLLABLE_LAYOUTS[`${family}${parts.final ? "Closed" : "Open"}`] || null;
+}
+
 function normalizeHangulJamoStrokes(strokes) {
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
   strokes.forEach((stroke) => stroke.forEach((p) => {
@@ -15106,11 +15116,7 @@ function composeHangulSyllableGuide(glyph, bank) {
   const parts = decomposeHangul(glyph);
   if (parts) {
     const hasFinal = Boolean(parts.final);
-    const layout = VOWEL_FAMILIES.compound.has(parts.medial)
-      ? HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "compoundClosed" : "compoundOpen"]
-      : VOWEL_FAMILIES.vertical.has(parts.medial)
-        ? HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "verticalClosed" : "verticalOpen"]
-        : HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "horizontalClosed" : "horizontalOpen"];
+    const layout = getHangulSyllableLayout(parts);
     const pieces = [
       { strokes: getComposableJamoStrokes(parts.initial, bank), box: layout.initial },
       { strokes: getComposableJamoStrokes(parts.medial, bank), box: layout.medial },
@@ -15135,6 +15141,11 @@ function composeHangulSyllableGuide(glyph, bank) {
 // pen lift than the authored demonstration.
 const HANGUL_FREEHAND_TARGET_CONFIDENCE = 0.82;
 const HANGUL_FREEHAND_MIN_MARGIN = 0.01;
+const HANGUL_FREEHAND_FALLBACK_TARGET_CONFIDENCE = 0.76;
+const HANGUL_FREEHAND_COMPONENT_MIN_CONFIDENCE = 0.7;
+const HANGUL_FREEHAND_COMPONENT_AVG_CONFIDENCE = 0.8;
+const HANGUL_FREEHAND_COMPONENT_MAX_RANK = 4;
+let hangulComponentRecognizerCache = null;
 
 function getHangulWritingRecognitionGlyphs() {
   const bankGlyphs = Object.keys((typeof window !== "undefined" && window.HANGUL_STROKES) || {});
@@ -15167,12 +15178,115 @@ function recognizeHangulWriting(canvas, limit = 3) {
   return recognizer.recognize(getNormalizedHangulWritingStrokes(canvas), limit);
 }
 
-function isHangulFreehandRecognitionMatch(matches, glyph) {
+function getHangulComponentStrokes(jamo) {
+  const bank = (typeof window !== "undefined" && window.HANGUL_STROKES) || null;
+  if (!bank) return null;
+  return bank[jamo]?.strokes?.length ? bank[jamo].strokes : getComposableJamoStrokes(jamo, bank);
+}
+
+function getHangulComponentRecognizer() {
+  if (hangulComponentRecognizerCache) return hangulComponentRecognizerCache;
+  const API = typeof window !== "undefined" ? window.HANAPATH_HANGUL_RECOGNIZER : null;
+  const bank = (typeof window !== "undefined" && window.HANGUL_STROKES) || null;
+  if (!API?.Recognizer || !bank) return null;
+  const recognizer = new API.Recognizer();
+  const componentGlyphs = [...new Set([...Object.keys(bank), ...Object.keys(HANGUL_COMPOUND_FINAL_PARTS)])];
+  componentGlyphs.forEach((jamo) => {
+    const strokes = getHangulComponentStrokes(jamo);
+    if (strokes?.length) recognizer.add(jamo, strokes, { augment: true });
+  });
+  hangulComponentRecognizerCache = { recognizer, count: componentGlyphs.length };
+  return hangulComponentRecognizerCache;
+}
+
+function extractHangulInkComponentStrokes(strokes, pieces, pieceIndex, verticalFamily) {
+  const padding = 0.12;
+  const [, box] = pieces[pieceIndex];
+  const [x, y, width, height] = box;
+  const finalIndex = pieces.length === 3 ? 2 : -1;
+  const medialBox = pieces[1][1];
+  const denseStrokes = strokes.map((stroke) => {
+    const count = Math.max(24, Math.min(96, Math.ceil(hangulPairPathLength(stroke) * 120)));
+    return resampleHangulStroke(stroke, count);
+  });
+  const fragments = [];
+  denseStrokes.forEach((dense) => {
+    if (pieceIndex === finalIndex) {
+      const [mx, my, mw, mh] = medialBox;
+      const medialPoints = dense.filter(([px, py]) => (
+        px >= mx - padding && px <= mx + mw + padding
+        && py >= my - padding && py <= my + mh + padding
+      ));
+      const medialOverlap = medialPoints.length / dense.length;
+      const meanX = dense.reduce((sum, [px]) => sum + px, 0) / dense.length;
+      const meanY = dense.reduce((sum, [, py]) => sum + py, 0) / dense.length;
+      const belongsToMedial = verticalFamily
+        ? medialOverlap >= 0.5 && meanX >= mx - 0.05
+        : medialOverlap >= 0.5 && meanY <= box[1] - 0.04;
+      if (belongsToMedial) return;
+    }
+    let fragment = [];
+    dense.forEach((point) => {
+      const inside = point[0] >= x - padding && point[0] <= x + width + padding
+        && point[1] >= y - padding && point[1] <= y + height + padding;
+      if (inside) {
+        fragment.push(point);
+      } else if (fragment.length > 1) {
+        const clean = cleanHangulInkStroke(fragment);
+        if (clean) fragments.push(clean);
+        fragment = [];
+      } else {
+        fragment = [];
+      }
+    });
+    if (fragment.length > 1) {
+      const clean = cleanHangulInkStroke(fragment);
+      if (clean) fragments.push(clean);
+    }
+  });
+  return fragments;
+}
+
+function getHangulTargetComponentMatches(strokes, glyph) {
+  const parts = decomposeHangul(glyph);
+  const layout = getHangulSyllableLayout(parts);
+  const componentApi = getHangulComponentRecognizer();
+  if (!parts || !layout || !componentApi) return [];
+  const pieces = [[parts.initial, layout.initial], [parts.medial, layout.medial]];
+  if (parts.final) pieces.push([parts.final, layout.final]);
+  const verticalFamily = VOWEL_FAMILIES.vertical.has(parts.medial) || VOWEL_FAMILIES.compound.has(parts.medial);
+  return pieces.map(([jamo], pieceIndex) => {
+    const componentInk = extractHangulInkComponentStrokes(strokes, pieces, pieceIndex, verticalFamily);
+    const matches = componentApi.recognizer.recognize(componentInk, componentApi.count);
+    const rankIndex = matches.findIndex((match) => match.name === jamo);
+    return {
+      jamo,
+      rank: rankIndex + 1,
+      confidence: rankIndex >= 0 ? matches[rankIndex].confidence : 0,
+    };
+  });
+}
+
+function isHangulTargetAwareRecognitionMatch(matches, glyph, strokes) {
+  const target = matches.find((match) => match.name === glyph) || null;
+  if (!target || target.confidence < HANGUL_FREEHAND_FALLBACK_TARGET_CONFIDENCE) return false;
+  const components = getHangulTargetComponentMatches(strokes, glyph);
+  if (components.length < 2) return false;
+  const confidences = components.map((component) => component.confidence);
+  const average = confidences.reduce((sum, confidence) => sum + confidence, 0) / confidences.length;
+  return Math.min(...confidences) >= HANGUL_FREEHAND_COMPONENT_MIN_CONFIDENCE
+    && average >= HANGUL_FREEHAND_COMPONENT_AVG_CONFIDENCE
+    && components.every((component) => component.rank > 0 && component.rank <= HANGUL_FREEHAND_COMPONENT_MAX_RANK);
+}
+
+function isHangulFreehandRecognitionMatch(matches, glyph, strokes = []) {
   const top = matches[0] || null;
   const second = matches[1] || null;
-  if (!top || top.name !== glyph || top.confidence < HANGUL_FREEHAND_TARGET_CONFIDENCE) return false;
-  const margin = second ? top.confidence - second.confidence : 1;
-  return margin >= HANGUL_FREEHAND_MIN_MARGIN || top.confidence >= 0.96;
+  if (top?.name === glyph && top.confidence >= HANGUL_FREEHAND_TARGET_CONFIDENCE) {
+    const margin = second ? top.confidence - second.confidence : 1;
+    if (margin >= HANGUL_FREEHAND_MIN_MARGIN || top.confidence >= 0.96) return true;
+  }
+  return isHangulTargetAwareRecognitionMatch(matches, glyph, strokes);
 }
 
 function clearHangulRecognitionTimer() {
@@ -15182,14 +15296,11 @@ function clearHangulRecognitionTimer() {
   }
 }
 
-function setHangulRecognitionFeedback(message, matches = [], tone = "") {
+function setHangulRecognitionFeedback(message, tone = "") {
   const panel = document.getElementById("writingRecognition");
   if (!panel) return;
   panel.className = `writing-recognition${tone ? ` ${tone}` : ""}`;
-  const guesses = matches.slice(0, 3)
-    .map((match, index) => `<span class="writing-recognition-chip${index === 0 ? " primary" : ""}" lang="ko">${escapeHtml(match.name)}</span>`)
-    .join("");
-  panel.innerHTML = `<span class="writing-recognition-message">${escapeHtml(message)}</span>${guesses ? `<span class="writing-recognition-guesses" aria-label="Recognition guesses">${guesses}</span>` : ""}`;
+  panel.innerHTML = `<span class="writing-recognition-message">${escapeHtml(message)}</span>`;
 }
 
 function hangulWritingResultSvg(strokes, glyph) {
@@ -15839,16 +15950,16 @@ function checkHangulFreehandDrawing(canvas, glyph, unit, { silentFailure = false
     updateHangulStrokeStatus("Draw the whole shape first.", "wrong");
     return;
   }
-  const matches = recognizeHangulWriting(canvas, 3);
+  const matches = recognizeHangulWriting(canvas, getHangulWritingRecognitionGlyphs().length);
   const top = matches[0] || null;
-  const correct = isHangulFreehandRecognitionMatch(matches, glyph);
+  const correct = isHangulFreehandRecognitionMatch(matches, glyph, strokes);
   const detail = correct
     ? `Freehand recognized as ${glyph} — your natural shape is clear.`
     : top
       ? `This currently looks closest to ${top.name}. Refine the overall shape and check again.`
       : `HanaPath could not read that shape yet. Make it a little clearer and try again.`;
   if (!correct && silentFailure) {
-    setHangulRecognitionFeedback(top ? `Closest shape: ${top.name}. Keep refining, or tap Check.` : "Keep refining the shape, or tap Check.", matches, top ? "close" : "wrong");
+    setHangulRecognitionFeedback(top ? `Maybe ${top.name} — keep drawing` : "Try a clearer shape", top ? "close" : "wrong");
     updateHangulStrokeStatus("Keep drawing until the whole shape reads clearly.");
     return;
   }
@@ -15893,7 +16004,7 @@ function bindHangulWritingCanvas(canvas) {
     canvas.setPointerCapture(event.pointerId);
     activeStroke = [pointFromEvent(event)];
     hangulWritingState.strokes.push(activeStroke);
-    setHangulRecognitionFeedback("Writing…", [], "working");
+    setHangulRecognitionFeedback("Writing…", "working");
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
   });
@@ -16154,13 +16265,13 @@ function renderHangulWritingPractice(el, unit) {
       <div class="quiz-card writing-quiz-card">
         <div class="quiz-visual writing-prompt-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span><span class="writing-hear-cue">Tap to hear</span></div>
         <div class="quiz-detail writing-instruction writing-stroke-status" id="writingStrokeStatus" aria-live="polite">${escapeHtml(initialStrokeStatus)}</div>
-        <div class="writing-recognition" id="writingRecognition" aria-live="polite"><span class="writing-recognition-message">Write with your finger or stylus.</span></div>
         <div class="writing-canvas-wrap">
           <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
           <button class="writing-canvas-action writing-canvas-clear" type="button" id="writingClear" disabled>Erase all</button>
           <button class="writing-canvas-action writing-canvas-undo" type="button" id="writingUndo" disabled>Undo stroke</button>
           <button class="writing-canvas-action writing-canvas-help" type="button" id="writingHelp">Help</button>
           <button class="writing-canvas-action writing-canvas-check" type="button" id="writingCheck" disabled>Check drawing</button>
+          <div class="writing-recognition" id="writingRecognition" role="status" aria-live="polite"><span class="writing-recognition-message">Write with your finger or stylus.</span></div>
         </div>
         <div class="writing-result-overlay" id="writingResultOverlay" aria-live="polite"></div>
       </div>
@@ -16182,6 +16293,7 @@ function renderHangulWritingPractice(el, unit) {
     hangulWritingState.strokes = [];
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
+    setHangulRecognitionFeedback("Write with your finger or stylus.");
     updateHangulStrokeStatus(initialStrokeStatus);
   });
   el.querySelector("#writingUndo").addEventListener("click", () => {
@@ -16201,6 +16313,7 @@ function renderHangulWritingPractice(el, unit) {
     // existing ink. Watching is not counted as an attempt.
     if (guide && !hangulWritingState.celebrating) {
       clearHangulRecognitionTimer();
+      setHangulRecognitionFeedback("Writing help is playing.");
       updateHangulStrokeStatus("Watch the standard strokes, then try it yourself.");
       watchHangulGuide(canvas, guide);
     }
