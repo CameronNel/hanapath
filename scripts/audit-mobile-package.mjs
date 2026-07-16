@@ -182,9 +182,12 @@ if (!existsSync(androidRoot)) {
 } else {
   const manifestXmlPath = join(androidRoot, "app", "src", "main", "AndroidManifest.xml");
   const manifestXml = readFileSync(manifestXmlPath, "utf8");
-  for (const match of manifestXml.matchAll(/<uses-permission[^>]*android:name=["']([^"']+)["']/g)) {
-    if (!ALLOWED_ANDROID_PERMISSIONS.has(match[1])) {
-      errors.push(`AndroidManifest.xml declares an unexpected permission: ${match[1]}`);
+  for (const match of manifestXml.matchAll(/<uses-permission\b[^>]*>/g)) {
+    const tag = match[0];
+    if (/tools:node=["']remove["']/.test(tag)) continue;
+    const permission = tag.match(/android:name=["']([^"']+)["']/)?.[1];
+    if (permission && !ALLOWED_ANDROID_PERMISSIONS.has(permission)) {
+      errors.push(`AndroidManifest.xml declares an unexpected permission: ${permission}`);
     }
   }
   if (/android:usesCleartextTraffic=["']true["']/.test(manifestXml)) {

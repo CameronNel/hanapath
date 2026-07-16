@@ -54,6 +54,23 @@ Expected contract, in order:
 - [ ] Undo / Erase all / Check / Help targets are comfortably tappable.
 - [ ] The rough-한 case: natural joined strokes for 한 are accepted (post-#264 behaviour).
 
+## E2. M3 recognition-provider evidence
+
+Record the exported JSON comparison report for each phone/tablet. Until this
+section is signed off, ML Kit is diagnostic-only and `$Q` remains the learner
+grader.
+
+- [ ] Before download: the app clearly discloses the optional ~20 MiB Korean model; dismissing it leaves writing fully usable with `$Q`.
+- [ ] Airplane mode before first download: download failure is clear, no crash occurs, and writing still grades through `$Q`.
+- [ ] Online download: the `ko` model installs; relaunching the app reports it installed without downloading again.
+- [ ] Airplane mode after download: ML Kit diagnostics run on-device and the comparison report completes.
+- [ ] Run **Run device comparison** on a mid-range phone and a tablet; save both JSON reports with device model, Android version, build commit, and tester.
+- [ ] Reports include the rough `한`, authored positives, split/merged variants, pairwise negatives, candidates, target rank, false accepts, latency, and fallback rate.
+- [ ] No new ML Kit false accepts are accepted for prompted practice; rough learner ink materially improves over `$Q`.
+- [ ] Warm latency is acceptable on both devices; record average and p95 rather than judging one attempt.
+- [ ] Low-storage/download interruption returns to `$Q` cleanly and does not leave a false “ready” state.
+- [ ] Only after evidence review: record the provider decision in the PR and change learner grading authority in a separate, explicitly reviewed patch if ML Kit wins.
+
 ## F. Layout, safe areas, system UI
 
 - [ ] No content under the status bar, gesture bar, or camera cutout (portrait + landscape).
