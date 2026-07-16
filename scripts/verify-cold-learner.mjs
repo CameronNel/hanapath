@@ -87,6 +87,10 @@ try {
 async function waitForApp(page) {
   await page.goto(`${baseUrl}/index.html`);
   await page.waitForSelector("button.nav-btn[data-nav='practice']", { timeout: 10000 });
+  const introSkip = page.locator("[data-intro-skip]");
+  if (await introSkip.isVisible().catch(() => false)) {
+    await introSkip.click();
+  }
 }
 
 async function openSentenceStudio(page) {

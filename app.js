@@ -1,4 +1,4 @@
-// Single platform boundary for every web-vs-native difference (see
+﻿// Single platform boundary for every web-vs-native difference (see
 // docs/MOBILE_NATIVE_ARCHITECTURE.md §4.3). Never test window.Capacitor
 // anywhere else in this file — route new platform differences through here.
 function getHanaPathRuntime() {
@@ -6098,14 +6098,28 @@ function getWordLessonResultStats(view) {
   return { total, firstTryCorrect, pct, typedTotal, typedCorrect };
 }
 
+function completionIconSvg(icon = "check") {
+  if (icon === "crown") {
+    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M11 20l13 10 8-18 8 18 13-10-5 28H16z"/><path d="M17 52h30"/></svg>`;
+  }
+  if (icon === "spark") {
+    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8c2 13 9 20 22 22-13 2-20 9-22 22-2-13-9-20-22-22 13-2 20-9 22-22z"/><path d="M50 7v10M45 12h10"/></svg>`;
+  }
+  if (icon === "retry") {
+    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 23a19 19 0 1 1-2 20"/><path d="M9 14v16h16"/></svg>`;
+  }
+  return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 33l11 11 25-27"/></svg>`;
+}
+
 function completionConfettiHtml(enabled = true) {
   if (!enabled) return "";
-  return `<div class="completion-confetti" aria-hidden="true">${Array.from({ length: 10 }, (_, index) => `<i style="--piece:${index}"></i>`).join("")}</div>`;
+  return `<div class="completion-confetti" aria-hidden="true">${Array.from({ length: 16 }, (_, index) => `<i style="--piece:${index}"></i>`).join("")}</div>`;
 }
 
 function premiumCompletionHtml({
   id = "",
   tone = "success",
+  icon = "check",
   eyebrow = "Complete",
   title = "Beautiful work",
   copy = "",
@@ -6132,9 +6146,14 @@ function premiumCompletionHtml({
     : "";
   return `
     <section${id ? ` id="${escapeHtml(id)}"` : ""} class="completion-stage completion-stage--${safeTone} ${className}" data-lesson-motion-root>
+      <div class="completion-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
       ${completionConfettiHtml(celebrate)}
       <div class="completion-hero" role="status" aria-live="polite">
-        <div class="completion-flourish" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="completion-emblem" aria-hidden="true">
+          <span class="completion-emblem-ring"></span>
+          <span class="completion-emblem-ring completion-emblem-ring--outer"></span>
+          <span class="completion-emblem-icon">${completionIconSvg(icon)}</span>
+        </div>
         <div class="completion-kicker"><span></span>${escapeHtml(String(eyebrow))}<span></span></div>
         <h2 class="completion-title">${escapeHtml(String(title))}</h2>
         ${copy ? `<p class="completion-copy">${escapeHtml(String(copy))}</p>` : ""}
@@ -11233,7 +11252,7 @@ function renderDrillQuestion() {
        </div>`;
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total, s.answered)}
+      ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total)}
       <div class="alphabet-practice-status" id="drillStatus">${s.correct} clean · streak ${s.streak}</div>
       ${visualHtml}
       <div class="drill-audio-row">
@@ -13253,19 +13272,24 @@ const ITEM_MOTION_CLASSES = [
 ];
 
 let pendingScreenMotion = null;
-let screenEntranceTimer = 0;
-let screenEntranceToken = 0;
+let screenExitTimer = 0;
+let screenExitNode = null;
 const lessonMotionFrames = new Map();
 
 function motionIsReduced() {
-  return Boolean(state.reduceMotion || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+  return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 }
 
 function queueScreenMotion(kind = "forward", direction = 1, { replace = true } = {}) {
   if (!replace && pendingScreenMotion) return;
+  const visibleScreen = getVisibleScreen();
+  const visibleRect = visibleScreen?.getBoundingClientRect();
   pendingScreenMotion = {
     kind: SCREEN_MOTION_KINDS.has(kind) ? kind : "forward",
     direction: direction < 0 ? -1 : 1,
+    fromRect: visibleRect
+      ? { top: visibleRect.top, left: visibleRect.left, width: visibleRect.width, height: visibleRect.height }
+      : null,
   };
 }
 
@@ -13276,34 +13300,64 @@ function takeScreenMotion(fallbackKind = "forward") {
 }
 
 function getVisibleScreen() {
-  return document.querySelector(".screen:not([hidden])");
+  return document.querySelector(".screen:not([hidden]):not(.screen-motion-exit)");
 }
 
-function hideOutgoingScreen(screen) {
-  if (!screen) return;
-  // Keep navigation to a single incoming layer. Retaining a live copy of the
-  // outgoing screen caused duplicate ids, overlapping controls, and snapping
-  // timers during fast taps.
-  screen.hidden = true;
-  screen.innerHTML = "";
+function finishScreenExit() {
+  if (screenExitTimer) {
+    window.clearTimeout(screenExitTimer);
+    screenExitTimer = 0;
+  }
+  if (!screenExitNode) return;
+  screenExitNode.hidden = true;
+  screenExitNode.innerHTML = "";
+  screenExitNode.classList.remove("screen-motion-exit", "screen-motion-exit-launch", "screen-motion-exit-forward", "screen-motion-exit-back", "screen-motion-exit-tab", "screen-motion-exit-hub", "screen-motion-exit-completion", "motion-reverse");
+  screenExitNode.removeAttribute("aria-hidden");
+  screenExitNode.inert = false;
+  screenExitNode.style.removeProperty("--screen-top");
+  screenExitNode.style.removeProperty("--screen-left");
+  screenExitNode.style.removeProperty("--screen-width");
+  screenExitNode.style.removeProperty("--screen-height");
+  screenExitNode = null;
+}
+
+function beginScreenExit(screen, motion) {
+  finishScreenExit();
+  if (!screen || motionIsReduced()) {
+    if (screen) {
+      screen.hidden = true;
+      screen.innerHTML = "";
+    }
+    return;
+  }
+
+  const rect = motion.fromRect || screen.getBoundingClientRect();
+  // The outgoing screen remains visible for a fraction of a second while the
+  // destination arrives. Strip descendant ids so the incoming renderer can
+  // safely reuse its legacy getElementById hooks during that overlap.
+  screen.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
+  screen.setAttribute("aria-hidden", "true");
+  screen.inert = true;
+  screen.style.setProperty("--screen-top", `${rect.top}px`);
+  screen.style.setProperty("--screen-left", `${rect.left}px`);
+  screen.style.setProperty("--screen-width", `${rect.width}px`);
+  screen.style.setProperty("--screen-height", `${rect.height}px`);
+  screen.classList.add("screen-motion-exit", `screen-motion-exit-${motion.kind}`);
+  if (motion.direction < 0) screen.classList.add("motion-reverse");
+  screenExitNode = screen;
+  screenExitTimer = window.setTimeout(finishScreenExit, 420);
 }
 
 function playScreenEntrance(screen, motion) {
   if (!screen || motionIsReduced()) return;
-  if (screenEntranceTimer) window.clearTimeout(screenEntranceTimer);
-  const token = ++screenEntranceToken;
   SCREEN_MOTION_CLASSES.forEach((className) => screen.classList.remove(className));
   void screen.offsetWidth;
   screen.dataset.motionKind = motion.kind;
   screen.classList.add("screen-motion-enter", `screen-motion-${motion.kind}`);
-  // Forward always enters from the right and Back always from the left.
-  // Signed direction is meaningful only when moving between peer tabs.
-  if (motion.kind === "tab" && motion.direction < 0) screen.classList.add("motion-reverse");
-  screenEntranceTimer = window.setTimeout(() => {
-    if (token !== screenEntranceToken) return;
+  if (motion.direction < 0) screen.classList.add("motion-reverse");
+  window.setTimeout(() => {
     SCREEN_MOTION_CLASSES.forEach((className) => screen.classList.remove(className));
-    screenEntranceTimer = 0;
-  }, 420);
+  }, 720);
 }
 
 function resetLessonMotion(channel) {
@@ -13338,8 +13392,7 @@ function animateLessonFrame(scope, channel, frame) {
     scope.classList.remove("lesson-frame-enter", "lesson-frame-forward", "lesson-frame-back", "lesson-frame-section", "lesson-frame-answer", "lesson-frame-complete");
     scope.style.removeProperty("--lesson-direction");
   }, frame.complete ? 980 : 620);
-  // The lesson frame itself is the animation layer. Cascading the frame's
-  // descendants at the same time compounded transforms and looked twitchy.
+  animateMotionScope(scope, MOTION_SELECTORS, variant === "complete" ? 52 : 26, variant);
 }
 
 function playMotion(node, className, cleanupMs) {
@@ -13401,12 +13454,13 @@ function showScreen(screenId) {
   const hasRequestedMotion = Boolean(pendingScreenMotion);
   const motion = takeScreenMotion(isSameScreen ? "hub" : "forward");
   const shouldAnimate = !isSameScreen || hasRequestedMotion;
-  if (currentScreen && !isSameScreen) hideOutgoingScreen(currentScreen);
+  if (currentScreen && !isSameScreen) beginScreenExit(currentScreen, motion);
   // Hide every screen and empty the inactive ones. Inactive screens keep their
   // quiz cards in the DOM otherwise, and the alphabet quiz on Home shares its
   // element IDs with the alphabet practice screen — getElementById would then
   // write into the hidden copy. Each screen is fully re-rendered when shown.
   document.querySelectorAll(".screen").forEach((s) => {
+    if (s === screenExitNode) return;
     s.hidden = true;
     if (s.id !== targetId) s.innerHTML = "";
   });
@@ -13425,12 +13479,10 @@ function showScreen(screenId) {
           : motion.kind === "completion"
             ? "complete"
             : "focus";
-      if (motion.kind === "hub" || motion.kind === "tab" || motion.kind === "launch") {
-        window.requestAnimationFrame(() => {
-          if (screen.querySelector("[data-lesson-motion-root]")) return;
-          animateMotionScope(screen, MOTION_SELECTORS, motion.kind === "hub" ? 36 : 28, itemVariant);
-        });
-      }
+      window.requestAnimationFrame(() => {
+        if (screen.querySelector("[data-lesson-motion-root]")) return;
+        animateMotionScope(screen, MOTION_SELECTORS, motion.kind === "hub" ? 48 : 34, itemVariant);
+      });
     }
   }
   return screen;
@@ -13682,6 +13734,10 @@ function renderHubMenu(hub) {
       queueScreenMotion("forward", 1);
       openHubItem(hub, btn.dataset.hubItem);
     });
+  });
+  el.querySelector("[data-open-settings]")?.addEventListener("click", () => {
+    queueScreenMotion("forward", 1);
+    renderSettingsScreen(hub);
   });
 }
 
@@ -14796,7 +14852,7 @@ window.renderPronunciationDrill = function() {
 
   el.innerHTML = `
     <div class="card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.currentIndex + 1, pronDrillState.questionCount, pronDrillState.answered)}
+      ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.currentIndex + 1, pronDrillState.questionCount)}
 
       <div style="text-align:center; padding:24px 0;">
         <button class="button primary" type="button" style="padding:16px 24px; font-size:1.1rem; border-radius:50px;" onclick="speakPronDrillTarget()">
@@ -16710,7 +16766,7 @@ function bindHangulWritingCanvas(canvas) {
   canvas.addEventListener("lostpointercapture", cancelStroke);
 }
 
-function startHangulWritingSession(unit, exercise, repeatTarget) {
+function startHangulWritingSession(unit, exercise, repeatTarget, inputMode = "guided") {
   resetLessonMotion("writing");
   queueScreenMotion("forward", 1, { replace: false });
   hangulWritingState = {
@@ -16804,7 +16860,7 @@ function renderHangulWritingCompletion(el, summary) {
       { value: summary.glyphs.length, label: "Shapes" },
     ],
     detailsHtml: `
-      <div class="writing-summary-drawn"><span>Free drawing · ${summary.repeatTarget}× each</span><div>${summary.glyphs.map((glyph) => `<span lang="ko">${escapeHtml(glyph)}</span>`).join("")}</div></div>
+      <div class="writing-summary-drawn"><span>${summary.inputMode === "freehand" ? "Freehand" : "Guided"} · ${summary.repeatTarget}× each</span><div>${summary.glyphs.map((glyph) => `<span lang="ko">${escapeHtml(glyph)}</span>`).join("")}</div></div>
       <details class="writing-summary-details">
         <summary>More session detail</summary>
         <div class="writing-summary-detail-list">${glyphRows}</div>
@@ -17107,7 +17163,7 @@ function renderLetterReview() {
 
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml("Spaced review", letterReview.index + 1, total, letterReview.answered)}
+      ${alphabetPracticeProgressHtml("Spaced review", letterReview.index + 1, total)}
       <div class="quiz-card">
         <div class="quiz-visual" lang="ko"><span class="checkpoint-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakableForChunk(letter))}" data-speak="${escapeHtml(speakableForChunk(letter))}" title="Tap to hear">${escapeHtml(letter)}</span></div>
         <div class="quiz-prompt">Which sound does this letter make?</div>
@@ -18290,6 +18346,7 @@ function getSentenceTransformForSessionRow(session, row) {
 function startSentenceStudioSession(modeId) {
   stopSpeech();
   resetLessonMotion("sentence");
+  queueScreenMotion("forward", 1, { replace: false });
   const progress = getSentencesProgress();
   const rows = modeId === "transform"
     ? pickSentenceTransformRows(progress.band)
@@ -18338,6 +18395,7 @@ function isSentenceLessonUnlocked(lesson, metWords, completedSet) {
 function openSentenceLesson(lessonId) {
   const lesson = getSentenceLessonById(lessonId);
   if (!lesson || !isSentenceLessonUnlocked(lesson)) return;
+  queueScreenMotion("forward", 1, { replace: false });
   stopSpeech();
   sentenceStudioSession = null;
   sentenceLessonView = { lessonId };
@@ -18399,11 +18457,9 @@ function startSentenceLessonSession(lessonId) {
   }
   if (!rows.length) return;
   resetLessonMotion("sentence");
-  const contentPlan = lesson.type === "content" ? buildSentenceLessonQuestionPlan(lesson, rows) : null;
-  const studyRows = contentPlan ? contentPlan.studyRows : rows;
-  const questionRows = contentPlan ? contentPlan.rows : rows;
-  const drillPlan = contentPlan
-    ? contentPlan.drillPlan
+  queueScreenMotion("forward", 1, { replace: false });
+  const drillPlan = lesson.type === "content"
+    ? (Array.isArray(lesson.drillPlan) ? lesson.drillPlan : [])
     : rows.map((row, index) => ({
       sentenceId: row.id,
       mode: index === rows.length - 1 ? "listen" : index === rows.length - 2 ? "build" : "translate",
@@ -18608,6 +18664,7 @@ function advanceSentenceSession() {
 function exitSentenceStudioSession() {
   clearSentenceSessionTimeouts();
   stopSpeech();
+  queueScreenMotion("back", -1);
   sentenceStudioSession = null;
   sentenceLessonView = null;
   persistSentenceLessonSession(null);
@@ -19044,7 +19101,7 @@ function sentenceStudyHtml(session) {
   const total = studyRows.length;
   return `
     <div class="card word-card sent-session" id="sentenceSessionRoot" data-lesson-motion-root>
-      ${sentenceSessionProgressHtml(session.studyIndex + 1, total, "Listen and shadow", true)}
+      ${sentenceSessionProgressHtml(session.studyIndex + 1, total, "Listen and shadow")}
       <h2 class="screen-title" style="margin-bottom:8px;">Say the line out loud</h2>
       <div class="word-card-ko-tile">
         <button class="sent-card-ko" type="button" lang="ko" data-sentence-play aria-label="Hear ${escapeHtml(row.korean)}">
@@ -19386,7 +19443,7 @@ function sentenceFeedbackHtml(session) {
 
   return `
     <div class="card word-card sent-session" id="sentenceSessionRoot" data-lesson-motion-root data-ss-id="${row.id}">
-      ${sentenceSessionProgressHtml(session.index + 1, session.rows.length, "Feedback", true)}
+      ${sentenceSessionProgressHtml(session.index + 1, session.rows.length, "Feedback")}
 
       <div class="word-card-heading">
         <div class="word-card-ko-tile">
