@@ -13719,6 +13719,16 @@ function renderSettingsScreen(hub = activeHub) {
       </div>
       <button class="settings-toggle ${state.reduceMotion ? "active" : ""}" type="button" id="reduceMotionToggle" role="switch" aria-label="Use reduced motion" aria-checked="${state.reduceMotion ? "true" : "false"}"><span></span></button>
     </div>
+    <div class="settings-section">
+      <h3 class="settings-section-title">Progress backup</h3>
+      <p class="settings-section-sub">Progress lives on this device. Export a backup file to keep it safe or to move it — for example between the browser and the installed app, which store progress separately.</p>
+      <div class="settings-backup-actions">
+        <button class="button primary compact" type="button" id="exportProgressBtn">Export progress</button>
+        <button class="button secondary compact" type="button" id="importProgressBtn">Import progress</button>
+        <input type="file" id="importProgressFile" accept="application/json,.json" hidden />
+      </div>
+      <p class="settings-section-sub" id="backupStatusLine" role="status" aria-live="polite" style="margin-top:10px; margin-bottom:0;"></p>
+    </div>
   `;
 
   el.querySelectorAll("[data-theme-pick]").forEach((btn) => {
@@ -13752,6 +13762,53 @@ function renderSettingsScreen(hub = activeHub) {
     reduceMotionToggle.setAttribute("aria-checked", state.reduceMotion ? "true" : "false");
     saveState();
   });
+
+  const backupStatus = el.querySelector("#backupStatusLine");
+  const setBackupStatus = (message) => {
+    if (backupStatus) backupStatus.textContent = message;
+  };
+  const exportButton = el.querySelector("#exportProgressBtn");
+  if (exportButton) exportButton.addEventListener("click", () => {
+    saveState();
+    downloadBackupFile();
+    setBackupStatus("Backup file downloaded. Keep it somewhere safe.");
+  });
+  const importButton = el.querySelector("#importProgressBtn");
+  const importInput = el.querySelector("#importProgressFile");
+  if (importButton && importInput) {
+    importButton.addEventListener("click", () => importInput.click());
+    importInput.addEventListener("change", async () => {
+      const file = importInput.files && importInput.files[0];
+      importInput.value = "";
+      if (!file) return;
+      let imported;
+      try {
+        imported = parseBackupState(await file.text());
+        if (!imported || typeof imported !== "object" || Array.isArray(imported)) {
+          throw new Error("Backup file does not contain state data.");
+        }
+      } catch (error) {
+        setBackupStatus(`That file is not a valid HanaPath backup — nothing was changed. (${error && error.message ? error.message : "unreadable file"})`);
+        return;
+      }
+      const proceed = window.confirm("Replace the progress on this device with the backup file? Your current progress is kept as a one-step rollback copy.");
+      if (!proceed) {
+        setBackupStatus("Import cancelled — nothing was changed.");
+        return;
+      }
+      try {
+        const current = localStorage.getItem(STORAGE_KEY);
+        if (current) localStorage.setItem(`${STORAGE_KEY}-import-rollback`, current);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(imported));
+      } catch (error) {
+        setBackupStatus("Could not write the imported progress to storage — nothing was changed.");
+        return;
+      }
+      // Reload so the imported save flows through loadState()'s defaults merge
+      // exactly like any other persisted state.
+      window.location.reload();
+    });
+  }
 }
 
 function renderLearnStageMenu(itemId) {
@@ -19896,6 +19953,59 @@ async function init() {
   goHub("learn");
 }
 
+// Android hardware/gesture back contract (docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md
+// §11.3), in priority order: close the intro overlay, then act like the
+// visible ‹ back bar, then return to the Learn home, and only at the true
+// root hand control back to the system (minimize, never kill mid-lesson).
+function handleHanaPathBackAction() {
+  const intro = document.getElementById("hanapath-app-intro");
+  if (intro && intro.classList.contains("is-open")) {
+    if (window.HanaPathIntro && typeof window.HanaPathIntro.close === "function") {
+      window.HanaPathIntro.close();
+    } else {
+      intro.classList.remove("is-open");
+      intro.hidden = true;
+    }
+    return true;
+  }
+
+  const bar = document.getElementById("detail-bar");
+  if (bar && !bar.hidden) {
+    const backButton = bar.querySelector(".back-btn");
+    if (backButton) {
+      backButton.click();
+      return true;
+    }
+  }
+
+  const onboarding = document.getElementById("onboarding");
+  const onboardingVisible = onboarding && !onboarding.hidden && onboarding.childElementCount > 0;
+  if (!onboardingVisible && activeHub !== "learn") {
+    queueScreenMotion("back", -1);
+    goHub("learn");
+    return true;
+  }
+
+  return false;
+}
+
+function registerNativeBackButton() {
+  if (!isHanaPathNative()) return;
+  const appPlugin = window.Capacitor && window.Capacitor.Plugins ? window.Capacitor.Plugins.App : null;
+  if (!appPlugin || typeof appPlugin.addListener !== "function") {
+    console.warn("HanaPath: @capacitor/app plugin unavailable; system back will use WebView defaults.");
+    return;
+  }
+  appPlugin.addListener("backButton", () => {
+    if (handleHanaPathBackAction()) return;
+    if (typeof appPlugin.minimizeApp === "function") {
+      appPlugin.minimizeApp().catch(() => {});
+    } else if (typeof appPlugin.exitApp === "function") {
+      appPlugin.exitApp();
+    }
+  });
+}
+
 function registerServiceWorker() {
   if (isHanaPathNative()) {
     // The Capacitor app ships its own versioned copy of the web assets and is
@@ -20086,6 +20196,7 @@ window.handleSpeakingPractice = function (btn) {
 
 document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();
+  registerNativeBackButton();
   init().catch((error) => {
     console.error("HanaPath init failed:", error);
   });

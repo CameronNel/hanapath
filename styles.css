@@ -5235,6 +5235,7 @@ li { margin-bottom: 4px; }
 }
 .settings-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .settings-toggle-row .settings-section-sub { margin-bottom: 0; }
+.settings-backup-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .settings-toggle {
   flex: 0 0 auto;
   width: 52px;

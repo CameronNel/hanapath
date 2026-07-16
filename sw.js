@@ -1,12 +1,12 @@
-// [2026-07-16] Cache bumped to v380: vendor fonts locally and add the native runtime boundary (skip SW registration in Capacitor).
-const CACHE_NAME = "hanapath-shell-v380";
+// [2026-07-16] Cache bumped to v381: Android back contract, Settings progress backup, and M2 hardening.
+const CACHE_NAME = "hanapath-shell-v381";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260716c",
+  "./styles.css?v=20260716d",
   "./app_intro.css?v=20260713b",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
@@ -20,7 +20,7 @@ const APP_SHELL = [
   "./hangul_strokes.js?v=20260715b",
   "./app_intro_timeline.js?v=20260713b",
   "./app_intro.js?v=20260713b",
-  "./app.js?v=20260716d",
+  "./app.js?v=20260716e",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
