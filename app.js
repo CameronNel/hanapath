@@ -2430,7 +2430,7 @@ function makeMeaningListenQuestion(items, modeLabel, prompt, detail, level = get
     mode: modeLabel,
     prompt,
     detail,
-    visual: `<div class="big-glyph">♪</div><div class="fs-xs text-muted-2">${escapeHtml(item.korean || item.phrase || item.answer || "")}</div>`,
+    visual: `<div class="big-glyph">♪</div><div class="fs-xs text-muted-2">Audio only · transcript appears after answering</div>`,
     interaction: "choice",
     options,
     answer: item.meaning,
@@ -2474,7 +2474,7 @@ function makeListenStudioQuestion(type, level = getTrackLevel("listening")) {
 }
 
 const conversationDialogueBank = [
-  { starter: "안녕하세요.", reply: "안녕하세요.", cue: "A polite greeting usually gets the same greeting back.", explanation: "Mirroring the greeting keeps the exchange natural." },
+  { starter: "처음 뵙겠습니다.", reply: "안녕하세요.", cue: "A polite first introduction can be answered with a warm greeting.", explanation: "This greeting keeps the first exchange natural without simply copying the prompt." },
   { starter: "감사합니다.", reply: "괜찮아요.", cue: "A natural response to thanks.", explanation: "괜찮아요 is a friendly reply to thanks." },
   { starter: "다시 말씀해 주세요.", reply: "네, 다시 말씀드릴게요.", cue: "If someone asks for a repeat, confirm that you will repeat it.", explanation: "This keeps the conversation moving." },
   { starter: "천천히 말씀해 주세요.", reply: "네, 천천히 말할게요.", cue: "If someone asks you to slow down, acknowledge it politely.", explanation: "This is a calm and polite confirmation." },
@@ -2503,6 +2503,8 @@ let currentQuestion = null;
 let currentAnswered = false;
 let currentQuestionStartedAt = 0;
 let quizStateByScope = {};
+const GENERIC_PRACTICE_LENGTH = 10;
+let practiceQuizSessions = {};
 let phaseOneResetArmed = false;
 let phaseOneResetTimer = 0;
 let phaseOneView = { lessonIndex: 0, mode: "intro", introIndex: 0, slideIndex: 0, questionIndex: 0, results: [], hadMistake: false, answered: false, passed: false };
@@ -2698,6 +2700,38 @@ function getQuizIds(scope = getCurrentQuizScope()) {
   };
 }
 
+function getPracticeQuizSession(scope = getCurrentQuizScope()) {
+  return practiceQuizSessions[normalizeMainTab(scope)] || null;
+}
+
+function startGenericPracticeSession(scope, total = GENERIC_PRACTICE_LENGTH) {
+  const safeScope = normalizeMainTab(scope);
+  practiceQuizSessions[safeScope] = {
+    scope: safeScope,
+    total: Math.max(1, Number(total) || GENERIC_PRACTICE_LENGTH),
+    index: 0,
+    asked: 0,
+    correct: 0,
+    streak: 0,
+    bestStreak: 0,
+    complete: false,
+  };
+  delete quizStateByScope[safeScope];
+  if (currentQuizScope === safeScope) {
+    currentQuestion = null;
+    currentAnswered = false;
+  }
+  resetLessonMotion(`generic-${safeScope}`);
+  return practiceQuizSessions[safeScope];
+}
+
+function renderGenericPracticeSurface(scope) {
+  const safeScope = normalizeMainTab(scope);
+  if (safeScope === "alphabet") renderAlphabetPractice();
+  else if (safeScope === "vocabulary") renderVocabulary();
+  else if (safeScope === "listening") renderLibrary();
+}
+
 function getLevelBand(level, bands = 10) {
   return Math.min(bands, Math.max(1, Math.ceil(clampLevel(level) / (10 / bands))));
 }
@@ -2867,7 +2901,7 @@ const TEST_UNLOCK_ALL_STAGES = false;
 // Testing control: show a path button that crowns every lesson in a v2
 // section. Set false before any learner-facing release; the handler is also
 // guarded so a stale button cannot mutate completion when disabled.
-const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
+const TEST_ENABLE_WORD_SECTION_COMPLETION = false;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
@@ -3029,6 +3063,10 @@ function loadState() {
     resetArmed: false,
     // Settings → Theme colors: accent palette id, see THEME_DEFS.
     theme: "ocean",
+    // Free-drawing preferences. Grading uses stroke centre-lines, so visible
+    // ink width never changes recognition accuracy.
+    writingLineWidth: 14,
+    reduceMotion: false,
   };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -4325,6 +4363,8 @@ function serializeWordLessonView(view) {
     checkpointTypedValue: view.checkpointTypedValue || "",
     typeTiles: view.typeTiles || null,
     typeTilesWordId: view.typeTilesWordId || null,
+    typeHelperVisible: Boolean(view.typeHelperVisible),
+    questionHelperUsed: Boolean(view.questionHelperUsed),
     stepStartedAt: Number(view.stepStartedAt) || 0,
     questionStartedAt: Number(view.questionStartedAt) || 0,
     resultSaved: Boolean(view.resultSaved),
@@ -4365,6 +4405,8 @@ function rehydrateWordLessonView(snapshot, lesson) {
     checkpointTypedValue: String(snapshot.checkpointTypedValue || ""),
     typeTiles: Array.isArray(snapshot.typeTiles) ? snapshot.typeTiles : null,
     typeTilesWordId: snapshot.typeTilesWordId || null,
+    typeHelperVisible: Boolean(snapshot.typeHelperVisible),
+    questionHelperUsed: Boolean(snapshot.questionHelperUsed),
   };
 }
 
@@ -5087,7 +5129,7 @@ const WORD_TILE_DISTRACTORS = ["가", "나", "다", "리", "미", "바", "서", 
 
 function getWordSyllableTiles(word) {
   const target = getWordTypeTarget(word);
-  const syllables = Array.from(target).filter((ch) => /[가-힣]/.test(ch));
+  const syllables = Array.from(target).filter((ch) => /[ㄱ-ㆎ가-힣]/u.test(ch));
   const distractors = shuffle(WORD_TILE_DISTRACTORS.filter((ch) => !syllables.includes(ch))).slice(0, 2);
   return shuffle([...syllables, ...distractors]);
 }
@@ -5126,7 +5168,7 @@ function makeWordSentenceBlank(word) {
   const forms = getWordAcceptedAnswers(word).sort((a, b) => b.length - a.length);
   for (const form of forms) {
     if (form && word.exampleKo.includes(form)) {
-      return { blanked: word.exampleKo.replace(form, "____"), answer: form };
+      return { blanked: word.exampleKo.split(form).join("____"), answer: form };
     }
   }
   return makeConjugatedSentenceBlank(word);
@@ -5168,7 +5210,7 @@ function makeConjugatedSentenceBlank(word) {
     const at = example.indexOf(form);
     if (at < 0) continue;
     if (at > 0 && !/[\s"“”‘’(【[]/.test(example[at - 1])) continue;
-    return { blanked: example.replace(form, "____"), answer: form, conj };
+    return { blanked: example.split(form).join("____"), answer: form, conj };
   }
   return null;
 }
@@ -5459,6 +5501,9 @@ function buildWordLessonQuestions(lesson, words) {
   const hasCustomCheckpoint = checkpoints.some((checkpoint) => ["form-recognition", "form-production", "function-usage"].includes(checkpoint));
   if (!hasCustomCheckpoint && (checkpoints.includes("ko-to-meaning") || checkpoints.includes("meaning-to-ko"))) {
     words.forEach((word, index) => push(word, index % 2 === 0 ? "koToMeaning" : "meaningToKo"));
+    if (checkpoints.includes("audio-to-meaning")) {
+      words.forEach((word) => push(word, "audioToMeaning"));
+    }
     if (checkpoints.includes("type-ko")) {
       for (let index = 0; index < words.length; index += 2) push(words[index], "typeKo");
     }
@@ -5520,6 +5565,8 @@ function initWordLessonView(lesson) {
     typedFeedback: "",
     typedDone: false,
     typedAttempts: {},
+    typeHelperVisible: false,
+    questionHelperUsed: false,
     answered: false,
     selectedChoice: "",
     results: [],
@@ -5578,6 +5625,8 @@ function openWordReview() {
     typedFeedback: "",
     typedDone: false,
     typedAttempts: {},
+    typeHelperVisible: false,
+    questionHelperUsed: false,
     answered: false,
     selectedChoice: "",
     results: [],
@@ -5866,9 +5915,13 @@ function wordLessonStudyHtml(lesson, view) {
   }
 
   if (step.type === "type") {
-    const tiles = view.typeTiles && view.typeTilesWordId === word.id ? view.typeTiles : getWordSyllableTiles(word);
-    view.typeTiles = tiles;
-    view.typeTilesWordId = word.id;
+    const tiles = view.typeHelperVisible || view.typedDone
+      ? (view.typeTiles && view.typeTilesWordId === word.id ? view.typeTiles : getWordSyllableTiles(word))
+      : [];
+    if (tiles.length) {
+      view.typeTiles = tiles;
+      view.typeTilesWordId = word.id;
+    }
     const target = getWordTypeTarget(word);
     return `
       <div class="card word-card">
@@ -5878,11 +5931,10 @@ function wordLessonStudyHtml(lesson, view) {
             <div class="word-card-type-label">Type it</div>
             <div class="word-card-progress-track" aria-hidden="true"><span style="width:${Math.round(((step.wordIndex + 1) / Math.max(1, view.words.length)) * 100)}%;"></span></div>
           </div>
-          <button class="button secondary compact word-card-bank-button" type="button" data-word-open-reference>📚 Word Bank</button>
+          ${view.typedDone ? '<button class="button secondary compact word-card-bank-button" type="button" data-word-open-reference>📚 Word Bank</button>' : ""}
         </div>
         <div class="word-type-prompt-row">
-          <div class="word-type-prompt">Type the Korean for <strong>“${escapeHtml(word.meaningShort)}”</strong><div class="word-type-definition">Listen, then recall it without the spelling shown.</div></div>
-          <button class="word-type-play" type="button" lang="ko" data-speak="${escapeHtml(word.voiceText || word.korean)}" aria-label="Play the Korean prompt" title="Play prompt">▶</button>
+          <div class="word-type-prompt">Type the Korean for <strong>“${escapeHtml(word.meaningShort)}”</strong><div class="word-type-definition">Recall it without the spelling shown.</div></div>
         </div>
         <div class="word-type-box word-type-study-box">
           <div class="word-input-wrap">
@@ -5890,10 +5942,11 @@ function wordLessonStudyHtml(lesson, view) {
               placeholder="Type it here" value="${escapeHtml(view.typedValue || "")}" ${view.typedDone ? "disabled" : ""} lang="ko" />
             <button class="word-input-erase" type="button" data-word-tile-erase aria-label="Delete last block" ${view.typedDone ? "disabled" : ""}>⌫</button>
           </div>
-          <div class="fs-xs text-muted-2" style="margin:8px 0 4px;">No Korean keyboard yet? Tap the blocks below.</div>
-          <div class="word-tile-row">
-            ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.typedDone ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
-          </div>
+          ${view.typeHelperVisible || view.typedDone ? `
+            <div class="fs-xs text-muted-2" style="margin:8px 0 4px;">Syllable help is open; this attempt is recorded as aided.</div>
+            <div class="word-tile-row">
+              ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.typedDone ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
+            </div>` : '<button class="button secondary compact word-helper-button" type="button" data-word-show-tiles>Need help? Show syllable bank</button>'}
           <div class="word-type-feedback" role="status" aria-live="polite">${view.typedFeedback || ""}</div>
         </div>
         ${view.typedDone ? "" : `<div class="word-card-actions word-card-nav-actions">
@@ -5954,18 +6007,23 @@ function wordLessonCheckHtml(lesson, view) {
   let interactionHtml = "";
   if (question.interaction === "type") {
     const word = curatedWordsById.get(question.wordId);
-    const tiles = view.typeTiles && view.typeTilesWordId === `q-${view.questionIndex}` ? view.typeTiles : getWordSyllableTiles(word);
-    view.typeTiles = tiles;
-    view.typeTilesWordId = `q-${view.questionIndex}`;
+    const tiles = view.typeHelperVisible || view.answered
+      ? (view.typeTiles && view.typeTilesWordId === `q-${view.questionIndex}` ? view.typeTiles : getWordSyllableTiles(word))
+      : [];
+    if (tiles.length) {
+      view.typeTiles = tiles;
+      view.typeTilesWordId = `q-${view.questionIndex}`;
+    }
     interactionHtml = `
       <div class="word-type-box">
         <input class="sentence-input" id="wordTypeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
           placeholder="Type the Korean word" value="${escapeHtml(view.typedValue || "")}" ${view.answered ? "disabled" : ""} lang="ko" />
-        <div class="fs-xs text-muted-2" style="margin:8px 0 4px;">No Korean keyboard yet? Tap the blocks below.</div>
-        <div class="word-tile-row">
-          ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.answered ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
-          <button class="word-tile word-tile-erase" type="button" data-word-tile-erase aria-label="Delete last block" ${view.answered ? "disabled" : ""}>⌫</button>
-        </div>
+        ${view.typeHelperVisible || view.answered ? `
+          <div class="fs-xs text-muted-2" style="margin:8px 0 4px;">Syllable help is open; this answer counts as aided.</div>
+          <div class="word-tile-row">
+            ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.answered ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
+            <button class="word-tile word-tile-erase" type="button" data-word-tile-erase aria-label="Delete last block" ${view.answered ? "disabled" : ""}>⌫</button>
+          </div>` : '<button class="button secondary compact word-helper-button" type="button" data-word-show-tiles>Need help? Show syllable bank</button>'}
       </div>
       ${view.answered ? "" : `<div class="word-card-actions"><button class="button primary compact" type="button" data-word-check-typed>Check</button></div>`}
     `;
@@ -5991,12 +6049,12 @@ function wordLessonCheckHtml(lesson, view) {
       <div class="quiz-visual">${visualHtml}</div>
       <div class="quiz-prompt">${escapeHtml(question.prompt)}</div>
       <div class="quiz-detail">${escapeHtml(question.detail || "")}</div>
-      ${question.voiceText ? `<div class="word-card-actions"><button class="button secondary compact" type="button" data-speak="${escapeHtml(question.voiceText)}">▶ Hear</button></div>` : ""}
-      ${!view.isReview ? '<div class="word-card-actions"><button class="button secondary compact" type="button" data-word-review-study>Review words</button></div>' : ""}
+      ${question.voiceText && (view.answered || String(question.direction || "").startsWith("audio")) ? `<div class="word-card-actions"><button class="button secondary compact" type="button" data-speak="${escapeHtml(question.voiceText)}">▶ Hear</button></div>` : ""}
+      ${!view.isReview && view.answered ? '<div class="word-card-actions"><button class="button secondary compact" type="button" data-word-review-study>Review words</button></div>' : ""}
       ${interactionHtml}
       <div class="${feedbackClasses.join(" ")}" role="status" aria-live="polite">${view.answered ? view.checkFeedback || "" : ""}</div>
       ${view.answered ? `<div class="word-card-actions"><button class="button primary compact" type="button" data-word-lesson-next>${view.questionIndex + 1 >= view.questions.length ? "See results →" : "Next question →"}</button></div>` : ""}
-      ${wordReferenceButtonHtml()}
+      ${view.answered ? wordReferenceButtonHtml() : ""}
     </div>
   `;
 }
@@ -6010,28 +6068,14 @@ function getWordLessonResultStats(view) {
   return { total, firstTryCorrect, pct, typedTotal, typedCorrect };
 }
 
-function completionIconSvg(icon = "check") {
-  if (icon === "crown") {
-    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M11 20l13 10 8-18 8 18 13-10-5 28H16z"/><path d="M17 52h30"/></svg>`;
-  }
-  if (icon === "spark") {
-    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8c2 13 9 20 22 22-13 2-20 9-22 22-2-13-9-20-22-22 13-2 20-9 22-22z"/><path d="M50 7v10M45 12h10"/></svg>`;
-  }
-  if (icon === "retry") {
-    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 23a19 19 0 1 1-2 20"/><path d="M9 14v16h16"/></svg>`;
-  }
-  return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 33l11 11 25-27"/></svg>`;
-}
-
 function completionConfettiHtml(enabled = true) {
   if (!enabled) return "";
-  return `<div class="completion-confetti" aria-hidden="true">${Array.from({ length: 16 }, (_, index) => `<i style="--piece:${index}"></i>`).join("")}</div>`;
+  return `<div class="completion-confetti" aria-hidden="true">${Array.from({ length: 10 }, (_, index) => `<i style="--piece:${index}"></i>`).join("")}</div>`;
 }
 
 function premiumCompletionHtml({
   id = "",
   tone = "success",
-  icon = "check",
   eyebrow = "Complete",
   title = "Beautiful work",
   copy = "",
@@ -6058,14 +6102,9 @@ function premiumCompletionHtml({
     : "";
   return `
     <section${id ? ` id="${escapeHtml(id)}"` : ""} class="completion-stage completion-stage--${safeTone} ${className}" data-lesson-motion-root>
-      <div class="completion-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
       ${completionConfettiHtml(celebrate)}
       <div class="completion-hero" role="status" aria-live="polite">
-        <div class="completion-emblem" aria-hidden="true">
-          <span class="completion-emblem-ring"></span>
-          <span class="completion-emblem-ring completion-emblem-ring--outer"></span>
-          <span class="completion-emblem-icon">${completionIconSvg(icon)}</span>
-        </div>
+        <div class="completion-flourish" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="completion-kicker"><span></span>${escapeHtml(String(eyebrow))}<span></span></div>
         <h2 class="completion-title">${escapeHtml(String(title))}</h2>
         ${copy ? `<p class="completion-copy">${escapeHtml(String(copy))}</p>` : ""}
@@ -6185,6 +6224,10 @@ function advanceWordLessonStudy(view) {
   }
   view.typeTiles = null;
   view.typeTilesWordId = null;
+  view.typeHelperVisible = false;
+  view.questionHelperUsed = false;
+  view.typeHelperVisible = false;
+  view.questionHelperUsed = false;
   if (view.stepIndex + 1 < view.steps.length) {
     view.stepIndex += 1;
     startWordLessonStudyTimer(view);
@@ -6215,6 +6258,8 @@ function advanceWordLessonCheck(view) {
   view.checkFeedback = "";
   view.typeTiles = null;
   view.typeTilesWordId = null;
+  view.typeHelperVisible = false;
+  view.questionHelperUsed = false;
   if (view.questionIndex + 1 < view.questions.length) {
     view.questionIndex += 1;
     startWordLessonQuestionTimer(view);
@@ -6244,7 +6289,9 @@ function returnToWordLessonCheckpoint(view) {
 function answerWordLessonChoice(view, choice) {
   const question = getWordLessonQuestion(view);
   if (!question || view.answered) return;
-  speakClickableText(choice);
+  const feedbackSpeech = HANGUL_TEXT_PATTERN.test(String(choice || ""))
+    ? speakableForClickableText(choice)
+    : question.voiceText;
   const isCorrect = choice === question.answer;
   view.answered = true;
   view.selectedChoice = choice;
@@ -6262,6 +6309,7 @@ function answerWordLessonChoice(view, choice) {
   persistWordLessonSession(view);
   if (isCorrect) showCorrectToast();
   renderWordLesson();
+  if (feedbackSpeech) scheduleAutoSpeak(feedbackSpeech, 120);
 }
 
 function answerWordLessonTyped(view) {
@@ -6275,9 +6323,10 @@ function answerWordLessonTyped(view) {
     return;
   }
   const isCorrect = isWordTypedCorrect(typed, word);
+  const firstTryCorrect = Boolean(isCorrect && !view.questionHelperUsed);
   view.answered = true;
   view.checkCorrect = isCorrect;
-  view.results.push({ wordId: question.wordId, direction: question.direction, correct: isCorrect });
+  view.results.push({ wordId: question.wordId, direction: question.direction, correct: firstTryCorrect, aided: Boolean(view.questionHelperUsed) });
   view.typedAttempts[question.wordId] = isCorrect;
   view.checkFeedback = isCorrect
     ? `<strong>Correct.</strong> ${escapeHtml(question.explanation)}`
@@ -6286,7 +6335,7 @@ function answerWordLessonTyped(view) {
     latencyMs: getWordLessonQuestionLatencyMs(view),
     source: view.isReview ? "review" : "lesson",
     lessonId: view.lessonId || null,
-    result: isCorrect ? "correct" : "incorrect",
+    result: isCorrect ? (view.questionHelperUsed ? "aided" : "correct") : "incorrect",
   });
   persistWordLessonSession(view);
   if (isCorrect) showCorrectToast();
@@ -6316,6 +6365,7 @@ function checkWordLessonStudyTyped(view) {
     view.typedFeedback = `<strong>Correct.</strong> <span lang="ko">${escapeHtml(getWordTypeTarget(word))}</span> — ${escapeHtml(word.meaningShort)}.`;
     showCorrectToast();
   } else {
+    view.typeHelperVisible = true;
     view.typedFeedback = `<strong>Not yet.</strong> You typed <strong lang="ko">${escapeHtml(typed)}</strong>. Target: <strong lang="ko">${escapeHtml(getWordTypeTarget(word))}</strong>. Try again or tap the blocks.`;
   }
   persistWordLessonSession(view);
@@ -6419,6 +6469,13 @@ function bindWordLessonRoot(root) {
     if (knownBtn) {
       const record = getVocabSrsRecord(knownBtn.dataset.wordLessonKnown);
       setCuratedWordStatus(knownBtn.dataset.wordLessonKnown, record?.isKnown ? "clear" : "known");
+      renderWordLesson();
+      return;
+    }
+    if (event.target.closest("[data-word-show-tiles]")) {
+      view.typeHelperVisible = true;
+      if (view.mode === "check") view.questionHelperUsed = true;
+      persistWordLessonSession(view);
       renderWordLesson();
       return;
     }
@@ -7924,13 +7981,31 @@ function bindLevelRail(el, tab, rerender) {
 
 function renderQuizCard(scope) {
   const ids = getQuizIds(scope);
+  const session = getPracticeQuizSession(scope) || startGenericPracticeSession(scope);
+  if (session.complete) {
+    const accuracy = session.asked ? Math.round((session.correct / session.asked) * 100) : 0;
+    return premiumCompletionHtml({
+      tone: accuracy >= 80 ? "success" : "retry",
+      eyebrow: `${getMainTabLabel(scope)} practice complete`,
+      title: accuracy >= 80 ? "Strong finish" : "A useful practice pass",
+      copy: accuracy >= 80 ? "That set is complete. Start another whenever you are ready." : "Your misses are useful signals. Try another set to reinforce them.",
+      score: { value: `${accuracy}%`, label: "Accuracy" },
+      stats: [
+        { value: `${session.correct}/${session.asked}`, label: "Correct" },
+        { value: session.bestStreak, label: "Best streak" },
+      ],
+      actionsHtml: `<button class="button primary compact" type="button" data-generic-practice-again="${escapeHtml(session.scope)}">Practise another set</button>`,
+      className: "generic-practice-summary",
+      celebrate: accuracy >= 80,
+    });
+  }
   return `
     <div class="card">
       <div class="review-stats">
-        <div class="rev-stat"><span class="sv" id="${ids.round}">${state.round}</span><span class="sl">Round</span></div>
-        <div class="rev-stat"><span class="sv" id="${ids.streak}">${state.streak}</span><span class="sl">Streak</span></div>
-        <div class="rev-stat"><span class="sv" id="${ids.best}">${state.bestStreak}</span><span class="sl">Best</span></div>
-        <div class="rev-stat"><span class="sv" id="${ids.accuracy}">${state.asked === 0 ? "0%" : Math.min(100, Math.round(state.correct / state.asked * 100)) + "%"}</span><span class="sl">Accuracy</span></div>
+        <div class="rev-stat"><span class="sv" id="${ids.round}">${session.index + 1}/${session.total}</span><span class="sl">Question</span></div>
+        <div class="rev-stat"><span class="sv" id="${ids.streak}">${session.streak}</span><span class="sl">Streak</span></div>
+        <div class="rev-stat"><span class="sv" id="${ids.best}">${session.bestStreak}</span><span class="sl">Best</span></div>
+        <div class="rev-stat"><span class="sv" id="${ids.accuracy}">${session.asked === 0 ? "0%" : Math.min(100, Math.round(session.correct / session.asked * 100)) + "%"}</span><span class="sl">Accuracy</span></div>
       </div>
 
       <div class="quiz-card">
@@ -8437,18 +8512,23 @@ function getMasteryLabel(correct) {
 }
 
 function updateStats() {
-  const accuracy = state.asked === 0 ? 0 : Math.min(100, Math.round((state.correct / state.asked) * 100));
+  const session = getPracticeQuizSession(getCurrentQuizScope());
+  const asked = session ? session.asked : state.asked;
+  const correct = session ? session.correct : state.correct;
+  const streak = session ? session.streak : state.streak;
+  const bestStreak = session ? session.bestStreak : state.bestStreak;
+  const accuracy = asked === 0 ? 0 : Math.min(100, Math.round((correct / asked) * 100));
   const ids = getQuizIds(getCurrentQuizScope());
   const rnd = document.getElementById(ids.round);
   const str = document.getElementById(ids.streak);
   const bst = document.getElementById(ids.best);
   const acc = document.getElementById(ids.accuracy);
   const qmd = document.getElementById(ids.mode);
-  if (rnd) rnd.textContent = String(state.round);
-  if (str) str.textContent = String(state.streak);
-  if (bst) bst.textContent = String(state.bestStreak);
+  if (rnd) rnd.textContent = session ? `${session.index + 1}/${session.total}` : String(state.round);
+  if (str) str.textContent = String(streak);
+  if (bst) bst.textContent = String(bestStreak);
   if (acc) acc.textContent = `${accuracy}%`;
-  if (qmd) qmd.textContent = `${getStudioLabel()} · ${getMasteryLabel(state.correct)}`;
+  if (qmd) qmd.textContent = session ? `${getStudioLabel()} · Session` : `${getStudioLabel()} · ${getMasteryLabel(state.correct)}`;
 }
 
 function renderStartOrder() { /* no-op */ }
@@ -9695,14 +9775,14 @@ function phaseOneReferenceButtonHtml() {
     '</div>';
 }
 
-function alphabetPracticeProgressHtml(label, current = 0, total = 0) {
+function alphabetPracticeProgressHtml(label, current = 0, total = 0, allowReference = true) {
   const safeTotal = Math.max(0, Number(total) || 0);
   const safeCurrent = safeTotal ? Math.min(safeTotal, Math.max(0, Number(current) || 0)) : 0;
   const pct = safeTotal ? Math.round((safeCurrent / safeTotal) * 100) : 0;
   const progressLabel = safeTotal ? `${label} · ${safeCurrent} of ${safeTotal}` : label;
   return `<div class="word-card-progress-row alphabet-practice-progress">
     <div class="word-card-progress-tile"><div class="eyebrow">${escapeHtml(progressLabel)}</div><div class="word-card-progress-track" aria-hidden="true"><span style="width:${pct}%;"></span></div></div>
-    <button class="button secondary compact word-card-bank-button alphabet-reference-button" type="button" data-checkpoint-open-reference>📚 Reference</button>
+    ${allowReference ? '<button class="button secondary compact word-card-bank-button alphabet-reference-button" type="button" data-checkpoint-open-reference>📚 Reference</button>' : ""}
   </div>`;
 }
 
@@ -9978,7 +10058,7 @@ function renderPhaseOnePlayer() {
     renderPhaseOneResult(lesson);
   }
 
-  const showReference = ["intro", "learn", "check", "result"].includes(phaseOneView.mode);
+  const showReference = phaseOneView.mode !== "check" || phaseOneView.answered;
   if (els.phaseOneReferenceButton) {
     els.phaseOneReferenceButton.style.display = showReference ? "" : "none";
   }
@@ -10084,6 +10164,7 @@ function answerPhaseOneQuestion(choice, button) {
   showCorrectToast();
   speakClickableText(choice, { preferSoundLabels: true });
   els.phaseOneActionButton.disabled = false;
+  if (els.phaseOneReferenceButton) els.phaseOneReferenceButton.style.display = "";
   refreshPhaseOneHearLabel();
 }
 
@@ -10238,6 +10319,7 @@ function answerPhaseOneBuild(jamo, tile) {
     feedback.innerHTML = "<strong>Correct.</strong> " + escapeHtml(question.explanation);
     showCorrectToast();
     els.phaseOneActionButton.disabled = false;
+    if (els.phaseOneReferenceButton) els.phaseOneReferenceButton.style.display = "";
     refreshPhaseOneHearLabel();
   } else {
     feedback.innerHTML = "<strong>Nice.</strong> " + escapeHtml("Now the " + roleLabel(roles[filled.length]) + ".");
@@ -10798,7 +10880,8 @@ const DRILL_MODES = [
   { id: "batchim", label: "Batchim", sub: "Match finals to closing sounds" },
   { id: "weak", label: "Weak Spots", sub: "Review your saved trouble spots" },
 ];
-const DRILL_LENGTHS = [5, 10, 20, "∞"];
+// 80 is the finite mastery pass: 40 modern jamo in both retrieval directions.
+const DRILL_LENGTHS = [5, 10, 20, 80, "∞"];
 const ALPHABET_LETTER_QUESTION_DIRECTIONS = ["letter-to-sound", "sound-to-letter"];
 let drillSession = null;
 
@@ -11049,7 +11132,7 @@ function renderAlphabetDrillLab() {
        <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(mo.id === "weak" && !weakCount ? "Available after your first miss" : mo.sub)}</div>
      </button>`).join("");
   const lenBtns = DRILL_LENGTHS.map((n, i) =>
-    `<button class="alpha-seg${i === 0 ? " active" : ""}" type="button" data-drill-len="${n}" aria-pressed="${i === 0}">${n === "∞" ? "Infinite" : n}</button>`).join("");
+    `<button class="alpha-seg${i === 0 ? " active" : ""}" type="button" data-drill-len="${n}" aria-pressed="${i === 0}">${n === "∞" ? "Infinite" : n === 80 ? "Full 80" : n}</button>`).join("");
   const firstOpenHint = !state.drillLabSeen
     ? `<div class="first-try-note">Pick a <strong>mode</strong> (Mixed blends them all), choose how many questions, then Start. Questions generate forever — tap <strong>End session</strong> any time in Infinite. Letters you miss are saved and resurface in <strong>Weak Spots</strong>.</div>`
     : "";
@@ -11107,12 +11190,7 @@ function renderDrillQuestion() {
   s.currentHadMiss = false;
   s.currentMissIds = [];
   const isBuild = q.interaction === "build";
-  const visualSpeakText = getDrillWholeAudioText(q);
-  const visualHtml = q.visual && visualSpeakText
-    ? `<button class="quiz-visual drill-visual-button" type="button" data-speak="${escapeHtml(visualSpeakText)}" aria-label="Hear ${escapeHtml(visualSpeakText)}">${q.visual}</button>`
-    : q.visual
-      ? `<div class="quiz-visual">${q.visual}</div>`
-      : "";
+  const visualHtml = q.visual ? `<div class="quiz-visual">${q.visual}</div>` : "";
   const interactiveHtml = isBuild
     ? `<div class="bd-builder" id="drillBuilder" lang="ko">
          <div class="drill-build-slots">${q.seq.map((_, i) => `<span class="bd-slot" data-drill-slot="${i}" aria-hidden="true">·</span>`).join("")}</div>
@@ -11127,7 +11205,7 @@ function renderDrillQuestion() {
        </div>`;
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total)}
+      ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total, s.answered)}
       <div class="alphabet-practice-status" id="drillStatus">${s.correct} clean · streak ${s.streak}</div>
       ${visualHtml}
       <div class="drill-audio-row">
@@ -11165,13 +11243,6 @@ function renderDrillQuestion() {
   } else {
     document.querySelectorAll("#drillOptions .option").forEach((b) =>
       b.addEventListener("click", () => answerDrill(b.dataset.drillOption, b)));
-  }
-  const visualButton = document.querySelector(".drill-visual-button[data-speak]");
-  if (visualButton) {
-    visualButton.addEventListener("click", () => {
-      flashElement(visualButton);
-      void speak(visualButton.dataset.speak || "");
-    });
   }
   document.getElementById("drillEndBtn").addEventListener("click", () => renderDrillResult());
   document.getElementById("drillNextBtn").addEventListener("click", () => { s.asked += 1; renderDrillQuestion(); });
@@ -11871,7 +11942,7 @@ function generateVerbHonorificQuestion() {
     mode: "Verb system",
     prompt: `Which sentence is the respectful version of "${item.plain}"?`,
     detail: item.cue,
-    visual: `<div class="syllable-stack"><span>${escapeHtml(item.plain)}</span><span>→</span><span>${escapeHtml(item.honorific)}</span></div>`,
+    visual: `<div class="syllable-stack"><span>${escapeHtml(item.plain)}</span><span>→</span><span>?</span></div>`,
     options,
     answer: item.honorific,
     explanation: `${item.plain} becomes ${item.honorific} in respectful speech.`,
@@ -11939,7 +12010,7 @@ function generateConversationDialogueQuestion() {
     mode: "Conversation studio",
     prompt: `A: ${item.starter}\nB: ?`,
     detail: item.cue,
-    visual: `<div class="syllable-stack"><span>${escapeHtml(item.starter)}</span><span>→</span><span>${escapeHtml(item.reply)}</span></div>`,
+    visual: `<div class="syllable-stack"><span>${escapeHtml(item.starter)}</span><span>→</span><span>?</span></div>`,
     options,
     answer: item.reply,
     explanation: item.explanation,
@@ -12426,7 +12497,9 @@ function syncReviewActionButton(question) {
   const nextBtn = document.getElementById(getQuizIds(getCurrentQuizScope()).next);
   if (!nextBtn) return;
   const needsCheck = !currentAnswered && (question.interaction === "build" || question.interaction === "type");
-  nextBtn.textContent = needsCheck ? "Check →" : "Next →";
+  const needsChoice = !currentAnswered && question.interaction !== "build" && question.interaction !== "type";
+  nextBtn.textContent = needsCheck ? "Check →" : needsChoice ? "Choose an answer" : "Next →";
+  nextBtn.disabled = needsChoice;
 }
 
 function getTokenById(question, tokenId) {
@@ -12458,8 +12531,12 @@ function renderChoiceQuestion(question, quizOptions) {
 
   quizOptions.querySelectorAll(".option").forEach((button) => {
     button.addEventListener("click", () => {
-      speakClickableText(button.dataset.option || "", { preferSoundLabels: getCurrentQuizScope() === "alphabet" });
-      chooseAnswer(button.dataset.option || "");
+      const option = button.dataset.option || "";
+      const feedbackSpeech = HANGUL_TEXT_PATTERN.test(option)
+        ? speakableForClickableText(option, { preferSoundLabels: getCurrentQuizScope() === "alphabet" })
+        : currentQuestion?.voiceText;
+      chooseAnswer(option);
+      if (feedbackSpeech) scheduleAutoSpeak(feedbackSpeech, 100);
     });
   });
 }
@@ -12792,7 +12869,11 @@ function renderQuestion(question, options = {}) {
   }
 
   if (speakBtn) {
-    speakBtn.disabled = !question.voiceText;
+    const answerIsHangul = HANGUL_TEXT_PATTERN.test(String(question.answer || ""));
+    const audioIsPrompt = Boolean(question.autoSpeak || /listen|audio/i.test(`${question.kind || ""} ${question.mode || ""}`));
+    const canReplay = Boolean(question.voiceText && (currentAnswered || audioIsPrompt || !answerIsHangul));
+    speakBtn.hidden = !canReplay;
+    speakBtn.disabled = !canReplay;
     if (speakBtn.dataset.boundQuizControl !== "true") {
       speakBtn.dataset.boundQuizControl = "true";
       speakBtn.addEventListener("click", () => {
@@ -12846,6 +12927,17 @@ function finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml) {
   }
 
   state.asked += 1;
+  const practiceSession = getPracticeQuizSession(getCurrentQuizScope());
+  if (practiceSession && !practiceSession.complete) {
+    practiceSession.asked += 1;
+    if (isCorrect) {
+      practiceSession.correct += 1;
+      practiceSession.streak += 1;
+      practiceSession.bestStreak = Math.max(practiceSession.bestStreak, practiceSession.streak);
+    } else {
+      practiceSession.streak = 0;
+    }
+  }
   if (isCorrect) {
     state.correct += 1;
     state.streak += 1;
@@ -12935,6 +13027,22 @@ function nextQuestion() {
     return;
   }
 
+  if (!currentAnswered) {
+    showRetryToast("Choose an answer before moving on.");
+    return;
+  }
+
+  const practiceSession = getPracticeQuizSession(getCurrentQuizScope());
+  if (practiceSession) {
+    if (practiceSession.index + 1 >= practiceSession.total) {
+      practiceSession.complete = true;
+      delete quizStateByScope[practiceSession.scope];
+      queueScreenMotion("completion", 1, { replace: false });
+      renderGenericPracticeSurface(practiceSession.scope);
+      return;
+    }
+    practiceSession.index += 1;
+  }
   state.round += 1;
   renderQuestion(generateQuestion(), { scope: getCurrentQuizScope() });
 }
@@ -13004,6 +13112,8 @@ const HUB_DEFS = {
       { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
       { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Review due lines or choose a sentence drill.", target: "practice" },
       { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
+      { id: "vocabulary-writing", icon: "✍", title: "Vocabulary writing", sub: "Draw syllables from the words you are learning.", custom: "hangulWriting", writingSource: "vocabulary" },
+      { id: "sentence-writing", icon: "✍", title: "Sentence writing", sub: "Draw syllables from your current sentence band.", custom: "hangulWriting", writingSource: "sentences" },
     ],
   },
   progress: {
@@ -13038,6 +13148,13 @@ const SETTINGS_ICON_SVG = `
     <circle cx="12" cy="12" r="3"/>
   </svg>`;
 
+function setSettingsShortcutVisible(visible) {
+  const button = document.getElementById("app-settings-button");
+  if (!button) return;
+  button.hidden = !visible;
+  button.setAttribute("aria-hidden", visible ? "false" : "true");
+}
+
 function applyTheme() {
   const themeId = THEME_DEFS.some((t) => t.id === state.theme) ? state.theme : "ocean";
   if (themeId === "ocean") {
@@ -13045,6 +13162,7 @@ function applyTheme() {
   } else {
     document.documentElement.dataset.theme = themeId;
   }
+  document.documentElement.classList.toggle("app-reduced-motion", Boolean(state.reduceMotion));
 }
 
 // Legacy nav names (used by in-screen buttons) → {hub, item}.
@@ -13107,24 +13225,19 @@ const ITEM_MOTION_CLASSES = [
 ];
 
 let pendingScreenMotion = null;
-let screenExitTimer = 0;
-let screenExitNode = null;
+let screenEntranceTimer = 0;
+let screenEntranceToken = 0;
 const lessonMotionFrames = new Map();
 
 function motionIsReduced() {
-  return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+  return Boolean(state.reduceMotion || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 }
 
 function queueScreenMotion(kind = "forward", direction = 1, { replace = true } = {}) {
   if (!replace && pendingScreenMotion) return;
-  const visibleScreen = getVisibleScreen();
-  const visibleRect = visibleScreen?.getBoundingClientRect();
   pendingScreenMotion = {
     kind: SCREEN_MOTION_KINDS.has(kind) ? kind : "forward",
     direction: direction < 0 ? -1 : 1,
-    fromRect: visibleRect
-      ? { top: visibleRect.top, left: visibleRect.left, width: visibleRect.width, height: visibleRect.height }
-      : null,
   };
 }
 
@@ -13135,64 +13248,34 @@ function takeScreenMotion(fallbackKind = "forward") {
 }
 
 function getVisibleScreen() {
-  return document.querySelector(".screen:not([hidden]):not(.screen-motion-exit)");
+  return document.querySelector(".screen:not([hidden])");
 }
 
-function finishScreenExit() {
-  if (screenExitTimer) {
-    window.clearTimeout(screenExitTimer);
-    screenExitTimer = 0;
-  }
-  if (!screenExitNode) return;
-  screenExitNode.hidden = true;
-  screenExitNode.innerHTML = "";
-  screenExitNode.classList.remove("screen-motion-exit", "screen-motion-exit-launch", "screen-motion-exit-forward", "screen-motion-exit-back", "screen-motion-exit-tab", "screen-motion-exit-hub", "screen-motion-exit-completion", "motion-reverse");
-  screenExitNode.removeAttribute("aria-hidden");
-  screenExitNode.inert = false;
-  screenExitNode.style.removeProperty("--screen-top");
-  screenExitNode.style.removeProperty("--screen-left");
-  screenExitNode.style.removeProperty("--screen-width");
-  screenExitNode.style.removeProperty("--screen-height");
-  screenExitNode = null;
-}
-
-function beginScreenExit(screen, motion) {
-  finishScreenExit();
-  if (!screen || motionIsReduced()) {
-    if (screen) {
-      screen.hidden = true;
-      screen.innerHTML = "";
-    }
-    return;
-  }
-
-  const rect = motion.fromRect || screen.getBoundingClientRect();
-  // The outgoing screen remains visible for a fraction of a second while the
-  // destination arrives. Strip descendant ids so the incoming renderer can
-  // safely reuse its legacy getElementById hooks during that overlap.
-  screen.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"));
-  screen.setAttribute("aria-hidden", "true");
-  screen.inert = true;
-  screen.style.setProperty("--screen-top", `${rect.top}px`);
-  screen.style.setProperty("--screen-left", `${rect.left}px`);
-  screen.style.setProperty("--screen-width", `${rect.width}px`);
-  screen.style.setProperty("--screen-height", `${rect.height}px`);
-  screen.classList.add("screen-motion-exit", `screen-motion-exit-${motion.kind}`);
-  if (motion.direction < 0) screen.classList.add("motion-reverse");
-  screenExitNode = screen;
-  screenExitTimer = window.setTimeout(finishScreenExit, 420);
+function hideOutgoingScreen(screen) {
+  if (!screen) return;
+  // Keep navigation to a single incoming layer. Retaining a live copy of the
+  // outgoing screen caused duplicate ids, overlapping controls, and snapping
+  // timers during fast taps.
+  screen.hidden = true;
+  screen.innerHTML = "";
 }
 
 function playScreenEntrance(screen, motion) {
   if (!screen || motionIsReduced()) return;
+  if (screenEntranceTimer) window.clearTimeout(screenEntranceTimer);
+  const token = ++screenEntranceToken;
   SCREEN_MOTION_CLASSES.forEach((className) => screen.classList.remove(className));
   void screen.offsetWidth;
   screen.dataset.motionKind = motion.kind;
   screen.classList.add("screen-motion-enter", `screen-motion-${motion.kind}`);
-  if (motion.direction < 0) screen.classList.add("motion-reverse");
-  window.setTimeout(() => {
+  // Forward always enters from the right and Back always from the left.
+  // Signed direction is meaningful only when moving between peer tabs.
+  if (motion.kind === "tab" && motion.direction < 0) screen.classList.add("motion-reverse");
+  screenEntranceTimer = window.setTimeout(() => {
+    if (token !== screenEntranceToken) return;
     SCREEN_MOTION_CLASSES.forEach((className) => screen.classList.remove(className));
-  }, 720);
+    screenEntranceTimer = 0;
+  }, 420);
 }
 
 function resetLessonMotion(channel) {
@@ -13227,7 +13310,8 @@ function animateLessonFrame(scope, channel, frame) {
     scope.classList.remove("lesson-frame-enter", "lesson-frame-forward", "lesson-frame-back", "lesson-frame-section", "lesson-frame-answer", "lesson-frame-complete");
     scope.style.removeProperty("--lesson-direction");
   }, frame.complete ? 980 : 620);
-  animateMotionScope(scope, MOTION_SELECTORS, variant === "complete" ? 52 : 26, variant);
+  // The lesson frame itself is the animation layer. Cascading the frame's
+  // descendants at the same time compounded transforms and looked twitchy.
 }
 
 function playMotion(node, className, cleanupMs) {
@@ -13289,13 +13373,12 @@ function showScreen(screenId) {
   const hasRequestedMotion = Boolean(pendingScreenMotion);
   const motion = takeScreenMotion(isSameScreen ? "hub" : "forward");
   const shouldAnimate = !isSameScreen || hasRequestedMotion;
-  if (currentScreen && !isSameScreen) beginScreenExit(currentScreen, motion);
+  if (currentScreen && !isSameScreen) hideOutgoingScreen(currentScreen);
   // Hide every screen and empty the inactive ones. Inactive screens keep their
   // quiz cards in the DOM otherwise, and the alphabet quiz on Home shares its
   // element IDs with the alphabet practice screen — getElementById would then
   // write into the hidden copy. Each screen is fully re-rendered when shown.
   document.querySelectorAll(".screen").forEach((s) => {
-    if (s === screenExitNode) return;
     s.hidden = true;
     if (s.id !== targetId) s.innerHTML = "";
   });
@@ -13314,10 +13397,12 @@ function showScreen(screenId) {
           : motion.kind === "completion"
             ? "complete"
             : "focus";
-      window.requestAnimationFrame(() => {
-        if (screen.querySelector("[data-lesson-motion-root]")) return;
-        animateMotionScope(screen, MOTION_SELECTORS, motion.kind === "hub" ? 48 : 34, itemVariant);
-      });
+      if (motion.kind === "hub" || motion.kind === "tab" || motion.kind === "launch") {
+        window.requestAnimationFrame(() => {
+          if (screen.querySelector("[data-lesson-motion-root]")) return;
+          animateMotionScope(screen, MOTION_SELECTORS, motion.kind === "hub" ? 36 : 28, itemVariant);
+        });
+      }
     }
   }
   return screen;
@@ -13348,7 +13433,10 @@ function renderLeafContent(navName, focus = "all") {
 function showDetailBar(hub, itemTitle) {
   const bar = document.getElementById("detail-bar");
   if (!bar) return;
+  setSettingsShortcutVisible(false);
   const label = HUB_DEFS[hub] ? HUB_DEFS[hub].label : "Menu";
+  const motionKey = `${hub}:${itemTitle || ""}:${label}`;
+  const shouldAnimate = bar.hidden || bar.dataset.motionKey !== motionKey;
   bar.innerHTML = `
     <button class="back-btn" type="button">‹ ${escapeHtml(label)}</button>
     ${itemTitle ? `<span class="detail-bar-title">${escapeHtml(itemTitle)}</span>` : ""}
@@ -13358,18 +13446,23 @@ function showDetailBar(hub, itemTitle) {
     goHub(hub);
   });
   bar.hidden = false;
-  playMotion(bar, "bar-enter", 320);
+  bar.dataset.motionKey = motionKey;
+  if (shouldAnimate) playMotion(bar, "bar-enter", 260);
 }
 
 function hideDetailBar() {
   const bar = document.getElementById("detail-bar");
-  if (bar) { bar.hidden = true; bar.innerHTML = ""; }
+  if (bar) { bar.hidden = true; bar.innerHTML = ""; delete bar.dataset.motionKey; }
+  setSettingsShortcutVisible(true);
 }
 
 function showDetailBarWithBack(hub, itemTitle, onBack = null, backLabel = null) {
   const bar = document.getElementById("detail-bar");
   if (!bar) return;
+  setSettingsShortcutVisible(false);
   const label = backLabel || (HUB_DEFS[hub] ? HUB_DEFS[hub].label : "Menu");
+  const motionKey = `${hub}:${itemTitle || ""}:${label}`;
+  const shouldAnimate = bar.hidden || bar.dataset.motionKey !== motionKey;
   bar.innerHTML = `
     <!-- [2026-06-29] Fixed mojibake back-arrow (â€¹ → ‹) in this back-bar variant. -->
     <button class="back-btn" type="button">‹ ${escapeHtml(label)}</button>
@@ -13384,7 +13477,8 @@ function showDetailBarWithBack(hub, itemTitle, onBack = null, backLabel = null) 
     goHub(hub);
   });
   bar.hidden = false;
-  playMotion(bar, "bar-enter", 320);
+  bar.dataset.motionKey = motionKey;
+  if (shouldAnimate) playMotion(bar, "bar-enter", 260);
 }
 
 function normalizeRoute(route) {
@@ -13535,6 +13629,7 @@ function renderHubMenu(hub) {
   const def = HUB_DEFS[hub];
   const el = showScreen("menu");
   if (!def || !el) return;
+  setSettingsShortcutVisible(true);
   el.innerHTML = `
     <div class="hub-header">
       <div class="eyebrow">${escapeHtml(def.eyebrow)}</div>
@@ -13552,14 +13647,6 @@ function renderHubMenu(hub) {
           <span class="hub-tile-go" aria-hidden="true">›</span>
         </button>
       `).join("")}
-      <button class="hub-tile settings-tile" type="button" data-open-settings>
-        <span class="hub-tile-icon">${SETTINGS_ICON_SVG}</span>
-        <span class="hub-tile-text">
-          <strong>Settings</strong>
-          <small>Theme colors and app preferences.</small>
-        </span>
-        <span class="hub-tile-go" aria-hidden="true">›</span>
-      </button>
     </div>
   `;
   el.querySelectorAll("[data-hub-item]").forEach((btn) => {
@@ -13568,20 +13655,16 @@ function renderHubMenu(hub) {
       openHubItem(hub, btn.dataset.hubItem);
     });
   });
-  el.querySelector("[data-open-settings]").addEventListener("click", () => {
-    queueScreenMotion("forward", 1);
-    renderSettingsScreen(hub);
-  });
 }
 
-// Settings screen (opened from the settings tile on any hub menu). Currently
-// hosts the theme-color picker; new preference sections slot in below it.
+// Settings screen (opened from the top-right shortcut on any hub menu).
 function renderSettingsScreen(hub = activeHub) {
   const el = showScreen("detail");
   if (!el) return;
   showDetailBar(hub, "Settings");
 
   const activeTheme = THEME_DEFS.some((t) => t.id === state.theme) ? state.theme : "ocean";
+  const writingLineWidth = Math.max(6, Math.min(28, Number(state.writingLineWidth) || 14));
   el.innerHTML = `
     <div class="hub-header">
       <div class="eyebrow">Preferences</div>
@@ -13603,6 +13686,23 @@ function renderSettingsScreen(hub = activeHub) {
         `).join("")}
       </div>
     </div>
+    <div class="settings-section">
+      <h3 class="settings-section-title">Handwriting ink</h3>
+      <p class="settings-section-sub">Adjust line thickness for finger, mouse, or stylus drawing. Recognition follows the shape centre-line, so this does not change scoring.</p>
+      <div class="ink-setting-row">
+        <label for="writingLineWidth">Line thickness</label>
+        <output id="writingLineWidthValue" for="writingLineWidth">${writingLineWidth}px</output>
+      </div>
+      <input class="settings-range" id="writingLineWidth" type="range" min="6" max="28" step="1" value="${writingLineWidth}" />
+      <div class="ink-setting-preview" aria-hidden="true"><span style="height:${writingLineWidth}px"></span></div>
+    </div>
+    <div class="settings-section settings-toggle-row">
+      <div>
+        <h3 class="settings-section-title">Reduced motion</h3>
+        <p class="settings-section-sub">Use instant navigation and minimal lesson animation.</p>
+      </div>
+      <button class="settings-toggle ${state.reduceMotion ? "active" : ""}" type="button" id="reduceMotionToggle" role="switch" aria-label="Use reduced motion" aria-checked="${state.reduceMotion ? "true" : "false"}"><span></span></button>
+    </div>
   `;
 
   el.querySelectorAll("[data-theme-pick]").forEach((btn) => {
@@ -13617,6 +13717,24 @@ function renderSettingsScreen(hub = activeHub) {
         b.querySelector(".theme-swatch-dot").textContent = active ? "✓" : "";
       });
     });
+  });
+  const widthInput = el.querySelector("#writingLineWidth");
+  const widthOutput = el.querySelector("#writingLineWidthValue");
+  const widthPreview = el.querySelector(".ink-setting-preview span");
+  if (widthInput) widthInput.addEventListener("input", () => {
+    const value = Math.max(6, Math.min(28, Number(widthInput.value) || 14));
+    state.writingLineWidth = value;
+    if (widthOutput) widthOutput.textContent = `${value}px`;
+    if (widthPreview) widthPreview.style.height = `${value}px`;
+    saveState();
+  });
+  const reduceMotionToggle = el.querySelector("#reduceMotionToggle");
+  if (reduceMotionToggle) reduceMotionToggle.addEventListener("click", () => {
+    state.reduceMotion = !state.reduceMotion;
+    document.documentElement.classList.toggle("app-reduced-motion", state.reduceMotion);
+    reduceMotionToggle.classList.toggle("active", state.reduceMotion);
+    reduceMotionToggle.setAttribute("aria-checked", state.reduceMotion ? "true" : "false");
+    saveState();
   });
 }
 
@@ -13879,10 +13997,13 @@ function openHubItem(hub, itemId) {
     return;
   }
   if (item.custom === "hangulWriting") {
-    enterHangulWriting();
+    enterHangulWriting(item.writingSource || "alphabet");
     return;
   }
 
+  if (hub === "practice" && (itemId === "vocabulary" || itemId === "listening")) {
+    startGenericPracticeSession(itemId);
+  }
   renderLeafContent(item.target, focus);
 }
 
@@ -14421,7 +14542,7 @@ function renderAlphabetPracticeHub() {
     button.addEventListener("click", () => {
       const action = button.dataset.alphabetPractice;
       if (action === "review") startLetterReview();
-      else if (action === "quiz") renderAlphabetPractice();
+      else if (action === "quiz") { startGenericPracticeSession("alphabet"); renderAlphabetPractice(); }
       else if (action === "drill") openAlphabetDrillLab();
       else if (action === "pronunciation") renderPronunciationDrill();
       else if (action === "writing") enterHangulWriting();
@@ -14435,12 +14556,13 @@ function renderAlphabetPractice() {
   state.studio = "alphabet";
   currentFocus = "practice";
   activeTab = "today";
+  const practiceSession = getPracticeQuizSession("alphabet") || startGenericPracticeSession("alphabet");
   const el = showScreen("detail");
   if (!el) return;
   showDetailBarWithBack("practice", "Alphabet quiz", () => renderAlphabetPracticeHub(), "Alphabet practice");
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card">
-      ${alphabetPracticeProgressHtml("Alphabet quiz")}
+      ${alphabetPracticeProgressHtml("Alphabet quiz", 0, 0, practiceSession.complete)}
       <div class="eyebrow">Practice · Alphabet</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Alphabet quiz</h2>
       <div class="screen-sub" style="margin-bottom:0;">Match each letter to its sound. Press a number key (1–4) or tap an answer.</div>
@@ -14451,7 +14573,7 @@ function renderAlphabetPractice() {
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
-  renderScopedQuestion("alphabet");
+  if (!practiceSession.complete) renderScopedQuestion("alphabet");
   showTapHint("alphabet");
 }
 
@@ -14589,7 +14711,7 @@ window.renderPronunciationDrill = function() {
 
   el.innerHTML = `
     <div class="card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.currentIndex + 1, pronDrillState.questionCount)}
+      ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.currentIndex + 1, pronDrillState.questionCount, pronDrillState.answered)}
 
       <div style="text-align:center; padding:24px 0;">
         <button class="button primary" type="button" style="padding:16px 24px; font-size:1.1rem; border-radius:50px;" onclick="speakPronDrillTarget()">
@@ -14656,7 +14778,6 @@ window.speakPronDrillTarget = function() {
 
 window.submitPronDrillAnswer = function(text) {
   if (pronDrillState.answered) return;
-  speakClickableText(text);
   const set = pronDrillState.activePairSet;
   const opt = set.items.find((item) => item.text === text);
   pronDrillState.selectedOption = opt;
@@ -14665,6 +14786,9 @@ window.submitPronDrillAnswer = function(text) {
     pronDrillState.correctCount += 1;
   }
   renderPronunciationDrill();
+  // Rendering calls showScreen(), which intentionally cancels old speech.
+  // Play the selected Korean only after the feedback frame is mounted.
+  scheduleAutoSpeak(text, 120);
 }
 
 window.nextPronDrillQuestion = function() {
@@ -14719,11 +14843,52 @@ const HANGUL_WRITING_UNITS = [
   { id: "blocks-cvc", eyebrow: "Unit 5", label: "Blocks with batchim", sub: "Full syllables with a bottom consonant.", glyphs: ["한", "글", "밥", "산", "강"], unlockLessonIndex: 5 },
 ];
 
+let hangulWritingSource = "alphabet";
+let activeHangulWritingUnits = HANGUL_WRITING_UNITS;
+
+function getWritingSourceMeta(source = hangulWritingSource) {
+  if (source === "vocabulary") return { title: "Vocabulary writing", eyebrow: "Practice · Words", back: "Practice", unitPrefix: "Word set" };
+  if (source === "sentences") return { title: "Sentence writing", eyebrow: "Practice · Sentences", back: "Practice", unitPrefix: "Sentence set" };
+  return { title: "Hangul writing", eyebrow: "Practice · Hangul writing", back: "Alphabet practice", unitPrefix: "Unit" };
+}
+
+function buildContentWritingUnits(source) {
+  let strings = [];
+  if (source === "vocabulary") {
+    const learned = getCuratedWords().filter((word) => Number(state.vocabSrs?.[word.id]?.seen) > 0);
+    const words = learned.length ? learned : getCuratedWords().filter((word) => (word.priority || "core") === "core").slice(0, 80);
+    strings = words.map((word) => word.display || word.korean);
+  } else if (source === "sentences") {
+    const progress = getSentencesProgress();
+    const bandRows = getSentenceRowsForBand(progress.band);
+    const practised = bandRows.filter((row) => Number(progress.results?.[row.id]?.seen) > 0);
+    strings = (practised.length ? practised : bandRows.slice(0, 50)).map((row) => row.korean);
+  }
+  const glyphs = [...new Set(strings.flatMap((text) => Array.from(String(text || ""))))]
+    .filter((glyph) => /^[가-힣]$/u.test(glyph) && getHangulStrokeGuide(glyph))
+    .slice(0, 32);
+  const meta = getWritingSourceMeta(source);
+  const units = [];
+  for (let index = 0; index < glyphs.length; index += 8) {
+    const set = glyphs.slice(index, index + 8);
+    units.push({
+      id: `${source}-writing-${index / 8 + 1}`,
+      eyebrow: `${meta.unitPrefix} ${index / 8 + 1}`,
+      label: source === "vocabulary" ? `Word syllables ${index / 8 + 1}` : `Sentence syllables ${index / 8 + 1}`,
+      sub: source === "vocabulary" ? "Shapes pulled from your vocabulary path." : "Shapes pulled from your current sentence band.",
+      glyphs: set,
+      unlockLessonIndex: -1,
+      source,
+    });
+  }
+  return units;
+}
+
 let hangulWritingState = {
   unitId: null,
   glyphIndex: 0,
   exercise: "shape", // "shape" (copy the glyph) | "sound" (write what you hear) | "roman" (write from romanization)
-  inputMode: "guided", // "guided" validates each standard stroke; "freehand" checks the finished shape
+  inputMode: "freehand",
   repeatTarget: 1,
   repeatIndex: 0,
   strokes: [], // meaningful learner ink; taps/interrupted pointers are discarded
@@ -14742,7 +14907,7 @@ let hangulRecognitionTimer = null;
 let hangulWritingRecognizerCache = null;
 
 function getHangulWritingUnit(unitId = hangulWritingState.unitId) {
-  return HANGUL_WRITING_UNITS.find((unit) => unit.id === unitId) || null;
+  return activeHangulWritingUnits.find((unit) => unit.id === unitId) || null;
 }
 
 function resetHangulWritingSession() {
@@ -14750,7 +14915,7 @@ function resetHangulWritingSession() {
     unitId: null,
     glyphIndex: 0,
     exercise: "shape",
-    inputMode: "guided",
+    inputMode: "freehand",
     repeatTarget: 1,
     repeatIndex: 0,
     strokes: [],
@@ -14797,7 +14962,8 @@ function leaveHangulWritingSession() {
   if (hangulWritingState.celebrating) hangulWritingState.strokes = [];
   hangulWritingState.celebrating = false;
   hangulWritingState.animating = false;
-  renderAlphabetPracticeHub();
+  if (hangulWritingSource === "alphabet") renderAlphabetPracticeHub();
+  else goHub("practice");
 }
 
 function renderHangulWritingReentryPrompt() {
@@ -14816,13 +14982,14 @@ function renderHangulWritingReentryPrompt() {
       : "Copy the shape";
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Hangul writing", () => renderAlphabetPracticeHub(), "Alphabet practice");
+  const sourceMeta = getWritingSourceMeta();
+  showDetailBarWithBack("practice", sourceMeta.title, () => leaveHangulWritingSession(), sourceMeta.back);
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card writing-reentry-card">
       <div class="eyebrow">Writing session paused</div>
       <div class="writing-reentry-glyph" lang="ko">${escapeHtml(glyph)}</div>
       <h2 class="screen-title">Continue where you left off?</h2>
-      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)} · ${hangulWritingState.inputMode === "freehand" ? "Freehand" : "Guided"} · ${hangulWritingState.repeatTarget}× · ${hangulWritingState.glyphIndex + 1} of ${unit.glyphs.length}</div>
+      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)} · Free drawing · ${hangulWritingState.repeatTarget}× · ${hangulWritingState.glyphIndex + 1} of ${unit.glyphs.length}</div>
       <div class="writing-reentry-actions">
         <button class="button secondary" type="button" id="writingStartNew">Start new session</button>
         <button class="button primary" type="button" id="writingContinue">Continue session</button>
@@ -14840,8 +15007,13 @@ function renderHangulWritingReentryPrompt() {
   });
 }
 
-function enterHangulWriting() {
+function enterHangulWriting(source = "alphabet") {
   refreshProgressionState();
+  const nextSource = ["alphabet", "vocabulary", "sentences"].includes(source) ? source : "alphabet";
+  if (nextSource !== hangulWritingSource) resetHangulWritingSession();
+  hangulWritingSource = nextSource;
+  activeHangulWritingUnits = nextSource === "alphabet" ? HANGUL_WRITING_UNITS : buildContentWritingUnits(nextSource);
+  hangulWritingRecognizerCache = null;
   if (hasActiveHangulWritingSession()) {
     renderHangulWritingReentryPrompt();
     return;
@@ -14862,6 +15034,7 @@ function getHangulWritingRoman(glyph) {
 }
 
 function isHangulWritingUnitUnlocked(unit) {
+  if (unit?.source && unit.source !== "alphabet") return true;
   if (TEST_UNLOCK_ALL_STAGES) return true;
   return getAlphabetProgress().completedCount > unit.unlockLessonIndex;
 }
@@ -14887,6 +15060,14 @@ const HANGUL_SYLLABLE_LAYOUTS = {
   verticalClosed: { initial: [0.16, 0.1, 0.3, 0.36], medial: [0.56, 0.06, 0.28, 0.42], final: [0.26, 0.58, 0.48, 0.32] },
   horizontalOpen: { initial: [0.26, 0.08, 0.48, 0.38], medial: [0.12, 0.52, 0.76, 0.36] },
   horizontalClosed: { initial: [0.28, 0.04, 0.44, 0.28], medial: [0.14, 0.36, 0.72, 0.26], final: [0.26, 0.66, 0.48, 0.3] },
+  compoundOpen: { initial: [0.08, 0.1, 0.34, 0.54], medial: [0.36, 0.08, 0.58, 0.82] },
+  compoundClosed: { initial: [0.08, 0.05, 0.3, 0.38], medial: [0.34, 0.03, 0.6, 0.5], final: [0.24, 0.62, 0.52, 0.3] },
+};
+const HANGUL_COMPOUND_FINAL_PARTS = {
+  "ㄳ": ["ㄱ", "ㅅ"], "ㄵ": ["ㄴ", "ㅈ"], "ㄶ": ["ㄴ", "ㅎ"],
+  "ㄺ": ["ㄹ", "ㄱ"], "ㄻ": ["ㄹ", "ㅁ"], "ㄼ": ["ㄹ", "ㅂ"],
+  "ㄽ": ["ㄹ", "ㅅ"], "ㄾ": ["ㄹ", "ㅌ"], "ㄿ": ["ㄹ", "ㅍ"],
+  "ㅀ": ["ㄹ", "ㅎ"], "ㅄ": ["ㅂ", "ㅅ"],
 };
 const hangulSyllableGuideCache = {};
 
@@ -14907,24 +15088,40 @@ function normalizeHangulJamoStrokes(strokes) {
   ]));
 }
 
+function getComposableJamoStrokes(jamo, bank) {
+  if (bank[jamo]?.strokes?.length) return bank[jamo].strokes;
+  const parts = HANGUL_COMPOUND_FINAL_PARTS[jamo];
+  if (!parts || !parts.every((part) => bank[part]?.strokes?.length)) return null;
+  const strokes = [];
+  parts.forEach((part, index) => {
+    const box = index === 0 ? [0, 0.08, 0.46, 0.84] : [0.54, 0.08, 0.46, 0.84];
+    normalizeHangulJamoStrokes(bank[part].strokes).forEach((stroke) => {
+      strokes.push(stroke.map((point) => [box[0] + point[0] * box[2], box[1] + point[1] * box[3]]));
+    });
+  });
+  return strokes;
+}
+
 function composeHangulSyllableGuide(glyph, bank) {
   if (hangulSyllableGuideCache[glyph] !== undefined) return hangulSyllableGuideCache[glyph];
   let result = null;
   const parts = decomposeHangul(glyph);
-  if (parts && !VOWEL_FAMILIES.compound.has(parts.medial)) {
+  if (parts) {
     const hasFinal = Boolean(parts.final);
-    const layout = VOWEL_FAMILIES.vertical.has(parts.medial)
-      ? HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "verticalClosed" : "verticalOpen"]
-      : HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "horizontalClosed" : "horizontalOpen"];
+    const layout = VOWEL_FAMILIES.compound.has(parts.medial)
+      ? HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "compoundClosed" : "compoundOpen"]
+      : VOWEL_FAMILIES.vertical.has(parts.medial)
+        ? HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "verticalClosed" : "verticalOpen"]
+        : HANGUL_SYLLABLE_LAYOUTS[hasFinal ? "horizontalClosed" : "horizontalOpen"];
     const pieces = [
-      { jamo: parts.initial, box: layout.initial },
-      { jamo: parts.medial, box: layout.medial },
+      { strokes: getComposableJamoStrokes(parts.initial, bank), box: layout.initial },
+      { strokes: getComposableJamoStrokes(parts.medial, bank), box: layout.medial },
     ];
-    if (hasFinal) pieces.push({ jamo: parts.final, box: layout.final });
-    if (pieces.every((piece) => bank[piece.jamo] && bank[piece.jamo].strokes.length)) {
+    if (hasFinal) pieces.push({ strokes: getComposableJamoStrokes(parts.final, bank), box: layout.final });
+    if (pieces.every((piece) => piece.strokes?.length)) {
       const strokes = [];
-      pieces.forEach(({ jamo, box }) => {
-        normalizeHangulJamoStrokes(bank[jamo].strokes).forEach((stroke) => {
+      pieces.forEach(({ strokes: pieceStrokes, box }) => {
+        normalizeHangulJamoStrokes(pieceStrokes).forEach((stroke) => {
           strokes.push(stroke.map((p) => [box[0] + p[0] * box[2], box[1] + p[1] * box[3]]));
         });
       });
@@ -14935,14 +15132,15 @@ function composeHangulSyllableGuide(glyph, bank) {
   return result;
 }
 
-// Owner-approved mobile recognition layer (2026-07-12). $Q identifies the
-// written glyph independently of stroke order; the existing W2 grader remains
-// the separate pedagogy check for standard order and direction.
-const HANGUL_RECOGNITION_MIN_CONFIDENCE = 0.72;
+// Free-drawing recognition is deliberately stroke-order agnostic. $Q judges
+// the completed shape, so a readable glyph may use one fewer or one extra
+// pen lift than the authored demonstration.
 const HANGUL_FREEHAND_TARGET_CONFIDENCE = 0.82;
+const HANGUL_FREEHAND_MIN_MARGIN = 0.01;
 
 function getHangulWritingRecognitionGlyphs() {
-  return [...new Set(HANGUL_WRITING_UNITS.flatMap((unit) => unit.glyphs))]
+  const bankGlyphs = Object.keys((typeof window !== "undefined" && window.HANGUL_STROKES) || {});
+  return [...new Set([...bankGlyphs, ...activeHangulWritingUnits.flatMap((unit) => unit.glyphs)])]
     .filter((glyph) => Boolean(getHangulStrokeGuide(glyph)));
 }
 
@@ -14969,6 +15167,14 @@ function recognizeHangulWriting(canvas, limit = 3) {
   const recognizer = getHangulWritingRecognizer();
   if (!recognizer) return [];
   return recognizer.recognize(getNormalizedHangulWritingStrokes(canvas), limit);
+}
+
+function isHangulFreehandRecognitionMatch(matches, glyph) {
+  const top = matches[0] || null;
+  const second = matches[1] || null;
+  if (!top || top.name !== glyph || top.confidence < HANGUL_FREEHAND_TARGET_CONFIDENCE) return false;
+  const margin = second ? top.confidence - second.confidence : 1;
+  return margin >= HANGUL_FREEHAND_MIN_MARGIN || top.confidence >= 0.96;
 }
 
 function clearHangulRecognitionTimer() {
@@ -15032,7 +15238,7 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
         <button class="writing-result-action retry" type="button" id="writingResultRetry">Retry</button>
         <button class="writing-result-action next" type="button" id="writingResultNext">${escapeHtml(nextLabel)} <span aria-hidden="true">›</span></button>
       </div>
-      <div class="writing-result-title" id="writingResultTitle">${correct ? "Shape and stroke order locked in" : "One quick correction"}</div>
+      <div class="writing-result-title" id="writingResultTitle">${correct ? "Shape recognized" : "One quick correction"}</div>
       <p class="writing-result-copy">${escapeHtml(detail)}</p>
       ${hangulWritingResultSvg(strokes, glyph)}
     </div>`;
@@ -15044,10 +15250,7 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
     overlay.innerHTML = "";
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
-    const guide = getHangulStrokeGuide(glyph);
-    updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-      ? "Draw naturally · pause to auto-check, or tap Check drawing."
-      : `${guide?.strokes?.length || 0} stroke${guide?.strokes?.length === 1 ? "" : "s"} remaining · follow standard order`);
+    updateHangulStrokeStatus("Draw naturally · pause to auto-check, or tap Check drawing.");
     canvas.focus({ preventScroll: true });
   });
   overlay.querySelector("#writingResultNext").addEventListener("click", () => {
@@ -15555,7 +15758,7 @@ function completeHangulWritingSession(unit) {
     entry?.unitId === unit.id &&
     entry?.exercise === hangulWritingState.exercise &&
     entry?.repeatTarget === hangulWritingState.repeatTarget &&
-    (entry?.inputMode || "guided") === hangulWritingState.inputMode
+    (entry?.inputMode || "freehand") === "freehand"
   ) || null;
   const attempts = Math.max(1, hangulWritingState.attempts);
   const summary = {
@@ -15563,7 +15766,7 @@ function completeHangulWritingSession(unit) {
     unitId: unit.id,
     unitLabel: unit.label,
     exercise: hangulWritingState.exercise,
-    inputMode: hangulWritingState.inputMode,
+    inputMode: "freehand",
     repeatTarget: hangulWritingState.repeatTarget,
     glyphs: [...unit.glyphs],
     attempts: hangulWritingState.attempts,
@@ -15594,7 +15797,7 @@ function drawHangulWritingCanvas(canvas) {
   // blank; the stroke guide appears solely inside the Help! demo animation.
   ctx.save();
   ctx.strokeStyle = "#7a5cff";
-  ctx.lineWidth = Math.max(6, canvas.width * 0.028);
+  ctx.lineWidth = Math.max(6, Math.min(28, Number(state.writingLineWidth) || 14));
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   hangulWritingState.strokes.forEach((stroke) => {
@@ -15612,11 +15815,13 @@ function drawHangulWritingCanvas(canvas) {
 function updateHangulWritingControls() {
   const hasInk = hangulWritingState.strokes.length > 0;
   const clear = document.getElementById("writingClear");
+  const undo = document.getElementById("writingUndo");
   const help = document.getElementById("writingHelp");
   const check = document.getElementById("writingCheck");
   if (clear) clear.disabled = !hasInk || hangulWritingState.celebrating;
+  if (undo) undo.disabled = !hasInk || hangulWritingState.celebrating;
   if (check) check.disabled = !hasInk || hangulWritingState.celebrating;
-  [clear, help, check].forEach((button) => {
+  [clear, undo, help, check].forEach((button) => {
     if (button) button.hidden = hangulWritingState.animating;
   });
 }
@@ -15628,52 +15833,7 @@ function updateHangulStrokeStatus(message, tone = "") {
   status.textContent = message;
 }
 
-function getHangulGuidedStrokeHint(stroke, index) {
-  if (!stroke?.length) return `Try stroke ${index + 1} again.`;
-  const first = stroke[0];
-  const last = stroke[stroke.length - 1];
-  const dx = last[0] - first[0];
-  const dy = last[1] - first[1];
-  if (hangulPairDist(first, last) < 0.05) return `Try stroke ${index + 1} again — draw the closed loop.`;
-  if (Math.abs(dx) > Math.abs(dy) * 1.5) return `Try stroke ${index + 1} again — draw ${dx >= 0 ? "left to right" : "right to left"}.`;
-  if (Math.abs(dy) > Math.abs(dx) * 1.5) return `Try stroke ${index + 1} again — draw ${dy >= 0 ? "top to bottom" : "bottom to top"}.`;
-  return `Try stroke ${index + 1} again — follow the shape shown in Help.`;
-}
-
-function validateLatestHangulGuidedStroke(canvas, glyph) {
-  const guide = getHangulStrokeGuide(glyph);
-  const strokes = getNormalizedHangulWritingStrokes(canvas);
-  if (!guide || !strokes.length) return { pass: false, remaining: guide?.strokes?.length || 0 };
-  const index = strokes.length - 1;
-  if (index >= guide.strokes.length) {
-    hangulWritingState.strokes.pop();
-    recordHangulWritingResult(glyph, "retry");
-    drawHangulWritingCanvas(canvas);
-    updateHangulStrokeStatus("That extra stroke was not needed — wait for the current check.", "wrong");
-    return { pass: false, remaining: 0 };
-  }
-  const result = index === 0
-    ? scoreHangulStrokeFree(strokes[index], guide.strokes[index])
-    : scoreHangulStroke(
-        strokes[index],
-        transformHangulPoints(guide.strokes[index], fitHangulAlignment(strokes, guide.strokes, index)),
-      );
-  if (!result.pass) {
-    hangulWritingState.strokes.pop();
-    recordHangulWritingResult(glyph, "retry");
-    drawHangulWritingCanvas(canvas);
-    updateHangulStrokeStatus(getHangulGuidedStrokeHint(guide.strokes[index], index), "wrong");
-    updateHangulWritingControls();
-    return { pass: false, remaining: guide.strokes.length - index };
-  }
-  const remaining = guide.strokes.length - strokes.length;
-  updateHangulStrokeStatus(remaining
-    ? `Nice stroke · ${remaining} stroke${remaining === 1 ? "" : "s"} remaining`
-    : "All strokes placed — checking your writing…", "good");
-  return { pass: true, remaining };
-}
-
-function checkHangulFreehandDrawing(canvas, glyph, unit) {
+function checkHangulFreehandDrawing(canvas, glyph, unit, { silentFailure = false } = {}) {
   if (hangulWritingState.celebrating) return;
   clearHangulRecognitionTimer();
   const strokes = getNormalizedHangulWritingStrokes(canvas);
@@ -15682,14 +15842,18 @@ function checkHangulFreehandDrawing(canvas, glyph, unit) {
     return;
   }
   const matches = recognizeHangulWriting(canvas, 3);
-  const target = matches.find((match) => match.name === glyph) || null;
   const top = matches[0] || null;
-  const correct = Boolean(target && target.confidence >= HANGUL_FREEHAND_TARGET_CONFIDENCE);
+  const correct = isHangulFreehandRecognitionMatch(matches, glyph);
   const detail = correct
     ? `Freehand recognized as ${glyph} — your natural shape is clear.`
     : top
       ? `This currently looks closest to ${top.name}. Refine the overall shape and check again.`
       : `HanaPath could not read that shape yet. Make it a little clearer and try again.`;
+  if (!correct && silentFailure) {
+    setHangulRecognitionFeedback(top ? `Closest shape: ${top.name}. Keep refining, or tap Check.` : "Keep refining the shape, or tap Check.", matches, top ? "close" : "wrong");
+    updateHangulStrokeStatus("Keep drawing until the whole shape reads clearly.");
+    return;
+  }
   showHangulWritingResult({ glyph, strokes, correct, detail, unit });
 }
 
@@ -15700,88 +15864,13 @@ function scheduleHangulFreehandAutoCheck(canvas, glyph, unit) {
     hangulRecognitionTimer = null;
     const activeUnit = getHangulWritingUnit();
     if (
-      hangulWritingState.inputMode !== "freehand" ||
       hangulWritingState.celebrating ||
       !activeUnit ||
       activeUnit.id !== unit.id ||
       activeUnit.glyphs[hangulWritingState.glyphIndex] !== glyph
     ) return;
-    checkHangulFreehandDrawing(canvas, glyph, unit);
+    checkHangulFreehandDrawing(canvas, glyph, unit, { silentFailure: true });
   }, 1100);
-}
-
-function scheduleHangulWritingRecognition(canvas, glyph, unit) {
-  clearHangulRecognitionTimer();
-  const guide = getHangulStrokeGuide(glyph);
-  const strokes = getNormalizedHangulWritingStrokes(canvas);
-  if (!strokes.length || !guide) {
-    setHangulRecognitionFeedback("Write with your finger or stylus.");
-    return;
-  }
-  if (strokes.length < guide.strokes.length) {
-    setHangulRecognitionFeedback(`${strokes.length} of ${guide.strokes.length} standard strokes · keep going`);
-    return;
-  }
-
-  setHangulRecognitionFeedback("Reading your writing…", [], "working");
-  hangulRecognitionTimer = window.setTimeout(() => {
-    hangulRecognitionTimer = null;
-    const activeUnit = getHangulWritingUnit();
-    if (!activeUnit || activeUnit.id !== unit.id || activeUnit.glyphs[hangulWritingState.glyphIndex] !== glyph) return;
-    const currentStrokes = getNormalizedHangulWritingStrokes(canvas);
-    const matches = recognizeHangulWriting(canvas, 3);
-    const top = matches[0] || null;
-    const grade = gradeHangulDrawing(glyph, currentStrokes);
-    const readableTarget = top?.name === glyph && top.confidence >= HANGUL_RECOGNITION_MIN_CONFIDENCE;
-    const standardWriting = grade?.verdict === "great";
-
-    // This exercise names the target in advance, so the target-specific grader
-    // is authoritative: it checks the requested glyph's shape, placement,
-    // stroke count, order and direction. The broad $Q classifier must not turn
-    // a strong target match into a false negative merely because another glyph
-    // ranks slightly higher in its all-glyph comparison.
-    if (standardWriting) {
-      showHangulWritingResult({
-        glyph,
-        strokes: currentStrokes,
-        correct: true,
-        detail: `Nice work — your ${glyph} is readable, balanced, and follows the standard stroke order.`,
-        unit,
-      });
-      return;
-    }
-
-    if (grade) {
-      const failed = grade?.perStroke?.find((stroke) => !stroke.pass);
-      const detail = failed?.reason === "wrong-direction"
-        ? "I can read it. Now use the standard stroke direction."
-        : grade?.strokeCount?.drawn !== grade?.strokeCount?.expected
-          ? `I can read it. Standard writing uses ${grade.strokeCount.expected} strokes.`
-          : readableTarget
-            ? "I can read it. Check the standard stroke order with Help!"
-            : `You are close to ${glyph}. Replay the guide and tighten the stroke placement.`;
-      showHangulWritingResult({ glyph, strokes: currentStrokes, correct: false, detail, unit });
-      return;
-    }
-
-    if (!top || top.confidence < HANGUL_RECOGNITION_MIN_CONFIDENCE) {
-      showHangulWritingResult({
-        glyph,
-        strokes: currentStrokes,
-        correct: false,
-        detail: `Your strokes have the right energy — tighten the shape so it resolves clearly into ${glyph}.`,
-        unit,
-      });
-      return;
-    }
-    showHangulWritingResult({
-      glyph,
-      strokes: currentStrokes,
-      correct: false,
-      detail: `That currently reads as ${top.name}. Replay the shape, then aim for the clean structure of ${glyph}.`,
-      unit,
-    });
-  }, 140);
 }
 
 function bindHangulWritingCanvas(canvas) {
@@ -15821,9 +15910,8 @@ function bindHangulWritingCanvas(canvas) {
     if (!activeStroke) return;
     const finished = activeStroke;
     activeStroke = null;
-    // Keep meaningful ink so $Q can identify what the learner actually wrote.
-    // Stroke-order coaching is evaluated separately after recognition; taps
-    // and interrupted pointers still disappear silently.
+    // Keep meaningful ink so $Q can identify what the learner actually wrote;
+    // taps and interrupted pointers still disappear silently.
     const unit = getHangulWritingUnit();
     const glyph = unit ? unit.glyphs[hangulWritingState.glyphIndex] : "";
     const cleaned = cleanHangulInkStroke(normalizeHangulInkStroke(finished, canvas));
@@ -15831,17 +15919,10 @@ function bindHangulWritingCanvas(canvas) {
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
     if (!cleaned || !unit || !glyph) {
-      updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-        ? "Draw naturally · pause to auto-check, or tap Check drawing."
-        : "Keep going with the next standard stroke.");
+      updateHangulStrokeStatus("Draw naturally · pause to auto-check, or tap Check drawing.");
       return;
     }
-    if (hangulWritingState.inputMode === "freehand") {
-      scheduleHangulFreehandAutoCheck(canvas, glyph, unit);
-      return;
-    }
-    const validation = validateLatestHangulGuidedStroke(canvas, glyph);
-    if (validation.pass && validation.remaining === 0) scheduleHangulWritingRecognition(canvas, glyph, unit);
+    scheduleHangulFreehandAutoCheck(canvas, glyph, unit);
   };
   canvas.addEventListener("pointerup", finishStroke);
   const cancelStroke = () => {
@@ -15852,22 +15933,20 @@ function bindHangulWritingCanvas(canvas) {
     hangulWritingState.strokes.pop();
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
-    updateHangulStrokeStatus(hangulWritingState.inputMode === "freehand"
-      ? "Draw naturally · pause to auto-check, or tap Check drawing."
-      : "Keep going with the next standard stroke.");
+    updateHangulStrokeStatus("Draw naturally · pause to auto-check, or tap Check drawing.");
   };
   canvas.addEventListener("pointercancel", cancelStroke);
   canvas.addEventListener("lostpointercapture", cancelStroke);
 }
 
-function startHangulWritingSession(unit, exercise, repeatTarget, inputMode = "guided") {
+function startHangulWritingSession(unit, exercise, repeatTarget) {
   resetLessonMotion("writing");
   queueScreenMotion("forward", 1, { replace: false });
   hangulWritingState = {
     unitId: unit.id,
     glyphIndex: 0,
     exercise,
-    inputMode: inputMode === "freehand" ? "freehand" : "guided",
+    inputMode: "freehand",
     repeatTarget: Math.max(1, Math.min(3, Number(repeatTarget) || 1)),
     repeatIndex: 0,
     strokes: [],
@@ -15895,11 +15974,7 @@ function renderHangulWritingMultiplierPicker(el, unit, exercise) {
     <div class="card word-card alphabet-practice-card writing-multiplier-card" data-lesson-motion-root>
       <div class="eyebrow">Before you start</div>
       <h2 class="screen-title">How many repetitions?</h2>
-      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)}. Every glyph must be drawn correctly this many times before you move on.</div>
-      <div class="writing-input-mode-picker" aria-label="Writing mode">
-        <button class="writing-input-mode active" type="button" data-writing-input-mode="guided" aria-pressed="true"><strong>Guided learning</strong><span>Follow standard strokes with live feedback</span></button>
-        <button class="writing-input-mode" type="button" data-writing-input-mode="freehand" aria-pressed="false"><strong>Freehand</strong><span>Draw naturally, then let HanaPath recognize it</span></button>
-      </div>
+      <div class="screen-sub">${escapeHtml(unit.label)} · ${escapeHtml(exerciseLabel)} · free drawing. HanaPath checks the finished shape, not an exact stroke count.</div>
       <div class="writing-multiplier-options">
         <button class="writing-multiplier-option" type="button" data-writing-multiplier="1"><strong>1×</strong><span>One clean pass</span></button>
         <button class="writing-multiplier-option primary" type="button" data-writing-multiplier="2"><strong>2×</strong><span>Repeat to lock it in</span></button>
@@ -15907,19 +15982,8 @@ function renderHangulWritingMultiplierPicker(el, unit, exercise) {
       </div>
       <button class="button secondary compact writing-multiplier-back" type="button" id="writingMultiplierBack">Back to units</button>
     </div>`;
-  let selectedInputMode = "guided";
-  el.querySelectorAll("[data-writing-input-mode]").forEach((button) => {
-    button.addEventListener("click", () => {
-      selectedInputMode = button.dataset.writingInputMode === "freehand" ? "freehand" : "guided";
-      el.querySelectorAll("[data-writing-input-mode]").forEach((option) => {
-        const selected = option.dataset.writingInputMode === selectedInputMode;
-        option.classList.toggle("active", selected);
-        option.setAttribute("aria-pressed", selected ? "true" : "false");
-      });
-    });
-  });
   el.querySelectorAll("[data-writing-multiplier]").forEach((button) => {
-    button.addEventListener("click", () => startHangulWritingSession(unit, exercise, Number(button.dataset.writingMultiplier), selectedInputMode));
+    button.addEventListener("click", () => startHangulWritingSession(unit, exercise, Number(button.dataset.writingMultiplier)));
   });
   el.querySelector("#writingMultiplierBack").addEventListener("click", () => {
     resetHangulWritingSession();
@@ -15950,7 +16014,7 @@ function getHangulWritingImprovement(summary) {
 }
 
 function renderHangulWritingCompletion(el, summary) {
-  const unit = HANGUL_WRITING_UNITS.find((item) => item.id === summary.unitId) || null;
+  const unit = activeHangulWritingUnits.find((item) => item.id === summary.unitId) || null;
   const glyphRows = summary.glyphs.map((glyph) => {
     const stats = summary.glyphStats[glyph] || { attempts: 0, successes: 0, retries: 0 };
     return `<div class="writing-summary-detail-row"><span lang="ko">${escapeHtml(glyph)}</span><span>${stats.successes} clean · ${stats.attempts} attempt${stats.attempts === 1 ? "" : "s"} · ${stats.retries} retr${stats.retries === 1 ? "y" : "ies"}</span></div>`;
@@ -15969,7 +16033,7 @@ function renderHangulWritingCompletion(el, summary) {
       { value: summary.glyphs.length, label: "Shapes" },
     ],
     detailsHtml: `
-      <div class="writing-summary-drawn"><span>${summary.inputMode === "freehand" ? "Freehand" : "Guided"} · ${summary.repeatTarget}× each</span><div>${summary.glyphs.map((glyph) => `<span lang="ko">${escapeHtml(glyph)}</span>`).join("")}</div></div>
+      <div class="writing-summary-drawn"><span>Free drawing · ${summary.repeatTarget}× each</span><div>${summary.glyphs.map((glyph) => `<span lang="ko">${escapeHtml(glyph)}</span>`).join("")}</div></div>
       <details class="writing-summary-details">
         <summary>More session detail</summary>
         <div class="writing-summary-detail-list">${glyphRows}</div>
@@ -15985,7 +16049,7 @@ function renderHangulWritingCompletion(el, summary) {
   });
   el.querySelector("#writingSummaryAgain").addEventListener("click", () => {
     if (!unit) return;
-    startHangulWritingSession(unit, summary.exercise, summary.repeatTarget, summary.inputMode || "guided");
+    startHangulWritingSession(unit, summary.exercise, summary.repeatTarget);
   });
   animateLessonFrame(el.querySelector(".completion-stage"), "writing", {
     key: "complete",
@@ -15996,10 +16060,9 @@ function renderHangulWritingCompletion(el, summary) {
 }
 
 function renderHangulWritingUnitPicker(el) {
-  // Only units whose every glyph has an authored stroke guide are offered —
-  // recognition and stroke coaching need that template, so guideless units
-  // (currently advanced jamo) stay hidden until their W1b data lands.
-  const readyUnits = HANGUL_WRITING_UNITS.filter((unit) =>
+  // The authored paths seed shape-recognition templates and the optional Help
+  // animation. They never constrain the learner's stroke count or order.
+  const readyUnits = activeHangulWritingUnits.filter((unit) =>
     unit.glyphs.every((glyph) => getHangulStrokeGuide(glyph))
   );
   const unitsHtml = readyUnits.map((unit) => {
@@ -16028,14 +16091,15 @@ function renderHangulWritingUnitPicker(el) {
     `;
   }).join("");
 
+  const sourceMeta = getWritingSourceMeta();
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card">
       ${alphabetPracticeProgressHtml("Writing practice")}
-      <div class="eyebrow sentence-lesson-kind">Practice · Hangul writing</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">Write Hangul by hand</h2>
-      <div class="screen-sub" style="margin-bottom:0;">Write with your finger or stylus. HanaPath reads the character and checks standard stroke order.</div>
+      <div class="eyebrow sentence-lesson-kind">${escapeHtml(sourceMeta.eyebrow)}</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(sourceMeta.title)}</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Draw with your finger or stylus. Shape recognition is stroke-count tolerant, and Help remains available as an optional reference.</div>
     </div>
-    ${unitsHtml}
+    ${unitsHtml || '<div class="card"><div class="screen-sub" style="margin-bottom:0;">Complete a little more learning first so HanaPath can build a writing set from this section.</div></div>'}
   `;
 
   bindAlphabetReferenceButtons(el);
@@ -16064,10 +16128,7 @@ function renderHangulWritingPractice(el, unit) {
   const repeatProgress = hangulWritingState.repeatTarget > 1
     ? ` · pass ${hangulWritingState.repeatIndex + 1}/${hangulWritingState.repeatTarget}`
     : "";
-  const isFreehand = hangulWritingState.inputMode === "freehand";
-  const initialStrokeStatus = isFreehand
-    ? "Draw naturally · pause to auto-check, or tap Check drawing."
-    : `${guide.strokes.length} stroke${guide.strokes.length === 1 ? "" : "s"} remaining · follow standard order`;
+  const initialStrokeStatus = "Draw naturally · pause to auto-check, or tap Check drawing.";
 
   // The prompt is ONLY the required cue for the exercise — the glyph (shape),
   // a speaker (sound), or the romanization — using the same tap-to-hear token
@@ -16088,18 +16149,20 @@ function renderHangulWritingPractice(el, unit) {
     <div class="card word-card alphabet-practice-card writing-practice-card" data-lesson-motion-root>
       <div class="writing-practice-header">
         <div class="writing-progress-tile">
-          <div class="writing-progress-line"><span class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")} · ${isFreehand ? "Freehand" : "Guided"}</span><span class="writing-progress-count">${progressCurrent} of ${progressTotal}${repeatProgress}</span></div>
+          <div class="writing-progress-line"><span class="eyebrow">${escapeHtml(exercise === "shape" ? "Copy the shape" : exercise === "sound" ? "Write from sound" : "Write from romanization")} · Free drawing</span><span class="writing-progress-count">${progressCurrent} of ${progressTotal}${repeatProgress}</span></div>
           <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPercent}%;"></span></div>
         </div>
       </div>
       <div class="quiz-card writing-quiz-card">
         <div class="quiz-visual writing-prompt-visual"${exercise === "shape" ? ` lang="ko"` : ""}><span class="checkpoint-token tappable"${tokenLang} role="button" tabindex="0" aria-label="Hear ${escapeHtml(glyph)}" data-speak="${escapeHtml(glyph)}" title="Tap to hear">${escapeHtml(tokenText)}</span><span class="writing-hear-cue">Tap to hear</span></div>
         <div class="quiz-detail writing-instruction writing-stroke-status" id="writingStrokeStatus" aria-live="polite">${escapeHtml(initialStrokeStatus)}</div>
+        <div class="writing-recognition" id="writingRecognition" aria-live="polite"><span class="writing-recognition-message">Write with your finger or stylus.</span></div>
         <div class="writing-canvas-wrap">
           <canvas id="writingCanvas" class="writing-canvas" width="480" height="480" aria-label="Writing area"></canvas>
           <button class="writing-canvas-action writing-canvas-clear" type="button" id="writingClear" disabled>Erase all</button>
+          <button class="writing-canvas-action writing-canvas-undo" type="button" id="writingUndo" disabled>Undo stroke</button>
           <button class="writing-canvas-action writing-canvas-help" type="button" id="writingHelp">Help</button>
-          ${isFreehand ? '<button class="writing-canvas-action writing-canvas-check" type="button" id="writingCheck" disabled>Check drawing</button>' : ""}
+          <button class="writing-canvas-action writing-canvas-check" type="button" id="writingCheck" disabled>Check drawing</button>
         </div>
         <div class="writing-result-overlay" id="writingResultOverlay" aria-live="polite"></div>
       </div>
@@ -16121,6 +16184,16 @@ function renderHangulWritingPractice(el, unit) {
     hangulWritingState.strokes = [];
     drawHangulWritingCanvas(canvas);
     updateHangulWritingControls();
+    updateHangulStrokeStatus(initialStrokeStatus);
+  });
+  el.querySelector("#writingUndo").addEventListener("click", () => {
+    if (hangulWritingState.celebrating || !hangulWritingState.strokes.length) return;
+    clearHangulRecognitionTimer();
+    stopHangulWatch();
+    hangulWritingState.strokes.pop();
+    drawHangulWritingCanvas(canvas);
+    updateHangulWritingControls();
+    setHangulRecognitionFeedback(hangulWritingState.strokes.length ? "Last stroke removed." : "Write with your finger or stylus.");
     updateHangulStrokeStatus(initialStrokeStatus);
   });
   const check = el.querySelector("#writingCheck");
@@ -16149,7 +16222,8 @@ function renderHangulWriting() {
   setNavActive("practice");
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Hangul writing", () => leaveHangulWritingSession(), "Alphabet practice");
+  const sourceMeta = getWritingSourceMeta();
+  showDetailBarWithBack("practice", sourceMeta.title, () => leaveHangulWritingSession(), sourceMeta.back);
 
   if (hangulWritingState.completedSummary) {
     renderHangulWritingCompletion(el, hangulWritingState.completedSummary);
@@ -16238,7 +16312,7 @@ function renderLetterReview() {
 
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml("Spaced review", letterReview.index + 1, total)}
+      ${alphabetPracticeProgressHtml("Spaced review", letterReview.index + 1, total, letterReview.answered)}
       <div class="quiz-card">
         <div class="quiz-visual" lang="ko"><span class="checkpoint-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakableForChunk(letter))}" data-speak="${escapeHtml(speakableForChunk(letter))}" title="Tap to hear">${escapeHtml(letter)}</span></div>
         <div class="quiz-prompt">Which sound does this letter make?</div>
@@ -16904,6 +16978,7 @@ function serializeSentenceLessonSession(session) {
     lessonType: session.lessonType || "content",
     studyIndex: session.studyIndex || 0,
     drillPlan: session.drillPlan || [],
+    studyRows: (session.studyRows || session.rows).map((row) => row.id),
     rows: session.rows.map((row) => row.id),
     index: session.index,
     phase: session.phase,
@@ -16932,6 +17007,10 @@ function rehydrateSentenceLessonSession(snapshot) {
   const byId = getSentenceBankById();
   const rows = snapshot.rows.map((id) => byId.get(id)).filter(Boolean);
   if (rows.length !== snapshot.rows.length) return null;
+  const studyRows = Array.isArray(snapshot.studyRows)
+    ? snapshot.studyRows.map((id) => byId.get(id)).filter(Boolean)
+    : [...new Map(rows.map((row) => [row.id, row])).values()];
+  if (!studyRows.length) return null;
 
   if (!Number.isInteger(snapshot.index) || snapshot.index < 0 || snapshot.index >= rows.length) return null;
 
@@ -16945,6 +17024,7 @@ function rehydrateSentenceLessonSession(snapshot) {
     lessonType: snapshot.lessonType === "checkpoint" ? "checkpoint" : "content",
     studyIndex: Number.isInteger(snapshot.studyIndex) && snapshot.studyIndex >= 0 ? snapshot.studyIndex : 0,
     drillPlan: Array.isArray(snapshot.drillPlan) ? snapshot.drillPlan : [],
+    studyRows,
     rows: rows,
     index: snapshot.index,
     phase: snapshot.phase,
@@ -17415,7 +17495,6 @@ function getSentenceTransformForSessionRow(session, row) {
 function startSentenceStudioSession(modeId) {
   stopSpeech();
   resetLessonMotion("sentence");
-  queueScreenMotion("forward", 1, { replace: false });
   const progress = getSentencesProgress();
   const rows = modeId === "transform"
     ? pickSentenceTransformRows(progress.band)
@@ -17464,11 +17543,45 @@ function isSentenceLessonUnlocked(lesson, metWords, completedSet) {
 function openSentenceLesson(lessonId) {
   const lesson = getSentenceLessonById(lessonId);
   if (!lesson || !isSentenceLessonUnlocked(lesson)) return;
-  queueScreenMotion("forward", 1, { replace: false });
   stopSpeech();
   sentenceStudioSession = null;
   sentenceLessonView = { lessonId };
   renderPracticeView();
+}
+
+function normalizeSentenceLessonMode(row, mode) {
+  const requested = String(mode || "translate");
+  if (requested === "transform" && !buildSentenceTransformForRow(row)) return "translate";
+  // A one- or two-token build exposes nearly the complete answer at a glance.
+  // Keep word-order drills for sentences that contain a meaningful sequence.
+  if (requested === "build" && tokenizeSentence(row.korean).length < 3) return "listen";
+  return ["translate", "build", "listen", "shadow", "transform"].includes(requested) ? requested : "translate";
+}
+
+// Every content sentence receives two objective retrievals in different modes.
+// The study pass remains unique; only the question deck is doubled and spaced.
+function buildSentenceLessonQuestionPlan(lesson, studyRows) {
+  const configured = new Map((Array.isArray(lesson.drillPlan) ? lesson.drillPlan : [])
+    .map((entry) => [entry.sentenceId, entry.mode]));
+  const primary = studyRows.map((row) => ({
+    sentenceId: row.id,
+    mode: normalizeSentenceLessonMode(row, configured.get(row.id)),
+  }));
+  const secondMode = (row, first) => {
+    if (first === "translate") return tokenizeSentence(row.korean).length >= 3 ? "build" : "listen";
+    if (first === "build" || first === "transform") return "listen";
+    if (first === "listen") return "shadow";
+    return "translate";
+  };
+  const secondary = studyRows.map((row, index) => ({
+    sentenceId: row.id,
+    mode: secondMode(row, primary[index].mode),
+  }));
+  return {
+    studyRows: [...studyRows],
+    rows: [...studyRows, ...studyRows],
+    drillPlan: [...primary, ...secondary],
+  };
 }
 
 function startSentenceLessonSession(lessonId) {
@@ -17491,9 +17604,11 @@ function startSentenceLessonSession(lessonId) {
   }
   if (!rows.length) return;
   resetLessonMotion("sentence");
-  queueScreenMotion("forward", 1, { replace: false });
-  const drillPlan = lesson.type === "content"
-    ? (Array.isArray(lesson.drillPlan) ? lesson.drillPlan : [])
+  const contentPlan = lesson.type === "content" ? buildSentenceLessonQuestionPlan(lesson, rows) : null;
+  const studyRows = contentPlan ? contentPlan.studyRows : rows;
+  const questionRows = contentPlan ? contentPlan.rows : rows;
+  const drillPlan = contentPlan
+    ? contentPlan.drillPlan
     : rows.map((row, index) => ({
       sentenceId: row.id,
       mode: index === rows.length - 1 ? "listen" : index === rows.length - 2 ? "build" : "translate",
@@ -17507,7 +17622,8 @@ function startSentenceLessonSession(lessonId) {
     lessonType: lesson.type === "checkpoint" ? "checkpoint" : "content",
     studyIndex: 0,
     drillPlan,
-    rows,
+    studyRows,
+    rows: questionRows,
     index: 0,
     phase: lesson.type === "content" && isSentenceCurriculumV2() ? "study" : "question",
     typed: "",
@@ -17532,9 +17648,9 @@ function startSentenceLessonSession(lessonId) {
 
 function sentenceQuestionMode(session = sentenceStudioSession) {
   if (session.modeId === "lesson") {
-    const configured = (session.drillPlan || []).find((entry) => entry.sentenceId === session.rows[session.index]?.id)?.mode;
-    if (configured === "transform" && !buildSentenceTransformForRow(session.rows[session.index])) return "build";
-    return configured || (session.index % 2 === 0 ? "translate" : "build");
+    const row = session.rows[session.index];
+    const configured = session.drillPlan?.[session.index]?.mode;
+    return normalizeSentenceLessonMode(row, configured || (session.index % 2 === 0 ? "translate" : "build"));
   }
   if (session.modeId !== "mixed") return session.modeId;
   const progress = getSentencesProgress();
@@ -17697,7 +17813,6 @@ function advanceSentenceSession() {
 function exitSentenceStudioSession() {
   clearSentenceSessionTimeouts();
   stopSpeech();
-  queueScreenMotion("back", -1);
   sentenceStudioSession = null;
   sentenceLessonView = null;
   persistSentenceLessonSession(null);
@@ -18129,11 +18244,12 @@ function sentenceLessonIntroHtml(lesson) {
 }
 
 function sentenceStudyHtml(session) {
-  const row = session.rows[session.studyIndex];
-  const total = session.rows.length;
+  const studyRows = session.studyRows || session.rows;
+  const row = studyRows[session.studyIndex];
+  const total = studyRows.length;
   return `
     <div class="card word-card sent-session" id="sentenceSessionRoot" data-lesson-motion-root>
-      ${sentenceSessionProgressHtml(session.studyIndex + 1, total, "Listen and shadow")}
+      ${sentenceSessionProgressHtml(session.studyIndex + 1, total, "Listen and shadow", true)}
       <h2 class="screen-title" style="margin-bottom:8px;">Say the line out loud</h2>
       <div class="word-card-ko-tile">
         <button class="sent-card-ko" type="button" lang="ko" data-sentence-play aria-label="Hear ${escapeHtml(row.korean)}">
@@ -18151,7 +18267,7 @@ function sentenceStudyHtml(session) {
   `;
 }
 
-function sentenceSessionProgressHtml(current, total, label = "Line") {
+function sentenceSessionProgressHtml(current, total, label = "Line", allowReference = false) {
   const safeTotal = Math.max(1, Number(total) || 1);
   const safeCurrent = Math.min(safeTotal, Math.max(1, Number(current) || 1));
   const progressPct = Math.round((safeCurrent / safeTotal) * 100);
@@ -18161,7 +18277,7 @@ function sentenceSessionProgressHtml(current, total, label = "Line") {
         <div class="eyebrow">${escapeHtml(label)} · ${safeCurrent} of ${safeTotal}</div>
         <div class="word-card-progress-track" aria-hidden="true"><span style="width:${progressPct}%;"></span></div>
       </div>
-      <button class="button secondary compact word-card-bank-button" type="button" data-sentence-reference>📚 Reference</button>
+      ${allowReference ? '<button class="button secondary compact word-card-bank-button" type="button" data-sentence-reference>📚 Reference</button>' : ""}
     </div>
   `;
 }
@@ -18332,6 +18448,8 @@ function sentenceQuestionHtml(session) {
     }
   } else if (mode === "shadow") {
     const speech = session.speech || {};
+    const speechRecognitionSupported = Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
+    const speechPassed = Boolean(speech.score && speech.score.segmental >= 75);
     const scoreHtml = speech.score
       ? `<div class="ss-helper-panel">${speakingScoreHtml(row.korean, speech.transcript || "", speech.score)}</div>`
       : speech.status
@@ -18352,19 +18470,25 @@ function sentenceQuestionHtml(session) {
       : `<div class="ss-repeat-prompt" style="margin: 12px 0; color: var(--text-muted); text-align: center; font-size: 0.95rem; opacity: 0.6;">
            Listening to the pronunciation...
          </div>`;
+    const shadowActions = speech.score
+      ? `<div class="word-card-actions word-card-nav-actions">
+          <button class="button ${speechPassed ? "primary" : "secondary"} compact" type="button" data-sentence-selfmark="${speechPassed ? "correct" : "incorrect"}">${speechPassed ? "Continue" : "Mark for practice"}</button>
+        </div>`
+      : !speechRecognitionSupported && session.showRepeatPrompt
+        ? `<div class="word-card-actions word-card-nav-actions">
+            <button class="button secondary compact" type="button" data-sentence-selfmark="incorrect">Repeat again later</button>
+            <button class="button primary compact" type="button" data-sentence-selfmark="correct">I repeated it</button>
+          </div>`
+        : `<div class="screen-sub" style="margin:10px 0 0;text-align:center;">${session.showRepeatPrompt ? "Record your repetition to check it without revealing the line." : "Listen first; the Korean stays hidden until you attempt it."}</div>`;
     innerContent = `
       ${sentenceSessionProgressHtml(session.index + 1, session.rows.length)}
-      <div class="word-card-heading">
-        <div class="word-card-ko-tile">
-          <button class="sent-card-ko" type="button" lang="ko" data-sentence-play aria-label="Hear ${escapeHtml(row.korean)}">
-            <span class="word-card-ko-main">${escapeHtml(row.korean)}</span>
-            <span class="word-card-ko-rom">${escapeHtml(approximateSentenceRomanization(row.korean))}</span>
-          </button>
-          <button class="word-card-ko-play" type="button" lang="ko" data-sentence-play aria-label="Play ${escapeHtml(row.korean)}" title="Play Hangul">▶</button>
-        </div>
+      <div class="ss-shadow-listen-hero" aria-label="Hidden Korean shadow prompt">
+        <span class="ss-shadow-listen-icon" aria-hidden="true">🎧</span>
+        <strong>Listen, then repeat from memory</strong>
+        <span>The written Korean appears only after your attempt.</span>
       </div>
       ${sentenceModeMetaHtml(row, row.english)}
-      ${soundNoteHtml}
+      ${speech.score ? soundNoteHtml : ""}
       ${promptPulse}
       <div class="word-card-actions word-card-audio-actions">
         <button class="button secondary compact" type="button" data-sentence-play>▶ Play</button>
@@ -18372,10 +18496,7 @@ function sentenceQuestionHtml(session) {
         <button class="button secondary compact" type="button" data-sentence-record>${speech.listening ? "Listening..." : "🎙️ Record attempt"}</button>
       </div>
       ${scoreHtml}
-      <div class="word-card-actions word-card-nav-actions">
-        <button class="button secondary compact" type="button" data-sentence-selfmark="incorrect">Need practice</button>
-        <button class="button primary compact" type="button" data-sentence-selfmark="correct">I said it</button>
-      </div>
+      ${shadowActions}
     `;
   } else if (mode === "translate") {
     innerContent = `
@@ -18470,7 +18591,7 @@ function sentenceFeedbackHtml(session) {
 
   return `
     <div class="card word-card sent-session" id="sentenceSessionRoot" data-lesson-motion-root data-ss-id="${row.id}">
-      ${sentenceSessionProgressHtml(session.index + 1, session.rows.length, "Feedback")}
+      ${sentenceSessionProgressHtml(session.index + 1, session.rows.length, "Feedback", true)}
 
       <div class="word-card-heading">
         <div class="word-card-ko-tile">
@@ -18622,7 +18743,7 @@ function renderPracticeView() {
   }
   if (session && session.phase === "study" && !session.autoPlayed) {
     session.autoPlayed = true;
-    const row = session.rows[session.studyIndex];
+    const row = (session.studyRows || session.rows)[session.studyIndex];
     speak(row.voiceText || row.korean);
   } else if (session && session.phase === "question" && !session.autoPlayed) {
     const qMode = sentenceQuestionMode(session);
@@ -18984,7 +19105,8 @@ function bindSentenceSessionRoot(root) {
     if (slowBtn && root.contains(slowBtn)) {
       clearSentenceSessionTimeouts();
       session.showRepeatPrompt = true;
-      openSentenceSlowOverlay(row);
+      if (sentenceQuestionMode(session) === "shadow") speakSentenceSlow(row.voiceText || row.korean);
+      else openSentenceSlowOverlay(row);
       renderPracticeView();
       return;
     }
@@ -19016,7 +19138,8 @@ function bindSentenceSessionRoot(root) {
     }
     const studyNextBtn = event.target.closest("[data-sentence-study-next]");
     if (studyNextBtn && root.contains(studyNextBtn)) {
-      if (session.studyIndex + 1 < session.rows.length) {
+      const studyRows = session.studyRows || session.rows;
+      if (session.studyIndex + 1 < studyRows.length) {
         session.studyIndex += 1;
         session.autoPlayed = false;
       } else {
@@ -19203,6 +19326,7 @@ function renderVocabulary() {
   const dailyWordCount = dailyWords.length || currentBandItems.length;
   const showStudy = currentFocus !== "practice";
   const showQuiz = currentFocus !== "learn";
+  const practiceSession = showQuiz ? (getPracticeQuizSession("vocabulary") || startGenericPracticeSession("vocabulary")) : null;
   let activeView = normalizeVocabView(state.vocabView || "learn");
   if (currentFocus === "practice") activeView = "test";
   else if (currentFocus === "learn" && activeView === "test") activeView = "learn";
@@ -19309,7 +19433,7 @@ function renderVocabulary() {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
 
-  if (showQuiz) renderScopedQuestion("vocabulary");
+  if (showQuiz && !practiceSession.complete) renderScopedQuestion("vocabulary");
   showTapHint("vocabulary");
 
   // Restore focus and cursor selection range to search box if it was active
@@ -19350,6 +19474,7 @@ function renderLibrary() {
 
   const showStudy = currentFocus !== "practice";
   const showQuiz = currentFocus !== "learn";
+  const practiceSession = showQuiz ? (getPracticeQuizSession("listening") || startGenericPracticeSession("listening")) : null;
 
   el.innerHTML = `
     <div class="card">
@@ -19437,7 +19562,7 @@ function renderLibrary() {
   el.querySelectorAll("[data-speak]").forEach((btn) => {
     btn.addEventListener("click", () => speak(btn.dataset.speak || ""));
   });
-  if (showQuiz) renderScopedQuestion("listening");
+  if (showQuiz && !practiceSession.complete) renderScopedQuestion("listening");
   showTapHint("listening");
 }
 
@@ -19601,6 +19726,18 @@ async function init() {
 
   if (onbDiv) onbDiv.hidden = true;
   if (appDiv) appDiv.hidden = false;
+  if (appDiv) appDiv.addEventListener("click", (event) => {
+    const restart = event.target.closest("[data-generic-practice-again]");
+    if (!restart) return;
+    const scope = normalizeMainTab(restart.dataset.genericPracticeAgain);
+    startGenericPracticeSession(scope);
+    renderGenericPracticeSurface(scope);
+  });
+  const settingsShortcut = document.getElementById("app-settings-button");
+  if (settingsShortcut) settingsShortcut.addEventListener("click", () => {
+    queueScreenMotion("forward", 1);
+    renderSettingsScreen(activeHub);
+  });
   document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const previousIndex = Math.max(0, HUBS.indexOf(activeHub));

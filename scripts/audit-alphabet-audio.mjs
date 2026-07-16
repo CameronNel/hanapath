@@ -7,9 +7,8 @@
 // whole-word / closing-sound samples — normalizes them the same way speak()
 // does (trim + NFC), and checks both map coverage and local file existence.
 //
-// Usage: node scripts/audit-alphabet-audio.mjs [--strict] [--allow-missing=앋]
-//   --strict exits non-zero if any unallowed required token is missing.
-//   --allow-missing can be passed more than once for documented asset gaps.
+// Usage: node scripts/audit-alphabet-audio.mjs [--strict]
+//   --strict exits non-zero if any required token lacks a non-empty local file.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -21,15 +20,10 @@ const appSrc = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
 
 const norm = (s) => String(s || "").trim().normalize("NFC");
 
-function getAllowedMissingTokens(args) {
-  return new Set(
-    args
-      .filter((arg) => arg.startsWith("--allow-missing="))
-      .flatMap((arg) => arg.slice("--allow-missing=".length).split(","))
-      .map(norm)
-      .filter(Boolean),
-  );
-}
+// `No sound` is deliberately represented by a real Ogg silence clip. It is
+// documented here so nobody reintroduces the old zero-byte exception; even a
+// silent/non-speech key must point to a non-empty audio container.
+const DOCUMENTED_SILENT_KEYS = new Set(["No sound"]);
 
 // ── Load AUDIO_MAP from audio_map.js (it assigns window.AUDIO_MAP) ──────────
 function loadAudioMap() {
@@ -85,7 +79,6 @@ function collectRequired() {
 
 // ── Run ─────────────────────────────────────────────────────────────────────
 const strict = process.argv.includes("--strict");
-const allowedMissing = getAllowedMissingTokens(process.argv.slice(2));
 const audioMap = loadAudioMap();
 
 // Index map keys by NFC form (mirrors lookupAudioUrl in app.js).
@@ -96,12 +89,23 @@ const nonNormalizedKeys = Object.keys(audioMap).filter((k) => k !== norm(k));
 const required = collectRequired();
 const present = required.filter((t) => normalizedKeys.has(t));
 const missing = required.filter((t) => !normalizedKeys.has(t));
-const unallowedMissing = missing.filter((t) => !allowedMissing.has(t));
-const missingFiles = present.filter((token) => {
+const invalidAssets = present.map((token) => {
   const assetPath = normalizedEntries.get(token);
-  if (typeof assetPath !== "string" || !assetPath.startsWith("./")) return false;
-  return !fs.existsSync(path.join(ROOT, assetPath.slice(2)));
-});
+  if (typeof assetPath !== "string" || !assetPath.startsWith("./audio/")) {
+    return { token, assetPath, reason: "invalid mapped path" };
+  }
+  const filePath = path.resolve(ROOT, assetPath.slice(2));
+  const audioRoot = path.resolve(ROOT, "audio");
+  const rel = path.relative(audioRoot, filePath);
+  if (!rel || rel.startsWith("..") || path.isAbsolute(rel)) {
+    return { token, assetPath, reason: "mapped path escapes audio/" };
+  }
+  if (!fs.existsSync(filePath)) return { token, assetPath, reason: "mapped file is missing" };
+  const stat = fs.statSync(filePath);
+  if (!stat.isFile()) return { token, assetPath, reason: "mapped path is not a file" };
+  if (stat.size === 0) return { token, assetPath, reason: "mapped file is zero-byte" };
+  return null;
+}).filter(Boolean);
 
 console.log("Alphabet audio audit");
 console.log("====================");
@@ -109,28 +113,26 @@ console.log(`audio_map.js keys : ${Object.keys(audioMap).length}`);
 console.log(`required tokens   : ${required.length}`);
 console.log(`present           : ${present.length}`);
 console.log(`missing           : ${missing.length}`);
-console.log(`allowed missing   : ${missing.length - unallowedMissing.length}`);
-console.log(`unallowed missing : ${unallowedMissing.length}`);
-console.log(`missing files     : ${missingFiles.length}`);
+console.log(`invalid files     : ${invalidAssets.length}`);
+console.log(`documented silent : ${DOCUMENTED_SILENT_KEYS.size}`);
 console.log(`non-NFC map keys  : ${nonNormalizedKeys.length} (rescued by normalizeAudioKey at runtime)`);
 
 if (missing.length) {
   console.log("\nMissing audio (falls back to browser TTS):");
-  for (const t of missing) {
-    const allowed = allowedMissing.has(t) ? " (allowed)" : "";
-    console.log("  - " + JSON.stringify(t) + allowed);
-  }
+  for (const t of missing) console.log("  - " + JSON.stringify(t));
 }
 if (nonNormalizedKeys.length) {
   console.log("\nNon-NFC keys in audio_map.js (consider re-normalizing the source):");
   for (const k of nonNormalizedKeys.slice(0, 50)) console.log("  - " + JSON.stringify(k));
   if (nonNormalizedKeys.length > 50) console.log(`  …and ${nonNormalizedKeys.length - 50} more`);
 }
-if (missingFiles.length) {
-  console.log("\nMapped audio with missing local files:");
-  for (const t of missingFiles) console.log("  - " + JSON.stringify(t));
+if (invalidAssets.length) {
+  console.log("\nMapped audio with missing, empty, or invalid local files:");
+  for (const issue of invalidAssets) {
+    console.log(`  - ${JSON.stringify(issue.token)}: ${issue.reason} (${JSON.stringify(issue.assetPath)})`);
+  }
 }
 
-const failed = unallowedMissing.length || missingFiles.length;
+const failed = missing.length || invalidAssets.length;
 console.log(failed ? "\nResult: alphabet audio gaps found (see above)." : "\nResult: all required alphabet and Drill Lab audio is present.");
 process.exit(strict && failed ? 1 : 0);

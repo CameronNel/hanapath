@@ -83,8 +83,7 @@
       "sn1-firstwords-u2-l2",
       "sn1-firstwords-u2-l3",
       "sn1-firstwords-u2-l4",
-      "sn1-firstwords-u2-l5",
-      "sn1-firstwords-u2-l6"
+      "sn1-firstwords-u2-l5"
     ],
     "checkpointId": "sn1-firstwords-u2-cp"
   },
@@ -1604,7 +1603,7 @@
     "unitId": "sn1-firstwords-u2",
     "type": "content",
     "title": "S1 · Useful first exchanges · 1",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use useful first exchanges sentences naturally in Korean.",
     "sentenceIds": [
       "s0029",
@@ -1612,7 +1611,8 @@
       "s0033",
       "s0035",
       "s0036",
-      "s0037"
+      "s0037",
+      "s0041"
     ],
     "drillPlan": [
       {
@@ -1633,17 +1633,21 @@
       },
       {
         "sentenceId": "s0036",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s0037",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s0041",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "copula-ieyo",
       "honorific-si",
-      "imperative-seyo"
+      "imperative-seyo",
+      "copula-ieyo"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -1654,21 +1658,18 @@
     "unitId": "sn1-firstwords-u2",
     "type": "content",
     "title": "S1 · Useful first exchanges · 2",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use useful first exchanges sentences naturally in Korean.",
     "sentenceIds": [
-      "s0041",
       "s0133",
       "s0134",
       "s0135",
       "s0136",
-      "s0138"
+      "s0138",
+      "s0139",
+      "s0315"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s0041",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s0133",
         "mode": "translate"
@@ -1683,17 +1684,25 @@
       },
       {
         "sentenceId": "s0136",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s0138",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0139",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s0315",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "question-polite",
-      "copula-ieyo",
-      "honorific-si"
+      "location-e",
+      "object-eul-reul"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -1704,25 +1713,18 @@
     "unitId": "sn1-firstwords-u2",
     "type": "content",
     "title": "S1 · Useful first exchanges · 3",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use useful first exchanges sentences naturally in Korean.",
     "sentenceIds": [
-      "s0139",
-      "s0315",
+      "s0034",
+      "s0038",
       "s2037",
       "s2043",
       "s2047",
-      "s2053"
+      "s2053",
+      "s2056"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s0139",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0315",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s2037",
         "mode": "translate"
@@ -1733,17 +1735,29 @@
       },
       {
         "sentenceId": "s2047",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s2053",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2056",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0034",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s0038",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "copula-ieyo",
-      "question-polite",
-      "honorific-si"
+      "honorific-si",
+      "question-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -1754,67 +1768,30 @@
     "unitId": "sn1-firstwords-u2",
     "type": "content",
     "title": "S1 · Useful first exchanges · 4",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use useful first exchanges sentences naturally in Korean.",
     "sentenceIds": [
-      "s0034",
-      "s0038",
       "s0137",
       "s0140",
       "s0314",
-      "s2056"
+      "s0316",
+      "s0317",
+      "s0318",
+      "s0320"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s2056",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0034",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0038",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s0137",
         "mode": "translate"
       },
       {
         "sentenceId": "s0140",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s0314",
-        "mode": "listen"
-      }
-    ],
-    "patternTags": [
-      "copula-ieyo",
-      "present-polite",
-      "question-polite"
-    ],
-    "pass": {
-      "minFirstTryPct": 75
-    }
-  },
-  {
-    "id": "sn1-firstwords-u2-l5",
-    "unitId": "sn1-firstwords-u2",
-    "type": "content",
-    "title": "S1 · Useful first exchanges · 5",
-    "subtitle": "6 sentences · Listen, build, type",
-    "goal": "Use useful first exchanges sentences naturally in Korean.",
-    "sentenceIds": [
-      "s0316",
-      "s0317",
-      "s0318",
-      "s0320",
-      "s0321",
-      "s0322"
-    ],
-    "drillPlan": [
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0316",
         "mode": "translate"
@@ -1825,52 +1802,49 @@
       },
       {
         "sentenceId": "s0318",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0320",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0321",
         "mode": "build"
       },
       {
-        "sentenceId": "s0322",
+        "sentenceId": "s0320",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "present-polite",
       "time-expression",
-      "object-eul-reul"
+      "object-eul-reul",
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn1-firstwords-u2-l6",
+    "id": "sn1-firstwords-u2-l5",
     "unitId": "sn1-firstwords-u2",
     "type": "content",
-    "title": "S1 · Useful first exchanges · 6",
-    "subtitle": "6 sentences · Listen, build, type",
+    "title": "S1 · Useful first exchanges · 5",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use useful first exchanges sentences naturally in Korean.",
     "sentenceIds": [
       "s0319",
+      "s0321",
+      "s0322",
       "s0323",
       "s0324",
-      "s2012",
       "s2022",
       "s2027"
     ],
     "drillPlan": [
       {
-        "sentenceId": "s0324",
+        "sentenceId": "s0321",
         "mode": "translate"
       },
       {
-        "sentenceId": "s2012",
+        "sentenceId": "s0322",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0324",
         "mode": "translate"
       },
       {
@@ -1883,7 +1857,7 @@
       },
       {
         "sentenceId": "s0319",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s0323",
@@ -1891,9 +1865,9 @@
       }
     ],
     "patternTags": [
-      "object-eul-reul",
       "present-polite",
-      "topic-neun"
+      "object-eul-reul",
+      "time-expression"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -1904,7 +1878,7 @@
     "unitId": "sn1-firstwords-u2",
     "type": "checkpoint",
     "title": "Unit check: Useful first exchanges",
-    "subtitle": "Prove your 36 lines stick",
+    "subtitle": "Prove your 35 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -1936,7 +1910,6 @@
       "s0322",
       "s0323",
       "s0324",
-      "s2012",
       "s2022",
       "s2027",
       "s2037",
@@ -3570,13 +3543,14 @@
     "unitId": "sn2-grammar-u1",
     "type": "content",
     "title": "S2 · Function words · 1",
-    "subtitle": "4 sentences · Listen, build, type",
+    "subtitle": "5 sentences · Listen, build, type",
     "goal": "Use function words sentences naturally in Korean.",
     "sentenceIds": [
       "s0022",
       "s0045",
       "s0141",
-      "s0142"
+      "s0142",
+      "s0143"
     ],
     "drillPlan": [
       {
@@ -3589,17 +3563,21 @@
       },
       {
         "sentenceId": "s0141",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s0142",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s0143",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "present-polite",
-      "also-do",
-      "copula-ieyo"
+      "copula-ieyo",
+      "also-do"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -3610,25 +3588,30 @@
     "unitId": "sn2-grammar-u1",
     "type": "content",
     "title": "S2 · Function words · 2",
-    "subtitle": "4 sentences · Listen, build, type",
+    "subtitle": "5 sentences · Listen, build, type",
     "goal": "Use function words sentences naturally in Korean.",
     "sentenceIds": [
-      "s0143",
       "s0144",
       "s0145",
-      "s0146"
+      "s0146",
+      "s2012",
+      "s2061"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s0143",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s0144",
         "mode": "translate"
       },
       {
         "sentenceId": "s0145",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2012",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2061",
         "mode": "build"
       },
       {
@@ -3637,9 +3620,9 @@
       }
     ],
     "patternTags": [
+      "copula-negative-anieyo",
       "present-polite",
-      "with-hago-wa",
-      "and-go"
+      "topic-neun"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -3650,7 +3633,7 @@
     "unitId": "sn2-grammar-u1",
     "type": "checkpoint",
     "title": "Unit check: Function words",
-    "subtitle": "Prove your 8 lines stick",
+    "subtitle": "Prove your 10 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -3661,10 +3644,12 @@
       "s0143",
       "s0144",
       "s0145",
-      "s0146"
+      "s0146",
+      "s2012",
+      "s2061"
     ],
     "promptBounds": {
-      "min": 8,
+      "min": 10,
       "max": 12
     },
     "pass": {

@@ -14,27 +14,27 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="HanaPath" />
-    <link rel="stylesheet" href="./styles.css?v=20260714c" />
+    <link rel="stylesheet" href="./styles.css?v=20260715b" />
     <link rel="stylesheet" href="./app_intro.css?v=20260713b" />
     <link rel="icon" type="image/png" href="./icons/icon-192.png">
     <script defer src="./lib/hangul.js"></script>
-    <script defer src="./audio_map.js?v=20260712a"></script>
+    <script defer src="./audio_map.js?v=20260716a"></script>
     <!-- Words section curated data — must load before app.js -->
     <script defer src="./words_curated_core.js?v=20260705e"></script>
     <script defer src="./words_inflect.js?v=20260703c"></script>
     <script defer src="./words_lesson_plan.js?v=20260709f"></script>
     <script defer src="./raw_word_meanings.js?v=20260703b"></script>
     <!-- Sentences section bank — load before app.js -->
-    <script defer src="./sentences_core.js?v=20260707i"></script>
-    <script defer src="./sentences_lesson_plan.js?v=20260711o"></script>
+    <script defer src="./sentences_core.js?v=20260715b"></script>
+    <script defer src="./sentences_lesson_plan.js?v=20260715b"></script>
     <!-- Alphabet Hangul-writing stroke data — load before app.js -->
-    <script defer src="./lib/hangul_q_recognizer.js?v=20260712a"></script>
-    <script defer src="./hangul_strokes.js?v=20260712b"></script>
+    <script defer src="./lib/hangul_q_recognizer.js?v=20260715b"></script>
+    <script defer src="./hangul_strokes.js?v=20260715b"></script>
     <!-- App-wide first-run film; stays independent from lesson state.
          The timeline (generated voiceover + word-synced lyrics) must load first. -->
     <script defer src="./app_intro_timeline.js?v=20260713b"></script>
     <script defer src="./app_intro.js?v=20260713b"></script>
-    <script defer src="./app.js?v=20260714c"></script>
+    <script defer src="./app.js?v=20260715b"></script>
     <script defer src="./alphabet_skill_srs.js?v=20260630b"></script>
   </head>
   <body>
@@ -49,6 +49,12 @@
 
     <!-- Main app shell -->
     <div id="app" class="app-shell" hidden>
+      <button id="app-settings-button" class="app-settings-button" type="button" aria-label="Open settings" title="Settings" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
       <div id="detail-bar" class="detail-bar" hidden></div>
       <div id="screen-today"    class="screen" data-screen="today"></div>
       <div id="screen-path"     class="screen" data-screen="path"     hidden></div>
