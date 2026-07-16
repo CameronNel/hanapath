@@ -30,7 +30,10 @@ do not turn the root app into a framework project or remove browser/PWA support.
 > the Duolingo-style path from
 > **[`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md)**
 > (S2-A…S2-G all complete). The next work is that plan's **Phase 2 (§5) —
-> authored expansion via Track H, owner-gated 🔒**.
+> authored expansion via Track H, unlocked by the owner 2026-07-16 and
+> assigned to Opus per
+> [`docs/OPUS_TRACK_H_BATCH_PROMPT.md`](docs/OPUS_TRACK_H_BATCH_PROMPT.md)**
+> (scenario-pack themes remain owner-picked per batch).
 > Bank-level and authored-content work (Track H) still follows
 > **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)**
 > (one box = one PR; owner-gated items are marked 🔒), cross-checked against
