@@ -6226,8 +6226,6 @@ function advanceWordLessonStudy(view) {
   view.typeTilesWordId = null;
   view.typeHelperVisible = false;
   view.questionHelperUsed = false;
-  view.typeHelperVisible = false;
-  view.questionHelperUsed = false;
   if (view.stepIndex + 1 < view.steps.length) {
     view.stepIndex += 1;
     startWordLessonStudyTimer(view);

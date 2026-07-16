@@ -1,5 +1,5 @@
-// [2026-07-16] Cache bumped to v377: complete offline Korean audio allocation and experience polish.
-const CACHE_NAME = "hanapath-shell-v377";
+// [2026-07-16] Cache bumped to v378: remove duplicated helper-state reset in word lesson study flow.
+const CACHE_NAME = "hanapath-shell-v378";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -20,7 +20,7 @@ const APP_SHELL = [
   "./hangul_strokes.js?v=20260715b",
   "./app_intro_timeline.js?v=20260713b",
   "./app_intro.js?v=20260713b",
-  "./app.js?v=20260715b",
+  "./app.js?v=20260716b",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
