@@ -19,9 +19,9 @@
 //     the isFunctionWord gate, and the form-drill conjugation requirements —
 //     Track F4; dead checkpoints shipped silently for months before this)
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import vm from "node:vm";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -507,35 +507,58 @@ if (!Inflect) {
 
 // ── Audio-map coverage ─────────────────────────────────────────────────────
 // Every voiceText/exampleVoiceText the app can speak should resolve in
-// window.AUDIO_MAP the same way speak() resolves it: exact trimmed key, or —
-// for comma/slash/interpunct-separated sequences — every split part present.
+// window.AUDIO_MAP the same way the Words speaker resolves it: an exact,
+// trimmed/NFC key. (Only Phase One has a sequence player that splits commas.)
 // A miss falls back to robotic speechSynthesis, so it is a warning (fails
-  // --strict) unless the sentence is on the explicit allow list below, which
-  // records text that is knowingly awaiting a `python generate_assets.py` run.
-  const AUDIO_PENDING_ALLOWED = new Set([]);
+// --strict). A map key is not coverage when its local file is absent or
+// zero-byte. `No sound` is the only documented silent/non-speech key; it must
+// still be a real non-empty audio container rather than a placeholder.
+const DOCUMENTED_SILENT_KEYS = new Set(["No sound"]);
 const audioMap = sandbox.window.AUDIO_MAP;
 if (!audioMap || typeof audioMap !== "object") {
   errors.push("window.AUDIO_MAP is missing or not an object");
 } else {
-  const hasKey = (text) => {
+  const normalizedAudioMap = new Map();
+  for (const [key, value] of Object.entries(audioMap)) {
+    const normalized = String(key).trim().normalize("NFC");
+    if (!normalizedAudioMap.has(normalized)) normalizedAudioMap.set(normalized, value);
+  }
+  const audioRoot = resolve(root, "audio");
+  const assetStatus = (token) => {
+    const normalized = String(token || "").trim().normalize("NFC");
+    const mapped = normalizedAudioMap.get(normalized);
+    if (!mapped) return { ok: false, reason: "missing AUDIO_MAP key" };
+    if (typeof mapped !== "string" || !mapped.startsWith("./audio/")) {
+      return { ok: false, reason: `invalid mapped path ${JSON.stringify(mapped)}` };
+    }
+    const filePath = resolve(root, mapped.slice(2));
+    const rel = relative(audioRoot, filePath);
+    if (!rel || rel.startsWith("..") || isAbsolute(rel)) {
+      return { ok: false, reason: `mapped path escapes audio/: ${JSON.stringify(mapped)}` };
+    }
+    if (!existsSync(filePath)) return { ok: false, reason: `mapped file is missing: ${mapped}` };
+    const stat = statSync(filePath);
+    if (!stat.isFile()) return { ok: false, reason: `mapped path is not a file: ${mapped}` };
+    if (stat.size === 0) return { ok: false, reason: `mapped file is zero-byte: ${mapped}` };
+    return { ok: true, reason: DOCUMENTED_SILENT_KEYS.has(normalized) ? "documented silence" : "" };
+  };
+  const audioStatus = (text) => {
     const t = String(text || "").trim();
-    if (!t) return true;
-    if (audioMap[t] || audioMap[t.normalize("NFC")]) return true;
-    const parts = t.split(/[,\u3001\/·|]+/).map((x) => x.trim()).filter(Boolean);
-    return parts.length > 1 && parts.every((x) => audioMap[x] || audioMap[x.normalize("NFC")]);
+    if (!t) return { ok: true, reason: "" };
+    return assetStatus(t);
   };
   let audioMisses = 0;
   for (const word of words || []) {
     for (const field of ["voiceText", "exampleVoiceText"]) {
       const text = word[field];
       if (!text || !HANGUL_RE.test(text)) continue;
-      if (hasKey(text)) continue;
-      if (AUDIO_PENDING_ALLOWED.has(String(text).trim())) continue;
+      const status = audioStatus(text);
+      if (status.ok) continue;
       audioMisses += 1;
-      warnings.push(`${word.id}: ${field} has no audio_map entry: ${JSON.stringify(text)} (run generate_assets.py or add to AUDIO_PENDING_ALLOWED with a reason)`);
+      warnings.push(`${word.id}: ${field} has no playable local audio for ${JSON.stringify(text)} (${status.reason}; run generate_assets.py)`);
     }
   }
-  console.log(`Audio coverage: ${audioMisses} unexpected miss(es); ${AUDIO_PENDING_ALLOWED.size} knowingly pending`);
+  console.log(`Audio coverage: ${audioMisses} missing/empty asset(s); ${DOCUMENTED_SILENT_KEYS.size} documented silence key(s)`);
 }
 
 console.log(`Curated words: ${(words || []).length}`);

@@ -68871,8 +68871,8 @@
     "tokens": ["저는","학생이","아니에요"],
     "band": 2,
     "patternTags": ["topic-neun","subject-i-ga","copula-negative-anieyo"],
-    "focusWordIds": ["w0303_jeo_that_over","w0207_haksaeng"],
-    "sourceWordIds": ["w0303_jeo_that_over","w0207_haksaeng"],
+    "focusWordIds": ["w0201_jeo_i","w0207_haksaeng"],
+    "sourceWordIds": ["w0201_jeo_i","w0207_haksaeng"],
     "speechLevel": "polite informal",
     "register": "polite",
     "grammarTip": "",
@@ -69842,6 +69842,26 @@
       "patternTags": "explicit"
     },
     "source": "legacy-app"
+  },
+  {
+    "id": "s2061",
+    "korean": "이것은 책이 아니에요.",
+    "english": "This is not a book.",
+    "voiceText": "이것은 책이 아니에요.",
+    "tokens": ["이것은","책이","아니에요"],
+    "band": 2,
+    "patternTags": ["topic-neun","copula-negative-anieyo"],
+    "focusWordIds": ["w0301_i_this","w0309_chaek"],
+    "sourceWordIds": ["w0301_i_this","w0309_chaek"],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "아니에요 is the polite negative copula: it means am not, is not, or are not.",
+    "acceptAlso": ["이건 책이 아니에요."],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
   }
 ];
 })();

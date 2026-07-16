@@ -49,6 +49,8 @@ const wordUnitMap = new Map(wordUnits.map((u, i) => [u.id, { unit: u, index: i }
 const sentenceGatingUnits = new Map();
 const rawReassignments = {
   "s0045": "s2-grammar-u1",
+  "s2012": "s2-grammar-u1",
+  "s2061": "s2-grammar-u1",
   "s2021": "s2-daily-u1",
   "s2041": "s2-actions-u1",
   "s2045": "s2-actions-u1"

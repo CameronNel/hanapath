@@ -1,26 +1,26 @@
-// [2026-07-14] Cache bumped to v374: premium app-wide motion and unified completion stages.
-const CACHE_NAME = "hanapath-shell-v374";
+// [2026-07-16] Cache bumped to v377: complete offline Korean audio allocation and experience polish.
+const CACHE_NAME = "hanapath-shell-v377";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260714c",
+  "./styles.css?v=20260715b",
   "./app_intro.css?v=20260713b",
   "./lib/hangul.js",
-  "./lib/hangul_q_recognizer.js?v=20260712a",
-  "./audio_map.js?v=20260712a",
+  "./lib/hangul_q_recognizer.js?v=20260715b",
+  "./audio_map.js?v=20260716a",
   "./words_curated_core.js?v=20260705e",
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260709f",
   "./raw_word_meanings.js?v=20260703b",
-  "./sentences_core.js?v=20260707i",
-  "./sentences_lesson_plan.js?v=20260711o",
-  "./hangul_strokes.js?v=20260712b",
+  "./sentences_core.js?v=20260715b",
+  "./sentences_lesson_plan.js?v=20260715b",
+  "./hangul_strokes.js?v=20260715b",
   "./app_intro_timeline.js?v=20260713b",
   "./app_intro.js?v=20260713b",
-  "./app.js?v=20260714c",
+  "./app.js?v=20260715b",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
