@@ -6,6 +6,14 @@
 > defaults below but none is final until the owner marks it ✅.
 >
 > Legend: ⏳ awaiting owner · ✅ owner-confirmed (add date + initials)
+>
+> **M5 drafts now exist** to make each decision concrete:
+> [`STORE_LISTING.md`](STORE_LISTING.md) (name/description/assets, #2),
+> [`DATA_SAFETY.md`](DATA_SAFETY.md) (declarations, #4/#8),
+> [`INTERNAL_TESTING_RUNBOOK.md`](INTERNAL_TESTING_RUNBOOK.md) (release path,
+> #5), [`SIGNING_AND_RELEASE.md`](SIGNING_AND_RELEASE.md) (keystore/CI), and
+> the privacy page `privacy.html` at the repository root (#8). They are
+> proposals — nothing is submitted to Google until the table below is ✅.
 
 ## Blocking M1 (Capacitor project generation)
 
@@ -73,14 +81,18 @@ accounts show the verified name rules Google applies at registration).
 
 ### 8. Privacy-policy URL — ⏳
 
-**Proposed: host a static page in this repo**, e.g.
-`https://cameronnel.github.io/hanapath/privacy.html`, drafted at M5 from
-actual behaviour: all learning state and handwriting stay on-device; no ads,
-no analytics, no accounts; the only network use is fetching the hosted app
-and (natively, optional, if M3 adopts it) the on-device ML Kit Korean
-handwriting model download.
+**Proposed: host a static page in this repo**, at
+`https://cameronnel.github.io/hanapath/privacy.html`.
 
-- Required for Data Safety even for apps that collect nothing.
+- **Drafted (M5):** `privacy.html` now exists at the repository root and goes
+  live at that URL on merge (GitHub Pages serves the repo root). It states
+  the actual behaviour: all learning state and handwriting stay on-device; no
+  ads, no analytics, no accounts; network use is only fetching the hosted app
+  (plus GitHub's standard hosting logs) and the optional, opt-in on-device
+  ML Kit Korean handwriting model download in the native app.
+- Required for Data Safety even for apps that collect nothing. The URL
+  entered in Play Console is this decision; the page existing does not
+  confirm it.
 
 ## Record of confirmations
 
