@@ -1,10 +1,21 @@
 #!/usr/bin/env node
-import { loadAudioMap, loadCuratedWords, loadExistingSentenceBank, normalizeSentenceKey } from "./sentences-bank.mjs";
+import { existsSync, statSync } from "node:fs";
+import { isAbsolute, relative, resolve } from "node:path";
+import { ROOT, loadAudioMap, loadCuratedWords, loadExistingSentenceBank, normalizeSentenceKey } from "./sentences-bank.mjs";
 
 const strict = process.argv.includes("--strict");
 const words = loadCuratedWords();
 const sentences = loadExistingSentenceBank();
 const audioMap = loadAudioMap();
+const normalizedAudioMap = new Map();
+for (const [key, value] of Object.entries(audioMap || {})) {
+  const normalized = String(key).trim().normalize("NFC");
+  if (!normalizedAudioMap.has(normalized)) normalizedAudioMap.set(normalized, value);
+}
+const audioRoot = resolve(ROOT, "audio");
+// The only deliberate non-speech entry is a real Ogg silence asset. Required
+// spoken rows never get a zero-byte exception.
+const DOCUMENTED_SILENT_KEYS = new Set(["No sound"]);
 
 const errors = [];
 const warnings = [];
@@ -57,6 +68,7 @@ const VALID_PATTERN_TAGS = new Set([
 const wordsById = new Map((words || []).map((word) => [word.id, word]));
 const sentenceIds = new Set();
 const normalizedSentenceKeys = new Map();
+let sentenceAudioMisses = 0;
 
 const annotationSourceCounts = {
   band: { explicit: 0, inferred: 0, absent: 0 },
@@ -87,12 +99,29 @@ function stripTrailingPunctuation(token) {
     .trim();
 }
 
-function hasAudioKey(text) {
+function mappedAssetStatus(token) {
+  const normalized = String(token || "").trim().normalize("NFC");
+  const mapped = normalizedAudioMap.get(normalized);
+  if (!mapped) return { ok: false, reason: "missing AUDIO_MAP key" };
+  if (typeof mapped !== "string" || !mapped.startsWith("./audio/")) {
+    return { ok: false, reason: `invalid mapped path ${JSON.stringify(mapped)}` };
+  }
+  const filePath = resolve(ROOT, mapped.slice(2));
+  const rel = relative(audioRoot, filePath);
+  if (!rel || rel.startsWith("..") || isAbsolute(rel)) {
+    return { ok: false, reason: `mapped path escapes audio/: ${JSON.stringify(mapped)}` };
+  }
+  if (!existsSync(filePath)) return { ok: false, reason: `mapped file is missing: ${mapped}` };
+  const stat = statSync(filePath);
+  if (!stat.isFile()) return { ok: false, reason: `mapped path is not a file: ${mapped}` };
+  if (stat.size === 0) return { ok: false, reason: `mapped file is zero-byte: ${mapped}` };
+  return { ok: true, reason: DOCUMENTED_SILENT_KEYS.has(normalized) ? "documented silence" : "" };
+}
+
+function audioStatus(text) {
   const trimmed = String(text || "").trim();
-  if (!trimmed) return true;
-  if (audioMap[trimmed] || audioMap[trimmed.normalize("NFC")]) return true;
-  const parts = trimmed.split(/[,\u3001\/·|]+/).map((part) => part.trim()).filter(Boolean);
-  return parts.length > 1 && parts.every((part) => audioMap[part] || audioMap[part.normalize("NFC")]);
+  if (!trimmed) return { ok: true, reason: "" };
+  return mappedAssetStatus(trimmed);
 }
 
 function summarizeAnnotationSource(row, label) {
@@ -151,8 +180,10 @@ for (const row of sentences || []) {
     if (LATIN_RE.test(row.voiceText)) {
       errors.push(`${label}: voiceText contains English letters: ${JSON.stringify(row.voiceText)}`);
     }
-    if (!hasAudioKey(row.voiceText)) {
-      errors.push(`${label}: voiceText has no audio_map entry: ${JSON.stringify(row.voiceText)}`);
+    const status = audioStatus(row.voiceText);
+    if (!status.ok) {
+      sentenceAudioMisses += 1;
+      errors.push(`${label}: voiceText has no playable local audio: ${JSON.stringify(row.voiceText)} (${status.reason})`);
     }
   }
 
@@ -249,8 +280,9 @@ for (const word of words || []) {
   for (const field of ["voiceText", "exampleVoiceText"]) {
     const text = word[field];
     if (!isNonEmptyString(text)) continue;
-    if (HANGUL_RE.test(text) && !hasAudioKey(text)) {
-      wordsAudioMisses.push(`${word.id}: ${field} missing audio`);
+    const status = audioStatus(text);
+    if (HANGUL_RE.test(text) && !status.ok) {
+      wordsAudioMisses.push(`${word.id}: ${field} missing/empty audio (${status.reason})`);
     }
   }
 }
@@ -264,14 +296,15 @@ const summary = {
   uniqueSentenceIds: sentenceIds.size,
   uniqueKorean: normalizedSentenceKeys.size,
   annotationSources: annotationSourceCounts,
-  audioMisses: wordsAudioMisses.length,
+  sentenceAudioMisses,
+  wordsAudioMisses: wordsAudioMisses.length,
 };
 
 console.log(`Sentences rows: ${summary.rows}`);
 console.log(`Unique sentence ids: ${summary.uniqueSentenceIds}`);
 console.log(`Unique korean sentences: ${summary.uniqueKorean}`);
 console.log(`Annotation sources: ${JSON.stringify(summary.annotationSources)}`);
-console.log(`Audio coverage: ${summary.audioMisses} unexpected miss(es); 0 knowingly pending`);
+console.log(`Audio coverage: ${summary.sentenceAudioMisses} sentence issue(s); ${summary.wordsAudioMisses} word/example issue(s); ${DOCUMENTED_SILENT_KEYS.size} documented silence key(s)`);
 console.log(`Errors: ${errors.length}`);
 for (const message of errors) {
   console.log(`  ERROR ${message}`);

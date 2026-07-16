@@ -227,7 +227,7 @@ All modes draw from the bank and grade into the sentence SRS.
 Update this table in the same PR as the work it describes. **Claims here must
 be re-derived from data, not copied forward.**
 
-| # | Piece | Status (2026-07-06) |
+| # | Piece | Status (2026-07-16) |
 |---|---|---|
 | 1 | Sentence bank `sentences_core.js` + extractor | ✅ done |
 | 2 | Sentence audit `scripts/audit-sentences-data.mjs` | ✅ done |
@@ -235,14 +235,22 @@ be re-derived from data, not copied forward.**
 | 4 | Practice hub rebuild (due/new/free session flow) | ✅ **done** — the self-contained **Sentence Studio** now includes the curriculum-v2 path hub, continuation hero, guided unit progression, checkpoint crowns, due/free practice, and insights. |
 | 5 | Sentence SRS (`state.sentencesProgress`) | ✅ done — Leitner scheduling + due dates (C3) fully built and scheduled |
 | 6 | i+1 gating via `focusWordIds` | ✅ done — new-sentence queue restricted to known words (C2) |
-| 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,060 rows explicit; **accuracy sweep complete for all s0001–s2060** (finished 2026-07-07). |
-| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ✅ **done** — 75 curriculum-v2 units (333 content lessons + 75 checkpoints) are playable, with Words-based unit gating, linear lesson progression, collapsible path UI, and checkpoint crowns wired in Sentence Studio |
+| 7 | Pattern-tag curation (inferred → explicit) | ✅ **done** — 2,061 rows explicit / 0 inferred; the original accuracy sweep covers s0001–s2060 and the owner-requested coverage row s2061 is explicitly authored and audited. |
+| 8 | Pattern micro-lessons (`sentences_lesson_plan.js`) | ✅ **done** — 75 curriculum-v2 units (332 content lessons + 75 checkpoints) are playable, with Words-based unit gating, linear lesson progression, collapsible path UI, and checkpoint crowns wired in Sentence Studio |
 | 9 | Shadow mode + speech-stub wiring for sentences | ✅ **done** — automated listen → slow replay → prompt timing flow, SpeechRecognition transcript grading, and soundNote details surfaced |
 | 10 | Transform drill (inflection engine) | ✅ **done** — inflected surface replacement via `HANAPATH_INFLECT`, deck and mixed session integration at band ≥3, and SRS grading integration |
-| 11 | Authored expansion batches (gap-driven) | ❌ not started (owner-gated volume) |
+| 11 | Authored expansion batches (gap-driven) | ❌ bulk batches not started (owner-gated volume); one owner-requested coverage row, s2061, closes the second distinct `copula-negative-anieyo` presentation without opening Track H volume. |
 | 12 | Legacy mini-bank migration + dead-code removal | 🟡 **partial** — mini-bank data was migrated into `sentences_core.js` (#109), but the **dead-code removal is not done**: `getSentenceStudyBank()`/`makeSentence*` still live in `app.js` (≈2137+) because the **Listening** tab still calls them. Full removal is the rest of Track I |
 | 13 | Sentence analytics events + metrics view | ✅ **done** — review events tracked and integrated into a dedicated sentence insights card in the metrics view (J1) |
 | 14 | Close-out: docs honest, cold-learner browser test | ✅ **done** — specs scorecard fully re-derived, roadmap reconciled, HANDOVER.md updated, and automated verification script completed and verified (J2/J3) |
+
+> **Experience/audio verification (2026-07-16):** the canonical learner-audio
+> manifest contains 32,861 targets and the strict audit reports 32,861 valid
+> local assets, 0 missing mappings, and 0 invalid assets. The finite-question
+> audit covers all 2,061 sentence rows at least twice (5,455 presentations), all
+> 37 pattern tags with at least two distinct rows/presentations, and no tracked
+> pre-answer target leaks. These counts were re-derived from the committed data
+> and runtime planners rather than copied from an earlier scorecard.
 
 > **Foundation note (2026-07-06):** the Sentences section was rebuilt from
 > scratch as its own subsystem — **Sentence Studio** — instead of routing

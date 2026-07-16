@@ -1,8 +1,8 @@
 # Sentences Curriculum v2 Report
 
-Total sentence rows: 2060
+Total sentence rows: 2061
 Total units: 75
-Total content lessons: 333
+Total content lessons: 332
 Total checkpoints: 75
 
 ## Units Breakdown
@@ -22,14 +22,13 @@ Total checkpoints: 75
 ### Unit: sn1-firstwords-u2 (Useful first exchanges 👋)
 - Section: sn1
 - Twin Words Unit: s1-firstwords-u2
-- Total rows: 36
-- Content Lessons: 6
-  - **sn1-firstwords-u2-l1** (S1 · Useful first exchanges · 1): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn1-firstwords-u2-l2** (S1 · Useful first exchanges · 2): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn1-firstwords-u2-l3** (S1 · Useful first exchanges · 3): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn1-firstwords-u2-l4** (S1 · Useful first exchanges · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn1-firstwords-u2-l5** (S1 · Useful first exchanges · 5): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn1-firstwords-u2-l6** (S1 · Useful first exchanges · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+- Total rows: 35
+- Content Lessons: 5
+  - **sn1-firstwords-u2-l1** (S1 · Useful first exchanges · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn1-firstwords-u2-l2** (S1 · Useful first exchanges · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn1-firstwords-u2-l3** (S1 · Useful first exchanges · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn1-firstwords-u2-l4** (S1 · Useful first exchanges · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn1-firstwords-u2-l5** (S1 · Useful first exchanges · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn1-firstwords-u3 (Questions on the street 👋)
 - Section: sn1
@@ -90,10 +89,10 @@ Total checkpoints: 75
 ### Unit: sn2-grammar-u1 (Function words 📖)
 - Section: sn2
 - Twin Words Unit: s2-grammar-u1
-- Total rows: 8
+- Total rows: 10
 - Content Lessons: 2
-  - **sn2-grammar-u1-l1** (S2 · Function words · 1): 4 rows [Drills: translate, translate, build, listen]
-  - **sn2-grammar-u1-l2** (S2 · Function words · 2): 4 rows [Drills: translate, translate, build, listen]
+  - **sn2-grammar-u1-l1** (S2 · Function words · 1): 5 rows [Drills: translate, translate, translate, build, listen]
+  - **sn2-grammar-u1-l2** (S2 · Function words · 2): 5 rows [Drills: translate, translate, translate, build, listen]
 
 ### Unit: sn2-nature-u1 (Weather today 🌿)
 - Section: sn2

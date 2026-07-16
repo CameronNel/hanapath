@@ -1,3 +1,23 @@
 .codex-remote-attachments/
 *.log
 node_modules/
+__pycache__/
+
+# Native packaging (mobile/) — generated output and local tooling state
+mobile/www/
+mobile/www-manifest.json
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/local.properties
+mobile/android/.idea/
+mobile/android/captures/
+
+# Signing material — never commit keystores or credentials
+*.jks
+*.keystore
+*.p12
+keystore.properties
+signing.properties
+*.aab
+*.apk

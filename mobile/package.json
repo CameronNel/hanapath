@@ -1,0 +1,20 @@
+{
+  "name": "hanapath-mobile",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Isolated Capacitor packaging project for the canonical HanaPath web app (see docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md). The web app itself stays vanilla and build-free; this project only wraps generated, allowlisted copies of the audited assets.",
+  "type": "module",
+  "scripts": {
+    "prepare:web": "node scripts/prepare-web.mjs",
+    "verify:web": "node ../scripts/audit-mobile-package.mjs",
+    "sync:android": "npm run prepare:web && npm run verify:web && capacitor sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.4.2",
+    "@capacitor/app": "8.1.1",
+    "@capacitor/core": "8.4.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.4.2"
+  }
+}

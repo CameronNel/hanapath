@@ -1,0 +1,134 @@
+name: Android build
+
+on:
+  pull_request:
+    paths:
+      - "mobile/**"
+      - "index.html"
+      - "app.js"
+      - "styles.css"
+      - "sw.js"
+      - "app_intro.*"
+      - "audio_map.js"
+      - "words_*.js"
+      - "sentences_*.js"
+      - "raw_word_meanings.js"
+      - "hangul_strokes.js"
+      - "alphabet_skill_srs.js"
+      - "manifest.webmanifest"
+      - "fonts/**"
+      - "lib/**"
+      - "icons/**"
+      - "scripts/audit-mobile-package.mjs"
+      - "scripts/audit-app-shell.mjs"
+      - ".github/workflows/android-build.yml"
+  push:
+    branches: [main]
+    paths:
+      - "mobile/**"
+      - ".github/workflows/android-build.yml"
+  workflow_dispatch:
+
+# Pull requests must never see signing material; this workflow uses no secrets.
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Prepare, audit, and build debug Android app
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Static app checks
+        run: |
+          node --check app.js
+          node --check sw.js
+          node scripts/audit-app-shell.mjs
+
+      - name: Learning-data audits
+        run: |
+          node scripts/audit-words-data.mjs --strict
+          node scripts/audit-sentences-data.mjs --strict
+          node scripts/audit-alphabet-audio.mjs --strict
+          node scripts/audit-hangul-recognition.mjs
+
+      - name: Install mobile dependencies
+        working-directory: mobile
+        run: npm ci
+
+      - name: Generate allowlisted web payload
+        working-directory: mobile
+        run: npm run prepare:web
+
+      - name: Audit mobile package
+        run: node scripts/audit-mobile-package.mjs
+
+      - name: Sync Capacitor Android project
+        working-directory: mobile
+        run: npx cap sync android
+
+      - name: Build debug APK and run checks
+        working-directory: mobile/android
+        run: |
+          chmod +x gradlew
+          ./gradlew lint testDebugUnitTest assembleDebug --no-daemon
+
+      - name: Verify merged manifest permissions
+        run: |
+          merged=$(find mobile/android/app/build/intermediates/merged_manifests -path '*debug*' -name AndroidManifest.xml | sort | head -1)
+          if [ -z "$merged" ]; then echo "merged debug manifest not found" >&2; exit 1; fi
+          echo "Merged manifest: $merged"
+          # Only <uses-permission> elements grant the app permissions. Other
+          # android.permission.* strings in the merged manifest (for example a
+          # library receiver protected by android:permission="...DUMP") are
+          # requirements imposed on callers, not grants, and must not fail this.
+          perms=$(grep -oE '<uses-permission(-sdk-23)?[^>]*android:name="[^"]*"' "$merged" | grep -oE '"[^"]*"$' | tr -d '"' | sort -u || true)
+          echo "Declared uses-permissions:"
+          echo "${perms:-<none>}"
+          # Allowed: INTERNET (Capacitor default; future optional model download)
+          # and the app's own signature-level DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+          # that androidx.core adds as receiver-export hardening.
+          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected permissions in merged manifest:" >&2
+            echo "$unexpected" >&2
+            exit 1
+          fi
+
+      - name: Report artifact sizes
+        run: |
+          ls -la mobile/android/app/build/outputs/apk/debug/
+          du -sh mobile/www
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanapath-debug-apk
+          path: mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+      - name: Upload package manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: www-package-manifest
+          path: mobile/www-manifest.json
+          retention-days: 14
