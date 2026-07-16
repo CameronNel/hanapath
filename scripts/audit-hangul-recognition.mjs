@@ -40,6 +40,11 @@ requireAppSource(
     && appSource.includes("Number(state.writingLineWidth)"),
   "the persisted line-thickness setting is not wired to learner ink",
 );
+requireAppSource(
+  appSource.includes("recognizeHangulWriting(canvas, getHangulWritingRecognitionGlyphs().length)")
+    && appSource.includes("isHangulFreehandRecognitionMatch(matches, glyph, strokes)"),
+  "completed syllables do not reach the target-aware component fallback",
+);
 
 function scanJavaScript(source, start, stop) {
   let quote = "";
@@ -127,19 +132,38 @@ const compositionDeclarations = [
   "HANGUL_SYLLABLE_LAYOUTS",
   "HANGUL_COMPOUND_FINAL_PARTS",
   "hangulSyllableGuideCache",
+  "HANGUL_GRADE",
+  "HANGUL_FREEHAND_TARGET_CONFIDENCE",
+  "HANGUL_FREEHAND_MIN_MARGIN",
+  "HANGUL_FREEHAND_FALLBACK_TARGET_CONFIDENCE",
+  "HANGUL_FREEHAND_COMPONENT_MIN_CONFIDENCE",
+  "HANGUL_FREEHAND_COMPONENT_AVG_CONFIDENCE",
+  "HANGUL_FREEHAND_COMPONENT_MAX_RANK",
+  "hangulComponentRecognizerCache",
 ].map(extractDeclaration);
 const compositionFunctions = [
   "decomposeHangul",
   "normalizeHangulJamoStrokes",
   "getComposableJamoStrokes",
+  "getHangulSyllableLayout",
   "composeHangulSyllableGuide",
   "getHangulStrokeGuide",
+  "hangulPairDist",
+  "hangulPairPathLength",
+  "cleanHangulInkStroke",
+  "resampleHangulStroke",
+  "getHangulComponentStrokes",
+  "getHangulComponentRecognizer",
+  "extractHangulInkComponentStrokes",
+  "getHangulTargetComponentMatches",
+  "isHangulTargetAwareRecognitionMatch",
+  "isHangulFreehandRecognitionMatch",
 ].map(extractFunction);
 const createCompositionApi = new Function(
   "window",
-  `"use strict";\n${compositionDeclarations.join("\n")}\n${compositionFunctions.join("\n")}\nreturn { getHangulStrokeGuide };\n//# sourceURL=hanapath-app-composition-audit.js`,
+  `"use strict";\n${compositionDeclarations.join("\n")}\n${compositionFunctions.join("\n")}\nreturn { getHangulStrokeGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch };\n//# sourceURL=hanapath-app-composition-audit.js`,
 );
-const { getHangulStrokeGuide } = createCompositionApi(globalThis);
+const { getHangulStrokeGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch } = createCompositionApi(globalThis);
 
 function guideProblem(guide) {
   if (!guide || typeof guide !== "object") return "guide is missing";
@@ -200,6 +224,43 @@ for (const [glyph, guide] of Object.entries(bank)) {
   if (!recognizer.add(glyph, guide.strokes, { augment: true })) throw new Error(`Could not add template ${glyph}`);
 }
 const glyphs = Object.keys(bank);
+
+// Regression captured from the 2026-07-16 learner report: a loose but
+// structurally readable 한, with ㅎ and final ㄴ joined into one natural pen
+// gesture and an overlong ㅏ. Whole-block $Q ranks this behind several
+// unrelated blocks, so the prompted-syllable fallback must validate the three
+// Hangul components without accepting another unit glyph as 한.
+const ROUGH_NATURAL_HAN = [
+  [[0.24, 0.04], [0.24, 0.2]],
+  [[0.08, 0.17], [0.18, 0.18], [0.31, 0.19], [0.43, 0.17]],
+  [[0.16, 0.3], [0.11, 0.36], [0.1, 0.48], [0.15, 0.55], [0.28, 0.56], [0.37, 0.5], [0.4, 0.4], [0.36, 0.32], [0.25, 0.3], [0.16, 0.3], [0.13, 0.46], [0.14, 0.65], [0.16, 0.82], [0.19, 0.91], [0.39, 0.91]],
+  [[0.69, 0.22], [0.69, 0.84]],
+  [[0.69, 0.49], [0.9, 0.49]],
+];
+const TARGET_AWARE_UNIT_GLYPHS = [
+  "한", "부", "리", "워", "글", "국", "어", "말", "단", "읽", "다", "듣", "쓰", "문",
+  "장", "안", "녕", "하", "세", "요", "감", "니", "네", "아", "주", "죄", "송",
+];
+const targetAwareRecognizer = new API.Recognizer();
+for (const glyph of [...new Set([...glyphs, ...TARGET_AWARE_UNIT_GLYPHS])]) {
+  const guide = getHangulStrokeGuide(glyph);
+  if (guide) targetAwareRecognizer.add(glyph, guide.strokes, { augment: true });
+}
+const targetAwareLimit = glyphs.length + TARGET_AWARE_UNIT_GLYPHS.length;
+const roughHanMatches = targetAwareRecognizer.recognize(ROUGH_NATURAL_HAN, targetAwareLimit);
+const roughHanComponents = getHangulTargetComponentMatches(ROUGH_NATURAL_HAN, "한");
+const targetAwareFailures = [];
+if (!isHangulFreehandRecognitionMatch(roughHanMatches, "한", ROUGH_NATURAL_HAN)) {
+  targetAwareFailures.push({ kind: "rough-positive", source: "한", components: roughHanComponents });
+}
+for (const source of TARGET_AWARE_UNIT_GLYPHS) {
+  if (source === "한") continue;
+  const strokes = getHangulStrokeGuide(source)?.strokes || [];
+  const matches = targetAwareRecognizer.recognize(strokes, targetAwareLimit);
+  if (isHangulFreehandRecognitionMatch(matches, "한", strokes)) {
+    targetAwareFailures.push({ kind: "false-accept", source, components: getHangulTargetComponentMatches(strokes, "한") });
+  }
+}
 // Match the learner-facing confidence floor. Unlike the old freehand check,
 // passing this audit also requires the prompted glyph to be the top-ranked
 // result; a high-confidence second or third choice is only a confuser.
@@ -459,12 +520,15 @@ console.log(`positive min margin: ${Number.isFinite(minimumPositiveMargin) ? min
 console.log(`pairwise negatives : ${negativeCases}`);
 console.log(`confidence confusers: ${confidenceConfusers.length}`);
 console.log(`false accepts      : ${falseAccepts.length}`);
+console.log(`rough 한 fallback  : ${targetAwareFailures.some((failure) => failure.kind === "rough-positive") ? "fail" : "pass"}`);
+console.log(`fallback negatives : ${TARGET_AWARE_UNIT_GLYPHS.length - 1}`);
+console.log(`fallback false accepts: ${targetAwareFailures.filter((failure) => failure.kind === "false-accept").length}`);
 
 const positiveFailures = Object.values(groups).flatMap((group) =>
   group.failures.map((failure) => ({ group: group.label, ...failure })),
 );
 
-if (compositionFailureCount || freeDrawingContractProblems.length || positiveFailures.length || falseAccepts.length) {
+if (compositionFailureCount || freeDrawingContractProblems.length || positiveFailures.length || falseAccepts.length || targetAwareFailures.length) {
   if (freeDrawingContractProblems.length) {
     console.log("\nFree-drawing contract failures:");
     freeDrawingContractProblems.forEach((problem) => console.log(`  ${problem}`));
@@ -489,6 +553,12 @@ if (compositionFailureCount || freeDrawingContractProblems.length || positiveFai
     console.log("\nPairwise false accepts:");
     falseAccepts.slice(0, 30).forEach((failure) => {
       console.log(`  drew ${failure.source}, prompted ${failure.prompt} · ${failure.variant}: margin ${failure.margin.toFixed(3)}; ${failure.matches}`);
+    });
+  }
+  if (targetAwareFailures.length) {
+    console.log("\nTarget-aware syllable fallback failures:");
+    targetAwareFailures.forEach((failure) => {
+      console.log(`  ${failure.kind} · ${failure.source}: ${JSON.stringify(failure.components)}`);
     });
   }
   if (confidenceConfusers.length) {

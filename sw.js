@@ -1,12 +1,12 @@
-// [2026-07-16] Cache bumped to v378: remove duplicated helper-state reset in word lesson study flow.
-const CACHE_NAME = "hanapath-shell-v378";
+// [2026-07-16] Cache bumped to v379: improve writing recognition and keep feedback out of the canvas layout.
+const CACHE_NAME = "hanapath-shell-v379";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260715b",
+  "./styles.css?v=20260716c",
   "./app_intro.css?v=20260713b",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
@@ -20,7 +20,7 @@ const APP_SHELL = [
   "./hangul_strokes.js?v=20260715b",
   "./app_intro_timeline.js?v=20260713b",
   "./app_intro.js?v=20260713b",
-  "./app.js?v=20260716b",
+  "./app.js?v=20260716c",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
