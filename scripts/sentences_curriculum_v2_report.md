@@ -1,8 +1,8 @@
 # Sentences Curriculum v2 Report
 
-Total sentence rows: 3876
+Total sentence rows: 4025
 Total units: 75
-Total content lessons: 587
+Total content lessons: 608
 Total checkpoints: 75
 
 ## Units Breakdown
@@ -10,8 +10,8 @@ Total checkpoints: 75
 ### Unit: sn1-firstwords-u1 (Reading the signs 👋)
 - Section: sn1
 - Twin Words Unit: s1-firstwords-u1
-- Total rows: 100
-- Content Lessons: 15
+- Total rows: 112
+- Content Lessons: 16
   - **sn1-firstwords-u1-l1** (S1 · Reading the signs · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn1-firstwords-u1-l2** (S1 · Reading the signs · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn1-firstwords-u1-l3** (S1 · Reading the signs · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
@@ -22,11 +22,12 @@ Total checkpoints: 75
   - **sn1-firstwords-u1-l8** (S1 · Reading the signs · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn1-firstwords-u1-l9** (S1 · Reading the signs · 9): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn1-firstwords-u1-l10** (S1 · Reading the signs · 10): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn1-firstwords-u1-l11** (S1 · Reading the signs · 11): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn1-firstwords-u1-l12** (S1 · Reading the signs · 12): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn1-firstwords-u1-l13** (S1 · Reading the signs · 13): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn1-firstwords-u1-l14** (S1 · Reading the signs · 14): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn1-firstwords-u1-l15** (S1 · Reading the signs · 15): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn1-firstwords-u1-l11** (S1 · Reading the signs · 11): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn1-firstwords-u1-l12** (S1 · Reading the signs · 12): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn1-firstwords-u1-l13** (S1 · Reading the signs · 13): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn1-firstwords-u1-l14** (S1 · Reading the signs · 14): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn1-firstwords-u1-l15** (S1 · Reading the signs · 15): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn1-firstwords-u1-l16** (S1 · Reading the signs · 16): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
 
 ### Unit: sn1-firstwords-u2 (Useful first exchanges 👋)
 - Section: sn1
@@ -61,7 +62,7 @@ Total checkpoints: 75
 ### Unit: sn2-actions-u1 (Getting things done 🏃)
 - Section: sn2
 - Twin Words Unit: s2-actions-u1
-- Total rows: 81
+- Total rows: 84
 - Content Lessons: 12
   - **sn2-actions-u1-l1** (S2 · Getting things done · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-actions-u1-l2** (S2 · Getting things done · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
@@ -72,9 +73,9 @@ Total checkpoints: 75
   - **sn2-actions-u1-l7** (S2 · Getting things done · 7): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn2-actions-u1-l8** (S2 · Getting things done · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-actions-u1-l9** (S2 · Getting things done · 9): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn2-actions-u1-l10** (S2 · Getting things done · 10): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn2-actions-u1-l11** (S2 · Getting things done · 11): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn2-actions-u1-l12** (S2 · Getting things done · 12): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-actions-u1-l10** (S2 · Getting things done · 10): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn2-actions-u1-l11** (S2 · Getting things done · 11): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn2-actions-u1-l12** (S2 · Getting things done · 12): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
 
 ### Unit: sn2-daily-u1 (Morning routines 📅)
 - Section: sn2
@@ -113,8 +114,8 @@ Total checkpoints: 75
 ### Unit: sn2-food-u1 (Ordering a meal ☕)
 - Section: sn2
 - Twin Words Unit: s2-food-u1
-- Total rows: 82
-- Content Lessons: 12
+- Total rows: 85
+- Content Lessons: 13
   - **sn2-food-u1-l1** (S2 · Ordering a meal · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-food-u1-l2** (S2 · Ordering a meal · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-food-u1-l3** (S2 · Ordering a meal · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
@@ -122,11 +123,12 @@ Total checkpoints: 75
   - **sn2-food-u1-l5** (S2 · Ordering a meal · 5): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-food-u1-l6** (S2 · Ordering a meal · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-food-u1-l7** (S2 · Ordering a meal · 7): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn2-food-u1-l8** (S2 · Ordering a meal · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn2-food-u1-l9** (S2 · Ordering a meal · 9): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn2-food-u1-l10** (S2 · Ordering a meal · 10): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn2-food-u1-l8** (S2 · Ordering a meal · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-food-u1-l9** (S2 · Ordering a meal · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn2-food-u1-l10** (S2 · Ordering a meal · 10): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn2-food-u1-l11** (S2 · Ordering a meal · 11): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn2-food-u1-l12** (S2 · Ordering a meal · 12): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-food-u1-l13** (S2 · Ordering a meal · 13): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn2-grammar-u1 (Function words 📖)
 - Section: sn2
@@ -214,24 +216,25 @@ Total checkpoints: 75
 ### Unit: sn2-tech-u1 (Everyday devices 💻)
 - Section: sn2
 - Twin Words Unit: s2-tech-u1
-- Total rows: 67
-- Content Lessons: 10
+- Total rows: 71
+- Content Lessons: 11
   - **sn2-tech-u1-l1** (S2 · Everyday devices · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-tech-u1-l2** (S2 · Everyday devices · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-tech-u1-l3** (S2 · Everyday devices · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn2-tech-u1-l4** (S2 · Everyday devices · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-tech-u1-l5** (S2 · Everyday devices · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn2-tech-u1-l6** (S2 · Everyday devices · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn2-tech-u1-l7** (S2 · Everyday devices · 7): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn2-tech-u1-l6** (S2 · Everyday devices · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-tech-u1-l7** (S2 · Everyday devices · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn2-tech-u1-l8** (S2 · Everyday devices · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn2-tech-u1-l9** (S2 · Everyday devices · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn2-tech-u1-l10** (S2 · Everyday devices · 10): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-tech-u1-l11** (S2 · Everyday devices · 11): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn2-travel-u1 (Finding your way ✈️)
 - Section: sn2
 - Twin Words Unit: s2-travel-u1
-- Total rows: 90
-- Content Lessons: 13
+- Total rows: 99
+- Content Lessons: 15
   - **sn2-travel-u1-l1** (S2 · Finding your way · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-travel-u1-l2** (S2 · Finding your way · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-travel-u1-l3** (S2 · Finding your way · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
@@ -241,10 +244,12 @@ Total checkpoints: 75
   - **sn2-travel-u1-l7** (S2 · Finding your way · 7): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-travel-u1-l8** (S2 · Finding your way · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn2-travel-u1-l9** (S2 · Finding your way · 9): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn2-travel-u1-l10** (S2 · Finding your way · 10): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn2-travel-u1-l11** (S2 · Finding your way · 11): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn2-travel-u1-l12** (S2 · Finding your way · 12): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn2-travel-u1-l10** (S2 · Finding your way · 10): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-travel-u1-l11** (S2 · Finding your way · 11): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn2-travel-u1-l12** (S2 · Finding your way · 12): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn2-travel-u1-l13** (S2 · Finding your way · 13): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn2-travel-u1-l14** (S2 · Finding your way · 14): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-travel-u1-l15** (S2 · Finding your way · 15): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn3-health-u1 (Body and movement 🏥)
 - Section: sn3
@@ -264,8 +269,8 @@ Total checkpoints: 75
 ### Unit: sn3-hobbies-u1 (Free-time plans 🎨)
 - Section: sn3
 - Twin Words Unit: s3-hobbies-u1
-- Total rows: 116
-- Content Lessons: 17
+- Total rows: 131
+- Content Lessons: 19
   - **sn3-hobbies-u1-l1** (S3 · Free-time plans · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-hobbies-u1-l2** (S3 · Free-time plans · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-hobbies-u1-l3** (S3 · Free-time plans · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
@@ -274,15 +279,17 @@ Total checkpoints: 75
   - **sn3-hobbies-u1-l6** (S3 · Free-time plans · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-hobbies-u1-l7** (S3 · Free-time plans · 7): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-hobbies-u1-l8** (S3 · Free-time plans · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-hobbies-u1-l9** (S3 · Free-time plans · 9): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn3-hobbies-u1-l9** (S3 · Free-time plans · 9): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-hobbies-u1-l10** (S3 · Free-time plans · 10): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-hobbies-u1-l11** (S3 · Free-time plans · 11): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn3-hobbies-u1-l12** (S3 · Free-time plans · 12): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-hobbies-u1-l13** (S3 · Free-time plans · 13): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn3-hobbies-u1-l14** (S3 · Free-time plans · 14): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-hobbies-u1-l15** (S3 · Free-time plans · 15): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn3-hobbies-u1-l16** (S3 · Free-time plans · 16): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn3-hobbies-u1-l17** (S3 · Free-time plans · 17): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn3-hobbies-u1-l15** (S3 · Free-time plans · 15): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn3-hobbies-u1-l16** (S3 · Free-time plans · 16): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn3-hobbies-u1-l17** (S3 · Free-time plans · 17): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn3-hobbies-u1-l18** (S3 · Free-time plans · 18): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn3-hobbies-u1-l19** (S3 · Free-time plans · 19): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn3-work-u1 (At the workplace 💼)
 - Section: sn3
@@ -328,11 +335,11 @@ Total checkpoints: 75
 ### Unit: sn3-feelings-u2 (Rainy-day moods 💭)
 - Section: sn3
 - Twin Words Unit: s3-feelings-u2
-- Total rows: 44
+- Total rows: 45
 - Content Lessons: 7
   - **sn3-feelings-u2-l1** (S3 · Rainy-day moods · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-feelings-u2-l2** (S3 · Rainy-day moods · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-feelings-u2-l3** (S3 · Rainy-day moods · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn3-feelings-u2-l3** (S3 · Rainy-day moods · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn3-feelings-u2-l4** (S3 · Rainy-day moods · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn3-feelings-u2-l5** (S3 · Rainy-day moods · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn3-feelings-u2-l6** (S3 · Rainy-day moods · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
@@ -351,8 +358,8 @@ Total checkpoints: 75
 ### Unit: sn3-nature-u2 (Animals nearby 🌿)
 - Section: sn3
 - Twin Words Unit: s3-nature-u2
-- Total rows: 95
-- Content Lessons: 14
+- Total rows: 106
+- Content Lessons: 16
   - **sn3-nature-u2-l1** (S3 · Animals nearby · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-nature-u2-l2** (S3 · Animals nearby · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-nature-u2-l3** (S3 · Animals nearby · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
@@ -361,50 +368,55 @@ Total checkpoints: 75
   - **sn3-nature-u2-l6** (S3 · Animals nearby · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-nature-u2-l7** (S3 · Animals nearby · 7): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-nature-u2-l8** (S3 · Animals nearby · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-nature-u2-l9** (S3 · Animals nearby · 9): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn3-nature-u2-l9** (S3 · Animals nearby · 9): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-nature-u2-l10** (S3 · Animals nearby · 10): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-nature-u2-l11** (S3 · Animals nearby · 11): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn3-nature-u2-l11** (S3 · Animals nearby · 11): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn3-nature-u2-l12** (S3 · Animals nearby · 12): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn3-nature-u2-l13** (S3 · Animals nearby · 13): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn3-nature-u2-l14** (S3 · Animals nearby · 14): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn3-nature-u2-l15** (S3 · Animals nearby · 15): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn3-nature-u2-l16** (S3 · Animals nearby · 16): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn3-study-u2 (Study plans 📚)
 - Section: sn3
 - Twin Words Unit: s3-study-u2
-- Total rows: 42
-- Content Lessons: 6
+- Total rows: 43
+- Content Lessons: 7
   - **sn3-study-u2-l1** (S3 · Study plans · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-study-u2-l2** (S3 · Study plans · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-study-u2-l3** (S3 · Study plans · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn3-study-u2-l4** (S3 · Study plans · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-study-u2-l5** (S3 · Study plans · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn3-study-u2-l6** (S3 · Study plans · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn3-study-u2-l2** (S3 · Study plans · 2): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn3-study-u2-l3** (S3 · Study plans · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn3-study-u2-l4** (S3 · Study plans · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn3-study-u2-l5** (S3 · Study plans · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn3-study-u2-l6** (S3 · Study plans · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn3-study-u2-l7** (S3 · Study plans · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn3-travel-u2 (Getting around town ✈️)
 - Section: sn3
 - Twin Words Unit: s3-travel-u2
-- Total rows: 44
+- Total rows: 48
 - Content Lessons: 7
   - **sn3-travel-u2-l1** (S3 · Getting around town · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-travel-u2-l2** (S3 · Getting around town · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn3-travel-u2-l3** (S3 · Getting around town · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn3-travel-u2-l4** (S3 · Getting around town · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn3-travel-u2-l5** (S3 · Getting around town · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn3-travel-u2-l6** (S3 · Getting around town · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn3-travel-u2-l3** (S3 · Getting around town · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn3-travel-u2-l4** (S3 · Getting around town · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn3-travel-u2-l5** (S3 · Getting around town · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn3-travel-u2-l6** (S3 · Getting around town · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-travel-u2-l7** (S3 · Getting around town · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn3-work-u2 (Meeting the team 💼)
 - Section: sn3
 - Twin Words Unit: s3-work-u2
-- Total rows: 47
-- Content Lessons: 7
+- Total rows: 61
+- Content Lessons: 9
   - **sn3-work-u2-l1** (S3 · Meeting the team · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-work-u2-l2** (S3 · Meeting the team · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-work-u2-l3** (S3 · Meeting the team · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn3-work-u2-l4** (S3 · Meeting the team · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn3-work-u2-l5** (S3 · Meeting the team · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn3-work-u2-l6** (S3 · Meeting the team · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn3-work-u2-l7** (S3 · Meeting the team · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn3-work-u2-l6** (S3 · Meeting the team · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn3-work-u2-l7** (S3 · Meeting the team · 7): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn3-work-u2-l8** (S3 · Meeting the team · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn3-work-u2-l9** (S3 · Meeting the team · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn4-food-u2 (Drinks and dishes ☕)
 - Section: sn4
@@ -420,13 +432,13 @@ Total checkpoints: 75
 ### Unit: sn4-shopping-u2 (Choosing clothes 🛒)
 - Section: sn4
 - Twin Words Unit: s4-shopping-u2
-- Total rows: 52
+- Total rows: 53
 - Content Lessons: 8
   - **sn4-shopping-u2-l1** (S4 · Choosing clothes · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-shopping-u2-l2** (S4 · Choosing clothes · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-shopping-u2-l3** (S4 · Choosing clothes · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-shopping-u2-l4** (S4 · Choosing clothes · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn4-shopping-u2-l5** (S4 · Choosing clothes · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn4-shopping-u2-l5** (S4 · Choosing clothes · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn4-shopping-u2-l6** (S4 · Choosing clothes · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn4-shopping-u2-l7** (S4 · Choosing clothes · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn4-shopping-u2-l8** (S4 · Choosing clothes · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
@@ -469,11 +481,11 @@ Total checkpoints: 75
 ### Unit: sn4-feelings-u3 (Describing the room 💭)
 - Section: sn4
 - Twin Words Unit: s4-feelings-u3
-- Total rows: 44
+- Total rows: 45
 - Content Lessons: 7
   - **sn4-feelings-u3-l1** (S4 · Describing the room · 1): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn4-feelings-u3-l2** (S4 · Describing the room · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn4-feelings-u3-l3** (S4 · Describing the room · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn4-feelings-u3-l3** (S4 · Describing the room · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn4-feelings-u3-l4** (S4 · Describing the room · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn4-feelings-u3-l5** (S4 · Describing the room · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn4-feelings-u3-l6** (S4 · Describing the room · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
@@ -509,30 +521,33 @@ Total checkpoints: 75
 ### Unit: sn4-study-u3 (Reading together 📚)
 - Section: sn4
 - Twin Words Unit: s4-study-u3
-- Total rows: 46
-- Content Lessons: 7
+- Total rows: 61
+- Content Lessons: 9
   - **sn4-study-u3-l1** (S4 · Reading together · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-study-u3-l2** (S4 · Reading together · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn4-study-u3-l3** (S4 · Reading together · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn4-study-u3-l3** (S4 · Reading together · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-study-u3-l4** (S4 · Reading together · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn4-study-u3-l5** (S4 · Reading together · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn4-study-u3-l6** (S4 · Reading together · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn4-study-u3-l7** (S4 · Reading together · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn4-study-u3-l5** (S4 · Reading together · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn4-study-u3-l6** (S4 · Reading together · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn4-study-u3-l7** (S4 · Reading together · 7): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn4-study-u3-l8** (S4 · Reading together · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn4-study-u3-l9** (S4 · Reading together · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn4-travel-u3 (At the station ✈️)
 - Section: sn4
 - Twin Words Unit: s4-travel-u3
-- Total rows: 61
-- Content Lessons: 9
+- Total rows: 65
+- Content Lessons: 10
   - **sn4-travel-u3-l1** (S4 · At the station · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-travel-u3-l2** (S4 · At the station · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-travel-u3-l3** (S4 · At the station · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-travel-u3-l4** (S4 · At the station · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn4-travel-u3-l5** (S4 · At the station · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn4-travel-u3-l6** (S4 · At the station · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn4-travel-u3-l7** (S4 · At the station · 7): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn4-travel-u3-l6** (S4 · At the station · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn4-travel-u3-l7** (S4 · At the station · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn4-travel-u3-l8** (S4 · At the station · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn4-travel-u3-l9** (S4 · At the station · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn4-travel-u3-l10** (S4 · At the station · 10): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn4-work-u3 (Jobs and duties 💼)
 - Section: sn4
@@ -633,10 +648,10 @@ Total checkpoints: 75
 ### Unit: sn5-study-u4 (School supplies 📚)
 - Section: sn5
 - Twin Words Unit: s5-study-u4
-- Total rows: 37
+- Total rows: 38
 - Content Lessons: 6
   - **sn5-study-u4-l1** (S5 · School supplies · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn5-study-u4-l2** (S5 · School supplies · 2): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn5-study-u4-l2** (S5 · School supplies · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn5-study-u4-l3** (S5 · School supplies · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn5-study-u4-l4** (S5 · School supplies · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn5-study-u4-l5** (S5 · School supplies · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
@@ -659,11 +674,12 @@ Total checkpoints: 75
 ### Unit: sn5-work-u4 (A busy workday 💼)
 - Section: sn5
 - Twin Words Unit: s5-work-u4
-- Total rows: 20
-- Content Lessons: 3
-  - **sn5-work-u4-l1** (S5 · A busy workday · 1): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn5-work-u4-l2** (S5 · A busy workday · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+- Total rows: 24
+- Content Lessons: 4
+  - **sn5-work-u4-l1** (S5 · A busy workday · 1): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn5-work-u4-l2** (S5 · A busy workday · 2): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn5-work-u4-l3** (S5 · A busy workday · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn5-work-u4-l4** (S5 · A busy workday · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn6-hobbies-u2 (Sports with friends 🎨)
 - Section: sn6
@@ -684,14 +700,14 @@ Total checkpoints: 75
 ### Unit: sn6-tech-u2 (At the desk 💻)
 - Section: sn6
 - Twin Words Unit: s6-tech-u2
-- Total rows: 64
+- Total rows: 66
 - Content Lessons: 10
   - **sn6-tech-u2-l1** (S6 · At the desk · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-tech-u2-l2** (S6 · At the desk · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-tech-u2-l3** (S6 · At the desk · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-tech-u2-l4** (S6 · At the desk · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn6-tech-u2-l5** (S6 · At the desk · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn6-tech-u2-l6** (S6 · At the desk · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn6-tech-u2-l5** (S6 · At the desk · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn6-tech-u2-l6** (S6 · At the desk · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-tech-u2-l7** (S6 · At the desk · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn6-tech-u2-l8** (S6 · At the desk · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn6-tech-u2-l9** (S6 · At the desk · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
@@ -735,7 +751,7 @@ Total checkpoints: 75
 ### Unit: sn6-daily-u5 (A quiet evening 📅)
 - Section: sn6
 - Twin Words Unit: s6-daily-u5
-- Total rows: 78
+- Total rows: 80
 - Content Lessons: 12
   - **sn6-daily-u5-l1** (S6 · A quiet evening · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-daily-u5-l2** (S6 · A quiet evening · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
@@ -743,8 +759,8 @@ Total checkpoints: 75
   - **sn6-daily-u5-l4** (S6 · A quiet evening · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-daily-u5-l5** (S6 · A quiet evening · 5): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-daily-u5-l6** (S6 · A quiet evening · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn6-daily-u5-l7** (S6 · A quiet evening · 7): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn6-daily-u5-l8** (S6 · A quiet evening · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn6-daily-u5-l7** (S6 · A quiet evening · 7): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn6-daily-u5-l8** (S6 · A quiet evening · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-daily-u5-l9** (S6 · A quiet evening · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn6-daily-u5-l10** (S6 · A quiet evening · 10): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn6-daily-u5-l11** (S6 · A quiet evening · 11): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
@@ -753,8 +769,8 @@ Total checkpoints: 75
 ### Unit: sn6-feelings-u5 (Small talk outside 💭)
 - Section: sn6
 - Twin Words Unit: s6-feelings-u5
-- Total rows: 63
-- Content Lessons: 9
+- Total rows: 70
+- Content Lessons: 10
   - **sn6-feelings-u5-l1** (S6 · Small talk outside · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-feelings-u5-l2** (S6 · Small talk outside · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-feelings-u5-l3** (S6 · Small talk outside · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
@@ -764,6 +780,7 @@ Total checkpoints: 75
   - **sn6-feelings-u5-l7** (S6 · Small talk outside · 7): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn6-feelings-u5-l8** (S6 · Small talk outside · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-feelings-u5-l9** (S6 · Small talk outside · 9): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn6-feelings-u5-l10** (S6 · Small talk outside · 10): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
 
 ### Unit: sn6-shopping-u5 (Shopping together 🛒)
 - Section: sn6
@@ -778,17 +795,18 @@ Total checkpoints: 75
 ### Unit: sn6-study-u5 (Working on a project 📚)
 - Section: sn6
 - Twin Words Unit: s6-study-u5
-- Total rows: 19
-- Content Lessons: 3
+- Total rows: 26
+- Content Lessons: 4
   - **sn6-study-u5-l1** (S6 · Working on a project · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn6-study-u5-l2** (S6 · Working on a project · 2): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn6-study-u5-l2** (S6 · Working on a project · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-study-u5-l3** (S6 · Working on a project · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn6-study-u5-l4** (S6 · Working on a project · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn6-travel-u5 (A day trip ✈️)
 - Section: sn6
 - Twin Words Unit: s6-travel-u5
-- Total rows: 76
-- Content Lessons: 11
+- Total rows: 79
+- Content Lessons: 12
   - **sn6-travel-u5-l1** (S6 · A day trip · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-travel-u5-l2** (S6 · A day trip · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-travel-u5-l3** (S6 · A day trip · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
@@ -796,34 +814,35 @@ Total checkpoints: 75
   - **sn6-travel-u5-l5** (S6 · A day trip · 5): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-travel-u5-l6** (S6 · A day trip · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn6-travel-u5-l7** (S6 · A day trip · 7): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn6-travel-u5-l8** (S6 · A day trip · 8): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn6-travel-u5-l9** (S6 · A day trip · 9): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn6-travel-u5-l10** (S6 · A day trip · 10): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn6-travel-u5-l8** (S6 · A day trip · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn6-travel-u5-l9** (S6 · A day trip · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn6-travel-u5-l10** (S6 · A day trip · 10): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn6-travel-u5-l11** (S6 · A day trip · 11): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn6-travel-u5-l12** (S6 · A day trip · 12): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn7-hobbies-u3 (Music and games 🎨)
 - Section: sn7
 - Twin Words Unit: s7-hobbies-u3
-- Total rows: 39
+- Total rows: 40
 - Content Lessons: 6
   - **sn7-hobbies-u3-l1** (S7 · Music and games · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-hobbies-u3-l2** (S7 · Music and games · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-hobbies-u3-l3** (S7 · Music and games · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn7-hobbies-u3-l4** (S7 · Music and games · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn7-hobbies-u3-l4** (S7 · Music and games · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-hobbies-u3-l5** (S7 · Music and games · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn7-hobbies-u3-l6** (S7 · Music and games · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn7-tech-u3 (Messages and calls 💻)
 - Section: sn7
 - Twin Words Unit: s7-tech-u3
-- Total rows: 41
+- Total rows: 42
 - Content Lessons: 6
   - **sn7-tech-u3-l1** (S7 · Messages and calls · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-tech-u3-l2** (S7 · Messages and calls · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-tech-u3-l3** (S7 · Messages and calls · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn7-tech-u3-l4** (S7 · Messages and calls · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-tech-u3-l5** (S7 · Messages and calls · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn7-tech-u3-l6** (S7 · Messages and calls · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn7-tech-u3-l6** (S7 · Messages and calls · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
 
 ### Unit: sn7-grammar-u4 (Forms and nuance 📖)
 - Section: sn7
@@ -840,21 +859,21 @@ Total checkpoints: 75
 ### Unit: sn7-actions-u6 (Moving through town 🏃)
 - Section: sn7
 - Twin Words Unit: s7-actions-u6
-- Total rows: 45
+- Total rows: 47
 - Content Lessons: 7
   - **sn7-actions-u6-l1** (S7 · Moving through town · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-actions-u6-l2** (S7 · Moving through town · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-actions-u6-l3** (S7 · Moving through town · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
-  - **sn7-actions-u6-l4** (S7 · Moving through town · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn7-actions-u6-l5** (S7 · Moving through town · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn7-actions-u6-l4** (S7 · Moving through town · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn7-actions-u6-l5** (S7 · Moving through town · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn7-actions-u6-l6** (S7 · Moving through town · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn7-actions-u6-l7** (S7 · Moving through town · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn7-daily-u6 (Morning routines 📅)
 - Section: sn7
 - Twin Words Unit: s7-daily-u6
-- Total rows: 46
-- Content Lessons: 7
+- Total rows: 52
+- Content Lessons: 8
   - **sn7-daily-u6-l1** (S7 · Morning routines to · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-daily-u6-l2** (S7 · Morning routines to · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-daily-u6-l3** (S7 · Morning routines to · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
@@ -862,6 +881,7 @@ Total checkpoints: 75
   - **sn7-daily-u6-l5** (S7 · Morning routines to · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn7-daily-u6-l6** (S7 · Morning routines to · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn7-daily-u6-l7** (S7 · Morning routines to · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn7-daily-u6-l8** (S7 · Morning routines to · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn7-feelings-u6 (Good news today 💭)
 - Section: sn7
@@ -877,21 +897,21 @@ Total checkpoints: 75
 ### Unit: sn7-study-u6 (In the classroom absence 📚)
 - Section: sn7
 - Twin Words Unit: s7-study-u6
-- Total rows: 18
+- Total rows: 20
 - Content Lessons: 3
-  - **sn7-study-u6-l1** (S7 · In the classroom · 1): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn7-study-u6-l2** (S7 · In the classroom · 2): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn7-study-u6-l1** (S7 · In the classroom · 1): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn7-study-u6-l2** (S7 · In the classroom · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-study-u6-l3** (S7 · In the classroom · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn7-travel-u6 (Checking the route ✈️)
 - Section: sn7
 - Twin Words Unit: s7-travel-u6
-- Total rows: 44
+- Total rows: 46
 - Content Lessons: 7
   - **sn7-travel-u6-l1** (S7 · Checking the route · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-travel-u6-l2** (S7 · Checking the route · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn7-travel-u6-l3** (S7 · Checking the route · 3): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn7-travel-u6-l4** (S7 · Checking the route · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn7-travel-u6-l3** (S7 · Checking the route · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn7-travel-u6-l4** (S7 · Checking the route · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn7-travel-u6-l5** (S7 · Checking the route · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn7-travel-u6-l6** (S7 · Checking the route · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn7-travel-u6-l7** (S7 · Checking the route · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
@@ -950,14 +970,14 @@ Total checkpoints: 75
 ### Unit: sn8-shopping-u4 (Finding the right size 🛒)
 - Section: sn8
 - Twin Words Unit: s8-shopping-u4
-- Total rows: 46
+- Total rows: 48
 - Content Lessons: 7
   - **sn8-shopping-u4-l1** (S8 · Finding the right size · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn8-shopping-u4-l2** (S8 · Finding the right size · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn8-shopping-u4-l3** (S8 · Finding the right size · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
   - **sn8-shopping-u4-l4** (S8 · Finding the right size · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn8-shopping-u4-l5** (S8 · Finding the right size · 5): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn8-shopping-u4-l6** (S8 · Finding the right size · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn8-shopping-u4-l5** (S8 · Finding the right size · 5): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn8-shopping-u4-l6** (S8 · Finding the right size · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn8-shopping-u4-l7** (S8 · Finding the right size · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
 
 ### Unit: sn8-actions-u7 (Getting things done 🏃)
@@ -984,17 +1004,18 @@ Total checkpoints: 75
 ### Unit: sn8-travel-u7 (Finding your way going o ✈️)
 - Section: sn8
 - Twin Words Unit: s8-travel-u7
-- Total rows: 57
-- Content Lessons: 9
+- Total rows: 66
+- Content Lessons: 10
   - **sn8-travel-u7-l1** (S8 · Finding your way going · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn8-travel-u7-l2** (S8 · Finding your way going · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn8-travel-u7-l3** (S8 · Finding your way going · 3): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
-  - **sn8-travel-u7-l4** (S8 · Finding your way going · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn8-travel-u7-l5** (S8 · Finding your way going · 5): 6 rows [Drills: translate, translate, translate, translate, build, listen]
-  - **sn8-travel-u7-l6** (S8 · Finding your way going · 6): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn8-travel-u7-l4** (S8 · Finding your way going · 4): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn8-travel-u7-l5** (S8 · Finding your way going · 5): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn8-travel-u7-l6** (S8 · Finding your way going · 6): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
   - **sn8-travel-u7-l7** (S8 · Finding your way going · 7): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
   - **sn8-travel-u7-l8** (S8 · Finding your way going · 8): 6 rows [Drills: translate, translate, translate, translate, build, listen]
   - **sn8-travel-u7-l9** (S8 · Finding your way going · 9): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn8-travel-u7-l10** (S8 · Finding your way · 10): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn8-feelings-u8 (Rainy-day moods 💭)
 - Section: sn8
