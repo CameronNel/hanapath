@@ -588,7 +588,12 @@ if (isMainModule()) {
   }
 
   if (process.argv.includes("--manifest-json")) {
-    process.stdout.write(JSON.stringify({ version: 1, entries: manifest }));
+    // Exit only after stdout drains: process.exit() right after a multi-MB
+    // write truncates the payload when stdout is a pipe (as it is when
+    // generate_assets.py consumes this output).
+    await new Promise((flushed) => {
+      process.stdout.write(JSON.stringify({ version: 1, entries: manifest }), flushed);
+    });
     process.exit(0);
   }
 
