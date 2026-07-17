@@ -2,49 +2,49 @@
 
 This report outlines the distribution of sentences across the 37 closed pattern tags and 5 difficulty bands, identifying thin cells (<10 sentences) and proposing expansion batches to address coverage gaps.
 
-**Total Sentences scanned:** 3020
+**Total Sentences scanned:** 3180
 
 ## 1. Coverage Matrix (patternTags × band)
 
 | Pattern Tag | Band 1 | Band 2 | Band 3 | Band 4 | Band 5 | Total |
 |---|---|---|---|---|---|---|
-| `topic-neun` | 65 | 128 | 124 | 99 | 187 | **603** |
-| `subject-i-ga` | 191 | 182 | 260 | 218 | 288 | **1139** |
-| `object-eul-reul` | 164 | 246 | 321 | 292 | 394 | **1417** |
-| `location-e` | 56 | 73 | 72 | 65 | 125 | **391** |
-| `location-eseo` | 38 | 51 | 70 | 77 | 87 | **323** |
-| `direction-euro` | 20 | 21 | 43 | 51 | 45 | **180** |
+| `topic-neun` | 65 | 129 | 130 | 103 | 187 | **614** |
+| `subject-i-ga` | 191 | 182 | 277 | 227 | 289 | **1166** |
+| `object-eul-reul` | 166 | 250 | 348 | 301 | 394 | **1459** |
+| `location-e` | 56 | 73 | 77 | 68 | 125 | **399** |
+| `location-eseo` | 38 | 52 | 73 | 78 | 87 | **328** |
+| `direction-euro` | 20 | 21 | 44 | 51 | 45 | **181** |
 | `possessive-ui` | 7 | 14 | 32 | 81 | 133 | **267** |
-| `with-hago-wa` | 2 | 23 | 19 | 26 | 40 | **110** |
-| `only-man` | 3 | 6 | 10 | 2 | 1 | **22** |
-| `also-do` | 6 | 6 | 14 | 5 | 10 | **41** |
-| `from-buteo` | 0 | 10 | 9 | 8 | 2 | **29** |
-| `until-kkaji` | 0 | 7 | 17 | 6 | 3 | **33** |
-| `present-polite` | 345 | 379 | 359 | 201 | 214 | **1498** |
-| `past-polite` | 39 | 89 | 232 | 211 | 262 | **833** |
-| `future-geoyeyo` | 2 | 8 | 15 | 9 | 0 | **34** |
-| `formal-nida` | 7 | 4 | 10 | 19 | 38 | **78** |
-| `copula-ieyo` | 61 | 34 | 26 | 30 | 51 | **202** |
+| `with-hago-wa` | 2 | 23 | 19 | 27 | 40 | **111** |
+| `only-man` | 3 | 7 | 15 | 4 | 1 | **30** |
+| `also-do` | 6 | 7 | 15 | 6 | 10 | **44** |
+| `from-buteo` | 0 | 10 | 9 | 10 | 2 | **31** |
+| `until-kkaji` | 0 | 7 | 17 | 7 | 3 | **34** |
+| `present-polite` | 346 | 386 | 379 | 217 | 214 | **1542** |
+| `past-polite` | 39 | 93 | 259 | 218 | 262 | **871** |
+| `future-geoyeyo` | 2 | 9 | 16 | 9 | 0 | **36** |
+| `formal-nida` | 7 | 4 | 11 | 20 | 38 | **80** |
+| `copula-ieyo` | 61 | 37 | 30 | 31 | 52 | **211** |
 | `copula-negative-anieyo` | 6 | 12 | 4 | 1 | 0 | **23** |
-| `question-polite` | 42 | 40 | 64 | 11 | 2 | **159** |
-| `imperative-seyo` | 26 | 41 | 53 | 19 | 24 | **163** |
+| `question-polite` | 42 | 45 | 87 | 17 | 2 | **193** |
+| `imperative-seyo` | 28 | 52 | 72 | 24 | 24 | **200** |
 | `propositive-eyo` | 4 | 12 | 11 | 1 | 1 | **29** |
-| `neg-an` | 4 | 14 | 25 | 5 | 4 | **52** |
-| `neg-mot` | 0 | 13 | 11 | 8 | 4 | **36** |
-| `neg-ji-anta` | 1 | 6 | 9 | 11 | 7 | **34** |
-| `and-go` | 1 | 14 | 27 | 56 | 56 | **154** |
-| `but-jiman` | 1 | 6 | 4 | 7 | 6 | **24** |
+| `neg-an` | 4 | 14 | 26 | 5 | 4 | **53** |
+| `neg-mot` | 0 | 13 | 11 | 9 | 4 | **37** |
+| `neg-ji-anta` | 1 | 6 | 12 | 12 | 7 | **38** |
+| `and-go` | 1 | 14 | 30 | 57 | 56 | **158** |
+| `but-jiman` | 1 | 6 | 6 | 8 | 6 | **27** |
 | `because-aseo` | 1 | 11 | 66 | 63 | 35 | **176** |
-| `if-myeon` | 0 | 5 | 29 | 30 | 28 | **92** |
-| `when-ttae` | 0 | 1 | 17 | 14 | 22 | **54** |
+| `if-myeon` | 0 | 6 | 34 | 33 | 28 | **101** |
+| `when-ttae` | 0 | 2 | 26 | 16 | 22 | **66** |
 | `want-go-sipda` | 0 | 9 | 20 | 9 | 6 | **44** |
-| `can-su-itda` | 0 | 3 | 15 | 13 | 12 | **43** |
+| `can-su-itda` | 0 | 3 | 26 | 18 | 12 | **59** |
 | `must-ya-dwaeda` | 0 | 3 | 17 | 11 | 16 | **47** |
-| `honorific-si` | 31 | 24 | 30 | 32 | 34 | **151** |
-| `counter-phrase` | 4 | 35 | 26 | 5 | 23 | **93** |
-| `time-expression` | 27 | 112 | 176 | 72 | 91 | **478** |
-| `comparison-boda` | 0 | 3 | 31 | 11 | 6 | **51** |
-| `existence-itda` | 27 | 34 | 24 | 9 | 14 | **108** |
+| `honorific-si` | 31 | 24 | 45 | 39 | 34 | **173** |
+| `counter-phrase` | 4 | 35 | 27 | 5 | 23 | **94** |
+| `time-expression` | 27 | 116 | 190 | 76 | 92 | **501** |
+| `comparison-boda` | 0 | 3 | 32 | 11 | 6 | **52** |
+| `existence-itda` | 27 | 34 | 27 | 10 | 14 | **112** |
 
 ## 2. Low Coverage Tags (<10 sentences total)
 
