@@ -112,28 +112,34 @@ function getWordTypeTarget(word) {
 // lesson renderer: one incoming screen, semantic navigation direction, a
 // simple completion flourish, and Settings in the top-right app chrome.
 const screenEntranceSource = readFunction("playScreenEntrance");
-const hideOutgoingSource = readFunction("hideOutgoingScreen");
+const beginScreenExitSource = readFunction("beginScreenExit");
+const finishScreenExitSource = readFunction("finishScreenExit");
 const completionSource = readFunction("premiumCompletionHtml");
 if (
-  !stylesSrc.includes(".screen-motion-forward { --screen-enter-x: 34px;")
-  || !stylesSrc.includes(".screen-motion-back { --screen-enter-x: -34px;")
-  || !screenEntranceSource.includes('motion.kind === "tab" && motion.direction < 0')
+  !stylesSrc.includes(".screen-motion-forward")
+  || !stylesSrc.includes(".screen-motion-back")
+  || !screenEntranceSource.includes('motion.direction < 0')
 ) {
-  errors.push("Screen motion no longer enters forward from the right and back from the left");
+  errors.push("Screen motion layout contract is broken or missing transition classes");
 }
 if (
-  !hideOutgoingSource.includes("screen.hidden = true")
-  || !hideOutgoingSource.includes('screen.innerHTML = ""')
-  || appSrc.includes("screen-motion-exit")
+  !beginScreenExitSource.includes('node.removeAttribute("id")')
+  || !beginScreenExitSource.includes('screen.setAttribute("aria-hidden", "true")')
+  || !beginScreenExitSource.includes('screen.inert = true')
+  || !finishScreenExitSource.includes('screenExitNode.hidden = true')
+  || !finishScreenExitSource.includes('screenExitNode.innerHTML = ""')
+  || !finishScreenExitSource.includes('screenExitNode.removeAttribute("aria-hidden")')
+  || !finishScreenExitSource.includes('screenExitNode.inert = false')
 ) {
-  errors.push("Navigation can retain a second live outgoing screen and reintroduce twitchy overlap");
+  errors.push("Screen exit transition does not properly isolate, strip IDs, set inert/aria, or clean up outgoing screen");
 }
 if (
-  !completionSource.includes("completion-flourish")
-  || completionSource.includes("completion-emblem")
-  || appSrc.includes("completionIconSvg")
+  !completionSource.includes("completion-stage")
+  || !completionSource.includes("completion-aurora")
+  || !completionSource.includes("completion-emblem")
+  || !appSrc.includes("completionIconSvg")
 ) {
-  errors.push("Completion screens reintroduced the retired top checkmark/emblem treatment");
+  errors.push("Completion screens are missing key elements of the premium layout contract");
 }
 if (
   !indexSrc.includes('id="app-settings-button"')
