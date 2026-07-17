@@ -78387,6 +78387,1265 @@
       "patternTags": "explicit"
     },
     "source": "authored"
+  },
+  {
+    "id": "s2311",
+    "korean": "여기에서 공항까지 어떻게 가요?",
+    "english": "How do I get to the airport from here?",
+    "voiceText": "여기에서 공항까지 어떻게 가요?",
+    "tokens": [
+      "여기에서",
+      "공항까지",
+      "어떻게",
+      "가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "until-kkaji",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1301_gonghang"
+    ],
+    "sourceWordIds": [
+      "w1301_gonghang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "에서 … 까지 marks the route; 어떻게 가요? asks the way.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2312",
+    "korean": "이 근처에 지하철역이 있어요?",
+    "english": "Is there a subway station nearby?",
+    "voiceText": "이 근처에 지하철역이 있어요?",
+    "tokens": [
+      "이",
+      "근처에",
+      "지하철역이",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "question-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w1319_geuncheo"
+    ],
+    "sourceWordIds": [
+      "w1319_geuncheo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "근처에 = nearby; 있어요? asks whether one exists.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2313",
+    "korean": "이 길이 시청으로 가는 길 맞아요?",
+    "english": "Is this the road to city hall?",
+    "voiceText": "이 길이 시청으로 가는 길 맞아요?",
+    "tokens": [
+      "이",
+      "길이",
+      "시청으로",
+      "가는",
+      "길",
+      "맞아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "direction-euro",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1309_gil"
+    ],
+    "sourceWordIds": [
+      "w1309_gil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "맞아요? = is it right?; (으)로 가는 길 = the road that goes to ….",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2314",
+    "korean": "저기까지 걸어서 갈 수 있어요?",
+    "english": "Can I walk there?",
+    "voiceText": "저기까지 걸어서 갈 수 있어요?",
+    "tokens": [
+      "저기까지",
+      "걸어서",
+      "갈",
+      "수",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "until-kkaji",
+      "can-su-itda",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1911_geotda"
+    ],
+    "sourceWordIds": [
+      "w1911_geotda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "걸어서 = on foot; -(으)ㄹ 수 있어요? asks if it's possible.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2315",
+    "korean": "버스 정류장이 어디에 있어요?",
+    "english": "Where is the bus stop?",
+    "voiceText": "버스 정류장이 어디에 있어요?",
+    "tokens": [
+      "버스",
+      "정류장이",
+      "어디에",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "location-e",
+      "question-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_187_jeongryujang"
+    ],
+    "sourceWordIds": [
+      "w_m5_187_jeongryujang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "어디에 있어요? asks a location; 이/가 marks what you seek.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2316",
+    "korean": "똑바로 쭉 가세요.",
+    "english": "Go straight ahead.",
+    "voiceText": "똑바로 쭉 가세요.",
+    "tokens": [
+      "똑바로",
+      "쭉",
+      "가세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0409_gada"
+    ],
+    "sourceWordIds": [
+      "w0409_gada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "똑바로/쭉 = straight; -(으)세요 gives a polite instruction.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2317",
+    "korean": "저 사거리에서 왼쪽으로 가세요.",
+    "english": "Turn left at that intersection.",
+    "voiceText": "저 사거리에서 왼쪽으로 가세요.",
+    "tokens": [
+      "저",
+      "사거리에서",
+      "왼쪽으로",
+      "가세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "direction-euro",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1219_oenjjok"
+    ],
+    "sourceWordIds": [
+      "w_m6_1219_oenjjok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks the direction: 왼쪽으로 = to the left.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2318",
+    "korean": "신호등에서 오른쪽으로 도세요.",
+    "english": "Turn right at the traffic light.",
+    "voiceText": "신호등에서 오른쪽으로 도세요.",
+    "tokens": [
+      "신호등에서",
+      "오른쪽으로",
+      "도세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "direction-euro",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_194_sinhodeung"
+    ],
+    "sourceWordIds": [
+      "w_m5_194_sinhodeung"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "돌다 → 도세요 = turn; (으)로 marks which way.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2319",
+    "korean": "약국 옆에 있어요.",
+    "english": "It's next to the pharmacy.",
+    "voiceText": "약국 옆에 있어요.",
+    "tokens": [
+      "약국",
+      "옆에",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "present-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m6_1216_yeop"
+    ],
+    "sourceWordIds": [
+      "w_m6_1216_yeop"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "옆에 = beside; 에 marks the location of being.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2320",
+    "korean": "저 건물 뒤에 있어요.",
+    "english": "It's behind that building.",
+    "voiceText": "저 건물 뒤에 있어요.",
+    "tokens": [
+      "저",
+      "건물",
+      "뒤에",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "present-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_746_dwi"
+    ],
+    "sourceWordIds": [
+      "w_m5_746_dwi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "뒤에 = behind; position words take 에 for location.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2321",
+    "korean": "횡단보도를 건너서 쭉 가세요.",
+    "english": "Cross the crosswalk and keep going straight.",
+    "voiceText": "횡단보도를 건너서 쭉 가세요.",
+    "tokens": [
+      "횡단보도를",
+      "건너서",
+      "쭉",
+      "가세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1022_hoengdanbodo"
+    ],
+    "sourceWordIds": [
+      "w_m6_1022_hoengdanbodo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아/어서 chains: 건너서 (cross and then) 쭉 가세요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2322",
+    "korean": "입구는 건물 앞에 있어요.",
+    "english": "The entrance is in front of the building.",
+    "voiceText": "입구는 건물 앞에 있어요.",
+    "tokens": [
+      "입구는",
+      "건물",
+      "앞에",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "location-e",
+      "present-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m6_1024_ipgu"
+    ],
+    "sourceWordIds": [
+      "w_m6_1024_ipgu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "앞에 = in front; 은/는 marks the entrance as topic.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2323",
+    "korean": "골목으로 들어가면 바로 보여요.",
+    "english": "If you go into the alley, you'll see it right away.",
+    "voiceText": "골목으로 들어가면 바로 보여요.",
+    "tokens": [
+      "골목으로",
+      "들어가면",
+      "바로",
+      "보여요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "direction-euro",
+      "if-myeon",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1020_golmok"
+    ],
+    "sourceWordIds": [
+      "w_m6_1020_golmok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks direction into; -(으)면 sets the condition.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2324",
+    "korean": "택시를 탈 거예요.",
+    "english": "I'm going to take a taxi.",
+    "voiceText": "택시를 탈 거예요.",
+    "tokens": [
+      "택시를",
+      "탈",
+      "거예요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w1305_taeksi"
+    ],
+    "sourceWordIds": [
+      "w1305_taeksi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "타다 = to ride; -(으)ㄹ 거예요 states the plan.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2325",
+    "korean": "이 주소로 가 주세요.",
+    "english": "Please go to this address.",
+    "voiceText": "이 주소로 가 주세요.",
+    "tokens": [
+      "이",
+      "주소로",
+      "가",
+      "주세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "direction-euro",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_2066_juso"
+    ],
+    "sourceWordIds": [
+      "w_m6_2066_juso"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks the destination; -아/어 주세요 requests it.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2326",
+    "korean": "공항까지 얼마나 걸려요?",
+    "english": "How long does it take to the airport?",
+    "voiceText": "공항까지 얼마나 걸려요?",
+    "tokens": [
+      "공항까지",
+      "얼마나",
+      "걸려요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "until-kkaji",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w0908_eolmana"
+    ],
+    "sourceWordIds": [
+      "w0908_eolmana"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "얼마나 걸려요? = how long does it take?; 까지 marks the endpoint.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2327",
+    "korean": "여기에서 세워 주세요.",
+    "english": "Please stop here.",
+    "voiceText": "여기에서 세워 주세요.",
+    "tokens": [
+      "여기에서",
+      "세워",
+      "주세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0401_yeogi"
+    ],
+    "sourceWordIds": [
+      "w0401_yeogi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "세우다 = to stop (a vehicle); 여기에서 세워 주세요 = stop here.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2328",
+    "korean": "택시 요금이 얼마예요?",
+    "english": "How much is the taxi fare?",
+    "voiceText": "택시 요금이 얼마예요?",
+    "tokens": [
+      "택시",
+      "요금이",
+      "얼마예요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1305_taeksi"
+    ],
+    "sourceWordIds": [
+      "w1305_taeksi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "요금 = fare; 얼마예요? asks the amount.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2329",
+    "korean": "이 버스가 시청에 가요?",
+    "english": "Does this bus go to city hall?",
+    "voiceText": "이 버스가 시청에 가요?",
+    "tokens": [
+      "이",
+      "버스가",
+      "시청에",
+      "가요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "location-e",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1303_beoseu"
+    ],
+    "sourceWordIds": [
+      "w1303_beoseu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "이/가 marks the bus; 에 marks the destination.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2330",
+    "korean": "몇 번 버스를 타야 해요?",
+    "english": "Which bus number do I need to take?",
+    "voiceText": "몇 번 버스를 타야 해요?",
+    "tokens": [
+      "몇",
+      "번",
+      "버스를",
+      "타야",
+      "해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "must-ya-dwaeda",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_030_beon"
+    ],
+    "sourceWordIds": [
+      "w_m5_030_beon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "몇 번 = what number; 타야 해요 = have to take.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2331",
+    "korean": "다음 역에서 내려요.",
+    "english": "I get off at the next station.",
+    "voiceText": "다음 역에서 내려요.",
+    "tokens": [
+      "다음",
+      "역에서",
+      "내려요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0408_yeok"
+    ],
+    "sourceWordIds": [
+      "w0408_yeok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "내리다 = to get off; the place you get off takes 에서.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2332",
+    "korean": "여기에서 갈아타야 해요?",
+    "english": "Do I have to transfer here?",
+    "voiceText": "여기에서 갈아타야 해요?",
+    "tokens": [
+      "여기에서",
+      "갈아타야",
+      "해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "must-ya-dwaeda",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w0401_yeogi"
+    ],
+    "sourceWordIds": [
+      "w0401_yeogi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "갈아타다 = to transfer; -아/어야 해요? asks if it's required.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2333",
+    "korean": "지하철이 버스보다 빨라요.",
+    "english": "The subway is faster than the bus.",
+    "voiceText": "지하철이 버스보다 빨라요.",
+    "tokens": [
+      "지하철이",
+      "버스보다",
+      "빨라요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "comparison-boda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1304_jihacheol"
+    ],
+    "sourceWordIds": [
+      "w1304_jihacheol"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "보다 compares; 빠르다 → 빨라요 (르 irregular).",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2334",
+    "korean": "표는 어디에서 사요?",
+    "english": "Where do I buy a ticket?",
+    "voiceText": "표는 어디에서 사요?",
+    "tokens": [
+      "표는",
+      "어디에서",
+      "사요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "location-eseo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1308_pyo"
+    ],
+    "sourceWordIds": [
+      "w1308_pyo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "에서 marks where the buying happens; 은/는 marks the ticket as topic.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2335",
+    "korean": "이 역에서 지하철을 타세요.",
+    "english": "Take the subway at this station.",
+    "voiceText": "이 역에서 지하철을 타세요.",
+    "tokens": [
+      "이",
+      "역에서",
+      "지하철을",
+      "타세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "object-eul-reul",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0408_yeok"
+    ],
+    "sourceWordIds": [
+      "w0408_yeok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "에서 marks the boarding place; -(으)세요 instructs.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2336",
+    "korean": "택시보다 지하철이 더 싸요.",
+    "english": "The subway is cheaper than a taxi.",
+    "voiceText": "택시보다 지하철이 더 싸요.",
+    "tokens": [
+      "택시보다",
+      "지하철이",
+      "더",
+      "싸요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "comparison-boda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1305_taeksi"
+    ],
+    "sourceWordIds": [
+      "w1305_taeksi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "보다 더 = more (cheaper) than: 택시보다 더 싸요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2337",
+    "korean": "여기에서 많이 멀어요?",
+    "english": "Is it very far from here?",
+    "voiceText": "여기에서 많이 멀어요?",
+    "tokens": [
+      "여기에서",
+      "많이",
+      "멀어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_842_meolda"
+    ],
+    "sourceWordIds": [
+      "w_m5_842_meolda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "멀다 → 멀어요 = is far; 에서 marks the reference point.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2338",
+    "korean": "역이 생각보다 가까워요.",
+    "english": "The station is closer than I thought.",
+    "voiceText": "역이 생각보다 가까워요.",
+    "tokens": [
+      "역이",
+      "생각보다",
+      "가까워요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "comparison-boda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_843_gakkapda"
+    ],
+    "sourceWordIds": [
+      "w_m5_843_gakkapda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "가깝다 → 가까워요 (ㅂ irregular); 생각보다 = than expected.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2339",
+    "korean": "걸어서 십 분쯤 걸려요.",
+    "english": "It takes about ten minutes on foot.",
+    "voiceText": "걸어서 십 분쯤 걸려요.",
+    "tokens": [
+      "걸어서",
+      "십",
+      "분쯤",
+      "걸려요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w1911_geotda"
+    ],
+    "sourceWordIds": [
+      "w1911_geotda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "걸어서 = on foot; 쯤 = about; 걸려요 = it takes.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2340",
+    "korean": "차로 가면 한 시간 걸려요.",
+    "english": "By car it takes an hour.",
+    "voiceText": "차로 가면 한 시간 걸려요.",
+    "tokens": [
+      "차로",
+      "가면",
+      "한",
+      "시간",
+      "걸려요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "if-myeon",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0605_sigan"
+    ],
+    "sourceWordIds": [
+      "w0605_sigan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks the means; -(으)면 sets the condition.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2341",
+    "korean": "지금 길이 많이 막혀요.",
+    "english": "The traffic is heavy right now.",
+    "voiceText": "지금 길이 많이 막혀요.",
+    "tokens": [
+      "지금",
+      "길이",
+      "많이",
+      "막혀요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w1309_gil"
+    ],
+    "sourceWordIds": [
+      "w1309_gil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "길이 막히다 = the road is congested: 막혀요 = is jammed.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2342",
+    "korean": "거의 다 왔어요.",
+    "english": "We're almost there.",
+    "voiceText": "거의 다 왔어요.",
+    "tokens": [
+      "거의",
+      "다",
+      "왔어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w0410_oda"
+    ],
+    "sourceWordIds": [
+      "w0410_oda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "거의 다 왔어요 = have almost arrived (lit. almost all come).",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2343",
+    "korean": "곧 도착할 거예요.",
+    "english": "I'll arrive soon.",
+    "voiceText": "곧 도착할 거예요.",
+    "tokens": [
+      "곧",
+      "도착할",
+      "거예요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "future-geoyeyo",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w_m6_1353_dochak"
+    ],
+    "sourceWordIds": [
+      "w_m6_1353_dochak"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "곧 = soon; 도착하다 + -(으)ㄹ 거예요 = will arrive.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2344",
+    "korean": "길을 잃어버렸어요.",
+    "english": "I've gotten lost.",
+    "voiceText": "길을 잃어버렸어요.",
+    "tokens": [
+      "길을",
+      "잃어버렸어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w1309_gil"
+    ],
+    "sourceWordIds": [
+      "w1309_gil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "길을 잃다 = to lose one's way; -아/어 버리다 stresses it's done.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2345",
+    "korean": "지도를 보면서 갈게요.",
+    "english": "I'll go while looking at the map.",
+    "voiceText": "지도를 보면서 갈게요.",
+    "tokens": [
+      "지도를",
+      "보면서",
+      "갈게요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1310_jido"
+    ],
+    "sourceWordIds": [
+      "w1310_jido"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)면서 = while doing; 갈게요 = I'll go.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2346",
+    "korean": "출구가 어느 쪽이에요?",
+    "english": "Which way is the exit?",
+    "voiceText": "출구가 어느 쪽이에요?",
+    "tokens": [
+      "출구가",
+      "어느",
+      "쪽이에요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1023_chulgu"
+    ],
+    "sourceWordIds": [
+      "w_m6_1023_chulgu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "어느 쪽 = which way; 이에요? asks the direction.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2347",
+    "korean": "이 기차는 부산까지 가요?",
+    "english": "Does this train go to Busan?",
+    "voiceText": "이 기차는 부산까지 가요?",
+    "tokens": [
+      "이",
+      "기차는",
+      "부산까지",
+      "가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "until-kkaji",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1302_gicha"
+    ],
+    "sourceWordIds": [
+      "w1302_gicha"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "까지 marks the destination; 은/는 marks the train as topic.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2348",
+    "korean": "비행기가 두 시간 후에 출발해요.",
+    "english": "The plane departs in two hours.",
+    "voiceText": "비행기가 두 시간 후에 출발해요.",
+    "tokens": [
+      "비행기가",
+      "두",
+      "시간",
+      "후에",
+      "출발해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w_m5_184_bihaenggi"
+    ],
+    "sourceWordIds": [
+      "w_m5_184_bihaenggi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "후에 = after/in (time); 출발해요 = departs.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2349",
+    "korean": "다음 정류장에서 내리세요.",
+    "english": "Get off at the next stop.",
+    "voiceText": "다음 정류장에서 내리세요.",
+    "tokens": [
+      "다음",
+      "정류장에서",
+      "내리세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_187_jeongryujang"
+    ],
+    "sourceWordIds": [
+      "w_m5_187_jeongryujang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "에서 marks where to get off; 내리세요 = please get off.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
   }
 ];
 })();
