@@ -79646,6 +79646,1275 @@
       "patternTags": "explicit"
     },
     "source": "authored"
+  },
+  {
+    "id": "s2350",
+    "korean": "티셔츠를 사고 싶어요.",
+    "english": "I want to buy a t-shirt.",
+    "voiceText": "티셔츠를 사고 싶어요.",
+    "tokens": [
+      "티셔츠를",
+      "사고",
+      "싶어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "want-go-sipda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_105_tisyeocheu"
+    ],
+    "sourceWordIds": [
+      "w_m5_105_tisyeocheu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 싶어요 = want to; 사다 → 사고 싶어요 = want to buy.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2351",
+    "korean": "이 옷 좀 보여 주세요.",
+    "english": "Please show me this clothing.",
+    "voiceText": "이 옷 좀 보여 주세요.",
+    "tokens": [
+      "이",
+      "옷",
+      "좀",
+      "보여",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w1103_ot"
+    ],
+    "sourceWordIds": [
+      "w1103_ot"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "보여 주다 = to show; -아/어 주세요 requests it politely.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2352",
+    "korean": "혹시 이거 다른 색도 있어요?",
+    "english": "Do you happen to have this in another color?",
+    "voiceText": "혹시 이거 다른 색도 있어요?",
+    "tokens": [
+      "혹시",
+      "이거",
+      "다른",
+      "색도",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "also-do",
+      "question-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_064_saek"
+    ],
+    "sourceWordIds": [
+      "w_m5_064_saek"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "다른 색 = another color; 도 = also; 있어요? asks availability.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2353",
+    "korean": "저는 검은색 코트를 찾고 있어요.",
+    "english": "I'm looking for a black coat.",
+    "voiceText": "저는 검은색 코트를 찾고 있어요.",
+    "tokens": [
+      "저는",
+      "검은색",
+      "코트를",
+      "찾고",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_104_koteu"
+    ],
+    "sourceWordIds": [
+      "w_m5_104_koteu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 있다 = in the middle of: 찾고 있어요 = am looking for.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2354",
+    "korean": "모자는 어디에 있어요?",
+    "english": "Where are the hats?",
+    "voiceText": "모자는 어디에 있어요?",
+    "tokens": [
+      "모자는",
+      "어디에",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "location-e",
+      "question-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_097_moja"
+    ],
+    "sourceWordIds": [
+      "w_m5_097_moja"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "어디에 있어요? asks a location; 은/는 marks the hats as topic.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2355",
+    "korean": "이거 더 큰 사이즈 있어요?",
+    "english": "Do you have this in a bigger size?",
+    "voiceText": "이거 더 큰 사이즈 있어요?",
+    "tokens": [
+      "이거",
+      "더",
+      "큰",
+      "사이즈",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "question-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w1417_saijeu"
+    ],
+    "sourceWordIds": [
+      "w1417_saijeu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "더 큰 = bigger; 있어요? asks whether it's in stock.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2356",
+    "korean": "한번 입어 봐도 돼요?",
+    "english": "May I try it on?",
+    "voiceText": "한번 입어 봐도 돼요?",
+    "tokens": [
+      "한번",
+      "입어",
+      "봐도",
+      "돼요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_476_ipda"
+    ],
+    "sourceWordIds": [
+      "w_m5_476_ipda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아/어 보다 = try doing; -아/어도 돼요? asks permission.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2357",
+    "korean": "이 신발을 신어 봐도 돼요?",
+    "english": "Can I try on these shoes?",
+    "voiceText": "이 신발을 신어 봐도 돼요?",
+    "tokens": [
+      "이",
+      "신발을",
+      "신어",
+      "봐도",
+      "돼요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_475_sinda"
+    ],
+    "sourceWordIds": [
+      "w_m5_475_sinda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "신다 = to wear (on feet); 신어 봐도 돼요? = may I try them on?",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2358",
+    "korean": "이 바지는 저한테 좀 커요.",
+    "english": "These pants are a bit big for me.",
+    "voiceText": "이 바지는 저한테 좀 커요.",
+    "tokens": [
+      "이",
+      "바지는",
+      "저한테",
+      "좀",
+      "커요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_098_baji"
+    ],
+    "sourceWordIds": [
+      "w_m5_098_baji"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "한테 = for/to (a person); 크다 → 커요 = is big.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2359",
+    "korean": "이 신발은 사이즈가 딱 맞아요.",
+    "english": "These shoes fit perfectly.",
+    "voiceText": "이 신발은 사이즈가 딱 맞아요.",
+    "tokens": [
+      "이",
+      "신발은",
+      "사이즈가",
+      "딱",
+      "맞아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_824_matda"
+    ],
+    "sourceWordIds": [
+      "w_m5_824_matda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "맞다 = to fit; 딱 = exactly/just right.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2360",
+    "korean": "이 치마는 저한테 좀 길어요.",
+    "english": "This skirt is a bit long for me.",
+    "voiceText": "이 치마는 저한테 좀 길어요.",
+    "tokens": [
+      "이",
+      "치마는",
+      "저한테",
+      "좀",
+      "길어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_099_chima"
+    ],
+    "sourceWordIds": [
+      "w_m5_099_chima"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "길다 → 길어요 = is long; 한테 marks the person it's long for.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2361",
+    "korean": "더 작은 걸로 보여 주세요.",
+    "english": "Please show me a smaller one.",
+    "voiceText": "더 작은 걸로 보여 주세요.",
+    "tokens": [
+      "더",
+      "작은",
+      "걸로",
+      "보여",
+      "주세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0804_jakda"
+    ],
+    "sourceWordIds": [
+      "w0804_jakda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "더 작은 = smaller; -(으)로 marks the one you want shown.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2362",
+    "korean": "저는 파란색이 제일 마음에 들어요.",
+    "english": "I like the blue one best.",
+    "voiceText": "저는 파란색이 제일 마음에 들어요.",
+    "tokens": [
+      "저는",
+      "파란색이",
+      "제일",
+      "마음에",
+      "들어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_068_paransaek"
+    ],
+    "sourceWordIds": [
+      "w_m5_068_paransaek"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "마음에 들다 = to be to one's liking; 제일 = most.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2363",
+    "korean": "빨간색보다 검은색이 더 좋아요.",
+    "english": "I prefer black to red.",
+    "voiceText": "빨간색보다 검은색이 더 좋아요.",
+    "tokens": [
+      "빨간색보다",
+      "검은색이",
+      "더",
+      "좋아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "comparison-boda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_066_geomeunsaek"
+    ],
+    "sourceWordIds": [
+      "w_m5_066_geomeunsaek"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "보다 더 = more than: 빨간색보다 검은색이 더 좋아요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2364",
+    "korean": "이 색깔이 저한테 잘 어울려요?",
+    "english": "Does this color suit me well?",
+    "voiceText": "이 색깔이 저한테 잘 어울려요?",
+    "tokens": [
+      "이",
+      "색깔이",
+      "저한테",
+      "잘",
+      "어울려요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1418_saekkal"
+    ],
+    "sourceWordIds": [
+      "w1418_saekkal"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "어울리다 = to suit/match; 한테 marks whom it suits.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2365",
+    "korean": "이 모자 정말 예뻐요.",
+    "english": "This hat is really pretty.",
+    "voiceText": "이 모자 정말 예뻐요.",
+    "tokens": [
+      "이",
+      "모자",
+      "정말",
+      "예뻐요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_097_moja"
+    ],
+    "sourceWordIds": [
+      "w_m5_097_moja"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "예쁘다 → 예뻐요 = is pretty; 정말 = really.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2366",
+    "korean": "이 가방은 얼마예요?",
+    "english": "How much is this bag?",
+    "voiceText": "이 가방은 얼마예요?",
+    "tokens": [
+      "이",
+      "가방은",
+      "얼마예요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "topic-neun",
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1101_gabang"
+    ],
+    "sourceWordIds": [
+      "w1101_gabang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "얼마예요? asks a price; 은/는 marks the bag as topic.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2367",
+    "korean": "이거 너무 비싸요.",
+    "english": "This is too expensive.",
+    "voiceText": "이거 너무 비싸요.",
+    "tokens": [
+      "이거",
+      "너무",
+      "비싸요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1408_bissada"
+    ],
+    "sourceWordIds": [
+      "w1408_bissada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "비싸다 → 비싸요 = is expensive; 너무 = too.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2368",
+    "korean": "할인 좀 해 주세요.",
+    "english": "Could you give me a discount?",
+    "voiceText": "할인 좀 해 주세요.",
+    "tokens": [
+      "할인",
+      "좀",
+      "해",
+      "주세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_670_harin"
+    ],
+    "sourceWordIds": [
+      "w_m5_670_harin"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "할인하다 = to discount; -아/어 주세요 makes it a request.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2369",
+    "korean": "지금 세일 중이에요?",
+    "english": "Is it on sale right now?",
+    "voiceText": "지금 세일 중이에요?",
+    "tokens": [
+      "지금",
+      "세일",
+      "중이에요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1405_seil"
+    ],
+    "sourceWordIds": [
+      "w1405_seil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-중이다 = in the middle of; 세일 중이에요? = is it on sale?",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2370",
+    "korean": "이 옷은 세일해서 더 싸요.",
+    "english": "This is cheaper because it's on sale.",
+    "voiceText": "이 옷은 세일해서 더 싸요.",
+    "tokens": [
+      "이",
+      "옷은",
+      "세일해서",
+      "더",
+      "싸요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "because-aseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1103_ot"
+    ],
+    "sourceWordIds": [
+      "w1103_ot"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아/어서 gives the reason: 세일해서 = because it's on sale.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2371",
+    "korean": "카드로 사면 할인이 돼요?",
+    "english": "Do I get a discount if I pay by card?",
+    "voiceText": "카드로 사면 할인이 돼요?",
+    "tokens": [
+      "카드로",
+      "사면",
+      "할인이",
+      "돼요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "direction-euro",
+      "if-myeon",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1403_kadeu"
+    ],
+    "sourceWordIds": [
+      "w1403_kadeu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks the means; -(으)면 sets the condition.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2372",
+    "korean": "생각보다 안 비싸요.",
+    "english": "It's not as expensive as I thought.",
+    "voiceText": "생각보다 안 비싸요.",
+    "tokens": [
+      "생각보다",
+      "안",
+      "비싸요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "comparison-boda",
+      "neg-an",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1408_bissada"
+    ],
+    "sourceWordIds": [
+      "w1408_bissada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "생각보다 = than expected; 안 비싸요 = isn't expensive.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2373",
+    "korean": "그냥 이걸로 할게요.",
+    "english": "I'll just take this one.",
+    "voiceText": "그냥 이걸로 할게요.",
+    "tokens": [
+      "그냥",
+      "이걸로",
+      "할게요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0304_igeo"
+    ],
+    "sourceWordIds": [
+      "w0304_igeo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "이걸로 할게요 = I'll go with this one; -(으)ㄹ게요 = I'll ….",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2374",
+    "korean": "이거 두 개 살게요.",
+    "english": "I'll buy two of these.",
+    "voiceText": "이거 두 개 살게요.",
+    "tokens": [
+      "이거",
+      "두",
+      "개",
+      "살게요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_028_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_028_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "개 counts items; -(으)ㄹ게요 states your decision to buy.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2375",
+    "korean": "선물용으로 포장해 주세요.",
+    "english": "Please gift-wrap it.",
+    "voiceText": "선물용으로 포장해 주세요.",
+    "tokens": [
+      "선물용으로",
+      "포장해",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "direction-euro",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1539_seonmul"
+    ],
+    "sourceWordIds": [
+      "w_m6_1539_seonmul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "선물용으로 = as a gift; -아/어 주세요 requests the wrapping.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2376",
+    "korean": "그냥 현금으로 낼게요.",
+    "english": "I'll just pay in cash.",
+    "voiceText": "그냥 현금으로 낼게요.",
+    "tokens": [
+      "그냥",
+      "현금으로",
+      "낼게요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "direction-euro",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1404_hyeongeum"
+    ],
+    "sourceWordIds": [
+      "w1404_hyeongeum"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks the means; 내다 → 낼게요 = I'll pay.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2377",
+    "korean": "이거 환불할 수 있어요?",
+    "english": "Can I get a refund for this?",
+    "voiceText": "이거 환불할 수 있어요?",
+    "tokens": [
+      "이거",
+      "환불할",
+      "수",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "can-su-itda",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1195_hwanbul"
+    ],
+    "sourceWordIds": [
+      "w_m6_1195_hwanbul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "환불하다 = to refund; -(으)ㄹ 수 있어요? asks if it's possible.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2378",
+    "korean": "사이즈가 안 맞아서 교환하고 싶어요.",
+    "english": "The size doesn't fit, so I'd like to exchange it.",
+    "voiceText": "사이즈가 안 맞아서 교환하고 싶어요.",
+    "tokens": [
+      "사이즈가",
+      "안",
+      "맞아서",
+      "교환하고",
+      "싶어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "because-aseo",
+      "want-go-sipda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_673_gyohwan"
+    ],
+    "sourceWordIds": [
+      "w_m5_673_gyohwan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "안 맞아서 gives the reason; 교환하고 싶어요 = want to exchange.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2379",
+    "korean": "다른 색으로 바꿀 수 있어요?",
+    "english": "Can I change it for another color?",
+    "voiceText": "다른 색으로 바꿀 수 있어요?",
+    "tokens": [
+      "다른",
+      "색으로",
+      "바꿀",
+      "수",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "direction-euro",
+      "can-su-itda",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1085_bakkuda"
+    ],
+    "sourceWordIds": [
+      "w_m6_1085_bakkuda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks what you change it to; 바꿀 수 있어요? = can I swap it?",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2380",
+    "korean": "영수증이 있으면 환불이 돼요.",
+    "english": "You can get a refund if you have the receipt.",
+    "voiceText": "영수증이 있으면 환불이 돼요.",
+    "tokens": [
+      "영수증이",
+      "있으면",
+      "환불이",
+      "돼요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "if-myeon",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1406_yeongsujeung"
+    ],
+    "sourceWordIds": [
+      "w1406_yeongsujeung"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)면 sets the condition; 환불이 되다 = a refund is possible.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2381",
+    "korean": "이 옷은 한 번도 안 입었어요.",
+    "english": "I've never even worn this.",
+    "voiceText": "이 옷은 한 번도 안 입었어요.",
+    "tokens": [
+      "이",
+      "옷은",
+      "한",
+      "번도",
+      "안",
+      "입었어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "neg-an",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w1103_ot"
+    ],
+    "sourceWordIds": [
+      "w1103_ot"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "한 번도 안 = not even once; strengthens the negation 안 입었어요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2382",
+    "korean": "이 가게는 옷이 정말 많아요.",
+    "english": "This shop has a lot of clothes.",
+    "voiceText": "이 가게는 옷이 정말 많아요.",
+    "tokens": [
+      "이",
+      "가게는",
+      "옷이",
+      "정말",
+      "많아요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1410_gage"
+    ],
+    "sourceWordIds": [
+      "w1410_gage"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "많다 → 많아요 = there are many; 이/가 marks what's plentiful.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2383",
+    "korean": "백화점보다 시장이 더 싸요.",
+    "english": "The market is cheaper than the department store.",
+    "voiceText": "백화점보다 시장이 더 싸요.",
+    "tokens": [
+      "백화점보다",
+      "시장이",
+      "더",
+      "싸요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "comparison-boda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1412_baekhwajeom"
+    ],
+    "sourceWordIds": [
+      "w1412_baekhwajeom"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "보다 compares two places by price.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2384",
+    "korean": "양말 세 켤레 주세요.",
+    "english": "Three pairs of socks, please.",
+    "voiceText": "양말 세 켤레 주세요.",
+    "tokens": [
+      "양말",
+      "세",
+      "켤레",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_101_yangmal"
+    ],
+    "sourceWordIds": [
+      "w_m5_101_yangmal"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "켤레 counts pairs (socks/shoes): 세 켤레 = three pairs.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2385",
+    "korean": "이 티셔츠 두 벌 주세요.",
+    "english": "Two of these t-shirts, please.",
+    "voiceText": "이 티셔츠 두 벌 주세요.",
+    "tokens": [
+      "이",
+      "티셔츠",
+      "두",
+      "벌",
+      "주세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "counter-phrase",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_042_beol"
+    ],
+    "sourceWordIds": [
+      "w_m5_042_beol"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "벌 counts sets/pieces of clothing: 두 벌 = two.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2386",
+    "korean": "저는 그냥 좀 볼게요.",
+    "english": "I'm just browsing, thanks.",
+    "voiceText": "저는 그냥 좀 볼게요.",
+    "tokens": [
+      "저는",
+      "그냥",
+      "좀",
+      "볼게요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0704_boda"
+    ],
+    "sourceWordIds": [
+      "w0704_boda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "그냥 = just; 볼게요 = I'll look — the polite way to say just browsing.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2387",
+    "korean": "이거 말고 저거 보여 주세요.",
+    "english": "Show me that one, not this one.",
+    "voiceText": "이거 말고 저거 보여 주세요.",
+    "tokens": [
+      "이거",
+      "말고",
+      "저거",
+      "보여",
+      "주세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0306_jeogeo"
+    ],
+    "sourceWordIds": [
+      "w0306_jeogeo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "말고 = not (but rather): 이거 말고 저거 = that one instead of this.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2388",
+    "korean": "더 싼 거 없어요?",
+    "english": "Do you have anything cheaper?",
+    "voiceText": "더 싼 거 없어요?",
+    "tokens": [
+      "더",
+      "싼",
+      "거",
+      "없어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "question-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w1407_ssada"
+    ],
+    "sourceWordIds": [
+      "w1407_ssada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "더 싼 거 = a cheaper one; 없어요? asks if there's none/any.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
   }
 ];
 })();
