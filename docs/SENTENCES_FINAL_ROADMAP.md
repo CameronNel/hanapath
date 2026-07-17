@@ -424,8 +424,11 @@ them. One PR per box; browser-play each unit before shipping.
 
 **Precondition (met):** owner unlocked Track H on 2026-07-16 for the
 priority queue in the v2 plan §5; the per-batch work order is
-[`OPUS_TRACK_H_BATCH_PROMPT.md`](OPUS_TRACK_H_BATCH_PROMPT.md). Scenario-pack
-themes are still approved per batch. Coverage first:
+[`OPUS_TRACK_H_BATCH_PROMPT.md`](OPUS_TRACK_H_BATCH_PROMPT.md). For
+high-volume batch authoring by a fast mid-tier model, the operational recipe
+(self-validating script template + pipeline) is
+[`GEMINI_TRACK_H_BATCH_PROMPT.md`](GEMINI_TRACK_H_BATCH_PROMPT.md).
+Scenario-pack themes are still approved per batch. Coverage first:
 
 - [x] **H1** [high] Gap report: extend the audit (or a sibling script) to print a patternTags × band coverage matrix and the list of §4 tags with <10 sentences; propose batch contents from it. No data change — the PR is the report + proposal in `docs/`.
 - [x] **H2** [high/codex] Batches 1–13 completed (s2061–s3180) covering grammar gaps and 12 situational scenario-packs with offline audio. Any further scenario packs require owner approval.
