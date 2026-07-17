@@ -58,15 +58,25 @@ the mobile track, or roadmap re-architecture.
 2. **Grammar-unit fills** — append lessons to the three thin grammar units
    (7/12/15 rows). Crowned units stay crowned; checkpoint
    `reviewSentenceIds` may extend.
-3. **Scenario packs** — K-pop-fan-life themed units (practice-room talk,
-   fan-sign lines, interview reactions, award-show thanks, live-stream
-   chat). Owner picks themes per batch in the PR thread before you author.
+3. **Practical situational packs** — new themed units of **high-frequency,
+   immediately-useful everyday Korean** (ordering food, directions and
+   transport, appointments and plans, work/study logistics, shopping and
+   money, requests, health, phone/messages). This is the **fast-immersion
+   drilling style** an agency uses to make a learner functional quickly.
+   > **Owner clarification (2026-07-17):** the "trainee" framing is the
+   > *method* (intensive, high-frequency, survival-first drilling), **not**
+   > subject matter about K-pop. Do **not** author idol/fan-life topic
+   > content — no practice-room/fan-sign/award-show/live-stream *scenarios*.
+   > Keep sentences practical and universally useful. Owner still picks any
+   > new situational theme per batch in the PR thread before you author.
 
 ## Authoring rules (non-negotiable)
 
-- **Original sentences only.** K-pop *theming* is welcome; **verbatim
-  lyrics/subtitles never; no real idol/group/company names of any kind**
-  (plan §3.0/§6.5). 해요체-first register; bands ≠ politeness.
+- **Original sentences only**, and **practical/universal in subject** — the
+  content teaches everyday functional Korean, not K-pop topics (owner
+  clarification 2026-07-17). **Verbatim lyrics/subtitles never; no real
+  idol/group/company names of any kind** (plan §3.0/§6.5). 해요체-first
+  register; bands ≠ politeness.
 - Ids continue the frozen sequence (`s2062`, `s2063`, …) in file order.
 - Every row: full schema per `s2061` — `korean`, `english`, `voiceText`
   (= korean), `tokens` (must normalize to `korean` — the audit checks),

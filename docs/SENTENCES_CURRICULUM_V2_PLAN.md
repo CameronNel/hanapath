@@ -846,11 +846,15 @@ per batch.
      units at 7/12/15 rows first). A crowned unit stays crowned; its
      checkpoint `reviewSentenceIds` extends (ids frozen, content data may
      grow).
-  2. **Scenario packs**: new themed units appended to the right section by
-     gating unit — this is where the K-pop flavor becomes *content*, not
-     just naming: practice-room talk, fan-sign lines, interview reactions,
-     award-show thanks, live-stream chat — **original sentences only, no
-     lyrics, no real names of any kind** (§3.0).
+  2. **Practical situational packs**: new themed units appended to the right
+     section by gating unit — **high-frequency, immediately-useful everyday
+     Korean** (ordering, directions/transport, appointments, work/study
+     logistics, shopping/money, requests, health). **Owner clarification
+     (2026-07-17):** the "trainee" framing is the *fast-immersion drilling
+     method*, **not** K-pop subject matter — do not author idol/fan-life
+     topic scenarios (practice-room/fan-sign/award-show/live-stream). Keep
+     content universal and functional; **original sentences only, no lyrics,
+     no real names of any kind** (§3.0).
 - **Priority queue**: (1) the 8 thin pattern tags per
   `docs/SENTENCES_GAP_REPORT.md` (~100 rows in 4 batches — makes
   pattern-focused drilling viable); (2) grammar-unit fills; (3) scenario
