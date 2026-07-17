@@ -77141,6 +77141,1252 @@
       "patternTags": "explicit"
     },
     "source": "authored"
+  },
+  {
+    "id": "s2272",
+    "korean": "세 사람 자리 있어요?",
+    "english": "Do you have a table for three?",
+    "voiceText": "세 사람 자리 있어요?",
+    "tokens": [
+      "세",
+      "사람",
+      "자리",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "question-polite",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w0205_saram"
+    ],
+    "sourceWordIds": [
+      "w0205_saram"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "Counter phrase 세 사람 (three people) + 있어요? asks about availability.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2273",
+    "korean": "여기 앉아도 돼요?",
+    "english": "May I sit here?",
+    "voiceText": "여기 앉아도 돼요?",
+    "tokens": [
+      "여기",
+      "앉아도",
+      "돼요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w0401_yeogi"
+    ],
+    "sourceWordIds": [
+      "w0401_yeogi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아/어도 돼요? asks permission: 앉아도 돼요? = is it okay to sit?",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2274",
+    "korean": "저기 창가 자리에 앉을게요.",
+    "english": "I'll sit over there by the window.",
+    "voiceText": "저기 창가 자리에 앉을게요.",
+    "tokens": [
+      "저기",
+      "창가",
+      "자리에",
+      "앉을게요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0403_jeogi"
+    ],
+    "sourceWordIds": [
+      "w0403_jeogi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "에 marks where you'll sit; -(으)ㄹ게요 = I'll (sit).",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2275",
+    "korean": "메뉴 좀 주세요.",
+    "english": "Could I get a menu, please?",
+    "voiceText": "메뉴 좀 주세요.",
+    "tokens": [
+      "메뉴",
+      "좀",
+      "주세요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1109_menyu"
+    ],
+    "sourceWordIds": [
+      "w_m6_1109_menyu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "좀 softens a request; 주세요 = please give.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2276",
+    "korean": "여기 물 좀 주세요.",
+    "english": "Some water here, please.",
+    "voiceText": "여기 물 좀 주세요.",
+    "tokens": [
+      "여기",
+      "물",
+      "좀",
+      "주세요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0501_mul"
+    ],
+    "sourceWordIds": [
+      "w0501_mul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "좀 makes 주세요 gentler: 물 좀 주세요 = some water, please.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2277",
+    "korean": "비빔밥 두 개 주세요.",
+    "english": "Two bibimbap, please.",
+    "voiceText": "비빔밥 두 개 주세요.",
+    "tokens": [
+      "비빔밥",
+      "두",
+      "개",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_713_bibimbap"
+    ],
+    "sourceWordIds": [
+      "w_m5_713_bibimbap"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "개 counts servings/items: 두 개 = two (orders).",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2278",
+    "korean": "커피 한 잔 주세요.",
+    "english": "One coffee, please.",
+    "voiceText": "커피 한 잔 주세요.",
+    "tokens": [
+      "커피",
+      "한",
+      "잔",
+      "주세요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "counter-phrase",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0504_keopi"
+    ],
+    "sourceWordIds": [
+      "w0504_keopi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "잔 counts cups/glasses: 한 잔 = one cup.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2279",
+    "korean": "맥주 한 병 주세요.",
+    "english": "One bottle of beer, please.",
+    "voiceText": "맥주 한 병 주세요.",
+    "tokens": [
+      "맥주",
+      "한",
+      "병",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_155_maekju"
+    ],
+    "sourceWordIds": [
+      "w_m5_155_maekju"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "병 counts bottles: 한 병 = one bottle.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2280",
+    "korean": "김밥 세 개 주세요.",
+    "english": "Three gimbap, please.",
+    "voiceText": "김밥 세 개 주세요.",
+    "tokens": [
+      "김밥",
+      "세",
+      "개",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_712_gimbap"
+    ],
+    "sourceWordIds": [
+      "w_m5_712_gimbap"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "개 again counts portions: 세 개 = three.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2281",
+    "korean": "저는 라면을 먹을게요.",
+    "english": "I'll have ramyeon.",
+    "voiceText": "저는 라면을 먹을게요.",
+    "tokens": [
+      "저는",
+      "라면을",
+      "먹을게요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_149_ramyeon"
+    ],
+    "sourceWordIds": [
+      "w_m5_149_ramyeon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)ㄹ게요 states what you'll do: 먹을게요 = I'll eat.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2282",
+    "korean": "이거 하나 더 주세요.",
+    "english": "One more of these, please.",
+    "voiceText": "이거 하나 더 주세요.",
+    "tokens": [
+      "이거",
+      "하나",
+      "더",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0304_igeo"
+    ],
+    "sourceWordIds": [
+      "w0304_igeo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "하나 더 = one more; 더 adds to the count.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2283",
+    "korean": "여기는 뭐가 제일 맛있어요?",
+    "english": "What's the tastiest thing here?",
+    "voiceText": "여기는 뭐가 제일 맛있어요?",
+    "tokens": [
+      "여기는",
+      "뭐가",
+      "제일",
+      "맛있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w0809_masitda"
+    ],
+    "sourceWordIds": [
+      "w0809_masitda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "제일 = most; 뭐가 제일 맛있어요? asks for the best dish.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2284",
+    "korean": "이 음식은 매워요?",
+    "english": "Is this dish spicy?",
+    "voiceText": "이 음식은 매워요?",
+    "tokens": [
+      "이",
+      "음식은",
+      "매워요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1912_maepda"
+    ],
+    "sourceWordIds": [
+      "w1912_maepda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "매워요? (from 맵다) asks about spiciness; ㅂ becomes 워 before 요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2285",
+    "korean": "안 매운 걸로 추천해 주세요.",
+    "english": "Please recommend something not spicy.",
+    "voiceText": "안 매운 걸로 추천해 주세요.",
+    "tokens": [
+      "안",
+      "매운",
+      "걸로",
+      "추천해",
+      "주세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "neg-an",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1256_chucheon"
+    ],
+    "sourceWordIds": [
+      "w_m6_1256_chucheon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "안 매운 = not spicy; -(으)로 marks the choice you want recommended.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2286",
+    "korean": "이 집은 불고기가 유명해요?",
+    "english": "Is this place famous for bulgogi?",
+    "voiceText": "이 집은 불고기가 유명해요?",
+    "tokens": [
+      "이",
+      "집은",
+      "불고기가",
+      "유명해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_714_bulgogi"
+    ],
+    "sourceWordIds": [
+      "w_m5_714_bulgogi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "집 here means restaurant; 이/가 marks what it's known for.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2287",
+    "korean": "저는 커피보다 차를 더 좋아해요.",
+    "english": "I like tea more than coffee.",
+    "voiceText": "저는 커피보다 차를 더 좋아해요.",
+    "tokens": [
+      "저는",
+      "커피보다",
+      "차를",
+      "더",
+      "좋아해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "comparison-boda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0505_cha"
+    ],
+    "sourceWordIds": [
+      "w0505_cha"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "보다 더 = more than: 커피보다 차를 더 좋아해요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2288",
+    "korean": "반찬 좀 더 주세요.",
+    "english": "More side dishes, please.",
+    "voiceText": "반찬 좀 더 주세요.",
+    "tokens": [
+      "반찬",
+      "좀",
+      "더",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m5_133_banchan"
+    ],
+    "sourceWordIds": [
+      "w_m5_133_banchan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "좀 더 = a bit more; 반찬 (side dishes) are refillable in Korea.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2289",
+    "korean": "컵 하나 더 주세요.",
+    "english": "One more cup, please.",
+    "voiceText": "컵 하나 더 주세요.",
+    "tokens": [
+      "컵",
+      "하나",
+      "더",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1142_keop"
+    ],
+    "sourceWordIds": [
+      "w_m6_1142_keop"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "하나 더 asks for one additional item.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2290",
+    "korean": "이거 포장해 주세요.",
+    "english": "Please pack this to go.",
+    "voiceText": "이거 포장해 주세요.",
+    "tokens": [
+      "이거",
+      "포장해",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w0304_igeo"
+    ],
+    "sourceWordIds": [
+      "w0304_igeo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "포장하다 = to pack (to go); -아/어 주세요 requests it.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2291",
+    "korean": "조금만 덜 맵게 해 주세요.",
+    "english": "Please make it a little less spicy.",
+    "voiceText": "조금만 덜 맵게 해 주세요.",
+    "tokens": [
+      "조금만",
+      "덜",
+      "맵게",
+      "해",
+      "주세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "only-man",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w1912_maepda"
+    ],
+    "sourceWordIds": [
+      "w1912_maepda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "덜 = less; -게 하다 = make it (adjective); 조금만 = just a little.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2292",
+    "korean": "이 국이 좀 짜요.",
+    "english": "This soup is a bit salty.",
+    "voiceText": "이 국이 좀 짜요.",
+    "tokens": [
+      "이",
+      "국이",
+      "좀",
+      "짜요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_147_guk"
+    ],
+    "sourceWordIds": [
+      "w_m5_147_guk"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "짜다 = to be salty: 짜요; 좀 softens the complaint.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2293",
+    "korean": "음식이 조금 식었어요.",
+    "english": "The food has gotten a bit cold.",
+    "voiceText": "음식이 조금 식었어요.",
+    "tokens": [
+      "음식이",
+      "조금",
+      "식었어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w0503_eumsik"
+    ],
+    "sourceWordIds": [
+      "w0503_eumsik"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "식다 = to cool down: 식었어요 = has cooled.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2294",
+    "korean": "국이 아직 뜨거우니까 조심하세요.",
+    "english": "The soup is still hot, so be careful.",
+    "voiceText": "국이 아직 뜨거우니까 조심하세요.",
+    "tokens": [
+      "국이",
+      "아직",
+      "뜨거우니까",
+      "조심하세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1385_tteugeopda"
+    ],
+    "sourceWordIds": [
+      "w_m6_1385_tteugeopda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)니까 gives a reason; 뜨겁다 → 뜨거우니까 (irregular ㅂ).",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2295",
+    "korean": "정말 맛있어요.",
+    "english": "It's really delicious.",
+    "voiceText": "정말 맛있어요.",
+    "tokens": [
+      "정말",
+      "맛있어요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0809_masitda"
+    ],
+    "sourceWordIds": [
+      "w0809_masitda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "맛있다 → 맛있어요 = it's tasty; 정말 = really.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2296",
+    "korean": "저는 매운 음식을 잘 못 먹어요.",
+    "english": "I can't handle spicy food well.",
+    "voiceText": "저는 매운 음식을 잘 못 먹어요.",
+    "tokens": [
+      "저는",
+      "매운",
+      "음식을",
+      "잘",
+      "못",
+      "먹어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "neg-mot",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w0503_eumsik"
+    ],
+    "sourceWordIds": [
+      "w0503_eumsik"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "잘 못 = can't do well: 잘 못 먹어요 = can't eat (it) well.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2297",
+    "korean": "따뜻한 국을 먹고 싶어요.",
+    "english": "I want some warm soup.",
+    "voiceText": "따뜻한 국을 먹고 싶어요.",
+    "tokens": [
+      "따뜻한",
+      "국을",
+      "먹고",
+      "싶어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "want-go-sipda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_147_guk"
+    ],
+    "sourceWordIds": [
+      "w_m5_147_guk"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "따뜻한 = warm (modifier); -고 싶어요 = want to eat.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2298",
+    "korean": "너무 많이 먹어서 배불러요.",
+    "english": "I ate too much, so I'm full.",
+    "voiceText": "너무 많이 먹어서 배불러요.",
+    "tokens": [
+      "너무",
+      "많이",
+      "먹어서",
+      "배불러요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "because-aseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1395_mani"
+    ],
+    "sourceWordIds": [
+      "w_m6_1395_mani"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아/어서 gives the cause; 배부르다 → 배불러요 = am full.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2299",
+    "korean": "여기요, 계산할게요.",
+    "english": "Excuse me, I'd like to pay.",
+    "voiceText": "여기요, 계산할게요.",
+    "tokens": [
+      "여기요,",
+      "계산할게요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1179_gyesan"
+    ],
+    "sourceWordIds": [
+      "w_m6_1179_gyesan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "여기요 gets the server's attention; 계산할게요 = I'll pay.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2300",
+    "korean": "따로따로 계산해 주세요.",
+    "english": "Separate checks, please.",
+    "voiceText": "따로따로 계산해 주세요.",
+    "tokens": [
+      "따로따로",
+      "계산해",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1179_gyesan"
+    ],
+    "sourceWordIds": [
+      "w_m6_1179_gyesan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "따로따로 = separately; -아/어 주세요 requests it.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2301",
+    "korean": "카드로 계산해도 돼요?",
+    "english": "Can I pay by card?",
+    "voiceText": "카드로 계산해도 돼요?",
+    "tokens": [
+      "카드로",
+      "계산해도",
+      "돼요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1403_kadeu"
+    ],
+    "sourceWordIds": [
+      "w1403_kadeu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks the means; -아/어도 돼요? asks permission.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2302",
+    "korean": "여기 카드로 계산할 수 있어요?",
+    "english": "Can I pay by card here?",
+    "voiceText": "여기 카드로 계산할 수 있어요?",
+    "tokens": [
+      "여기",
+      "카드로",
+      "계산할",
+      "수",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-e",
+      "can-su-itda",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1403_kadeu"
+    ],
+    "sourceWordIds": [
+      "w1403_kadeu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)ㄹ 수 있어요? asks if paying by card is possible.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2303",
+    "korean": "영수증도 주세요.",
+    "english": "The receipt too, please.",
+    "voiceText": "영수증도 주세요.",
+    "tokens": [
+      "영수증도",
+      "주세요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "also-do",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w1406_yeongsujeung"
+    ],
+    "sourceWordIds": [
+      "w1406_yeongsujeung"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "도 = too/also: 영수증도 = the receipt as well.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2304",
+    "korean": "계산은 얼마예요?",
+    "english": "How much is the bill?",
+    "voiceText": "계산은 얼마예요?",
+    "tokens": [
+      "계산은",
+      "얼마예요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1179_gyesan"
+    ],
+    "sourceWordIds": [
+      "w_m6_1179_gyesan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "얼마예요? asks a total; 은/는 marks the bill as topic.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2305",
+    "korean": "현금으로 내면 할인이 돼요?",
+    "english": "Is there a discount if I pay cash?",
+    "voiceText": "현금으로 내면 할인이 돼요?",
+    "tokens": [
+      "현금으로",
+      "내면",
+      "할인이",
+      "돼요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "direction-euro",
+      "if-myeon",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1404_hyeongeum"
+    ],
+    "sourceWordIds": [
+      "w1404_hyeongeum"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "(으)로 marks the means; -(으)면 sets the condition.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2306",
+    "korean": "화장실이 어느 쪽이에요?",
+    "english": "Which way is the restroom?",
+    "voiceText": "화장실이 어느 쪽이에요?",
+    "tokens": [
+      "화장실이",
+      "어느",
+      "쪽이에요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "copula-ieyo",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w0407_hwajangsil"
+    ],
+    "sourceWordIds": [
+      "w0407_hwajangsil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "어느 쪽 = which side/way; 이에요? asks for the direction.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2307",
+    "korean": "예약하면 더 좋은 자리에 앉을 수 있어요.",
+    "english": "If you reserve, you can get a better seat.",
+    "voiceText": "예약하면 더 좋은 자리에 앉을 수 있어요.",
+    "tokens": [
+      "예약하면",
+      "더",
+      "좋은",
+      "자리에",
+      "앉을",
+      "수",
+      "있어요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "if-myeon",
+      "can-su-itda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2388_yeyag"
+    ],
+    "sourceWordIds": [
+      "w_m6_2388_yeyag"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)면 … -(으)ㄹ 수 있어요 ties reserving to the better seat.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2308",
+    "korean": "이 식당은 밥보다 반찬이 더 맛있어요.",
+    "english": "At this place the side dishes are tastier than the rice.",
+    "voiceText": "이 식당은 밥보다 반찬이 더 맛있어요.",
+    "tokens": [
+      "이",
+      "식당은",
+      "밥보다",
+      "반찬이",
+      "더",
+      "맛있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "comparison-boda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_133_banchan"
+    ],
+    "sourceWordIds": [
+      "w_m5_133_banchan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "보다 compares two items; 더 맛있어요 = tastier.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2309",
+    "korean": "맛있게 잘 먹었어요.",
+    "english": "That was a great meal, thank you.",
+    "voiceText": "맛있게 잘 먹었어요.",
+    "tokens": [
+      "맛있게",
+      "잘",
+      "먹었어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w0809_masitda"
+    ],
+    "sourceWordIds": [
+      "w0809_masitda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "잘 먹었습니다/먹었어요 is what you say after a meal: thanks for the food.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2310",
+    "korean": "다음에 또 올게요.",
+    "english": "I'll come again next time.",
+    "voiceText": "다음에 또 올게요.",
+    "tokens": [
+      "다음에",
+      "또",
+      "올게요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w0410_oda"
+    ],
+    "sourceWordIds": [
+      "w0410_oda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "또 = again; -(으)ㄹ게요 = I'll (come); 다음에 = next time.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
   }
 ];
 })();
