@@ -179,7 +179,9 @@
     "order": 1,
     "lessonIds": [
       "sn2-grammar-u1-l1",
-      "sn2-grammar-u1-l2"
+      "sn2-grammar-u1-l2",
+      "sn2-grammar-u1-l3",
+      "sn2-grammar-u1-l4"
     ],
     "checkpointId": "sn2-grammar-u1-cp"
   },
@@ -383,7 +385,9 @@
     "order": 2,
     "lessonIds": [
       "sn3-grammar-u2-l1",
-      "sn3-grammar-u2-l2"
+      "sn3-grammar-u2-l2",
+      "sn3-grammar-u2-l3",
+      "sn3-grammar-u2-l4"
     ],
     "checkpointId": "sn3-grammar-u2-cp"
   },
@@ -647,7 +651,8 @@
     "lessonIds": [
       "sn5-grammar-u3-l1",
       "sn5-grammar-u3-l2",
-      "sn5-grammar-u3-l3"
+      "sn5-grammar-u3-l3",
+      "sn5-grammar-u3-l4"
     ],
     "checkpointId": "sn5-grammar-u3-cp"
   },
@@ -3614,16 +3619,71 @@
     "unitId": "sn2-grammar-u1",
     "type": "content",
     "title": "S2 · Function words · 1",
-    "subtitle": "5 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use function words sentences naturally in Korean.",
+    "sentenceIds": [
+      "s2114",
+      "s2115",
+      "s2116",
+      "s2119",
+      "s2120",
+      "s2121"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s2114",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2115",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2116",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2119",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2120",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s2121",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "copula-ieyo",
+      "topic-neun",
+      "also-do"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn2-grammar-u1-l2",
+    "unitId": "sn2-grammar-u1",
+    "type": "content",
+    "title": "S2 · Function words · 2",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use function words sentences naturally in Korean.",
     "sentenceIds": [
       "s0022",
       "s0045",
       "s0141",
       "s0142",
-      "s0143"
+      "s0143",
+      "s2122"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2122",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0022",
         "mode": "translate"
@@ -3646,27 +3706,28 @@
       }
     ],
     "patternTags": [
-      "present-polite",
       "copula-ieyo",
-      "also-do"
+      "present-polite",
+      "possessive-ui"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn2-grammar-u1-l2",
+    "id": "sn2-grammar-u1-l3",
     "unitId": "sn2-grammar-u1",
     "type": "content",
-    "title": "S2 · Function words · 2",
-    "subtitle": "5 sentences · Listen, build, type",
+    "title": "S2 · Function words · 3",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use function words sentences naturally in Korean.",
     "sentenceIds": [
       "s0144",
       "s0145",
-      "s0146",
       "s2012",
-      "s2061"
+      "s2061",
+      "s2117",
+      "s2118"
     ],
     "drillPlan": [
       {
@@ -3683,6 +3744,60 @@
       },
       {
         "sentenceId": "s2061",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2117",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s2118",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "present-polite",
+      "copula-negative-anieyo",
+      "location-eseo"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn2-grammar-u1-l4",
+    "unitId": "sn2-grammar-u1",
+    "type": "content",
+    "title": "S2 · Function words · 4",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use function words sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0146",
+      "s2123",
+      "s2124",
+      "s2125",
+      "s2126",
+      "s2127"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s2123",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2124",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2125",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2126",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2127",
         "mode": "build"
       },
       {
@@ -3691,9 +3806,9 @@
       }
     ],
     "patternTags": [
-      "copula-negative-anieyo",
       "present-polite",
-      "topic-neun"
+      "object-eul-reul",
+      "and-go"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -3704,7 +3819,7 @@
     "unitId": "sn2-grammar-u1",
     "type": "checkpoint",
     "title": "Unit check: Function words",
-    "subtitle": "Prove your 10 lines stick",
+    "subtitle": "Prove your 24 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -3717,11 +3832,25 @@
       "s0145",
       "s0146",
       "s2012",
-      "s2061"
+      "s2061",
+      "s2114",
+      "s2115",
+      "s2116",
+      "s2117",
+      "s2118",
+      "s2119",
+      "s2120",
+      "s2121",
+      "s2122",
+      "s2123",
+      "s2124",
+      "s2125",
+      "s2126",
+      "s2127"
     ],
     "promptBounds": {
-      "min": 10,
-      "max": 12
+      "min": 12,
+      "max": 18
     },
     "pass": {
       "minFirstTryPct": 80
@@ -7377,15 +7506,16 @@
     "unitId": "sn3-grammar-u2",
     "type": "content",
     "title": "S3 · Connecting clauses · 1",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use connecting clauses sentences naturally in Korean.",
     "sentenceIds": [
       "s0280",
       "s0281",
       "s0282",
-      "s0284",
-      "s0286",
-      "s0310"
+      "s0310",
+      "s2128",
+      "s2129",
+      "s2130"
     ],
     "drillPlan": [
       {
@@ -7405,18 +7535,22 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s0284",
-        "mode": "transform"
+        "sentenceId": "s2128",
+        "mode": "translate"
       },
       {
-        "sentenceId": "s0286",
+        "sentenceId": "s2129",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s2130",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "neg-an",
       "object-eul-reul",
-      "present-polite",
-      "topic-neun"
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -7427,17 +7561,80 @@
     "unitId": "sn3-grammar-u2",
     "type": "content",
     "title": "S3 · Connecting clauses · 2",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use connecting clauses sentences naturally in Korean.",
+    "sentenceIds": [
+      "s2131",
+      "s2132",
+      "s2133",
+      "s2134",
+      "s2135",
+      "s2136",
+      "s2137"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s2131",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2132",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2133",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2134",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2135",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2136",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s2137",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "present-polite",
+      "object-eul-reul",
+      "topic-neun"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn3-grammar-u2-l3",
+    "unitId": "sn3-grammar-u2",
+    "type": "content",
+    "title": "S3 · Connecting clauses · 3",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use connecting clauses sentences naturally in Korean.",
     "sentenceIds": [
-      "s0283",
-      "s0285",
+      "s0284",
+      "s0286",
       "s0287",
       "s0288",
       "s0289",
       "s0290"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0284",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0286",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0287",
         "mode": "translate"
@@ -7448,10 +7645,52 @@
       },
       {
         "sentenceId": "s0289",
-        "mode": "translate"
+        "mode": "transform"
       },
       {
         "sentenceId": "s0290",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "past-polite",
+      "present-polite",
+      "location-e"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn3-grammar-u2-l4",
+    "unitId": "sn3-grammar-u2",
+    "type": "content",
+    "title": "S3 · Connecting clauses · 4",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use connecting clauses sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0283",
+      "s0285",
+      "s2138",
+      "s2139",
+      "s2140",
+      "s2141"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s2138",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2139",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2140",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2141",
         "mode": "translate"
       },
       {
@@ -7464,9 +7703,9 @@
       }
     ],
     "patternTags": [
-      "present-polite",
-      "location-e",
-      "past-polite"
+      "neg-mot",
+      "past-polite",
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -7477,7 +7716,7 @@
     "unitId": "sn3-grammar-u2",
     "type": "checkpoint",
     "title": "Unit check: Connecting clauses",
-    "subtitle": "Prove your 12 lines stick",
+    "subtitle": "Prove your 26 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -7492,11 +7731,25 @@
       "s0288",
       "s0289",
       "s0290",
-      "s0310"
+      "s0310",
+      "s2128",
+      "s2129",
+      "s2130",
+      "s2131",
+      "s2132",
+      "s2133",
+      "s2134",
+      "s2135",
+      "s2136",
+      "s2137",
+      "s2138",
+      "s2139",
+      "s2140",
+      "s2141"
     ],
     "promptBounds": {
       "min": 12,
-      "max": 12
+      "max": 18
     },
     "pass": {
       "minFirstTryPct": 80
@@ -12064,14 +12317,16 @@
     "unitId": "sn5-grammar-u3",
     "type": "content",
     "title": "S5 · Register and respect · 1",
-    "subtitle": "5 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use register and respect sentences naturally in Korean.",
     "sentenceIds": [
       "s0278",
       "s0279",
-      "s0348",
       "s2026",
-      "s2058"
+      "s2058",
+      "s2148",
+      "s2150",
+      "s2151"
     ],
     "drillPlan": [
       {
@@ -12088,17 +12343,25 @@
       },
       {
         "sentenceId": "s2058",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2148",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2150",
         "mode": "build"
       },
       {
-        "sentenceId": "s0348",
+        "sentenceId": "s2151",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "subject-i-ga",
-      "honorific-si",
-      "counter-phrase"
+      "question-polite",
+      "honorific-si"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -12109,16 +12372,77 @@
     "unitId": "sn5-grammar-u3",
     "type": "content",
     "title": "S5 · Register and respect · 2",
-    "subtitle": "5 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use register and respect sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0348",
+      "s2142",
+      "s2143",
+      "s2144",
+      "s2145",
+      "s2149",
+      "s2152"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s0348",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2142",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2143",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2144",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2145",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2149",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s2152",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "honorific-si",
+      "present-polite",
+      "object-eul-reul"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn5-grammar-u3-l3",
+    "unitId": "sn5-grammar-u3",
+    "type": "content",
+    "title": "S5 · Register and respect · 3",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use register and respect sentences naturally in Korean.",
     "sentenceIds": [
       "s0275",
       "s0276",
       "s0277",
-      "s0296",
-      "s0311"
+      "s0311",
+      "s2146",
+      "s2147",
+      "s2153"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2153",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0275",
         "mode": "translate"
@@ -12133,30 +12457,35 @@
       },
       {
         "sentenceId": "s0311",
-        "mode": "build"
+        "mode": "translate"
       },
       {
-        "sentenceId": "s0296",
+        "sentenceId": "s2146",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s2147",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "formal-nida",
       "time-expression",
-      "present-polite",
-      "formal-nida"
+      "question-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn5-grammar-u3-l3",
+    "id": "sn5-grammar-u3-l4",
     "unitId": "sn5-grammar-u3",
     "type": "content",
-    "title": "S5 · Register and respect · 3",
-    "subtitle": "5 sentences · Listen, build, type",
+    "title": "S5 · Register and respect · 4",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use register and respect sentences naturally in Korean.",
     "sentenceIds": [
+      "s0296",
       "s0297",
       "s0298",
       "s0299",
@@ -12164,6 +12493,10 @@
       "s0301"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0296",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0297",
         "mode": "translate"
@@ -12178,7 +12511,7 @@
       },
       {
         "sentenceId": "s0300",
-        "mode": "transform"
+        "mode": "build"
       },
       {
         "sentenceId": "s0301",
@@ -12199,7 +12532,7 @@
     "unitId": "sn5-grammar-u3",
     "type": "checkpoint",
     "title": "Unit check: Register and respect",
-    "subtitle": "Prove your 15 lines stick",
+    "subtitle": "Prove your 27 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -12217,11 +12550,23 @@
       "s0311",
       "s0348",
       "s2026",
-      "s2058"
+      "s2058",
+      "s2142",
+      "s2143",
+      "s2144",
+      "s2145",
+      "s2146",
+      "s2147",
+      "s2148",
+      "s2149",
+      "s2150",
+      "s2151",
+      "s2152",
+      "s2153"
     ],
     "promptBounds": {
       "min": 12,
-      "max": 15
+      "max": 18
     },
     "pass": {
       "minFirstTryPct": 80

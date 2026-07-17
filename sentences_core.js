@@ -71744,6 +71744,1310 @@
       "patternTags": "explicit"
     },
     "source": "authored"
+  },
+  {
+    "id": "s2114",
+    "korean": "저는 가수예요.",
+    "english": "I am a singer.",
+    "voiceText": "저는 가수예요.",
+    "tokens": [
+      "저는",
+      "가수예요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "topic-neun",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w0201_jeo_i",
+      "fw1001_eun_neun"
+    ],
+    "sourceWordIds": [
+      "w0201_jeo_i",
+      "fw1001_eun_neun"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "은/는 marks the topic and 예요 is the polite copula after a vowel: 저는 …예요.",
+    "acceptAlso": [
+      "전 가수예요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2115",
+    "korean": "저는 연습생이에요.",
+    "english": "I am a trainee.",
+    "voiceText": "저는 연습생이에요.",
+    "tokens": [
+      "저는",
+      "연습생이에요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "topic-neun",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w0201_jeo_i",
+      "fw1001_eun_neun"
+    ],
+    "sourceWordIds": [
+      "w0201_jeo_i",
+      "fw1001_eun_neun"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "이에요 is the polite copula after a consonant; 예요 is used after a vowel.",
+    "acceptAlso": [
+      "전 연습생이에요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2116",
+    "korean": "오늘은 연습이에요.",
+    "english": "Today is practice.",
+    "voiceText": "오늘은 연습이에요.",
+    "tokens": [
+      "오늘은",
+      "연습이에요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "topic-neun",
+      "copula-ieyo",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "fw1001_eun_neun"
+    ],
+    "sourceWordIds": [
+      "fw1001_eun_neun"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "은/는 can mark a time word as the topic: 오늘은 = as for today.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2117",
+    "korean": "학교에서 노래해요.",
+    "english": "I sing at school.",
+    "voiceText": "학교에서 노래해요.",
+    "tokens": [
+      "학교에서",
+      "노래해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1005_eseo"
+    ],
+    "sourceWordIds": [
+      "fw1005_eseo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "에서 marks the place where an action happens, unlike 에 which marks a destination or location of being.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2118",
+    "korean": "무대에서 춤을 춰요.",
+    "english": "I dance on the stage.",
+    "voiceText": "무대에서 춤을 춰요.",
+    "tokens": [
+      "무대에서",
+      "춤을",
+      "춰요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1005_eseo"
+    ],
+    "sourceWordIds": [
+      "fw1005_eseo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "에서 marks where the dancing happens; the thing danced takes 을/를.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2119",
+    "korean": "친구도 연습생이에요.",
+    "english": "My friend is a trainee too.",
+    "voiceText": "친구도 연습생이에요.",
+    "tokens": [
+      "친구도",
+      "연습생이에요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "also-do",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "fw1006_do"
+    ],
+    "sourceWordIds": [
+      "fw1006_do"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "도 means too/also and replaces 은/는 or 이/가 on the noun.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2120",
+    "korean": "저도 가수예요.",
+    "english": "I am a singer too.",
+    "voiceText": "저도 가수예요.",
+    "tokens": [
+      "저도",
+      "가수예요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "also-do",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "fw1006_do"
+    ],
+    "sourceWordIds": [
+      "fw1006_do"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "도 attaches to 저 to mean me too, dropping the topic particle.",
+    "acceptAlso": [
+      "저도 가수에요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2121",
+    "korean": "선생님의 노래예요.",
+    "english": "It is the teacher's song.",
+    "voiceText": "선생님의 노래예요.",
+    "tokens": [
+      "선생님의",
+      "노래예요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "possessive-ui",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "fw1007_ui"
+    ],
+    "sourceWordIds": [
+      "fw1007_ui"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "의 marks possession: NounA의 NounB = NounB of NounA.",
+    "acceptAlso": [
+      "선생님 노래예요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2122",
+    "korean": "저의 꿈이에요.",
+    "english": "It is my dream.",
+    "voiceText": "저의 꿈이에요.",
+    "tokens": [
+      "저의",
+      "꿈이에요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "possessive-ui",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "fw1007_ui",
+      "w0201_jeo_i"
+    ],
+    "sourceWordIds": [
+      "fw1007_ui",
+      "w0201_jeo_i"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "저의 (my) often contracts to 제 in speech; both are correct.",
+    "acceptAlso": [
+      "제 꿈이에요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2123",
+    "korean": "물과 빵을 사요.",
+    "english": "I buy water and bread.",
+    "voiceText": "물과 빵을 사요.",
+    "tokens": [
+      "물과",
+      "빵을",
+      "사요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1008_wa_gwa"
+    ],
+    "sourceWordIds": [
+      "fw1008_wa_gwa"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "과 joins two nouns after a consonant (와 after a vowel): A과/와 B.",
+    "acceptAlso": [
+      "물하고 빵을 사요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2124",
+    "korean": "커피하고 빵을 먹어요.",
+    "english": "I eat coffee and bread.",
+    "voiceText": "커피하고 빵을 먹어요.",
+    "tokens": [
+      "커피하고",
+      "빵을",
+      "먹어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1009_hago"
+    ],
+    "sourceWordIds": [
+      "fw1009_hago"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "하고 is the casual way to join nouns and works after any ending: A하고 B.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2125",
+    "korean": "노래하고 춤을 연습해요.",
+    "english": "I practice singing and dancing.",
+    "voiceText": "노래하고 춤을 연습해요.",
+    "tokens": [
+      "노래하고",
+      "춤을",
+      "연습해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1009_hago"
+    ],
+    "sourceWordIds": [
+      "fw1009_hago"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "하고 links two nouns you treat together here, singing and dancing.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2126",
+    "korean": "밥을 먹고 자요.",
+    "english": "I eat and then sleep.",
+    "voiceText": "밥을 먹고 자요.",
+    "tokens": [
+      "밥을",
+      "먹고",
+      "자요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "and-go",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1010_go"
+    ],
+    "sourceWordIds": [
+      "fw1010_go"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 joins two verbs in sequence: 먹고 자요 = eat and (then) sleep.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2127",
+    "korean": "손을 씻고 밥을 먹어요.",
+    "english": "I wash my hands and eat.",
+    "voiceText": "손을 씻고 밥을 먹어요.",
+    "tokens": [
+      "손을",
+      "씻고",
+      "밥을",
+      "먹어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "and-go",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1010_go"
+    ],
+    "sourceWordIds": [
+      "fw1010_go"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 attaches to the first verb stem to chain actions in order.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2128",
+    "korean": "저는 커피를 안 마셔요.",
+    "english": "I don't drink coffee.",
+    "voiceText": "저는 커피를 안 마셔요.",
+    "tokens": [
+      "저는",
+      "커피를",
+      "안",
+      "마셔요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "neg-an",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1711_an"
+    ],
+    "sourceWordIds": [
+      "fw1711_an"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "안 goes right before the verb for simple negation: 안 마셔요 = don't drink.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2129",
+    "korean": "오늘은 연습을 안 해요.",
+    "english": "I'm not practicing today.",
+    "voiceText": "오늘은 연습을 안 해요.",
+    "tokens": [
+      "오늘은",
+      "연습을",
+      "안",
+      "해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "neg-an",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "fw1711_an"
+    ],
+    "sourceWordIds": [
+      "fw1711_an"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "For 하다 verbs, 안 sits before 해요: 연습을 안 해요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2130",
+    "korean": "아직 밥을 안 먹었어요.",
+    "english": "I haven't eaten yet.",
+    "voiceText": "아직 밥을 안 먹었어요.",
+    "tokens": [
+      "아직",
+      "밥을",
+      "안",
+      "먹었어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "neg-an",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "fw1711_an"
+    ],
+    "sourceWordIds": [
+      "fw1711_an"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "안 also negates past tense: 안 먹었어요 = didn't eat / haven't eaten.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2131",
+    "korean": "요즘 잠을 잘 못 자요.",
+    "english": "I can't sleep well these days.",
+    "voiceText": "요즘 잠을 잘 못 자요.",
+    "tokens": [
+      "요즘",
+      "잠을",
+      "잘",
+      "못",
+      "자요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "neg-mot",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "fw1712_mot"
+    ],
+    "sourceWordIds": [
+      "fw1712_mot"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "못 before the verb means unable to, stronger than 안 (simply don't).",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2132",
+    "korean": "어제는 연습을 못 했어요.",
+    "english": "I couldn't practice yesterday.",
+    "voiceText": "어제는 연습을 못 했어요.",
+    "tokens": [
+      "어제는",
+      "연습을",
+      "못",
+      "했어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "neg-mot",
+      "past-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "fw1712_mot"
+    ],
+    "sourceWordIds": [
+      "fw1712_mot"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "못 했어요 means was unable to do it, not just didn't.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2133",
+    "korean": "저는 늦지 않아요.",
+    "english": "I am not late.",
+    "voiceText": "저는 늦지 않아요.",
+    "tokens": [
+      "저는",
+      "늦지",
+      "않아요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "neg-ji-anta",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1713_ji_anta"
+    ],
+    "sourceWordIds": [
+      "fw1713_ji_anta"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-지 않다 is the long negation: stem + 지 않아요, same meaning as 안.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2134",
+    "korean": "그 노래는 어렵지 않아요.",
+    "english": "That song is not hard.",
+    "voiceText": "그 노래는 어렵지 않아요.",
+    "tokens": [
+      "그",
+      "노래는",
+      "어렵지",
+      "않아요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "neg-ji-anta",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1713_ji_anta"
+    ],
+    "sourceWordIds": [
+      "fw1713_ji_anta"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "Adjectives negate with -지 않다 too: 어렵지 않아요 = is not hard.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2135",
+    "korean": "밥을 먹으러 가요.",
+    "english": "I'm going to eat.",
+    "voiceText": "밥을 먹으러 가요.",
+    "tokens": [
+      "밥을",
+      "먹으러",
+      "가요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1802_reo"
+    ],
+    "sourceWordIds": [
+      "fw1802_reo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)러 가다/오다 expresses going/coming in order to do something.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2136",
+    "korean": "커피를 마시러 왔어요.",
+    "english": "I came to drink coffee.",
+    "voiceText": "커피를 마시러 왔어요.",
+    "tokens": [
+      "커피를",
+      "마시러",
+      "왔어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "fw1802_reo"
+    ],
+    "sourceWordIds": [
+      "fw1802_reo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)러 pairs with a motion verb; here 왔어요 (came) states the purpose of coming.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2137",
+    "korean": "시간이 있으면 연습해요.",
+    "english": "If I have time, I practice.",
+    "voiceText": "시간이 있으면 연습해요.",
+    "tokens": [
+      "시간이",
+      "있으면",
+      "연습해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "if-myeon",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1801_myeon"
+    ],
+    "sourceWordIds": [
+      "fw1801_myeon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)면 makes an if/when clause: 있으면 = if there is.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2138",
+    "korean": "날씨가 좋으면 공원에 가요.",
+    "english": "If the weather is nice, I go to the park.",
+    "voiceText": "날씨가 좋으면 공원에 가요.",
+    "tokens": [
+      "날씨가",
+      "좋으면",
+      "공원에",
+      "가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "location-e",
+      "if-myeon",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1801_myeon"
+    ],
+    "sourceWordIds": [
+      "fw1801_myeon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)면 attaches to an adjective stem too: 좋으면 = if it's good.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2139",
+    "korean": "주말에는 쉬거나 노래해요.",
+    "english": "On weekends I rest or sing.",
+    "voiceText": "주말에는 쉬거나 노래해요.",
+    "tokens": [
+      "주말에는",
+      "쉬거나",
+      "노래해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "present-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "fw1803_geona"
+    ],
+    "sourceWordIds": [
+      "fw1803_geona"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-거나 joins two verbs as alternatives: A거나 B = A or B.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2140",
+    "korean": "너무 바빠서 밥을 먹지 못했어요.",
+    "english": "I was so busy I couldn't eat.",
+    "voiceText": "너무 바빠서 밥을 먹지 못했어요.",
+    "tokens": [
+      "너무",
+      "바빠서",
+      "밥을",
+      "먹지",
+      "못했어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "because-aseo",
+      "neg-mot",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "fw1714_ji_mothada"
+    ],
+    "sourceWordIds": [
+      "fw1714_ji_mothada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-지 못하다 is the long form of 못: 먹지 못했어요 = was unable to eat.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2141",
+    "korean": "비 때문에 연습을 못 했어요.",
+    "english": "I couldn't practice because of the rain.",
+    "voiceText": "비 때문에 연습을 못 했어요.",
+    "tokens": [
+      "비",
+      "때문에",
+      "연습을",
+      "못",
+      "했어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "neg-mot",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "fw1806_ttaemune"
+    ],
+    "sourceWordIds": [
+      "fw1806_ttaemune"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "Noun + 때문에 gives a reason: 비 때문에 = because of the rain.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2142",
+    "korean": "대표님이 사무실에 계세요.",
+    "english": "The director is in the office.",
+    "voiceText": "대표님이 사무실에 계세요.",
+    "tokens": [
+      "대표님이",
+      "사무실에",
+      "계세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "honorific-si",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1902_gyesida"
+    ],
+    "sourceWordIds": [
+      "w1902_gyesida"
+    ],
+    "speechLevel": "polite informal",
+    "register": "honorific",
+    "grammarTip": "계시다 is the honorific of 있다 (to be present) for a respected person.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2143",
+    "korean": "부장님께서 오세요.",
+    "english": "The manager is coming.",
+    "voiceText": "부장님께서 오세요.",
+    "tokens": [
+      "부장님께서",
+      "오세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "honorific-si",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1901_si"
+    ],
+    "sourceWordIds": [
+      "fw1901_si"
+    ],
+    "speechLevel": "polite informal",
+    "register": "honorific",
+    "grammarTip": "께서 is the honorific subject marker; -(으)시- adds respect to the verb: 오세요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2144",
+    "korean": "할머니께서 주무세요.",
+    "english": "Grandmother is sleeping.",
+    "voiceText": "할머니께서 주무세요.",
+    "tokens": [
+      "할머니께서",
+      "주무세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "honorific-si",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1904_jumusida"
+    ],
+    "sourceWordIds": [
+      "w1904_jumusida"
+    ],
+    "speechLevel": "polite informal",
+    "register": "honorific",
+    "grammarTip": "주무시다 is the honorific of 자다 (to sleep).",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2145",
+    "korean": "아버지께서 진지를 드세요.",
+    "english": "Father is eating.",
+    "voiceText": "아버지께서 진지를 드세요.",
+    "tokens": [
+      "아버지께서",
+      "진지를",
+      "드세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "honorific-si",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1903_deusida"
+    ],
+    "sourceWordIds": [
+      "w1903_deusida"
+    ],
+    "speechLevel": "polite informal",
+    "register": "honorific",
+    "grammarTip": "드시다 is the honorific of 먹다; 진지 is the honorific word for a meal.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2146",
+    "korean": "성함이 어떻게 되십니까?",
+    "english": "May I ask your name?",
+    "voiceText": "성함이 어떻게 되십니까?",
+    "tokens": [
+      "성함이",
+      "어떻게",
+      "되십니까"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "question-polite",
+      "honorific-si",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w1905_seongham",
+      "fw1703_seumnida"
+    ],
+    "sourceWordIds": [
+      "w1905_seongham",
+      "fw1703_seumnida"
+    ],
+    "speechLevel": "polite formal",
+    "register": "honorific",
+    "grammarTip": "성함 is the honorific for name; 되십니까 is the formal honorific question form.",
+    "acceptAlso": [
+      "성함이 어떻게 되세요?"
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2147",
+    "korean": "연세가 어떻게 되십니까?",
+    "english": "May I ask your age?",
+    "voiceText": "연세가 어떻게 되십니까?",
+    "tokens": [
+      "연세가",
+      "어떻게",
+      "되십니까"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "question-polite",
+      "honorific-si",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w1906_yeonse",
+      "fw1703_seumnida"
+    ],
+    "sourceWordIds": [
+      "w1906_yeonse",
+      "fw1703_seumnida"
+    ],
+    "speechLevel": "polite formal",
+    "register": "honorific",
+    "grammarTip": "연세 is the honorific for age; asking elders uses this respectful phrasing.",
+    "acceptAlso": [
+      "연세가 어떻게 되세요?"
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2148",
+    "korean": "오늘 날씨가 참 좋네요.",
+    "english": "The weather is really nice today.",
+    "voiceText": "오늘 날씨가 참 좋네요.",
+    "tokens": [
+      "오늘",
+      "날씨가",
+      "참",
+      "좋네요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1704_neyo"
+    ],
+    "sourceWordIds": [
+      "fw1704_neyo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-네요 adds a tone of noticing or mild surprise: 좋네요 = oh, it's nice!",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2149",
+    "korean": "노래를 참 잘하시네요.",
+    "english": "You sing really well!",
+    "voiceText": "노래를 참 잘하시네요.",
+    "tokens": [
+      "노래를",
+      "참",
+      "잘하시네요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "honorific-si",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "fw1704_neyo"
+    ],
+    "sourceWordIds": [
+      "fw1704_neyo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "honorific",
+    "grammarTip": "-시- shows respect to the listener and -네요 adds admiration: 잘하시네요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2150",
+    "korean": "이제 시작할까요?",
+    "english": "Shall we start now?",
+    "voiceText": "이제 시작할까요?",
+    "tokens": [
+      "이제",
+      "시작할까요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "fw1705_lkkayo"
+    ],
+    "sourceWordIds": [
+      "fw1705_lkkayo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)ㄹ까요? proposes or asks a shared decision: 시작할까요? = shall we start?",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2151",
+    "korean": "내일 다시 만날까요?",
+    "english": "Shall we meet again tomorrow?",
+    "voiceText": "내일 다시 만날까요?",
+    "tokens": [
+      "내일",
+      "다시",
+      "만날까요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "question-polite",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "fw1705_lkkayo"
+    ],
+    "sourceWordIds": [
+      "fw1705_lkkayo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)ㄹ까요? with 우리 implied suggests doing something together.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2152",
+    "korean": "이제 곧 출발합니다.",
+    "english": "We are departing shortly.",
+    "voiceText": "이제 곧 출발합니다.",
+    "tokens": [
+      "이제",
+      "곧",
+      "출발합니다"
+    ],
+    "band": 2,
+    "patternTags": [
+      "formal-nida",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "fw1703_seumnida"
+    ],
+    "sourceWordIds": [
+      "fw1703_seumnida"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "-습니다/ㅂ니다 is the formal-polite ending used for announcements and public speech.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s2153",
+    "korean": "지금부터 회의를 시작합니다.",
+    "english": "The meeting begins now.",
+    "voiceText": "지금부터 회의를 시작합니다.",
+    "tokens": [
+      "지금부터",
+      "회의를",
+      "시작합니다"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "from-buteo",
+      "formal-nida",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "fw1703_seumnida"
+    ],
+    "sourceWordIds": [
+      "fw1703_seumnida"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "시작합니다 is the formal 합니다-form of 시작하다, used to open events.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
   }
 ];
 })();

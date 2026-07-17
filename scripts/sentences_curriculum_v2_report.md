@@ -1,8 +1,8 @@
 # Sentences Curriculum v2 Report
 
-Total sentence rows: 2113
+Total sentence rows: 2153
 Total units: 75
-Total content lessons: 339
+Total content lessons: 344
 Total checkpoints: 75
 
 ## Units Breakdown
@@ -91,10 +91,12 @@ Total checkpoints: 75
 ### Unit: sn2-grammar-u1 (Function words 📖)
 - Section: sn2
 - Twin Words Unit: s2-grammar-u1
-- Total rows: 10
-- Content Lessons: 2
-  - **sn2-grammar-u1-l1** (S2 · Function words · 1): 5 rows [Drills: translate, translate, translate, build, listen]
-  - **sn2-grammar-u1-l2** (S2 · Function words · 2): 5 rows [Drills: translate, translate, translate, build, listen]
+- Total rows: 24
+- Content Lessons: 4
+  - **sn2-grammar-u1-l1** (S2 · Function words · 1): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-grammar-u1-l2** (S2 · Function words · 2): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-grammar-u1-l3** (S2 · Function words · 3): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+  - **sn2-grammar-u1-l4** (S2 · Function words · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn2-nature-u1 (Weather today 🌿)
 - Section: sn2
@@ -230,10 +232,12 @@ Total checkpoints: 75
 ### Unit: sn3-grammar-u2 (Connecting clauses 📖)
 - Section: sn3
 - Twin Words Unit: s3-grammar-u2
-- Total rows: 12
-- Content Lessons: 2
-  - **sn3-grammar-u2-l1** (S3 · Connecting clauses · 1): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
-  - **sn3-grammar-u2-l2** (S3 · Connecting clauses · 2): 6 rows [Drills: translate, translate, translate, translate, build, listen]
+- Total rows: 26
+- Content Lessons: 4
+  - **sn3-grammar-u2-l1** (S3 · Connecting clauses · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn3-grammar-u2-l2** (S3 · Connecting clauses · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn3-grammar-u2-l3** (S3 · Connecting clauses · 3): 6 rows [Drills: translate, translate, translate, translate, transform, listen]
+  - **sn3-grammar-u2-l4** (S3 · Connecting clauses · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn3-nature-u2 (Animals nearby 🌿)
 - Section: sn3
@@ -408,11 +412,12 @@ Total checkpoints: 75
 ### Unit: sn5-grammar-u3 (Register and respect 📖)
 - Section: sn5
 - Twin Words Unit: s5-grammar-u3
-- Total rows: 15
-- Content Lessons: 3
-  - **sn5-grammar-u3-l1** (S5 · Register and respect · 1): 5 rows [Drills: translate, translate, translate, build, listen]
-  - **sn5-grammar-u3-l2** (S5 · Register and respect · 2): 5 rows [Drills: translate, translate, translate, build, listen]
-  - **sn5-grammar-u3-l3** (S5 · Register and respect · 3): 5 rows [Drills: translate, translate, translate, transform, listen]
+- Total rows: 27
+- Content Lessons: 4
+  - **sn5-grammar-u3-l1** (S5 · Register and respect · 1): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn5-grammar-u3-l2** (S5 · Register and respect · 2): 7 rows [Drills: translate, translate, translate, translate, translate, build, listen]
+  - **sn5-grammar-u3-l3** (S5 · Register and respect · 3): 7 rows [Drills: translate, translate, translate, translate, translate, transform, listen]
+  - **sn5-grammar-u3-l4** (S5 · Register and respect · 4): 6 rows [Drills: translate, translate, translate, translate, build, listen]
 
 ### Unit: sn5-actions-u4 (A busy afternoon 🏃)
 - Section: sn5
