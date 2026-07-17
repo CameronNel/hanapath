@@ -115750,6 +115750,5344 @@
       "patternTags": "explicit"
     },
     "source": "authored"
+  },
+  {
+    "id": "s3411",
+    "korean": "우리 집 개는 정말 귀여워요.",
+    "english": "Our dog is really cute.",
+    "voiceText": "우리 집 개는 정말 귀여워요.",
+    "tokens": [
+      "우리",
+      "집",
+      "개는",
+      "정말",
+      "귀여워요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "topic-neun",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-는 marks the topic; 귀여워요 means is cute.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3412",
+    "korean": "고양이가 소파에서 자요.",
+    "english": "The cat sleeps on the sofa.",
+    "voiceText": "고양이가 소파에서 자요.",
+    "tokens": [
+      "고양이가",
+      "소파에서",
+      "자요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "subject-i-ga",
+      "location-eseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-가 marks the subject; -에서 marks where an action happens.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3413",
+    "korean": "개에게 물을 줘요.",
+    "english": "I give the dog water.",
+    "voiceText": "개에게 물을 줘요.",
+    "tokens": [
+      "개에게",
+      "물을",
+      "줘요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에게 marks the receiver; 물을 줘요 means give water.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3414",
+    "korean": "고양이 밥을 준비해요.",
+    "english": "I prepare the cat's food.",
+    "voiceText": "고양이 밥을 준비해요.",
+    "tokens": [
+      "고양이",
+      "밥을",
+      "준비해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "밥을 준비해요 means prepare food; -을 marks the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3415",
+    "korean": "아침마다 개와 산책해요.",
+    "english": "I take a walk with the dog every morning.",
+    "voiceText": "아침마다 개와 산책해요.",
+    "tokens": [
+      "아침마다",
+      "개와",
+      "산책해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "with-hago-wa",
+      "time-expression",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-와 means with after a vowel-ending noun; 아침마다 means every morning.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3416",
+    "korean": "저녁에 고양이와 놀아요.",
+    "english": "I play with the cat in the evening.",
+    "voiceText": "저녁에 고양이와 놀아요.",
+    "tokens": [
+      "저녁에",
+      "고양이와",
+      "놀아요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "location-e",
+      "with-hago-wa",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-와 means with; -에 marks a time.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3417",
+    "korean": "개를 하루에 두 번 산책시켜요.",
+    "english": "I walk the dog twice a day.",
+    "voiceText": "개를 하루에 두 번 산책시켜요.",
+    "tokens": [
+      "개를",
+      "하루에",
+      "두",
+      "번",
+      "산책시켜요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "counter-phrase",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae",
+      "w_m5_035_mari"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae",
+      "w_m5_035_mari"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "하루에 두 번 means twice a day; -를 marks the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3418",
+    "korean": "고양이 한 마리가 창가에 있어요.",
+    "english": "There is one cat by the window.",
+    "voiceText": "고양이 한 마리가 창가에 있어요.",
+    "tokens": [
+      "고양이",
+      "한",
+      "마리가",
+      "창가에",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "location-e",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi",
+      "w_m5_035_mari"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi",
+      "w_m5_035_mari"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "한 마리 counts one animal; 있어요 means there is or exists.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3419",
+    "korean": "개가 오늘 밥을 잘 먹어요.",
+    "english": "The dog eats its food well today.",
+    "voiceText": "개가 오늘 밥을 잘 먹어요.",
+    "tokens": [
+      "개가",
+      "오늘",
+      "밥을",
+      "잘",
+      "먹어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "time-expression",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "오늘 means today; -을 marks 밥 as the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3420",
+    "korean": "고양이는 물을 많이 마셔요.",
+    "english": "The cat drinks a lot of water.",
+    "voiceText": "고양이는 물을 많이 마셔요.",
+    "tokens": [
+      "고양이는",
+      "물을",
+      "많이",
+      "마셔요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-는 marks the topic; 많이 means a lot.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3421",
+    "korean": "우리 개가 낯선 사람을 무서워해요.",
+    "english": "Our dog is afraid of strangers.",
+    "voiceText": "우리 개가 낯선 사람을 무서워해요.",
+    "tokens": [
+      "우리",
+      "개가",
+      "낯선",
+      "사람을",
+      "무서워해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-가 marks the subject; -을 marks the person feared.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3422",
+    "korean": "고양이가 창문을 자꾸 열어요.",
+    "english": "The cat keeps opening the window.",
+    "voiceText": "고양이가 창문을 자꾸 열어요.",
+    "tokens": [
+      "고양이가",
+      "창문을",
+      "자꾸",
+      "열어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "자꾸 means repeatedly; -을 marks the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3423",
+    "korean": "개가 아파서 동물 병원에 가요.",
+    "english": "The dog is sick, so I go to the animal hospital.",
+    "voiceText": "개가 아파서 동물 병원에 가요.",
+    "tokens": [
+      "개가",
+      "아파서",
+      "동물",
+      "병원에",
+      "가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "because-aseo",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아서 means because or so; -에 marks the destination.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3424",
+    "korean": "수의사가 개를 꼼꼼히 살펴봐요.",
+    "english": "The veterinarian examines the dog carefully.",
+    "voiceText": "수의사가 개를 꼼꼼히 살펴봐요.",
+    "tokens": [
+      "수의사가",
+      "개를",
+      "꼼꼼히",
+      "살펴봐요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1156_suuisa",
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m6_1156_suuisa",
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-가 marks the subject; -을 marks the patient being examined.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3425",
+    "korean": "수의사에게 고양이의 상태를 물어봐요.",
+    "english": "I ask the veterinarian about the cat's condition.",
+    "voiceText": "수의사에게 고양이의 상태를 물어봐요.",
+    "tokens": [
+      "수의사에게",
+      "고양이의",
+      "상태를",
+      "물어봐요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-e",
+      "possessive-ui",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1156_suuisa",
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m6_1156_suuisa",
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-의 means the cat's; -에게 marks the person asked.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3426",
+    "korean": "개에게 약을 먹여요.",
+    "english": "I give the dog medicine.",
+    "voiceText": "개에게 약을 먹여요.",
+    "tokens": [
+      "개에게",
+      "약을",
+      "먹여요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에게 marks the receiver; 약을 먹여요 means give medicine to eat.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3427",
+    "korean": "고양이는 약을 잘 못 먹어요.",
+    "english": "The cat cannot take medicine well.",
+    "voiceText": "고양이는 약을 잘 못 먹어요.",
+    "tokens": [
+      "고양이는",
+      "약을",
+      "잘",
+      "못",
+      "먹어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "neg-mot",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "못 before a verb means cannot; 약을 marks medicine as the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3428",
+    "korean": "개가 열이 나서 오늘 쉬어요.",
+    "english": "The dog has a fever, so it rests today.",
+    "voiceText": "개가 열이 나서 오늘 쉬어요.",
+    "tokens": [
+      "개가",
+      "열이",
+      "나서",
+      "오늘",
+      "쉬어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "because-aseo",
+      "time-expression",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아서 connects a reason; 오늘 means today.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3429",
+    "korean": "고양이의 눈이 빨개요.",
+    "english": "The cat's eyes are red.",
+    "voiceText": "고양이의 눈이 빨개요.",
+    "tokens": [
+      "고양이의",
+      "눈이",
+      "빨개요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "possessive-ui",
+      "subject-i-ga",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-의 means the cat's; -이 marks the subject.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3430",
+    "korean": "아픈 개를 조심해서 안아요.",
+    "english": "I hold the sick dog carefully.",
+    "voiceText": "아픈 개를 조심해서 안아요.",
+    "tokens": [
+      "아픈",
+      "개를",
+      "조심해서",
+      "안아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "because-aseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae",
+      "w_m6_1044_josim"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae",
+      "w_m6_1044_josim"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-해서 means while doing something carefully; -를 marks the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3431",
+    "korean": "고양이가 침대 밑에 숨어 있어요.",
+    "english": "The cat is hiding under the bed.",
+    "voiceText": "고양이가 침대 밑에 숨어 있어요.",
+    "tokens": [
+      "고양이가",
+      "침대",
+      "밑에",
+      "숨어",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "location-e",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the location; 있어요 describes a continuing state.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3432",
+    "korean": "개가 문 앞에서 기다려요.",
+    "english": "The dog waits in front of the door.",
+    "voiceText": "개가 문 앞에서 기다려요.",
+    "tokens": [
+      "개가",
+      "문",
+      "앞에서",
+      "기다려요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks where the action happens; 기다려요 means waits.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3433",
+    "korean": "고양이 털을 매일 빗어요.",
+    "english": "I brush the cat's fur every day.",
+    "voiceText": "고양이 털을 매일 빗어요.",
+    "tokens": [
+      "고양이",
+      "털을",
+      "매일",
+      "빗어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "매일 means every day; -을 marks the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3434",
+    "korean": "개가 밖에서 신나게 뛰어요.",
+    "english": "The dog runs excitedly outside.",
+    "voiceText": "개가 밖에서 신나게 뛰어요.",
+    "tokens": [
+      "개가",
+      "밖에서",
+      "신나게",
+      "뛰어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks where the action happens; 밖에서 means outside.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3435",
+    "korean": "고양이에게 새 장난감을 사 줘요.",
+    "english": "I buy a new toy for the cat.",
+    "voiceText": "고양이에게 새 장난감을 사 줘요.",
+    "tokens": [
+      "고양이에게",
+      "새",
+      "장난감을",
+      "사",
+      "줘요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에게 marks the beneficiary; 사 줘요 means buy for someone.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3436",
+    "korean": "개가 장난감을 물고 달려가요.",
+    "english": "The dog runs off carrying a toy in its mouth.",
+    "voiceText": "개가 장난감을 물고 달려가요.",
+    "tokens": [
+      "개가",
+      "장난감을",
+      "물고",
+      "달려가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "and-go",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 connects actions; 물고 means while holding with the mouth.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3437",
+    "korean": "고양이는 낯선 소리를 잘 들어요.",
+    "english": "The cat listens well to unfamiliar sounds.",
+    "voiceText": "고양이는 낯선 소리를 잘 들어요.",
+    "tokens": [
+      "고양이는",
+      "낯선",
+      "소리를",
+      "잘",
+      "들어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-는 marks the topic; -을 marks the sound heard.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3438",
+    "korean": "개를 목욕시킨 후에 털을 말려요.",
+    "english": "After bathing the dog, I dry its fur.",
+    "voiceText": "개를 목욕시킨 후에 털을 말려요.",
+    "tokens": [
+      "개를",
+      "목욕시킨",
+      "후에",
+      "털을",
+      "말려요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-은 후에 means after doing something; -을 marks each object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3439",
+    "korean": "고양이가 아기 옆에서 조용히 자요.",
+    "english": "The cat sleeps quietly next to the baby.",
+    "voiceText": "고양이가 아기 옆에서 조용히 자요.",
+    "tokens": [
+      "고양이가",
+      "아기",
+      "옆에서",
+      "조용히",
+      "자요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks the place of sleeping; 옆에서 means beside.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3440",
+    "korean": "개가 예방 주사를 맞았어요.",
+    "english": "The dog got a preventative shot.",
+    "voiceText": "개가 예방 주사를 맞았어요.",
+    "tokens": [
+      "개가",
+      "예방",
+      "주사를",
+      "맞았어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-았어요 marks a completed past action.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3441",
+    "korean": "수의사 선생님이 친절해서 마음이 놓였어요.",
+    "english": "I felt relieved because the veterinarian was kind.",
+    "voiceText": "수의사 선생님이 친절해서 마음이 놓였어요.",
+    "tokens": [
+      "수의사",
+      "선생님이",
+      "친절해서",
+      "마음이",
+      "놓였어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "because-aseo",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1156_suuisa"
+    ],
+    "sourceWordIds": [
+      "w_m6_1156_suuisa"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-해서 gives the reason; 놓였어요 expresses became relieved.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3442",
+    "korean": "우리 집 고양이는 올해 열 살이에요.",
+    "english": "Our cat is ten years old this year.",
+    "voiceText": "우리 집 고양이는 올해 열 살이에요.",
+    "tokens": [
+      "우리",
+      "집",
+      "고양이는",
+      "올해",
+      "열",
+      "살이에요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "time-expression",
+      "counter-phrase",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "열 살이에요 uses 살 as an age counter.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3443",
+    "korean": "개가 산책을 좋아하지만 비가 와요.",
+    "english": "The dog likes walks, but it is raining.",
+    "voiceText": "개가 산책을 좋아하지만 비가 와요.",
+    "tokens": [
+      "개가",
+      "산책을",
+      "좋아하지만",
+      "비가",
+      "와요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "want-go-sipda",
+      "but-jiman",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-지만 means but; 좋아해요 expresses liking.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3444",
+    "korean": "고양이를 혼자 두면 걱정돼요.",
+    "english": "I worry if I leave the cat alone.",
+    "voiceText": "고양이를 혼자 두면 걱정돼요.",
+    "tokens": [
+      "고양이를",
+      "혼자",
+      "두면",
+      "걱정돼요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "if-myeon",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-면 means if or when; -를 marks the cat left alone.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3445",
+    "korean": "개를 입양하기 전에 가족과 상의해요.",
+    "english": "Before adopting a dog, I discuss it with my family.",
+    "voiceText": "개를 입양하기 전에 가족과 상의해요.",
+    "tokens": [
+      "개를",
+      "입양하기",
+      "전에",
+      "가족과",
+      "상의해요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "object-eul-reul",
+      "with-hago-wa",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-기 전에 means before doing something; -와 means with.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3446",
+    "korean": "고양이의 건강을 위해 정기적으로 병원에 가요.",
+    "english": "I go to the hospital regularly for the cat's health.",
+    "voiceText": "고양이의 건강을 위해 정기적으로 병원에 가요.",
+    "tokens": [
+      "고양이의",
+      "건강을",
+      "위해",
+      "정기적으로",
+      "병원에",
+      "가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "possessive-ui",
+      "object-eul-reul",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-의 means the cat's; -을 위해 means for the sake of.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3447",
+    "korean": "이번 주에는 개를 꼭 데리고 갈게요.",
+    "english": "This week, I will definitely take the dog with me.",
+    "voiceText": "이번 주에는 개를 꼭 데리고 갈게요.",
+    "tokens": [
+      "이번",
+      "주에는",
+      "개를",
+      "꼭",
+      "데리고",
+      "갈게요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에는 marks the time topic; 갈게요 expresses a promise.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3448",
+    "korean": "고양이가 아파도 밥은 조금 먹어요.",
+    "english": "Even though the cat is sick, it eats a little food.",
+    "voiceText": "고양이가 아파도 밥은 조금 먹어요.",
+    "tokens": [
+      "고양이가",
+      "아파도",
+      "밥은",
+      "조금",
+      "먹어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아도 means even if or although; -은 contrasts 밥.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3449",
+    "korean": "개와 고양이를 함께 키우고 있어요.",
+    "english": "I am raising a dog and a cat together.",
+    "voiceText": "개와 고양이를 함께 키우고 있어요.",
+    "tokens": [
+      "개와",
+      "고양이를",
+      "함께",
+      "키우고",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "and-go",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_115_gae",
+      "w_m5_116_goyangi"
+    ],
+    "sourceWordIds": [
+      "w_m5_115_gae",
+      "w_m5_116_goyangi"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 있어요 describes an ongoing action; -와 connects the animals.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3450",
+    "korean": "반려동물이 아프면 바로 수의사에게 연락해요.",
+    "english": "If a pet gets sick, I contact a veterinarian right away.",
+    "voiceText": "반려동물이 아프면 바로 수의사에게 연락해요.",
+    "tokens": [
+      "반려동물이",
+      "아프면",
+      "바로",
+      "수의사에게",
+      "연락해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "if-myeon",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1156_suuisa"
+    ],
+    "sourceWordIds": [
+      "w_m6_1156_suuisa"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-면 means if; -에게 marks the person contacted.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3451",
+    "korean": "동물 병원에서 예방 접종을 해요.",
+    "english": "I get a vaccination at the animal hospital.",
+    "voiceText": "동물 병원에서 예방 접종을 해요.",
+    "tokens": [
+      "동물",
+      "병원에서",
+      "예방",
+      "접종을",
+      "해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1156_suuisa"
+    ],
+    "sourceWordIds": [
+      "w_m6_1156_suuisa"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks where an action happens; -을 marks the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3452",
+    "korean": "저는 자동차를 매일 운전해요.",
+    "english": "I drive a car every day.",
+    "voiceText": "저는 자동차를 매일 운전해요.",
+    "tokens": [
+      "저는",
+      "자동차를",
+      "매일",
+      "운전해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "time-expression",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_428_jadongcha"
+    ],
+    "sourceWordIds": [
+      "w_m5_428_jadongcha"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-는 marks the topic; 매일 means every day.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3453",
+    "korean": "차가 주차장에 있어요.",
+    "english": "The car is in the parking lot.",
+    "voiceText": "차가 주차장에 있어요.",
+    "tokens": [
+      "차가",
+      "주차장에",
+      "있어요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "subject-i-ga",
+      "location-e",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the location; 있어요 means is located.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3454",
+    "korean": "주유소에서 아침 일찍 기름을 넣어요.",
+    "english": "I fill up with gas early in the morning at the gas station.",
+    "voiceText": "주유소에서 아침 일찍 기름을 넣어요.",
+    "tokens": [
+      "주유소에서",
+      "아침",
+      "일찍",
+      "기름을",
+      "넣어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "time-expression",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_454_juyuso"
+    ],
+    "sourceWordIds": [
+      "w_m5_454_juyuso"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks where an action happens; 일찍 means early.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3455",
+    "korean": "오늘 교통이 많이 막혀요.",
+    "english": "Traffic is very congested today.",
+    "voiceText": "오늘 교통이 많이 막혀요.",
+    "tokens": [
+      "오늘",
+      "교통이",
+      "많이",
+      "막혀요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "time-expression",
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_181_gyotong"
+    ],
+    "sourceWordIds": [
+      "w_m5_181_gyotong"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "오늘 means today; 많이 means a lot or very much.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3456",
+    "korean": "신호등이 빨간색이면 멈춰요.",
+    "english": "If the traffic light is red, I stop.",
+    "voiceText": "신호등이 빨간색이면 멈춰요.",
+    "tokens": [
+      "신호등이",
+      "빨간색이면",
+      "멈춰요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "if-myeon",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_194_sinhodeung"
+    ],
+    "sourceWordIds": [
+      "w_m5_194_sinhodeung"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-이면 means if it is; -면 makes a condition.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3457",
+    "korean": "운전할 때 휴대전화를 보지 마세요.",
+    "english": "Do not look at your phone while driving.",
+    "voiceText": "운전할 때 휴대전화를 보지 마세요.",
+    "tokens": [
+      "운전할",
+      "때",
+      "휴대전화를",
+      "보지",
+      "마세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "when-ttae",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "sourceWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-할 때 means when doing; -지 마세요 means do not.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3458",
+    "korean": "주차장에 빈자리가 있어요.",
+    "english": "There is an empty space in the parking lot.",
+    "voiceText": "주차장에 빈자리가 있어요.",
+    "tokens": [
+      "주차장에",
+      "빈자리가",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m6_2546_juchajang"
+    ],
+    "sourceWordIds": [
+      "w_m6_2546_juchajang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the location; 있어요 expresses existence.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3459",
+    "korean": "속도를 조금 줄여 주세요.",
+    "english": "Please reduce the speed a little.",
+    "voiceText": "속도를 조금 줄여 주세요.",
+    "tokens": [
+      "속도를",
+      "조금",
+      "줄여",
+      "주세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_2302_sogdo"
+    ],
+    "sourceWordIds": [
+      "w_m6_2302_sogdo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아 주세요 is a polite request; -를 marks speed.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3460",
+    "korean": "차가 고장 나서 정비소에 갔어요.",
+    "english": "The car broke down, so I went to a repair shop.",
+    "voiceText": "차가 고장 나서 정비소에 갔어요.",
+    "tokens": [
+      "차가",
+      "고장",
+      "나서",
+      "정비소에",
+      "갔어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "because-aseo",
+      "location-e",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아서 connects a reason; 갔어요 is the past of 가요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3461",
+    "korean": "작은 사고가 있었지만 다치지 않았어요.",
+    "english": "There was a small accident, but no one was hurt.",
+    "voiceText": "작은 사고가 있었지만 다치지 않았어요.",
+    "tokens": [
+      "작은",
+      "사고가",
+      "있었지만",
+      "다치지",
+      "않았어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "existence-itda",
+      "but-jiman",
+      "neg-an",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1534_sago"
+    ],
+    "sourceWordIds": [
+      "w_m6_1534_sago"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-지만 means but; -지 않았어요 is a past negative.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3462",
+    "korean": "도로에서 천천히 운전해요.",
+    "english": "I drive slowly on the road.",
+    "voiceText": "도로에서 천천히 운전해요.",
+    "tokens": [
+      "도로에서",
+      "천천히",
+      "운전해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1348_doro",
+      "w_m6_1099_unjeonhada"
+    ],
+    "sourceWordIds": [
+      "w_m6_1348_doro",
+      "w_m6_1099_unjeonhada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks the place of driving; 천천히 means slowly.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3463",
+    "korean": "비 오는 날에는 길이 미끄러우니까 조심하세요.",
+    "english": "On rainy days, the road is slippery, so please be careful.",
+    "voiceText": "비 오는 날에는 길이 미끄러우니까 조심하세요.",
+    "tokens": [
+      "비",
+      "오는",
+      "날에는",
+      "길이",
+      "미끄러우니까",
+      "조심하세요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w1309_gil",
+      "w_m6_1044_josim"
+    ],
+    "sourceWordIds": [
+      "w1309_gil",
+      "w_m6_1044_josim"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-으니까 gives a reason; -세요 makes a polite command.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3464",
+    "korean": "자동차 한 대를 빌렸어요.",
+    "english": "I rented one car.",
+    "voiceText": "자동차 한 대를 빌렸어요.",
+    "tokens": [
+      "자동차",
+      "한",
+      "대를",
+      "빌렸어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_428_jadongcha",
+      "w_m5_041_dae"
+    ],
+    "sourceWordIds": [
+      "w_m5_428_jadongcha",
+      "w_m5_041_dae"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "한 대 counts one vehicle; -었어요 marks the past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3465",
+    "korean": "운전사는 손님을 공항까지 데려가요.",
+    "english": "The driver takes the passenger to the airport.",
+    "voiceText": "운전사는 손님을 공항까지 데려가요.",
+    "tokens": [
+      "운전사는",
+      "손님을",
+      "공항까지",
+      "데려가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "until-kkaji",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1154_unjeonsa"
+    ],
+    "sourceWordIds": [
+      "w_m6_1154_unjeonsa"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-까지 means up to or as far as; -을 marks the passenger.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3466",
+    "korean": "차 열쇠를 집에 두고 왔어요.",
+    "english": "I left the car key at home.",
+    "voiceText": "차 열쇠를 집에 두고 왔어요.",
+    "tokens": [
+      "차",
+      "열쇠를",
+      "집에",
+      "두고",
+      "왔어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "location-e",
+      "and-go",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 오다 describes doing something and coming; -을 marks the key.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3467",
+    "korean": "주차할 곳을 아직 못 찾았어요.",
+    "english": "I still could not find a place to park.",
+    "voiceText": "주차할 곳을 아직 못 찾았어요.",
+    "tokens": [
+      "주차할",
+      "곳을",
+      "아직",
+      "못",
+      "찾았어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "neg-mot",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2546_juchajang"
+    ],
+    "sourceWordIds": [
+      "w_m6_2546_juchajang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "못 means could not; 아직 means still or yet.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3468",
+    "korean": "차를 세우고 길을 확인해요.",
+    "english": "I stop the car and check the road.",
+    "voiceText": "차를 세우고 길을 확인해요.",
+    "tokens": [
+      "차를",
+      "세우고",
+      "길을",
+      "확인해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "and-go",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car",
+      "w1309_gil"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car",
+      "w1309_gil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 connects sequential actions; -을 marks each object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3469",
+    "korean": "교통이 복잡해서 지하철을 탔어요.",
+    "english": "Traffic was complicated, so I took the subway.",
+    "voiceText": "교통이 복잡해서 지하철을 탔어요.",
+    "tokens": [
+      "교통이",
+      "복잡해서",
+      "지하철을",
+      "탔어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "because-aseo",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_181_gyotong"
+    ],
+    "sourceWordIds": [
+      "w_m5_181_gyotong"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-해서 means because or so; 탔어요 is the past of 타요.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3470",
+    "korean": "신호등이 초록색으로 바뀌었어요.",
+    "english": "The traffic light changed to green.",
+    "voiceText": "신호등이 초록색으로 바뀌었어요.",
+    "tokens": [
+      "신호등이",
+      "초록색으로",
+      "바뀌었어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "direction-euro",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_194_sinhodeung"
+    ],
+    "sourceWordIds": [
+      "w_m5_194_sinhodeung"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-으로 marks the resulting direction or state; -었어요 is past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3471",
+    "korean": "차 안에서 음악을 들어요.",
+    "english": "I listen to music inside the car.",
+    "voiceText": "차 안에서 음악을 들어요.",
+    "tokens": [
+      "차",
+      "안에서",
+      "음악을",
+      "들어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks where listening happens; -을 marks music.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3472",
+    "korean": "비가 오면 운전하지 않아요.",
+    "english": "If it rains, I do not drive.",
+    "voiceText": "비가 오면 운전하지 않아요.",
+    "tokens": [
+      "비가",
+      "오면",
+      "운전하지",
+      "않아요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "if-myeon",
+      "neg-ji-anta",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "sourceWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-면 means if; -지 않아요 makes a verb negative.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3473",
+    "korean": "고속도로에서는 속도를 지켜야 해요.",
+    "english": "On the highway, I have to follow the speed limit.",
+    "voiceText": "고속도로에서는 속도를 지켜야 해요.",
+    "tokens": [
+      "고속도로에서는",
+      "속도를",
+      "지켜야",
+      "해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "must-ya-dwaeda",
+      "object-eul-reul"
+    ],
+    "focusWordIds": [
+      "w_m6_2302_sogdo"
+    ],
+    "sourceWordIds": [
+      "w_m6_2302_sogdo"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아야 해요 means must or have to; -에서는 sets a topic and place.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3474",
+    "korean": "주유소까지 차로 십 분 걸려요.",
+    "english": "It takes ten minutes by car to the gas station.",
+    "voiceText": "주유소까지 차로 십 분 걸려요.",
+    "tokens": [
+      "주유소까지",
+      "차로",
+      "십",
+      "분",
+      "걸려요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "until-kkaji",
+      "direction-euro",
+      "counter-phrase",
+      "time-expression"
+    ],
+    "focusWordIds": [
+      "w_m5_454_juyuso",
+      "w_m5_034_bun"
+    ],
+    "sourceWordIds": [
+      "w_m5_454_juyuso",
+      "w_m5_034_bun"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-로 means by car; 십 분 uses a minutes counter.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3475",
+    "korean": "차의 타이어가 많이 닳았어요.",
+    "english": "The car's tires are very worn.",
+    "voiceText": "차의 타이어가 많이 닳았어요.",
+    "tokens": [
+      "차의",
+      "타이어가",
+      "많이",
+      "닳았어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "possessive-ui",
+      "subject-i-ga",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-의 means the car's; -았어요 describes a completed change of state.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3476",
+    "korean": "정비소에서 브레이크를 점검했어요.",
+    "english": "I checked the brakes at the repair shop.",
+    "voiceText": "정비소에서 브레이크를 점검했어요.",
+    "tokens": [
+      "정비소에서",
+      "브레이크를",
+      "점검했어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks the place; -했어요 is the past of 하다.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3477",
+    "korean": "면허증을 집에 두고 왔어요.",
+    "english": "I left my driver's license at home.",
+    "voiceText": "면허증을 집에 두고 왔어요.",
+    "tokens": [
+      "면허증을",
+      "집에",
+      "두고",
+      "왔어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "location-e",
+      "and-go",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "sourceWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 오다 describes doing something and coming; -을 marks the license.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3478",
+    "korean": "앞차와 거리를 넉넉히 두세요.",
+    "english": "Please leave plenty of distance from the car ahead.",
+    "voiceText": "앞차와 거리를 넉넉히 두세요.",
+    "tokens": [
+      "앞차와",
+      "거리를",
+      "넉넉히",
+      "두세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-와 means with or from in this comparison; -세요 is a polite request.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3479",
+    "korean": "뒤차가 너무 가까이 와요.",
+    "english": "The car behind is coming too close.",
+    "voiceText": "뒤차가 너무 가까이 와요.",
+    "tokens": [
+      "뒤차가",
+      "너무",
+      "가까이",
+      "와요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-가 marks the subject; 너무 means too or overly.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3480",
+    "korean": "길을 잘못 들어서 돌아갔어요.",
+    "english": "I took the wrong road, so I turned back.",
+    "voiceText": "길을 잘못 들어서 돌아갔어요.",
+    "tokens": [
+      "길을",
+      "잘못",
+      "들어서",
+      "돌아갔어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "because-aseo",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w1309_gil"
+    ],
+    "sourceWordIds": [
+      "w1309_gil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-어서 connects a reason; 돌아갔어요 means went back.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3481",
+    "korean": "차로 친구를 역에 데려다줘요.",
+    "english": "I take my friend to the station by car.",
+    "voiceText": "차로 친구를 역에 데려다줘요.",
+    "tokens": [
+      "차로",
+      "친구를",
+      "역에",
+      "데려다줘요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "direction-euro",
+      "object-eul-reul",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-로 means by car; -에 marks the destination.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3482",
+    "korean": "운전 중에는 전화를 받지 마세요.",
+    "english": "Please do not answer the phone while driving.",
+    "voiceText": "운전 중에는 전화를 받지 마세요.",
+    "tokens": [
+      "운전",
+      "중에는",
+      "전화를",
+      "받지",
+      "마세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "sourceWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "중에는 means while or during; -지 마세요 means do not.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3483",
+    "korean": "차가 오래돼서 새 차를 알아보고 있어요.",
+    "english": "The car is old, so I am looking into a new car.",
+    "voiceText": "차가 오래돼서 새 차를 알아보고 있어요.",
+    "tokens": [
+      "차가",
+      "오래돼서",
+      "새",
+      "차를",
+      "알아보고",
+      "있어요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "because-aseo",
+      "object-eul-reul",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-어서 gives a reason; -고 있어요 describes an ongoing search.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3484",
+    "korean": "주차할 때 다른 차를 막지 마세요.",
+    "english": "When parking, do not block another car.",
+    "voiceText": "주차할 때 다른 차를 막지 마세요.",
+    "tokens": [
+      "주차할",
+      "때",
+      "다른",
+      "차를",
+      "막지",
+      "마세요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "when-ttae",
+      "object-eul-reul",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w_m6_2546_juchajang",
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2546_juchajang",
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-할 때 means when parking; -지 마세요 is a negative command.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3485",
+    "korean": "교통이 적은 길로 돌아서 갔어요.",
+    "english": "I went around by a road with less traffic.",
+    "voiceText": "교통이 적은 길로 돌아서 갔어요.",
+    "tokens": [
+      "교통이",
+      "적은",
+      "길로",
+      "돌아서",
+      "갔어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "direction-euro",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_181_gyotong",
+      "w1309_gil"
+    ],
+    "sourceWordIds": [
+      "w_m5_181_gyotong",
+      "w1309_gil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-로 marks the route; -어서 connects the turning action.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3486",
+    "korean": "안전벨트를 매고 출발해요.",
+    "english": "I fasten my seat belt and set off.",
+    "voiceText": "안전벨트를 매고 출발해요.",
+    "tokens": [
+      "안전벨트를",
+      "매고",
+      "출발해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "and-go",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "sourceWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 connects two actions in sequence.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3487",
+    "korean": "운전 경험이 아직 많지 않아요.",
+    "english": "I do not have much driving experience yet.",
+    "voiceText": "운전 경험이 아직 많지 않아요.",
+    "tokens": [
+      "운전",
+      "경험이",
+      "아직",
+      "많지",
+      "않아요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "neg-ji-anta",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "sourceWordIds": [
+      "w_m6_1099_unjeonhada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-지 않아요 makes a verb or adjective negative; 아직 means yet.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3488",
+    "korean": "차를 빌리려면 운전면허가 필요해요.",
+    "english": "If you want to rent a car, you need a driver's license.",
+    "voiceText": "차를 빌리려면 운전면허가 필요해요.",
+    "tokens": [
+      "차를",
+      "빌리려면",
+      "운전면허가",
+      "필요해요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "if-myeon",
+      "subject-i-ga",
+      "must-ya-dwaeda"
+    ],
+    "focusWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "sourceWordIds": [
+      "w_m6_2966_cha_car"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-려면 means if you want to; 필요해요 means is needed.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3489",
+    "korean": "주차 요금은 카드로 계산할 수 있어요.",
+    "english": "You can pay the parking fee by card.",
+    "voiceText": "주차 요금은 카드로 계산할 수 있어요.",
+    "tokens": [
+      "주차",
+      "요금은",
+      "카드로",
+      "계산할",
+      "수",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "direction-euro",
+      "can-su-itda"
+    ],
+    "focusWordIds": [
+      "w_m6_2546_juchajang",
+      "w1403_kadeu"
+    ],
+    "sourceWordIds": [
+      "w_m6_2546_juchajang",
+      "w1403_kadeu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-로 means by card; -(으)ㄹ 수 있어요 means can.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3490",
+    "korean": "돈을 아껴서 저금해요.",
+    "english": "I save money by spending carefully.",
+    "voiceText": "돈을 아껴서 저금해요.",
+    "tokens": [
+      "돈을",
+      "아껴서",
+      "저금해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "because-aseo",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1401_don",
+      "w_m6_1183_jeogeum"
+    ],
+    "sourceWordIds": [
+      "w1401_don",
+      "w_m6_1183_jeogeum"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-어서 connects the method or reason; -을 marks money.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3491",
+    "korean": "가격이 생각보다 비싸요.",
+    "english": "The price is more expensive than I thought.",
+    "voiceText": "가격이 생각보다 비싸요.",
+    "tokens": [
+      "가격이",
+      "생각보다",
+      "비싸요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "comparison-boda",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w1402_gagyeok",
+      "w1408_bissada"
+    ],
+    "sourceWordIds": [
+      "w1402_gagyeok",
+      "w1408_bissada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-보다 means than; 비싸요 means is expensive.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3492",
+    "korean": "이 가게는 물건이 싸요.",
+    "english": "The goods at this store are cheap.",
+    "voiceText": "이 가게는 물건이 싸요.",
+    "tokens": [
+      "이",
+      "가게는",
+      "물건이",
+      "싸요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w1407_ssada"
+    ],
+    "sourceWordIds": [
+      "w1407_ssada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-는 marks the topic; 싸요 means is cheap.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3493",
+    "korean": "현금 없이 카드로 계산해도 돼요?",
+    "english": "Is it okay to pay by card without cash?",
+    "voiceText": "현금 없이 카드로 계산해도 돼요?",
+    "tokens": [
+      "현금",
+      "없이",
+      "카드로",
+      "계산해도",
+      "돼요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "direction-euro",
+      "question-polite"
+    ],
+    "focusWordIds": [
+      "w1403_kadeu",
+      "w1409_gyesanhada"
+    ],
+    "sourceWordIds": [
+      "w1403_kadeu",
+      "w1409_gyesanhada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-로 means by card; -아도 돼요 asks if something is allowed.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3494",
+    "korean": "현금이 조금밖에 없어요.",
+    "english": "I only have a little cash.",
+    "voiceText": "현금이 조금밖에 없어요.",
+    "tokens": [
+      "현금이",
+      "조금밖에",
+      "없어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "only-man",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w1404_hyeongeum"
+    ],
+    "sourceWordIds": [
+      "w1404_hyeongeum"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-밖에 with a negative means only; 없어요 means do not have.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3495",
+    "korean": "영수증을 꼭 받아 주세요.",
+    "english": "Please be sure to take the receipt.",
+    "voiceText": "영수증을 꼭 받아 주세요.",
+    "tokens": [
+      "영수증을",
+      "꼭",
+      "받아",
+      "주세요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "object-eul-reul",
+      "imperative-seyo"
+    ],
+    "focusWordIds": [
+      "w1406_yeongsujeung"
+    ],
+    "sourceWordIds": [
+      "w1406_yeongsujeung"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아 주세요 makes a polite request; 꼭 means surely.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3496",
+    "korean": "은행에서 통장으로 돈을 찾았어요.",
+    "english": "I withdrew money at the bank using my bankbook.",
+    "voiceText": "은행에서 통장으로 돈을 찾았어요.",
+    "tokens": [
+      "은행에서",
+      "통장으로",
+      "돈을",
+      "찾았어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-eseo",
+      "direction-euro",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_198_eunhaeng",
+      "w1401_don"
+    ],
+    "sourceWordIds": [
+      "w_m5_198_eunhaeng",
+      "w1401_don"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks the place; -으로 marks the means or instrument.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3497",
+    "korean": "매달 예산을 세워요.",
+    "english": "I make a budget every month.",
+    "voiceText": "매달 예산을 세워요.",
+    "tokens": [
+      "매달",
+      "예산을",
+      "세워요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "time-expression",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2385_yesan"
+    ],
+    "sourceWordIds": [
+      "w_m6_2385_yesan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "매달 means every month; -을 marks the budget.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3498",
+    "korean": "이번 달 지출이 많았어요.",
+    "english": "This month's expenses were high.",
+    "voiceText": "이번 달 지출이 많았어요.",
+    "tokens": [
+      "이번",
+      "달",
+      "지출이",
+      "많았어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "subject-i-ga",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1181_jichul"
+    ],
+    "sourceWordIds": [
+      "w_m6_1181_jichul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-의 is omitted in this natural time expression; -았어요 marks the past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3499",
+    "korean": "수입보다 지출이 적어요.",
+    "english": "Expenses are less than income.",
+    "voiceText": "수입보다 지출이 적어요.",
+    "tokens": [
+      "수입보다",
+      "지출이",
+      "적어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "comparison-boda",
+      "subject-i-ga",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1181_jichul",
+      "w_m6_1182_suip"
+    ],
+    "sourceWordIds": [
+      "w_m6_1181_jichul",
+      "w_m6_1182_suip"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-보다 means than; 적어요 means is less.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3500",
+    "korean": "월급날에 통장 잔액을 확인해요.",
+    "english": "I check my bank balance on payday.",
+    "voiceText": "월급날에 통장 잔액을 확인해요.",
+    "tokens": [
+      "월급날에",
+      "통장",
+      "잔액을",
+      "확인해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1184_tongjang"
+    ],
+    "sourceWordIds": [
+      "w_m6_1184_tongjang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the day; -을 marks the balance as the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3501",
+    "korean": "용돈을 받으면 조금씩 모아요.",
+    "english": "When I receive allowance, I save it little by little.",
+    "voiceText": "용돈을 받으면 조금씩 모아요.",
+    "tokens": [
+      "용돈을",
+      "받으면",
+      "조금씩",
+      "모아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "if-myeon",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1411_moeuda"
+    ],
+    "sourceWordIds": [
+      "w_m6_1411_moeuda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-으면 means when or if; 조금씩 means little by little.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3502",
+    "korean": "비용을 미리 계산해 봐요.",
+    "english": "I try calculating the cost in advance.",
+    "voiceText": "비용을 미리 계산해 봐요.",
+    "tokens": [
+      "비용을",
+      "미리",
+      "계산해",
+      "봐요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1185_biyong",
+      "w_m6_1179_gyesan"
+    ],
+    "sourceWordIds": [
+      "w_m6_1185_biyong",
+      "w_m6_1179_gyesan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아 보다 means try doing; 미리 means in advance.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3503",
+    "korean": "은행 계좌로 돈을 송금했어요.",
+    "english": "I transferred money to a bank account.",
+    "voiceText": "은행 계좌로 돈을 송금했어요.",
+    "tokens": [
+      "은행",
+      "계좌로",
+      "돈을",
+      "송금했어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "direction-euro",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_198_eunhaeng",
+      "w_m6_2305_songgeum"
+    ],
+    "sourceWordIds": [
+      "w_m5_198_eunhaeng",
+      "w_m6_2305_songgeum"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-로 marks the destination or method; -했어요 is past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3504",
+    "korean": "카드 대금을 오늘 납부해야 해요.",
+    "english": "I have to pay the card bill today.",
+    "voiceText": "카드 대금을 오늘 납부해야 해요.",
+    "tokens": [
+      "카드",
+      "대금을",
+      "오늘",
+      "납부해야",
+      "해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "time-expression",
+      "object-eul-reul",
+      "must-ya-dwaeda"
+    ],
+    "focusWordIds": [
+      "w1403_kadeu",
+      "w_m6_1304_napbu"
+    ],
+    "sourceWordIds": [
+      "w1403_kadeu",
+      "w_m6_1304_napbu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아야 해요 means have to; 오늘 means today.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3505",
+    "korean": "할인하면 이 가격에 살 수 있어요.",
+    "english": "If there is a discount, I can buy it at this price.",
+    "voiceText": "할인하면 이 가격에 살 수 있어요.",
+    "tokens": [
+      "할인하면",
+      "이",
+      "가격에",
+      "살",
+      "수",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "if-myeon",
+      "location-e",
+      "can-su-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_670_harin",
+      "w1402_gagyeok"
+    ],
+    "sourceWordIds": [
+      "w_m5_670_harin",
+      "w1402_gagyeok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-하면 means if; -(으)ㄹ 수 있어요 means can.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3506",
+    "korean": "지갑에 동전이 많이 있어요.",
+    "english": "There are many coins in my wallet.",
+    "voiceText": "지갑에 동전이 많이 있어요.",
+    "tokens": [
+      "지갑에",
+      "동전이",
+      "많이",
+      "있어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "subject-i-ga",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w1107_jigap",
+      "w_m6_1176_dongjeon"
+    ],
+    "sourceWordIds": [
+      "w1107_jigap",
+      "w_m6_1176_dongjeon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the location; -이 marks what exists.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3507",
+    "korean": "잔돈이 없어서 카드를 썼어요.",
+    "english": "There was no change, so I used a card.",
+    "voiceText": "잔돈이 없어서 카드를 썼어요.",
+    "tokens": [
+      "잔돈이",
+      "없어서",
+      "카드를",
+      "썼어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "existence-itda",
+      "because-aseo",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w1403_kadeu"
+    ],
+    "sourceWordIds": [
+      "w1403_kadeu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-어서 gives the reason; 썼어요 is the past of 쓰다.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3508",
+    "korean": "필요한 것만 사려고 해요.",
+    "english": "I intend to buy only what I need.",
+    "voiceText": "필요한 것만 사려고 해요.",
+    "tokens": [
+      "필요한",
+      "것만",
+      "사려고",
+      "해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "only-man",
+      "want-go-sipda",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1401_don"
+    ],
+    "sourceWordIds": [
+      "w1401_don"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-만 means only; -(으)려고 해요 expresses an intention.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3509",
+    "korean": "비싼 물건은 다음 달에 살게요.",
+    "english": "I will buy the expensive item next month.",
+    "voiceText": "비싼 물건은 다음 달에 살게요.",
+    "tokens": [
+      "비싼",
+      "물건은",
+      "다음",
+      "달에",
+      "살게요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "time-expression",
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w1408_bissada"
+    ],
+    "sourceWordIds": [
+      "w1408_bissada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-은 marks the topic; 살게요 expresses a promise or decision.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3510",
+    "korean": "가격표를 보고 예산을 정해요.",
+    "english": "I look at the price tag and set a budget.",
+    "voiceText": "가격표를 보고 예산을 정해요.",
+    "tokens": [
+      "가격표를",
+      "보고",
+      "예산을",
+      "정해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "and-go",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1189_gagyeokpyo",
+      "w_m6_2385_yesan"
+    ],
+    "sourceWordIds": [
+      "w_m6_1189_gagyeokpyo",
+      "w_m6_2385_yesan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 connects two actions; -을 marks each object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3511",
+    "korean": "은행원에게 계좌를 물어봤어요.",
+    "english": "I asked the bank clerk about the account.",
+    "voiceText": "은행원에게 계좌를 물어봤어요.",
+    "tokens": [
+      "은행원에게",
+      "계좌를",
+      "물어봤어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_438_eunhaengwon"
+    ],
+    "sourceWordIds": [
+      "w_m5_438_eunhaengwon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에게 marks the person asked; -아 봤어요 means tried or did in the past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3512",
+    "korean": "현금과 카드를 둘 다 가져가요.",
+    "english": "I take both cash and a card.",
+    "voiceText": "현금과 카드를 둘 다 가져가요.",
+    "tokens": [
+      "현금과",
+      "카드를",
+      "둘",
+      "다",
+      "가져가요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "with-hago-wa",
+      "also-do",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1404_hyeongeum",
+      "w1403_kadeu"
+    ],
+    "sourceWordIds": [
+      "w1404_hyeongeum",
+      "w1403_kadeu"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-과 connects nouns; 둘 다 means both.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3513",
+    "korean": "돈을 빌리면 꼭 갚아야 해요.",
+    "english": "If you borrow money, you must pay it back.",
+    "voiceText": "돈을 빌리면 꼭 갚아야 해요.",
+    "tokens": [
+      "돈을",
+      "빌리면",
+      "꼭",
+      "갚아야",
+      "해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "if-myeon",
+      "must-ya-dwaeda",
+      "object-eul-reul"
+    ],
+    "focusWordIds": [
+      "w1401_don"
+    ],
+    "sourceWordIds": [
+      "w1401_don"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-으면 means if; -아야 해요 means must.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3514",
+    "korean": "친구에게 빌린 돈을 갚았어요.",
+    "english": "I paid back the money I borrowed from a friend.",
+    "voiceText": "친구에게 빌린 돈을 갚았어요.",
+    "tokens": [
+      "친구에게",
+      "빌린",
+      "돈을",
+      "갚았어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w1401_don"
+    ],
+    "sourceWordIds": [
+      "w1401_don"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에게 marks the source person; -은 modifies 돈 as borrowed money.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3515",
+    "korean": "이번 주에는 불필요한 지출을 줄일 거예요.",
+    "english": "This week, I will reduce unnecessary spending.",
+    "voiceText": "이번 주에는 불필요한 지출을 줄일 거예요.",
+    "tokens": [
+      "이번",
+      "주에는",
+      "불필요한",
+      "지출을",
+      "줄일",
+      "거예요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1181_jichul"
+    ],
+    "sourceWordIds": [
+      "w_m6_1181_jichul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-을 거예요 expresses a future plan; -에는 marks the time topic.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3516",
+    "korean": "월세와 전기 요금을 함께 내요.",
+    "english": "I pay rent and the electricity bill together.",
+    "voiceText": "월세와 전기 요금을 함께 내요.",
+    "tokens": [
+      "월세와",
+      "전기",
+      "요금을",
+      "함께",
+      "내요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1185_biyong"
+    ],
+    "sourceWordIds": [
+      "w_m6_1185_biyong"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-와 connects nouns; 함께 means together.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3517",
+    "korean": "이번 달에는 저금할 돈이 없어요.",
+    "english": "This month, I have no money to save.",
+    "voiceText": "이번 달에는 저금할 돈이 없어요.",
+    "tokens": [
+      "이번",
+      "달에는",
+      "저금할",
+      "돈이",
+      "없어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "existence-itda"
+    ],
+    "focusWordIds": [
+      "w_m6_1183_jeogeum",
+      "w1401_don"
+    ],
+    "sourceWordIds": [
+      "w_m6_1183_jeogeum",
+      "w1401_don"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에는 marks the time topic; 없어요 means there is not or do not have.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3518",
+    "korean": "시장 가격이 조금 올랐어요.",
+    "english": "The market price went up a little.",
+    "voiceText": "시장 가격이 조금 올랐어요.",
+    "tokens": [
+      "시장",
+      "가격이",
+      "조금",
+      "올랐어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1187_sijanggagyeok"
+    ],
+    "sourceWordIds": [
+      "w_m6_1187_sijanggagyeok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-이 marks the subject; 올랐어요 is the past of 오르다.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3519",
+    "korean": "수수료가 너무 비싸면 다른 은행을 찾아요.",
+    "english": "If the fee is too high, I look for another bank.",
+    "voiceText": "수수료가 너무 비싸면 다른 은행을 찾아요.",
+    "tokens": [
+      "수수료가",
+      "너무",
+      "비싸면",
+      "다른",
+      "은행을",
+      "찾아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "if-myeon",
+      "subject-i-ga",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1190_susuryo",
+      "w_m5_198_eunhaeng"
+    ],
+    "sourceWordIds": [
+      "w_m6_1190_susuryo",
+      "w_m5_198_eunhaeng"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-면 makes a condition; -을 marks the bank sought.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3520",
+    "korean": "영수증을 모아서 비용을 정리해요.",
+    "english": "I collect receipts and organize the expenses.",
+    "voiceText": "영수증을 모아서 비용을 정리해요.",
+    "tokens": [
+      "영수증을",
+      "모아서",
+      "비용을",
+      "정리해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "and-go",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1406_yeongsujeung",
+      "w_m6_1185_biyong"
+    ],
+    "sourceWordIds": [
+      "w1406_yeongsujeung",
+      "w_m6_1185_biyong"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아서 connects actions; -을 marks each object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3521",
+    "korean": "돈을 쓸 때 먼저 예산을 확인해요.",
+    "english": "When spending money, I check the budget first.",
+    "voiceText": "돈을 쓸 때 먼저 예산을 확인해요.",
+    "tokens": [
+      "돈을",
+      "쓸",
+      "때",
+      "먼저",
+      "예산을",
+      "확인해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "when-ttae",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w1401_don",
+      "w_m6_2385_yesan"
+    ],
+    "sourceWordIds": [
+      "w1401_don",
+      "w_m6_2385_yesan"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-을 때 means when; 먼저 means first.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3522",
+    "korean": "통장에 월급이 들어왔어요.",
+    "english": "My salary came into my bank account.",
+    "voiceText": "통장에 월급이 들어왔어요.",
+    "tokens": [
+      "통장에",
+      "월급이",
+      "들어왔어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "subject-i-ga",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1184_tongjang"
+    ],
+    "sourceWordIds": [
+      "w_m6_1184_tongjang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks where money enters; -왔어요 marks a completed arrival.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3523",
+    "korean": "예산보다 돈을 더 썼어요.",
+    "english": "I spent more money than the budget.",
+    "voiceText": "예산보다 돈을 더 썼어요.",
+    "tokens": [
+      "예산보다",
+      "돈을",
+      "더",
+      "썼어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "comparison-boda",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2385_yesan",
+      "w1401_don"
+    ],
+    "sourceWordIds": [
+      "w_m6_2385_yesan",
+      "w1401_don"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-보다 means than; 더 means more.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3524",
+    "korean": "다음 달 여행을 위해 돈을 모아요.",
+    "english": "I save money for a trip next month.",
+    "voiceText": "다음 달 여행을 위해 돈을 모아요.",
+    "tokens": [
+      "다음",
+      "달",
+      "여행을",
+      "위해",
+      "돈을",
+      "모아요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "time-expression",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1098_yeohenghada",
+      "w_m6_1411_moeuda"
+    ],
+    "sourceWordIds": [
+      "w_m6_1098_yeohenghada",
+      "w_m6_1411_moeuda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-을 위해 means for the purpose of; -을 marks money.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3525",
+    "korean": "가격이 내려가면 바로 살게요.",
+    "english": "If the price goes down, I will buy it right away.",
+    "voiceText": "가격이 내려가면 바로 살게요.",
+    "tokens": [
+      "가격이",
+      "내려가면",
+      "바로",
+      "살게요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "if-myeon",
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w1402_gagyeok"
+    ],
+    "sourceWordIds": [
+      "w1402_gagyeok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-면 means if; 살게요 expresses a decision or promise.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3526",
+    "korean": "은행 앱으로 잔액을 확인할 수 있어요.",
+    "english": "I can check the balance with a bank app.",
+    "voiceText": "은행 앱으로 잔액을 확인할 수 있어요.",
+    "tokens": [
+      "은행",
+      "앱으로",
+      "잔액을",
+      "확인할",
+      "수",
+      "있어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "direction-euro",
+      "object-eul-reul",
+      "can-su-itda"
+    ],
+    "focusWordIds": [
+      "w_m5_198_eunhaeng"
+    ],
+    "sourceWordIds": [
+      "w_m5_198_eunhaeng"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-으로 marks the tool; -(으)ㄹ 수 있어요 means can.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3527",
+    "korean": "돈 관리가 생각보다 어렵지 않아요.",
+    "english": "Managing money is not as difficult as I thought.",
+    "voiceText": "돈 관리가 생각보다 어렵지 않아요.",
+    "tokens": [
+      "돈",
+      "관리가",
+      "생각보다",
+      "어렵지",
+      "않아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "comparison-boda",
+      "neg-ji-anta"
+    ],
+    "focusWordIds": [
+      "w1401_don"
+    ],
+    "sourceWordIds": [
+      "w1401_don"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-보다 means than; -지 않아요 makes 어렵다 negative.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3528",
+    "korean": "설날에 가족을 만나요.",
+    "english": "I meet my family on Lunar New Year.",
+    "voiceText": "설날에 가족을 만나요.",
+    "tokens": [
+      "설날에",
+      "가족을",
+      "만나요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the holiday time; -을 marks the family.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3529",
+    "korean": "추석에는 고향에 가요.",
+    "english": "I go to my hometown during Chuseok.",
+    "voiceText": "추석에는 고향에 가요.",
+    "tokens": [
+      "추석에는",
+      "고향에",
+      "가요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "topic-neun",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2133_gohyang"
+    ],
+    "sourceWordIds": [
+      "w_m6_2133_gohyang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에는 marks a time topic; -에 marks the destination.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3530",
+    "korean": "생일 선물을 준비했어요.",
+    "english": "I prepared a birthday present.",
+    "voiceText": "생일 선물을 준비했어요.",
+    "tokens": [
+      "생일",
+      "선물을",
+      "준비했어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_386_saengil",
+      "w_m6_1539_seonmul"
+    ],
+    "sourceWordIds": [
+      "w_m5_386_saengil",
+      "w_m6_1539_seonmul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-을 marks the object; -했어요 marks the completed past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3531",
+    "korean": "가족이 집에 모였어요.",
+    "english": "The family gathered at home.",
+    "voiceText": "가족이 집에 모였어요.",
+    "tokens": [
+      "가족이",
+      "집에",
+      "모였어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "location-e",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-이 marks the subject; -에 marks the place.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3532",
+    "korean": "친척들과 함께 저녁을 먹어요.",
+    "english": "I eat dinner together with my relatives.",
+    "voiceText": "친척들과 함께 저녁을 먹어요.",
+    "tokens": [
+      "친척들과",
+      "함께",
+      "저녁을",
+      "먹어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "with-hago-wa",
+      "also-do",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-들과 means with plural people; 함께 means together.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3533",
+    "korean": "명절 음식이 정말 맛있어요.",
+    "english": "The holiday food is really delicious.",
+    "voiceText": "명절 음식이 정말 맛있어요.",
+    "tokens": [
+      "명절",
+      "음식이",
+      "정말",
+      "맛있어요"
+    ],
+    "band": 1,
+    "patternTags": [
+      "subject-i-ga",
+      "copula-ieyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "sourceWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-이 marks the subject; 맛있어요 means is delicious.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3534",
+    "korean": "떡국을 한 그릇 먹었어요.",
+    "english": "I ate one bowl of rice-cake soup.",
+    "voiceText": "떡국을 한 그릇 먹었어요.",
+    "tokens": [
+      "떡국을",
+      "한",
+      "그릇",
+      "먹었어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "counter-phrase",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1381_tteok"
+    ],
+    "sourceWordIds": [
+      "w_m6_1381_tteok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "한 그릇 counts one bowl; -었어요 marks the past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3535",
+    "korean": "추석에 송편을 만들어요.",
+    "english": "I make songpyeon at Chuseok.",
+    "voiceText": "추석에 송편을 만들어요.",
+    "tokens": [
+      "추석에",
+      "송편을",
+      "만들어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1381_tteok"
+    ],
+    "sourceWordIds": [
+      "w_m6_1381_tteok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the holiday time; -을 marks the food made.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3536",
+    "korean": "할머니께 선물을 드렸어요.",
+    "english": "I gave a present to my grandmother.",
+    "voiceText": "할머니께 선물을 드렸어요.",
+    "tokens": [
+      "할머니께",
+      "선물을",
+      "드렸어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "past-polite",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_1539_seonmul",
+      "w_m6_1370_deurida"
+    ],
+    "sourceWordIds": [
+      "w_m6_1539_seonmul",
+      "w_m6_1370_deurida"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "께 is an honorific form of 에게; 드렸어요 is humble gave.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3537",
+    "korean": "부모님께 새해 인사를 했어요.",
+    "english": "I gave New Year's greetings to my parents.",
+    "voiceText": "부모님께 새해 인사를 했어요.",
+    "tokens": [
+      "부모님께",
+      "새해",
+      "인사를",
+      "했어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "past-polite",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "께 marks an honored receiver; 했어요 is the past of 하다.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3538",
+    "korean": "생일 케이크에 촛불을 꽂아요.",
+    "english": "I put candles in the birthday cake.",
+    "voiceText": "생일 케이크에 촛불을 꽂아요.",
+    "tokens": [
+      "생일",
+      "케이크에",
+      "촛불을",
+      "꽂아요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_386_saengil",
+      "w_m2_cho_candle"
+    ],
+    "sourceWordIds": [
+      "w_m5_386_saengil",
+      "w_m2_cho_candle"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks where the candles go; -을 marks the object.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3539",
+    "korean": "친구가 생일을 축하해 줬어요.",
+    "english": "My friend celebrated my birthday for me.",
+    "voiceText": "친구가 생일을 축하해 줬어요.",
+    "tokens": [
+      "친구가",
+      "생일을",
+      "축하해",
+      "줬어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_386_saengil",
+      "w_m6_2921_chugha"
+    ],
+    "sourceWordIds": [
+      "w_m5_386_saengil",
+      "w_m6_2921_chugha"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아 주다 means do something as a favor; -었어요 marks the past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3540",
+    "korean": "파티에 친구들을 초대했어요.",
+    "english": "I invited friends to the party.",
+    "voiceText": "파티에 친구들을 초대했어요.",
+    "tokens": [
+      "파티에",
+      "친구들을",
+      "초대했어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_386_saengil"
+    ],
+    "sourceWordIds": [
+      "w_m5_386_saengil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the destination of the invitation; -을 marks friends.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3541",
+    "korean": "가족 사진을 찍어서 앨범에 넣었어요.",
+    "english": "I took family photos and put them in an album.",
+    "voiceText": "가족 사진을 찍어서 앨범에 넣었어요.",
+    "tokens": [
+      "가족",
+      "사진을",
+      "찍어서",
+      "앨범에",
+      "넣었어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "and-go",
+      "location-e",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-어서 connects actions; -에 marks the album as the destination.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3542",
+    "korean": "명절 전에 집을 깨끗하게 청소해요.",
+    "english": "I clean the house before the holiday.",
+    "voiceText": "명절 전에 집을 깨끗하게 청소해요.",
+    "tokens": [
+      "명절",
+      "전에",
+      "집을",
+      "깨끗하게",
+      "청소해요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "sourceWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-기 전에 means before; -을 marks the house.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3543",
+    "korean": "연휴 동안 고향에서 쉬었어요.",
+    "english": "I rested in my hometown during the long holiday.",
+    "voiceText": "연휴 동안 고향에서 쉬었어요.",
+    "tokens": [
+      "연휴",
+      "동안",
+      "고향에서",
+      "쉬었어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "time-expression",
+      "location-eseo",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2368_yeonhyu",
+      "w_m6_2133_gohyang"
+    ],
+    "sourceWordIds": [
+      "w_m6_2368_yeonhyu",
+      "w_m6_2133_gohyang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "동안 means during; -에서 marks where the resting happened.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3544",
+    "korean": "공휴일이라서 은행이 문을 닫아요.",
+    "english": "Because it is a public holiday, the bank closes.",
+    "voiceText": "공휴일이라서 은행이 문을 닫아요.",
+    "tokens": [
+      "공휴일이라서",
+      "은행이",
+      "문을",
+      "닫아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "because-aseo",
+      "subject-i-ga",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_231_gonghyuil",
+      "w_m5_198_eunhaeng"
+    ],
+    "sourceWordIds": [
+      "w_m5_231_gonghyuil",
+      "w_m5_198_eunhaeng"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-이라서 means because it is; -이 marks the bank as subject.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3545",
+    "korean": "이번 휴일에는 가족과 여행할 거예요.",
+    "english": "This holiday, I will travel with my family.",
+    "voiceText": "이번 휴일에는 가족과 여행할 거예요.",
+    "tokens": [
+      "이번",
+      "휴일에는",
+      "가족과",
+      "여행할",
+      "거예요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "topic-neun",
+      "with-hago-wa",
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w_m5_732_hyuil",
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m5_732_hyuil",
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에는 marks the time topic; -할 거예요 expresses a future plan.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3546",
+    "korean": "사촌이 먼 곳에서 방문했어요.",
+    "english": "My cousin visited from a faraway place.",
+    "voiceText": "사촌이 먼 곳에서 방문했어요.",
+    "tokens": [
+      "사촌이",
+      "먼",
+      "곳에서",
+      "방문했어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "subject-i-ga",
+      "location-eseo",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_062_sachon"
+    ],
+    "sourceWordIds": [
+      "w_m5_062_sachon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 can mark the starting place; -했어요 marks the past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3547",
+    "korean": "고향집에서 친척들과 차례를 지냈어요.",
+    "english": "I observed ancestral rites with relatives at my hometown home.",
+    "voiceText": "고향집에서 친척들과 차례를 지냈어요.",
+    "tokens": [
+      "고향집에서",
+      "친척들과",
+      "차례를",
+      "지냈어요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "location-eseo",
+      "with-hago-wa",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2133_gohyang",
+      "w_m6_3040_charye_rites"
+    ],
+    "sourceWordIds": [
+      "w_m6_2133_gohyang",
+      "w_m6_3040_charye_rites"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks the place; -들과 means with relatives.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3548",
+    "korean": "명절 아침에 어른들께 세배해요.",
+    "english": "On the holiday morning, I perform a New Year's bow to elders.",
+    "voiceText": "명절 아침에 어른들께 세배해요.",
+    "tokens": [
+      "명절",
+      "아침에",
+      "어른들께",
+      "세배해요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "honorific-si",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "sourceWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "께 marks an honored receiver; -에 marks the morning time.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3549",
+    "korean": "할아버지께 건강을 빌었어요.",
+    "english": "I wished for my grandfather's health.",
+    "voiceText": "할아버지께 건강을 빌었어요.",
+    "tokens": [
+      "할아버지께",
+      "건강을",
+      "빌었어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "object-eul-reul",
+      "past-polite",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_1370_deurida"
+    ],
+    "sourceWordIds": [
+      "w_m6_1370_deurida"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "께 marks an honored person; -었어요 marks the past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3550",
+    "korean": "생일이어서 작은 파티를 열어요.",
+    "english": "Because it is a birthday, I hold a small party.",
+    "voiceText": "생일이어서 작은 파티를 열어요.",
+    "tokens": [
+      "생일이어서",
+      "작은",
+      "파티를",
+      "열어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "because-aseo",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_386_saengil"
+    ],
+    "sourceWordIds": [
+      "w_m5_386_saengil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-이어서 means because it is; -을 marks the party.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3551",
+    "korean": "선물을 받고 기뻤어요.",
+    "english": "I was happy to receive the gift.",
+    "voiceText": "선물을 받고 기뻤어요.",
+    "tokens": [
+      "선물을",
+      "받고",
+      "기뻤어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "object-eul-reul",
+      "and-go",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1539_seonmul"
+    ],
+    "sourceWordIds": [
+      "w_m6_1539_seonmul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 connects the receiving and feeling; -었어요 marks the past.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3552",
+    "korean": "가족 모임에서 오래 이야기했어요.",
+    "english": "I talked for a long time at the family gathering.",
+    "voiceText": "가족 모임에서 오래 이야기했어요.",
+    "tokens": [
+      "가족",
+      "모임에서",
+      "오래",
+      "이야기했어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-eseo",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok",
+      "w_m6_1412_moim"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok",
+      "w_m6_1412_moim"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에서 marks where the action happened; 오래 means for a long time.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3553",
+    "korean": "이번 설날에는 떡을 직접 만들 거예요.",
+    "english": "This Lunar New Year, I will make rice cakes myself.",
+    "voiceText": "이번 설날에는 떡을 직접 만들 거예요.",
+    "tokens": [
+      "이번",
+      "설날에는",
+      "떡을",
+      "직접",
+      "만들",
+      "거예요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "future-geoyeyo"
+    ],
+    "focusWordIds": [
+      "w_m6_1381_tteok",
+      "w_m5_286_mandeulda"
+    ],
+    "sourceWordIds": [
+      "w_m6_1381_tteok",
+      "w_m5_286_mandeulda"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에는 marks the time topic; -ㄹ 거예요 expresses a future plan.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3554",
+    "korean": "추석 때 가족 모두가 고향에 모여요.",
+    "english": "At Chuseok, the whole family gathers in the hometown.",
+    "voiceText": "추석 때 가족 모두가 고향에 모여요.",
+    "tokens": [
+      "추석",
+      "때",
+      "가족",
+      "모두가",
+      "고향에",
+      "모여요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "when-ttae",
+      "subject-i-ga",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok",
+      "w_m6_2133_gohyang"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok",
+      "w_m6_2133_gohyang"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-때 means when or at the time; -에 marks the destination.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3555",
+    "korean": "생일마다 엄마에게 꽃을 보내요.",
+    "english": "I send flowers to Mom every birthday.",
+    "voiceText": "생일마다 엄마에게 꽃을 보내요.",
+    "tokens": [
+      "생일마다",
+      "엄마에게",
+      "꽃을",
+      "보내요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "time-expression",
+      "location-e",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_386_saengil"
+    ],
+    "sourceWordIds": [
+      "w_m5_386_saengil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-마다 means every; -에게 marks the receiver.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3556",
+    "korean": "선물은 비싸지 않아도 괜찮아요.",
+    "english": "Even if the gift is not expensive, it is fine.",
+    "voiceText": "선물은 비싸지 않아도 괜찮아요.",
+    "tokens": [
+      "선물은",
+      "비싸지",
+      "않아도",
+      "괜찮아요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "neg-ji-anta",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1539_seonmul"
+    ],
+    "sourceWordIds": [
+      "w_m6_1539_seonmul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-지 않아도 means even if not; -아도 괜찮아요 means it is okay.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3557",
+    "korean": "명절 음식을 만들고 이웃에게 나눠 줘요.",
+    "english": "I make holiday food and share it with neighbors.",
+    "voiceText": "명절 음식을 만들고 이웃에게 나눠 줘요.",
+    "tokens": [
+      "명절",
+      "음식을",
+      "만들고",
+      "이웃에게",
+      "나눠",
+      "줘요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "and-go",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "sourceWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-고 connects actions; -에게 marks the people who receive it.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3558",
+    "korean": "휴일에 늦게 일어나도 돼요.",
+    "english": "It is okay to wake up late on a holiday.",
+    "voiceText": "휴일에 늦게 일어나도 돼요.",
+    "tokens": [
+      "휴일에",
+      "늦게",
+      "일어나도",
+      "돼요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_732_hyuil"
+    ],
+    "sourceWordIds": [
+      "w_m5_732_hyuil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아도 돼요 means it is allowed; -에 marks the holiday time.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3559",
+    "korean": "가족과 사진을 찍으면서 웃었어요.",
+    "english": "I smiled while taking photos with my family.",
+    "voiceText": "가족과 사진을 찍으면서 웃었어요.",
+    "tokens": [
+      "가족과",
+      "사진을",
+      "찍으면서",
+      "웃었어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-(으)면서 means while doing; -과 means with.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3560",
+    "korean": "친척이 오시면 다 같이 저녁을 먹어요.",
+    "english": "When relatives come, we all eat dinner together.",
+    "voiceText": "친척이 오시면 다 같이 저녁을 먹어요.",
+    "tokens": [
+      "친척이",
+      "오시면",
+      "다",
+      "같이",
+      "저녁을",
+      "먹어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "if-myeon",
+      "also-do",
+      "object-eul-reul",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_062_sachon"
+    ],
+    "sourceWordIds": [
+      "w_m5_062_sachon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-시면 is a polite if or when clause; 다 같이 means all together.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3561",
+    "korean": "새해에는 좋은 일이 많이 생기면 좋겠어요.",
+    "english": "I hope many good things happen in the new year.",
+    "voiceText": "새해에는 좋은 일이 많이 생기면 좋겠어요.",
+    "tokens": [
+      "새해에는",
+      "좋은",
+      "일이",
+      "많이",
+      "생기면",
+      "좋겠어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "if-myeon",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "sourceWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에는 marks the new-year topic; -면 좋겠어요 expresses hope.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3562",
+    "korean": "생일 파티가 끝난 후에 케이크를 나눴어요.",
+    "english": "After the birthday party ended, we shared the cake.",
+    "voiceText": "생일 파티가 끝난 후에 케이크를 나눴어요.",
+    "tokens": [
+      "생일",
+      "파티가",
+      "끝난",
+      "후에",
+      "케이크를",
+      "나눴어요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "subject-i-ga",
+      "time-expression",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_386_saengil"
+    ],
+    "sourceWordIds": [
+      "w_m5_386_saengil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-은 후에 means after; -을 marks the cake shared.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3563",
+    "korean": "기념으로 가족에게 사진을 보냈어요.",
+    "english": "I sent a photo to my family as a keepsake.",
+    "voiceText": "기념으로 가족에게 사진을 보냈어요.",
+    "tokens": [
+      "기념으로",
+      "가족에게",
+      "사진을",
+      "보냈어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "direction-euro",
+      "location-e",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2152_ginyeom",
+      "w_m5_044_gajok"
+    ],
+    "sourceWordIds": [
+      "w_m6_2152_ginyeom",
+      "w_m5_044_gajok"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-으로 means as or for the purpose of; -에게 marks the receiver.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3564",
+    "korean": "이번 연휴는 짧아서 여행을 못 가요.",
+    "english": "This long holiday is short, so I cannot travel.",
+    "voiceText": "이번 연휴는 짧아서 여행을 못 가요.",
+    "tokens": [
+      "이번",
+      "연휴는",
+      "짧아서",
+      "여행을",
+      "못",
+      "가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "topic-neun",
+      "because-aseo",
+      "neg-mot",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_2368_yeonhyu",
+      "w_m6_1098_yeohenghada"
+    ],
+    "sourceWordIds": [
+      "w_m6_2368_yeonhyu",
+      "w_m6_1098_yeohenghada"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-아서 gives a reason; 못 가요 means cannot go.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3565",
+    "korean": "가족 생일을 달력에 미리 적어 둬요.",
+    "english": "I write family birthdays on the calendar in advance.",
+    "voiceText": "가족 생일을 달력에 미리 적어 둬요.",
+    "tokens": [
+      "가족",
+      "생일을",
+      "달력에",
+      "미리",
+      "적어",
+      "둬요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "object-eul-reul",
+      "location-e",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m5_044_gajok",
+      "w_m5_386_saengil"
+    ],
+    "sourceWordIds": [
+      "w_m5_044_gajok",
+      "w_m5_386_saengil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-에 marks the calendar location; -아 두다 means do and leave prepared.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3566",
+    "korean": "축하 카드와 선물을 같이 준비했어요.",
+    "english": "I prepared a congratulatory card and gift together.",
+    "voiceText": "축하 카드와 선물을 같이 준비했어요.",
+    "tokens": [
+      "축하",
+      "카드와",
+      "선물을",
+      "같이",
+      "준비했어요"
+    ],
+    "band": 2,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1539_seonmul"
+    ],
+    "sourceWordIds": [
+      "w_m6_1539_seonmul"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-와 connects the objects; 같이 means together.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3567",
+    "korean": "명절이 지나면 다시 일상으로 돌아가요.",
+    "english": "When the holiday passes, we return to daily life.",
+    "voiceText": "명절이 지나면 다시 일상으로 돌아가요.",
+    "tokens": [
+      "명절이",
+      "지나면",
+      "다시",
+      "일상으로",
+      "돌아가요"
+    ],
+    "band": 3,
+    "patternTags": [
+      "if-myeon",
+      "direction-euro",
+      "present-polite"
+    ],
+    "focusWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "sourceWordIds": [
+      "w_m6_1409_myeongjeol"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "-면 means when; -으로 marks the destination or resulting state.",
+    "acceptAlso": [],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
   }
 ];
 })();
