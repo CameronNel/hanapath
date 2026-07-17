@@ -2,29 +2,29 @@
 
 This report outlines the distribution of sentences across the 37 closed pattern tags and 5 difficulty bands, identifying thin cells (<10 sentences) and proposing expansion batches to address coverage gaps.
 
-**Total Sentences scanned:** 3180
+**Total Sentences scanned:** 3210
 
 ## 1. Coverage Matrix (patternTags × band)
 
 | Pattern Tag | Band 1 | Band 2 | Band 3 | Band 4 | Band 5 | Total |
 |---|---|---|---|---|---|---|
-| `topic-neun` | 65 | 129 | 130 | 103 | 187 | **614** |
-| `subject-i-ga` | 191 | 182 | 277 | 227 | 289 | **1166** |
-| `object-eul-reul` | 166 | 250 | 348 | 301 | 394 | **1459** |
-| `location-e` | 56 | 73 | 77 | 68 | 125 | **399** |
-| `location-eseo` | 38 | 52 | 73 | 78 | 87 | **328** |
-| `direction-euro` | 20 | 21 | 44 | 51 | 45 | **181** |
-| `possessive-ui` | 7 | 14 | 32 | 81 | 133 | **267** |
-| `with-hago-wa` | 2 | 23 | 19 | 27 | 40 | **111** |
+| `topic-neun` | 65 | 129 | 130 | 105 | 190 | **619** |
+| `subject-i-ga` | 191 | 182 | 277 | 242 | 290 | **1182** |
+| `object-eul-reul` | 166 | 250 | 348 | 314 | 400 | **1478** |
+| `location-e` | 56 | 73 | 77 | 72 | 125 | **403** |
+| `location-eseo` | 38 | 52 | 73 | 80 | 89 | **332** |
+| `direction-euro` | 20 | 21 | 44 | 56 | 47 | **188** |
+| `possessive-ui` | 7 | 14 | 32 | 82 | 135 | **270** |
+| `with-hago-wa` | 2 | 23 | 19 | 29 | 40 | **113** |
 | `only-man` | 3 | 7 | 15 | 4 | 1 | **30** |
 | `also-do` | 6 | 7 | 15 | 6 | 10 | **44** |
 | `from-buteo` | 0 | 10 | 9 | 10 | 2 | **31** |
-| `until-kkaji` | 0 | 7 | 17 | 7 | 3 | **34** |
-| `present-polite` | 346 | 386 | 379 | 217 | 214 | **1542** |
-| `past-polite` | 39 | 93 | 259 | 218 | 262 | **871** |
+| `until-kkaji` | 0 | 7 | 17 | 9 | 3 | **36** |
+| `present-polite` | 346 | 386 | 379 | 218 | 216 | **1545** |
+| `past-polite` | 39 | 93 | 259 | 224 | 265 | **880** |
 | `future-geoyeyo` | 2 | 9 | 16 | 9 | 0 | **36** |
-| `formal-nida` | 7 | 4 | 11 | 20 | 38 | **80** |
-| `copula-ieyo` | 61 | 37 | 30 | 31 | 52 | **211** |
+| `formal-nida` | 7 | 4 | 11 | 38 | 43 | **103** |
+| `copula-ieyo` | 61 | 37 | 30 | 32 | 52 | **212** |
 | `copula-negative-anieyo` | 6 | 12 | 4 | 1 | 0 | **23** |
 | `question-polite` | 42 | 45 | 87 | 17 | 2 | **193** |
 | `imperative-seyo` | 28 | 52 | 72 | 24 | 24 | **200** |
@@ -34,16 +34,16 @@ This report outlines the distribution of sentences across the 37 closed pattern 
 | `neg-ji-anta` | 1 | 6 | 12 | 12 | 7 | **38** |
 | `and-go` | 1 | 14 | 30 | 57 | 56 | **158** |
 | `but-jiman` | 1 | 6 | 6 | 8 | 6 | **27** |
-| `because-aseo` | 1 | 11 | 66 | 63 | 35 | **176** |
-| `if-myeon` | 0 | 6 | 34 | 33 | 28 | **101** |
+| `because-aseo` | 1 | 11 | 66 | 66 | 35 | **179** |
+| `if-myeon` | 0 | 6 | 34 | 36 | 28 | **104** |
 | `when-ttae` | 0 | 2 | 26 | 16 | 22 | **66** |
 | `want-go-sipda` | 0 | 9 | 20 | 9 | 6 | **44** |
 | `can-su-itda` | 0 | 3 | 26 | 18 | 12 | **59** |
-| `must-ya-dwaeda` | 0 | 3 | 17 | 11 | 16 | **47** |
-| `honorific-si` | 31 | 24 | 45 | 39 | 34 | **173** |
+| `must-ya-dwaeda` | 0 | 3 | 17 | 12 | 16 | **48** |
+| `honorific-si` | 31 | 24 | 45 | 58 | 38 | **196** |
 | `counter-phrase` | 4 | 35 | 27 | 5 | 23 | **94** |
-| `time-expression` | 27 | 116 | 190 | 76 | 92 | **501** |
-| `comparison-boda` | 0 | 3 | 32 | 11 | 6 | **52** |
+| `time-expression` | 27 | 116 | 190 | 85 | 96 | **514** |
+| `comparison-boda` | 0 | 3 | 32 | 12 | 6 | **53** |
 | `existence-itda` | 27 | 34 | 27 | 10 | 14 | **112** |
 
 ## 2. Low Coverage Tags (<10 sentences total)
