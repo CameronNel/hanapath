@@ -1,4 +1,4 @@
-﻿// Single platform boundary for every web-vs-native difference (see
+// Single platform boundary for every web-vs-native difference (see
 // docs/MOBILE_NATIVE_ARCHITECTURE.md §4.3). Never test window.Capacitor
 // anywhere else in this file — route new platform differences through here.
 function getHanaPathRuntime() {
@@ -11252,7 +11252,7 @@ function renderDrillQuestion() {
        </div>`;
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total)}
+      ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total, s.answered)}
       <div class="alphabet-practice-status" id="drillStatus">${s.correct} clean · streak ${s.streak}</div>
       ${visualHtml}
       <div class="drill-audio-row">
@@ -14852,7 +14852,7 @@ window.renderPronunciationDrill = function() {
 
   el.innerHTML = `
     <div class="card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.currentIndex + 1, pronDrillState.questionCount)}
+      ${alphabetPracticeProgressHtml("Pronunciation", pronDrillState.currentIndex + 1, pronDrillState.questionCount, pronDrillState.answered)}
 
       <div style="text-align:center; padding:24px 0;">
         <button class="button primary" type="button" style="padding:16px 24px; font-size:1.1rem; border-radius:50px;" onclick="speakPronDrillTarget()">
@@ -17163,7 +17163,7 @@ function renderLetterReview() {
 
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml("Spaced review", letterReview.index + 1, total)}
+      ${alphabetPracticeProgressHtml("Spaced review", letterReview.index + 1, total, letterReview.answered)}
       <div class="quiz-card">
         <div class="quiz-visual" lang="ko"><span class="checkpoint-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(speakableForChunk(letter))}" data-speak="${escapeHtml(speakableForChunk(letter))}" title="Tap to hear">${escapeHtml(letter)}</span></div>
         <div class="quiz-prompt">Which sound does this letter make?</div>
