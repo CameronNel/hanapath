@@ -255,7 +255,9 @@
       "sn2-people-u1-l4",
       "sn2-people-u1-l5",
       "sn2-people-u1-l6",
-      "sn2-people-u1-l7"
+      "sn2-people-u1-l7",
+      "sn2-people-u1-l8",
+      "sn2-people-u1-l9"
     ],
     "checkpointId": "sn2-people-u1-cp"
   },
@@ -592,7 +594,8 @@
       "sn4-actions-u3-l5",
       "sn4-actions-u3-l6",
       "sn4-actions-u3-l7",
-      "sn4-actions-u3-l8"
+      "sn4-actions-u3-l8",
+      "sn4-actions-u3-l9"
     ],
     "checkpointId": "sn4-actions-u3-cp"
   },
@@ -613,7 +616,9 @@
       "sn4-daily-u3-l7",
       "sn4-daily-u3-l8",
       "sn4-daily-u3-l9",
-      "sn4-daily-u3-l10"
+      "sn4-daily-u3-l10",
+      "sn4-daily-u3-l11",
+      "sn4-daily-u3-l12"
     ],
     "checkpointId": "sn4-daily-u3-cp"
   },
@@ -666,7 +671,9 @@
       "sn4-shopping-u3-l3",
       "sn4-shopping-u3-l4",
       "sn4-shopping-u3-l5",
-      "sn4-shopping-u3-l6"
+      "sn4-shopping-u3-l6",
+      "sn4-shopping-u3-l7",
+      "sn4-shopping-u3-l8"
     ],
     "checkpointId": "sn4-shopping-u3-cp"
   },
@@ -833,7 +840,8 @@
       "sn5-nature-u4-l1",
       "sn5-nature-u4-l2",
       "sn5-nature-u4-l3",
-      "sn5-nature-u4-l4"
+      "sn5-nature-u4-l4",
+      "sn5-nature-u4-l5"
     ],
     "checkpointId": "sn5-nature-u4-cp"
   },
@@ -985,7 +993,12 @@
       "sn6-daily-u5-l3",
       "sn6-daily-u5-l4",
       "sn6-daily-u5-l5",
-      "sn6-daily-u5-l6"
+      "sn6-daily-u5-l6",
+      "sn6-daily-u5-l7",
+      "sn6-daily-u5-l8",
+      "sn6-daily-u5-l9",
+      "sn6-daily-u5-l10",
+      "sn6-daily-u5-l11"
     ],
     "checkpointId": "sn6-daily-u5-cp"
   },
@@ -1004,7 +1017,8 @@
       "sn6-feelings-u5-l5",
       "sn6-feelings-u5-l6",
       "sn6-feelings-u5-l7",
-      "sn6-feelings-u5-l8"
+      "sn6-feelings-u5-l8",
+      "sn6-feelings-u5-l9"
     ],
     "checkpointId": "sn6-feelings-u5-cp"
   },
@@ -1082,7 +1096,8 @@
       "sn7-tech-u3-l2",
       "sn7-tech-u3-l3",
       "sn7-tech-u3-l4",
-      "sn7-tech-u3-l5"
+      "sn7-tech-u3-l5",
+      "sn7-tech-u3-l6"
     ],
     "checkpointId": "sn7-tech-u3-cp"
   },
@@ -1115,7 +1130,8 @@
       "sn7-actions-u6-l2",
       "sn7-actions-u6-l3",
       "sn7-actions-u6-l4",
-      "sn7-actions-u6-l5"
+      "sn7-actions-u6-l5",
+      "sn7-actions-u6-l6"
     ],
     "checkpointId": "sn7-actions-u6-cp"
   },
@@ -1131,7 +1147,9 @@
       "sn7-daily-u6-l2",
       "sn7-daily-u6-l3",
       "sn7-daily-u6-l4",
-      "sn7-daily-u6-l5"
+      "sn7-daily-u6-l5",
+      "sn7-daily-u6-l6",
+      "sn7-daily-u6-l7"
     ],
     "checkpointId": "sn7-daily-u6-cp"
   },
@@ -1228,7 +1246,11 @@
       "sn8-people-u2-l3",
       "sn8-people-u2-l4",
       "sn8-people-u2-l5",
-      "sn8-people-u2-l6"
+      "sn8-people-u2-l6",
+      "sn8-people-u2-l7",
+      "sn8-people-u2-l8",
+      "sn8-people-u2-l9",
+      "sn8-people-u2-l10"
     ],
     "checkpointId": "sn8-people-u2-cp"
   },
@@ -1242,7 +1264,9 @@
     "lessonIds": [
       "sn8-people-u3-l1",
       "sn8-people-u3-l2",
-      "sn8-people-u3-l3"
+      "sn8-people-u3-l3",
+      "sn8-people-u3-l4",
+      "sn8-people-u3-l5"
     ],
     "checkpointId": "sn8-people-u3-cp"
   },
@@ -1359,7 +1383,8 @@
       "sn8-feelings-u9-l5",
       "sn8-feelings-u9-l6",
       "sn8-feelings-u9-l7",
-      "sn8-feelings-u9-l8"
+      "sn8-feelings-u9-l8",
+      "sn8-feelings-u9-l9"
     ],
     "checkpointId": "sn8-feelings-u9-cp"
   },
@@ -4153,7 +4178,7 @@
     "unitId": "sn2-daily-u1",
     "type": "content",
     "title": "S2 · Morning routines · 7",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use morning routines sentences naturally in Korean.",
     "sentenceIds": [
       "s2527",
@@ -4161,7 +4186,8 @@
       "s2697",
       "s2715",
       "s2724",
-      "s2737"
+      "s2737",
+      "s2942"
     ],
     "drillPlan": [
       {
@@ -4182,17 +4208,21 @@
       },
       {
         "sentenceId": "s2724",
-        "mode": "transform"
+        "mode": "translate"
       },
       {
         "sentenceId": "s2737",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s2942",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
-      "imperative-seyo",
-      "present-polite"
+      "present-polite",
+      "imperative-seyo"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -4206,18 +4236,14 @@
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use morning routines sentences naturally in Korean.",
     "sentenceIds": [
-      "s2942",
       "s2955",
       "s2960",
       "s2971",
       "s2973",
-      "s2975"
+      "s2975",
+      "s2979"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s2942",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s2955",
         "mode": "translate"
@@ -4232,17 +4258,21 @@
       },
       {
         "sentenceId": "s2973",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s2975",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s2979",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "time-expression",
       "object-eul-reul",
-      "present-polite",
-      "time-expression"
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -4259,21 +4289,21 @@
       "s0497",
       "s0859",
       "s0867",
-      "s2979",
       "s2980",
-      "s3152"
+      "s3152",
+      "s3388"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s2979",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s2980",
         "mode": "translate"
       },
       {
         "sentenceId": "s3152",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3388",
         "mode": "translate"
       },
       {
@@ -4403,7 +4433,7 @@
     "unitId": "sn2-daily-u1",
     "type": "checkpoint",
     "title": "Unit check: Morning routines",
-    "subtitle": "Prove your 72 lines stick",
+    "subtitle": "Prove your 73 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -4478,7 +4508,8 @@
       "s2980",
       "s3026",
       "s3027",
-      "s3152"
+      "s3152",
+      "s3388"
     ],
     "promptBounds": {
       "min": 12,
@@ -6888,13 +6919,13 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use family introductions sentences naturally in Korean.",
     "sentenceIds": [
-      "s0359",
-      "s0361",
-      "s0365",
       "s0778",
       "s2829",
       "s2833",
-      "s3144"
+      "s3144",
+      "s3260",
+      "s3261",
+      "s3262"
     ],
     "drillPlan": [
       {
@@ -6914,22 +6945,22 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s0359",
+        "sentenceId": "s3260",
         "mode": "translate"
       },
       {
-        "sentenceId": "s0361",
-        "mode": "transform"
+        "sentenceId": "s3261",
+        "mode": "build"
       },
       {
-        "sentenceId": "s0365",
+        "sentenceId": "s3262",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
       "present-polite",
-      "past-polite"
+      "topic-neun"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -6940,21 +6971,122 @@
     "unitId": "sn2-people-u1",
     "type": "content",
     "title": "S2 · Family introductions · 4",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use family introductions sentences naturally in Korean.",
+    "sentenceIds": [
+      "s3263",
+      "s3264",
+      "s3266",
+      "s3267",
+      "s3268",
+      "s3269",
+      "s3282"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3263",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3264",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3266",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3267",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3268",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3269",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3282",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "present-polite",
+      "topic-neun",
+      "time-expression"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn2-people-u1-l5",
+    "unitId": "sn2-people-u1",
+    "type": "content",
+    "title": "S2 · Family introductions · 5",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use family introductions sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0359",
+      "s0361",
+      "s0365",
+      "s0773",
+      "s3283",
+      "s3286"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3283",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3286",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0359",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0361",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0365",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s0773",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "present-polite",
+      "topic-neun"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn2-people-u1-l6",
+    "unitId": "sn2-people-u1",
+    "type": "content",
+    "title": "S2 · Family introductions · 6",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use family introductions sentences naturally in Korean.",
     "sentenceIds": [
       "s0772",
-      "s0773",
       "s2177",
       "s2265",
       "s2678",
-      "s2939"
+      "s2939",
+      "s3265"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s0773",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s2177",
         "mode": "translate"
@@ -6969,6 +7101,10 @@
       },
       {
         "sentenceId": "s2939",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3265",
         "mode": "build"
       },
       {
@@ -6986,10 +7122,10 @@
     }
   },
   {
-    "id": "sn2-people-u1-l5",
+    "id": "sn2-people-u1-l7",
     "unitId": "sn2-people-u1",
     "type": "content",
-    "title": "S2 · Family introductions · 5",
+    "title": "S2 · Family introductions · 7",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use family introductions sentences naturally in Korean.",
     "sentenceIds": [
@@ -7036,10 +7172,10 @@
     }
   },
   {
-    "id": "sn2-people-u1-l6",
+    "id": "sn2-people-u1-l8",
     "unitId": "sn2-people-u1",
     "type": "content",
-    "title": "S2 · Family introductions · 6",
+    "title": "S2 · Family introductions · 8",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use family introductions sentences naturally in Korean.",
     "sentenceIds": [
@@ -7086,10 +7222,10 @@
     }
   },
   {
-    "id": "sn2-people-u1-l7",
+    "id": "sn2-people-u1-l9",
     "unitId": "sn2-people-u1",
     "type": "content",
-    "title": "S2 · Family introductions · 7",
+    "title": "S2 · Family introductions · 9",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use family introductions sentences naturally in Korean.",
     "sentenceIds": [
@@ -7140,7 +7276,7 @@
     "unitId": "sn2-people-u1",
     "type": "checkpoint",
     "title": "Unit check: Family introductions",
-    "subtitle": "Prove your 45 lines stick",
+    "subtitle": "Prove your 58 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -7188,7 +7324,20 @@
       "s2935",
       "s2939",
       "s3144",
-      "s3176"
+      "s3176",
+      "s3260",
+      "s3261",
+      "s3262",
+      "s3263",
+      "s3264",
+      "s3265",
+      "s3266",
+      "s3267",
+      "s3268",
+      "s3269",
+      "s3282",
+      "s3283",
+      "s3286"
     ],
     "promptBounds": {
       "min": 12,
@@ -7427,12 +7576,12 @@
     "goal": "Use at the market sentences naturally in Korean.",
     "sentenceIds": [
       "s0810",
-      "s0828",
-      "s0895",
       "s2566",
       "s2572",
       "s2579",
-      "s3073"
+      "s3073",
+      "s3339",
+      "s3351"
     ],
     "drillPlan": [
       {
@@ -7452,22 +7601,22 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s0810",
+        "sentenceId": "s3339",
         "mode": "translate"
       },
       {
-        "sentenceId": "s0828",
+        "sentenceId": "s3351",
         "mode": "transform"
       },
       {
-        "sentenceId": "s0895",
+        "sentenceId": "s0810",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
-      "because-aseo"
+      "because-aseo",
+      "past-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -7481,15 +7630,23 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use at the market sentences naturally in Korean.",
     "sentenceIds": [
+      "s0828",
+      "s0895",
       "s1171",
       "s1172",
       "s1178",
       "s1396",
-      "s1437",
-      "s1532",
-      "s1771"
+      "s1437"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0828",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0895",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s1171",
         "mode": "translate"
@@ -7504,25 +7661,17 @@
       },
       {
         "sentenceId": "s1396",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1437",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1532",
         "mode": "build"
       },
       {
-        "sentenceId": "s1771",
+        "sentenceId": "s1437",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "object-eul-reul",
       "subject-i-ga",
-      "location-eseo",
-      "object-eul-reul"
+      "topic-neun"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -7533,17 +7682,26 @@
     "unitId": "sn2-shopping-u1",
     "type": "content",
     "title": "S2 · At the market · 7",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use at the market sentences naturally in Korean.",
     "sentenceIds": [
+      "s1532",
+      "s1771",
       "s2220",
       "s2228",
       "s2307",
       "s2371",
-      "s2409",
-      "s2529"
+      "s2409"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s1532",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1771",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2220",
         "mode": "translate"
@@ -7558,20 +7716,16 @@
       },
       {
         "sentenceId": "s2371",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2409",
         "mode": "transform"
       },
       {
-        "sentenceId": "s2529",
+        "sentenceId": "s2409",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "present-polite",
       "if-myeon",
+      "present-polite",
       "can-su-itda"
     ],
     "pass": {
@@ -7583,9 +7737,10 @@
     "unitId": "sn2-shopping-u1",
     "type": "content",
     "title": "S2 · At the market · 8",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use at the market sentences naturally in Korean.",
     "sentenceIds": [
+      "s2529",
       "s2534",
       "s2540",
       "s2569",
@@ -7594,6 +7749,10 @@
       "s3182"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2529",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2534",
         "mode": "translate"
@@ -7620,9 +7779,9 @@
       }
     ],
     "patternTags": [
+      "object-eul-reul",
       "topic-neun",
-      "must-ya-dwaeda",
-      "object-eul-reul"
+      "must-ya-dwaeda"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -7733,7 +7892,7 @@
     "unitId": "sn2-shopping-u1",
     "type": "checkpoint",
     "title": "Unit check: At the market",
-    "subtitle": "Prove your 66 lines stick",
+    "subtitle": "Prove your 68 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -7802,7 +7961,9 @@
       "s2579",
       "s3073",
       "s3087",
-      "s3182"
+      "s3182",
+      "s3339",
+      "s3351"
     ],
     "promptBounds": {
       "min": 12,
@@ -7935,12 +8096,16 @@
       "s0954",
       "s0990",
       "s0991",
-      "s2584",
-      "s2989"
+      "s2989",
+      "s3368"
     ],
     "drillPlan": [
       {
         "sentenceId": "s2989",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3368",
         "mode": "translate"
       },
       {
@@ -7957,21 +8122,17 @@
       },
       {
         "sentenceId": "s0990",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0991",
         "mode": "transform"
       },
       {
-        "sentenceId": "s2584",
+        "sentenceId": "s0991",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "object-eul-reul",
       "present-polite",
-      "past-polite"
+      "subject-i-ga",
+      "object-eul-reul"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -7985,15 +8146,19 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use in the classroom sentences naturally in Korean.",
     "sentenceIds": [
+      "s2584",
       "s2587",
       "s2596",
       "s2990",
       "s3002",
       "s3009",
-      "s3012",
-      "s3110"
+      "s3012"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2584",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2587",
         "mode": "translate"
@@ -8012,21 +8177,17 @@
       },
       {
         "sentenceId": "s3009",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3012",
         "mode": "build"
       },
       {
-        "sentenceId": "s3110",
+        "sentenceId": "s3012",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "subject-i-ga",
-      "existence-itda",
-      "object-eul-reul"
+      "object-eul-reul",
+      "existence-itda"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -8044,11 +8205,23 @@
       "s0896",
       "s0989",
       "s0992",
-      "s0994",
-      "s1000",
-      "s1002"
+      "s3110",
+      "s3349",
+      "s3364"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3110",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3349",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3364",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0081",
         "mode": "translate"
@@ -8059,22 +8232,65 @@
       },
       {
         "sentenceId": "s0989",
-        "mode": "translate"
+        "mode": "transform"
       },
       {
         "sentenceId": "s0992",
-        "mode": "translate"
-      },
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "subject-i-ga",
+      "object-eul-reul",
+      "topic-neun"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn2-study-u1-l6",
+    "unitId": "sn2-study-u1",
+    "type": "content",
+    "title": "S2 · In the classroom · 6",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use in the classroom sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0994",
+      "s1000",
+      "s1002",
+      "s1229",
+      "s1233",
+      "s1366",
+      "s1415"
+    ],
+    "drillPlan": [
       {
         "sentenceId": "s0994",
         "mode": "translate"
       },
       {
         "sentenceId": "s1000",
-        "mode": "transform"
+        "mode": "translate"
       },
       {
         "sentenceId": "s1002",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1229",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1233",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1366",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s1415",
         "mode": "listen"
       }
     ],
@@ -8088,71 +8304,30 @@
     }
   },
   {
-    "id": "sn2-study-u1-l6",
-    "unitId": "sn2-study-u1",
-    "type": "content",
-    "title": "S2 · In the classroom · 6",
-    "subtitle": "6 sentences · Listen, build, type",
-    "goal": "Use in the classroom sentences naturally in Korean.",
-    "sentenceIds": [
-      "s1229",
-      "s1233",
-      "s1366",
-      "s1415",
-      "s1423",
-      "s1444"
-    ],
-    "drillPlan": [
-      {
-        "sentenceId": "s1229",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1233",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1366",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1415",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1423",
-        "mode": "build"
-      },
-      {
-        "sentenceId": "s1444",
-        "mode": "listen"
-      }
-    ],
-    "patternTags": [
-      "object-eul-reul",
-      "past-polite",
-      "location-eseo"
-    ],
-    "pass": {
-      "minFirstTryPct": 75
-    }
-  },
-  {
     "id": "sn2-study-u1-l7",
     "unitId": "sn2-study-u1",
     "type": "content",
     "title": "S2 · In the classroom · 7",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use in the classroom sentences naturally in Korean.",
     "sentenceIds": [
+      "s1423",
+      "s1444",
       "s1446",
       "s2219",
       "s2595",
       "s2614",
-      "s2997",
-      "s3004"
+      "s2997"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s1423",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1444",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s1446",
         "mode": "translate"
@@ -8167,21 +8342,17 @@
       },
       {
         "sentenceId": "s2614",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2997",
         "mode": "transform"
       },
       {
-        "sentenceId": "s3004",
+        "sentenceId": "s2997",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
       "past-polite",
-      "present-polite"
+      "topic-neun"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -8192,17 +8363,22 @@
     "unitId": "sn2-study-u1",
     "type": "content",
     "title": "S2 · In the classroom · 8",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use in the classroom sentences naturally in Korean.",
     "sentenceIds": [
       "s0830",
       "s1235",
+      "s3004",
       "s3017",
       "s3118",
       "s3128",
       "s3193"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3004",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s3017",
         "mode": "translate"
@@ -8230,8 +8406,8 @@
     ],
     "patternTags": [
       "object-eul-reul",
-      "honorific-si",
-      "present-polite"
+      "present-polite",
+      "honorific-si"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -8242,7 +8418,7 @@
     "unitId": "sn2-study-u1",
     "type": "checkpoint",
     "title": "Unit check: In the classroom",
-    "subtitle": "Prove your 53 lines stick",
+    "subtitle": "Prove your 56 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -8298,7 +8474,10 @@
       "s3110",
       "s3118",
       "s3128",
-      "s3193"
+      "s3193",
+      "s3349",
+      "s3364",
+      "s3368"
     ],
     "promptBounds": {
       "min": 12,
@@ -15486,13 +15665,13 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use plans in motion sentences naturally in Korean.",
     "sentenceIds": [
-      "s2096",
       "s2107",
       "s2687",
       "s2853",
       "s2941",
       "s2943",
-      "s3099"
+      "s3099",
+      "s3371"
     ],
     "drillPlan": [
       {
@@ -15520,14 +15699,14 @@
         "mode": "build"
       },
       {
-        "sentenceId": "s2096",
+        "sentenceId": "s3371",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "present-polite",
       "time-expression",
-      "topic-neun"
+      "object-eul-reul"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -15538,17 +15717,26 @@
     "unitId": "sn4-actions-u3",
     "type": "content",
     "title": "S4 · Plans in motion · 5",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use plans in motion sentences naturally in Korean.",
     "sentenceIds": [
+      "s2096",
       "s2165",
       "s2213",
       "s2417",
       "s2703",
       "s3069",
-      "s3072"
+      "s3378"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3378",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2096",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2165",
         "mode": "translate"
@@ -15563,21 +15751,17 @@
       },
       {
         "sentenceId": "s2703",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3069",
         "mode": "transform"
       },
       {
-        "sentenceId": "s3072",
+        "sentenceId": "s3069",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "present-polite",
       "time-expression",
-      "subject-i-ga"
+      "and-go"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -15591,16 +15775,66 @@
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use plans in motion sentences naturally in Korean.",
     "sentenceIds": [
+      "s3072",
+      "s3108",
+      "s3375",
+      "s3376",
+      "s3380",
+      "s3386"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3072",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3108",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3375",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3376",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3380",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3386",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "time-expression",
+      "object-eul-reul",
+      "past-polite"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn4-actions-u3-l7",
+    "unitId": "sn4-actions-u3",
+    "type": "content",
+    "title": "S4 · Plans in motion · 7",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use plans in motion sentences naturally in Korean.",
+    "sentenceIds": [
       "s0925",
       "s1329",
       "s1332",
       "s1752",
       "s1770",
-      "s3108"
+      "s3409"
     ],
     "drillPlan": [
       {
-        "sentenceId": "s3108",
+        "sentenceId": "s3409",
         "mode": "translate"
       },
       {
@@ -15617,7 +15851,7 @@
       },
       {
         "sentenceId": "s1752",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s1770",
@@ -15626,18 +15860,18 @@
     ],
     "patternTags": [
       "subject-i-ga",
-      "object-eul-reul",
-      "past-polite"
+      "and-go",
+      "object-eul-reul"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn4-actions-u3-l7",
+    "id": "sn4-actions-u3-l8",
     "unitId": "sn4-actions-u3",
     "type": "content",
-    "title": "S4 · Plans in motion · 7",
+    "title": "S4 · Plans in motion · 8",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use plans in motion sentences naturally in Korean.",
     "sentenceIds": [
@@ -15667,7 +15901,7 @@
       },
       {
         "sentenceId": "s0832",
-        "mode": "transform"
+        "mode": "build"
       },
       {
         "sentenceId": "s1468",
@@ -15684,10 +15918,10 @@
     }
   },
   {
-    "id": "sn4-actions-u3-l8",
+    "id": "sn4-actions-u3-l9",
     "unitId": "sn4-actions-u3",
     "type": "content",
-    "title": "S4 · Plans in motion · 8",
+    "title": "S4 · Plans in motion · 9",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use plans in motion sentences naturally in Korean.",
     "sentenceIds": [
@@ -15717,7 +15951,7 @@
       },
       {
         "sentenceId": "s1900",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s1904",
@@ -15738,7 +15972,7 @@
     "unitId": "sn4-actions-u3",
     "type": "checkpoint",
     "title": "Unit check: Plans in motion",
-    "subtitle": "Prove your 52 lines stick",
+    "subtitle": "Prove your 59 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -15793,7 +16027,14 @@
       "s3108",
       "s3115",
       "s3135",
-      "s3140"
+      "s3140",
+      "s3371",
+      "s3375",
+      "s3376",
+      "s3378",
+      "s3380",
+      "s3386",
+      "s3409"
     ],
     "promptBounds": {
       "min": 12,
@@ -15921,13 +16162,13 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use meals at home sentences naturally in Korean.",
     "sentenceIds": [
-      "s0100",
-      "s0106",
       "s2944",
       "s2954",
       "s2959",
       "s2961",
-      "s2967"
+      "s2967",
+      "s3395",
+      "s3404"
     ],
     "drillPlan": [
       {
@@ -15951,18 +16192,18 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s0100",
-        "mode": "transform"
+        "sentenceId": "s3395",
+        "mode": "build"
       },
       {
-        "sentenceId": "s0106",
+        "sentenceId": "s3404",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "time-expression",
       "present-polite",
-      "past-polite"
+      "subject-i-ga"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -15976,15 +16217,23 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use meals at home sentences naturally in Korean.",
     "sentenceIds": [
+      "s0100",
+      "s0106",
       "s0109",
       "s0499",
       "s0507",
       "s1312",
-      "s2196",
-      "s2212",
-      "s2452"
+      "s2196"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0100",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0106",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0109",
         "mode": "translate"
@@ -15999,25 +16248,17 @@
       },
       {
         "sentenceId": "s1312",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2196",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2212",
         "mode": "build"
       },
       {
-        "sentenceId": "s2452",
+        "sentenceId": "s2196",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "time-expression",
-      "present-polite",
-      "object-eul-reul"
+      "past-polite",
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -16031,15 +16272,23 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use meals at home sentences naturally in Korean.",
     "sentenceIds": [
+      "s2212",
+      "s2452",
       "s2463",
       "s2542",
       "s2644",
       "s2952",
-      "s2962",
-      "s3105",
-      "s3129"
+      "s2962"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2212",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2452",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2463",
         "mode": "translate"
@@ -16054,25 +16303,17 @@
       },
       {
         "sentenceId": "s2952",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2962",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3105",
         "mode": "transform"
       },
       {
-        "sentenceId": "s3129",
+        "sentenceId": "s2962",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "time-expression",
-      "past-polite",
-      "honorific-si"
+      "object-eul-reul",
+      "question-polite",
+      "time-expression"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -16086,41 +16327,41 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use meals at home sentences naturally in Korean.",
     "sentenceIds": [
-      "s0846",
-      "s1117",
-      "s1118",
-      "s1458",
-      "s1650",
-      "s1944",
-      "s1952"
+      "s3105",
+      "s3129",
+      "s3303",
+      "s3372",
+      "s3377",
+      "s3381",
+      "s3385"
     ],
     "drillPlan": [
       {
-        "sentenceId": "s0846",
+        "sentenceId": "s3105",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1117",
+        "sentenceId": "s3129",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1118",
+        "sentenceId": "s3303",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1458",
+        "sentenceId": "s3372",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1650",
+        "sentenceId": "s3377",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1944",
+        "sentenceId": "s3381",
         "mode": "build"
       },
       {
-        "sentenceId": "s1952",
+        "sentenceId": "s3385",
         "mode": "listen"
       }
     ],
@@ -16141,15 +16382,129 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use meals at home sentences naturally in Korean.",
     "sentenceIds": [
+      "s3392",
+      "s3393",
+      "s3394",
+      "s3399",
+      "s3401",
+      "s3403",
+      "s3406"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3392",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3393",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3394",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3399",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3401",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3403",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s3406",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite",
+      "because-aseo"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn4-daily-u3-l8",
+    "unitId": "sn4-daily-u3",
+    "type": "content",
+    "title": "S4 · Meals at home · 8",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use meals at home sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0846",
+      "s1117",
+      "s1118",
+      "s1458",
+      "s1650",
+      "s1944",
+      "s3410"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3410",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0846",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1117",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1118",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1458",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1650",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s1944",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "past-polite"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn4-daily-u3-l9",
+    "unitId": "sn4-daily-u3",
+    "type": "content",
+    "title": "S4 · Meals at home · 9",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use meals at home sentences naturally in Korean.",
+    "sentenceIds": [
+      "s1952",
       "s2437",
       "s2442",
       "s2448",
       "s2456",
       "s2459",
-      "s2462",
-      "s2522"
+      "s2462"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s1952",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2437",
         "mode": "translate"
@@ -16168,35 +16523,31 @@
       },
       {
         "sentenceId": "s2459",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2462",
         "mode": "transform"
       },
       {
-        "sentenceId": "s2522",
+        "sentenceId": "s2462",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
-      "present-polite",
-      "past-polite"
+      "past-polite",
+      "time-expression"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn4-daily-u3-l8",
+    "id": "sn4-daily-u3-l10",
     "unitId": "sn4-daily-u3",
     "type": "content",
-    "title": "S4 · Meals at home · 8",
+    "title": "S4 · Meals at home · 10",
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use meals at home sentences naturally in Korean.",
     "sentenceIds": [
-      "s1126",
+      "s2522",
       "s3187",
       "s3194",
       "s3223",
@@ -16205,6 +16556,10 @@
       "s3250"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2522",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s3187",
         "mode": "translate"
@@ -16223,14 +16578,10 @@
       },
       {
         "sentenceId": "s3242",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3250",
         "mode": "build"
       },
       {
-        "sentenceId": "s1126",
+        "sentenceId": "s3250",
         "mode": "listen"
       }
     ],
@@ -16244,13 +16595,14 @@
     }
   },
   {
-    "id": "sn4-daily-u3-l9",
+    "id": "sn4-daily-u3-l11",
     "unitId": "sn4-daily-u3",
     "type": "content",
-    "title": "S4 · Meals at home · 9",
-    "subtitle": "6 sentences · Listen, build, type",
+    "title": "S4 · Meals at home · 11",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use meals at home sentences naturally in Korean.",
     "sentenceIds": [
+      "s1126",
       "s1262",
       "s1305",
       "s1406",
@@ -16259,6 +16611,10 @@
       "s1947"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s1126",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s1262",
         "mode": "translate"
@@ -16294,10 +16650,10 @@
     }
   },
   {
-    "id": "sn4-daily-u3-l10",
+    "id": "sn4-daily-u3-l12",
     "unitId": "sn4-daily-u3",
     "type": "content",
-    "title": "S4 · Meals at home · 10",
+    "title": "S4 · Meals at home · 12",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use meals at home sentences naturally in Korean.",
     "sentenceIds": [
@@ -16348,7 +16704,7 @@
     "unitId": "sn4-daily-u3",
     "type": "checkpoint",
     "title": "Unit check: Meals at home",
-    "subtitle": "Prove your 68 lines stick",
+    "subtitle": "Prove your 83 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -16419,7 +16775,22 @@
       "s3223",
       "s3236",
       "s3242",
-      "s3250"
+      "s3250",
+      "s3303",
+      "s3372",
+      "s3377",
+      "s3381",
+      "s3385",
+      "s3392",
+      "s3393",
+      "s3394",
+      "s3395",
+      "s3399",
+      "s3401",
+      "s3403",
+      "s3404",
+      "s3406",
+      "s3410"
     ],
     "promptBounds": {
       "min": 12,
@@ -16966,7 +17337,7 @@
     "unitId": "sn4-nature-u3",
     "type": "content",
     "title": "S4 · A walk outdoors · 3",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use a walk outdoors sentences naturally in Korean.",
     "sentenceIds": [
       "s2627",
@@ -16974,7 +17345,8 @@
       "s2641",
       "s2652",
       "s2870",
-      "s2871"
+      "s2871",
+      "s2873"
     ],
     "drillPlan": [
       {
@@ -16995,16 +17367,20 @@
       },
       {
         "sentenceId": "s2870",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s2871",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s2873",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "time-expression",
       "present-polite",
+      "time-expression",
       "location-eseo"
     ],
     "pass": {
@@ -17023,14 +17399,10 @@
       "s0258",
       "s0421",
       "s0422",
-      "s2873",
+      "s0484",
       "s2880"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s2873",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s2880",
         "mode": "translate"
@@ -17045,10 +17417,14 @@
       },
       {
         "sentenceId": "s0421",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s0422",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s0484",
         "mode": "listen"
       }
     ],
@@ -17069,18 +17445,14 @@
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use a walk outdoors sentences naturally in Korean.",
     "sentenceIds": [
-      "s0484",
       "s0823",
       "s1274",
       "s2640",
       "s2651",
-      "s2653"
+      "s2653",
+      "s2660"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s0484",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s0823",
         "mode": "translate"
@@ -17095,16 +17467,20 @@
       },
       {
         "sentenceId": "s2651",
-        "mode": "transform"
+        "mode": "translate"
       },
       {
         "sentenceId": "s2653",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s2660",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "subject-i-ga",
       "present-polite",
+      "subject-i-ga",
       "copula-ieyo"
     ],
     "pass": {
@@ -17122,21 +17498,21 @@
       "s0057",
       "s0428",
       "s0838",
-      "s2660",
       "s2661",
-      "s2891"
+      "s2891",
+      "s3322"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s2660",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s2661",
         "mode": "translate"
       },
       {
         "sentenceId": "s2891",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3322",
         "mode": "translate"
       },
       {
@@ -17153,8 +17529,8 @@
       }
     ],
     "patternTags": [
-      "present-polite",
       "subject-i-ga",
+      "present-polite",
       "because-aseo"
     ],
     "pass": {
@@ -17216,7 +17592,7 @@
     "unitId": "sn4-nature-u3",
     "type": "checkpoint",
     "title": "Unit check: A walk outdoors",
-    "subtitle": "Prove your 44 lines stick",
+    "subtitle": "Prove your 45 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -17263,7 +17639,8 @@
       "s2871",
       "s2873",
       "s2880",
-      "s2891"
+      "s2891",
+      "s3322"
     ],
     "promptBounds": {
       "min": 12,
@@ -17443,10 +17820,9 @@
     "unitId": "sn4-shopping-u3",
     "type": "content",
     "title": "S4 · Paying the bill · 4",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use paying the bill sentences naturally in Korean.",
     "sentenceIds": [
-      "s0053",
       "s0812",
       "s2350",
       "s2360",
@@ -17473,21 +17849,17 @@
       },
       {
         "sentenceId": "s2384",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2388",
         "mode": "build"
       },
       {
-        "sentenceId": "s0053",
+        "sentenceId": "s2388",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "present-polite",
       "object-eul-reul",
-      "topic-neun"
+      "counter-phrase"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -17498,6 +17870,56 @@
     "unitId": "sn4-shopping-u3",
     "type": "content",
     "title": "S4 · Paying the bill · 5",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use paying the bill sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0053",
+      "s3331",
+      "s3332",
+      "s3346",
+      "s3348",
+      "s3356"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3331",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3332",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3346",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3348",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3356",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s0053",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "because-aseo",
+      "present-polite",
+      "formal-nida"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn4-shopping-u3-l6",
+    "unitId": "sn4-shopping-u3",
+    "type": "content",
+    "title": "S4 · Paying the bill · 6",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use paying the bill sentences naturally in Korean.",
     "sentenceIds": [
@@ -17527,7 +17949,7 @@
       },
       {
         "sentenceId": "s0923",
-        "mode": "transform"
+        "mode": "build"
       },
       {
         "sentenceId": "s2356",
@@ -17544,19 +17966,19 @@
     }
   },
   {
-    "id": "sn4-shopping-u3-l6",
+    "id": "sn4-shopping-u3-l7",
     "unitId": "sn4-shopping-u3",
     "type": "content",
-    "title": "S4 · Paying the bill · 6",
+    "title": "S4 · Paying the bill · 7",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use paying the bill sentences naturally in Korean.",
     "sentenceIds": [
-      "s0403",
-      "s1169",
-      "s1170",
       "s2369",
       "s2372",
-      "s2380"
+      "s2380",
+      "s3343",
+      "s3347",
+      "s3353"
     ],
     "drillPlan": [
       {
@@ -17569,6 +17991,56 @@
       },
       {
         "sentenceId": "s2380",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3343",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3347",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s3353",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "subject-i-ga",
+      "because-aseo",
+      "present-polite"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn4-shopping-u3-l8",
+    "unitId": "sn4-shopping-u3",
+    "type": "content",
+    "title": "S4 · Paying the bill · 8",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use paying the bill sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0403",
+      "s1169",
+      "s1170",
+      "s3354",
+      "s3357",
+      "s3363"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3354",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3357",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3363",
         "mode": "translate"
       },
       {
@@ -17585,9 +18057,9 @@
       }
     ],
     "patternTags": [
+      "location-e",
       "present-polite",
-      "subject-i-ga",
-      "location-e"
+      "because-aseo"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -17598,7 +18070,7 @@
     "unitId": "sn4-shopping-u3",
     "type": "checkpoint",
     "title": "Unit check: Paying the bill",
-    "subtitle": "Prove your 40 lines stick",
+    "subtitle": "Prove your 51 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -17641,7 +18113,18 @@
       "s2372",
       "s2380",
       "s2384",
-      "s2388"
+      "s2388",
+      "s3331",
+      "s3332",
+      "s3343",
+      "s3346",
+      "s3347",
+      "s3348",
+      "s3353",
+      "s3354",
+      "s3356",
+      "s3357",
+      "s3363"
     ],
     "promptBounds": {
       "min": 12,
@@ -19919,9 +20402,13 @@
       "s0574",
       "s0575",
       "s0576",
-      "s0577"
+      "s3294"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3294",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0077",
         "mode": "translate"
@@ -19940,14 +20427,10 @@
       },
       {
         "sentenceId": "s0575",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0576",
         "mode": "transform"
       },
       {
-        "sentenceId": "s0577",
+        "sentenceId": "s0576",
         "mode": "listen"
       }
     ],
@@ -19968,15 +20451,19 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use a busy afternoon sentences naturally in Korean.",
     "sentenceIds": [
+      "s0577",
       "s0578",
       "s2561",
       "s2570",
       "s2585",
       "s2603",
-      "s2722",
-      "s2753"
+      "s2722"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0577",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0578",
         "mode": "translate"
@@ -19995,14 +20482,10 @@
       },
       {
         "sentenceId": "s2603",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2722",
         "mode": "build"
       },
       {
-        "sentenceId": "s2753",
+        "sentenceId": "s2722",
         "mode": "listen"
       }
     ],
@@ -20023,7 +20506,7 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use a busy afternoon sentences naturally in Korean.",
     "sentenceIds": [
-      "s0572",
+      "s2753",
       "s3022",
       "s3028",
       "s3093",
@@ -20032,6 +20515,10 @@
       "s3124"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2753",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s3022",
         "mode": "translate"
@@ -20050,21 +20537,17 @@
       },
       {
         "sentenceId": "s3123",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3124",
         "mode": "transform"
       },
       {
-        "sentenceId": "s0572",
+        "sentenceId": "s3124",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "past-polite",
-      "present-polite",
-      "subject-i-ga"
+      "time-expression",
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -20075,9 +20558,10 @@
     "unitId": "sn5-actions-u4",
     "type": "content",
     "title": "S5 · A busy afternoon · 8",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use a busy afternoon sentences naturally in Korean.",
     "sentenceIds": [
+      "s0572",
       "s2559",
       "s2619",
       "s2778",
@@ -20086,6 +20570,10 @@
       "s3109"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0572",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2559",
         "mode": "translate"
@@ -20125,7 +20613,7 @@
     "unitId": "sn5-actions-u4",
     "type": "checkpoint",
     "title": "Unit check: A busy afternoon",
-    "subtitle": "Prove your 55 lines stick",
+    "subtitle": "Prove your 56 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -20183,7 +20671,8 @@
       "s3111",
       "s3114",
       "s3123",
-      "s3124"
+      "s3124",
+      "s3294"
     ],
     "promptBounds": {
       "min": 12,
@@ -20924,7 +21413,7 @@
     "unitId": "sn5-nature-u4",
     "type": "content",
     "title": "S5 · Seasonal changes · 1",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use seasonal changes sentences naturally in Korean.",
     "sentenceIds": [
       "s0487",
@@ -20932,8 +21421,7 @@
       "s0677",
       "s0723",
       "s0724",
-      "s0736",
-      "s0842"
+      "s0736"
     ],
     "drillPlan": [
       {
@@ -20954,21 +21442,17 @@
       },
       {
         "sentenceId": "s0487",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0494",
         "mode": "transform"
       },
       {
-        "sentenceId": "s0842",
+        "sentenceId": "s0494",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "subject-i-ga",
       "location-e",
-      "past-polite"
+      "past-polite",
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -20979,18 +21463,21 @@
     "unitId": "sn5-nature-u4",
     "type": "content",
     "title": "S5 · Seasonal changes · 2",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use seasonal changes sentences naturally in Korean.",
     "sentenceIds": [
+      "s0842",
       "s0863",
       "s0903",
       "s0919",
       "s0921",
-      "s1324",
-      "s1665",
-      "s2294"
+      "s1665"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0842",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0863",
         "mode": "translate"
@@ -21005,25 +21492,17 @@
       },
       {
         "sentenceId": "s0921",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1665",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2294",
         "mode": "build"
       },
       {
-        "sentenceId": "s1324",
+        "sentenceId": "s1665",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "subject-i-ga",
       "present-polite",
-      "object-eul-reul"
+      "because-aseo"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -21034,26 +21513,67 @@
     "unitId": "sn5-nature-u4",
     "type": "content",
     "title": "S5 · Seasonal changes · 3",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use seasonal changes sentences naturally in Korean.",
     "sentenceIds": [
+      "s1324",
       "s1365",
+      "s1672",
+      "s2294",
+      "s3334",
+      "s3345"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s2294",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3334",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3345",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1324",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1672",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s1365",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "formal-nida",
+      "imperative-seyo"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn5-nature-u4-l4",
+    "unitId": "sn5-nature-u4",
+    "type": "content",
+    "title": "S5 · Seasonal changes · 4",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use seasonal changes sentences naturally in Korean.",
+    "sentenceIds": [
       "s1492",
       "s1611",
       "s1642",
       "s1652",
       "s1666",
-      "s1672"
+      "s1732"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s1672",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1365",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s1492",
         "mode": "translate"
@@ -21068,31 +21588,34 @@
       },
       {
         "sentenceId": "s1652",
-        "mode": "transform"
+        "mode": "translate"
       },
       {
         "sentenceId": "s1666",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s1732",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "location-e",
       "object-eul-reul",
-      "subject-i-ga",
-      "location-e"
+      "past-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn5-nature-u4-l4",
+    "id": "sn5-nature-u4-l5",
     "unitId": "sn5-nature-u4",
     "type": "content",
-    "title": "S5 · Seasonal changes · 4",
-    "subtitle": "7 sentences · Listen, build, type",
+    "title": "S5 · Seasonal changes · 5",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use seasonal changes sentences naturally in Korean.",
     "sentenceIds": [
-      "s1732",
       "s1747",
       "s1815",
       "s1840",
@@ -21101,10 +21624,6 @@
       "s1920"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s1732",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s1747",
         "mode": "translate"
@@ -21123,7 +21642,7 @@
       },
       {
         "sentenceId": "s1895",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s1920",
@@ -21133,7 +21652,7 @@
     "patternTags": [
       "subject-i-ga",
       "object-eul-reul",
-      "and-go"
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -21144,7 +21663,7 @@
     "unitId": "sn5-nature-u4",
     "type": "checkpoint",
     "title": "Unit check: Seasonal changes",
-    "subtitle": "Prove your 28 lines stick",
+    "subtitle": "Prove your 30 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -21175,7 +21694,9 @@
       "s1892",
       "s1895",
       "s1920",
-      "s2294"
+      "s2294",
+      "s3334",
+      "s3345"
     ],
     "promptBounds": {
       "min": 12,
@@ -24353,11 +24874,11 @@
     "sentenceIds": [
       "s0464",
       "s2078",
-      "s2180",
       "s2404",
-      "s2419",
       "s2817",
-      "s3063"
+      "s3063",
+      "s3291",
+      "s3292"
     ],
     "drillPlan": [
       {
@@ -24381,18 +24902,18 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s2180",
-        "mode": "transform"
+        "sentenceId": "s3291",
+        "mode": "build"
       },
       {
-        "sentenceId": "s2419",
+        "sentenceId": "s3292",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "imperative-seyo",
       "present-polite",
-      "time-expression"
+      "object-eul-reul"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -24403,18 +24924,171 @@
     "unitId": "sn6-daily-u5",
     "type": "content",
     "title": "S6 · A quiet evening · 6",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use a quiet evening sentences naturally in Korean.",
     "sentenceIds": [
-      "s0187",
-      "s2159",
+      "s3293",
+      "s3300",
+      "s3302",
+      "s3305",
+      "s3306",
+      "s3307"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3293",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3300",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3302",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3305",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3306",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3307",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "imperative-seyo",
+      "because-aseo"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn6-daily-u5-l7",
+    "unitId": "sn6-daily-u5",
+    "type": "content",
+    "title": "S6 · A quiet evening · 7",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use a quiet evening sentences naturally in Korean.",
+    "sentenceIds": [
+      "s3308",
+      "s3310",
+      "s3311",
+      "s3312",
+      "s3313",
+      "s3316"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3308",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3310",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3311",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3312",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3313",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3316",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "direction-euro"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn6-daily-u5-l8",
+    "unitId": "sn6-daily-u5",
+    "type": "content",
+    "title": "S6 · A quiet evening · 8",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use a quiet evening sentences naturally in Korean.",
+    "sentenceIds": [
+      "s2180",
+      "s3317",
+      "s3318",
+      "s3323",
+      "s3325",
+      "s3328"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3317",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3318",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3323",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3325",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3328",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s2180",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "direction-euro"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn6-daily-u5-l9",
+    "unitId": "sn6-daily-u5",
+    "type": "content",
+    "title": "S6 · A quiet evening · 9",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use a quiet evening sentences naturally in Korean.",
+    "sentenceIds": [
+      "s2419",
       "s2789",
       "s2804",
       "s3038",
       "s3076",
-      "s3095"
+      "s3299"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2419",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2789",
         "mode": "translate"
@@ -24429,6 +25103,98 @@
       },
       {
         "sentenceId": "s3076",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s3299",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "imperative-seyo",
+      "past-polite"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn6-daily-u5-l10",
+    "unitId": "sn6-daily-u5",
+    "type": "content",
+    "title": "S6 · A quiet evening · 10",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use a quiet evening sentences naturally in Korean.",
+    "sentenceIds": [
+      "s3301",
+      "s3304",
+      "s3309",
+      "s3314",
+      "s3315",
+      "s3319"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3301",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3304",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3309",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3314",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3315",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3319",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "location-e",
+      "present-polite"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn6-daily-u5-l11",
+    "unitId": "sn6-daily-u5",
+    "type": "content",
+    "title": "S6 · A quiet evening · 11",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use a quiet evening sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0187",
+      "s2159",
+      "s3095",
+      "s3324",
+      "s3329",
+      "s3330"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3324",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3329",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3330",
         "mode": "translate"
       },
       {
@@ -24437,7 +25203,7 @@
       },
       {
         "sentenceId": "s2159",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s3095",
@@ -24445,9 +25211,9 @@
       }
     ],
     "patternTags": [
-      "object-eul-reul",
-      "present-polite",
-      "subject-i-ga"
+      "location-e",
+      "past-polite",
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -24458,7 +25224,7 @@
     "unitId": "sn6-daily-u5",
     "type": "checkpoint",
     "title": "Unit check: A quiet evening",
-    "subtitle": "Prove your 42 lines stick",
+    "subtitle": "Prove your 71 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -24503,7 +25269,36 @@
       "s3038",
       "s3063",
       "s3076",
-      "s3095"
+      "s3095",
+      "s3291",
+      "s3292",
+      "s3293",
+      "s3299",
+      "s3300",
+      "s3301",
+      "s3302",
+      "s3304",
+      "s3305",
+      "s3306",
+      "s3307",
+      "s3308",
+      "s3309",
+      "s3310",
+      "s3311",
+      "s3312",
+      "s3313",
+      "s3314",
+      "s3315",
+      "s3316",
+      "s3317",
+      "s3318",
+      "s3319",
+      "s3323",
+      "s3324",
+      "s3325",
+      "s3328",
+      "s3329",
+      "s3330"
     ],
     "promptBounds": {
       "min": 12,
@@ -24522,12 +25317,12 @@
     "goal": "Use small talk outside sentences naturally in Korean.",
     "sentenceIds": [
       "s1031",
-      "s1034",
-      "s1035",
       "s1102",
       "s1876",
       "s2010",
-      "s3097"
+      "s3097",
+      "s3336",
+      "s3402"
     ],
     "drillPlan": [
       {
@@ -24547,22 +25342,22 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s1031",
+        "sentenceId": "s3336",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1034",
-        "mode": "transform"
+        "sentenceId": "s3402",
+        "mode": "build"
       },
       {
-        "sentenceId": "s1035",
+        "sentenceId": "s1031",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "present-polite",
       "object-eul-reul",
-      "past-polite",
-      "possessive-ui"
+      "past-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -24576,15 +25371,23 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use small talk outside sentences naturally in Korean.",
     "sentenceIds": [
+      "s1034",
+      "s1035",
       "s1864",
       "s1888",
       "s2986",
       "s2994",
-      "s2999",
-      "s3005",
-      "s3013"
+      "s2999"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s1034",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1035",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s1864",
         "mode": "translate"
@@ -24599,18 +25402,10 @@
       },
       {
         "sentenceId": "s2994",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2999",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3005",
         "mode": "build"
       },
       {
-        "sentenceId": "s3013",
+        "sentenceId": "s2999",
         "mode": "listen"
       }
     ],
@@ -24631,15 +25426,23 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use small talk outside sentences naturally in Korean.",
     "sentenceIds": [
+      "s3005",
+      "s3013",
       "s3016",
       "s3061",
       "s3062",
       "s3070",
-      "s3071",
-      "s3100",
-      "s3101"
+      "s3071"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3005",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3013",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s3016",
         "mode": "translate"
@@ -24654,25 +25457,17 @@
       },
       {
         "sentenceId": "s3070",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3071",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3100",
         "mode": "transform"
       },
       {
-        "sentenceId": "s3101",
+        "sentenceId": "s3071",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "imperative-seyo",
       "also-do",
-      "existence-itda"
+      "copula-ieyo"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -24687,22 +25482,69 @@
     "goal": "Use small talk outside sentences naturally in Korean.",
     "sentenceIds": [
       "s1039",
-      "s1055",
-      "s1060",
-      "s1067",
-      "s1250",
-      "s1293",
-      "s3165"
+      "s3100",
+      "s3101",
+      "s3165",
+      "s3338",
+      "s3360",
+      "s3370"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3100",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3101",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s3165",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1039",
+        "sentenceId": "s3338",
         "mode": "translate"
       },
+      {
+        "sentenceId": "s3360",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3370",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s1039",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "because-aseo",
+      "location-e",
+      "subject-i-ga"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn6-feelings-u5-l5",
+    "unitId": "sn6-feelings-u5",
+    "type": "content",
+    "title": "S6 · Small talk outside · 5",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use small talk outside sentences naturally in Korean.",
+    "sentenceIds": [
+      "s1055",
+      "s1060",
+      "s1067",
+      "s1250",
+      "s1293",
+      "s1309",
+      "s1325"
+    ],
+    "drillPlan": [
       {
         "sentenceId": "s1055",
         "mode": "translate"
@@ -24717,65 +25559,18 @@
       },
       {
         "sentenceId": "s1250",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s1293",
-        "mode": "listen"
-      }
-    ],
-    "patternTags": [
-      "object-eul-reul",
-      "copula-ieyo",
-      "present-polite"
-    ],
-    "pass": {
-      "minFirstTryPct": 75
-    }
-  },
-  {
-    "id": "sn6-feelings-u5-l5",
-    "unitId": "sn6-feelings-u5",
-    "type": "content",
-    "title": "S6 · Small talk outside · 5",
-    "subtitle": "7 sentences · Listen, build, type",
-    "goal": "Use small talk outside sentences naturally in Korean.",
-    "sentenceIds": [
-      "s1309",
-      "s1325",
-      "s1354",
-      "s1379",
-      "s1464",
-      "s1783",
-      "s3020"
-    ],
-    "drillPlan": [
+        "mode": "translate"
+      },
       {
         "sentenceId": "s1309",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1325",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1354",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1379",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1464",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1783",
         "mode": "transform"
       },
       {
-        "sentenceId": "s3020",
+        "sentenceId": "s1325",
         "mode": "listen"
       }
     ],
@@ -24793,22 +25588,67 @@
     "unitId": "sn6-feelings-u5",
     "type": "content",
     "title": "S6 · Small talk outside · 6",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use small talk outside sentences naturally in Korean.",
+    "sentenceIds": [
+      "s1354",
+      "s1379",
+      "s1464",
+      "s1783",
+      "s3020",
+      "s3081"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s1354",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1379",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1464",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1783",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3020",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3081",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "copula-ieyo",
+      "imperative-seyo",
+      "object-eul-reul"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn6-feelings-u5-l7",
+    "unitId": "sn6-feelings-u5",
+    "type": "content",
+    "title": "S6 · Small talk outside · 7",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use small talk outside sentences naturally in Korean.",
     "sentenceIds": [
       "s1068",
       "s1306",
-      "s3081",
       "s3133",
       "s3186",
       "s3212",
       "s3245"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s3081",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s3133",
         "mode": "translate"
@@ -24827,7 +25667,7 @@
       },
       {
         "sentenceId": "s1068",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s1306",
@@ -24844,10 +25684,10 @@
     }
   },
   {
-    "id": "sn6-feelings-u5-l7",
+    "id": "sn6-feelings-u5-l8",
     "unitId": "sn6-feelings-u5",
     "type": "content",
-    "title": "S6 · Small talk outside · 7",
+    "title": "S6 · Small talk outside · 8",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use small talk outside sentences naturally in Korean.",
     "sentenceIds": [
@@ -24877,7 +25717,7 @@
       },
       {
         "sentenceId": "s1893",
-        "mode": "transform"
+        "mode": "build"
       },
       {
         "sentenceId": "s1975",
@@ -24894,10 +25734,10 @@
     }
   },
   {
-    "id": "sn6-feelings-u5-l8",
+    "id": "sn6-feelings-u5-l9",
     "unitId": "sn6-feelings-u5",
     "type": "content",
-    "title": "S6 · Small talk outside · 8",
+    "title": "S6 · Small talk outside · 9",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use small talk outside sentences naturally in Korean.",
     "sentenceIds": [
@@ -24927,7 +25767,7 @@
       },
       {
         "sentenceId": "s3207",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s3226",
@@ -24948,7 +25788,7 @@
     "unitId": "sn6-feelings-u5",
     "type": "checkpoint",
     "title": "Unit check: Small talk outside",
-    "subtitle": "Prove your 54 lines stick",
+    "subtitle": "Prove your 59 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -25005,7 +25845,12 @@
       "s3207",
       "s3212",
       "s3226",
-      "s3245"
+      "s3245",
+      "s3336",
+      "s3338",
+      "s3360",
+      "s3370",
+      "s3402"
     ],
     "promptBounds": {
       "min": 12,
@@ -26215,10 +27060,10 @@
       "s0157",
       "s0813",
       "s0822",
-      "s0834",
       "s0874",
       "s0877",
-      "s2732"
+      "s2732",
+      "s3327"
     ],
     "drillPlan": [
       {
@@ -26246,14 +27091,14 @@
         "mode": "build"
       },
       {
-        "sentenceId": "s0834",
+        "sentenceId": "s3327",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
-      "past-polite",
-      "present-polite"
+      "location-e",
+      "past-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -26267,15 +27112,19 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use messages and calls sentences naturally in Korean.",
     "sentenceIds": [
+      "s0834",
       "s0873",
       "s0922",
       "s0926",
       "s1130",
       "s1132",
-      "s1142",
-      "s2714"
+      "s1142"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0834",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0873",
         "mode": "translate"
@@ -26294,21 +27143,17 @@
       },
       {
         "sentenceId": "s1132",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1142",
         "mode": "transform"
       },
       {
-        "sentenceId": "s2714",
+        "sentenceId": "s1142",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
       "direction-euro",
-      "present-polite"
+      "past-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -26319,18 +27164,21 @@
     "unitId": "sn7-tech-u3",
     "type": "content",
     "title": "S7 · Messages and calls · 4",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use messages and calls sentences naturally in Korean.",
     "sentenceIds": [
-      "s1134",
-      "s1138",
-      "s1139",
-      "s1140",
+      "s2714",
       "s2721",
       "s2731",
-      "s2733"
+      "s2733",
+      "s3295",
+      "s3298"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2714",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2721",
         "mode": "translate"
@@ -26344,26 +27192,18 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s1134",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1138",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1139",
+        "sentenceId": "s3295",
         "mode": "build"
       },
       {
-        "sentenceId": "s1140",
+        "sentenceId": "s3298",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "location-e",
       "object-eul-reul",
-      "past-polite"
+      "direction-euro"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -26374,22 +27214,67 @@
     "unitId": "sn7-tech-u3",
     "type": "content",
     "title": "S7 · Messages and calls · 5",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use messages and calls sentences naturally in Korean.",
+    "sentenceIds": [
+      "s1134",
+      "s1138",
+      "s1139",
+      "s1140",
+      "s1143",
+      "s3365"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3365",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1134",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1138",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1139",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1140",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s1143",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite",
+      "and-go"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn7-tech-u3-l6",
+    "unitId": "sn7-tech-u3",
+    "type": "content",
+    "title": "S7 · Messages and calls · 6",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use messages and calls sentences naturally in Korean.",
     "sentenceIds": [
       "s1136",
       "s1137",
       "s1141",
-      "s1143",
       "s1675",
       "s1691",
       "s1797"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s1143",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s1675",
         "mode": "translate"
@@ -26408,7 +27293,7 @@
       },
       {
         "sentenceId": "s1141",
-        "mode": "transform"
+        "mode": "build"
       },
       {
         "sentenceId": "s1797",
@@ -26417,8 +27302,8 @@
     ],
     "patternTags": [
       "object-eul-reul",
-      "past-polite",
-      "location-e"
+      "location-e",
+      "past-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -26429,7 +27314,7 @@
     "unitId": "sn7-tech-u3",
     "type": "checkpoint",
     "title": "Unit check: Messages and calls",
-    "subtitle": "Prove your 35 lines stick",
+    "subtitle": "Prove your 39 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -26467,7 +27352,11 @@
       "s2721",
       "s2731",
       "s2732",
-      "s2733"
+      "s2733",
+      "s3295",
+      "s3298",
+      "s3327",
+      "s3365"
     ],
     "promptBounds": {
       "min": 12,
@@ -26909,7 +27798,7 @@
     "unitId": "sn7-actions-u6",
     "type": "content",
     "title": "S7 · Moving through town · 2",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use moving through town sentences naturally in Korean.",
     "sentenceIds": [
       "s1091",
@@ -26917,7 +27806,6 @@
       "s3042",
       "s3047",
       "s3052",
-      "s3056",
       "s3057"
     ],
     "drillPlan": [
@@ -26939,14 +27827,10 @@
       },
       {
         "sentenceId": "s3042",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3047",
         "mode": "build"
       },
       {
-        "sentenceId": "s3056",
+        "sentenceId": "s3047",
         "mode": "listen"
       }
     ],
@@ -26964,26 +27848,67 @@
     "unitId": "sn7-actions-u6",
     "type": "content",
     "title": "S7 · Moving through town · 3",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use moving through town sentences naturally in Korean.",
     "sentenceIds": [
       "s1084",
-      "s1086",
-      "s1090",
-      "s1092",
-      "s1093",
-      "s1094",
-      "s3058"
+      "s3056",
+      "s3058",
+      "s3374",
+      "s3389",
+      "s3391"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3056",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s3058",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1084",
+        "sentenceId": "s3374",
         "mode": "translate"
       },
+      {
+        "sentenceId": "s3389",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3391",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s1084",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite",
+      "can-su-itda"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn7-actions-u6-l4",
+    "unitId": "sn7-actions-u6",
+    "type": "content",
+    "title": "S7 · Moving through town · 4",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use moving through town sentences naturally in Korean.",
+    "sentenceIds": [
+      "s1086",
+      "s1090",
+      "s1092",
+      "s1093",
+      "s1094",
+      "s1096"
+    ],
+    "drillPlan": [
       {
         "sentenceId": "s1086",
         "mode": "translate"
@@ -26998,31 +27923,34 @@
       },
       {
         "sentenceId": "s1093",
-        "mode": "transform"
+        "mode": "translate"
       },
       {
         "sentenceId": "s1094",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s1096",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
       "past-polite",
-      "because-aseo"
+      "possessive-ui"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn7-actions-u6-l4",
+    "id": "sn7-actions-u6-l5",
     "unitId": "sn7-actions-u6",
     "type": "content",
-    "title": "S7 · Moving through town · 4",
-    "subtitle": "7 sentences · Listen, build, type",
+    "title": "S7 · Moving through town · 5",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use moving through town sentences naturally in Korean.",
     "sentenceIds": [
-      "s1096",
       "s1097",
       "s1098",
       "s1280",
@@ -27031,10 +27959,6 @@
       "s3054"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s1096",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s1097",
         "mode": "translate"
@@ -27053,7 +27977,7 @@
       },
       {
         "sentenceId": "s3036",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s3054",
@@ -27062,18 +27986,18 @@
     ],
     "patternTags": [
       "object-eul-reul",
-      "past-polite",
-      "honorific-si"
+      "honorific-si",
+      "past-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn7-actions-u6-l5",
+    "id": "sn7-actions-u6-l6",
     "unitId": "sn7-actions-u6",
     "type": "content",
-    "title": "S7 · Moving through town · 5",
+    "title": "S7 · Moving through town · 6",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use moving through town sentences naturally in Korean.",
     "sentenceIds": [
@@ -27103,7 +28027,7 @@
       },
       {
         "sentenceId": "s1095",
-        "mode": "transform"
+        "mode": "build"
       },
       {
         "sentenceId": "s1287",
@@ -27124,7 +28048,7 @@
     "unitId": "sn7-actions-u6",
     "type": "checkpoint",
     "title": "Unit check: Moving through town",
-    "subtitle": "Prove your 34 lines stick",
+    "subtitle": "Prove your 37 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -27161,7 +28085,10 @@
       "s3054",
       "s3056",
       "s3057",
-      "s3058"
+      "s3058",
+      "s3374",
+      "s3389",
+      "s3391"
     ],
     "promptBounds": {
       "min": 12,
@@ -27180,12 +28107,12 @@
     "goal": "Use morning routines sentences naturally in Korean.",
     "sentenceIds": [
       "s0174",
-      "s0188",
       "s0510",
       "s0663",
       "s0675",
       "s0732",
-      "s0870"
+      "s0870",
+      "s3320"
     ],
     "drillPlan": [
       {
@@ -27213,14 +28140,14 @@
         "mode": "build"
       },
       {
-        "sentenceId": "s0188",
+        "sentenceId": "s3320",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
-      "past-polite",
-      "present-polite"
+      "present-polite",
+      "subject-i-ga"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -27231,51 +28158,46 @@
     "unitId": "sn7-daily-u6",
     "type": "content",
     "title": "S7 · Morning routines to · 2",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use morning routines sentences naturally in Korean.",
     "sentenceIds": [
+      "s0188",
       "s0506",
       "s0509",
       "s0898",
-      "s0938",
-      "s2450",
-      "s2947",
-      "s2978"
+      "s3326",
+      "s3397"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3326",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3397",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0188",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s0506",
         "mode": "translate"
       },
       {
         "sentenceId": "s0509",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0898",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0938",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2450",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2947",
         "mode": "build"
       },
       {
-        "sentenceId": "s2978",
+        "sentenceId": "s0898",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "time-expression",
-      "location-e",
-      "object-eul-reul"
+      "object-eul-reul",
+      "past-polite",
+      "time-expression"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -27289,16 +28211,116 @@
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use morning routines sentences naturally in Korean.",
     "sentenceIds": [
+      "s0938",
+      "s2450",
+      "s2947",
+      "s2978",
+      "s3094",
+      "s3296"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s0938",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2450",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2947",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2978",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3094",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s3296",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "time-expression",
+      "because-aseo",
+      "present-polite"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn7-daily-u6-l4",
+    "unitId": "sn7-daily-u6",
+    "type": "content",
+    "title": "S7 · Morning routines to · 4",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use morning routines sentences naturally in Korean.",
+    "sentenceIds": [
+      "s3297",
+      "s3321",
+      "s3382",
+      "s3384",
+      "s3398",
+      "s3400"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3297",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3321",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3382",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3384",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3398",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3400",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "formal-nida"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn7-daily-u6-l5",
+    "unitId": "sn7-daily-u6",
+    "type": "content",
+    "title": "S7 · Morning routines to · 5",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use morning routines sentences naturally in Korean.",
+    "sentenceIds": [
       "s0902",
       "s1109",
       "s1111",
       "s1114",
       "s1125",
-      "s3094"
+      "s3408"
     ],
     "drillPlan": [
       {
-        "sentenceId": "s3094",
+        "sentenceId": "s3408",
         "mode": "translate"
       },
       {
@@ -27323,8 +28345,8 @@
       }
     ],
     "patternTags": [
-      "object-eul-reul",
       "formal-nida",
+      "object-eul-reul",
       "location-eseo"
     ],
     "pass": {
@@ -27332,10 +28354,10 @@
     }
   },
   {
-    "id": "sn7-daily-u6-l4",
+    "id": "sn7-daily-u6-l6",
     "unitId": "sn7-daily-u6",
     "type": "content",
-    "title": "S7 · Morning routines to · 4",
+    "title": "S7 · Morning routines to · 6",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use morning routines sentences naturally in Korean.",
     "sentenceIds": [
@@ -27382,10 +28404,10 @@
     }
   },
   {
-    "id": "sn7-daily-u6-l5",
+    "id": "sn7-daily-u6-l7",
     "unitId": "sn7-daily-u6",
     "type": "content",
-    "title": "S7 · Morning routines to · 5",
+    "title": "S7 · Morning routines to · 7",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use morning routines sentences naturally in Korean.",
     "sentenceIds": [
@@ -27436,7 +28458,7 @@
     "unitId": "sn7-daily-u6",
     "type": "checkpoint",
     "title": "Unit check: Morning routines",
-    "subtitle": "Prove your 32 lines stick",
+    "subtitle": "Prove your 43 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -27471,7 +28493,18 @@
       "s2450",
       "s2947",
       "s2978",
-      "s3094"
+      "s3094",
+      "s3296",
+      "s3297",
+      "s3320",
+      "s3321",
+      "s3326",
+      "s3382",
+      "s3384",
+      "s3397",
+      "s3398",
+      "s3400",
+      "s3408"
     ],
     "promptBounds": {
       "min": 12,
@@ -29043,10 +30076,10 @@
       "s0372",
       "s0376",
       "s0849",
-      "s1161",
-      "s1164",
       "s2589",
-      "s2612"
+      "s3251",
+      "s3256",
+      "s3257"
     ],
     "drillPlan": [
       {
@@ -29066,22 +30099,22 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s2612",
+        "sentenceId": "s3251",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1161",
+        "sentenceId": "s3256",
         "mode": "build"
       },
       {
-        "sentenceId": "s1164",
+        "sentenceId": "s3257",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "past-polite",
-      "object-eul-reul",
-      "subject-i-ga"
+      "present-polite",
+      "topic-neun",
+      "with-hago-wa"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -29095,48 +30128,48 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use talking about friends sentences naturally in Korean.",
     "sentenceIds": [
-      "s1246",
-      "s1466",
-      "s1640",
-      "s1643",
-      "s3191",
-      "s3196",
-      "s3198"
+      "s3258",
+      "s3259",
+      "s3272",
+      "s3273",
+      "s3274",
+      "s3278",
+      "s3279"
     ],
     "drillPlan": [
       {
-        "sentenceId": "s1246",
+        "sentenceId": "s3258",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1466",
+        "sentenceId": "s3259",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1640",
+        "sentenceId": "s3272",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1643",
+        "sentenceId": "s3273",
         "mode": "translate"
       },
       {
-        "sentenceId": "s3191",
+        "sentenceId": "s3274",
         "mode": "translate"
       },
       {
-        "sentenceId": "s3196",
-        "mode": "transform"
+        "sentenceId": "s3278",
+        "mode": "build"
       },
       {
-        "sentenceId": "s3198",
+        "sentenceId": "s3279",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
-      "subject-i-ga",
-      "formal-nida"
+      "present-polite",
+      "location-e"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -29150,48 +30183,48 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use talking about friends sentences naturally in Korean.",
     "sentenceIds": [
-      "s1160",
-      "s1163",
-      "s1165",
-      "s1167",
-      "s3218",
-      "s3220",
-      "s3249"
+      "s2612",
+      "s3252",
+      "s3284",
+      "s3285",
+      "s3287",
+      "s3288",
+      "s3373"
     ],
     "drillPlan": [
       {
-        "sentenceId": "s3218",
+        "sentenceId": "s3284",
         "mode": "translate"
       },
       {
-        "sentenceId": "s3220",
+        "sentenceId": "s3285",
         "mode": "translate"
       },
       {
-        "sentenceId": "s3249",
+        "sentenceId": "s3287",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1160",
+        "sentenceId": "s3288",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1163",
+        "sentenceId": "s2612",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1165",
+        "sentenceId": "s3252",
         "mode": "build"
       },
       {
-        "sentenceId": "s1167",
+        "sentenceId": "s3373",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "subject-i-ga",
       "object-eul-reul",
-      "formal-nida",
-      "past-polite"
+      "formal-nida"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -29202,26 +30235,217 @@
     "unitId": "sn8-people-u2",
     "type": "content",
     "title": "S8 · Talking about friends · 5",
-    "subtitle": "7 sentences · Listen, build, type",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use talking about friends sentences naturally in Korean.",
     "sentenceIds": [
+      "s3379",
+      "s3383",
+      "s3387",
+      "s3390",
+      "s3405",
+      "s3407"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3379",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3383",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3387",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3390",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3405",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s3407",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "because-aseo",
+      "formal-nida",
+      "location-e"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn8-people-u2-l6",
+    "unitId": "sn8-people-u2",
+    "type": "content",
+    "title": "S8 · Talking about friends · 6",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use talking about friends sentences naturally in Korean.",
+    "sentenceIds": [
+      "s1161",
+      "s1164",
+      "s1246",
+      "s1466",
+      "s1640",
+      "s1643"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s1161",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1164",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1246",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1466",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1640",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s1643",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "subject-i-ga",
+      "topic-neun"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn8-people-u2-l7",
+    "unitId": "sn8-people-u2",
+    "type": "content",
+    "title": "S8 · Talking about friends · 7",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use talking about friends sentences naturally in Korean.",
+    "sentenceIds": [
+      "s3191",
+      "s3196",
+      "s3198",
+      "s3218",
+      "s3220",
+      "s3249"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3191",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3196",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3198",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3218",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3220",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s3249",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "formal-nida",
+      "honorific-si",
+      "object-eul-reul"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn8-people-u2-l8",
+    "unitId": "sn8-people-u2",
+    "type": "content",
+    "title": "S8 · Talking about friends · 8",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use talking about friends sentences naturally in Korean.",
+    "sentenceIds": [
+      "s1160",
+      "s1163",
+      "s1165",
+      "s1167",
       "s1257",
-      "s1370",
+      "s1370"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s1160",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1163",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1165",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1167",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1257",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s1370",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "subject-i-ga",
+      "past-polite"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn8-people-u2-l9",
+    "unitId": "sn8-people-u2",
+    "type": "content",
+    "title": "S8 · Talking about friends · 9",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use talking about friends sentences naturally in Korean.",
+    "sentenceIds": [
       "s1390",
       "s1409",
       "s1605",
       "s1636",
-      "s1655"
+      "s1655",
+      "s1720"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s1257",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1370",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s1390",
         "mode": "translate"
@@ -29236,31 +30460,34 @@
       },
       {
         "sentenceId": "s1636",
-        "mode": "transform"
+        "mode": "translate"
       },
       {
         "sentenceId": "s1655",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s1720",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "topic-neun",
       "object-eul-reul",
-      "subject-i-ga",
-      "topic-neun"
+      "subject-i-ga"
     ],
     "pass": {
       "minFirstTryPct": 75
     }
   },
   {
-    "id": "sn8-people-u2-l6",
+    "id": "sn8-people-u2-l10",
     "unitId": "sn8-people-u2",
     "type": "content",
-    "title": "S8 · Talking about friends · 6",
-    "subtitle": "7 sentences · Listen, build, type",
+    "title": "S8 · Talking about friends · 10",
+    "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use talking about friends sentences naturally in Korean.",
     "sentenceIds": [
-      "s1720",
       "s1767",
       "s1773",
       "s1821",
@@ -29269,10 +30496,6 @@
       "s3239"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s1720",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s1767",
         "mode": "translate"
@@ -29312,7 +30535,7 @@
     "unitId": "sn8-people-u2",
     "type": "checkpoint",
     "title": "Unit check: Talking about friends",
-    "subtitle": "Prove your 42 lines stick",
+    "subtitle": "Prove your 64 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -29357,7 +30580,29 @@
       "s3218",
       "s3220",
       "s3239",
-      "s3249"
+      "s3249",
+      "s3251",
+      "s3252",
+      "s3256",
+      "s3257",
+      "s3258",
+      "s3259",
+      "s3272",
+      "s3273",
+      "s3274",
+      "s3278",
+      "s3279",
+      "s3284",
+      "s3285",
+      "s3287",
+      "s3288",
+      "s3373",
+      "s3379",
+      "s3383",
+      "s3387",
+      "s3390",
+      "s3405",
+      "s3407"
     ],
     "promptBounds": {
       "min": 12,
@@ -29376,12 +30621,12 @@
     "goal": "Use people around us sentences naturally in Korean.",
     "sentenceIds": [
       "s0373",
-      "s0374",
       "s0375",
-      "s0658",
       "s0662",
-      "s1341",
-      "s1657"
+      "s3271",
+      "s3275",
+      "s3276",
+      "s3277"
     ],
     "drillPlan": [
       {
@@ -29397,26 +30642,26 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s0374",
+        "sentenceId": "s3271",
         "mode": "translate"
       },
       {
-        "sentenceId": "s0658",
+        "sentenceId": "s3275",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1657",
-        "mode": "transform"
+        "sentenceId": "s3276",
+        "mode": "build"
       },
       {
-        "sentenceId": "s1341",
+        "sentenceId": "s3277",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "object-eul-reul",
       "subject-i-ga",
-      "present-polite",
-      "copula-ieyo"
+      "present-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -29430,19 +30675,124 @@
     "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use people around us sentences naturally in Korean.",
     "sentenceIds": [
+      "s0374",
+      "s0658",
+      "s1657",
+      "s3253",
+      "s3280",
+      "s3289",
+      "s3290"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3280",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3289",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3290",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0374",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0658",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1657",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3253",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "copula-ieyo"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn8-people-u3-l3",
+    "unitId": "sn8-people-u3",
+    "type": "content",
+    "title": "S8 · People around us · 3",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use people around us sentences naturally in Korean.",
+    "sentenceIds": [
+      "s1341",
+      "s1380",
+      "s3254",
+      "s3255",
+      "s3270",
+      "s3281",
+      "s3396"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3254",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3255",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3270",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3281",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3396",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1341",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s1380",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "object-eul-reul",
+      "past-polite",
+      "subject-i-ga"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn8-people-u3-l4",
+    "unitId": "sn8-people-u3",
+    "type": "content",
+    "title": "S8 · People around us · 4",
+    "subtitle": "6 sentences · Listen, build, type",
+    "goal": "Use people around us sentences naturally in Korean.",
+    "sentenceIds": [
       "s1159",
       "s1166",
       "s1296",
       "s1315",
       "s1321",
-      "s1380",
       "s1627"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s1380",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s1159",
         "mode": "translate"
@@ -29478,10 +30828,10 @@
     }
   },
   {
-    "id": "sn8-people-u3-l3",
+    "id": "sn8-people-u3-l5",
     "unitId": "sn8-people-u3",
     "type": "content",
-    "title": "S8 · People around us · 3",
+    "title": "S8 · People around us · 5",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use people around us sentences naturally in Korean.",
     "sentenceIds": [
@@ -29532,7 +30882,7 @@
     "unitId": "sn8-people-u3",
     "type": "checkpoint",
     "title": "Unit check: People around us",
-    "subtitle": "Prove your 20 lines stick",
+    "subtitle": "Prove your 33 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -29555,7 +30905,20 @@
       "s1775",
       "s1792",
       "s1812",
-      "s1855"
+      "s1855",
+      "s3253",
+      "s3254",
+      "s3255",
+      "s3270",
+      "s3271",
+      "s3275",
+      "s3276",
+      "s3277",
+      "s3280",
+      "s3281",
+      "s3289",
+      "s3290",
+      "s3396"
     ],
     "promptBounds": {
       "min": 12,
@@ -29570,7 +30933,7 @@
     "unitId": "sn8-shopping-u4",
     "type": "content",
     "title": "S8 · Finding the right size · 1",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use finding the right size sentences naturally in Korean.",
     "sentenceIds": [
       "s1180",
@@ -29578,7 +30941,8 @@
       "s2477",
       "s2546",
       "s2550",
-      "s2552"
+      "s2552",
+      "s2558"
     ],
     "drillPlan": [
       {
@@ -29599,17 +30963,21 @@
       },
       {
         "sentenceId": "s2546",
-        "mode": "transform"
+        "mode": "translate"
       },
       {
         "sentenceId": "s2550",
+        "mode": "transform"
+      },
+      {
+        "sentenceId": "s2558",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "object-eul-reul",
-      "question-polite",
-      "present-polite"
+      "present-polite",
+      "question-polite"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -29620,21 +30988,18 @@
     "unitId": "sn8-shopping-u4",
     "type": "content",
     "title": "S8 · Finding the right size · 2",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use finding the right size sentences naturally in Korean.",
     "sentenceIds": [
-      "s1177",
-      "s1181",
-      "s1185",
-      "s2558",
       "s2574",
-      "s2583"
+      "s2583",
+      "s3333",
+      "s3340",
+      "s3350",
+      "s3352",
+      "s3355"
     ],
     "drillPlan": [
-      {
-        "sentenceId": "s2558",
-        "mode": "translate"
-      },
       {
         "sentenceId": "s2574",
         "mode": "translate"
@@ -29644,22 +31009,30 @@
         "mode": "translate"
       },
       {
-        "sentenceId": "s1177",
+        "sentenceId": "s3333",
         "mode": "translate"
       },
       {
-        "sentenceId": "s1181",
+        "sentenceId": "s3340",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3350",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3352",
         "mode": "build"
       },
       {
-        "sentenceId": "s1185",
+        "sentenceId": "s3355",
         "mode": "listen"
       }
     ],
     "patternTags": [
+      "topic-neun",
       "present-polite",
-      "object-eul-reul",
-      "location-eseo"
+      "formal-nida"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -29670,46 +31043,51 @@
     "unitId": "sn8-shopping-u4",
     "type": "content",
     "title": "S8 · Finding the right size · 3",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use finding the right size sentences naturally in Korean.",
     "sentenceIds": [
+      "s1177",
+      "s1181",
+      "s1185",
       "s1186",
       "s1188",
       "s1190",
-      "s1192",
-      "s1194",
-      "s1195"
+      "s3366"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s3366",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1177",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1181",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1185",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s1186",
         "mode": "translate"
       },
       {
         "sentenceId": "s1188",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1190",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1192",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1194",
         "mode": "transform"
       },
       {
-        "sentenceId": "s1195",
+        "sentenceId": "s1190",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "object-eul-reul",
       "past-polite",
-      "location-e"
+      "object-eul-reul",
+      "subject-i-ga"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -29720,17 +31098,30 @@
     "unitId": "sn8-shopping-u4",
     "type": "content",
     "title": "S8 · Finding the right size · 4",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use finding the right size sentences naturally in Korean.",
     "sentenceIds": [
       "s1173",
       "s1174",
-      "s1176",
-      "s1182",
+      "s1192",
+      "s1194",
+      "s1195",
       "s1283",
       "s2565"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s1192",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1194",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1195",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s1283",
         "mode": "translate"
@@ -29741,25 +31132,17 @@
       },
       {
         "sentenceId": "s1173",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1174",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s1176",
         "mode": "build"
       },
       {
-        "sentenceId": "s1182",
+        "sentenceId": "s1174",
         "mode": "listen"
       }
     ],
     "patternTags": [
-      "object-eul-reul",
       "past-polite",
-      "time-expression"
+      "object-eul-reul",
+      "subject-i-ga"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -29770,9 +31153,11 @@
     "unitId": "sn8-shopping-u4",
     "type": "content",
     "title": "S8 · Finding the right size · 5",
-    "subtitle": "5 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use finding the right size sentences naturally in Korean.",
     "sentenceIds": [
+      "s1176",
+      "s1182",
       "s1183",
       "s1187",
       "s1191",
@@ -29780,6 +31165,14 @@
       "s1196"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s1176",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s1182",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s1183",
         "mode": "translate"
@@ -29815,7 +31208,7 @@
     "unitId": "sn8-shopping-u4",
     "type": "checkpoint",
     "title": "Unit check: Finding the right size",
-    "subtitle": "Prove your 29 lines stick",
+    "subtitle": "Prove your 35 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -29847,7 +31240,13 @@
       "s2558",
       "s2565",
       "s2574",
-      "s2583"
+      "s2583",
+      "s3333",
+      "s3340",
+      "s3350",
+      "s3352",
+      "s3355",
+      "s3366"
     ],
     "promptBounds": {
       "min": 12,
@@ -31689,7 +33088,7 @@
     "unitId": "sn8-feelings-u9",
     "type": "content",
     "title": "S8 · Describing the room to · 4",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use describing the room sentences naturally in Korean.",
     "sentenceIds": [
       "s2824",
@@ -31697,7 +33096,8 @@
       "s2909",
       "s2931",
       "s3034",
-      "s3150"
+      "s3150",
+      "s3160"
     ],
     "drillPlan": [
       {
@@ -31718,10 +33118,14 @@
       },
       {
         "sentenceId": "s3034",
-        "mode": "build"
+        "mode": "translate"
       },
       {
         "sentenceId": "s3150",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s3160",
         "mode": "listen"
       }
     ],
@@ -31739,46 +33143,51 @@
     "unitId": "sn8-feelings-u9",
     "type": "content",
     "title": "S8 · Describing the room to · 5",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use describing the room sentences naturally in Korean.",
     "sentenceIds": [
       "s0126",
       "s0596",
-      "s0608",
-      "s0726",
-      "s0729",
-      "s3160"
+      "s3335",
+      "s3337",
+      "s3342",
+      "s3362",
+      "s3367"
     ],
     "drillPlan": [
       {
-        "sentenceId": "s3160",
+        "sentenceId": "s3335",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3337",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3342",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3362",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3367",
         "mode": "translate"
       },
       {
         "sentenceId": "s0126",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0596",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0608",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s0726",
         "mode": "transform"
       },
       {
-        "sentenceId": "s0729",
+        "sentenceId": "s0596",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "present-polite",
-      "subject-i-ga",
-      "time-expression"
+      "because-aseo",
+      "subject-i-ga"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -31789,17 +33198,30 @@
     "unitId": "sn8-feelings-u9",
     "type": "content",
     "title": "S8 · Describing the room to · 6",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use describing the room sentences naturally in Korean.",
     "sentenceIds": [
+      "s0608",
+      "s0726",
+      "s0729",
       "s2429",
       "s2517",
       "s2519",
-      "s2835",
-      "s2836",
-      "s2845"
+      "s2835"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s0608",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0726",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s0729",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2429",
         "mode": "translate"
@@ -31810,25 +33232,17 @@
       },
       {
         "sentenceId": "s2519",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2835",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s2836",
         "mode": "build"
       },
       {
-        "sentenceId": "s2845",
+        "sentenceId": "s2835",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "present-polite",
-      "object-eul-reul",
-      "because-aseo"
+      "because-aseo",
+      "object-eul-reul"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -31839,10 +33253,11 @@
     "unitId": "sn8-feelings-u9",
     "type": "content",
     "title": "S8 · Describing the room to · 7",
-    "subtitle": "6 sentences · Listen, build, type",
+    "subtitle": "7 sentences · Listen, build, type",
     "goal": "Use describing the room sentences naturally in Korean.",
     "sentenceIds": [
-      "s0595",
+      "s2836",
+      "s2845",
       "s2854",
       "s2907",
       "s2911",
@@ -31850,6 +33265,14 @@
       "s3059"
     ],
     "drillPlan": [
+      {
+        "sentenceId": "s2836",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s2845",
+        "mode": "translate"
+      },
       {
         "sentenceId": "s2854",
         "mode": "translate"
@@ -31864,21 +33287,17 @@
       },
       {
         "sentenceId": "s2937",
-        "mode": "translate"
-      },
-      {
-        "sentenceId": "s3059",
         "mode": "transform"
       },
       {
-        "sentenceId": "s0595",
+        "sentenceId": "s3059",
         "mode": "listen"
       }
     ],
     "patternTags": [
       "present-polite",
       "topic-neun",
-      "and-go"
+      "because-aseo"
     ],
     "pass": {
       "minFirstTryPct": 75
@@ -31889,6 +33308,61 @@
     "unitId": "sn8-feelings-u9",
     "type": "content",
     "title": "S8 · Describing the room to · 8",
+    "subtitle": "7 sentences · Listen, build, type",
+    "goal": "Use describing the room sentences naturally in Korean.",
+    "sentenceIds": [
+      "s0595",
+      "s3341",
+      "s3344",
+      "s3358",
+      "s3359",
+      "s3361",
+      "s3369"
+    ],
+    "drillPlan": [
+      {
+        "sentenceId": "s3341",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3344",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3358",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3359",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3361",
+        "mode": "translate"
+      },
+      {
+        "sentenceId": "s3369",
+        "mode": "build"
+      },
+      {
+        "sentenceId": "s0595",
+        "mode": "listen"
+      }
+    ],
+    "patternTags": [
+      "present-polite",
+      "because-aseo",
+      "subject-i-ga"
+    ],
+    "pass": {
+      "minFirstTryPct": 75
+    }
+  },
+  {
+    "id": "sn8-feelings-u9-l9",
+    "unitId": "sn8-feelings-u9",
+    "type": "content",
+    "title": "S8 · Describing the room to · 9",
     "subtitle": "6 sentences · Listen, build, type",
     "goal": "Use describing the room sentences naturally in Korean.",
     "sentenceIds": [
@@ -31918,7 +33392,7 @@
       },
       {
         "sentenceId": "s0611",
-        "mode": "build"
+        "mode": "transform"
       },
       {
         "sentenceId": "s3085",
@@ -31939,7 +33413,7 @@
     "unitId": "sn8-feelings-u9",
     "type": "checkpoint",
     "title": "Unit check: Describing the room",
-    "subtitle": "Prove your 51 lines stick",
+    "subtitle": "Prove your 62 lines stick",
     "goal": "Prove the whole unit sticks.",
     "sentenceIds": [],
     "reviewSentenceIds": [
@@ -31993,7 +33467,18 @@
       "s3059",
       "s3085",
       "s3150",
-      "s3160"
+      "s3160",
+      "s3335",
+      "s3337",
+      "s3341",
+      "s3342",
+      "s3344",
+      "s3358",
+      "s3359",
+      "s3361",
+      "s3362",
+      "s3367",
+      "s3369"
     ],
     "promptBounds": {
       "min": 12,
