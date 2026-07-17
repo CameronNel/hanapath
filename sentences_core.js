@@ -108110,5 +108110,1792 @@
     },
     "source": "authored"
   }
+,
+  {
+    "id": "s3211",
+    "korean": "이메일로 주간 업무 계획안을 보내 주십시오.",
+    "english": "Please send the weekly work plan by email.",
+    "voiceText": "이메일로 주간 업무 계획안을 보내 주십시오.",
+    "tokens": [
+      "이메일로",
+      "주간",
+      "업무",
+      "계획안을",
+      "보내",
+      "주십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "object-eul-reul",
+      "direction-euro",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w1119_imeil",
+      "w_m6_2357_eobmu"
+    ],
+    "sourceWordIds": [
+      "w1119_imeil",
+      "w_m6_2357_eobmu"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "보내 주십시오 = please send (formal polite request).",
+    "acceptAlso": [
+      "이메일로 주간 업무 계획안을 보내 주세요.",
+      "메일로 주간 업무 계획안을 보내 주십시오.",
+      "메일로 주간 업무 계획안을 보내 주세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3212",
+    "korean": "새 기획서에 대해 의견이 있으시면 말씀해 주세요.",
+    "english": "If you have opinions about the new proposal, please speak.",
+    "voiceText": "새 기획서에 대해 의견이 있으시면 말씀해 주세요.",
+    "tokens": [
+      "새",
+      "기획서에",
+      "대해",
+      "의견이",
+      "있으시면",
+      "말씀해",
+      "주세요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "if-myeon",
+      "subject-i-ga",
+      "present-polite",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_2507_uigyeon"
+    ],
+    "sourceWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_2507_uigyeon"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "있으시면 = if you have (honorific); 말씀해 주세요 = please speak (polite request).",
+    "acceptAlso": [
+      "새 기획서에 대해 의견이 있으시면 말씀해 주십시오.",
+      "새 기획안에 대해 의견이 있으시면 말씀해 주세요.",
+      "새 기획안에 대해 의견이 있으시면 말씀해 주십시오."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3213",
+    "korean": "부서의 중요한 결정권은 과장님께 있습니다.",
+    "english": "The department's important decision-making right lies with the manager.",
+    "voiceText": "부서의 중요한 결정권은 과장님께 있습니다.",
+    "tokens": [
+      "부서의",
+      "중요한",
+      "결정권은",
+      "과장님께",
+      "있습니다"
+    ],
+    "band": 5,
+    "patternTags": [
+      "possessive-ui",
+      "topic-neun",
+      "existence-itda",
+      "present-polite",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_2185_gyeoljeonggwon"
+    ],
+    "sourceWordIds": [
+      "w_m6_2185_gyeoljeonggwon"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "결정권은 = decision-making right (topic); 과장님께 있습니다 = lies with the manager.",
+    "acceptAlso": [
+      "부서의 중요한 결정권은 과장님한테 있습니다.",
+      "부서의 중요한 결정권은 과장님께 있어요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3214",
+    "korean": "회의실 대기 시간이 길어지면 다른 장소로 이동합시다.",
+    "english": "If the waiting time in the meeting room gets long, let's move to another place.",
+    "voiceText": "회의실 대기 시간이 길어지면 다른 장소로 이동합시다.",
+    "tokens": [
+      "회의실",
+      "대기",
+      "시간이",
+      "길어지면",
+      "다른",
+      "장소로",
+      "이동합시다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "if-myeon",
+      "direction-euro",
+      "propositive-eyo"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_3038_daegi_waiting",
+      "w_m6_1214_jangso"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_3038_daegi_waiting",
+      "w_m6_1214_jangso"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "길어지면 = if it gets longer; 이동합시다 = let's move (propositive).",
+    "acceptAlso": [
+      "회의실 대기 시간이 길어지면 다른 장소로 이동해요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3215",
+    "korean": "저희 기업은 새로운 사업 기획을 추진하겠습니다.",
+    "english": "Our corporation will promote a new business plan.",
+    "voiceText": "저희 기업은 새로운 사업 기획을 추진하겠습니다.",
+    "tokens": [
+      "저희",
+      "기업은",
+      "새로운",
+      "사업",
+      "기획을",
+      "추진하겠습니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "topic-neun",
+      "object-eul-reul",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_2536_jeohui",
+      "w_m6_1258_gieop",
+      "w_m6_1262_sabeop",
+      "w_m6_2931_gihoeg"
+    ],
+    "sourceWordIds": [
+      "w_m6_2536_jeohui",
+      "w_m6_1258_gieop",
+      "w_m6_1262_sabeop",
+      "w_m6_2931_gihoeg"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "추진하겠습니다 = will promote/push forward (formal polite future/intent).",
+    "acceptAlso": [
+      "저희 기업은 새로운 사업 기획을 추진할 것입니다.",
+      "저희 기업은 새로운 사업 기획을 추진할게요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3216",
+    "korean": "사장님께서 이번 프로젝트의 전체 일정을 검토하셨습니다.",
+    "english": "The president reviewed the entire schedule of this project.",
+    "voiceText": "사장님께서 이번 프로젝트의 전체 일정을 검토하셨습니다.",
+    "tokens": [
+      "사장님께서",
+      "이번",
+      "프로젝트의",
+      "전체",
+      "일정을",
+      "검토하셨습니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "possessive-ui",
+      "object-eul-reul",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_1265_jeonche",
+      "w_m6_1125_iljeong"
+    ],
+    "sourceWordIds": [
+      "w_m6_1265_jeonche",
+      "w_m6_1125_iljeong"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "사장님께서 = the president (honorific subject); 검토하셨습니다 = reviewed (formal past honorific).",
+    "acceptAlso": [
+      "사장님이 이번 프로젝트의 전체 일정을 검토하셨습니다.",
+      "사장님께서 이번 프로젝트의 전체 일정을 검토했습니다.",
+      "사장님이 이번 프로젝트의 전체 일정을 검토했습니다."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3217",
+    "korean": "이 서류의 작성을 오늘 오후까지 완료해 주십시오.",
+    "english": "Please complete the writing of this document by this afternoon.",
+    "voiceText": "이 서류의 작성을 오늘 오후까지 완료해 주십시오.",
+    "tokens": [
+      "이",
+      "서류의",
+      "작성을",
+      "오늘",
+      "오후까지",
+      "완료해",
+      "주십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "possessive-ui",
+      "object-eul-reul",
+      "time-expression",
+      "until-kkaji",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_1552_jakseong",
+      "w_m5_221_ohu"
+    ],
+    "sourceWordIds": [
+      "w_m6_1552_jakseong",
+      "w_m5_221_ohu"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "완료해 주십시오 = please complete (formal honorific request).",
+    "acceptAlso": [
+      "이 서류의 작성을 오늘 오후까지 완료해 주세요.",
+      "이 서류 작성을 오늘 오후까지 완료해 주십시오.",
+      "이 서류 작성을 오늘 오후까지 완료해 주세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3218",
+    "korean": "회사 동료들과 함께 회의 자료를 준비하겠습니다.",
+    "english": "I will prepare the meeting materials together with company colleagues.",
+    "voiceText": "회사 동료들과 함께 회의 자료를 준비하겠습니다.",
+    "tokens": [
+      "회사",
+      "동료들과",
+      "함께",
+      "회의",
+      "자료를",
+      "준비하겠습니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "with-hago-wa",
+      "object-eul-reul",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w0406_hoesa",
+      "w_m6_1171_dongryeo",
+      "w_m6_2103_hoeui",
+      "w_m6_1541_jaryo"
+    ],
+    "sourceWordIds": [
+      "w0406_hoesa",
+      "w_m6_1171_dongryeo",
+      "w_m6_2103_hoeui",
+      "w_m6_1541_jaryo"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "준비하겠습니다 = will prepare (formal polite intent).",
+    "acceptAlso": [
+      "회사 동료와 함께 회의 자료를 준비하겠습니다.",
+      "직장 동료들과 함께 회의 자료를 준비하겠습니다.",
+      "회사 동료들과 함께 회의 자료를 준비할게요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3219",
+    "korean": "이 제품의 설명서 전체를 다시 작성해야 합니다.",
+    "english": "We must rewrite the entire instruction manual of this product.",
+    "voiceText": "이 제품의 설명서 전체를 다시 작성해야 합니다.",
+    "tokens": [
+      "이",
+      "제품의",
+      "설명서",
+      "전체를",
+      "다시",
+      "작성해야",
+      "합니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "possessive-ui",
+      "object-eul-reul",
+      "must-ya-dwaeda",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_1011_seolmyeong",
+      "w_m6_1265_jeonche",
+      "w_m6_1552_jakseong"
+    ],
+    "sourceWordIds": [
+      "w_m6_1011_seolmyeong",
+      "w_m6_1265_jeonche",
+      "w_m6_1552_jakseong"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "작성해야 합니다 = must write/prepare (formal must-ending).",
+    "acceptAlso": [
+      "이 제품의 설명서 전체를 다시 작성해야 해요.",
+      "이 제품 설명서 전체를 다시 작성해야 합니다.",
+      "제품 설명서 전체를 다시 작성해야 합니다."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3220",
+    "korean": "회사 동료가 오늘 갑자기 결근해서 걱정했습니다.",
+    "english": "I was worried because a company colleague was suddenly absent from work today.",
+    "voiceText": "회사 동료가 오늘 갑자기 결근해서 걱정했습니다.",
+    "tokens": [
+      "회사",
+      "동료가",
+      "오늘",
+      "갑자기",
+      "결근해서",
+      "걱정했습니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "time-expression",
+      "because-aseo",
+      "past-polite",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w0406_hoesa",
+      "w_m6_1171_dongryeo",
+      "w_m6_2181_gyeolgeun",
+      "w_m6_1052_geokjeong"
+    ],
+    "sourceWordIds": [
+      "w0406_hoesa",
+      "w_m6_1171_dongryeo",
+      "w_m6_2181_gyeolgeun",
+      "w_m6_1052_geokjeong"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "결근해서 = because of being absent from work; 걱정했습니다 = worried (formal past).",
+    "acceptAlso": [
+      "회사 동료가 오늘 갑자기 결근하여 걱정했습니다.",
+      "직장 동료가 오늘 갑자기 결근해서 걱정했습니다.",
+      "회사 동료가 오늘 갑자기 결근해서 걱정해요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3221",
+    "korean": "부장님께서 오늘 오후 면접을 진행하셨습니까?",
+    "english": "Did the department manager conduct the interviews this afternoon?",
+    "voiceText": "부장님께서 오늘 오후 면접을 진행하셨습니까?",
+    "tokens": [
+      "부장님께서",
+      "오늘",
+      "오후",
+      "면접을",
+      "진행하셨습니까"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "time-expression",
+      "object-eul-reul",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m5_221_ohu",
+      "w_m6_1407_myeonjeop"
+    ],
+    "sourceWordIds": [
+      "w_m5_221_ohu",
+      "w_m6_1407_myeonjeop"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "진행하셨습니까 = did you conduct/progress (formal honorific past question).",
+    "acceptAlso": [
+      "부장님이 오늘 오후 면접을 진행하셨습니까?",
+      "부장님께서 오늘 오후 면접을 진행하셨어요?",
+      "부장님이 오늘 오후 면접을 진행하셨어요?"
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3222",
+    "korean": "업무 시작 전에 컴퓨터와 마이크를 확인해 주십시오.",
+    "english": "Please check the computer and microphone before starting work.",
+    "voiceText": "업무 시작 전에 컴퓨터와 마이크를 확인해 주십시오.",
+    "tokens": [
+      "업무",
+      "시작",
+      "전에",
+      "컴퓨터와",
+      "마이크를",
+      "확인해",
+      "주십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "time-expression",
+      "with-hago-wa",
+      "object-eul-reul",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2357_eobmu"
+    ],
+    "sourceWordIds": [
+      "w_m6_2357_eobmu"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "확인해 주십시오 = please check/confirm (formal request).",
+    "acceptAlso": [
+      "업무 시작 전에 컴퓨터와 마이크를 확인해 주세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3223",
+    "korean": "기획 회의에 참석하실 분들은 이쪽에서 대기해 주세요.",
+    "english": "Those who will attend the planning meeting, please wait over here.",
+    "voiceText": "기획 회의에 참석하실 분들은 이쪽에서 대기해 주세요.",
+    "tokens": [
+      "기획",
+      "회의에",
+      "참석하실",
+      "분들은",
+      "이쪽에서",
+      "대기해",
+      "주세요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "location-e",
+      "topic-neun",
+      "location-eseo",
+      "present-polite",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_2103_hoeui",
+      "w_m6_3038_daegi_waiting"
+    ],
+    "sourceWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_2103_hoeui",
+      "w_m6_3038_daegi_waiting"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "참석하실 = who will attend (honorific future description); 대기해 주세요 = please wait (polite request).",
+    "acceptAlso": [
+      "기획 회의에 참석하실 분들은 이쪽에서 대기해 주십시오.",
+      "기획 회의에 참석하실 분은 이쪽에서 대기해 주세요.",
+      "기획 회의에 참석하실 분은 이쪽에서 대기해 주십시오."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3224",
+    "korean": "이번 출장 일정을 저희 이메일로 다시 보내 주시겠습니까?",
+    "english": "Would you please send this business trip schedule to our email again?",
+    "voiceText": "이번 출장 일정을 저희 이메일로 다시 보내 주시겠습니까?",
+    "tokens": [
+      "이번",
+      "출장",
+      "일정을",
+      "저희",
+      "이메일로",
+      "다시",
+      "보내",
+      "주시겠습니까"
+    ],
+    "band": 4,
+    "patternTags": [
+      "object-eul-reul",
+      "direction-euro",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_1151_chuljang",
+      "w_m6_1125_iljeong",
+      "w_m6_2536_jeohui",
+      "w1119_imeil"
+    ],
+    "sourceWordIds": [
+      "w_m6_1151_chuljang",
+      "w_m6_1125_iljeong",
+      "w_m6_2536_jeohui",
+      "w1119_imeil"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "보내 주시겠습니까 = would you please send (polite request question).",
+    "acceptAlso": [
+      "이번 출장 일정을 저희 메일로 다시 보내 주시겠습니까?",
+      "이번 출장 일정을 저희 이메일로 다시 보내 주시겠어요?",
+      "이번 출장 일정을 저희 메일로 다시 보내 주시겠어요?"
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3225",
+    "korean": "과장님께서 오늘 회의에서 새로운 사업을 제안하셨습니까?",
+    "english": "Did the manager propose a new business at the meeting today?",
+    "voiceText": "과장님께서 오늘 회의에서 새로운 사업을 제안하셨습니까?",
+    "tokens": [
+      "과장님께서",
+      "오늘",
+      "회의에서",
+      "새로운",
+      "사업을",
+      "제안하셨습니까"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "location-eseo",
+      "object-eul-reul",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_1262_sabeop",
+      "w_m6_2960_jean"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_1262_sabeop",
+      "w_m6_2960_jean"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "제안하셨습니까 = did you suggest/propose (formal honorific past question).",
+    "acceptAlso": [
+      "과장님이 오늘 회의에서 새로운 사업을 제안하셨습니까?",
+      "과장님께서 오늘 회의에서 새로운 사업을 제안하셨어요?",
+      "과장님이 오늘 회의에서 새로운 사업을 제안하셨어요?"
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3226",
+    "korean": "저희는 오늘 오전 회의에서 다양한 의견을 들었습니다.",
+    "english": "We heard diverse opinions at the meeting this morning.",
+    "voiceText": "저희는 오늘 오전 회의에서 다양한 의견을 들었습니다.",
+    "tokens": [
+      "저희는",
+      "오늘",
+      "오전",
+      "회의에서",
+      "다양한",
+      "의견을",
+      "들었습니다"
+    ],
+    "band": 5,
+    "patternTags": [
+      "topic-neun",
+      "time-expression",
+      "location-eseo",
+      "object-eul-reul",
+      "past-polite",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_2536_jeohui",
+      "w_m5_220_ojeon",
+      "w_m6_2103_hoeui",
+      "w_m6_2507_uigyeon"
+    ],
+    "sourceWordIds": [
+      "w_m6_2536_jeohui",
+      "w_m5_220_ojeon",
+      "w_m6_2103_hoeui",
+      "w_m6_2507_uigyeon"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "들었습니다 = heard (formal past; irregular 듣다 -> 들었습니다).",
+    "acceptAlso": [
+      "저희는 오늘 오전 회의에서 다양한 의견들을 들었습니다.",
+      "우리는 오늘 오전 회의에서 다양한 의견을 들었습니다.",
+      "우리는 오늘 오전 회의에서 다양한 의견들을 들었습니다."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3227",
+    "korean": "사장님께서 이번 기획을 직접 승인하실 예정이세요.",
+    "english": "The president is scheduled to approve this plan directly.",
+    "voiceText": "사장님께서 이번 기획을 직접 승인하실 예정이세요.",
+    "tokens": [
+      "사장님께서",
+      "이번",
+      "기획을",
+      "직접",
+      "승인하실",
+      "예정이세요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "object-eul-reul",
+      "copula-ieyo",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_2001_yejeong"
+    ],
+    "sourceWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_2001_yejeong"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "승인하실 = to approve (honorific future description); 예정이세요 = is scheduled to be (polite informal honorific copula).",
+    "acceptAlso": [
+      "사장님이 이번 기획을 직접 승인하실 예정이세요.",
+      "사장님께서 이번 기획을 직접 승인하실 예정입니다.",
+      "사장님이 이번 기획을 직접 승인하실 예정입니다."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3228",
+    "korean": "기획서 작성이 완료되면 즉시 과장님께 연락하십시오.",
+    "english": "When the writing of the proposal is completed, contact the manager immediately.",
+    "voiceText": "기획서 작성이 완료되면 즉시 과장님께 연락하십시오.",
+    "tokens": [
+      "기획서",
+      "작성이",
+      "완료되면",
+      "즉시",
+      "과장님께",
+      "연락하십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "if-myeon",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_1552_jakseong",
+      "w_m6_2365_yeonrag"
+    ],
+    "sourceWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_1552_jakseong",
+      "w_m6_2365_yeonrag"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "완료되면 = when/if completed; 연락하십시오 = please contact (formal imperative).",
+    "acceptAlso": [
+      "기획서 작성이 완료되면 즉시 과장님께 연락하세요.",
+      "기획서 작성이 완료되면 즉시 과장님께 연락을 하십시오.",
+      "기획서 작성이 완료되면 즉시 과장님께 연락을 하세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3229",
+    "korean": "회의 준비 자료 전체를 오늘 오후까지 인쇄해 주십시오.",
+    "english": "Please print the entire meeting preparation materials by this afternoon.",
+    "voiceText": "회의 준비 자료 전체를 오늘 오후까지 인쇄해 주십시오.",
+    "tokens": [
+      "회의",
+      "준비",
+      "자료",
+      "전체를",
+      "오늘",
+      "오후까지",
+      "인쇄해",
+      "주십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "until-kkaji",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_1541_jaryo",
+      "w_m6_1265_jeonche",
+      "w_m5_221_ohu"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_1541_jaryo",
+      "w_m6_1265_jeonche",
+      "w_m5_221_ohu"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "인쇄해 주십시오 = please print (formal polite request).",
+    "acceptAlso": [
+      "회의 준비 자료 전체를 오늘 오후까지 인쇄해 주세요.",
+      "회의 준비 자료를 오늘 오후까지 인쇄해 주십시오.",
+      "회의 준비 자료를 오늘 오후까지 인쇄해 주세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3230",
+    "korean": "그는 회사에서 마케팅과 기획 업무를 담당합니다.",
+    "english": "He is in charge of marketing and planning tasks at the company.",
+    "voiceText": "그는 회사에서 마케팅과 기획 업무를 담당합니다.",
+    "tokens": [
+      "그는",
+      "회사에서",
+      "마케팅과",
+      "기획",
+      "업무를",
+      "담당합니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "topic-neun",
+      "location-eseo",
+      "with-hago-wa",
+      "object-eul-reul",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w0406_hoesa",
+      "w_m6_2931_gihoeg",
+      "w_m6_2357_eobmu",
+      "w_m6_2943_damdang"
+    ],
+    "sourceWordIds": [
+      "w0406_hoesa",
+      "w_m6_2931_gihoeg",
+      "w_m6_2357_eobmu",
+      "w_m6_2943_damdang"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "담당합니다 = is in charge of (formal present).",
+    "acceptAlso": [
+      "그는 회사에서 마케팅과 기획 업무를 담당해요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3231",
+    "korean": "계약 조건에 동의하시면 여기에 서명을 작성하십시오.",
+    "english": "If you agree to the contract conditions, please write your signature here.",
+    "voiceText": "계약 조건에 동의하시면 여기에 서명을 작성하십시오.",
+    "tokens": [
+      "계약",
+      "조건에",
+      "동의하시면",
+      "여기에",
+      "서명을",
+      "작성하십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "location-e",
+      "if-myeon",
+      "object-eul-reul",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2073_gyeyak",
+      "w_m6_2072_jogeon",
+      "w_m6_1552_jakseong"
+    ],
+    "sourceWordIds": [
+      "w_m6_2073_gyeyak",
+      "w_m6_2072_jogeon",
+      "w_m6_1552_jakseong"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "동의하시면 = if you agree (honorific); 작성하십시오 = please write (formal imperative).",
+    "acceptAlso": [
+      "계약 조건에 동의하시면 여기에 서명을 작성하세요.",
+      "계약 조건에 동의하시면 여기에 서명해 주십시오.",
+      "계약 조건에 동의하시면 여기에 서명해 주세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3232",
+    "korean": "보고서 작성을 위해 새로운 자료들이 정말 필요합니다.",
+    "english": "We really need new materials in order to write the report.",
+    "voiceText": "보고서 작성을 위해 새로운 자료들이 정말 필요합니다.",
+    "tokens": [
+      "보고서",
+      "작성을",
+      "위해",
+      "새로운",
+      "자료들이",
+      "정말",
+      "필요합니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "object-eul-reul",
+      "subject-i-ga",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_1552_jakseong",
+      "w_m6_1541_jaryo",
+      "w_m5_744_piryo"
+    ],
+    "sourceWordIds": [
+      "w_m6_1552_jakseong",
+      "w_m6_1541_jaryo",
+      "w_m5_744_piryo"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "필요합니다 = is necessary / need (formal present).",
+    "acceptAlso": [
+      "보고서 작성을 위해 새로운 자료들이 정말 필요해요.",
+      "보고서 작성을 위해 새로운 자료가 정말 필요합니다.",
+      "보고서 작성을 위해 새로운 자료가 정말 필요해요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3233",
+    "korean": "회의 준비를 오늘 오후까지 모두 끝마쳐야 합니다.",
+    "english": "We must complete all meeting preparations by this afternoon.",
+    "voiceText": "회의 준비를 오늘 오후까지 모두 끝마쳐야 합니다.",
+    "tokens": [
+      "회의",
+      "준비를",
+      "오늘",
+      "오후까지",
+      "모두",
+      "끝마쳐야",
+      "합니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "object-eul-reul",
+      "time-expression",
+      "until-kkaji",
+      "must-ya-dwaeda",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m5_221_ohu",
+      "w_m6_1410_modu"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m5_221_ohu",
+      "w_m6_1410_modu"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "끝마쳐야 합니다 = must finish (formal must-ending).",
+    "acceptAlso": [
+      "회의 준비를 오늘 오후까지 모두 끝마쳐야 해요.",
+      "회의 준비를 오늘 오후까지 다 끝마쳐야 합니다.",
+      "회의 준비를 오늘 오후까지 다 끝마쳐야 해요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3234",
+    "korean": "사장님께서 주간 회의에 참석하실 예정이라고 들었습니다.",
+    "english": "I heard that the president is scheduled to attend the weekly meeting.",
+    "voiceText": "사장님께서 주간 회의에 참석하실 예정이라고 들었습니다.",
+    "tokens": [
+      "사장님께서",
+      "주간",
+      "회의에",
+      "참석하실",
+      "예정이라고",
+      "들었습니다"
+    ],
+    "band": 5,
+    "patternTags": [
+      "subject-i-ga",
+      "location-e",
+      "copula-ieyo",
+      "past-polite",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_2001_yejeong"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_2001_yejeong"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "참석하실 예정이라고 = saying that is scheduled to attend; 들었습니다 = heard (formal past).",
+    "acceptAlso": [
+      "사장님이 주간 회의에 참석하실 예정이라고 들었습니다.",
+      "사장님께서 주간 회의에 참석하실 예정이라 들었습니다.",
+      "사장님이 주간 회의에 참석하실 예정이라 들었습니다."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3235",
+    "korean": "이 서류 전체를 이메일로 다시 검토해 주시겠어요?",
+    "english": "Would you please review this entire document by email again?",
+    "voiceText": "이 서류 전체를 이메일로 다시 검토해 주시겠어요.",
+    "tokens": [
+      "이",
+      "서류",
+      "전체를",
+      "이메일로",
+      "다시",
+      "검토해",
+      "주시겠어요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "object-eul-reul",
+      "direction-euro",
+      "present-polite",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_1265_jeonche",
+      "w1119_imeil"
+    ],
+    "sourceWordIds": [
+      "w_m6_1265_jeonche",
+      "w1119_imeil"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "검토해 주시겠어요 = would you please review (polite request question).",
+    "acceptAlso": [
+      "이 서류 전체를 메일로 다시 검토해 주시겠어요?",
+      "이 서류 전체를 이메일로 다시 검토해 주시겠습니까?",
+      "이 서류 전체를 메일로 다시 검토해 주시겠습니까?"
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3236",
+    "korean": "기획서 제출 일정이 변경되면 즉시 알려 주세요.",
+    "english": "If the proposal submission schedule changes, please let me know immediately.",
+    "voiceText": "기획서 제출 일정이 변경되면 즉시 알려 주세요.",
+    "tokens": [
+      "기획서",
+      "제출",
+      "일정이",
+      "변경되면",
+      "즉시",
+      "알려",
+      "주세요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "if-myeon",
+      "present-polite",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_2544_jechul",
+      "w_m6_1125_iljeong",
+      "w_m6_2012_byeongyeong"
+    ],
+    "sourceWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_2544_jechul",
+      "w_m6_1125_iljeong",
+      "w_m6_2012_byeongyeong"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "변경되면 = if it is changed; 알려 주세요 = please let me know (polite request).",
+    "acceptAlso": [
+      "기획서 제출 일정이 변경되면 즉시 알려 주십시오.",
+      "기획서 제출 일정이 변경되면 즉시 연락해 주세요.",
+      "기획서 제출 일정이 변경되면 즉시 연락해 주십시오."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3237",
+    "korean": "이메일 전송에 문제가 있으면 즉시 제게 말씀해 주십시오.",
+    "english": "If there is a problem with sending the email, please tell me immediately.",
+    "voiceText": "이메일 전송에 문제가 있으면 즉시 제게 말씀해 주십시오.",
+    "tokens": [
+      "이메일",
+      "전송에",
+      "문제가",
+      "있으면",
+      "즉시",
+      "제게",
+      "말씀해",
+      "주십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "location-e",
+      "subject-i-ga",
+      "if-myeon",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w1119_imeil"
+    ],
+    "sourceWordIds": [
+      "w1119_imeil"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "있으면 = if there is; 말씀해 주십시오 = please speak (formal request).",
+    "acceptAlso": [
+      "이메일 전송에 문제가 있으면 즉시 제게 말씀해 주세요.",
+      "메일 전송에 문제가 있으면 즉시 제게 말씀해 주십시오.",
+      "메일 전송에 문제가 있으면 즉시 제게 말씀해 주세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3238",
+    "korean": "그는 우리 기업의 해외 마케팅 업무를 담당하고 있습니다.",
+    "english": "He is in charge of our corporation's overseas marketing business.",
+    "voiceText": "그는 우리 기업의 해외 마케팅 업무를 담당하고 있습니다.",
+    "tokens": [
+      "그는",
+      "우리",
+      "기업의",
+      "해외",
+      "마케팅",
+      "업무를",
+      "담당하고",
+      "있습니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "topic-neun",
+      "possessive-ui",
+      "object-eul-reul",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_1258_gieop",
+      "w_m6_2357_eobmu",
+      "w_m6_2943_damdang"
+    ],
+    "sourceWordIds": [
+      "w_m6_1258_gieop",
+      "w_m6_2357_eobmu",
+      "w_m6_2943_damdang"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "담당하고 있습니다 = is in charge of (formal progressive).",
+    "acceptAlso": [
+      "그는 우리 기업의 해외 마케팅 업무를 담당하고 있어요.",
+      "그는 저희 기업의 해외 마케팅 업무를 담당하고 있습니다.",
+      "그는 저희 기업의 해외 마케팅 업무를 담당하고 있어요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3239",
+    "korean": "회의실에서 두 사람이 주요 제안을 마주 보고 의논했습니다.",
+    "english": "The two people discussed the major proposals face-to-face in the meeting room.",
+    "voiceText": "회의실에서 두 사람이 주요 제안을 마주 보고 의논했습니다.",
+    "tokens": [
+      "회의실에서",
+      "두",
+      "사람이",
+      "주요",
+      "제안을",
+      "마주",
+      "보고",
+      "의논했습니다"
+    ],
+    "band": 5,
+    "patternTags": [
+      "location-eseo",
+      "subject-i-ga",
+      "object-eul-reul",
+      "past-polite",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_2039_juyo",
+      "w_m6_2960_jean",
+      "w_m6_1390_maju"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_2039_juyo",
+      "w_m6_2960_jean",
+      "w_m6_1390_maju"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "의논했습니다 = discussed (formal past).",
+    "acceptAlso": [
+      "회의실에서 두 사람이 주요 제안을 마주 보고 의논했어요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3240",
+    "korean": "사장님의 지시 사항을 수첩에 꼼꼼히 메모하십시오.",
+    "english": "Please take notes of the president's instructions carefully in your pocket notebook.",
+    "voiceText": "사장님의 지시 사항을 수첩에 꼼꼼히 메모하십시오.",
+    "tokens": [
+      "사장님의",
+      "지시",
+      "사항을",
+      "수첩에",
+      "꼼꼼히",
+      "메모하십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "possessive-ui",
+      "object-eul-reul",
+      "location-e",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m5_697_sucheop",
+      "w_m6_1406_memo"
+    ],
+    "sourceWordIds": [
+      "w_m5_697_sucheop",
+      "w_m6_1406_memo"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "메모하십시오 = please memo/take notes (formal imperative).",
+    "acceptAlso": [
+      "사장님의 지시 사항을 수첩에 꼼꼼히 메모하세요.",
+      "사장님 지시 사항을 수첩에 꼼꼼히 메모하십시오.",
+      "사장님 지시 사항을 수첩에 꼼꼼히 메모하세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3241",
+    "korean": "회의실에 모인 사원들이 계획안에 모두 찬성했습니다.",
+    "english": "The employees gathered in the meeting room all agreed to the plan.",
+    "voiceText": "회의실에 모인 사원들이 계획안에 모두 찬성했습니다.",
+    "tokens": [
+      "회의실에",
+      "모인",
+      "사원들이",
+      "계획안에",
+      "모두",
+      "찬성했습니다"
+    ],
+    "band": 5,
+    "patternTags": [
+      "location-e",
+      "past-polite",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_1410_modu"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_1410_modu"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "찬성했습니다 = approved/agreed (formal past).",
+    "acceptAlso": [
+      "회의실에 모인 사원들이 계획안에 모두 찬성했어요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3242",
+    "korean": "과장님께서 오늘 오후 일정을 직접 확인하실 예정이세요.",
+    "english": "The manager is scheduled to confirm today's afternoon schedule directly.",
+    "voiceText": "과장님께서 오늘 오후 일정을 직접 확인하실 예정이세요.",
+    "tokens": [
+      "과장님께서",
+      "오늘",
+      "오후",
+      "일정을",
+      "직접",
+      "확인하실",
+      "예정이세요"
+    ],
+    "band": 4,
+    "patternTags": [
+      "subject-i-ga",
+      "time-expression",
+      "object-eul-reul",
+      "copula-ieyo",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m5_221_ohu",
+      "w_m6_1125_iljeong",
+      "w_m6_2001_yejeong"
+    ],
+    "sourceWordIds": [
+      "w_m5_221_ohu",
+      "w_m6_1125_iljeong",
+      "w_m6_2001_yejeong"
+    ],
+    "speechLevel": "polite informal",
+    "register": "polite",
+    "grammarTip": "확인하실 = to verify (honorific future description); 예정이세요 = is scheduled to be (polite informal honorific copula).",
+    "acceptAlso": [
+      "과장님이 오늘 오후 일정을 직접 확인하실 예정이세요.",
+      "과장님께서 오늘 오후 일정을 직접 확인하실 예정입니다.",
+      "과장님이 오늘 오후 일정을 직접 확인하실 예정입니다."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3243",
+    "korean": "새 프로젝트의 주요 안건을 보고서로 작성해야 합니다.",
+    "english": "We must write down the main agenda of the new project into a report.",
+    "voiceText": "새 프로젝트의 주요 안건을 보고서로 작성해야 합니다.",
+    "tokens": [
+      "새",
+      "프로젝트의",
+      "주요",
+      "안건을",
+      "보고서로",
+      "작성해야",
+      "합니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "possessive-ui",
+      "object-eul-reul",
+      "direction-euro",
+      "must-ya-dwaeda",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_2039_juyo",
+      "w_m6_1552_jakseong"
+    ],
+    "sourceWordIds": [
+      "w_m6_2039_juyo",
+      "w_m6_1552_jakseong"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "작성해야 합니다 = must write/prepare (formal must-ending).",
+    "acceptAlso": [
+      "새 프로젝트의 주요 안건을 보고서로 작성해야 해요.",
+      "새 프로젝트 주요 안건을 보고서로 작성해야 합니다.",
+      "새 프로젝트 주요 안건을 보고서로 작성해야 해요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3244",
+    "korean": "회의가 오후 두 시에 시작될 예정이니 늦지 마십시오.",
+    "english": "The meeting is scheduled to start at 2 PM, so do not be late.",
+    "voiceText": "회의가 오후 두 시에 시작될 예정이니 늦지 마십시오.",
+    "tokens": [
+      "회의가",
+      "오후",
+      "두",
+      "시에",
+      "시작될",
+      "예정이니",
+      "늦지",
+      "마십시오"
+    ],
+    "band": 5,
+    "patternTags": [
+      "subject-i-ga",
+      "time-expression",
+      "location-e",
+      "because-aseo",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m5_221_ohu",
+      "w_m6_2001_yejeong"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m5_221_ohu",
+      "w_m6_2001_yejeong"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "시작될 예정이니 = since it is scheduled to start; 늦지 마십시오 = do not be late (formal polite request).",
+    "acceptAlso": [
+      "회의가 오후 두 시에 시작될 예정이니 늦지 마세요.",
+      "회의가 오후 2시에 시작될 예정이니 늦지 마십시오.",
+      "회의가 오후 2시에 시작될 예정이니 늦지 마세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3245",
+    "korean": "기획서 작성 시에 다른 부서원들의 의견을 경청하십시오.",
+    "english": "Please listen carefully to the opinions of other department members when writing the proposal.",
+    "voiceText": "기획서 작성 시에 다른 부서원들의 의견을 경청하십시오.",
+    "tokens": [
+      "기획서",
+      "작성",
+      "시에",
+      "다른",
+      "부서원들의",
+      "의견을",
+      "경청하십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "location-e",
+      "possessive-ui",
+      "object-eul-reul",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_1552_jakseong",
+      "w_m6_2507_uigyeon"
+    ],
+    "sourceWordIds": [
+      "w_m6_2931_gihoeg",
+      "w_m6_1552_jakseong",
+      "w_m6_2507_uigyeon"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "경청하십시오 = please listen carefully (formal imperative).",
+    "acceptAlso": [
+      "기획서 작성 시에 다른 부서원들의 의견을 경청하세요.",
+      "기획서 작성 할 때 다른 부서원들의 의견을 경청하십시오.",
+      "기획서 작성 할 때 다른 부서원들의 의견을 경청하세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3246",
+    "korean": "사장님의 출장 일정을 이메일로 다시 보내 주시겠습니까?",
+    "english": "Would you please send the president's business trip schedule by email again?",
+    "voiceText": "사장님의 출장 일정을 이메일로 다시 보내 주시겠습니까?",
+    "tokens": [
+      "사장님의",
+      "출장",
+      "일정을",
+      "이메일로",
+      "다시",
+      "보내",
+      "주시겠습니까"
+    ],
+    "band": 4,
+    "patternTags": [
+      "possessive-ui",
+      "object-eul-reul",
+      "direction-euro",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_1151_chuljang",
+      "w_m6_1125_iljeong",
+      "w1119_imeil"
+    ],
+    "sourceWordIds": [
+      "w_m6_1151_chuljang",
+      "w_m6_1125_iljeong",
+      "w1119_imeil"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "보내 주시겠습니까 = would you please send (formal polite request question).",
+    "acceptAlso": [
+      "사장님의 출장 일정을 메일로 다시 보내 주시겠습니까?",
+      "사장님의 출장 일정을 이메일로 다시 보내 주시겠어요?",
+      "사장님의 출장 일정을 메일로 다시 보내 주시겠어요?"
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3247",
+    "korean": "새 프로젝트의 사업 기획을 위해 더 긴 시간이 필요합니다.",
+    "english": "We need a longer time for the business planning of the new project.",
+    "voiceText": "새 프로젝트의 사업 기획을 위해 더 긴 시간이 필요합니다.",
+    "tokens": [
+      "새",
+      "프로젝트의",
+      "사업",
+      "기획을",
+      "위해",
+      "더",
+      "긴",
+      "시간이",
+      "필요합니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "possessive-ui",
+      "object-eul-reul",
+      "subject-i-ga",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_1262_sabeop",
+      "w_m6_2931_gihoeg",
+      "w_m5_744_piryo"
+    ],
+    "sourceWordIds": [
+      "w_m6_1262_sabeop",
+      "w_m6_2931_gihoeg",
+      "w_m5_744_piryo"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "필요합니다 = is necessary / need (formal present).",
+    "acceptAlso": [
+      "새 프로젝트의 사업 기획을 위해 더 긴 시간이 필요해요.",
+      "새 프로젝트 사업 기획을 위해 더 긴 시간이 필요합니다.",
+      "새 프로젝트 사업 기획을 위해 더 긴 시간이 필요해요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3248",
+    "korean": "회의 시작 전에 준비 자료를 메일로 모두 확인하십시오.",
+    "english": "Please check all the preparation materials by email before the meeting starts.",
+    "voiceText": "회의 시작 전에 준비 자료를 메일로 모두 확인하십시오.",
+    "tokens": [
+      "회의",
+      "시작",
+      "전에",
+      "준비",
+      "자료를",
+      "메일로",
+      "모두",
+      "확인하십시오"
+    ],
+    "band": 4,
+    "patternTags": [
+      "time-expression",
+      "object-eul-reul",
+      "direction-euro",
+      "formal-nida",
+      "honorific-si"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_1541_jaryo",
+      "w_m6_1410_modu"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_1541_jaryo",
+      "w_m6_1410_modu"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "확인하십시오 = please check/verify (formal imperative).",
+    "acceptAlso": [
+      "회의 시작 전에 준비 자료를 메일로 모두 확인하세요.",
+      "회의 시작 전에 준비 자료를 이메일로 모두 확인하십시오.",
+      "회의 시작 전에 준비 자료를 이메일로 모두 확인하세요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3249",
+    "korean": "회사 동료들과 이 보고서에 대해 다시 의논하겠습니다.",
+    "english": "I will discuss this report again with my company colleagues.",
+    "voiceText": "회사 동료들과 이 보고서에 대해 다시 의논하겠습니다.",
+    "tokens": [
+      "회사",
+      "동료들과",
+      "이",
+      "보고서에",
+      "대해",
+      "다시",
+      "의논하겠습니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "with-hago-wa",
+      "location-e",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w0406_hoesa",
+      "w_m6_1171_dongryeo"
+    ],
+    "sourceWordIds": [
+      "w0406_hoesa",
+      "w_m6_1171_dongryeo"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "의논하겠습니다 = will discuss (formal polite intent).",
+    "acceptAlso": [
+      "회사 동료와 이 보고서에 대해 다시 의논하겠습니다.",
+      "직장 동료들과 이 보고서에 대해 다시 의논하겠습니다.",
+      "회사 동료들과 이 보고서에 대해 다시 의논할게요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  },
+  {
+    "id": "s3250",
+    "korean": "오늘 주간 회의에서 기획서 제출 일정을 발표했습니다.",
+    "english": "I announced the proposal submission schedule at the weekly meeting today.",
+    "voiceText": "오늘 주간 회의에서 기획서 제출 일정을 발표했습니다.",
+    "tokens": [
+      "오늘",
+      "주간",
+      "회의에서",
+      "기획서",
+      "제출",
+      "일정을",
+      "발표했습니다"
+    ],
+    "band": 4,
+    "patternTags": [
+      "time-expression",
+      "location-eseo",
+      "object-eul-reul",
+      "past-polite",
+      "formal-nida"
+    ],
+    "focusWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_2931_gihoeg",
+      "w_m6_2544_jechul",
+      "w_m6_1125_iljeong"
+    ],
+    "sourceWordIds": [
+      "w_m6_2103_hoeui",
+      "w_m6_2931_gihoeg",
+      "w_m6_2544_jechul",
+      "w_m6_1125_iljeong"
+    ],
+    "speechLevel": "polite formal",
+    "register": "formal",
+    "grammarTip": "발표했습니다 = announced/presented (formal past).",
+    "acceptAlso": [
+      "오늘 주간 회의에서 기획서 제출 일정을 발표하였습니다.",
+      "오늘 주간 회의에서 기획서 제출 일정을 발표했어요."
+    ],
+    "annotationSource": {
+      "band": "explicit",
+      "patternTags": "explicit"
+    },
+    "source": "authored"
+  }
 ];
 })();
