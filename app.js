@@ -6106,7 +6106,9 @@ function completionIconSvg(icon = "check") {
     return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8c2 13 9 20 22 22-13 2-20 9-22 22-2-13-9-20-22-22 13-2 20-9 22-22z"/><path d="M50 7v10M45 12h10"/></svg>`;
   }
   if (icon === "retry") {
-    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 23a19 19 0 1 1-2 20"/><path d="M9 14v16h16"/></svg>`;
+    // Clean restart glyph: a single open arc whose gap is capped by a chevron
+    // arrowhead, so the strokes never overlap into artifacts.
+    return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 13a19 19 0 1 0 19 19"/><path d="M24.5 5.5l7.5 7.5-7.5 7.5"/></svg>`;
   }
   return `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 33l11 11 25-27"/></svg>`;
 }
@@ -6149,11 +6151,17 @@ function premiumCompletionHtml({
       <div class="completion-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
       ${completionConfettiHtml(celebrate)}
       <div class="completion-hero" role="status" aria-live="polite">
-        <div class="completion-emblem" aria-hidden="true">
+        ${safeTone === "retry"
+          ? `<button class="completion-emblem completion-emblem--action" type="button" data-completion-retry aria-label="Restart">
           <span class="completion-emblem-ring"></span>
           <span class="completion-emblem-ring completion-emblem-ring--outer"></span>
           <span class="completion-emblem-icon">${completionIconSvg(icon)}</span>
-        </div>
+        </button>`
+          : `<div class="completion-emblem" aria-hidden="true">
+          <span class="completion-emblem-ring"></span>
+          <span class="completion-emblem-ring completion-emblem-ring--outer"></span>
+          <span class="completion-emblem-icon">${completionIconSvg(icon)}</span>
+        </div>`}
         <div class="completion-kicker"><span></span>${escapeHtml(String(eyebrow))}<span></span></div>
         <h2 class="completion-title">${escapeHtml(String(title))}</h2>
         ${copy ? `<p class="completion-copy">${escapeHtml(String(copy))}</p>` : ""}
@@ -7704,9 +7712,9 @@ function bindWordLessonRows(el) {
   el.querySelectorAll("[data-words-open-lesson]").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.dataset.wordsLocked) {
-        showRetryToast(getAlphabetProgress().complete
-          ? "Finish the previous word lesson to unlock this one."
-          : "Finish the Hangul stages to unlock word lessons.");
+        indicateLockedStage(btn, getAlphabetProgress().complete
+          ? "Do the previous word lesson first to unlock this one."
+          : "Do the Hangul stages first to unlock word lessons.");
         return;
       }
       openWordLesson(btn.dataset.wordsOpenLesson, { resume: state.vocabLessonActive === btn.dataset.wordsOpenLesson });
@@ -7720,7 +7728,8 @@ function bindVocabularyStageRows(el) {
       if (btn.dataset.lockedStage) {
         const progress = getLearnProgress("vocabulary");
         const currentStageInfo = getLearnStageInfo("vocabulary", progress.currentStage);
-        showRetryToast(`Finish "${currentStageInfo.title}" to unlock this stage.`);
+        const targetInfo = getLearnStageInfo("vocabulary", Number(btn.dataset.learnStage));
+        indicateLockedStage(btn, `Do "${currentStageInfo.title}" first to unlock "${targetInfo.title}".`);
         return;
       }
       openLearnStage("vocabulary", Number(btn.dataset.learnStage));
@@ -7796,7 +7805,8 @@ function bindAlphabetStageRows(el) {
       if (btn.dataset.lockedStage) {
         const progress = getLearnProgress("alphabet");
         const currentStageInfo = getLearnStageInfo("alphabet", progress.currentStage);
-        showRetryToast(`Finish "${currentStageInfo.title}" to unlock this stage.`);
+        const targetInfo = getLearnStageInfo("alphabet", Number(btn.dataset.learnStage));
+        indicateLockedStage(btn, `Do "${currentStageInfo.title}" first to unlock "${targetInfo.title}".`);
         return;
       }
       openLearnStage("alphabet", Number(btn.dataset.learnStage));
@@ -8396,6 +8406,19 @@ function showTapHint(studio) {
     toast.classList.remove("is-visible");
     tapHintTimer = window.setTimeout(() => { toast.hidden = true; tapHintTimer = 0; }, 420);
   }, 4000);
+}
+
+// Tapping anything locked: gently shake the tile, tint it red for a moment,
+// and explain what unlocks it ("Do X first to unlock Y"). The tile returns to
+// normal on its own.
+function indicateLockedStage(element, message) {
+  if (element instanceof HTMLElement) {
+    element.classList.remove("locked-denied");
+    void element.offsetWidth; // restart the animation on repeat taps
+    element.classList.add("locked-denied");
+    window.setTimeout(() => element.classList.remove("locked-denied"), 750);
+  }
+  if (message) showRetryToast(message);
 }
 
 function composeHangul(initial, medial, final = "") {
@@ -9096,6 +9119,12 @@ function speakableForClickableText(text, options = {}) {
     if (typeof lookupAudioUrl === "function" && lookupAudioUrl(raw)) return raw;
     return hangulChunks.map((chunk) => speakableForChunk(chunk)).join(" ");
   }
+
+  // Never pipe plain-English UI text (answer choices like "Below the
+  // consonant" or "No sound") into the Korean voice - it comes out as
+  // startling random English over the lesson. Only Hangul-bearing text or a
+  // mapped sound label above is speakable.
+  if (!hangulChunks.length) return "";
 
   return raw;
 }
@@ -9842,15 +9871,22 @@ function bindAlphabetReferenceButtons(container) {
   });
 }
 
+// True when an answer choice / tray tile has a real sound to preview (Hangul
+// text or a mapped sound label). English layout answers ("Below the
+// consonant") have nothing to play, so they get no speaker.
+function isSpeakableAnswerOption(option) {
+  return Boolean(speakableForClickableText(option, { preferSoundLabels: true }));
+}
+
 function renderCheckpointAudioHelpers(lesson, question) {
   const isBlockGeometry = lesson.id === "block-geometry";
   const isBuildQuestion = question.type === "build";
-  const components = (isBlockGeometry || isBuildQuestion) ? getQuestionComponents(question) : [];
   const targetText = isBlockGeometry || isBuildQuestion ? (question.voiceText || question.target || question.answer || "") : "";
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
-  const hasComponents = components.length > 0;
+  const answerPool = isBuildQuestion ? (question.tray || []) : (question.options || []);
+  const hasPreviewableAnswers = answerPool.some((option) => isSpeakableAnswerOption(option));
 
-  if (!hasTarget && !hasComponents) return "";
+  if (!hasTarget && !hasPreviewableAnswers) return "";
 
   let html = '<div class="checkpoint-audio-helpers">';
 
@@ -9858,8 +9894,8 @@ function renderCheckpointAudioHelpers(lesson, question) {
     html += '<button class="checkpoint-audio-tile" type="button" data-checkpoint-speak-target="' + escapeHtml(targetText) + '"><span class="checkpoint-audio-icon" aria-hidden="true">▶</span><span class="checkpoint-audio-copy"><strong>Hear target</strong><small>Full syllable</small></span></button>';
   }
 
-  if (hasComponents) {
-    html += '<button class="checkpoint-audio-tile" type="button" data-checkpoint-speak-components="' + escapeHtml(components.join(",")) + '"><span class="checkpoint-audio-icon checkpoint-audio-icon-parts" aria-hidden="true">••</span><span class="checkpoint-audio-copy"><strong>Hear building blocks</strong><small>Sound by sound</small></span></button>';
+  if (hasPreviewableAnswers) {
+    html += '<button class="checkpoint-audio-tile" type="button" data-checkpoint-preview-answers><span class="checkpoint-audio-icon checkpoint-audio-icon-parts" aria-hidden="true">••</span><span class="checkpoint-audio-copy"><strong>Preview answers</strong><small>Hear every choice</small></span></button>';
   }
 
   html += '</div>';
@@ -9870,13 +9906,8 @@ function bindCheckpointAudioHelpers(container, lesson) {
   // The quick-reference button (data-checkpoint-open-reference) is handled by the
   // delegated stage click listener in mountLessonPlayer, so it works from every
   // Phase One screen and needs no per-render binding here.
-  const question = phaseOneView.mode === "check"
-    ? phaseOneLessons[phaseOneView.lessonIndex]?.questions?.[phaseOneView.questionIndex]
-    : null;
-  if (lesson.id !== "block-geometry" && question?.type !== "build") return;
-
   const targetBtn = container.querySelector("[data-checkpoint-speak-target]");
-  const componentsBtn = container.querySelector("[data-checkpoint-speak-components]");
+  const previewBtn = container.querySelector("[data-checkpoint-preview-answers]");
 
   if (targetBtn) {
     targetBtn.addEventListener("click", async () => {
@@ -9897,30 +9928,37 @@ function bindCheckpointAudioHelpers(container, lesson) {
     });
   }
 
-  if (componentsBtn) {
-    componentsBtn.addEventListener("click", async () => {
+  if (previewBtn) {
+    previewBtn.addEventListener("click", async () => {
       const tokenId = ++checkpointPlaybackId;
-      const parts = (componentsBtn.getAttribute("data-checkpoint-speak-components") || "").split(",").filter(Boolean);
+      // The potential answers on screen: choice buttons for multiple choice,
+      // tray tiles for build questions.
+      const answers = [...container.querySelectorAll(".lesson-option, .bd-tile")]
+        .map((el) => ({
+          el,
+          speech: speakableForClickableText(el.dataset.option ?? el.dataset.jamo ?? el.textContent, { preferSoundLabels: true }),
+        }))
+        .filter((entry) => entry.speech);
+      if (!answers.length) return;
 
-      container.querySelectorAll(".visual-comp, [data-visual-target]").forEach(el => el.classList.remove("active-highlight"));
+      const clearHighlights = () => container
+        .querySelectorAll(".answer-previewing, .answer-previewing-active")
+        .forEach((el) => el.classList.remove("answer-previewing", "answer-previewing-active"));
+      clearHighlights();
+      answers.forEach(({ el }) => el.classList.add("answer-previewing"));
 
-      for (let i = 0; i < parts.length; i++) {
-        if (tokenId !== checkpointPlaybackId) return;
-        const speakText = speakableForChunk(parts[i]);
-
-        const compEl = container.querySelector(`.visual-comp[data-comp-index="${i}"]`);
-        if (compEl) compEl.classList.add("active-highlight");
-
+      for (const { el, speech } of answers) {
+        if (tokenId !== checkpointPlaybackId) break;
+        el.classList.add("answer-previewing-active");
         await Promise.all([
-          speak(speakText, { preserveSequence: true }),
-          new Promise((resolve) => window.setTimeout(resolve, 800))
+          speak(speech, { preserveSequence: true }),
+          new Promise((resolve) => window.setTimeout(resolve, 700)),
         ]);
-
-        if (compEl) compEl.classList.remove("active-highlight");
-
-        if (tokenId !== checkpointPlaybackId) return;
-        await new Promise((resolve) => window.setTimeout(resolve, 200));
+        el.classList.remove("answer-previewing-active");
+        if (tokenId !== checkpointPlaybackId) break;
+        await new Promise((resolve) => window.setTimeout(resolve, 180));
       }
+      clearHighlights();
     });
   }
 
@@ -9965,7 +10003,7 @@ function renderPhaseOneQuestion(lesson) {
                 (option) => {
                   return '<div class="lesson-option-row">' +
                     '<button class="lesson-option" type="button" ' + textLanguageAttr(option) + ' data-option="' + escapeHtml(option) + '"><span class="lesson-option-label">' + escapeHtml(option) + '</span></button>' +
-                    (option !== "No letter" && option !== "To the right" && option !== "Below the consonant" && option !== "On the floor" && option !== "Above the block"
+                    (isSpeakableAnswerOption(option)
                       ? '<button class="button secondary compact speak-option-btn" type="button" data-speak-option="' + escapeHtml(option) + '" aria-label="Hear option ' + escapeHtml(option) + '">🔊</button>'
                       : '') +
                   '</div>';
@@ -10003,11 +10041,16 @@ function renderPhaseOneQuestion(lesson) {
       shuffle([...question.options])
         .map(
           (option) =>
+            '<div class="lesson-option-row">' +
             '<button class="lesson-option" type="button" ' + textLanguageAttr(option) + ' data-option="' +
             escapeHtml(option) +
             '">' +
             escapeHtml(option) +
-            "</button>",
+            "</button>" +
+            (isSpeakableAnswerOption(option)
+              ? '<button class="button secondary compact speak-option-btn" type="button" data-speak-option="' + escapeHtml(option) + '" aria-label="Hear option ' + escapeHtml(option) + '">🔊</button>'
+              : '') +
+            '</div>',
         )
         .join("") +
       "</div>" +
@@ -10263,7 +10306,12 @@ function renderPhaseOneBuildQuestion(lesson, question) {
   const tiles = shuffle([...question.tray])
     .map(
       (jamo) =>
-        `<button class="bd-tile" type="button" data-jamo="${escapeHtml(jamo)}" lang="ko" aria-label="Korean letter ${escapeHtml(jamo)}">${escapeHtml(jamo)}</button>`,
+        `<span class="bd-tile-wrap">` +
+        `<button class="bd-tile" type="button" data-jamo="${escapeHtml(jamo)}" lang="ko" aria-label="Korean letter ${escapeHtml(jamo)}">${escapeHtml(jamo)}</button>` +
+        (isSpeakableAnswerOption(jamo)
+          ? `<button class="button secondary compact speak-option-btn bd-tile-speak" type="button" data-speak-option="${escapeHtml(jamo)}" aria-label="Hear ${escapeHtml(jamo)}">🔊</button>`
+          : "") +
+        `</span>`,
     )
     .join("");
 
@@ -13159,8 +13207,7 @@ const HUB_DEFS = {
       { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
       { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Review due lines or choose a sentence drill.", target: "practice" },
       { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
-      { id: "vocabulary-writing", icon: "✍", title: "Vocabulary writing", sub: "Draw syllables from the words you are learning.", custom: "hangulWriting", writingSource: "vocabulary" },
-      { id: "sentence-writing", icon: "✍", title: "Sentence writing", sub: "Draw syllables from your current sentence band.", custom: "hangulWriting", writingSource: "sentences" },
+      { id: "writing", icon: "✍", title: "Writing practice", sub: "Draw Hangul from the alphabet, your words, or your sentences.", custom: "writingHub" },
     ],
   },
   progress: {
@@ -13998,6 +14045,25 @@ function renderLearnStageMenu(itemId) {
     </div>`
     : "";
 
+  // Every learnable section ends with its writing practice as the last step.
+  const writingSource = ["alphabet", "vocabulary", "sentences"].includes(itemId) ? itemId : null;
+  const writingCopy = {
+    alphabet: "Draw the letters and syllable blocks you have learned.",
+    vocabulary: "Draw the syllables from the words you are learning.",
+    sentences: "Draw the syllables from your current sentence band.",
+  };
+  const writingStepHtml = writingSource
+    ? `
+    <button class="card word-section-card learn-writing-step" type="button" data-learn-writing="${writingSource}">
+      <div>
+        <div class="eyebrow">Last step · Write it</div>
+        <div class="study-row-ko">Writing practice</div>
+        <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(writingCopy[writingSource])}</div>
+      </div>
+      <span class="alpha-board-entry-glyphs" aria-hidden="true">✍</span>
+    </button>`
+    : "";
+
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
@@ -14011,13 +14077,22 @@ function renderLearnStageMenu(itemId) {
       ${wordPathHtml}
       ${stagesHtml}
     `}
+    ${writingStepHtml}
   `;
+
+  el.querySelectorAll("[data-learn-writing]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      queueScreenMotion("forward", 1);
+      enterHangulWriting(btn.dataset.learnWriting, { returnTo: `learn-${itemId}` });
+    });
+  });
 
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.dataset.lockedStage) {
         const currentStageInfo = getLearnStageInfo(itemId, progress.currentStage);
-        showRetryToast(`Finish "${currentStageInfo.title}" to unlock this stage.`);
+        const targetInfo = getLearnStageInfo(itemId, Number(btn.dataset.learnStage));
+        indicateLockedStage(btn, `Do "${currentStageInfo.title}" first to unlock "${targetInfo.title}".`);
         return;
       }
       queueScreenMotion("forward", 1);
@@ -14139,6 +14214,10 @@ function openHubItem(hub, itemId) {
   }
   if (item.custom === "hangulWriting") {
     enterHangulWriting(item.writingSource || "alphabet");
+    return;
+  }
+  if (item.custom === "writingHub") {
+    renderWritingPracticeHub();
     return;
   }
 
@@ -14691,6 +14770,31 @@ function renderAlphabetPracticeHub() {
   });
 }
 
+// Practice › Writing practice: one hub listing the three writing sources.
+function renderWritingPracticeHub() {
+  refreshProgressionState();
+  activeHub = "practice";
+  setNavActive("practice");
+  state.route = { hub: "practice", item: "writing", stage: null };
+  saveState();
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("practice", "Writing practice", () => goHub("practice"), "Practice");
+  el.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Practice · Writing</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">What do you want to write?</h2>
+      <div class="screen-sub" style="margin-bottom:0;">Draw with your finger or stylus. Each source builds its sets from what you are learning.</div>
+    </div>
+    <button class="card word-section-card" type="button" data-writing-source="alphabet"><div><div class="eyebrow">Alphabet</div><div class="section-card-title" lang="en">Alphabet writing</div><div class="screen-sub" style="margin-bottom:0;">Letters and syllable blocks from the Hangul stages.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가</span></button>
+    <button class="card word-section-card" type="button" data-writing-source="vocabulary"><div><div class="eyebrow">Vocabulary</div><div class="section-card-title" lang="en">Vocabulary writing</div><div class="screen-sub" style="margin-bottom:0;">Syllables pulled from the words you are learning.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">말</span></button>
+    <button class="card word-section-card" type="button" data-writing-source="sentences"><div><div class="eyebrow">Sentences</div><div class="section-card-title" lang="en">Sentence writing</div><div class="screen-sub" style="margin-bottom:0;">Syllables pulled from your current sentence band.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">문</span></button>
+  `;
+  el.querySelectorAll("[data-writing-source]").forEach((button) => {
+    button.addEventListener("click", () => enterHangulWriting(button.dataset.writingSource, { returnTo: "writingHub" }));
+  });
+}
+
 function renderAlphabetPractice() {
   refreshProgressionState();
   currentQuizScope = "alphabet";
@@ -14986,11 +15090,21 @@ const HANGUL_WRITING_UNITS = [
 
 let hangulWritingSource = "alphabet";
 let activeHangulWritingUnits = HANGUL_WRITING_UNITS;
+// Where the ‹ back bar returns to when leaving writing; set on entry.
+let hangulWritingReturnTo = "alphabetPractice";
 
 function getWritingSourceMeta(source = hangulWritingSource) {
-  if (source === "vocabulary") return { title: "Vocabulary writing", eyebrow: "Practice · Words", back: "Practice", unitPrefix: "Word set" };
-  if (source === "sentences") return { title: "Sentence writing", eyebrow: "Practice · Sentences", back: "Practice", unitPrefix: "Sentence set" };
-  return { title: "Hangul writing", eyebrow: "Practice · Hangul writing", back: "Alphabet practice", unitPrefix: "Unit" };
+  const backLabels = {
+    writingHub: "Writing practice",
+    alphabetPractice: "Alphabet practice",
+    "learn-alphabet": "Alphabet",
+    "learn-vocabulary": "Vocabulary",
+    "learn-sentences": "Sentences",
+  };
+  const back = backLabels[hangulWritingReturnTo] || "Practice";
+  if (source === "vocabulary") return { title: "Vocabulary writing", eyebrow: "Practice · Words", back, unitPrefix: "Word set" };
+  if (source === "sentences") return { title: "Sentence writing", eyebrow: "Practice · Sentences", back, unitPrefix: "Sentence set" };
+  return { title: "Hangul writing", eyebrow: "Practice · Hangul writing", back, unitPrefix: "Unit" };
 }
 
 function buildContentWritingUnits(source) {
@@ -15103,7 +15217,11 @@ function leaveHangulWritingSession() {
   if (hangulWritingState.celebrating) hangulWritingState.strokes = [];
   hangulWritingState.celebrating = false;
   hangulWritingState.animating = false;
-  if (hangulWritingSource === "alphabet") renderAlphabetPracticeHub();
+  if (hangulWritingReturnTo === "writingHub") renderWritingPracticeHub();
+  else if (hangulWritingReturnTo === "learn-alphabet") openLearnStageMenu("alphabet");
+  else if (hangulWritingReturnTo === "learn-vocabulary") openLearnStageMenu("vocabulary");
+  else if (hangulWritingReturnTo === "learn-sentences") openLearnStageMenu("sentences");
+  else if (hangulWritingSource === "alphabet") renderAlphabetPracticeHub();
   else goHub("practice");
 }
 
@@ -15124,7 +15242,8 @@ function renderHangulWritingReentryPrompt() {
   const el = showScreen("detail");
   if (!el) return;
   const sourceMeta = getWritingSourceMeta();
-  showDetailBarWithBack("practice", sourceMeta.title, () => leaveHangulWritingSession(), sourceMeta.back);
+  const reentryHub = String(hangulWritingReturnTo).startsWith("learn-") ? "learn" : "practice";
+  showDetailBarWithBack(reentryHub, sourceMeta.title, () => leaveHangulWritingSession(), sourceMeta.back);
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card writing-reentry-card">
       <div class="eyebrow">Writing session paused</div>
@@ -15148,10 +15267,11 @@ function renderHangulWritingReentryPrompt() {
   });
 }
 
-function enterHangulWriting(source = "alphabet") {
+function enterHangulWriting(source = "alphabet", { returnTo = "" } = {}) {
   refreshProgressionState();
   const nextSource = ["alphabet", "vocabulary", "sentences"].includes(source) ? source : "alphabet";
   if (nextSource !== hangulWritingSource) resetHangulWritingSession();
+  hangulWritingReturnTo = returnTo || (nextSource === "alphabet" ? "alphabetPractice" : "practice");
   hangulWritingSource = nextSource;
   activeHangulWritingUnits = nextSource === "alphabet" ? HANGUL_WRITING_UNITS : buildContentWritingUnits(nextSource);
   hangulWritingRecognizerCache = null;
@@ -16040,9 +16160,13 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
   hangulWritingState.celebrating = true;
   updateHangulWritingControls();
   recordHangulWritingResult(glyph, correct ? "great" : "retry");
+  // The verdict banner in the overlay replaces the old top-of-page toast
+  // (which sat off-screen above the canvas); keep the audio feedback.
   if (correct) {
-    showCorrectToast("Well done!");
+    playCorrectSound();
     window.setTimeout(() => { void speak(glyph); }, 360);
+  } else {
+    playIncorrectSound();
   }
 
   const repeatsRemain = correct && hangulWritingState.repeatIndex + 1 < hangulWritingState.repeatTarget;
@@ -16057,6 +16181,7 @@ function showHangulWritingResult({ glyph, strokes, correct, detail, unit }) {
 
   overlay.className = `writing-result-overlay open ${correct ? "correct" : "retry"}`;
   overlay.innerHTML = `
+    <div class="writing-result-verdict ${correct ? "correct" : "incorrect"}" role="status">${correct ? "Correct!" : "Incorrect"}</div>
     <div class="writing-result-sheet" role="dialog" aria-modal="true" aria-labelledby="writingResultTitle">
       <div class="writing-result-actions">
         <button class="writing-result-action retry" type="button" id="writingResultRetry">Retry</button>
@@ -16896,7 +17021,7 @@ function renderHangulWritingUnitPicker(el) {
     const unlocked = isHangulWritingUnitUnlocked(unit);
     const preview = unit.glyphs.slice(0, 6).join(" ");
     return `
-      <div class="card writing-unit ${unlocked ? "" : "writing-unit-locked"}">
+      <div class="card writing-unit ${unlocked ? "" : "writing-unit-locked"}" ${unlocked ? "" : `data-writing-locked-unit="${escapeHtml(unit.id)}"`}>
         <div class="writing-unit-row">
           <div>
             <div class="eyebrow">${escapeHtml(unit.eyebrow)}</div>
@@ -16959,10 +17084,66 @@ function renderHangulWritingUnitPicker(el) {
       if (unit) renderHangulWritingMultiplierPicker(el, unit, exercise);
     });
   });
+  el.querySelectorAll("[data-writing-locked-unit]").forEach((cardEl) => {
+    cardEl.addEventListener("click", () => {
+      const unit = getHangulWritingUnit(cardEl.dataset.writingLockedUnit);
+      const gateLesson = unit ? phaseOneLessons[unit.unlockLessonIndex] : null;
+      indicateLockedStage(cardEl, gateLesson && unit
+        ? `Do "${gateLesson.title}" first to unlock "${unit.label}".`
+        : "Do the matching alphabet stage first to unlock this writing unit.");
+    });
+  });
   animateLessonFrame(el, "writing", {
     key: "unit-picker",
     order: 0,
     phase: "picker",
+  });
+}
+
+// Size the square writing canvas so the practice card ends exactly at the
+// bottom of the visible screen (just above the bottom nav) on any screen size,
+// instead of wrapping past the fold or shrinking to a miniature box.
+function fitHangulWritingCanvas() {
+  const wrap = document.querySelector(".writing-canvas-wrap");
+  if (!wrap) return;
+  const card = wrap.closest(".writing-practice-card") || wrap;
+  const nav = document.querySelector(".bottom-nav");
+  const navHeight = nav ? nav.offsetHeight : 0;
+
+  // Use offset metrics (untransformed layout) — the card is measured while its
+  // entry animation still scales it, so client rects would lie here.
+  const layoutTop = (el) => {
+    let top = 0;
+    for (let node = el; node; node = node.offsetParent) top += node.offsetTop;
+    return top;
+  };
+
+  // Measure at natural (CSS-default) size first.
+  wrap.style.width = "";
+  wrap.style.marginTop = "";
+  const wrapTop = layoutTop(wrap);
+  const chromeBelow = Math.max(0, layoutTop(card) + card.offsetHeight - (wrapTop + wrap.offsetHeight));
+  const available = Math.floor(window.innerHeight - navHeight - wrapTop - chromeBelow - 4);
+  const maxWidth = wrap.parentElement ? wrap.parentElement.clientWidth : wrap.offsetWidth;
+  const size = Math.max(220, Math.min(maxWidth, available));
+  if (!Number.isFinite(size) || size <= 0) return;
+  wrap.style.width = `${size}px`;
+  // The canvas stays square, so when width is the limit push it down until its
+  // bottom edge sits exactly at the bottom of the screen.
+  const slack = available - size;
+  if (slack > 0) wrap.style.marginTop = `${8 + slack}px`;
+}
+
+let hangulWritingResizeBound = false;
+function bindHangulWritingResize() {
+  if (hangulWritingResizeBound) return;
+  hangulWritingResizeBound = true;
+  window.addEventListener("resize", () => {
+    if (document.querySelector(".writing-canvas-wrap")) {
+      fitHangulWritingCanvas();
+      const canvas = document.getElementById("writingCanvas");
+      if (canvas) drawHangulWritingCanvas(canvas);
+    }
   });
 }
 
@@ -17020,6 +17201,8 @@ function renderHangulWritingPractice(el, unit) {
 
   bindAlphabetReferenceButtons(el);
   const canvas = el.querySelector("#writingCanvas");
+  fitHangulWritingCanvas();
+  bindHangulWritingResize();
   drawHangulWritingCanvas(canvas);
   bindHangulWritingCanvas(canvas);
   updateHangulWritingControls();
@@ -17069,12 +17252,13 @@ function renderHangulWriting() {
   clearHangulRecognitionTimer();
   stopHangulWatch(); // cancel any in-flight stroke animation before rebuilding the DOM
   refreshProgressionState();
-  activeHub = "practice";
-  setNavActive("practice");
+  const writingHub = String(hangulWritingReturnTo).startsWith("learn-") ? "learn" : "practice";
+  activeHub = writingHub;
+  setNavActive(writingHub);
   const el = showScreen("detail");
   if (!el) return;
   const sourceMeta = getWritingSourceMeta();
-  showDetailBarWithBack("practice", sourceMeta.title, () => leaveHangulWritingSession(), sourceMeta.back);
+  showDetailBarWithBack(writingHub, sourceMeta.title, () => leaveHangulWritingSession(), sourceMeta.back);
 
   if (hangulWritingState.completedSummary) {
     renderHangulWritingCompletion(el, hangulWritingState.completedSummary);
@@ -18729,7 +18913,7 @@ function sentencePathLessonRowHtml(lesson, unlocked, completed, active) {
   const isCheckpoint = lesson.type === "checkpoint";
   const label = isCheckpoint ? "Unit check" : (completed ? "Complete" : active ? "Next up" : "Lesson");
   const rowClass = `study-row ss-mode ${isCheckpoint ? "sentence-path-checkpoint" : ""} ${active ? "is-highlighted" : ""}`;
-  return `<button class="${rowClass}" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : "disabled"}>
+  return `<button class="${rowClass}" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : 'data-ss-locked="1" aria-disabled="true"'}>
     <div>
       <div class="study-row-ko" style="${unlocked ? "" : "opacity:.55;"}">${escapeHtml(getSentenceLessonDisplayTitle(lesson, false))}</div>
       <div class="study-row-sub" style="${unlocked ? "" : "opacity:.55;"}">${escapeHtml(lesson.subtitle || lesson.goal || "Sentence practice")}</div>
@@ -18983,7 +19167,7 @@ function sentenceStudioHubHtml() {
       const unlocked = isSentenceLessonUnlocked(lesson);
       const tags = (lesson.patternTags || []).slice(0, 3).join(" / ");
       return `
-        <button class="study-row ss-mode" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : "disabled"}>
+        <button class="study-row ss-mode" type="button" data-ss-lesson="${escapeHtml(lesson.id)}" ${unlocked ? "" : 'data-ss-locked="1" aria-disabled="true"'}>
           <div>
             <div class="study-row-ko" style="${unlocked ? "" : "opacity: 0.5;"}">${escapeHtml(getSentenceLessonDisplayTitle(lesson))} ${unlocked ? "" : "🔒"}</div>
             <div class="study-row-sub" style="${unlocked ? "" : "opacity: 0.5;"}">${escapeHtml(tags)} / ${rowsForLesson.length} sentences</div>
@@ -20123,7 +20307,18 @@ function bindSentenceStudioEvents(el) {
     btn.addEventListener("click", () => startSentenceStudioSession(btn.dataset.ssStart));
   });
   el.querySelectorAll("[data-ss-lesson]").forEach((btn) => {
-    btn.addEventListener("click", () => openSentenceLesson(btn.dataset.ssLesson));
+    btn.addEventListener("click", () => {
+      if (btn.dataset.ssLocked) {
+        const target = getSentenceLessonById(btn.dataset.ssLesson);
+        const next = getNextSentenceLesson();
+        const targetTitle = target ? getSentenceLessonDisplayTitle(target, false) : "this lesson";
+        indicateLockedStage(btn, next
+          ? `Do "${getSentenceLessonDisplayTitle(next, false)}" first to unlock "${targetTitle}".`
+          : `Do the earlier lessons first to unlock "${targetTitle}".`);
+        return;
+      }
+      openSentenceLesson(btn.dataset.ssLesson);
+    });
   });
   el.querySelectorAll("[data-ss-lesson-start]").forEach((btn) => {
     btn.addEventListener("click", () => startSentenceLessonSession(btn.dataset.ssLessonStart));
@@ -20584,6 +20779,22 @@ async function init() {
     const scope = normalizeMainTab(restart.dataset.genericPracticeAgain);
     startGenericPracticeSession(scope);
     renderGenericPracticeSurface(scope);
+  });
+  // Failed-run completion screens: tapping the arrow emblem restarts the same
+  // lesson/test by pressing whichever visible action button offers the retry.
+  if (appDiv) appDiv.addEventListener("click", (event) => {
+    const emblem = event.target.closest("[data-completion-retry]");
+    if (!emblem) return;
+    const stage = emblem.closest(".completion-stage");
+    const isRetryButton = (button) =>
+      button && !button.disabled && /retry|try again|practise another|practice again/i.test(button.textContent || "");
+    const candidates = [
+      ...(stage ? stage.querySelectorAll(".completion-actions button") : []),
+      document.getElementById("hpActionBtn"),
+      ...document.querySelectorAll("[data-generic-practice-again]"),
+    ];
+    const target = candidates.find(isRetryButton);
+    if (target) target.click();
   });
   const settingsShortcut = document.getElementById("app-settings-button");
   if (settingsShortcut) settingsShortcut.addEventListener("click", () => {

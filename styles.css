@@ -1134,6 +1134,33 @@ button.bd-assembled:hover {
   opacity: .45;
   cursor: default;
 }
+.bd-tile-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.bd-tile-wrap .bd-tile-speak {
+  width: 100%;
+  min-height: 24px;
+  padding: 2px 0;
+  font-size: .78rem;
+  border-radius: 9px;
+}
+/* "Preview answers": every playable choice tints to the theme color, and the
+   one currently sounding gets the stronger ring. */
+.lesson-option.answer-previewing,
+.bd-tile.answer-previewing {
+  border-color: rgba(var(--accent-rgb), .55);
+  background: rgba(var(--accent-rgb), .1);
+}
+.lesson-option.answer-previewing-active,
+.bd-tile.answer-previewing-active {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), .24);
+  color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .18);
+}
 .bd-tile.wrong {
   border-color: #f87171;
   background: rgba(248, 113, 113, .18);
@@ -1143,6 +1170,23 @@ button.bd-assembled:hover {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-4px); }
   75% { transform: translateX(4px); }
+}
+
+/* Tap on a locked stage/tile: gentle shake + brief red tint, then back to normal. */
+@keyframes hp-locked-shake {
+  0%, 100% { transform: translateX(0); }
+  18% { transform: translateX(-5px); }
+  38% { transform: translateX(4px); }
+  58% { transform: translateX(-3px); }
+  78% { transform: translateX(2px); }
+}
+.locked-denied {
+  animation: hp-locked-shake .55s ease both;
+  border-color: rgba(248, 113, 113, .65) !important;
+  background: rgba(239, 68, 68, .12) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .locked-denied { animation: none; }
 }
 
 .lesson-intro-card {
@@ -4853,6 +4897,10 @@ li { margin-bottom: 4px; }
   line-height: 1;
 }
 .writing-quiz-card { position: relative; }
+/* Keep the chrome under the canvas thin so the drawing area can end at the
+   very bottom of the screen (fitHangulWritingCanvas sizes against it). */
+.writing-practice-card { padding-bottom: 8px; }
+.writing-practice-card .writing-quiz-card { padding-bottom: 8px; margin-bottom: 0; }
 .writing-quiz-card .writing-instruction {
   margin-bottom: 4px;
   font-size: .78rem;
@@ -4875,7 +4923,32 @@ li { margin-bottom: 4px; }
 }
 .writing-result-overlay.open {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
   animation: writing-result-backdrop-in 140ms ease-out both;
+}
+/* Big verdict banner above the result sheet; stays until the sheet closes. */
+.writing-result-verdict {
+  width: min(100%, 300px);
+  padding: 11px 16px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 1.18rem;
+  font-weight: 900;
+  letter-spacing: .02em;
+  animation: writing-result-sheet-in 180ms cubic-bezier(.2,.9,.3,1.1) both;
+}
+.writing-result-verdict.correct {
+  color: #d1fae5;
+  background: rgba(16, 185, 129, .24);
+  border: 1px solid rgba(52, 211, 153, .62);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, .2);
+}
+.writing-result-verdict.incorrect {
+  color: #fecaca;
+  background: rgba(239, 68, 68, .22);
+  border: 1px solid rgba(248, 113, 113, .62);
+  box-shadow: 0 10px 30px rgba(239, 68, 68, .2);
 }
 .writing-result-sheet {
   width: min(100%, 300px);
@@ -5122,6 +5195,7 @@ li { margin-bottom: 4px; }
 @keyframes writing-result-glyph-in { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) {
   .writing-result-overlay.open,
+  .writing-result-verdict,
   .writing-result-sheet,
   .writing-result-stroke,
   .writing-result-glyph { animation-duration: 1ms !important; animation-delay: 0ms !important; }
@@ -5667,6 +5741,15 @@ li { margin-bottom: 4px; }
   filter: drop-shadow(0 4px 10px rgba(var(--completion-rgb), .3));
 }
 .completion-stage--crown .completion-emblem-icon svg path:first-child { fill: rgba(251,191,36,.2); }
+/* Retry emblem doubles as a tap target that restarts the run. */
+.completion-emblem--action {
+  cursor: pointer;
+  transition: transform .18s var(--ease-premium);
+}
+.completion-emblem--action:hover,
+.completion-emblem--action:focus-visible { transform: scale(1.06); }
+.completion-emblem--action:active { transform: scale(.95); }
+.completion-emblem--action:focus-visible { outline: 2px solid rgba(var(--completion-rgb), .8); outline-offset: 4px; border-radius: 30px; }
 @keyframes hp-completion-ring {
   from { opacity: 0; transform: scale(.55); }
   65% { opacity: 1; }
