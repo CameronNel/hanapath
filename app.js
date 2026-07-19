@@ -7220,19 +7220,6 @@ function openEntireWordBank(options = {}) {
   renderWordBankContent();
 }
 
-// Reference card shared by the Vocabulary and Sentences stage menus.
-function wordBankEntryCardHtml() {
-  return `
-    <button class="card alpha-board-entry" type="button" data-open-word-bank>
-      <div class="alpha-board-entry-main">
-        <div class="eyebrow">Reference</div>
-        <div class="study-row-ko">Dictionary</div>
-        <div class="screen-sub" style="margin-bottom:0;">Thousands of Korean words in one searchable place — Korean, English, pronunciation, lesson group, and more.</div>
-      </div>
-      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">단어</span>
-    </button>`;
-}
-
 function formatWordLessonCategoryLabel(category) {
   return String(category || "")
     .split("-")
@@ -13893,16 +13880,16 @@ function renderLearnStageMenu(itemId) {
 
   const referenceTileHtml = itemId === "alphabet"
     ? `
-    <button class="card alpha-board-entry" type="button" data-open-entire-alphabet>
-      <div class="alpha-board-entry-main">
-        <div class="eyebrow">Reference</div>
-        <div class="study-row-ko">All Hangul</div>
-        <div class="screen-sub" style="margin-bottom:0;">Every consonant and vowel as a keyboard or list — tap to hear each sound.</div>
-      </div>
-      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가나다</span>
-    </button>`
+      <button class="learn-stage-reference-tile" type="button" data-open-entire-alphabet aria-label="Open All Hangul reference">
+        <span class="learn-stage-reference-icon" aria-hidden="true">📚</span>
+        <span class="learn-stage-reference-label">All Hangul</span>
+      </button>`
     : ["vocabulary", "sentences"].includes(itemId)
-      ? wordBankEntryCardHtml()
+      ? `
+      <button class="learn-stage-reference-tile" type="button" data-open-word-bank aria-label="Open Dictionary reference">
+        <span class="learn-stage-reference-icon" aria-hidden="true">📚</span>
+        <span class="learn-stage-reference-label">Dictionary</span>
+      </button>`
       : "";
 
   // Words section: keep the stage menu grouped into a few high-level buckets.
@@ -13980,11 +13967,13 @@ function renderLearnStageMenu(itemId) {
     : "";
 
   el.innerHTML = `
-    <div class="card">
-      <div class="eyebrow">Learn ${escapeHtml(itemId === "alphabet" ? "Alphabet" : item.title)}</div>
-      <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
+    <div class="card learn-stage-header-card">
+      <div class="learn-stage-header-copy">
+        <div class="eyebrow">Learn ${escapeHtml(itemId === "alphabet" ? "Alphabet" : item.title)}</div>
+        <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
+      </div>
+      ${referenceTileHtml}
     </div>
-    ${referenceTileHtml}
     ${itemId === "alphabet" ? alphabetGridHtml : `
       ${wordBasicsHtml}
       ${wordReviewHtml}
