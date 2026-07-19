@@ -7355,15 +7355,17 @@ function vocabularyStageRowsHtml() {
 function alphabetStagesSectionHtml() {
   const progress = getLearnProgress("alphabet");
   return `
-    <button class="card word-section-card" type="button" data-alphabet-section="stages">
-      <div>
-        <div class="eyebrow">Stages</div>
-        <div class="study-row-ko">Alphabet stages</div>
-        <div class="screen-sub" style="margin-bottom:0;">${progress.complete ? "All stages are unlocked." : `Current stage: ${escapeHtml(getLearnStageInfo("alphabet", progress.currentStage).detail)}`}</div>
-      </div>
-      <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
-    </button>
-    ${TEST_ENABLE_WORD_SECTION_COMPLETION && !progress.complete ? '<button class="button secondary compact" type="button" data-complete-alphabet-section style="justify-self:start;align-self:start;">Complete section</button>' : ""}
+    <div class="card word-section-card alphabet-step-card alphabet-step-card-compound">
+      <button class="alphabet-step-main" type="button" data-alphabet-section="stages">
+        <span class="alphabet-step-copy">
+          <span class="eyebrow">Step 1</span>
+          <span class="study-row-ko">Learning lessons</span>
+          <span class="screen-sub">${progress.complete ? "All 8 Hangul stages completed." : `Continue ${escapeHtml(getLearnStageInfo("alphabet", progress.currentStage).detail)}.`}</span>
+        </span>
+        ${progress.complete ? `<span class="pill accent alphabet-step-pill">${progress.completedCount}/${progress.total}</span>` : ""}
+      </button>
+      ${TEST_ENABLE_WORD_SECTION_COMPLETION && !progress.complete ? '<button class="button secondary compact alphabet-step-complete" type="button" data-complete-alphabet-section>Complete</button>' : ""}
+    </div>
   `;
 }
 
@@ -11183,12 +11185,12 @@ function renderAlphabetDrillLab() {
   alphabetQuickRefReturn = null;
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
-  activeHub = "practice";
-  setNavActive("practice");
+  activeHub = "learn";
+  setNavActive("learn");
   drillSession = null;
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Alphabet Drill Lab", () => renderAlphabetPracticeHub(), "Alphabet practice");
+  showDetailBarWithBack("learn", "Alphabet Drill Lab", () => openLearnStageMenu("alphabet"), "Alphabet");
   const weakCount = getWeakSpotList().length;
   const modeBtns = DRILL_MODES.map((mo, i) =>
     `<button class="drill-mode-card${i === 0 ? " selected" : ""}" type="button" data-drill-mode="${mo.id}" aria-pressed="${i === 0}" ${mo.id === "weak" && !weakCount ? "disabled" : ""}>
@@ -11250,10 +11252,10 @@ function renderDrillQuestion(reuseCurrent = false) {
   const el = showScreen("detail");
   if (!el) return;
   const modeLabel = (DRILL_MODES.find((m) => m.id === s.mode) || {}).label || "Drill";
-  showDetailBarWithBack("practice", "Drill Lab", () => {
+  showDetailBarWithBack("learn", "Drill Lab", () => {
     cancelDrillAutoAdvance(s);
-    renderAlphabetPracticeHub();
-  }, "Practice");
+    openLearnStageMenu("alphabet");
+  }, "Alphabet");
   const q = reuseCurrent && s.current ? s.current : (s.current = makeDrillQuestion(s.mode));
   s.answered = false;
   s.buildFilled = [];
@@ -11484,7 +11486,7 @@ function renderDrillResult() {
   hideRetryToast(true);
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Drill complete", () => renderAlphabetDrillLab(), "Drill Lab");
+  showDetailBarWithBack("learn", "Drill complete", () => openLearnStageMenu("alphabet"), "Alphabet");
   // `asked` counts questions already advanced past. An early End-session also
   // counts the current question once the learner has answered or attempted it.
   const currentWasAttempted = s.currentAttempted && s.asked < s.total;
@@ -11540,7 +11542,7 @@ function renderDrillResult() {
 function openAlphabetDrillLab() {
   refreshProgressionState();
   queueScreenMotion("forward", 1, { replace: false });
-  state.route = { hub: "practice", item: "alphabet", stage: null };
+  state.route = { hub: "learn", item: "alphabet", stage: null };
   saveState();
   renderAlphabetDrillLab();
 }
@@ -13199,7 +13201,7 @@ const HUB_DEFS = {
     title: "Pick something to practise",
     sub: "Quick quizzes that bring the material back in different forms.",
     items: [
-      { id: "alphabet",   icon: "🎯", title: "Alphabet practice", sub: "Review letters, take a quiz, or open Drill Lab.", custom: "alphabetPracticeHub" },
+      { id: "alphabet",   icon: "🎯", title: "Alphabet practice", sub: "Review letters, take a quiz, or train pronunciation.", custom: "alphabetPracticeHub" },
       { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
       { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Review due lines or choose a sentence drill.", target: "practice" },
       { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
@@ -13509,6 +13511,7 @@ function showScreen(screenId) {
   });
   const screen = document.getElementById(targetId);
   if (screen) {
+    screen.classList.remove("alphabet-three-step-screen");
     screen.hidden = false;
     screen.removeAttribute("aria-hidden");
     screen.inert = false;
@@ -14033,13 +14036,6 @@ function renderLearnStageMenu(itemId) {
       </div>
     </div>`;
 
-  const alphabetGridHtml = itemId === "alphabet"
-    ? `
-    <div class="alphabet-menu-grid">
-      ${stagesHtml}
-    </div>`
-    : "";
-
   // Every learnable section ends with its writing practice as the last step.
   const writingSource = ["alphabet", "vocabulary", "sentences"].includes(itemId) ? itemId : null;
   const writingCopy = {
@@ -14049,9 +14045,9 @@ function renderLearnStageMenu(itemId) {
   };
   const writingStepHtml = writingSource
     ? `
-    <button class="card word-section-card learn-writing-step" type="button" data-learn-writing="${writingSource}">
+    <button class="card word-section-card learn-writing-step${itemId === "alphabet" ? " alphabet-step-card" : ""}" type="button" data-learn-writing="${writingSource}">
       <div>
-        <div class="eyebrow">Last step · Write it</div>
+        <div class="eyebrow">${itemId === "alphabet" ? "Step 3" : "Last step · Write it"}</div>
         <div class="study-row-ko">Writing practice</div>
         <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(writingCopy[writingSource])}</div>
       </div>
@@ -14059,11 +14055,35 @@ function renderLearnStageMenu(itemId) {
     </button>`
     : "";
 
+  const alphabetDrillUnlocked = progress.complete || TEST_UNLOCK_ALL_STAGES;
+  const alphabetDrillStepHtml = itemId === "alphabet"
+    ? `
+    <button class="card word-section-card alphabet-step-card${alphabetDrillUnlocked ? "" : " is-locked"}" type="button" data-learn-drill ${alphabetDrillUnlocked ? "" : 'disabled aria-disabled="true"'}>
+      <div>
+        <div class="eyebrow">Step 2</div>
+        <div class="study-row-ko">Drill lab</div>
+        <div class="screen-sub" style="margin-bottom:0;">${alphabetDrillUnlocked ? "Quick mixed, build, split, letter, and batchim drills." : "Complete Step 1 to unlock quick drills."}</div>
+      </div>
+      <span class="alpha-board-entry-glyphs" aria-hidden="true">∞</span>
+    </button>`
+    : "";
+
+  const alphabetGridHtml = itemId === "alphabet"
+    ? `
+    <div class="alphabet-three-step-grid">
+      ${stagesHtml}
+      ${alphabetDrillStepHtml}
+      ${writingStepHtml}
+    </div>`
+    : "";
+
+  el.classList.toggle("alphabet-three-step-screen", itemId === "alphabet");
   el.innerHTML = `
-    <div class="card learn-stage-header-card">
+    <div class="learn-stage-menu-layout${itemId === "alphabet" ? " alphabet-three-step-layout" : ""}">
+    <div class="card learn-stage-header-card${itemId === "alphabet" ? " alphabet-three-step-header" : ""}">
       <div class="learn-stage-header-copy">
         <div class="eyebrow">Learn ${escapeHtml(itemId === "alphabet" ? "Alphabet" : item.title)}</div>
-        <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
+        <h2 class="screen-title" style="margin-bottom:0;">${itemId === "alphabet" ? "Choose a step" : "Choose a stage"}</h2>
       </div>
       ${referenceTileHtml}
     </div>
@@ -14074,8 +14094,11 @@ function renderLearnStageMenu(itemId) {
       ${wordPathHtml}
       ${stagesHtml}
     `}
-    ${writingStepHtml}
+    ${itemId === "alphabet" ? "" : writingStepHtml}
+    </div>
   `;
+
+  el.querySelector("[data-learn-drill]")?.addEventListener("click", () => openAlphabetDrillLab());
 
   el.querySelectorAll("[data-learn-writing]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -14751,7 +14774,6 @@ function renderAlphabetPracticeHub() {
   if (!el) return;
   showDetailBarWithBack("practice", "Alphabet practice", () => goHub("practice"), "Practice");
   const due = getDueLetterCount();
-  const mastered = getAlphabetProgress().complete || TEST_UNLOCK_ALL_STAGES;
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Practice · Alphabet</div>
@@ -14760,7 +14782,6 @@ function renderAlphabetPracticeHub() {
     </div>
     ${due ? `<button class="card word-section-card" type="button" data-alphabet-practice="review"><div><div class="eyebrow">Make it stick</div><div class="section-card-title" lang="en">Letter review</div><div class="screen-sub" style="margin-bottom:0;">${due} letter${due === 1 ? "" : "s"} ready for spaced review.</div></div><span class="pill accent">${due} due</span></button>` : ""}
     <button class="card word-section-card" type="button" data-alphabet-practice="quiz"><div><div class="eyebrow">Quick check</div><div class="section-card-title" lang="en">Alphabet quiz</div><div class="screen-sub" style="margin-bottom:0;">Match each Hangul letter to its sound.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가</span></button>
-    ${mastered ? `<button class="card word-section-card" type="button" data-alphabet-practice="drill"><div><div class="eyebrow">Practice · Forever</div><div class="section-card-title" lang="en">Alphabet Drill Lab</div><div class="screen-sub" style="margin-bottom:0;">Mixed, build, split, letters, batchim, and weak spots.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">∞</span></button>` : ""}
     <button class="card word-section-card" type="button" data-alphabet-practice="pronunciation"><div><div class="eyebrow">Listen closely</div><div class="section-card-title" lang="en">Pronunciation drill</div><div class="screen-sub" style="margin-bottom:0;">Train tense, aspirated, and plain consonant contrasts.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">🎧</span></button>
     <button class="card word-section-card" type="button" data-alphabet-practice="writing"><div><div class="eyebrow">Write it</div><div class="section-card-title" lang="en">Hangul writing</div><div class="screen-sub" style="margin-bottom:0;">Draw letters and syllable blocks by hand.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">✍</span></button>
   `;
@@ -14769,7 +14790,6 @@ function renderAlphabetPracticeHub() {
       const action = button.dataset.alphabetPractice;
       if (action === "review") startLetterReview();
       else if (action === "quiz") { startGenericPracticeSession("alphabet"); renderAlphabetPractice(); }
-      else if (action === "drill") openAlphabetDrillLab();
       else if (action === "pronunciation") renderPronunciationDrill();
       else if (action === "writing") enterHangulWriting();
     });

@@ -3080,6 +3080,137 @@ li { margin-bottom: 4px; }
   }
 }
 
+/* Alphabet Learn is a fixed three-step path. The shared grid gives Learning,
+   Drill Lab, and Writing identical rows and keeps all three visible together. */
+.alphabet-three-step-screen {
+  overflow-y: hidden;
+  padding-bottom: 12px;
+}
+.alphabet-three-step-layout {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+}
+.alphabet-three-step-header {
+  min-height: 0;
+  margin-bottom: 0;
+  padding: clamp(11px, 3vw, 15px);
+}
+.alphabet-three-step-header .learn-stage-reference-tile {
+  min-height: 68px;
+}
+.alphabet-three-step-header .screen-title {
+  font-size: clamp(1.3rem, 6vw, 1.75rem);
+}
+.alphabet-three-step-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.alphabet-step-card {
+  min-height: 0;
+  height: 100%;
+  margin-bottom: 0;
+  padding: clamp(10px, 3vw, 15px);
+  overflow: hidden;
+}
+.alphabet-step-card .eyebrow {
+  margin-bottom: 4px;
+  font-size: clamp(.66rem, 2.8vw, .75rem);
+}
+.alphabet-step-card .study-row-ko {
+  font-size: clamp(1rem, 4.8vw, 1.2rem);
+  line-height: 1.2;
+}
+.alphabet-step-card .screen-sub {
+  display: -webkit-box;
+  margin: 3px 0 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: clamp(.74rem, 3.4vw, .84rem);
+  line-height: 1.32;
+}
+.alphabet-step-card .alpha-board-entry-glyphs {
+  flex: 0 0 auto;
+  font-size: clamp(1.45rem, 7vw, 2rem);
+}
+.alphabet-step-card-compound::after {
+  content: none;
+}
+.alphabet-step-main {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.alphabet-step-main::after {
+  content: ">";
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-weight: 900;
+}
+.alphabet-step-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+.alphabet-step-pill,
+.alphabet-step-complete {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.alphabet-step-complete {
+  min-width: 0;
+  padding: 8px 9px;
+  font-size: .72rem;
+}
+.alphabet-step-card.is-locked {
+  cursor: not-allowed;
+  opacity: .62;
+}
+.alphabet-step-card.is-locked:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 360px), (max-height: 680px) {
+  .alphabet-three-step-screen {
+    padding-top: 10px;
+    padding-inline: 12px;
+    padding-bottom: 8px;
+  }
+  .alphabet-three-step-layout,
+  .alphabet-three-step-grid {
+    gap: 8px;
+  }
+  .alphabet-three-step-header {
+    grid-template-columns: minmax(0, 1fr) 84px;
+    gap: 9px;
+    padding: 9px 10px;
+  }
+  .alphabet-three-step-header .learn-stage-reference-tile {
+    min-height: 58px;
+    padding: 7px 6px;
+  }
+  .alphabet-step-card {
+    padding: 9px 10px;
+  }
+}
+
 .alpha-board-entry {
   display: flex;
   align-items: center;
