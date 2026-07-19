@@ -447,7 +447,6 @@ const phaseOneLessons = [
         kicker: "Breath added",
         title: "See the extra strokes in ㅋ, ㅌ, ㅍ, ㅊ",
         visual: "ㄱ→ㅋ  ㄷ→ㅌ  ㅂ→ㅍ  ㅈ→ㅊ",
-        visualLayout: "paired",
         body: "An added stroke often signals a stronger puff of air. Pairing each aspirated shape with its base shape makes both easier to recall.",
         cue: "카 · 타 · 파 · 차",
         voiceText: "카, 타, 파, 차",
@@ -9585,19 +9584,16 @@ function animatePhaseOneFrame() {
 function renderPhaseOneConcept(lesson) {
   restorePhaseOneActions();
   const concept = lesson.concepts[phaseOneView.slideIndex];
-  const conceptVisualRenderer = concept.visualLayout === "paired"
-    ? renderFlashableHangulPairs
-    : renderFlashableHangulText;
   const conceptVisualHtml = concept.diagram
     ? renderBlockDiagrams(concept.diagram)
     : concept.wordBreakdown
       ? renderWordBreakdown(concept.wordBreakdown)
-      : conceptVisualRenderer(concept.visual).html;
+      : renderFlashableHangulPairs(concept.visual).html;
   els.phaseOneStage.innerHTML =
     '<p class="alphabet-hangul-hint" id="alphabetHangulHint">Click any Hangul to hear it</p>' +
     '<div class="phase-one-action-slot" data-phase-one-actions-slot></div>' +
     '<div class="concept-card">' +
-    `<div class="concept-visual${concept.visualLayout === "paired" ? " concept-visual-paired" : ""}" lang="ko" data-phase-one-visual>` +
+    '<div class="concept-visual concept-visual-wrap" lang="ko" data-phase-one-visual>' +
     conceptVisualHtml +
     "</div>" +
     '<div class="concept-copy">' +
@@ -9724,7 +9720,7 @@ function renderCheckpointVisualHtml(question) {
     const parts = visualText.split("+");
     parts.forEach((part, index) => {
       const trimmed = part.trim();
-      html += `<span class="visual-comp" data-comp-index="${index}">${escapeHtml(trimmed)}</span>`;
+      html += `<button class="visual-comp" type="button" data-comp-index="${index}" data-checkpoint-speak-component="${escapeHtml(trimmed)}" aria-label="Hear ${escapeHtml(trimmed)}">${escapeHtml(trimmed)}</button>`;
       if (index < parts.length - 1) {
         html += '<span class="visual-op">+</span>';
       }
@@ -9735,7 +9731,7 @@ function renderCheckpointVisualHtml(question) {
     if (components.length > 0) {
       html += '<div class="components-breakdown">';
       components.forEach((comp, index) => {
-        html += `<span class="visual-comp" data-comp-index="${index}">${escapeHtml(comp)}</span>`;
+        html += `<button class="visual-comp" type="button" data-comp-index="${index}" data-checkpoint-speak-component="${escapeHtml(comp)}" aria-label="Hear ${escapeHtml(comp)}">${escapeHtml(comp)}</button>`;
         if (index < components.length - 1) {
           html += '<span class="visual-op">+</span>';
         }
@@ -9819,29 +9815,44 @@ function bindCheckpointAudioHelpers(container, lesson) {
   // Phase One screen and needs no per-render binding here.
   const targetBtn = container.querySelector("[data-checkpoint-speak-target]");
   const previewBtn = container.querySelector("[data-checkpoint-preview-answers]");
+  const clearVisualHighlights = () => container
+    .querySelectorAll(".visual-comp, [data-visual-target]")
+    .forEach((el) => el.classList.remove("active-highlight"));
 
   if (targetBtn) {
     targetBtn.addEventListener("click", async () => {
-      checkpointPlaybackId += 1;
-      const tokenId = checkpointPlaybackId;
+      const tokenId = ++checkpointPlaybackId;
       const text = targetBtn.getAttribute("data-checkpoint-speak-target") || "";
-
-      container.querySelectorAll(".visual-comp, [data-visual-target]").forEach(el => el.classList.remove("active-highlight"));
-
+      clearVisualHighlights();
       const targetEl = container.querySelector("[data-visual-target]");
       if (targetEl) targetEl.classList.add("active-highlight");
-
-      await speak(text);
-
-      if (tokenId === checkpointPlaybackId && targetEl) {
-        targetEl.classList.remove("active-highlight");
+      try {
+        await speak(text);
+      } finally {
+        if (tokenId === checkpointPlaybackId) clearVisualHighlights();
       }
     });
   }
 
+  container.querySelectorAll("[data-checkpoint-speak-component]").forEach((component) => {
+    component.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      const tokenId = ++checkpointPlaybackId;
+      const text = component.getAttribute("data-checkpoint-speak-component") || "";
+      clearVisualHighlights();
+      component.classList.add("active-highlight");
+      try {
+        await speak(text);
+      } finally {
+        if (tokenId === checkpointPlaybackId) clearVisualHighlights();
+      }
+    });
+  });
+
   if (previewBtn) {
     previewBtn.addEventListener("click", async () => {
       const tokenId = ++checkpointPlaybackId;
+      clearVisualHighlights();
       // The potential answers on screen: choice buttons for multiple choice,
       // tray tiles for build questions.
       const answers = [...container.querySelectorAll(".lesson-option, .bd-tile")]
@@ -9877,6 +9888,7 @@ function bindCheckpointAudioHelpers(container, lesson) {
     btn.addEventListener("click", async (e) => {
       e.stopPropagation();
       checkpointPlaybackId += 1;
+      clearVisualHighlights();
       const text = btn.getAttribute("data-speak-option") || "";
       const answerRow = btn.closest(".lesson-option-row, .bd-tile-wrap");
       const glyph = answerRow?.querySelector(".phase-one-answer-glyph");
