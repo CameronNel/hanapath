@@ -2825,6 +2825,51 @@ li { margin-bottom: 4px; }
   border: 1px solid rgba(var(--accent-rgb), 0.28);
   transition: transform var(--dur-2) var(--ease-spring);
 }
+.hub-tile-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+/* Reference shortcut pinned to the right edge of a learn tile. */
+.hub-tile-ref {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 74px;
+  padding: 8px 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: rgba(var(--accent-rgb), 0.08);
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition: transform var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
+}
+.hub-tile-ref:hover {
+  transform: translateY(-1px);
+  background: rgba(var(--accent-rgb), 0.16);
+  border-color: rgba(var(--accent-rgb), .32);
+}
+.hub-tile-ref-icon { font-size: 1.25rem; line-height: 1; }
+.hub-tile-ref-label {
+  font-size: .7rem;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.2;
+  text-align: center;
+}
 .hub-tile-text { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .hub-tile-text strong { font-size: 1.02rem; font-weight: 700; color: var(--text); }
 .hub-tile-text small { font-size: .82rem; color: var(--muted); line-height: 1.35; }

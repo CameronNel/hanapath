@@ -7221,24 +7221,6 @@ function openEntireWordBank(options = {}) {
   renderWordBankContent();
 }
 
-// Entry card used by the Words home and the vocabulary stage menu.
-function wordBankEntryCardHtml() {
-  return `
-    <button class="card alpha-board-entry" type="button" id="openEntireWordBank">
-      <div class="alpha-board-entry-main">
-        <div class="eyebrow">Word bank</div>
-        <div class="study-row-ko">Big list of Korean words</div>
-        <div class="screen-sub" style="margin-bottom:0;">Thousands of Korean words in one searchable place - Korean, English, pronunciation, lesson group, and more.</div>
-      </div>
-      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">단어</span>
-    </button>`;
-}
-
-function bindWordBankEntryCard(el) {
-  const btn = el.querySelector("#openEntireWordBank");
-  if (btn) btn.addEventListener("click", () => openEntireWordBank());
-}
-
 function formatWordLessonCategoryLabel(category) {
   return String(category || "")
     .split("-")
@@ -13102,9 +13084,9 @@ const HUB_DEFS = {
     title: "What do you want to learn?",
     sub: "Pick a skill to study. No quizzes here — just the material.",
     items: [
-      { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Learn to read, one stage at a time.", custom: "alphabetLesson" },
-      { id: "vocabulary", icon: "📚", title: "Vocabulary",         sub: "Today's words and the full word list.", target: "library" },
-      { id: "sentences",  icon: "💬", title: "Sentences",          sub: "Read and build real sentences.", target: "practice" },
+      { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Learn to read, one stage at a time.", custom: "alphabetLesson", reference: { id: "alphabet", label: "All hangul" } },
+      { id: "vocabulary", icon: "📚", title: "Vocabulary",         sub: "Today's words and the full word list.", target: "library", reference: { id: "dictionary", label: "Dictionary" } },
+      { id: "sentences",  icon: "💬", title: "Sentences",          sub: "Read and build real sentences.", target: "practice", reference: { id: "dictionary", label: "Dictionary" } },
       { id: "listening",  icon: "🎧", title: "Listening",          sub: "Hear sentences and follow along.", target: "listening" },
     ],
   },
@@ -13675,22 +13657,41 @@ function renderHubMenu(hub) {
       <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(def.sub)}</div>
     </div>
     <div class="hub-tiles">
-      ${def.items.map((item) => `
-        <button class="hub-tile" type="button" data-hub-item="${escapeHtml(item.id)}">
-          <span class="hub-tile-icon">${item.icon}</span>
-          <span class="hub-tile-text">
-            <strong>${escapeHtml(item.title)}</strong>
-            <small>${escapeHtml(item.sub)}</small>
-          </span>
-          <span class="hub-tile-go" aria-hidden="true">›</span>
-        </button>
-      `).join("")}
+      ${def.items.map((item) => {
+        // The reference shortcut (All hangul / Dictionary) rides on the right
+        // edge of its own learn tile, so the banks are one tap from the hub.
+        const ref = hub === "learn" ? item.reference : null;
+        return `
+        <div class="hub-tile${ref ? " has-ref" : ""}">
+          <button class="hub-tile-main" type="button" data-hub-item="${escapeHtml(item.id)}">
+            <span class="hub-tile-icon">${item.icon}</span>
+            <span class="hub-tile-text">
+              <strong>${escapeHtml(item.title)}</strong>
+              <small>${escapeHtml(item.sub)}</small>
+            </span>
+          </button>
+          ${ref
+            ? `<button class="hub-tile-ref" type="button" data-hub-reference="${escapeHtml(ref.id)}">
+                 <span class="hub-tile-ref-icon" aria-hidden="true">📚</span>
+                 <span class="hub-tile-ref-label">${escapeHtml(ref.label)}</span>
+               </button>`
+            : `<span class="hub-tile-go" aria-hidden="true">›</span>`}
+        </div>
+      `;
+      }).join("")}
     </div>
   `;
   el.querySelectorAll("[data-hub-item]").forEach((btn) => {
     btn.addEventListener("click", () => {
       queueScreenMotion("forward", 1);
       openHubItem(hub, btn.dataset.hubItem);
+    });
+  });
+  el.querySelectorAll("[data-hub-reference]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      queueScreenMotion("forward", 1);
+      if (btn.dataset.hubReference === "alphabet") openEntireAlphabet();
+      else openEntireWordBank();
     });
   });
   el.querySelector("[data-open-settings]")?.addEventListener("click", () => {
@@ -13886,22 +13887,11 @@ function renderLearnStageMenu(itemId) {
     })()
     : stageRows;
 
-  // [2026-06-29] Entry card for the Entire Korean Alphabet board, pinned atop the alphabet stage list.
-  const fullAlphabetHtml = itemId === "alphabet"
-    ? `
-    <button class="card alpha-board-entry" type="button" id="openEntireAlphabet">
-      <div class="alpha-board-entry-main">
-        <div class="eyebrow">Reference</div>
-        <div class="study-row-ko">Entire Korean alphabet</div>
-        <div class="screen-sub" style="margin-bottom:0;">Every consonant and vowel as a keyboard or list — tap to hear each sound.</div>
-      </div>
-      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가나다</span>
-    </button>`
-    : "";
+  // The alphabet board and the word bank now live as the reference shortcut on
+  // the right edge of each Learn hub tile, so no entry card is repeated here.
 
   // Words section: keep the stage menu grouped into a few high-level buckets.
   const wordDueCount = itemId === "vocabulary" ? getVocabDueCount() : 0;
-  const wordBankHtml = itemId === "vocabulary" ? wordBankEntryCardHtml() : "";
   const wordBasicsHtml = itemId === "vocabulary" ? wordBasicsSectionHtml() : "";
   const wordReviewHtml = itemId === "vocabulary" && wordDueCount
     ? `
@@ -13951,7 +13941,6 @@ function renderLearnStageMenu(itemId) {
   const alphabetGridHtml = itemId === "alphabet"
     ? `
     <div class="alphabet-menu-grid">
-      ${fullAlphabetHtml}
       ${stagesHtml}
     </div>`
     : "";
@@ -13981,7 +13970,6 @@ function renderLearnStageMenu(itemId) {
       <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
     </div>
     ${itemId === "alphabet" ? alphabetGridHtml : `
-      ${wordBankHtml}
       ${wordBasicsHtml}
       ${wordReviewHtml}
       ${sentenceReviewHtml}
@@ -14016,13 +14004,9 @@ function renderLearnStageMenu(itemId) {
     completeAlphabetSectionForTesting();
     renderLearnStageMenu("alphabet");
   });
-  // [2026-06-29] Wire the full-alphabet entry card.
-  const entireAlphabetBtn = document.getElementById("openEntireAlphabet");
-  if (entireAlphabetBtn) entireAlphabetBtn.addEventListener("click", () => openEntireAlphabet());
   if (itemId === "alphabet") {
     bindAlphabetSectionCards(el);
   }
-  bindWordBankEntryCard(el);
   if (itemId === "vocabulary") {
     bindVocabularySectionCards(el, "menu");
   }
@@ -20417,8 +20401,6 @@ function renderVocabulary() {
       ${viewButtons ? `<div class="vocab-filters mt-12">${viewButtons}</div>` : ""}
     </div>
 
-    ${wordBankEntryCardHtml()}
-
     ${showLevelRail ? renderLevelRail("vocabulary", level) : ""}
 
     ${content}
@@ -20426,7 +20408,6 @@ function renderVocabulary() {
     ${showQuiz ? renderQuizCard("vocabulary") : ""}
   `;
 
-  bindWordBankEntryCard(el);
   if (activeView === "learn") {
     bindWordsHomeContent(el); // also wires its own review button
   } else {
