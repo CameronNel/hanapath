@@ -33,8 +33,8 @@ do not turn the root app into a framework project or remove browser/PWA support.
 > is also complete: the 21-batch queue closed 2026-07-19** (s2061–s4177,
 > 2,117 authored rows; ledger in the roadmap §13). Any further scenario pack
 > requires fresh owner approval of themes — do not author one autonomously.
-> Remaining known Sentences debt: Track I dead-code removal (Listening tab
-> still uses `getSentenceStudyBank()`) and the plan's §8 carried-over items.
+> Track I closed 2026-07-19: the Listening tab reads the full bank and the
+> legacy aggregation is deleted. Remaining: the plan's §8 carried-over items.
 > Bank-level and authored-content work (Track H) still follows
 > **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)**
 > (one box = one PR; owner-gated items are marked 🔒), cross-checked against

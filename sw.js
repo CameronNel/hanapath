@@ -1,5 +1,5 @@
 // [2026-07-16] Cache bumped to v382: Android back contract, Settings progress backup, M2 hardening, and ML Kit digital ink.
-const CACHE_NAME = "hanapath-shell-v408";
+const CACHE_NAME = "hanapath-shell-v409";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -20,7 +20,7 @@ const APP_SHELL = [
   "./hangul_strokes.js?v=20260715b",
   "./app_intro_timeline.js?v=20260713b",
   "./app_intro.js?v=20260713b",
-  "./app.js?v=20260719b",
+  "./app.js?v=20260719c",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

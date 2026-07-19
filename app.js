@@ -2140,103 +2140,19 @@ function tokenizeSentence(value) {
     .filter(Boolean);
 }
 
-function pushSentenceStudyItem(items, seen, candidate) {
-  const sentence = String(
-    candidate.korean ||
-      candidate.sentence ||
-      candidate.phrase ||
-      candidate.answer ||
-      candidate.reply ||
-      candidate.honorific ||
-      candidate.plain ||
-      ""
-  ).trim();
-
-  if (!sentence) {
-    return;
-  }
-
-  const key = normalizeStudyText(sentence);
-  if (!key || seen.has(key)) {
-    return;
-  }
-
-  seen.add(key);
-  items.push({
-    korean: sentence,
-    meaning: String(candidate.meaning || candidate.explanation || candidate.cue || candidate.prompt || "").trim(),
-    voiceText: String(candidate.voiceText || sentence).trim(),
-    source: String(candidate.source || candidate.label || "").trim(),
-    tokenCount: tokenizeSentence(sentence).length,
-  });
-}
-
-function getSentenceStudyBank() {
+function getListeningSentenceBank() {
   if (sentenceStudyBankCache.items) {
     return sentenceStudyBankCache.items;
   }
 
-  const items = [];
-  const seen = new Set();
-
-  const bankRows = getSentenceBankRows();
-  const legacyRows = bankRows.filter(row => row.source === "legacy-app");
-  legacyRows.forEach((row) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: row.korean,
-      meaning: row.english,
-      voiceText: row.voiceText || row.korean,
-      source: "Legacy Bank",
-    });
-  });
-
-  grammarClozeBank.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.voiceText || item.answer || "",
-      meaning: item.explanation || item.prompt,
-      voiceText: item.voiceText || item.answer || "",
-      source: "Grammar cloze",
-    });
-  });
-
-  grammarRoleBank.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.sentence,
-      meaning: item.answer,
-      voiceText: item.voiceText || item.sentence || "",
-      source: "Grammar role",
-    });
-  });
-
-  survivalCloze.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.voiceText || item.prompt || "",
-      meaning: item.explanation || item.prompt,
-      voiceText: item.voiceText || item.prompt || "",
-      source: "Survival cloze",
-    });
-  });
-
-  conversationRepairBank.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.phrase,
-      meaning: item.meaning,
-      voiceText: item.voiceText,
-      source: "Repair",
-    });
-  });
-
-  conversationScenarioBank.forEach((item) => {
-    pushSentenceStudyItem(items, seen, {
-      korean: item.answer,
-      meaning: item.cue,
-      voiceText: item.voiceText,
-      source: "Scenario",
-    });
-  });
-
-  sentenceStudyBankCache.items = items;
-  return items;
+  sentenceStudyBankCache.items = getSentenceBankRows().map((row) => ({
+    korean: row.korean,
+    meaning: row.english,
+    voiceText: row.voiceText || row.korean,
+    source: `Sentence bank · band ${row.band}`,
+    tokenCount: (Array.isArray(row.tokens) && row.tokens.length) || tokenizeSentence(row.korean).length,
+  }));
+  return sentenceStudyBankCache.items;
 }
 
 function getSentenceTokenBank() {
@@ -2247,7 +2163,7 @@ function getSentenceTokenBank() {
 
   const tokens = new Set();
 
-  getSentenceStudyBank().forEach((item) => {
+  getListeningSentenceBank().forEach((item) => {
     tokenizeSentence(item.korean).forEach((token) => tokens.add(token));
   });
 
@@ -2288,14 +2204,14 @@ function makeSentenceTokenPool(answerTokens, extraTokens = 8) {
 }
 
 function getBuildableSentenceBank(level = getTrackLevel("sentences")) {
-  const bank = getSentenceStudyBank()
+  const bank = getListeningSentenceBank()
     .filter((item) => item.tokenCount >= 2)
     .sort((a, b) => a.tokenCount - b.tokenCount);
   return getRepeatBandSlice(bank, level);
 }
 
 function getDictationSentenceBank(level = getTrackLevel("sentences")) {
-  const bank = getSentenceStudyBank()
+  const bank = getListeningSentenceBank()
     .filter((item) => item.tokenCount >= 2)
     .sort((a, b) => a.tokenCount - b.tokenCount);
   return getRepeatBandSlice(bank, level);
@@ -20559,7 +20475,7 @@ function renderLibrary() {
   state.studio = "listen";
 
   const level = getActiveLearnLevel("listening");
-  const listenBank = getSentenceStudyBank()
+  const listenBank = getListeningSentenceBank()
     .filter((item) => item.tokenCount >= 2)
     .sort((a, b) => a.tokenCount - b.tokenCount);
   const currentSlice = getCurrentBandSlice(listenBank, level, 10);
