@@ -10921,6 +10921,7 @@ const DRILL_LENGTHS = [5, 10, 20, 80, "∞"];
 const ALPHABET_LETTER_QUESTION_DIRECTIONS = ["letter-to-sound", "sound-to-letter"];
 let drillSession = null;
 let alphabetQuickRefReturn = null;
+let drillPlaybackId = 0;
 
 function cancelDrillAutoAdvance(session = drillSession) {
   if (!session?.advanceTimer) return;
@@ -11190,8 +11191,37 @@ function renderDrillAudioButtons(question) {
   ].join("");
 }
 
+function renderDrillVisualHtml(question) {
+  if (!question?.visual) return "";
+  const parts = Array.isArray(question.drillVisualParts) ? question.drillVisualParts.filter(Boolean) : [];
+  return `<div class="quiz-visual${parts.length ? " has-parts" : ""}">
+    <div class="drill-visual-target" data-drill-visual-target>${question.visual}</div>
+    ${parts.length ? `<div class="drill-visual-parts" aria-label="Hangul components">
+      ${parts.map((part, index) => `<span class="drill-visual-part" data-drill-visual-part="${index}" lang="ko">${escapeHtml(part)}</span>`).join("")}
+    </div>` : ""}
+  </div>`;
+}
+
+function clearDrillAudioHighlights(container) {
+  container?.querySelectorAll("[data-drill-visual-target], [data-drill-visual-part], [data-drill-slot], [data-drill-assembled]")
+    .forEach((item) => item.classList.remove("active-highlight"));
+}
+
+async function playDrillHighlightedAudio(container, text, target) {
+  const tokenId = ++drillPlaybackId;
+  clearDrillAudioHighlights(container);
+  if (target) target.classList.add("active-highlight");
+  try {
+    await speak(text);
+  } finally {
+    if (tokenId === drillPlaybackId) clearDrillAudioHighlights(container);
+  }
+}
+
 function renderAlphabetDrillLab() {
   cancelDrillAutoAdvance();
+  drillPlaybackId += 1;
+  stopSpeech();
   hideCorrectToast(true);
   hideRetryToast(true);
   alphabetQuickRefReturn = null;
@@ -11259,6 +11289,8 @@ function renderDrillQuestion(reuseCurrent = false) {
   if (!s) return;
   if (s.asked >= s.total) return renderDrillResult();
   cancelDrillAutoAdvance(s);
+  drillPlaybackId += 1;
+  stopSpeech();
   hideCorrectToast(true);
   hideRetryToast(true);
   const el = showScreen("detail");
@@ -11275,7 +11307,7 @@ function renderDrillQuestion(reuseCurrent = false) {
   s.currentHadMiss = false;
   s.currentMissIds = [];
   const isBuild = q.interaction === "build";
-  const visualHtml = q.visual ? `<div class="quiz-visual">${q.visual}</div>` : "";
+  const visualHtml = renderDrillVisualHtml(q);
   const interactiveHtml = isBuild
     ? `<div class="bd-builder" id="drillBuilder" lang="ko">
          <div class="drill-build-slots">${q.seq.map((_, i) => `<span class="bd-slot" data-drill-slot="${i}" aria-hidden="true">·</span>`).join("")}</div>
@@ -11315,20 +11347,33 @@ function renderDrillQuestion(reuseCurrent = false) {
       </div>
     </div>`;
   const hearWhole = document.getElementById("drillHearWholeBtn");
-  if (hearWhole) hearWhole.addEventListener("click", () => void speak(getDrillWholeAudioText(q)));
+  if (hearWhole) hearWhole.addEventListener("click", () => {
+    const target = el.querySelector("[data-drill-visual-target], [data-drill-assembled]");
+    void playDrillHighlightedAudio(el, getDrillWholeAudioText(q), target);
+  });
   bindAlphabetReferenceButtons(el);
   const hearPart = document.getElementById("drillHearPartBtn");
   if (hearPart) {
     hearPart.addEventListener("click", async () => {
       if (!isBuild) {
-        void speak(getDrillPartAudioText(q));
+        const partIndex = Number.isInteger(q.drillPartIndex) ? q.drillPartIndex : -1;
+        const target = partIndex >= 0
+          ? el.querySelector(`[data-drill-visual-part="${partIndex}"]`)
+          : el.querySelector("[data-drill-visual-target]");
+        void playDrillHighlightedAudio(el, getDrillPartAudioText(q), target);
         return;
       }
+      const tokenId = ++drillPlaybackId;
+      clearDrillAudioHighlights(el);
       for (const [index, part] of (q.seq || []).entries()) {
+        if (tokenId !== drillPlaybackId) break;
+        clearDrillAudioHighlights(el);
+        el.querySelector(`[data-drill-slot="${index}"]`)?.classList.add("active-highlight");
         const partAudio = index === 2 ? getBatchimAudioText(part) : speakableForChunk(part);
         await speak(partAudio || speakableForChunk(part), { preserveSequence: true });
         await new Promise((resolve) => window.setTimeout(resolve, 180));
       }
+      if (tokenId === drillPlaybackId) clearDrillAudioHighlights(el);
     });
   }
   if (isBuild) {
@@ -11494,6 +11539,8 @@ function renderDrillResult() {
   const s = drillSession;
   if (!s) return renderAlphabetDrillLab();
   cancelDrillAutoAdvance(s);
+  drillPlaybackId += 1;
+  stopSpeech();
   hideCorrectToast(true);
   hideRetryToast(true);
   const el = showScreen("detail");
@@ -11697,6 +11744,8 @@ function generateDecomposeQuestion(pools, forced = {}) {
     drillWholeLabel: "Syllable",
     drillPartLabel: target === "medial" ? "Vowel" : target === "final" ? "Final" : "Consonant",
     drillPartVoiceText: target === "final" ? getBatchimAudioText(answer) : answer,
+    drillVisualParts: [initial, medial, final].filter(Boolean),
+    drillPartIndex: target === "initial" ? 0 : target === "medial" ? 1 : 2,
     drillChoiceKind: target === "final" ? "batchim" : "letter",
     drillWeakKind: target === "final" ? "batchim" : "letter",
   };
@@ -12199,6 +12248,7 @@ function generateBatchimQuestion(pools, forcedLetter = "") {
   const answer = group.group;
   const options = makeTextChoices(answer, availableGroups.map((item) => item.group), Math.min(4, availableGroups.length));
   const sample = BATCHIM_GROUP_WORD_SAMPLE[answer] || composeHangul("ㅇ", "ㅏ", letter);
+  const sampleParts = decomposeHangul(sample);
 
   return {
     kind: "Batchim sound",
@@ -12215,6 +12265,8 @@ function generateBatchimQuestion(pools, forcedLetter = "") {
     drillWholeLabel: "Sample",
     drillPartLabel: "Closing sound",
     drillPartVoiceText: BATCHIM_GROUP_SOUND_SPEAK[answer] || "",
+    drillVisualParts: sampleParts ? [sampleParts.initial, sampleParts.medial, sampleParts.final].filter(Boolean) : [],
+    drillPartIndex: 2,
   };
 }
 
