@@ -829,7 +829,13 @@ Phase 2 (Track H authored expansion, §5), still owner-gated 🔒.
 
 ---
 
-## 5. Phase 2 — authored expansion (Track H; 🔓 owner-unlocked 2026-07-16)
+## 5. Phase 2 — authored expansion (Track H; ✅ queue completed 2026-07-19)
+
+> **Status (2026-07-19):** the owner-unlocked queue is **complete** — 21
+> batches merged (s2061–s4177, 2,117 authored rows; re-derived totals in the
+> roadmap §13 closure row). The gap-report priority items and grammar-unit
+> fills are done and the thin-cell list is empty. Any further scenario pack
+> requires fresh owner approval of themes — do not start one autonomously.
 
 Track H from `docs/SENTENCES_FINAL_ROADMAP.md` remains the content pipeline;
 this plan re-anchors where its output lands. The owner unlocked the priority
