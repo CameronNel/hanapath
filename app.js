@@ -10937,8 +10937,30 @@ function getDrillRuleReadTime(rule) {
 function advanceDrillQuestion(session) {
   if (!session || drillSession !== session) return;
   cancelDrillAutoAdvance(session);
+  hideDrillRuleOverlay();
   session.asked += 1;
   renderDrillQuestion();
+}
+
+function hideDrillRuleOverlay() {
+  document.querySelector("[data-drill-rule-overlay]")?.remove();
+}
+
+function showDrillRuleOverlay(correct, explanation) {
+  hideDrillRuleOverlay();
+  const overlay = document.createElement("div");
+  overlay.className = "word-typed-success-overlay drill-rule-overlay";
+  overlay.dataset.drillRuleOverlay = "";
+  overlay.setAttribute("role", "presentation");
+  overlay.innerHTML = `
+    <div class="word-typed-success-dialog drill-rule-dialog ${correct ? "is-correct" : "is-incorrect"}"
+      role="dialog" aria-modal="true" aria-live="assertive" aria-atomic="true">
+      <div class="drill-rule-mark" aria-hidden="true">${correct ? "✓" : "×"}</div>
+      <div class="word-typed-success-title">${correct ? "Correct" : "Incorrect"}</div>
+      <div class="drill-rule-copy">${escapeHtml(explanation)}</div>
+      <div class="drill-rule-auto">The next question starts automatically.</div>
+    </div>`;
+  document.body.appendChild(overlay);
 }
 
 function showDrillRuleAndAdvance(correct, rule) {
@@ -10946,13 +10968,10 @@ function showDrillRuleAndAdvance(correct, rule) {
   if (!session) return;
   const explanation = String(rule || "Read the pattern, then keep going.").trim();
   const readTime = getDrillRuleReadTime(explanation);
-  if (correct) {
-    showCorrectToast(`Correct. ${explanation}`, readTime);
-    getCorrectToastElement()?.classList.add("is-drill-rule");
-  } else {
-    showRetryToast(explanation, "Incorrect.", readTime);
-    getRetryToastElement()?.classList.add("is-drill-rule");
-  }
+  hideCorrectToast(true);
+  hideRetryToast(true);
+  if (correct) playCorrectSound(); else playIncorrectSound();
+  showDrillRuleOverlay(correct, explanation);
   cancelDrillAutoAdvance(session);
   session.advanceTimer = window.setTimeout(() => {
     if (drillSession !== session || !session.answered) return;
@@ -11220,6 +11239,7 @@ async function playDrillHighlightedAudio(container, text, target) {
 
 function renderAlphabetDrillLab() {
   cancelDrillAutoAdvance();
+  hideDrillRuleOverlay();
   drillPlaybackId += 1;
   stopSpeech();
   hideCorrectToast(true);
@@ -11275,6 +11295,7 @@ function renderAlphabetDrillLab() {
 
 function startDrillSession(mode, len) {
   cancelDrillAutoAdvance();
+  hideDrillRuleOverlay();
   resetLessonMotion("drill");
   queueScreenMotion("forward", 1, { replace: false });
   drillSession = {
@@ -11289,6 +11310,7 @@ function renderDrillQuestion(reuseCurrent = false) {
   if (!s) return;
   if (s.asked >= s.total) return renderDrillResult();
   cancelDrillAutoAdvance(s);
+  hideDrillRuleOverlay();
   drillPlaybackId += 1;
   stopSpeech();
   hideCorrectToast(true);
@@ -11539,6 +11561,7 @@ function renderDrillResult() {
   const s = drillSession;
   if (!s) return renderAlphabetDrillLab();
   cancelDrillAutoAdvance(s);
+  hideDrillRuleOverlay();
   drillPlaybackId += 1;
   stopSpeech();
   hideCorrectToast(true);
