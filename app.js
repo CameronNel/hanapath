@@ -10914,7 +10914,7 @@ const DRILL_MODES = [
   { id: "split", label: "Split Blocks", sub: "Find each jamo inside a syllable" },
   { id: "letters", label: "Letters", sub: "Every learned letter, symbol ↔ sound" },
   { id: "batchim", label: "Batchim", sub: "Match finals to closing sounds" },
-  { id: "weak", label: "Weak Spots", sub: "Review your saved trouble spots" },
+  { id: "weak", label: "Weak Spots", sub: "Review each saved trouble spot once" },
 ];
 // 80 is the finite mastery pass: 40 modern jamo in both retrieval directions.
 const DRILL_LENGTHS = [5, 10, 20, 80, "∞"];
@@ -11018,16 +11018,6 @@ function getWeakSpotList() {
     merged.set(spot.id, { ...spot, count: count + (existing?.count || 0) });
   });
   return [...merged.values()].sort((a, b) => b.count - a.count || a.id.localeCompare(b.id));
-}
-function pickWeakSpotForDrill(spots) {
-  const recent = Array.isArray(drillSession?.recentWeakKeys) ? drillSession.recentWeakKeys : [];
-  const candidates = spots.slice(0, 8);
-  const fresh = candidates.filter((spot) => !recent.includes(spot.id));
-  const chosen = randomItem(fresh.length ? fresh : candidates);
-  if (drillSession && chosen) {
-    drillSession.recentWeakKeys = [chosen.id, ...recent.filter((id) => id !== chosen.id)].slice(0, Math.min(3, candidates.length));
-  }
-  return chosen;
 }
 function makeLetterDrillQuestion(forceLetter, forceDirection = "") {
   const enrolled = getEnrolledLetters();
@@ -11164,8 +11154,8 @@ function makeDrillQuestion(mode) {
   let m = mode;
   if (mode === "mixed") m = randomItem(["build", "split", "letters", "batchim"]);
   if (mode === "weak") {
-    const spots = getWeakSpotList();
-    if (spots.length) return makeWeakSpotDrillQuestion(pickWeakSpotForDrill(spots), pools);
+    const spot = drillSession?.weakSpotQueue?.shift();
+    if (spot) return makeWeakSpotDrillQuestion(spot, pools);
     m = randomItem(["build", "split", "letters", "batchim"]);
   }
   let q;
@@ -11298,9 +11288,15 @@ function startDrillSession(mode, len) {
   hideDrillRuleOverlay();
   resetLessonMotion("drill");
   queueScreenMotion("forward", 1, { replace: false });
+  // Weak Spots always runs one question per unique saved spot. The general
+  // length picker must never pad this mode by repeating the same weak item.
+  const weakSpotQueue = mode === "weak" ? shuffle(getWeakSpotList()) : [];
+  const total = mode === "weak"
+    ? weakSpotQueue.length
+    : len === "∞" ? Infinity : len;
   drillSession = {
-    mode, len, total: len === "∞" ? Infinity : len,
-    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, recentWeakKeys: [], letterCoverageQueue: [], advanceTimer: 0,
+    mode, len, total,
+    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, weakSpotQueue, letterCoverageQueue: [], advanceTimer: 0,
   };
   renderDrillQuestion();
 }
