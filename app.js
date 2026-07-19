@@ -9497,9 +9497,10 @@ const VERTICAL_VOWELS = new Set(["ㅏ","ㅓ","ㅣ","ㅑ","ㅕ","ㅐ","ㅔ","ㅒ"
 function renderBlockDiagram(onset, vowel, batchim = "") {
   const isVertical = VERTICAL_VOWELS.has(vowel);
   const layoutClass = isVertical ? "bd-vertical" : "bd-horizontal";
+  const batchimClass = batchim ? " bd-has-batchim" : "";
   const batchimHtml = batchim ? `<span class="bd-batchim">${escapeHtml(batchim)}</span>` : "";
   return (
-    `<div class="block-diagram ${layoutClass}" lang="ko">` +
+    `<div class="block-diagram ${layoutClass}${batchimClass}" lang="ko">` +
     `<span class="bd-onset">${escapeHtml(onset)}</span>` +
     `<span class="bd-vowel">${escapeHtml(vowel)}</span>` +
     batchimHtml +
@@ -9774,10 +9775,10 @@ function renderCheckpointAudioHelpers(lesson, question) {
   const targetText = question.voiceText || question.target || question.answer || "";
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
   const answerPool = isBuildQuestion ? (question.tray || []) : (question.options || []);
-  // Stage 7's batchim choices are especially unpleasant as one long spoken
+  // Stage 7's word-building choices are especially unpleasant as one long spoken
   // sequence. Keep target and per-option tap audio, but omit "Preview answers"
   // for this stage only.
-  const hasPreviewableAnswers = lesson.id !== "batchim-basics"
+  const hasPreviewableAnswers = lesson.id !== "reading-graduation"
     && answerPool.some((option) => isSpeakableAnswerOption(option));
 
   if (!hasTarget && !hasPreviewableAnswers) return "";
@@ -10185,7 +10186,8 @@ function renderPhaseOneBuildQuestion(lesson, question) {
   const diagram = blocks
     .map((block) => {
       const layoutClass = VERTICAL_VOWELS.has(block.vowel) ? "bd-vertical" : "bd-horizontal";
-      let html = `<div class="block-diagram ${layoutClass} bd-build" lang="ko">`;
+      const batchimClass = block.batchim ? " bd-has-batchim" : "";
+      let html = `<div class="block-diagram ${layoutClass}${batchimClass} bd-build" lang="ko">`;
       html += slotSpan("bd-onset", seq.length);
       seq.push(block.onset);
       roles.push("onset");
@@ -14447,21 +14449,30 @@ function renderCompleteInPlayer(index) {
       : '<button class="lesson-complete-tile primary" type="button" id="learnNextBtn">Next lesson</button>') +
     "</div>";
 
+  const dueLetterCount = getDueLetterCount();
   const finalExtrasHtml = isFinalLesson
-    ? '<div class="card"><div class="flex-between">' +
-      "<div><div class=\"eyebrow\">Practice · Forever</div>" +
-      '<div class="screen-sub" style="margin-bottom:0;">Keep the alphabet sharp with infinite drills.</div></div>' +
-      '<button class="button secondary compact" type="button" id="learnDrillLabBtn">Open Drill Lab</button>' +
-      "</div></div>" +
-      phaseOneReferenceButtonHtml() +
-      (getDueLetterCount()
-        ? '<div class="card"><div class="flex-between">' +
-          "<div><div class=\"eyebrow\">Make it stick</div>" +
-          '<div class="screen-sub" style="margin-bottom:0;">Spaced review of the letters you\'ve learned.</div></div>' +
-          '<button class="button secondary compact" type="button" id="learnLetterReviewBtn">Review letters (' + getDueLetterCount() + ")</button>" +
-          "</div></div>"
-        : ""
-      )
+    ? '<div class="alphabet-completion-extra-grid">' +
+      '<button class="alphabet-completion-extra" type="button" id="learnDrillLabBtn">' +
+      '<span class="eyebrow">Practice · Forever</span>' +
+      '<strong>Drill Lab</strong>' +
+      '<span>Keep the alphabet sharp with infinite drills.</span>' +
+      '<span class="alphabet-completion-extra-action">Open Drill Lab</span>' +
+      '</button>' +
+      '<button class="alphabet-completion-extra" type="button" data-checkpoint-open-reference>' +
+      '<span class="eyebrow">Quick reference</span>' +
+      '<strong>All Hangul</strong>' +
+      '<span>Review every consonant and vowel in one place.</span>' +
+      '<span class="alphabet-completion-extra-action">View reference</span>' +
+      '</button>' +
+      (dueLetterCount
+        ? '<button class="alphabet-completion-extra" type="button" id="learnLetterReviewBtn">' +
+          '<span class="eyebrow">Make it stick</span>' +
+          '<strong>Letter review</strong>' +
+          '<span>Spaced review of the letters you\'ve learned.</span>' +
+          '<span class="alphabet-completion-extra-action">Review ' + dueLetterCount + ' letters</span>' +
+          '</button>'
+        : "") +
+      '</div>'
     : "";
 
   const returnTileHtml =
@@ -14471,7 +14482,7 @@ function renderCompleteInPlayer(index) {
   const totalQuestions = lesson.questions.length;
   const accuracy = totalQuestions ? Math.round((cleanCount / totalQuestions) * 100) : 100;
   els.phaseOneStage.innerHTML = premiumCompletionHtml({
-    tone: isFinalLesson ? "crown" : "success",
+    tone: isFinalLesson ? "neutral" : "success",
     icon: isFinalLesson ? "crown" : "check",
     eyebrow: isFinalLesson ? "Hangul complete" : `Stage ${String(index + 1).padStart(2, "0")} complete`,
     title: cheer,
@@ -14485,7 +14496,7 @@ function renderCompleteInPlayer(index) {
     ],
     detailsHtml: summaryHtml + finalExtrasHtml,
     actionsHtml: tilesHtml + returnTileHtml,
-    className: "alphabet-completion-stage",
+    className: `alphabet-completion-stage${isFinalLesson ? " alphabet-completion-stage--final" : ""}`,
   });
   animateLessonFrame(els.phaseOneStage, "alphabet", {
     key: `complete:${index}`,
