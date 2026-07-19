@@ -6,8 +6,7 @@ const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).p
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260719c",
-  "./app_intro.css?v=20260713b",
+  "./styles.css?v=20260719b",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260717u",
@@ -18,8 +17,6 @@ const APP_SHELL = [
   "./sentences_core.js?v=20260717u",
   "./sentences_lesson_plan.js?v=20260717u",
   "./hangul_strokes.js?v=20260715b",
-  "./app_intro_timeline.js?v=20260713b",
-  "./app_intro.js?v=20260713b",
   "./app.js?v=20260719e",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",

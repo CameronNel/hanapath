@@ -7221,6 +7221,19 @@ function openEntireWordBank(options = {}) {
   renderWordBankContent();
 }
 
+// Reference card shared by the Vocabulary and Sentences stage menus.
+function wordBankEntryCardHtml() {
+  return `
+    <button class="card alpha-board-entry" type="button" data-open-word-bank>
+      <div class="alpha-board-entry-main">
+        <div class="eyebrow">Reference</div>
+        <div class="study-row-ko">Dictionary</div>
+        <div class="screen-sub" style="margin-bottom:0;">Thousands of Korean words in one searchable place — Korean, English, pronunciation, lesson group, and more.</div>
+      </div>
+      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">단어</span>
+    </button>`;
+}
+
 function formatWordLessonCategoryLabel(category) {
   return String(category || "")
     .split("-")
@@ -13887,8 +13900,19 @@ function renderLearnStageMenu(itemId) {
     })()
     : stageRows;
 
-  // The alphabet board and the word bank now live as the reference shortcut on
-  // the right edge of each Learn hub tile, so no entry card is repeated here.
+  const referenceTileHtml = itemId === "alphabet"
+    ? `
+    <button class="card alpha-board-entry" type="button" data-open-entire-alphabet>
+      <div class="alpha-board-entry-main">
+        <div class="eyebrow">Reference</div>
+        <div class="study-row-ko">All Hangul</div>
+        <div class="screen-sub" style="margin-bottom:0;">Every consonant and vowel as a keyboard or list — tap to hear each sound.</div>
+      </div>
+      <span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가나다</span>
+    </button>`
+    : ["vocabulary", "sentences"].includes(itemId)
+      ? wordBankEntryCardHtml()
+      : "";
 
   // Words section: keep the stage menu grouped into a few high-level buckets.
   const wordDueCount = itemId === "vocabulary" ? getVocabDueCount() : 0;
@@ -13966,9 +13990,10 @@ function renderLearnStageMenu(itemId) {
 
   el.innerHTML = `
     <div class="card">
-      <div class="eyebrow">Learn · ${escapeHtml(item.title)}</div>
+      <div class="eyebrow">Learn ${escapeHtml(itemId === "alphabet" ? "Alphabet" : item.title)}</div>
       <h2 class="screen-title" style="margin-bottom:0;">Choose a stage</h2>
     </div>
+    ${referenceTileHtml}
     ${itemId === "alphabet" ? alphabetGridHtml : `
       ${wordBasicsHtml}
       ${wordReviewHtml}
@@ -13985,6 +14010,8 @@ function renderLearnStageMenu(itemId) {
       enterHangulWriting(btn.dataset.learnWriting, { returnTo: `learn-${itemId}` });
     });
   });
+  el.querySelector("[data-open-entire-alphabet]")?.addEventListener("click", () => openEntireAlphabet());
+  el.querySelector("[data-open-word-bank]")?.addEventListener("click", () => openEntireWordBank());
 
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -20770,21 +20797,10 @@ async function init() {
 }
 
 // Android hardware/gesture back contract (docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md
-// §11.3), in priority order: close the intro overlay, then act like the
-// visible ‹ back bar, then return to the Learn home, and only at the true
+// §11.3), in priority order: act like the visible ‹ back bar, then return to
+// the Learn home, and only at the true
 // root hand control back to the system (minimize, never kill mid-lesson).
 function handleHanaPathBackAction() {
-  const intro = document.getElementById("hanapath-app-intro");
-  if (intro && intro.classList.contains("is-open")) {
-    if (window.HanaPathIntro && typeof window.HanaPathIntro.close === "function") {
-      window.HanaPathIntro.close();
-    } else {
-      intro.classList.remove("is-open");
-      intro.hidden = true;
-    }
-    return true;
-  }
-
   const bar = document.getElementById("detail-bar");
   if (bar && !bar.hidden) {
     const backButton = bar.querySelector(".back-btn");
