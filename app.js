@@ -14048,7 +14048,7 @@ function renderLearnStageMenu(itemId) {
       </div>
     </div>`;
 
-  // Every learnable section ends with its writing practice as the last step.
+  // Vocabulary and Sentences end with writing; Alphabet keeps Drill Lab last.
   const writingSource = ["alphabet", "vocabulary", "sentences"].includes(itemId) ? itemId : null;
   const writingCopy = {
     alphabet: "Draw the letters and syllable blocks you have learned.",
@@ -14059,7 +14059,7 @@ function renderLearnStageMenu(itemId) {
     ? `
     <button class="card word-section-card learn-writing-step${itemId === "alphabet" ? " alphabet-step-card" : ""}" type="button" data-learn-writing="${writingSource}">
       <div>
-        <div class="eyebrow">${itemId === "alphabet" ? "Step 3" : "Last step · Write it"}</div>
+        <div class="eyebrow">${itemId === "alphabet" ? "Step 2" : "Last step · Write it"}</div>
         <div class="study-row-ko">Writing practice</div>
         <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(writingCopy[writingSource])}</div>
       </div>
@@ -14072,7 +14072,7 @@ function renderLearnStageMenu(itemId) {
     ? `
     <button class="card word-section-card alphabet-step-card${alphabetDrillUnlocked ? "" : " is-locked"}" type="button" data-learn-drill ${alphabetDrillUnlocked ? "" : 'disabled aria-disabled="true"'}>
       <div>
-        <div class="eyebrow">Step 2</div>
+        <div class="eyebrow">Step 3</div>
         <div class="study-row-ko">Drill lab</div>
         <div class="screen-sub" style="margin-bottom:0;">${alphabetDrillUnlocked ? "Quick mixed, build, split, letter, and batchim drills." : "Complete Step 1 to unlock quick drills."}</div>
       </div>
@@ -14084,8 +14084,8 @@ function renderLearnStageMenu(itemId) {
     ? `
     <div class="alphabet-three-step-grid">
       ${stagesHtml}
-      ${alphabetDrillStepHtml}
       ${writingStepHtml}
+      ${alphabetDrillStepHtml}
     </div>`
     : "";
 
