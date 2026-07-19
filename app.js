@@ -8176,7 +8176,7 @@ function hideCorrectToast(immediate = false) {
   }, 420);
 }
 
-function showCorrectToast(message = "Correct!") {
+function showCorrectToast(message = "Correct!", duration = 1500) {
   playCorrectSound();
   const toast = getCorrectToastElement();
   if (!toast) return;
@@ -8193,6 +8193,7 @@ function showCorrectToast(message = "Correct!") {
   }
 
   toast.textContent = message;
+  toast.classList.remove("is-drill-rule");
   toast.hidden = false;
   toast.classList.remove("is-visible");
   void toast.offsetWidth;
@@ -8200,7 +8201,7 @@ function showCorrectToast(message = "Correct!") {
 
   correctToastState.hideTimer = window.setTimeout(() => {
     hideCorrectToast();
-  }, 1500);
+  }, Math.max(600, Number(duration) || 1500));
 }
 
 function getRetryToastElement() {
@@ -8244,7 +8245,7 @@ function hideRetryToast(immediate = false) {
 // A wrong-answer nudge: "Try again!" plus a brief rule to learn from.
 // The clean-run score is already lost for this question, so restating the
 // rule helps the learner without affecting the pass threshold.
-function showRetryToast(rule = "") {
+function showRetryToast(rule = "", lead = "Try again!", duration = 3200) {
   playIncorrectSound();
   const toast = getRetryToastElement();
   if (!toast) return;
@@ -8261,7 +8262,8 @@ function showRetryToast(rule = "") {
   }
 
   const ruleHtml = rule ? " " + escapeHtml(rule) : "";
-  toast.innerHTML = `<span class="toast-rule"><strong>Try again!</strong>${ruleHtml}</span>`;
+  toast.innerHTML = `<span class="toast-rule"><strong>${escapeHtml(lead)}</strong>${ruleHtml}</span>`;
+  toast.classList.remove("is-drill-rule");
   toast.hidden = false;
   toast.classList.remove("is-visible");
   void toast.offsetWidth;
@@ -8270,7 +8272,7 @@ function showRetryToast(rule = "") {
   // Linger longer than the correct toast — there's a rule to read.
   retryToastState.hideTimer = window.setTimeout(() => {
     hideRetryToast();
-  }, 3200);
+  }, Math.max(900, Number(duration) || 3200));
 }
 
 // Shows a one-time "Tap any Hangul to hear it" hint the first time a user
@@ -9753,6 +9755,7 @@ function alphabetPracticeProgressHtml(label, current = 0, total = 0, allowRefere
 function bindAlphabetReferenceButtons(container) {
   container?.querySelectorAll("[data-checkpoint-open-reference]").forEach((button) => {
     button.addEventListener("click", () => {
+      alphabetQuickRefReturn = null;
       state.quickRefActive = true;
       openEntireAlphabet();
     });
@@ -10789,19 +10792,28 @@ function renderEntireAlphabet() {
 
   const activeLessonIdx = state.phaseOneActive;
   const isQuickRef = !!state.quickRefActive;
-
-  showDetailBarWithBack("learn", "Entire Korean alphabet", () => {
+  const returnFromQuickRef = () => {
+    const returnToSource = alphabetQuickRefReturn;
+    alphabetQuickRefReturn = null;
     state.quickRefActive = false;
     saveState();
+    if (typeof returnToSource === "function") {
+      returnToSource();
+      return;
+    }
     openLearnStageMenu("alphabet");
-  }, "Alphabet");
+  };
+
+  showDetailBarWithBack("learn", "Entire Korean alphabet", () => {
+    returnFromQuickRef();
+  }, alphabetQuickRefReturn ? "Drill Lab" : "Alphabet");
 
   const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
   const labels = state.alphabetBoardLabels || "none";
   if (!alphabetBoardSelected) alphabetBoardSelected = "ㄱ";
 
   const resumeBtnHtml = isQuickRef
-    ? `<button class="button primary compact alpha-reference-resume" type="button" id="resumeActiveLessonBtn">🔙 Return to Stage ${String(activeLessonIdx + 1).padStart(2, "0")}</button>`
+    ? `<button class="button primary compact alpha-reference-resume" type="button" id="resumeActiveLessonBtn">🔙 ${alphabetQuickRefReturn ? "Return to Drill Lab" : `Return to Stage ${String(activeLessonIdx + 1).padStart(2, "0")}`}</button>`
     : "";
 
   el.innerHTML = `
@@ -10835,6 +10847,11 @@ function renderEntireAlphabet() {
   const resumeBtn = el.querySelector("#resumeActiveLessonBtn");
   if (resumeBtn) {
     resumeBtn.addEventListener("click", () => {
+      if (alphabetQuickRefReturn) {
+        returnFromQuickRef();
+        return;
+      }
+      alphabetQuickRefReturn = null;
       state.quickRefActive = false;
       saveState();
       openLearnLesson(activeLessonIdx, { resume: true, allowResult: true });
@@ -10889,6 +10906,44 @@ const DRILL_MODES = [
 const DRILL_LENGTHS = [5, 10, 20, 80, "∞"];
 const ALPHABET_LETTER_QUESTION_DIRECTIONS = ["letter-to-sound", "sound-to-letter"];
 let drillSession = null;
+let alphabetQuickRefReturn = null;
+
+function cancelDrillAutoAdvance(session = drillSession) {
+  if (!session?.advanceTimer) return;
+  window.clearTimeout(session.advanceTimer);
+  session.advanceTimer = 0;
+}
+
+function getDrillRuleReadTime(rule) {
+  const words = String(rule || "").trim().split(/\s+/).filter(Boolean).length;
+  return Math.min(5200, Math.max(2100, 900 + words * 320));
+}
+
+function advanceDrillQuestion(session) {
+  if (!session || drillSession !== session) return;
+  cancelDrillAutoAdvance(session);
+  session.asked += 1;
+  renderDrillQuestion();
+}
+
+function showDrillRuleAndAdvance(correct, rule) {
+  const session = drillSession;
+  if (!session) return;
+  const explanation = String(rule || "Read the pattern, then keep going.").trim();
+  const readTime = getDrillRuleReadTime(explanation);
+  if (correct) {
+    showCorrectToast(`Correct. ${explanation}`, readTime);
+    getCorrectToastElement()?.classList.add("is-drill-rule");
+  } else {
+    showRetryToast(explanation, "Incorrect.", readTime);
+    getRetryToastElement()?.classList.add("is-drill-rule");
+  }
+  cancelDrillAutoAdvance(session);
+  session.advanceTimer = window.setTimeout(() => {
+    if (drillSession !== session || !session.answered) return;
+    advanceDrillQuestion(session);
+  }, readTime + 180);
+}
 
 function drillPools() { return ALPHABET_QUIZ_POOLS.reading; }
 function parseWeakSpotId(value) {
@@ -11122,6 +11177,10 @@ function renderDrillAudioButtons(question) {
 }
 
 function renderAlphabetDrillLab() {
+  cancelDrillAutoAdvance();
+  hideCorrectToast(true);
+  hideRetryToast(true);
+  alphabetQuickRefReturn = null;
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
   activeHub = "practice";
@@ -11171,24 +11230,31 @@ function renderAlphabetDrillLab() {
 }
 
 function startDrillSession(mode, len) {
+  cancelDrillAutoAdvance();
   resetLessonMotion("drill");
   queueScreenMotion("forward", 1, { replace: false });
   drillSession = {
     mode, len, total: len === "∞" ? Infinity : len,
-    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, recentWeakKeys: [], letterCoverageQueue: [],
+    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, recentWeakKeys: [], letterCoverageQueue: [], advanceTimer: 0,
   };
   renderDrillQuestion();
 }
 
-function renderDrillQuestion() {
+function renderDrillQuestion(reuseCurrent = false) {
   const s = drillSession;
   if (!s) return;
   if (s.asked >= s.total) return renderDrillResult();
+  cancelDrillAutoAdvance(s);
+  hideCorrectToast(true);
+  hideRetryToast(true);
   const el = showScreen("detail");
   if (!el) return;
   const modeLabel = (DRILL_MODES.find((m) => m.id === s.mode) || {}).label || "Drill";
-  showDetailBarWithBack("practice", modeLabel, () => renderAlphabetDrillLab(), "Drill Lab");
-  const q = s.current = makeDrillQuestion(s.mode);
+  showDetailBarWithBack("practice", "Drill Lab", () => {
+    cancelDrillAutoAdvance(s);
+    renderAlphabetPracticeHub();
+  }, "Practice");
+  const q = reuseCurrent && s.current ? s.current : (s.current = makeDrillQuestion(s.mode));
   s.answered = false;
   s.buildFilled = [];
   s.currentAttempted = false;
@@ -11208,21 +11274,30 @@ function renderDrillQuestion() {
     : `<div class="quiz-options" id="drillOptions">
          ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" ${textLanguageAttr(o)}>${escapeHtml(o)}</button>`).join("")}
        </div>`;
+  const progressLabel = s.total === Infinity
+    ? `${modeLabel} · Question ${s.asked + 1}`
+    : `${modeLabel} · ${s.asked + 1} / ${s.total}`;
+  const progressWidth = s.total === Infinity
+    ? ((s.asked % 10) + 1) * 10
+    : Math.round(((s.asked + 1) / Math.max(1, s.total)) * 100);
   el.innerHTML = `
-    <div class="card word-card alphabet-practice-card" data-lesson-motion-root>
-      ${alphabetPracticeProgressHtml(s.total === Infinity ? `${modeLabel} · Question ${s.asked + 1}` : modeLabel, s.asked + 1, s.total === Infinity ? 0 : s.total, s.answered)}
-      <div class="alphabet-practice-status" id="drillStatus">${s.correct} clean · streak ${s.streak}</div>
-      ${visualHtml}
-      <div class="drill-audio-row">
-        ${renderDrillAudioButtons(q)}
+    <div class="lesson-player-wrap alphabet-lesson-player drill-quick-runner" data-lesson-motion-root>
+      <div class="player-head drill-quick-head">
+        <div class="alphabet-progress-chip drill-quick-progress">
+          <div class="eyebrow">${escapeHtml(progressLabel)}</div>
+          <div class="alphabet-progress-track" aria-label="Drill progress"><span style="width:${progressWidth}%"></span></div>
+        </div>
       </div>
-      <h3 class="screen-title" style="font-size:1.05rem;margin-bottom:4px;">${escapeHtml(q.prompt)}</h3>
-      ${q.detail ? `<div class="screen-sub">${escapeHtml(q.detail)}</div>` : ""}
-      ${interactiveHtml}
-      <div class="lesson-feedback" id="drillFeedback" aria-live="polite"></div>
-      <div class="word-card-actions word-card-nav-actions">
-        <button class="button secondary compact" type="button" id="drillEndBtn">End session</button>
-        <button class="button primary compact" type="button" id="drillNextBtn" disabled>Next</button>
+      <div class="drill-quick-question">
+        ${visualHtml}
+        <div class="drill-audio-row">${renderDrillAudioButtons(q)}</div>
+        <h3 class="drill-quick-prompt">${escapeHtml(q.prompt)}</h3>
+        ${q.detail ? `<div class="screen-sub drill-quick-detail">${escapeHtml(q.detail)}</div>` : ""}
+        ${interactiveHtml}
+      </div>
+      <div class="player-actions word-card-nav-actions drill-quick-actions">
+        <button class="button secondary compact" type="button" id="drillPreviousBtn">Previous</button>
+        <button class="button primary compact" type="button" id="drillReferenceBtn">📚 Hangul</button>
       </div>
     </div>`;
   const hearWhole = document.getElementById("drillHearWholeBtn");
@@ -11249,8 +11324,17 @@ function renderDrillQuestion() {
     document.querySelectorAll("#drillOptions .option").forEach((b) =>
       b.addEventListener("click", () => answerDrill(b.dataset.drillOption, b)));
   }
-  document.getElementById("drillEndBtn").addEventListener("click", () => renderDrillResult());
-  document.getElementById("drillNextBtn").addEventListener("click", () => { s.asked += 1; renderDrillQuestion(); });
+  document.getElementById("drillPreviousBtn").addEventListener("click", () => {
+    cancelDrillAutoAdvance(s);
+    renderAlphabetDrillLab();
+  });
+  document.getElementById("drillReferenceBtn").addEventListener("click", () => {
+    cancelDrillAutoAdvance(s);
+    alphabetQuickRefReturn = () => renderDrillQuestion(true);
+    state.quickRefActive = true;
+    saveState();
+    openEntireAlphabet();
+  });
   animateLessonFrame(el.querySelector("[data-lesson-motion-root]"), "drill", {
     key: `question:${s.asked}`,
     order: s.asked,
@@ -11258,22 +11342,10 @@ function renderDrillQuestion() {
   });
 }
 
-function updateDrillStatus(session) {
-  const status = document.getElementById("drillStatus");
-  if (status && session) status.textContent = `${session.correct} clean · streak ${session.streak}`;
-}
-
-function setDrillFeedback(feedback, tone, lead, body) {
-  if (!feedback) return;
-  feedback.className = `lesson-feedback${tone ? ` ${tone}` : ""}`;
-  feedback.innerHTML = `<strong>${escapeHtml(lead)}</strong>${body ? ` ${escapeHtml(body)}` : ""}`;
-}
-
 function recordDrillMiss(session, jamo, kind = "letter") {
   if (!session) return;
   session.currentHadMiss = true;
   session.streak = 0;
-  updateDrillStatus(session);
   const id = weakSpotId(jamo, kind);
   if (!id) return;
   const recorded = session.currentMissIds || (session.currentMissIds = []);
@@ -11283,12 +11355,33 @@ function recordDrillMiss(session, jamo, kind = "letter") {
   session.missed[id] = (session.missed[id] || 0) + 1;
 }
 
+function lockDrillRunnerNavigation() {
+  ["drillPreviousBtn", "drillReferenceBtn"].forEach((id) => {
+    const button = document.getElementById(id);
+    if (button) button.disabled = true;
+  });
+}
+
+function revealDrillBuildAnswer(question) {
+  if (!question) return;
+  document.querySelectorAll("#drillBuilder [data-drill-slot]").forEach((slot, index) => {
+    slot.textContent = question.seq?.[index] || "";
+    slot.classList.add("filled");
+    slot.removeAttribute("aria-hidden");
+  });
+  const assembled = document.querySelector("[data-drill-assembled]");
+  if (assembled) {
+    assembled.textContent = question.target || "";
+    assembled.classList.add("done");
+  }
+  document.querySelectorAll("#drillTray .bd-tile").forEach((tile) => { tile.disabled = true; });
+}
+
 // Tile-assembly answer handler for the Build Blocks drill mode.
 function answerDrillBuild(jamo, tile) {
   const s = drillSession;
   if (!s || s.answered) return;
   const q = s.current;
-  const feedback = document.getElementById("drillFeedback");
   s.currentAttempted = true;
   const filled = s.buildFilled || (s.buildFilled = []);
   const idx = filled.length;
@@ -11298,9 +11391,11 @@ function answerDrillBuild(jamo, tile) {
   else speakClickableText(jamo, { preferSoundLabels: true });
   if (jamo !== q.seq[idx]) {
     tile.classList.add("wrong");
-    setTimeout(() => tile.classList.remove("wrong"), 500);
+    s.answered = true;
     recordDrillMiss(s, q.seq[idx], idx === 2 ? "batchim" : "letter");
-    setDrillFeedback(feedback, "wrong", "Not yet.", `Tap the ${seatName} next.`);
+    revealDrillBuildAnswer(q);
+    lockDrillRunnerNavigation();
+    showDrillRuleAndAdvance(false, q.explanation || `The ${seatName} comes next.`);
     return;
   }
   filled.push(jamo);
@@ -11308,15 +11403,9 @@ function answerDrillBuild(jamo, tile) {
   if (slot) { slot.textContent = jamo; slot.classList.add("filled"); slot.removeAttribute("aria-hidden"); flashElement(slot); }
   if (filled.length >= q.seq.length) {
     s.answered = true;
-    const clean = !s.currentHadMiss;
-    if (clean) {
-      s.correct += 1;
-      s.streak += 1;
-    } else {
-      s.streak = 0;
-    }
+    s.correct += 1;
+    s.streak += 1;
     s.bestStreak = Math.max(s.bestStreak, s.streak);
-    updateDrillStatus(s);
     const assembled = document.querySelector("[data-drill-assembled]");
     if (assembled) {
       assembled.outerHTML =
@@ -11336,11 +11425,8 @@ function answerDrillBuild(jamo, tile) {
       }
     }
     document.querySelectorAll("#drillTray .bd-tile").forEach((t) => { t.disabled = true; });
-    setDrillFeedback(feedback, "correct", clean ? "Correct." : "Got it.", q.explanation || "");
-    const next = document.getElementById("drillNextBtn");
-    if (next) { next.disabled = false; next.textContent = s.total !== Infinity && s.asked + 1 >= s.total ? "See result" : "Next"; }
-  } else {
-    setDrillFeedback(feedback, "", "Nice.", `Now the ${filled.length === 1 ? "vowel" : "final consonant"}.`);
+    lockDrillRunnerNavigation();
+    showDrillRuleAndAdvance(true, q.explanation || "The letters combine into this block.");
   }
 }
 
@@ -11364,38 +11450,38 @@ function answerDrill(choice, button) {
   const s = drillSession;
   if (!s || s.answered) return;
   const q = s.current;
-  const feedback = document.getElementById("drillFeedback");
   s.currentAttempted = true;
   speakDrillChoice(choice, q);
   if (choice !== q.answer) {
     button.classList.add("wrong");
-    button.disabled = true;
+    s.answered = true;
     recordDrillMiss(s, q.weakKey, q.weakKind || "letter");
-    setDrillFeedback(feedback, "wrong", "Not yet.", "Try another answer.");
+    document.querySelectorAll("#drillOptions .option").forEach((option) => {
+      option.disabled = true;
+      if ((option.dataset.drillOption || "") === q.answer) option.classList.add("correct");
+    });
+    lockDrillRunnerNavigation();
+    showDrillRuleAndAdvance(false, q.explanation || `The correct answer is ${q.answer}.`);
     return;
   }
   s.answered = true;
-  const clean = !s.currentHadMiss;
-  if (clean) {
-    s.correct += 1;
-    s.streak += 1;
-  } else {
-    s.streak = 0;
-  }
+  s.correct += 1;
+  s.streak += 1;
   s.bestStreak = Math.max(s.bestStreak, s.streak);
-  updateDrillStatus(s);
   document.querySelectorAll("#drillOptions .option").forEach((b) => {
     b.disabled = true;
     if ((b.dataset.drillOption || "") === q.answer) b.classList.add("correct");
   });
-  setDrillFeedback(feedback, "correct", clean ? "Correct." : "Got it.", q.explanation || "");
-  const next = document.getElementById("drillNextBtn");
-  if (next) { next.disabled = false; next.textContent = s.total !== Infinity && s.asked + 1 >= s.total ? "See result" : "Next"; }
+  lockDrillRunnerNavigation();
+  showDrillRuleAndAdvance(true, q.explanation || `The correct answer is ${q.answer}.`);
 }
 
 function renderDrillResult() {
   const s = drillSession;
   if (!s) return renderAlphabetDrillLab();
+  cancelDrillAutoAdvance(s);
+  hideCorrectToast(true);
+  hideRetryToast(true);
   const el = showScreen("detail");
   if (!el) return;
   showDetailBarWithBack("practice", "Drill complete", () => renderAlphabetDrillLab(), "Drill Lab");
@@ -14255,6 +14341,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   renderPhaseOnePlayer();
 
   els.phaseOneReferenceButton.addEventListener("click", () => {
+    alphabetQuickRefReturn = null;
     state.quickRefActive = true;
     openEntireAlphabet();
   });
@@ -14598,6 +14685,7 @@ function goHub(hub) {
 // Backwards-compatible entry point for in-screen buttons that still call
 // showTab("library"), showTab("practice"), etc.
 function showTab(name) {
+  cancelDrillAutoAdvance();
   const normalized = normalizeNavTab(name);
   const route = LEGACY_ROUTE[normalized] || LEGACY_ROUTE.today;
   if (route.item) {
