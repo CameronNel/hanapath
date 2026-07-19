@@ -5861,7 +5861,7 @@ function wordLessonStudyHtml(lesson, view) {
   }
 
   if (step.type === "type") {
-    const tiles = view.typeHelperVisible || view.typedDone
+    const tiles = view.typeHelperVisible
       ? (view.typeTiles && view.typeTilesWordId === word.id ? view.typeTiles : getWordSyllableTiles(word))
       : [];
     if (tiles.length) {
@@ -5888,14 +5888,20 @@ function wordLessonStudyHtml(lesson, view) {
               placeholder="Type it here" value="${escapeHtml(view.typedValue || "")}" ${view.typedDone ? "disabled" : ""} lang="ko" />
             <button class="word-input-erase" type="button" data-word-tile-erase aria-label="Delete last block" ${view.typedDone ? "disabled" : ""}>⌫</button>
           </div>
-          ${view.typeHelperVisible || view.typedDone ? `
-            <div class="fs-xs text-muted-2" style="margin:8px 0 4px;">Syllable help is open; this attempt is recorded as aided.</div>
-            <div class="word-tile-row">
-              ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.typedDone ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
-            </div>` : '<button class="button secondary compact word-helper-button" type="button" data-word-show-tiles>Need help? Show syllable bank</button>'}
+          <div class="word-helper-status${view.typeHelperVisible ? " is-aided" : ""}">
+            ${view.typeHelperVisible
+              ? "<strong>Aided.</strong>&nbsp; Syllable bank used for this attempt."
+              : "Using the syllable bank records this attempt as aided."}
+          </div>
+          <div class="word-helper-slot">
+            ${view.typeHelperVisible ? `
+              <div class="word-tile-row">
+                ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.typedDone ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
+              </div>` : '<button class="button secondary compact word-helper-button" type="button" data-word-show-tiles>Need help? Show syllable bank</button>'}
+          </div>
           <div class="word-type-feedback" role="status" aria-live="polite">${view.typedFeedback || ""}</div>
         </div>
-        ${view.typedDone ? "" : `<div class="word-card-actions word-card-nav-actions">
+        ${view.typedDone ? "" : `<div class="word-card-actions word-card-nav-actions word-type-actions">
           <button class="button secondary compact" type="button" data-word-lesson-back ${view.stepIndex === 0 ? "disabled" : ""}>Back</button>
           <button class="button primary compact" type="button" data-word-type-check>Check</button>
         </div>`}
@@ -5964,12 +5970,18 @@ function wordLessonCheckHtml(lesson, view) {
       <div class="word-type-box">
         <input class="sentence-input" id="wordTypeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
           placeholder="Type the Korean word" value="${escapeHtml(view.typedValue || "")}" ${view.answered ? "disabled" : ""} lang="ko" />
-        ${view.typeHelperVisible || view.answered ? `
-          <div class="fs-xs text-muted-2" style="margin:8px 0 4px;">Syllable help is open; this answer counts as aided.</div>
-          <div class="word-tile-row">
-            ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.answered ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
-            <button class="word-tile word-tile-erase" type="button" data-word-tile-erase aria-label="Delete last block" ${view.answered ? "disabled" : ""}>⌫</button>
-          </div>` : '<button class="button secondary compact word-helper-button" type="button" data-word-show-tiles>Need help? Show syllable bank</button>'}
+        <div class="word-helper-status${view.questionHelperUsed ? " is-aided" : ""}">
+          ${view.questionHelperUsed
+            ? "<strong>Aided.</strong>&nbsp; Syllable bank used for this answer."
+            : "Using the syllable bank records this answer as aided."}
+        </div>
+        <div class="word-helper-slot">
+          ${view.typeHelperVisible || view.answered ? `
+            <div class="word-tile-row">
+              ${tiles.map((tile) => `<button class="word-tile" type="button" data-word-tile="${escapeHtml(tile)}" lang="ko" ${view.answered ? "disabled" : ""}>${escapeHtml(tile)}</button>`).join("")}
+              <button class="word-tile word-tile-erase" type="button" data-word-tile-erase aria-label="Delete last block" ${view.answered ? "disabled" : ""}>⌫</button>
+            </div>` : '<button class="button secondary compact word-helper-button" type="button" data-word-show-tiles>Need help? Show syllable bank</button>'}
+        </div>
       </div>
       ${view.answered ? "" : `<div class="word-card-actions"><button class="button primary compact" type="button" data-word-check-typed>Check</button></div>`}
     `;
@@ -6324,7 +6336,7 @@ function checkWordLessonStudyTyped(view) {
     latencyMs: getWordLessonStudyLatencyMs(view),
     source: "lesson",
     lessonId: view.lessonId || null,
-    result: isCorrect ? "correct" : "incorrect",
+    result: isCorrect ? (view.typeHelperVisible ? "aided" : "correct") : "incorrect",
   });
   persistWordLessonSession(view);
   if (isCorrect) {
