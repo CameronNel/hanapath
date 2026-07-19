@@ -9879,9 +9879,13 @@ function isSpeakableAnswerOption(option) {
 }
 
 function renderCheckpointAudioHelpers(lesson, question) {
+  // Scoped to the block-geometry split layout and build questions — the plain
+  // lesson option grid stays untouched (owner feedback 2026-07-19: adding the
+  // helper row + per-option speakers there wrecked the layout).
   const isBlockGeometry = lesson.id === "block-geometry";
   const isBuildQuestion = question.type === "build";
-  const targetText = isBlockGeometry || isBuildQuestion ? (question.voiceText || question.target || question.answer || "") : "";
+  if (!isBlockGeometry && !isBuildQuestion) return "";
+  const targetText = question.voiceText || question.target || question.answer || "";
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
   const answerPool = isBuildQuestion ? (question.tray || []) : (question.options || []);
   const hasPreviewableAnswers = answerPool.some((option) => isSpeakableAnswerOption(option));
@@ -10041,16 +10045,11 @@ function renderPhaseOneQuestion(lesson) {
       shuffle([...question.options])
         .map(
           (option) =>
-            '<div class="lesson-option-row">' +
             '<button class="lesson-option" type="button" ' + textLanguageAttr(option) + ' data-option="' +
             escapeHtml(option) +
             '">' +
             escapeHtml(option) +
-            "</button>" +
-            (isSpeakableAnswerOption(option)
-              ? '<button class="button secondary compact speak-option-btn" type="button" data-speak-option="' + escapeHtml(option) + '" aria-label="Hear option ' + escapeHtml(option) + '">🔊</button>'
-              : '') +
-            '</div>',
+            "</button>",
         )
         .join("") +
       "</div>" +
@@ -15373,8 +15372,8 @@ function getComposableJamoStrokes(jamo, bank) {
   return strokes;
 }
 
-function composeHangulSyllableGuide(glyph, bank) {
-  if (hangulSyllableGuideCache[glyph] !== undefined) return hangulSyllableGuideCache[glyph];
+function composeHangulSyllableGuide(glyph, bank, cache = hangulSyllableGuideCache) {
+  if (cache[glyph] !== undefined) return cache[glyph];
   let result = null;
   const parts = decomposeHangul(glyph);
   if (parts) {
@@ -15395,8 +15394,64 @@ function composeHangulSyllableGuide(glyph, bank) {
       result = { type: "syllable", name: glyph, strokes };
     }
   }
-  hangulSyllableGuideCache[glyph] = result;
+  cache[glyph] = result;
   return result;
+}
+
+// ── Alternate top-tick handwriting styles for ㅎ / ㅊ ─────────────────────────
+// Learners write the small top mark of ㅎ and ㅊ either as a short upright
+// tick or as a flat bar; both are standard handwriting. The authored bank and
+// the Help demo keep one learner-facing form each (the audit asserts ㅎ stays
+// upright there), while recognition ALSO registers an alternate-tick template
+// for every glyph containing ㅎ or ㅊ so both styles are accepted.
+const HANGUL_TICK_VARIANT_STROKES = {
+  "ㅎ": [[0.36, 0.13], [0.64, 0.13]], // flat-bar alternative to the upright mark
+  "ㅊ": [[0.5, 0.02], [0.5, 0.2]],    // upright-tick alternative to the flat bar
+};
+let hangulVariantBankCache = null;
+const hangulVariantSyllableGuideCache = {};
+
+function getHangulVariantStrokeBank() {
+  if (hangulVariantBankCache) return hangulVariantBankCache;
+  const bank = (typeof window !== "undefined" && window.HANGUL_STROKES) || null;
+  if (!bank) return null;
+  const variantBank = {};
+  Object.keys(bank).forEach((jamo) => {
+    const entry = bank[jamo];
+    const variantStroke = HANGUL_TICK_VARIANT_STROKES[jamo];
+    variantBank[jamo] = variantStroke && entry?.strokes?.length
+      ? { ...entry, strokes: entry.strokes.map((stroke, index) => (index === 0 ? variantStroke : stroke)) }
+      : entry;
+  });
+  hangulVariantBankCache = variantBank;
+  return variantBank;
+}
+
+function hangulGlyphHasTickVariant(glyph) {
+  if (HANGUL_TICK_VARIANT_STROKES[glyph]) return true;
+  const parts = decomposeHangul(glyph);
+  if (!parts) return false;
+  const finalParts = parts.final ? (HANGUL_COMPOUND_FINAL_PARTS[parts.final] || [parts.final]) : [];
+  return [parts.initial, ...finalParts].some((jamo) => HANGUL_TICK_VARIANT_STROKES[jamo]);
+}
+
+// Alternate-tick guide used ONLY as an extra recognition template — guides,
+// Help demos, and grading keep the authored standard form.
+function getHangulTickVariantGuide(glyph) {
+  if (!hangulGlyphHasTickVariant(glyph)) return null;
+  const variantBank = getHangulVariantStrokeBank();
+  if (!variantBank) return null;
+  if (variantBank[glyph]?.strokes?.length) return variantBank[glyph];
+  return composeHangulSyllableGuide(glyph, variantBank, hangulVariantSyllableGuideCache);
+}
+
+function getHangulComponentVariantStrokes(jamo) {
+  const hasVariant = HANGUL_TICK_VARIANT_STROKES[jamo]
+    || (HANGUL_COMPOUND_FINAL_PARTS[jamo] || []).some((part) => HANGUL_TICK_VARIANT_STROKES[part]);
+  if (!hasVariant) return null;
+  const variantBank = getHangulVariantStrokeBank();
+  if (!variantBank) return null;
+  return variantBank[jamo]?.strokes?.length ? variantBank[jamo].strokes : getComposableJamoStrokes(jamo, variantBank);
 }
 
 // Free-drawing recognition is deliberately stroke-order agnostic. $Q judges
@@ -15424,6 +15479,8 @@ function getHangulWritingRecognizer() {
   getHangulWritingRecognitionGlyphs().forEach((glyph) => {
     const guide = getHangulStrokeGuide(glyph);
     if (guide) recognizer.add(glyph, guide.strokes, { augment: true });
+    const variant = getHangulTickVariantGuide(glyph);
+    if (variant) recognizer.add(glyph, variant.strokes, { augment: true });
   });
   hangulWritingRecognizerCache = recognizer;
   return recognizer;
@@ -16029,6 +16086,8 @@ function getHangulComponentRecognizer() {
   componentGlyphs.forEach((jamo) => {
     const strokes = getHangulComponentStrokes(jamo);
     if (strokes?.length) recognizer.add(jamo, strokes, { augment: true });
+    const variantStrokes = getHangulComponentVariantStrokes(jamo);
+    if (variantStrokes?.length) recognizer.add(jamo, variantStrokes, { augment: true });
   });
   hangulComponentRecognizerCache = { recognizer, count: componentGlyphs.length };
   return hangulComponentRecognizerCache;
