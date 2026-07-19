@@ -62,10 +62,20 @@ Words v1 queue was deleted 2026-07-10; recover from git history if needed).
    both `index.html` and `sw.js`.
 5. **Audio:** if you add Korean text, regenerate assets per `.agents/AGENTS.md`
    (`python generate_assets.py`); never hand-edit `audio_map.js`.
-6. **Workflow:** branch off `main`, keep changes small and single-purpose, open a
-   PR. There is no test framework — verify with `node --check`, the audit
-   scripts, and a browser smoke test (`python -m http.server`, open `index.html`;
-   state persists in `localStorage` under `hanapath-v1`).
+6. **Workflow:** branch off `main`, keep changes small and single-purpose, and
+   open a PR. Apply this owner-mandated model-family landing policy after the
+   required verification:
+   - **Fable, Opus, Sol, or Terra:** always make the PR ready and merge it
+     automatically after creating it.
+   - **Flash, Luna, or any model family not listed above:** always create a
+     draft PR first and leave it unmerged until the owner explicitly asks.
+   Match the family name case-insensitively regardless of vendor prefix,
+   suffix, or model version. For example, Opus 4.7 and Opus 4.8 both use the
+   Opus auto-merge rule.
+
+   There is no test framework — verify with `node --check`, the audit scripts,
+   and a browser smoke test (`python -m http.server`, open `index.html`; state
+   persists in `localStorage` under `hanapath-v1`).
 
 ## Document map
 

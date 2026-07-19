@@ -90,6 +90,19 @@ node scripts/audit-alphabet-audio.mjs --strict
 node scripts/audit-app-shell.mjs
 ```
 
+## AI pull-request landing policy
+
+The repository owner requires PR handling to follow the model family name,
+matched case-insensitively and independently of vendor prefixes, suffixes, or
+version numbers:
+
+- **Fable, Opus, Sol, and Terra:** after verification, create the PR, make it
+  ready, and merge it automatically. This applies to every version in those
+  families, including Opus 4.7 and Opus 4.8.
+- **Flash, Luna, and every model family not listed above:** always create a
+  draft PR first and leave it unmerged until the owner explicitly requests the
+  merge.
+
 ## Main files
 
 - `index.html`, `app.js`, `styles.css`
