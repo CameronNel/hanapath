@@ -9543,15 +9543,11 @@ function renderBlockDiagrams(diagrams) {
 // blocks: array of { char, onset, vowel, batchim? }
 function renderWordBreakdown(blocks) {
   const cols = blocks.map((b, i) => {
-    const sep = i < blocks.length - 1
-      ? `<span class="bd-word-sep" aria-hidden="true">·</span>`
-      : "";
     return (
       `<div class="bd-block-col concept-token tappable" role="button" tabindex="0" aria-label="Hear ${escapeHtml(b.char)}" title="Tap to hear" data-flash-index="${i}" data-speak="${escapeHtml(b.char)}">` +
       `<span class="bd-word-char" lang="ko">${escapeHtml(b.char)}</span>` +
       renderBlockDiagram(b.onset, b.vowel, b.batchim || "") +
-      `</div>` +
-      sep
+      `</div>`
     );
   });
   return `<div class="bd-word-row">${cols.join("")}</div>`;
@@ -10068,7 +10064,7 @@ function renderPhaseOnePlayer() {
     renderPhaseOneResult(lesson);
   }
 
-  const showReference = phaseOneView.mode !== "check" || phaseOneView.answered;
+  const showReference = true;
   if (els.phaseOneReferenceButton) {
     els.phaseOneReferenceButton.style.display = showReference ? "" : "none";
   }
@@ -15377,10 +15373,11 @@ function getHangulComponentVariantStrokes(jamo) {
 // pen lift than the authored demonstration.
 const HANGUL_FREEHAND_TARGET_CONFIDENCE = 0.82;
 const HANGUL_FREEHAND_MIN_MARGIN = 0.01;
-const HANGUL_FREEHAND_FALLBACK_TARGET_CONFIDENCE = 0.76;
 const HANGUL_FREEHAND_COMPONENT_MIN_CONFIDENCE = 0.7;
 const HANGUL_FREEHAND_COMPONENT_AVG_CONFIDENCE = 0.8;
+const HANGUL_FREEHAND_PRIMARY_COMPONENT_MAX_RANK = 2;
 const HANGUL_FREEHAND_COMPONENT_MAX_RANK = 4;
+const HANGUL_FREEHAND_STROKE_TOLERANCE = 1;
 let hangulComponentRecognizerCache = null;
 
 function getHangulWritingRecognitionGlyphs() {
@@ -16079,16 +16076,44 @@ function getHangulTargetComponentMatches(strokes, glyph) {
   });
 }
 
+function hasUnexpectedHangulFinalInk(strokes, parts, layout) {
+  if (parts.final) return false;
+  const initialBottom = layout.initial[1] + layout.initial[3];
+  const medialBottom = layout.medial[1] + layout.medial[3];
+  const medialLeft = layout.medial[0];
+  const sideBySide = medialLeft > layout.initial[0] + 0.15;
+  const lowerEdge = sideBySide
+    ? Math.min(0.9, initialBottom + 0.05)
+    : Math.min(0.94, Math.max(initialBottom, medialBottom) + 0.04);
+  return strokes.some((stroke) => {
+    if (!Array.isArray(stroke) || stroke.length < 2) return false;
+    const meanX = stroke.reduce((sum, point) => sum + point[0], 0) / stroke.length;
+    const meanY = stroke.reduce((sum, point) => sum + point[1], 0) / stroke.length;
+    return meanY >= lowerEdge && meanX < medialLeft + 0.12;
+  });
+}
+
 function isHangulTargetAwareRecognitionMatch(matches, glyph, strokes) {
-  const target = matches.find((match) => match.name === glyph) || null;
-  if (!target || target.confidence < HANGUL_FREEHAND_FALLBACK_TARGET_CONFIDENCE) return false;
+  // A prompted syllable should be judged by the jamo actually drawn in its
+  // expected seats. Requiring the full-block template to rank highly first
+  // made natural handwriting fail as an unrelated single jamo (for example,
+  // a clearly completed 한 being reported as ㅎ or ㅍ).
+  const parts = decomposeHangul(glyph);
+  const layout = getHangulSyllableLayout(parts);
+  const targetGuide = getHangulStrokeGuide(glyph);
+  if (!parts || !layout || !targetGuide?.strokes?.length) return false;
+  if (Math.abs(strokes.length - targetGuide.strokes.length) > HANGUL_FREEHAND_STROKE_TOLERANCE) return false;
+  if (hasUnexpectedHangulFinalInk(strokes, parts, layout)) return false;
   const components = getHangulTargetComponentMatches(strokes, glyph);
   if (components.length < 2) return false;
   const confidences = components.map((component) => component.confidence);
   const average = confidences.reduce((sum, confidence) => sum + confidence, 0) / confidences.length;
+  const primaryComponents = components.slice(0, 2);
+  const finalComponent = components[2] || null;
   return Math.min(...confidences) >= HANGUL_FREEHAND_COMPONENT_MIN_CONFIDENCE
     && average >= HANGUL_FREEHAND_COMPONENT_AVG_CONFIDENCE
-    && components.every((component) => component.rank > 0 && component.rank <= HANGUL_FREEHAND_COMPONENT_MAX_RANK);
+    && primaryComponents.every((component) => component.rank > 0 && component.rank <= HANGUL_FREEHAND_PRIMARY_COMPONENT_MAX_RANK)
+    && (!finalComponent || (finalComponent.rank > 0 && finalComponent.rank <= HANGUL_FREEHAND_COMPONENT_MAX_RANK));
 }
 
 function isHangulFreehandRecognitionMatch(matches, glyph, strokes = []) {
@@ -16768,15 +16793,12 @@ function checkHangulFreehandDrawing(canvas, glyph, unit, { silentFailure = false
     return;
   }
   const matches = recognizeHangulWriting(canvas, getHangulWritingRecognitionGlyphs().length);
-  const top = matches[0] || null;
   const correct = isHangulFreehandRecognitionMatch(matches, glyph, strokes);
   const detail = correct
     ? `Freehand recognized as ${glyph} — your natural shape is clear.`
-    : top
-      ? `This currently looks closest to ${top.name}. Refine the overall shape and check again.`
-      : `HanaPath could not read that shape yet. Make it a little clearer and try again.`;
+    : `HanaPath could not confirm ${glyph} yet. Keep the full block clear and try again.`;
   if (!correct && silentFailure) {
-    setHangulRecognitionFeedback(top ? `Maybe ${top.name} — keep drawing` : "Try a clearer shape", top ? "close" : "wrong");
+    setHangulRecognitionFeedback(`Keep drawing the complete ${glyph} block.`, "close");
     updateHangulStrokeStatus("Keep drawing until the whole shape reads clearly.");
     runParallelMLKitRecognition(canvas);
     return;

@@ -149,10 +149,11 @@ const compositionDeclarations = [
   "HANGUL_GRADE",
   "HANGUL_FREEHAND_TARGET_CONFIDENCE",
   "HANGUL_FREEHAND_MIN_MARGIN",
-  "HANGUL_FREEHAND_FALLBACK_TARGET_CONFIDENCE",
   "HANGUL_FREEHAND_COMPONENT_MIN_CONFIDENCE",
   "HANGUL_FREEHAND_COMPONENT_AVG_CONFIDENCE",
+  "HANGUL_FREEHAND_PRIMARY_COMPONENT_MAX_RANK",
   "HANGUL_FREEHAND_COMPONENT_MAX_RANK",
+  "HANGUL_FREEHAND_STROKE_TOLERANCE",
   "hangulComponentRecognizerCache",
   "HangulNativeRecognizer",
 ].map(extractDeclaration);
@@ -178,6 +179,7 @@ const compositionFunctions = [
   "getHangulComponentRecognizer",
   "extractHangulInkComponentStrokes",
   "getHangulTargetComponentMatches",
+  "hasUnexpectedHangulFinalInk",
   "isHangulTargetAwareRecognitionMatch",
   "isHangulFreehandRecognitionMatch",
   "validateWritingStrokes",
@@ -283,6 +285,18 @@ const ROUGH_NATURAL_HAN_FLAT_TOP = [
   [[0.15, 0.08], [0.24, 0.09], [0.34, 0.08]],
   ...ROUGH_NATURAL_HAN.slice(1).map((stroke) => stroke.map((point) => point.slice())),
 ];
+// Regression from the 2026-07-19 phone report: the learner completed all
+// three components separately, used the common flat-top ㅎ, extended ㅏ down
+// beside the final, and drew ㄴ as one natural corner stroke. This must grade
+// as the prompted 한 instead of exposing an unrelated jamo guess.
+const NATURAL_SEPARATE_HAN = [
+  [[0.2, 0.07], [0.38, 0.07]],
+  [[0.1, 0.19], [0.26, 0.2], [0.43, 0.19]],
+  [[0.18, 0.3], [0.13, 0.36], [0.13, 0.46], [0.19, 0.52], [0.31, 0.52], [0.38, 0.46], [0.38, 0.36], [0.32, 0.3], [0.18, 0.3]],
+  [[0.7, 0.18], [0.7, 0.84]],
+  [[0.7, 0.48], [0.89, 0.48]],
+  [[0.18, 0.61], [0.14, 0.85], [0.43, 0.85]],
+];
 const targetAwareLimit = glyphs.length + TARGET_AWARE_UNIT_GLYPHS.length;
 const roughHanMatches = targetAwareRecognizer.recognize(ROUGH_NATURAL_HAN, targetAwareLimit);
 const roughHanComponents = getHangulTargetComponentMatches(ROUGH_NATURAL_HAN, "한");
@@ -298,12 +312,31 @@ if (!isHangulFreehandRecognitionMatch(roughFlatHanMatches, "한", ROUGH_NATURAL_
     components: getHangulTargetComponentMatches(ROUGH_NATURAL_HAN_FLAT_TOP, "한"),
   });
 }
+const naturalSeparateHanMatches = targetAwareRecognizer.recognize(NATURAL_SEPARATE_HAN, targetAwareLimit);
+if (!isHangulFreehandRecognitionMatch(naturalSeparateHanMatches, "한", NATURAL_SEPARATE_HAN)) {
+  targetAwareFailures.push({
+    kind: "natural-separate-positive",
+    source: "한",
+    components: getHangulTargetComponentMatches(NATURAL_SEPARATE_HAN, "한"),
+  });
+}
 for (const source of TARGET_AWARE_UNIT_GLYPHS) {
-  if (source === "한") continue;
   const strokes = getHangulStrokeGuide(source)?.strokes || [];
   const matches = targetAwareRecognizer.recognize(strokes, targetAwareLimit);
-  if (isHangulFreehandRecognitionMatch(matches, "한", strokes)) {
-    targetAwareFailures.push({ kind: "false-accept", source, components: getHangulTargetComponentMatches(strokes, "한") });
+  for (const prompt of TARGET_AWARE_UNIT_GLYPHS) {
+    if (prompt === source) continue;
+    if (isHangulFreehandRecognitionMatch(matches, prompt, strokes)) {
+      targetAwareFailures.push({
+        kind: "false-accept",
+        source,
+        prompt,
+        wholeTarget: matches.find((match) => match.name === prompt) || null,
+        wholeRank: matches.findIndex((match) => match.name === prompt) + 1,
+        sourceStrokeCount: strokes.length,
+        promptStrokeCount: getHangulStrokeGuide(prompt)?.strokes?.length || 0,
+        components: getHangulTargetComponentMatches(strokes, prompt),
+      });
+    }
   }
 }
 // Match the learner-facing confidence floor. Unlike the old freehand check,
@@ -579,7 +612,7 @@ console.log(`pairwise negatives : ${negativeCases}`);
 console.log(`confidence confusers: ${confidenceConfusers.length}`);
 console.log(`false accepts      : ${falseAccepts.length}`);
 console.log(`rough 한 fallback  : ${targetAwareFailures.some((failure) => failure.kind.startsWith("rough-positive")) ? "fail" : "pass"}`);
-console.log(`fallback negatives : ${TARGET_AWARE_UNIT_GLYPHS.length - 1}`);
+console.log(`fallback negatives : ${TARGET_AWARE_UNIT_GLYPHS.length * (TARGET_AWARE_UNIT_GLYPHS.length - 1)}`);
 console.log(`fallback false accepts: ${targetAwareFailures.filter((failure) => failure.kind === "false-accept").length}`);
 
 const positiveFailures = Object.values(groups).flatMap((group) =>
@@ -616,7 +649,7 @@ if (compositionFailureCount || freeDrawingContractProblems.length || positiveFai
   if (targetAwareFailures.length) {
     console.log("\nTarget-aware syllable fallback failures:");
     targetAwareFailures.forEach((failure) => {
-      console.log(`  ${failure.kind} · ${failure.source}: ${JSON.stringify(failure.components)}`);
+      console.log(`  ${failure.kind} · drew ${failure.source}${failure.prompt ? `, prompted ${failure.prompt}` : ""}${failure.wholeTarget ? ` · whole rank ${failure.wholeRank}, ${failure.wholeTarget.confidence.toFixed(3)} · strokes ${failure.sourceStrokeCount}/${failure.promptStrokeCount}` : ""}: ${JSON.stringify(failure.components)}`);
     });
   }
   if (confidenceConfusers.length) {
