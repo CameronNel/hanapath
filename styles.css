@@ -1073,6 +1073,9 @@ button.bd-assembled:hover {
 .block-diagram {
   display: inline-grid;
   box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   background: rgba(var(--accent-rgb), .07);
   border: 1px solid rgba(var(--accent-rgb), .22);
   border-radius: 10px;
@@ -1084,17 +1087,22 @@ button.bd-assembled:hover {
 }
 .bd-vertical {
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: minmax(0, 1fr);
   min-width: 3.4rem;
 }
+.bd-vertical.bd-has-batchim { grid-template-rows: minmax(0, 1.15fr) minmax(0, .85fr); }
 .bd-vertical .bd-onset   { grid-column: 1; grid-row: 1; }
 .bd-vertical .bd-vowel   { grid-column: 2; grid-row: 1; }
 .bd-vertical .bd-batchim { grid-column: 1 / 3; grid-row: 2; }
 .bd-horizontal {
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
   min-width: 2.2rem;
 }
+.bd-horizontal.bd-has-batchim { grid-template-rows: repeat(3, minmax(0, 1fr)); }
+.bd-horizontal .bd-onset   { grid-column: 1; grid-row: 1; }
+.bd-horizontal .bd-vowel   { grid-column: 1; grid-row: 2; }
+.bd-horizontal .bd-batchim { grid-column: 1; grid-row: 3; }
 .bd-showcase .block-diagram {
   width: 92px;
   height: 72px;
@@ -1102,9 +1110,13 @@ button.bd-assembled:hover {
 }
 .bd-onset, .bd-vowel, .bd-batchim {
   display: flex;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
   align-items: center;
   justify-content: center;
-  padding: 3px 5px;
+  padding: 1px 4px;
+  line-height: 1;
 }
 .bd-onset   { color: var(--accent); }
 .bd-vowel   { color: #a78bfa; }
@@ -1136,7 +1148,7 @@ button.bd-assembled:hover {
 }
 .bd-word-row .block-diagram {
   width: 82px;
-  height: 68px;
+  height: 76px;
   min-width: 0;
   font-size: 1.35rem;
 }
@@ -1144,7 +1156,7 @@ button.bd-assembled:hover {
   font-size: 1.4rem;
   color: var(--muted-2);
   align-self: center;
-  padding-top: 6px;
+  padding-top: 0;
 }
 
 /* interactive "build a block" checkpoint */
@@ -1152,12 +1164,16 @@ button.bd-assembled:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 9px;
   margin: 6px 0 14px;
 }
 .bd-build {
-  font-size: 2rem;
-  padding: 8px;
+  flex: 0 0 76px;
+  width: 76px;
+  height: 112px;
+  min-width: 0;
+  font-size: 1.75rem;
+  padding: 7px;
 }
 .bd-slot {
   color: var(--muted-2);
@@ -1183,14 +1199,17 @@ button.bd-assembled:hover {
   gap: 10px;
   justify-content: center;
   margin-bottom: 4px;
+  width: 100%;
 }
 .bd-tile {
   font-family: "Noto Sans KR", sans-serif;
   font-size: 1.6rem;
   line-height: 1;
-  min-width: 3rem;
-  min-height: 3rem;
-  padding: 8px 12px;
+  width: 100%;
+  min-width: 0;
+  height: 58px;
+  min-height: 58px;
+  padding: 0 6px;
   color: var(--text);
   background: rgba(var(--accent-rgb), .1);
   border: 1px solid rgba(var(--accent-rgb), .28);
@@ -1210,12 +1229,17 @@ button.bd-assembled:hover {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  flex: 0 1 calc(25% - 8px);
+  width: calc(25% - 8px);
+  min-width: 54px;
+  max-width: 72px;
+  gap: 6px;
 }
 .bd-tile-wrap .bd-tile-speak {
   width: 100%;
-  min-height: 24px;
-  padding: 2px 0;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
   font-size: .78rem;
   border-radius: 9px;
 }
@@ -5733,6 +5757,13 @@ li { margin-bottom: 4px; }
 .completion-stage--retry { --completion-rgb: 251, 191, 36; --completion-color: var(--warn); }
 .completion-stage--neutral { --completion-rgb: var(--accent-rgb); --completion-color: var(--accent); }
 
+/* The final Hangul screen stays in the active theme; only its crown is gold. */
+.alphabet-completion-stage--final .completion-emblem-icon svg {
+  color: #fbbf24;
+  filter: drop-shadow(0 4px 10px rgba(251, 191, 36, .3));
+}
+.alphabet-completion-stage--final .completion-emblem-icon svg path:first-child { fill: rgba(251, 191, 36, .2); }
+
 .completion-stage::before {
   content: "";
   position: absolute;
@@ -5974,6 +6005,59 @@ li { margin-bottom: 4px; }
 .completion-details .writing-summary-details { background: rgba(2, 6, 20, .18); }
 .completion-details .writing-summary-drawn { margin-top: 0; }
 
+.alphabet-completion-extra-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+.alphabet-completion-extra {
+  display: flex;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 154px;
+  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  border: 1px solid rgba(var(--accent-rgb), .22);
+  border-radius: 15px;
+  background: rgba(var(--accent-rgb), .07);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.alphabet-completion-extra .eyebrow { margin: 0; }
+.alphabet-completion-extra strong { font-size: 1rem; line-height: 1.2; }
+.alphabet-completion-extra > span:not(.eyebrow):not(.alphabet-completion-extra-action) {
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.4;
+}
+.alphabet-completion-extra-action {
+  width: 100%;
+  min-height: 38px;
+  margin-top: auto;
+  display: grid;
+  place-items: center;
+  padding: 7px 9px;
+  border: 1px solid rgba(var(--accent-rgb), .28);
+  border-radius: 10px;
+  background: rgba(var(--accent-rgb), .12);
+  color: var(--accent);
+  font-size: .76rem;
+  font-weight: 800;
+  text-align: center;
+}
+.alphabet-completion-extra:hover,
+.alphabet-completion-extra:focus-visible {
+  border-color: rgba(var(--accent-rgb), .5);
+  background: rgba(var(--accent-rgb), .11);
+}
+.alphabet-completion-stage .lesson-complete-tiles { margin-bottom: 0; }
+.alphabet-completion-stage .lesson-complete-tile { min-height: 56px; padding: 11px 12px; }
+
 .completion-confetti {
   position: absolute;
   z-index: 1;
@@ -6038,6 +6122,9 @@ li { margin-bottom: 4px; }
   .completion-actions > .lesson-complete-tiles,
   .completion-actions > .lesson-complete-return { grid-column: 1; }
   .completion-actions .lesson-complete-tiles { grid-template-columns: 1fr 1fr; }
+  .alphabet-completion-extra-grid { grid-template-columns: 1fr; }
+  .alphabet-completion-extra { height: 164px; min-height: 164px; }
+  .alphabet-completion-stage--final .lesson-complete-tiles { grid-template-columns: 1fr; }
   .completion-confetti i:nth-child(1),
   .completion-confetti i:nth-child(15) { --tx: -150px; }
   .completion-confetti i:nth-child(14),
