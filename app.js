@@ -17644,17 +17644,6 @@ function renderTodayView() {
     </div>
     ${sentenceReviewCardHtml}
 
-    ${hangulDone ? `
-    <div class="card">
-      <div class="flex-between">
-        <div>
-          <div class="eyebrow">Reference</div>
-          <div class="screen-sub" style="margin-bottom:0;">Entire Korean Word Bank — look up any word.</div>
-        </div>
-        <button class="button secondary compact" type="button" id="continueWordBankBtn">Open</button>
-      </div>
-    </div>` : ""}
-
     <div class="card">
       <div class="flex-between mb-12">
         <div class="eyebrow">Streak &amp; progress</div>
@@ -17684,8 +17673,6 @@ function renderTodayView() {
       showTab("practice");
     });
   }
-  const wordBankBtn = document.getElementById("continueWordBankBtn");
-  if (wordBankBtn) wordBankBtn.addEventListener("click", () => openEntireWordBank());
   const progressBtn = document.getElementById("continueProgressBtn");
   if (progressBtn) progressBtn.addEventListener("click", () => openHubItem("progress", "stats"));
 }
