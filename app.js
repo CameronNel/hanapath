@@ -2840,10 +2840,11 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // isLessonUnlocked() below and isWordLessonUnlocked() further down for the
 // two places this is consumed. Flip to true only for local testing.
 const TEST_UNLOCK_ALL_STAGES = false;
-// Testing control: show a path button that crowns every lesson in a v2
-// section. Set false before any learner-facing release; the handler is also
-// guarded so a stale button cannot mutate completion when disabled.
-const TEST_ENABLE_WORD_SECTION_COMPLETION = false;
+// Owner-enabled control: show a path button that crowns every lesson in a v2
+// section. NEVER flip this off again without the owner's explicit request.
+// The handler remains guarded so a stale button cannot mutate completion if
+// the owner ever explicitly asks for this control to be disabled.
+const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
@@ -7362,7 +7363,7 @@ function alphabetStagesSectionHtml() {
       </div>
       <span class="pill accent" style="white-space:nowrap;">${progress.completedCount}/${progress.total}</span>
     </button>
-    ${TEST_ENABLE_WORD_SECTION_COMPLETION && !progress.complete ? '<button class="button secondary compact" type="button" data-complete-alphabet-section style="justify-self:start;align-self:start;">Complete section (test)</button>' : ""}
+    ${TEST_ENABLE_WORD_SECTION_COMPLETION && !progress.complete ? '<button class="button secondary compact" type="button" data-complete-alphabet-section style="justify-self:start;align-self:start;">Complete section</button>' : ""}
   `;
 }
 
@@ -7455,7 +7456,7 @@ function wordPathV2Html() {
         <div><div class="eyebrow">Section ${escapeHtml(section.id.toUpperCase())}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
         <div class="flex gap-8" style="align-items:center; flex-wrap:wrap; justify-content:flex-end;">
           <span class="pill ${unlocked ? "accent" : "muted"}">${unlocked ? `${crowned}/${sectionUnits.length} crowned` : "🔒 Locked"}</span>
-          ${TEST_ENABLE_WORD_SECTION_COMPLETION ? `<button class="button secondary compact" type="button" data-word-complete-section="${escapeHtml(section.id)}">Complete section (test)</button>` : ""}
+          ${TEST_ENABLE_WORD_SECTION_COMPLETION ? `<button class="button secondary compact" type="button" data-word-complete-section="${escapeHtml(section.id)}">Complete section</button>` : ""}
         </div>
       </div>
       ${unlocked ? (sectionOpen ? sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("") : `<details class="vocab-path-explore"><summary>Explore topics · ${sectionUnits.length} units</summary><div class="vocab-path-unit-list">${sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("")}</div></details>`) : `<div class="vocab-path-lock-note">Finish ${escapeHtml(section.prerequisiteSectionId ? getWordSectionById(section.prerequisiteSectionId)?.name || "the previous section" : "Hangul")} to unlock this section.</div>`}

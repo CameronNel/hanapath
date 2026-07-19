@@ -25,12 +25,11 @@ Words unlocks after the alphabet completes, then lesson-by-lesson. A scripted
 cold-learner test verified the chain. Flip to `true` locally (plus a cache
 bump) only for testing convenience; do not ship it enabled.
 
-The v2 Words path also has a separate testing control:
-`TEST_ENABLE_WORD_SECTION_COMPLETION` shows **Complete section (test)**
-buttons and crowns a whole section without playing its lessons. It is guarded
-in both the renderer and handler; set it to **`false`** before any
-learner-facing release. Use it only for local path, checkpoint, migration,
-and downstream-section smoke testing.
+The v2 Words path also has an owner-enabled completion control:
+`TEST_ENABLE_WORD_SECTION_COMPLETION` shows **Complete section** buttons and
+crowns a whole section without playing its lessons. The owner explicitly chose
+to keep this enabled on 2026-07-19. **Never disable it without the owner's
+explicit request.** It remains guarded in both the renderer and handler.
 
 ## Alphabet section — complete and protected
 Finished (progression, quiz-pool safety, audio normalization, accessibility,
