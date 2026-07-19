@@ -9774,7 +9774,11 @@ function renderCheckpointAudioHelpers(lesson, question) {
   const targetText = question.voiceText || question.target || question.answer || "";
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
   const answerPool = isBuildQuestion ? (question.tray || []) : (question.options || []);
-  const hasPreviewableAnswers = answerPool.some((option) => isSpeakableAnswerOption(option));
+  // Stage 7's batchim choices are especially unpleasant as one long spoken
+  // sequence. Keep target and per-option tap audio, but omit "Preview answers"
+  // for this stage only.
+  const hasPreviewableAnswers = lesson.id !== "batchim-basics"
+    && answerPool.some((option) => isSpeakableAnswerOption(option));
 
   if (!hasTarget && !hasPreviewableAnswers) return "";
 
