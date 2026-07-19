@@ -143,6 +143,9 @@ const compositionDeclarations = [
   "HANGUL_SYLLABLE_LAYOUTS",
   "HANGUL_COMPOUND_FINAL_PARTS",
   "hangulSyllableGuideCache",
+  "HANGUL_TICK_VARIANT_STROKES",
+  "hangulVariantBankCache",
+  "hangulVariantSyllableGuideCache",
   "HANGUL_GRADE",
   "HANGUL_FREEHAND_TARGET_CONFIDENCE",
   "HANGUL_FREEHAND_MIN_MARGIN",
@@ -163,6 +166,10 @@ const compositionFunctions = [
   "getHangulSyllableLayout",
   "composeHangulSyllableGuide",
   "getHangulStrokeGuide",
+  "getHangulVariantStrokeBank",
+  "hangulGlyphHasTickVariant",
+  "getHangulTickVariantGuide",
+  "getHangulComponentVariantStrokes",
   "hangulPairDist",
   "hangulPairPathLength",
   "cleanHangulInkStroke",
@@ -177,9 +184,9 @@ const compositionFunctions = [
 ].map(extractFunction);
 const createCompositionApi = new Function(
   "window",
-  `"use strict";\n${compositionDeclarations.join("\n")}\n${compositionFunctions.join("\n")}\nreturn { getHangulStrokeGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch, validateWritingStrokes, HangulNativeRecognizer };\n//# sourceURL=hanapath-app-composition-audit.js`,
+  `"use strict";\n${compositionDeclarations.join("\n")}\n${compositionFunctions.join("\n")}\nreturn { getHangulStrokeGuide, getHangulTickVariantGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch, validateWritingStrokes, HangulNativeRecognizer };\n//# sourceURL=hanapath-app-composition-audit.js`,
 );
-const { getHangulStrokeGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch, validateWritingStrokes, HangulNativeRecognizer } = createCompositionApi(globalThis);
+const { getHangulStrokeGuide, getHangulTickVariantGuide, getHangulTargetComponentMatches, isHangulFreehandRecognitionMatch, validateWritingStrokes, HangulNativeRecognizer } = createCompositionApi(globalThis);
 
 function guideProblem(guide) {
   if (!guide || typeof guide !== "object") return "guide is missing";
@@ -238,6 +245,12 @@ if (
 const recognizer = new API.Recognizer();
 for (const [glyph, guide] of Object.entries(bank)) {
   if (!recognizer.add(glyph, guide.strokes, { augment: true })) throw new Error(`Could not add template ${glyph}`);
+  // Mirror the app: glyphs containing ㅎ/ㅊ also register the alternate
+  // top-tick handwriting style (flat-bar ㅎ, upright-tick ㅊ).
+  const tickVariant = getHangulTickVariantGuide(glyph);
+  if (tickVariant && !recognizer.add(glyph, tickVariant.strokes, { augment: true })) {
+    throw new Error(`Could not add tick-variant template ${glyph}`);
+  }
 }
 const glyphs = Object.keys(bank);
 
@@ -261,13 +274,29 @@ const targetAwareRecognizer = new API.Recognizer();
 for (const glyph of [...new Set([...glyphs, ...TARGET_AWARE_UNIT_GLYPHS])]) {
   const guide = getHangulStrokeGuide(glyph);
   if (guide) targetAwareRecognizer.add(glyph, guide.strokes, { augment: true });
+  const tickVariant = getHangulTickVariantGuide(glyph);
+  if (tickVariant) targetAwareRecognizer.add(glyph, tickVariant.strokes, { augment: true });
 }
+// The same natural 한, but with the ㅎ top mark written as a flat bar instead
+// of an upright tick — the other common handwriting style. Both must pass.
+const ROUGH_NATURAL_HAN_FLAT_TOP = [
+  [[0.15, 0.08], [0.24, 0.09], [0.34, 0.08]],
+  ...ROUGH_NATURAL_HAN.slice(1).map((stroke) => stroke.map((point) => point.slice())),
+];
 const targetAwareLimit = glyphs.length + TARGET_AWARE_UNIT_GLYPHS.length;
 const roughHanMatches = targetAwareRecognizer.recognize(ROUGH_NATURAL_HAN, targetAwareLimit);
 const roughHanComponents = getHangulTargetComponentMatches(ROUGH_NATURAL_HAN, "한");
 const targetAwareFailures = [];
 if (!isHangulFreehandRecognitionMatch(roughHanMatches, "한", ROUGH_NATURAL_HAN)) {
   targetAwareFailures.push({ kind: "rough-positive", source: "한", components: roughHanComponents });
+}
+const roughFlatHanMatches = targetAwareRecognizer.recognize(ROUGH_NATURAL_HAN_FLAT_TOP, targetAwareLimit);
+if (!isHangulFreehandRecognitionMatch(roughFlatHanMatches, "한", ROUGH_NATURAL_HAN_FLAT_TOP)) {
+  targetAwareFailures.push({
+    kind: "rough-positive-flat-top",
+    source: "한",
+    components: getHangulTargetComponentMatches(ROUGH_NATURAL_HAN_FLAT_TOP, "한"),
+  });
 }
 for (const source of TARGET_AWARE_UNIT_GLYPHS) {
   if (source === "한") continue;
@@ -399,6 +428,7 @@ const groups = {
   joined: createGroup("joined freehand"),
   split: createGroup("split +1 stroke"),
   merged: createGroup("merged -1 stroke"),
+  tick: createGroup("alternate tick"),
 };
 const negativeSamples = [];
 
@@ -453,6 +483,17 @@ for (const [glyph, guide] of Object.entries(bank)) {
   if (merged) {
     if (merged.length !== guide.strokes.length - 1) throw new Error(`Merge case for ${glyph} did not remove exactly one stroke.`);
     evaluatePositive(groups.merged, glyph, "merge-closest-adjacent", merged);
+  }
+}
+
+// Both top-tick handwriting styles must be accepted for ㅎ and ㅊ (owner
+// report 2026-07-19: some learners write the top mark flat, others upright).
+for (const glyph of ["ㅎ", "ㅊ"]) {
+  const variant = getHangulTickVariantGuide(glyph);
+  if (!variant?.strokes?.length) throw new Error(`Missing alternate-tick variant guide for ${glyph}.`);
+  evaluatePositive(groups.tick, glyph, "alternate-tick-authored", cloneStrokes(variant.strokes));
+  for (let index = 0; index < 12; index += 1) {
+    evaluatePositive(groups.tick, glyph, `alternate-tick-mobile-${index}`, mobileVariant(variant.strokes, index));
   }
 }
 
@@ -531,12 +572,13 @@ printGroup(groups.mobile);
 printGroup(groups.joined);
 printGroup(groups.split);
 printGroup(groups.merged);
+printGroup(groups.tick);
 const minimumPositiveMargin = Math.min(...Object.values(groups).map((group) => group.minimumMargin));
 console.log(`positive min margin: ${Number.isFinite(minimumPositiveMargin) ? minimumPositiveMargin.toFixed(3) : "n/a"}`);
 console.log(`pairwise negatives : ${negativeCases}`);
 console.log(`confidence confusers: ${confidenceConfusers.length}`);
 console.log(`false accepts      : ${falseAccepts.length}`);
-console.log(`rough 한 fallback  : ${targetAwareFailures.some((failure) => failure.kind === "rough-positive") ? "fail" : "pass"}`);
+console.log(`rough 한 fallback  : ${targetAwareFailures.some((failure) => failure.kind.startsWith("rough-positive")) ? "fail" : "pass"}`);
 console.log(`fallback negatives : ${TARGET_AWARE_UNIT_GLYPHS.length - 1}`);
 console.log(`fallback false accepts: ${targetAwareFailures.filter((failure) => failure.kind === "false-accept").length}`);
 
