@@ -3081,7 +3081,7 @@ li { margin-bottom: 4px; }
 }
 
 /* Alphabet Learn is a fixed three-step path. The shared grid gives Learning,
-   Drill Lab, and Writing identical rows and keeps all three visible together. */
+   Writing, and Drill Lab identical rows and keeps all three visible together. */
 .alphabet-three-step-screen {
   overflow-y: hidden;
   padding-bottom: 12px;
@@ -3108,12 +3108,13 @@ li { margin-bottom: 4px; }
   min-height: 0;
   display: grid;
   grid-template-rows: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 14px;
 }
 .alphabet-step-card {
   min-height: 0;
   height: 100%;
-  margin-bottom: 0;
+  width: calc(100% - 6px);
+  margin: 0 3px;
   padding: clamp(10px, 3vw, 15px);
   overflow: hidden;
 }
@@ -3195,7 +3196,7 @@ li { margin-bottom: 4px; }
   }
   .alphabet-three-step-layout,
   .alphabet-three-step-grid {
-    gap: 8px;
+    gap: 12px;
   }
   .alphabet-three-step-header {
     grid-template-columns: minmax(0, 1fr) 84px;
