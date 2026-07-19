@@ -6153,13 +6153,9 @@ function premiumCompletionHtml({
       <div class="completion-hero" role="status" aria-live="polite">
         ${safeTone === "retry"
           ? `<button class="completion-emblem completion-emblem--action" type="button" data-completion-retry aria-label="Restart">
-          <span class="completion-emblem-ring"></span>
-          <span class="completion-emblem-ring completion-emblem-ring--outer"></span>
           <span class="completion-emblem-icon">${completionIconSvg(icon)}</span>
         </button>`
           : `<div class="completion-emblem" aria-hidden="true">
-          <span class="completion-emblem-ring"></span>
-          <span class="completion-emblem-ring completion-emblem-ring--outer"></span>
           <span class="completion-emblem-icon">${completionIconSvg(icon)}</span>
         </div>`}
         <div class="completion-kicker"><span></span>${escapeHtml(String(eyebrow))}<span></span></div>
