@@ -9748,9 +9748,12 @@ function alphabetPracticeProgressHtml(label, current = 0, total = 0, allowRefere
   </div>`;
 }
 
-function bindAlphabetReferenceButtons(container) {
+let alphabetQuickRefReturnTo = "lesson";
+
+function bindAlphabetReferenceButtons(container, { returnTo = "lesson" } = {}) {
   container?.querySelectorAll("[data-checkpoint-open-reference]").forEach((button) => {
     button.addEventListener("click", () => {
+      alphabetQuickRefReturnTo = returnTo;
       state.quickRefActive = true;
       openEntireAlphabet();
     });
@@ -10775,26 +10778,37 @@ function syncAlphabetSeg() {
 function renderEntireAlphabet() {
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
-  activeHub = "learn";
-  setNavActive("learn");
+  const quickRefReturnsToWriting = !!state.quickRefActive && alphabetQuickRefReturnTo === "writing";
+  const referenceHub = quickRefReturnsToWriting
+    ? (String(hangulWritingReturnTo).startsWith("learn-") ? "learn" : "practice")
+    : "learn";
+  activeHub = referenceHub;
+  setNavActive(referenceHub);
   const el = showScreen("detail");
   if (!el) return;
 
   const activeLessonIdx = state.phaseOneActive;
   const isQuickRef = !!state.quickRefActive;
 
-  showDetailBarWithBack("learn", "Entire Korean alphabet", () => {
+  const returnFromQuickReference = () => {
     state.quickRefActive = false;
     saveState();
-    openLearnStageMenu("alphabet");
-  }, "Alphabet");
+    if (quickRefReturnsToWriting) {
+      renderHangulWriting();
+    } else {
+      openLearnStageMenu("alphabet");
+    }
+  };
+
+  showDetailBarWithBack(referenceHub, "Entire Korean alphabet", returnFromQuickReference,
+    quickRefReturnsToWriting ? "Writing practice" : "Alphabet");
 
   const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
   const labels = state.alphabetBoardLabels || "none";
   if (!alphabetBoardSelected) alphabetBoardSelected = "ㄱ";
 
   const resumeBtnHtml = isQuickRef
-    ? `<button class="button primary compact alpha-reference-resume" type="button" id="resumeActiveLessonBtn">🔙 Return to Stage ${String(activeLessonIdx + 1).padStart(2, "0")}</button>`
+    ? `<button class="button primary compact alpha-reference-resume" type="button" id="resumeActiveLessonBtn">🔙 ${quickRefReturnsToWriting ? "Return to Writing practice" : `Return to Stage ${String(activeLessonIdx + 1).padStart(2, "0")}`}</button>`
     : "";
 
   el.innerHTML = `
@@ -10830,7 +10844,11 @@ function renderEntireAlphabet() {
     resumeBtn.addEventListener("click", () => {
       state.quickRefActive = false;
       saveState();
-      openLearnLesson(activeLessonIdx, { resume: true, allowResult: true });
+      if (quickRefReturnsToWriting) {
+        renderHangulWriting();
+      } else {
+        openLearnLesson(activeLessonIdx, { resume: true, allowResult: true });
+      }
     });
   }
 
@@ -14248,6 +14266,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   renderPhaseOnePlayer();
 
   els.phaseOneReferenceButton.addEventListener("click", () => {
+    alphabetQuickRefReturnTo = "lesson";
     state.quickRefActive = true;
     openEntireAlphabet();
   });
@@ -14301,6 +14320,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   stageEl.addEventListener("click", (e) => {
     const openRef = e.target.closest("[data-checkpoint-open-reference]");
     if (openRef) {
+      alphabetQuickRefReturnTo = "lesson";
       state.quickRefActive = true;
       openEntireAlphabet();
       return;
@@ -17064,7 +17084,7 @@ function renderHangulWritingUnitPicker(el) {
     updateNativeRecognitionUI();
   }
 
-  bindAlphabetReferenceButtons(el);
+  bindAlphabetReferenceButtons(el, { returnTo: "writing" });
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exercise = btn.dataset.writingExercise || "shape";
