@@ -537,6 +537,48 @@ input, textarea { cursor: text; }
   flex: 1;
   min-width: 0;
 }
+.learn-stage-header-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 104px;
+  align-items: stretch;
+  gap: 14px;
+}
+.learn-stage-header-copy {
+  min-width: 0;
+  align-self: center;
+}
+.learn-stage-reference-tile {
+  min-width: 0;
+  min-height: 82px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border: 1px solid rgba(var(--accent-rgb),.28);
+  border-radius: var(--radius-sm);
+  background: rgba(var(--accent-rgb),.10);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
+}
+.learn-stage-reference-tile:hover {
+  transform: translateY(-1px);
+  background: rgba(var(--accent-rgb),.16);
+  border-color: rgba(var(--accent-rgb),.42);
+}
+.learn-stage-reference-tile:active { transform: translateY(1px); }
+.learn-stage-reference-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+.learn-stage-reference-label {
+  font-size: .72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+}
 .study-pill {
   display: flex;
   flex-direction: column;
