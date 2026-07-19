@@ -8,7 +8,6 @@ on:
       - "app.js"
       - "styles.css"
       - "sw.js"
-      - "app_intro.*"
       - "audio_map.js"
       - "words_*.js"
       - "sentences_*.js"
