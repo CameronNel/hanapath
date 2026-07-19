@@ -9856,16 +9856,15 @@ function bindCheckpointAudioHelpers(container, lesson) {
         .querySelectorAll(".answer-previewing, .answer-previewing-active")
         .forEach((el) => el.classList.remove("answer-previewing", "answer-previewing-active"));
       clearHighlights();
-      answers.forEach(({ el }) => el.classList.add("answer-previewing"));
 
       for (const { el, speech } of answers) {
         if (tokenId !== checkpointPlaybackId) break;
-        el.classList.add("answer-previewing-active");
+        const glyph = el.querySelector(".phase-one-answer-glyph") || el;
+        flashElement(glyph);
         await Promise.all([
           speak(speech, { preserveSequence: true }),
           new Promise((resolve) => window.setTimeout(resolve, 700)),
         ]);
-        el.classList.remove("answer-previewing-active");
         if (tokenId !== checkpointPlaybackId) break;
         await new Promise((resolve) => window.setTimeout(resolve, 180));
       }
@@ -9875,11 +9874,14 @@ function bindCheckpointAudioHelpers(container, lesson) {
 
   // Bind speak option buttons next to choices
   container.querySelectorAll(".speak-option-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", async (e) => {
       e.stopPropagation();
       checkpointPlaybackId += 1;
       const text = btn.getAttribute("data-speak-option") || "";
-      speakClickableText(text, { preferSoundLabels: true });
+      const answerRow = btn.closest(".lesson-option-row, .bd-tile-wrap");
+      const glyph = answerRow?.querySelector(".phase-one-answer-glyph");
+      if (glyph) flashElement(glyph);
+      await speakClickableText(text, { preferSoundLabels: true });
     });
   });
 }
@@ -9913,7 +9915,7 @@ function renderPhaseOneQuestion(lesson) {
               .map(
                 (option) => {
                   return '<div class="lesson-option-row">' +
-                    '<button class="lesson-option" type="button" ' + textLanguageAttr(option) + ' data-option="' + escapeHtml(option) + '"><span class="lesson-option-label">' + escapeHtml(option) + '</span></button>' +
+                    '<button class="lesson-option" type="button" ' + textLanguageAttr(option) + ' data-option="' + escapeHtml(option) + '"><span class="lesson-option-label phase-one-answer-glyph">' + escapeHtml(option) + '</span></button>' +
                     (isSpeakableAnswerOption(option)
                       ? '<button class="button secondary compact speak-option-btn" type="button" data-speak-option="' + escapeHtml(option) + '" aria-label="Hear option ' + escapeHtml(option) + '">🔊</button>'
                       : '') +
@@ -10213,7 +10215,7 @@ function renderPhaseOneBuildQuestion(lesson, question) {
     .map(
       (jamo) =>
         `<span class="bd-tile-wrap">` +
-        `<button class="bd-tile" type="button" data-jamo="${escapeHtml(jamo)}" lang="ko" aria-label="Korean letter ${escapeHtml(jamo)}">${escapeHtml(jamo)}</button>` +
+        `<button class="bd-tile" type="button" data-jamo="${escapeHtml(jamo)}" lang="ko" aria-label="Korean letter ${escapeHtml(jamo)}"><span class="phase-one-answer-glyph">${escapeHtml(jamo)}</span></button>` +
         (isSpeakableAnswerOption(jamo)
           ? `<button class="button secondary compact speak-option-btn bd-tile-speak" type="button" data-speak-option="${escapeHtml(jamo)}" aria-label="Hear ${escapeHtml(jamo)}">🔊</button>`
           : "") +
@@ -13097,9 +13099,9 @@ const HUB_DEFS = {
     title: "What do you want to learn?",
     sub: "Pick a skill to study. No quizzes here — just the material.",
     items: [
-      { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Learn to read, one stage at a time.", custom: "alphabetLesson", reference: { id: "alphabet", label: "All hangul" } },
-      { id: "vocabulary", icon: "📚", title: "Vocabulary",         sub: "Today's words and the full word list.", target: "library", reference: { id: "dictionary", label: "Dictionary" } },
-      { id: "sentences",  icon: "💬", title: "Sentences",          sub: "Read and build real sentences.", target: "practice", reference: { id: "dictionary", label: "Dictionary" } },
+      { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Learn to read, one stage at a time.", custom: "alphabetLesson" },
+      { id: "vocabulary", icon: "📚", title: "Vocabulary",         sub: "Today's words and the full word list.", target: "library" },
+      { id: "sentences",  icon: "💬", title: "Sentences",          sub: "Read and build real sentences.", target: "practice" },
       { id: "listening",  icon: "🎧", title: "Listening",          sub: "Hear sentences and follow along.", target: "listening" },
     ],
   },
@@ -13670,41 +13672,22 @@ function renderHubMenu(hub) {
       <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(def.sub)}</div>
     </div>
     <div class="hub-tiles">
-      ${def.items.map((item) => {
-        // The reference shortcut (All hangul / Dictionary) rides on the right
-        // edge of its own learn tile, so the banks are one tap from the hub.
-        const ref = hub === "learn" ? item.reference : null;
-        return `
-        <div class="hub-tile${ref ? " has-ref" : ""}">
-          <button class="hub-tile-main" type="button" data-hub-item="${escapeHtml(item.id)}">
-            <span class="hub-tile-icon">${item.icon}</span>
-            <span class="hub-tile-text">
-              <strong>${escapeHtml(item.title)}</strong>
-              <small>${escapeHtml(item.sub)}</small>
-            </span>
-          </button>
-          ${ref
-            ? `<button class="hub-tile-ref" type="button" data-hub-reference="${escapeHtml(ref.id)}">
-                 <span class="hub-tile-ref-icon" aria-hidden="true">📚</span>
-                 <span class="hub-tile-ref-label">${escapeHtml(ref.label)}</span>
-               </button>`
-            : `<span class="hub-tile-go" aria-hidden="true">›</span>`}
-        </div>
-      `;
-      }).join("")}
+      ${def.items.map((item) => `
+        <button class="hub-tile" type="button" data-hub-item="${escapeHtml(item.id)}">
+          <span class="hub-tile-icon">${item.icon}</span>
+          <span class="hub-tile-text">
+            <strong>${escapeHtml(item.title)}</strong>
+            <small>${escapeHtml(item.sub)}</small>
+          </span>
+          <span class="hub-tile-go" aria-hidden="true">›</span>
+        </button>
+      `).join("")}
     </div>
   `;
   el.querySelectorAll("[data-hub-item]").forEach((btn) => {
     btn.addEventListener("click", () => {
       queueScreenMotion("forward", 1);
       openHubItem(hub, btn.dataset.hubItem);
-    });
-  });
-  el.querySelectorAll("[data-hub-reference]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      queueScreenMotion("forward", 1);
-      if (btn.dataset.hubReference === "alphabet") openEntireAlphabet();
-      else openEntireWordBank();
     });
   });
   el.querySelector("[data-open-settings]")?.addEventListener("click", () => {
