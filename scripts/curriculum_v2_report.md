@@ -201,22 +201,22 @@ Generated from 2028 curated words and 75 allocated units.
 - **s7-actions-u6** · Moving through town · actions
   - Lessons: `s7-actions-u6-l1`, `s7-actions-u6-l2`
   - Checkpoint: `s7-actions-u6-cp`
-- **s7-daily-u6** · Morning routines to brea · daily
+- **s7-daily-u6** · Morning routines · daily
   - Lessons: `s7-daily-u6-l1`, `s7-daily-u6-l2`, `s7-daily-u6-l3`
   - Checkpoint: `s7-daily-u6-cp`
 - **s7-feelings-u6** · Good news today · feelings
   - Lessons: `s7-feelings-u6-l1`, `s7-feelings-u6-l2`, `s7-feelings-u6-l3`
   - Checkpoint: `s7-feelings-u6-cp`
-- **s7-study-u6** · In the classroom absence · study
+- **s7-study-u6** · In the classroom · study
   - Lessons: `s7-study-u6-l1`, `s7-study-u6-l2`
   - Checkpoint: `s7-study-u6-cp`
 - **s7-travel-u6** · Checking the route · travel
   - Lessons: `s7-travel-u6-l1`, `s7-travel-u6-l2`, `s7-travel-u6-l3`
   - Checkpoint: `s7-travel-u6-cp`
-- **s7-feelings-u10** · A bright morning cheerfu · feelings
+- **s7-feelings-u10** · A bright morning · feelings
   - Lessons: `s7-feelings-u10-l1`, `s7-feelings-u10-l2`, `s7-feelings-u10-l3`
   - Checkpoint: `s7-feelings-u10-cp`
-- **s7-feelings-u11** · Small talk outside thick · feelings
+- **s7-feelings-u11** · Small talk outside · feelings
   - Lessons: `s7-feelings-u11-l1`, `s7-feelings-u11-l2`, `s7-feelings-u11-l3`
   - Checkpoint: `s7-feelings-u11-cp`
 
@@ -231,25 +231,25 @@ Generated from 2028 curated words and 75 allocated units.
 - **s8-shopping-u4** · Finding the right size · shopping
   - Lessons: `s8-shopping-u4-l1`, `s8-shopping-u4-l2`
   - Checkpoint: `s8-shopping-u4-cp`
-- **s8-actions-u7** · Getting things done to p · actions
+- **s8-actions-u7** · Getting things done · actions
   - Lessons: `s8-actions-u7-l1`, `s8-actions-u7-l2`
   - Checkpoint: `s8-actions-u7-cp`
-- **s8-feelings-u7** · How was your day rumor · feelings
+- **s8-feelings-u7** · How was your day · feelings
   - Lessons: `s8-feelings-u7-l1`, `s8-feelings-u7-l2`, `s8-feelings-u7-l3`
   - Checkpoint: `s8-feelings-u7-cp`
-- **s8-travel-u7** · Finding your way going o · travel
+- **s8-travel-u7** · Finding your way · travel
   - Lessons: `s8-travel-u7-l1`, `s8-travel-u7-l2`, `s8-travel-u7-l3`
   - Checkpoint: `s8-travel-u7-cp`
-- **s8-feelings-u8** · Rainy-day moods freshnes · feelings
+- **s8-feelings-u8** · Rainy-day moods · feelings
   - Lessons: `s8-feelings-u8-l1`, `s8-feelings-u8-l2`, `s8-feelings-u8-l3`
   - Checkpoint: `s8-feelings-u8-cp`
-- **s8-travel-u8** · Getting around town to g · travel
+- **s8-travel-u8** · Getting around town · travel
   - Lessons: `s8-travel-u8-l1`, `s8-travel-u8-l2`
   - Checkpoint: `s8-travel-u8-cp`
-- **s8-feelings-u9** · Describing the room to g · feelings
+- **s8-feelings-u9** · Describing the room · feelings
   - Lessons: `s8-feelings-u9-l1`, `s8-feelings-u9-l2`, `s8-feelings-u9-l3`
   - Checkpoint: `s8-feelings-u9-cp`
-- **s8-travel-u9** · At the station tourist s · travel
+- **s8-travel-u9** · At the station · travel
   - Lessons: `s8-travel-u9-l1`, `s8-travel-u9-l2`
   - Checkpoint: `s8-travel-u9-cp`
 
