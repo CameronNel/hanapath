@@ -6742,3 +6742,25 @@ li { margin-bottom: 4px; }
   .bottom-nav::before { transition: none !important; }
   .completion-confetti { display: none; }
 }
+
+/* ─── Exam tab · Hangul Mastery Examination (structure PR 2026-07-20) ────────
+   Neutral, sober exam presentation — no gamified glows. The attempt-runner
+   styles (six-option answer grid, question navigator, countdown, drawing and
+   keyboard layouts) land with the runner PR; see docs/EXAM_TAB_HANDOVER.md. */
+.exam-entry-card,
+.exam-intro-card { text-align: left; }
+.exam-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+.exam-status-mastered .pill { font-weight: 700; }
+.exam-rules-list {
+  margin: 0 0 18px;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+}
+.exam-rules-list li { line-height: 1.45; }

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>HanaPath</title>
-    <meta name="description" content="A learner-first Korean app with Today, Path, Practice, and Library tabs." />
+    <meta name="description" content="A learner-first Korean app with Learn, Exam, and Progress tabs." />
     <meta name="theme-color" content="#0f1026" />
     <!-- Fonts are vendored locally (fonts/, SIL OFL 1.1) so the app has no runtime network dependency -->
     <link rel="stylesheet" href="./fonts/fonts.css?v=20260716a" />
@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="HanaPath" />
-    <link rel="stylesheet" href="./styles.css?v=20260720f" />
+    <link rel="stylesheet" href="./styles.css?v=20260720g" />
     <link rel="icon" type="image/png" href="./icons/icon-192.png">
     <script defer src="./lib/hangul.js"></script>
     <script defer src="./audio_map.js?v=20260717u"></script>
@@ -28,7 +28,9 @@
     <!-- Alphabet Hangul-writing stroke data — load before app.js -->
     <script defer src="./lib/hangul_q_recognizer.js?v=20260715b"></script>
     <script defer src="./hangul_strokes.js?v=20260715b"></script>
-    <script defer src="./app.js?v=20260720g"></script>
+    <!-- Hangul Mastery Examination bank — load before app.js -->
+    <script defer src="./hangul_mastery_exam.js?v=20260720a"></script>
+    <script defer src="./app.js?v=20260720h"></script>
     <script defer src="./alphabet_skill_srs.js?v=20260630b"></script>
   </head>
   <body>
@@ -64,9 +66,9 @@
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-14A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>
           <span>Learn</span>
         </button>
-        <button class="nav-btn" data-nav="practice" type="button">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>
-          <span>Practice</span>
+        <button class="nav-btn" data-nav="exam" type="button">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6a1 1 0 0 1 1 1v2H8V4a1 1 0 0 1 1-1z"/><path d="M16 5h2a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><path d="m9 13 2 2 4-4"/></svg>
+          <span>Exam</span>
         </button>
         <button class="nav-btn" data-nav="progress" type="button">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>

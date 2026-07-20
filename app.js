@@ -2979,6 +2979,10 @@ state.phaseOneActive = Number.isInteger(state.phaseOneActive)
   ? Math.min(Math.max(state.phaseOneActive, 0), phaseOneLessons.length - 1)
   : 0;
 state.route = normalizeRoute(state.route);
+// Hangul Mastery Examination (v2) result record. Backfills safely for old
+// saves; never re-locks content a learner already unlocked via the legacy
+// Stage 08 checkpoint (docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md §8).
+state.alphabetMasteryExam = normalizeAlphabetMasteryExam(state.alphabetMasteryExam);
 phaseOneView.lessonIndex = state.phaseOneActive;
 state.vocabQuery = typeof state.vocabQuery === "string" ? state.vocabQuery : "";
 state.vocabBand = typeof state.vocabBand === "string" ? state.vocabBand : "all";
@@ -13491,36 +13495,42 @@ function bindKeyboardShortcuts() {
 let activeTab = normalizeNavTab(state.navTab || getNavTabForMainTab(state.mainTab) || "today");
 
 // ─── HUB + SUBMENU MODEL ─────────────────────────────────────────────────────
-// The app is organised as four bottom-tab "hubs". Home opens straight to the
-// dashboard; Learn / Practice / Progress each open a submenu of tiles, and a
-// tile opens a focused content screen with a "back to <hub>" bar at the top.
+// The app is organised as three bottom-tab "hubs": Learn (study material AND
+// the practice drills that used to live on their own tab), Exam (formal
+// assessments — first up: the Hangul Mastery Examination), and Progress.
+// A hub opens a submenu of tiles; a tile opens a focused content screen with
+// a "back to <hub>" bar at the top. Learn tiles split in two kinds: stage
+// items (no `drill` flag → stage menu via openLearnStageMenu) and drill items
+// (`drill: true` → straight into the practice surface, the old Practice-hub
+// behaviour).
 
-const HUBS = ["learn", "practice", "progress"];
+const HUBS = ["learn", "exam", "progress"];
 
 const HUB_DEFS = {
   learn: {
     label: "Learn",
-    eyebrow: "Study material",
-    title: "What do you want to learn?",
-    sub: "Pick a skill to study. No quizzes here — just the material.",
+    eyebrow: "Study & practice",
+    title: "What do you want to work on?",
+    sub: "Study a skill, then drill it — lessons on top, practice below.",
     items: [
       { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Learn to read, one stage at a time.", custom: "alphabetLesson" },
       { id: "vocabulary", icon: "📚", title: "Vocabulary",         sub: "Today's words and the full word list.", target: "library" },
       { id: "sentences",  icon: "💬", title: "Sentences",          sub: "Read and build real sentences.", target: "practice" },
       { id: "listening",  icon: "🎧", title: "Listening",          sub: "Hear sentences and follow along.", target: "listening" },
+      { id: "alphabet-practice", icon: "🎯", title: "Alphabet practice", sub: "Review letters, take a quiz, or train pronunciation.", custom: "alphabetPracticeHub", drill: true },
+      { id: "vocabulary-quiz",   icon: "🎯", title: "Vocabulary quiz",   sub: "Test the words you've learned.", target: "library", view: "test", drill: true },
+      { id: "sentence-studio",   icon: "🎯", title: "Sentence Studio",   sub: "Review due lines or choose a sentence drill.", target: "practice", drill: true },
+      { id: "listening-quiz",    icon: "🎯", title: "Listening quiz",    sub: "Choose or type what you heard.", target: "listening", drill: true },
+      { id: "writing",           icon: "✍", title: "Writing practice",  sub: "Draw Hangul from the alphabet, your words, or your sentences.", custom: "writingHub", drill: true },
     ],
   },
-  practice: {
-    label: "Practice",
-    eyebrow: "Exercises",
-    title: "Pick something to practise",
-    sub: "Quick quizzes that bring the material back in different forms.",
+  exam: {
+    label: "Exam",
+    eyebrow: "Formal assessment",
+    title: "Prove your mastery",
+    sub: "Formal exams — no hints, no reference, results only after final submission.",
     items: [
-      { id: "alphabet",   icon: "🎯", title: "Alphabet practice", sub: "Review letters, take a quiz, or train pronunciation.", custom: "alphabetPracticeHub" },
-      { id: "vocabulary", icon: "🎯", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test" },
-      { id: "sentences",  icon: "🎯", title: "Sentence Studio", sub: "Review due lines or choose a sentence drill.", target: "practice" },
-      { id: "listening",  icon: "🎯", title: "Listening quiz",  sub: "Choose or type what you heard.", target: "listening" },
-      { id: "writing", icon: "✍", title: "Writing practice", sub: "Draw Hangul from the alphabet, your words, or your sentences.", custom: "writingHub" },
+      { id: "alphabet", icon: "📝", title: "Alphabet · Hangul Mastery Exam", sub: "200 items across seven parts. Only 200/200 earns Hangul mastered.", custom: "alphabetExamHub" },
     ],
   },
   progress: {
@@ -13578,7 +13588,7 @@ const LEGACY_ROUTE = {
   path:      { hub: "progress", item: "path" },
   progress:  { hub: "progress", item: "stats" },
   library:   { hub: "learn",    item: "vocabulary" },
-  practice:  { hub: "practice", item: "sentences" },
+  practice:  { hub: "learn",    item: "sentence-studio" },
   listening: { hub: "learn",    item: "listening" },
 };
 
@@ -13927,9 +13937,24 @@ function normalizeRoute(route) {
     return { hub: "learn", item: null, stage: null };
   }
 
-  const allowedHubs = ["learn", "practice", "progress"];
-  const hub = allowedHubs.includes(route.hub) ? route.hub : "learn";
-  const item = typeof route.item === "string" ? route.item : null;
+  // The standalone Practice hub merged into Learn (2026-07-20). Old saves may
+  // still carry { hub: "practice" } routes — translate them to the new Learn
+  // drill-item ids so a restored profile lands on the equivalent screen.
+  const PRACTICE_ITEM_MIGRATION = {
+    alphabet: "alphabet-practice",
+    vocabulary: "vocabulary-quiz",
+    sentences: "sentence-studio",
+    listening: "listening-quiz",
+    writing: "writing",
+  };
+  let hub = route.hub;
+  let item = typeof route.item === "string" ? route.item : null;
+  if (hub === "practice") {
+    hub = "learn";
+    item = PRACTICE_ITEM_MIGRATION[item] || null;
+  }
+  const allowedHubs = ["learn", "exam", "progress"];
+  if (!allowedHubs.includes(hub)) hub = "learn";
   const stage = Number.isInteger(route.stage) ? route.stage : null;
   return { hub, item, stage };
 }
@@ -14512,7 +14537,9 @@ function openHubItem(hub, itemId) {
   activeHub = hub;
   setNavActive(hub);
 
-  if (hub === "learn") {
+  // Learn stage items open their stage menu; Learn drill items (the merged
+  // Practice tiles) fall through to the direct practice surfaces below.
+  if (hub === "learn" && !item.drill) {
     openLearnStageMenu(itemId);
     return;
   }
@@ -14521,8 +14548,13 @@ function openHubItem(hub, itemId) {
   if (item.view) { state.vocabView = item.view; }
   saveState();
 
-  const focus = hub === "practice" ? "practice" : hub === "learn" ? "learn" : "all";
+  const focus = item.drill ? "practice" : hub === "learn" ? "learn" : "all";
   showDetailBar(hub, item.title);
+
+  if (item.custom === "alphabetExamHub") {
+    renderAlphabetExamHub();
+    return;
+  }
 
   if (item.custom === "alphabetLesson") {
     const idx = getFirstIncompletePhaseOneIndex();
@@ -14554,9 +14586,8 @@ function openHubItem(hub, itemId) {
     return;
   }
 
-  if (hub === "practice" && (itemId === "vocabulary" || itemId === "listening")) {
-    startGenericPracticeSession(itemId);
-  }
+  if (itemId === "vocabulary-quiz") startGenericPracticeSession("vocabulary");
+  if (itemId === "listening-quiz")  startGenericPracticeSession("listening");
   renderLeafContent(item.target, focus);
 }
 
@@ -15054,7 +15085,7 @@ function renderAlphabetLearn() {
     <div class="card">
       <div class="eyebrow">Learn · Alphabet</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Hangul letters &amp; sounds</h2>
-      <div class="screen-sub" style="margin-bottom:0;">Tap any letter to hear it. When you're ready, try the Alphabet quiz under Practice.</div>
+      <div class="screen-sub" style="margin-bottom:0;">Tap any letter to hear it. When you're ready, try the Alphabet quiz under Learn.</div>
     </div>
     <div class="card">
       <div class="eyebrow mb-12">Consonants</div>
@@ -15081,13 +15112,13 @@ function renderAlphabetPracticeHub() {
   refreshProgressionState();
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
-  activeHub = "practice";
-  setNavActive("practice");
-  state.route = { hub: "practice", item: "alphabet", stage: null };
+  activeHub = "learn";
+  setNavActive("learn");
+  state.route = { hub: "learn", item: "alphabet-practice", stage: null };
   saveState();
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Alphabet practice", () => goHub("practice"), "Practice");
+  showDetailBarWithBack("learn", "Alphabet practice", () => goHub("learn"), "Learn");
   const due = getDueLetterCount();
   el.innerHTML = `
     <div class="card">
@@ -15114,13 +15145,13 @@ function renderAlphabetPracticeHub() {
 // Practice › Writing practice: one hub listing the three writing sources.
 function renderWritingPracticeHub() {
   refreshProgressionState();
-  activeHub = "practice";
-  setNavActive("practice");
-  state.route = { hub: "practice", item: "writing", stage: null };
+  activeHub = "learn";
+  setNavActive("learn");
+  state.route = { hub: "learn", item: "writing", stage: null };
   saveState();
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Writing practice", () => goHub("practice"), "Practice");
+  showDetailBarWithBack("learn", "Writing practice", () => goHub("learn"), "Learn");
   el.innerHTML = `
     <div class="card">
       <div class="eyebrow">Practice · Writing</div>
@@ -15136,6 +15167,153 @@ function renderWritingPracticeHub() {
   });
 }
 
+// ─── EXAM HUB · HANGUL MASTERY EXAMINATION (v2) ──────────────────────────────
+// Structure laid down 2026-07-20; the attempt runner is scaffolded but not yet
+// implemented. Contract: docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md, one-shot
+// finishing plan: docs/EXAM_TAB_HANDOVER.md. The question bank is the plain
+// browser global window.HANGUL_MASTERY_EXAM (hangul_mastery_exam.js), audited
+// by scripts/audit-hangul-mastery-exam.mjs.
+//
+// Hard rules for the finisher (spec §0/§3/§4):
+//   · mastered ⇔ correct === 200 && total === 200 && unanswered === 0 && ungraded === 0
+//   · no per-item feedback, no reference/hints/reveals while examActive
+//   · six-option MCQs; retakes reshuffle item order within parts + options
+//   · typed answers graded via normalizeHangulExamInput (NFC + trim)
+//   · drawings need exact-glyph recognition AND a 'great' verdict; 'close' = 0
+//   · never render a draw item's `target` to the candidate; canvases start blank
+
+function normalizeAlphabetMasteryExam(record) {
+  const safe = record && typeof record === "object" ? record : {};
+  return {
+    version: 2,
+    bestCorrect: Number.isInteger(safe.bestCorrect) ? Math.max(0, Math.min(200, safe.bestCorrect)) : 0,
+    mastered: safe.mastered === true,
+    completedAt: typeof safe.completedAt === "string" ? safe.completedAt : null,
+    attempts: Number.isInteger(safe.attempts) ? Math.max(0, safe.attempts) : 0,
+  };
+}
+
+function getHangulMasteryExamBank() {
+  const bank = window.HANGUL_MASTERY_EXAM;
+  if (!bank || !Array.isArray(bank.sections)) return null;
+  return bank;
+}
+
+// Spec §5/§6: typed-answer normalization. Grade with strict equality against
+// item.answer — no romanization, no compatibility-jamo decomposition.
+function normalizeHangulExamInput(value) {
+  return String(value || "").normalize("NFC").trim();
+}
+
+// Exam hub → Alphabet tile. Shows the candidate-facing summary and the current
+// v2 result record, and routes into the exam intro.
+function renderAlphabetExamHub() {
+  refreshProgressionState();
+  activeHub = "exam";
+  setNavActive("exam");
+  state.route = { hub: "exam", item: "alphabet", stage: null };
+  saveState();
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("exam", "Hangul Mastery Exam", () => goHub("exam"), "Exam");
+
+  const bank = getHangulMasteryExamBank();
+  const record = normalizeAlphabetMasteryExam(state.alphabetMasteryExam);
+  const statusLabel = record.mastered ? "한글 완전 습득 · Hangul mastered" : "아직 완전 습득 전 · Not yet mastered";
+  const bestLine = record.attempts > 0
+    ? `Best result: ${record.bestCorrect}/200 · ${record.attempts} attempt${record.attempts === 1 ? "" : "s"}`
+    : "No attempts yet.";
+
+  el.innerHTML = `
+    <div class="card word-card exam-entry-card">
+      <div class="eyebrow">한글 완전 습득 시험 · Hangul Mastery Examination</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Alphabet mastery exam</h2>
+      <div class="screen-sub">A formal 200-item examination covering alphabet Stages 01–07: identification, contrasts, block composition, batchim, word reading, Korean-keyboard entry, and handwriting from memory. Only a perfect 200/200 earns <strong>Hangul mastered</strong>.</div>
+      <div class="exam-status-row ${record.mastered ? "exam-status-mastered" : ""}">
+        <span class="pill ${record.mastered ? "accent" : ""}">${escapeHtml(statusLabel)}</span>
+        <span class="screen-sub" style="margin-bottom:0;">${escapeHtml(bestLine)}</span>
+      </div>
+      ${bank
+        ? `<button class="button primary" type="button" id="examIntroBtn">Read the candidate instructions</button>`
+        : `<div class="screen-sub">Exam data failed to load — refresh the app and try again.</div>`}
+    </div>`;
+  const introBtn = el.querySelector("#examIntroBtn");
+  if (introBtn) introBtn.addEventListener("click", () => {
+    queueScreenMotion("forward", 1);
+    renderHangulMasteryExamIntro();
+  });
+}
+
+// 수험 안내 · Candidate instructions (spec §1). Sober exam presentation: no
+// mnemonics, no teaching copy, no gamified tone.
+function renderHangulMasteryExamIntro() {
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("exam", "수험 안내 · Candidate instructions", () => renderAlphabetExamHub(), "Hangul Mastery Exam");
+  const bank = getHangulMasteryExamBank();
+  if (!bank) { renderAlphabetExamHub(); return; }
+  el.innerHTML = `
+    <div class="card word-card exam-intro-card">
+      <div class="eyebrow">수험 안내 · Candidate instructions</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Hangul Mastery Examination</h2>
+      <ul class="exam-rules-list">
+        <li>${bank.sections.length} parts · 200 items · 200 marks. Recommended time: ${bank.timeLimitMinutes} minutes.</li>
+        <li>120 multiple-choice items with six options (① – ⑥), 40 Korean-keyboard responses, 40 handwriting responses.</li>
+        <li>No reference boards, hints, reveals, or dictionaries are available during the exam.</li>
+        <li>No correct/incorrect feedback is given until final submission (최종 제출).</li>
+        <li>Audio prompts may be played at most ${bank.audioPlayLimit} times each.</li>
+        <li>Answers remain editable until final submission. You may flag items for review (답안 확인).</li>
+        <li>Leaving the exam discards the attempt.</li>
+        <li>한글 완전 습득 · <strong>Hangul mastered</strong> is awarded only at 200/200.</li>
+      </ul>
+      <button class="button primary" type="button" id="examBeginBtn">시험 시작 · Begin the exam</button>
+    </div>`;
+  el.querySelector("#examBeginBtn").addEventListener("click", () => {
+    queueScreenMotion("forward", 1);
+    startHangulMasteryExamAttempt();
+  });
+}
+
+// ── ATTEMPT RUNNER (NOT YET IMPLEMENTED) ────────────────────────────────────
+// One-shot finishing contract — implement in this order, reusing existing
+// engines (do NOT build parallel ones):
+//   1. Pre-checks: 소리 확인 audio check (speak() + AUDIO_MAP playback) and
+//      한글 입력 확인 keyboard check (normalizeHangulExamInput echo field).
+//   2. Attempt state: build from getHangulMasteryExamBank() — shuffle item
+//      order within each part and shuffle each MCQ's six options per attempt;
+//      keep {answers, flags, audioPlays, startedAt} in a module-level object,
+//      NOT in persisted state (leaving discards the attempt, spec §4).
+//   3. Set examActive = true; while active suppress reference surfaces
+//      (All Hangul board, hints, reveals, option audio previews, tracing
+//      guides) and intercept nav via a quit-confirmation.
+//   4. Render parts 1–5 as six-option MCQs (① – ⑥ order, explicit Prev/Next,
+//      Flag for review, Clear answer; no auto-advance, no answer coloring).
+//   5. Part 6: Korean text input graded later via normalizeHangulExamInput
+//      strict equality. Part 7: blank canvas per item — reuse the Hangul
+//      writing canvas + HANGUL_STROKES recognition adapter; store the verdict;
+//      only exact glyph + 'great' verdict earns the mark. Never show `target`.
+//   6. 답안 확인 review screen (unanswered + flagged) → 최종 제출 confirm.
+//   7. Grade: correct/total/unanswered/ungraded; mastered ⇔ 200/200 exactly.
+//      Update state.alphabetMasteryExam {bestCorrect, attempts, mastered,
+//      completedAt}, saveState(), then show section-level missed skills with
+//      stage routes — never the full answer key (spec §3).
+function startHangulMasteryExamAttempt() {
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("exam", "Hangul Mastery Exam", () => renderAlphabetExamHub(), "Hangul Mastery Exam");
+  el.innerHTML = `
+    <div class="card word-card exam-intro-card">
+      <div class="eyebrow">시험 준비 중 · Exam under construction</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">The examination hall isn't open yet</h2>
+      <div class="screen-sub">The 200-item bank, grading contract, and this exam section are in place; the attempt runner ships in a follow-up PR (see docs/EXAM_TAB_HANDOVER.md). Your progress is unaffected.</div>
+      <button class="button secondary" type="button" id="examBackBtn">Back to the exam overview</button>
+    </div>`;
+  el.querySelector("#examBackBtn").addEventListener("click", () => {
+    queueScreenMotion("back", -1);
+    renderAlphabetExamHub();
+  });
+}
+
 function renderAlphabetPractice() {
   refreshProgressionState();
   currentQuizScope = "alphabet";
@@ -15145,7 +15323,7 @@ function renderAlphabetPractice() {
   const practiceSession = getPracticeQuizSession("alphabet") || startGenericPracticeSession("alphabet");
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Alphabet quiz", () => renderAlphabetPracticeHub(), "Alphabet practice");
+  showDetailBarWithBack("learn", "Alphabet quiz", () => renderAlphabetPracticeHub(), "Alphabet practice");
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card">
       ${alphabetPracticeProgressHtml("Alphabet quiz", 0, 0, practiceSession.complete)}
@@ -15224,7 +15402,7 @@ let pronDrillState = {
 window.renderPronunciationDrill = function() {
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", pronDrillState.activePairSet ? "Pronunciation drill" : "Pronunciation", () => {
+  showDetailBarWithBack("learn", pronDrillState.activePairSet ? "Pronunciation drill" : "Pronunciation", () => {
     pronDrillState.activePairSet = null;
     renderAlphabetPracticeHub();
   }, "Alphabet practice");
@@ -15442,7 +15620,7 @@ function getWritingSourceMeta(source = hangulWritingSource) {
     "learn-vocabulary": "Vocabulary",
     "learn-sentences": "Sentences",
   };
-  const back = backLabels[hangulWritingReturnTo] || "Practice";
+  const back = backLabels[hangulWritingReturnTo] || "Learn";
   if (source === "vocabulary") return { title: "Vocabulary writing", eyebrow: "Practice · Words", back, unitPrefix: "Word set" };
   if (source === "sentences") return { title: "Sentence writing", eyebrow: "Practice · Sentences", back, unitPrefix: "Sentence set" };
   return { title: "Hangul writing", eyebrow: "Practice · Hangul writing", back, unitPrefix: "Unit" };
@@ -15563,7 +15741,7 @@ function leaveHangulWritingSession() {
   else if (hangulWritingReturnTo === "learn-vocabulary") openLearnStageMenu("vocabulary");
   else if (hangulWritingReturnTo === "learn-sentences") openLearnStageMenu("sentences");
   else if (hangulWritingSource === "alphabet") renderAlphabetPracticeHub();
-  else goHub("practice");
+  else goHub("learn");
 }
 
 function renderHangulWritingReentryPrompt() {
@@ -15583,7 +15761,7 @@ function renderHangulWritingReentryPrompt() {
   const el = showScreen("detail");
   if (!el) return;
   const sourceMeta = getWritingSourceMeta();
-  const reentryHub = String(hangulWritingReturnTo).startsWith("learn-") ? "learn" : "practice";
+  const reentryHub = "learn"; // every writing entry point now lives under Learn
   showDetailBarWithBack(reentryHub, sourceMeta.title, () => leaveHangulWritingSession(), sourceMeta.back);
   el.innerHTML = `
     <div class="card word-card alphabet-practice-card writing-reentry-card">
@@ -17690,7 +17868,7 @@ function renderHangulWriting() {
   clearHangulRecognitionTimer();
   stopHangulWatch(); // cancel any in-flight stroke animation before rebuilding the DOM
   refreshProgressionState();
-  const writingHub = String(hangulWritingReturnTo).startsWith("learn-") ? "learn" : "practice";
+  const writingHub = "learn"; // every writing entry point now lives under Learn
   activeHub = writingHub;
   setNavActive(writingHub);
   const el = showScreen("detail");
@@ -17947,7 +18125,7 @@ function leavePremiumWriting() {
 }
 
 function premiumWritingDetailBar() {
-  activeHub = String(premiumWritingState.returnTo).startsWith("learn-") ? "learn" : "practice";
+  activeHub = "learn"; // every writing entry point now lives under Learn
   setNavActive(activeHub);
   const title = premiumWritingState.source === "vocabulary" ? "Word handwriting" : "Phrase & sentence handwriting";
   showDetailBarWithBack(activeHub, title, () => leavePremiumWriting(), premiumWritingState.returnTo === "writingHub" ? "Writing practice" : "Learn");
@@ -18504,15 +18682,15 @@ function startLetterReview() {
   resetLessonMotion("letter-review");
   queueScreenMotion("forward", 1, { replace: false });
   letterReview = { queue: getDueLetters(), index: 0, correct: 0, answered: false };
-  activeHub = "practice";
-  setNavActive("practice");
+  activeHub = "learn";
+  setNavActive("learn");
   renderLetterReview();
 }
 
 function renderLetterReview() {
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("practice", "Alphabet review", () => renderAlphabetPracticeHub(), "Alphabet practice");
+  showDetailBarWithBack("learn", "Alphabet review", () => renderAlphabetPracticeHub(), "Alphabet practice");
 
   const total = letterReview.queue.length;
   if (!total || letterReview.index >= total) {
