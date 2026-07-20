@@ -69,6 +69,8 @@ Sentences queue.
 | `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; reference for its pedagogy + data axes) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — reuse these engines for Sentences) |
 | **`docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md`** | Hangul Mastery Examination contract: 200-item bank, grading, exam-mode rules (Exam tab) |
+| **`docs/CORE_WORD_EXAM_SPECS.md`** | Core Word Examination Suite contract: ten achievement exams, macrostrands, generation, scoring, retention, audit (Exam tab, beneath Hangul) |
+| **`docs/CORE_WORD_EXAM_COMPETENCY_MAP.md`** | Generated competency milestone map (first gate) proving every scored form was taught before it is tested |
 | **`docs/EXAM_TAB_HANDOVER.md`** | Exam-tab structure shipped 2026-07-20 + one-shot runbook for finishing the exam attempt runner |
 | **`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`** | Owner-approved Capacitor/Android/Google Play execution handover; preserves browser/PWA and later iOS compatibility |
 | `HANDOVER.md` | Repo snapshot + conventions for the next contributor |
@@ -93,6 +95,10 @@ Sentences queue.
    native recognition, or billing; run
    `node scripts/audit-hangul-mastery-exam.mjs` after touching the Exam tab or
    `hangul_mastery_exam.js`; run
+   `node scripts/audit-word-exams.mjs` (and
+   `node scripts/build-word-exam-competency-map.mjs --check`) after touching the
+   Core Word Examination Suite (`word_exam_blueprints.js`, `word_exam_engine.js`,
+   or the Words curriculum/curated data it reads); run
    `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
    any loaded asset version; `node --check` any JS you edit.
 4. **Bump caches** when you change `app.js`, `styles.css`, or any loaded data

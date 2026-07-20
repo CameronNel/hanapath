@@ -2983,6 +2983,9 @@ state.route = normalizeRoute(state.route);
 // saves; never re-locks content a learner already unlocked via the legacy
 // Stage 08 checkpoint (docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md §8).
 state.alphabetMasteryExam = normalizeAlphabetMasteryExam(state.alphabetMasteryExam);
+// Core Word Examination Suite records — normalized against the loaded
+// blueprints; backfills safely for old saves and never mutates learning state.
+state.wordExams = normalizeWordExams(state.wordExams);
 phaseOneView.lessonIndex = state.phaseOneActive;
 state.vocabQuery = typeof state.vocabQuery === "string" ? state.vocabQuery : "";
 state.vocabBand = typeof state.vocabBand === "string" ? state.vocabBand : "all";
@@ -3085,6 +3088,9 @@ function loadState() {
     // still open. $Q remains authoritative for learner grading everywhere.
     useMLKit: false,
     reduceMotion: false,
+    // Core Word Examination Suite records (docs/CORE_WORD_EXAM_SPECS.md §4.4).
+    // Backward-compatible v2 shape; normalized in init after blueprints load.
+    wordExams: null,
   };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -13531,6 +13537,7 @@ const HUB_DEFS = {
     sub: "Formal exams — no hints, no reference, results only after final submission.",
     items: [
       { id: "alphabet", icon: "📝", title: "Alphabet · Hangul Mastery Exam", sub: "200 items across seven parts. Only 200/200 earns Hangul mastered.", custom: "alphabetExamHub" },
+      { id: "corewords", icon: "📚", title: "Core Words · Examination Suite", sub: "Ten achievement exams: eight section exams, a midterm, and a cumulative final with delayed mastery confirmation.", custom: "wordExamHub" },
     ],
   },
   progress: {
@@ -14553,6 +14560,11 @@ function openHubItem(hub, itemId) {
 
   if (item.custom === "alphabetExamHub") {
     renderAlphabetExamHub();
+    return;
+  }
+
+  if (item.custom === "wordExamHub") {
+    renderWordExamHub();
     return;
   }
 
@@ -16063,6 +16075,671 @@ function showExamQuitConfirm(onProceed) {
   cancel.addEventListener("click", () => overlay.remove());
   overlay.addEventListener("click", (event) => { if (event.target === overlay) overlay.remove(); });
   window.setTimeout(() => { try { cancel.focus(); } catch (_) {} }, 40);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CORE WORD EXAMINATION SUITE (v2)
+// Ten curriculum-achievement exams generated deterministically by
+// word_exam_engine.js from word_exam_blueprints.js. Governing contract:
+// docs/CORE_WORD_EXAM_SPECS.md. One shared runner; navigation + flagging +
+// pre-submission review are allowed, but no correctness, hints, teaching notes,
+// Word Bank detail, or SRS state appear before final submission. Exams never
+// mutate Words progression or SRS.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const WORD_EXAM_MACRO = {
+  R: { label: "Recognition", sub: "recognise a word or heard form" },
+  C: { label: "Cued selection", sub: "pick the Korean for a meaning/context" },
+  P: { label: "Production", sub: "type the Korean form" },
+  X: { label: "Contextual use", sub: "complete a short context" },
+  F: { label: "Form & register", sub: "tense, negation, politeness, honorifics" },
+  D: { label: "Lexical depth", sub: "senses, contrasts, collocations" },
+};
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Explicit test hook: browser acceptance tests may set window.__WORD_EXAM_NOW
+// to simulate the 7-day/21-day retention transitions. Never used by shipped UI.
+function wordExamNow() {
+  const inject = (typeof window !== "undefined") ? window.__WORD_EXAM_NOW : null;
+  return Number.isFinite(inject) ? inject : Date.now();
+}
+
+function getWordExamEngine() { return (typeof window !== "undefined") ? window.HANAPATH_WORD_EXAM_ENGINE : null; }
+function getWordExamsList() { return (typeof window !== "undefined" && Array.isArray(window.HANAPATH_WORD_EXAMS)) ? window.HANAPATH_WORD_EXAMS : []; }
+function getWordExamById(id) { return getWordExamsList().find((e) => e.id === id) || null; }
+function getWordExamMeta() { return (typeof window !== "undefined") ? (window.HANAPATH_WORD_EXAM_META || {}) : {}; }
+
+// A Words section is "complete" for exam-unlock purposes when every unit in it
+// is crowned (its checkpoint passed). Reuses the live curriculum + progression.
+function isWordSectionComplete(sectionId) {
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  const unitsIn = getWordUnits().filter((u) => u.sectionId === sectionId);
+  return unitsIn.length > 0 && unitsIn.every(isWordUnitCrowned);
+}
+function isWordExamUnlocked(exam) {
+  if (!exam || !exam.unlock) return false;
+  return (exam.unlock.requiresSectionsComplete || []).every(isWordSectionComplete);
+}
+
+// ── v2 persistence (backward-compatible; never mutates learning state) ───────
+function normalizeWordExams(raw) {
+  const out = { version: 2, byExamId: {} };
+  const prev = raw && typeof raw === "object" ? raw : {};
+  const prevById = prev.byExamId && typeof prev.byExamId === "object" ? prev.byExamId : {};
+  getWordExamsList().forEach((exam) => {
+    const r = prevById[exam.id] && typeof prevById[exam.id] === "object" ? prevById[exam.id] : {};
+    out.byExamId[exam.id] = {
+      blueprintVersion: exam.version || 2,
+      attempts: Number.isInteger(r.attempts) ? r.attempts : 0,
+      bestPct: typeof r.bestPct === "number" ? r.bestPct : 0,
+      passed: Boolean(r.passed),
+      distinguished: Boolean(r.distinguished),
+      masteryEarnedAt: typeof r.masteryEarnedAt === "number" ? r.masteryEarnedAt : null,
+      confirmationDueFrom: typeof r.confirmationDueFrom === "number" ? r.confirmationDueFrom : null,
+      confirmationExpiresAt: typeof r.confirmationExpiresAt === "number" ? r.confirmationExpiresAt : null,
+      qualifyingTargetIds: Array.isArray(r.qualifyingTargetIds) ? r.qualifyingTargetIds : null,
+      lastAttemptAt: typeof r.lastAttemptAt === "number" ? r.lastAttemptAt : null,
+      lastResult: r.lastResult && typeof r.lastResult === "object" ? r.lastResult : null,
+    };
+  });
+  return out;
+}
+function getWordExamRecord(examId) {
+  if (!state.wordExams) state.wordExams = normalizeWordExams(state.wordExams);
+  return state.wordExams.byExamId[examId] || null;
+}
+
+// Retention window state for Exam 10 (spec §7.2).
+function wordExamRetentionStatus(exam) {
+  const rec = getWordExamRecord(exam.id);
+  if (!exam.retention || !rec) return { phase: "none" };
+  if (rec.masteryEarnedAt) return { phase: "mastered", at: rec.masteryEarnedAt };
+  const now = wordExamNow();
+  if (rec.confirmationDueFrom == null) return { phase: "none" };
+  if (now < rec.confirmationDueFrom) return { phase: "waiting", opensAt: rec.confirmationDueFrom };
+  if (rec.confirmationExpiresAt != null && now > rec.confirmationExpiresAt) return { phase: "expired" };
+  return { phase: "open", expiresAt: rec.confirmationExpiresAt };
+}
+
+// ── Runner state ─────────────────────────────────────────────────────────────
+let wordExamAttempt = null;
+let wordExamCountdownHandle = 0;
+
+function clearWordExamCountdown() {
+  if (wordExamCountdownHandle) { window.clearInterval(wordExamCountdownHandle); wordExamCountdownHandle = 0; }
+}
+function discardWordExamAttempt() {
+  clearWordExamCountdown();
+  stopSpeech();
+  examActive = false;
+  wordExamAttempt = null;
+}
+
+// ── Exam hub (list of ten cards, beneath the Hangul Mastery Examination) ─────
+function wordExamBandLabel(exam, rec) {
+  if (!rec || !rec.lastResult) return "";
+  if (exam.retention && rec.masteryEarnedAt) return "핵심 낱말 완전 습득 · Core Words mastered";
+  if (rec.distinguished) return "우수 · Distinction";
+  if (rec.passed) return "합격 · Passed";
+  return "미합격 · Not yet passed";
+}
+
+function renderWordExamHub() {
+  refreshProgressionState();
+  clearWordExamCountdown();
+  wordExamAttempt = null;
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("exam", "Core Words · Examination Suite", () => goHub("exam"), "Exam");
+  if (!getWordExamEngine() || !getWordExamsList().length) {
+    el.innerHTML = `<div class="card"><div class="eyebrow">Core Words</div><h2 class="screen-title">Examination suite unavailable</h2><p class="screen-sub">The exam data failed to load.</p></div>`;
+    return;
+  }
+  const cards = getWordExamsList().map((exam) => {
+    const rec = getWordExamRecord(exam.id);
+    const unlocked = isWordExamUnlocked(exam);
+    const best = rec && rec.attempts ? `${rec.bestPct}%` : "—";
+    const band = wordExamBandLabel(exam, rec);
+    const retention = exam.retention ? wordExamRetentionStatus(exam) : null;
+    let statusHtml = "";
+    if (!unlocked) {
+      const need = (exam.unlock.requiresSectionsComplete || []).map((sid) => { const s = getWordSectionById(sid); return s ? s.name : sid; });
+      statusHtml = `<div class="word-exam-lock">🔒 Complete ${need.join(", ")} to unlock</div>`;
+    } else if (retention && retention.phase === "mastered") {
+      statusHtml = `<div class="word-exam-badge word-exam-badge--mastered">👑 Core Words mastered</div>`;
+    } else if (retention && retention.phase === "open") {
+      statusHtml = `<div class="word-exam-badge word-exam-badge--retention">Retention confirmation open — 60 items</div>`;
+    } else if (retention && retention.phase === "waiting") {
+      const days = Math.max(1, Math.ceil((retention.opensAt - wordExamNow()) / DAY_MS));
+      statusHtml = `<div class="word-exam-badge">Retention confirmation opens in ~${days} day${days === 1 ? "" : "s"}</div>`;
+    } else if (band) {
+      statusHtml = `<div class="word-exam-badge">${escapeHtml(band)} · best ${best}</div>`;
+    }
+    const scopeNames = exam.scopeSectionIds.map((sid) => { const s = getWordSectionById(sid); return s ? s.name : sid; });
+    const scopeLabel = exam.scopeSectionIds.length > 2 ? `${exam.scopeSectionIds.length} sections` : scopeNames.join(" · ");
+    return `
+      <button class="word-exam-card${unlocked ? "" : " is-locked"}" type="button" data-word-exam="${escapeHtml(exam.id)}" ${unlocked ? "" : "disabled"}>
+        <div class="word-exam-card-head">
+          <span class="word-exam-card-order">${exam.order}</span>
+          <span class="word-exam-card-titles">
+            <span class="word-exam-card-title">${escapeHtml(exam.title)}</span>
+            <span class="word-exam-card-scope">${escapeHtml(scopeLabel)} · ${exam.items} items · ${exam.timeMinutes} min</span>
+          </span>
+        </div>
+        ${statusHtml}
+      </button>`;
+  }).join("");
+  el.innerHTML = `
+    <div class="word-exam-hub" data-lesson-motion-root>
+      <div class="eyebrow">핵심 낱말 시험 · Core Words achievement exams</div>
+      <h2 class="screen-title" style="margin-bottom:6px;">Core Word Examination Suite</h2>
+      <p class="screen-sub">Ten achievement exams that measure how securely you recognise, retrieve, distinguish, and use the words and forms HanaPath has taught. These are HanaPath achievement standards, not TOPIK/CEFR certification. No hints or feedback appear until you submit.</p>
+      <div class="word-exam-list">${cards}</div>
+    </div>`;
+  el.querySelectorAll("[data-word-exam]").forEach((btn) => {
+    btn.addEventListener("click", () => renderWordExamIntro(btn.dataset.wordExam));
+  });
+}
+
+// ── Intro / requirements ─────────────────────────────────────────────────────
+function renderWordExamIntro(examId) {
+  const exam = getWordExamById(examId);
+  if (!exam) { renderWordExamHub(); return; }
+  if (!isWordExamUnlocked(exam)) { renderWordExamHub(); return; }
+  refreshProgressionState();
+  const rec = getWordExamRecord(exam.id);
+  const retention = exam.retention ? wordExamRetentionStatus(exam) : null;
+  const isConfirmation = retention && retention.phase === "open";
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("exam", exam.title, () => renderWordExamHub(), "Core Words");
+  const itemCount = isConfirmation ? exam.retention.confirmationItems : exam.items;
+  const timeMin = isConfirmation ? exam.retention.confirmationTimeMinutes : exam.timeMinutes;
+  const macroList = ["R", "C", "P", "X", "F", "D"].map((code) => `<li><strong>${WORD_EXAM_MACRO[code].label}</strong> — ${WORD_EXAM_MACRO[code].sub}</li>`).join("");
+  const prior = rec && rec.attempts ? `<div class="word-exam-prior">Attempts: ${rec.attempts} · Best: ${rec.bestPct}%${rec.distinguished ? " · Distinction" : rec.passed ? " · Passed" : ""}</div>` : "";
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="exam-question">
+        <div class="eyebrow">${escapeHtml(exam.titleKo || "")} · ${isConfirmation ? "Retention confirmation" : "Achievement exam"}</div>
+        <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(exam.title)}</h2>
+        <p class="screen-sub">${isConfirmation
+          ? `This delayed retention confirmation seals Core Words mastery. ${itemCount} fresh items, avoiding your qualifying targets.`
+          : `${itemCount} items · ${timeMin} minutes. You may move Previous/Next, flag items, and review before submitting. No feedback appears until you submit.`}</p>
+        <ul class="word-exam-macro-list">${macroList}</ul>
+        <p class="screen-sub word-exam-fineprint">Provisional HanaPath achievement standard. Audio plays at most twice per item. Leaving the exam discards the attempt. This exam never changes your Words progress or review schedule.</p>
+        ${prior}
+      </div>
+      <div class="player-actions exam-actions">
+        <button class="button primary" type="button" id="wordExamStart">${isConfirmation ? "Begin retention confirmation" : (rec && rec.attempts ? "Retake with a new set" : "Begin exam")}</button>
+      </div>
+    </div>`;
+  el.querySelector("#wordExamStart").addEventListener("click", () => {
+    startWordExamAttempt(exam.id, { mode: isConfirmation ? "confirmation" : "full" });
+  });
+}
+
+// ── Start / build attempt ────────────────────────────────────────────────────
+function startWordExamAttempt(examId, opts) {
+  const exam = getWordExamById(examId);
+  const engine = getWordExamEngine();
+  if (!exam || !engine) { renderWordExamHub(); return; }
+  const mode = (opts && opts.mode) || "full";
+  const rec = getWordExamRecord(examId);
+  const seed = (opts && opts.seed != null) ? opts.seed : Math.floor(Math.random() * 1e9) + 1;
+  const genOpts = { mode };
+  if (mode === "confirmation" && rec && rec.qualifyingTargetIds) genOpts.avoidTargetIds = rec.qualifyingTargetIds;
+  let attempt;
+  try {
+    attempt = engine.generateAttempt(examId, seed, genOpts);
+  } catch (e) {
+    renderWordExamHub();
+    return;
+  }
+  resetLessonMotion("exam");
+  clearWordExamCountdown();
+  const now = Date.now();
+  const timeMin = mode === "confirmation" ? exam.retention.confirmationTimeMinutes : exam.timeMinutes;
+  wordExamAttempt = {
+    exam, mode, seed, items: attempt.items,
+    index: 0, answers: {}, audioPlays: {}, flagged: new Set(),
+    startedAt: now, deadline: now + timeMin * 60 * 1000,
+    submitted: false, result: null, stage: "attempt",
+  };
+  examActive = true;
+  startWordExamCountdown();
+  queueScreenMotion("forward", 1);
+  renderWordExamAttempt();
+}
+
+function startWordExamCountdown() {
+  clearWordExamCountdown();
+  wordExamCountdownHandle = window.setInterval(() => {
+    const a = wordExamAttempt;
+    if (!a || !examActive) { clearWordExamCountdown(); return; }
+    const remaining = a.deadline - Date.now();
+    const clock = document.getElementById("wordExamCountdown");
+    if (clock) {
+      clock.textContent = formatExamClock(remaining);
+      clock.classList.toggle("exam-countdown-low", remaining <= 5 * 60 * 1000);
+    }
+    if (remaining <= 0) { clearWordExamCountdown(); submitWordExamAttempt(true); }
+  }, 1000);
+}
+
+function mountWordExamScreen(title) {
+  const el = showScreen("detail");
+  if (!el) return null;
+  showDetailBarWithBack("exam", title, () => showWordExamQuitConfirm(() => {
+    queueScreenMotion("back", -1);
+    renderWordExamHub();
+  }), "Core Words");
+  return el;
+}
+
+function wordExamProgressHtml(secondary, positionLabel) {
+  const remaining = wordExamAttempt ? wordExamAttempt.deadline - Date.now() : 0;
+  return `
+    <div class="exam-progress">
+      <div class="exam-progress-heading">
+        <span class="eyebrow">${escapeHtml(wordExamAttempt.exam.title)}</span>
+        <span class="exam-progress-secondary">${escapeHtml(secondary)}</span>
+      </div>
+      <div class="exam-progress-meta">
+        <span class="exam-progress-position">${escapeHtml(positionLabel)}</span>
+        <span class="exam-countdown${remaining <= 5 * 60 * 1000 ? " exam-countdown-low" : ""}" id="wordExamCountdown" aria-label="Time remaining">${escapeHtml(formatExamClock(remaining))}</span>
+      </div>
+    </div>`;
+}
+
+function wordExamAudioPlaysLeft(item) {
+  return Math.max(0, 2 - (wordExamAttempt.audioPlays[item.id] || 0));
+}
+function wordExamAudioButtonHtml(item) {
+  if (!item.audioText) return "";
+  const left = wordExamAudioPlaysLeft(item);
+  return `<div class="exam-audio-row"><button class="button secondary compact exam-audio-btn" type="button" id="wordExamAudioBtn" ${left <= 0 ? "disabled" : ""}>▶ 소리 듣기 · Play <span id="wordExamAudioLeft">(${left} left)</span></button></div>`;
+}
+function bindWordExamAudio(el, item) {
+  const btn = el.querySelector("#wordExamAudioBtn");
+  if (!btn || !item.audioText) return;
+  btn.addEventListener("click", () => {
+    if (wordExamAudioPlaysLeft(item) <= 0) return;
+    wordExamAttempt.audioPlays[item.id] = (wordExamAttempt.audioPlays[item.id] || 0) + 1;
+    void speak(item.audioText);
+    const left = wordExamAudioPlaysLeft(item);
+    const lab = el.querySelector("#wordExamAudioLeft");
+    if (lab) lab.textContent = `(${left} left)`;
+    if (left <= 0) btn.disabled = true;
+  });
+}
+
+// ── Attempt item render (MCQ + typed), Prev/Next/flag, no feedback ──────────
+function renderWordExamAttempt() {
+  const a = wordExamAttempt;
+  if (!a) { renderWordExamHub(); return; }
+  if (a.stage === "review") return renderWordExamReview();
+  const item = a.items[a.index];
+  const el = mountWordExamScreen(a.exam.title);
+  if (!el) return;
+  const total = a.items.length;
+  const position = `Question ${a.index + 1} of ${total}`;
+  const flagged = a.flagged.has(item.id);
+  const isTyped = !item.options;
+  const current = a.answers[item.id];
+  let bodyHtml;
+  if (isTyped) {
+    bodyHtml = `
+      ${wordExamAudioButtonHtml(item)}
+      ${item.stimulus ? `<div class="exam-stimulus">${escapeHtml(item.stimulus)}</div>` : ""}
+      <h3 class="exam-prompt" lang="ko">${escapeHtml(item.promptKo)}</h3>
+      <div class="exam-prompt-en">${escapeHtml(item.promptEn)}</div>
+      <input class="sentence-input exam-input" id="wordExamInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="한국어로 입력" value="${escapeHtml(current || "")}" lang="ko" />`;
+  } else {
+    const opts = item.options.map((opt, i) => `
+      <button class="option exam-option${current === opt ? " exam-selected" : ""}" type="button" data-word-opt="${escapeHtml(opt)}" ${textLanguageAttr(opt)}>
+        <span class="exam-option-mark" aria-hidden="true">${EXAM_OPTION_MARKS[i]}</span>
+        <span class="exam-option-text">${escapeHtml(opt)}</span>
+      </button>`).join("");
+    bodyHtml = `
+      ${wordExamAudioButtonHtml(item)}
+      ${item.stimulus && item.mode !== "sentence-blank" && item.mode !== "function-usage" && item.mode !== "collocation-choice" && item.mode !== "sense-disambiguation" ? `<div class="exam-stimulus">${escapeHtml(item.stimulus)}</div>` : ""}
+      <h3 class="exam-prompt" lang="ko">${escapeHtml(item.promptKo)}</h3>
+      <div class="exam-prompt-en">${escapeHtml(item.promptEn)}</div>
+      <div class="quiz-options exam-options">${opts}</div>`;
+  }
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">
+        ${wordExamProgressHtml(WORD_EXAM_MACRO[item.strand] ? WORD_EXAM_MACRO[item.strand].label : "", position)}
+      </div>
+      <div class="exam-question">
+        <div class="word-exam-flag-row">
+          <button class="button subtle compact word-exam-flag${flagged ? " is-flagged" : ""}" type="button" id="wordExamFlag">${flagged ? "🚩 Flagged" : "⚑ Flag for review"}</button>
+        </div>
+        ${bodyHtml}
+      </div>
+      <div class="player-actions exam-actions word-exam-nav">
+        <button class="button secondary" type="button" id="wordExamPrev" ${a.index === 0 ? "disabled" : ""}>← Previous</button>
+        <button class="button secondary compact" type="button" id="wordExamReview">Review</button>
+        <button class="button primary" type="button" id="wordExamNext">${a.index === total - 1 ? "Review & submit" : "Next →"}</button>
+      </div>
+    </div>`;
+  bindWordExamAudio(el, item);
+  const commitInput = () => { const inp = el.querySelector("#wordExamInput"); if (inp) a.answers[item.id] = inp.value; };
+  if (isTyped) {
+    const inp = el.querySelector("#wordExamInput");
+    inp.addEventListener("input", () => { a.answers[item.id] = inp.value; });
+    window.setTimeout(() => { try { inp.focus(); } catch (_) {} }, 120);
+  } else {
+    el.querySelectorAll("[data-word-opt]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        a.answers[item.id] = btn.dataset.wordOpt;
+        el.querySelectorAll("[data-word-opt]").forEach((b) => b.classList.toggle("exam-selected", b === btn));
+      });
+    });
+  }
+  el.querySelector("#wordExamFlag").addEventListener("click", () => {
+    if (a.flagged.has(item.id)) a.flagged.delete(item.id); else a.flagged.add(item.id);
+    renderWordExamAttempt();
+  });
+  el.querySelector("#wordExamPrev").addEventListener("click", () => { commitInput(); if (a.index > 0) { a.index -= 1; queueScreenMotion("back", -1); renderWordExamAttempt(); } });
+  el.querySelector("#wordExamReview").addEventListener("click", () => { commitInput(); a.stage = "review"; queueScreenMotion("forward", 1); renderWordExamReview(); });
+  el.querySelector("#wordExamNext").addEventListener("click", () => {
+    commitInput();
+    if (a.index < total - 1) { a.index += 1; queueScreenMotion("forward", 1); renderWordExamAttempt(); }
+    else { a.stage = "review"; queueScreenMotion("forward", 1); renderWordExamReview(); }
+  });
+  animateExamFrame(el, `word-q:${item.id}`, 1000 + a.index);
+}
+
+// ── Pre-submission review (answered / unanswered / flagged) ─────────────────
+function renderWordExamReview() {
+  const a = wordExamAttempt;
+  if (!a) { renderWordExamHub(); return; }
+  const el = mountWordExamScreen("답안 확인 · Review");
+  if (!el) return;
+  const total = a.items.length;
+  const answered = a.items.filter((it) => { const v = a.answers[it.id]; return v != null && String(v).trim() !== ""; }).length;
+  const unanswered = total - answered;
+  const rows = a.items.map((it, i) => {
+    const v = a.answers[it.id];
+    const done = v != null && String(v).trim() !== "";
+    const flagged = a.flagged.has(it.id);
+    return `
+      <button class="word-exam-review-row${done ? "" : " is-unanswered"}${flagged ? " is-flagged" : ""}" type="button" data-review-index="${i}">
+        <span class="word-exam-review-num">${i + 1}</span>
+        <span class="word-exam-review-state">${done ? "Answered" : "Not answered"}${flagged ? " · 🚩" : ""}</span>
+        <span class="word-exam-review-strand">${WORD_EXAM_MACRO[it.strand] ? WORD_EXAM_MACRO[it.strand].label : ""}</span>
+      </button>`;
+  }).join("");
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">${wordExamProgressHtml("Review", "답안 확인 · Review")}</div>
+      <div class="exam-question">
+        <div class="eyebrow">답안 확인 · Review before submitting</div>
+        <h2 class="exam-part-title">${answered} answered · ${unanswered} unanswered</h2>
+        <p class="screen-sub">Tap any item to return to it. Unanswered items are scored as incorrect. No answers are shown until you submit.</p>
+        <div class="word-exam-review-list">${rows}</div>
+      </div>
+      <div class="player-actions exam-actions word-exam-nav">
+        <button class="button secondary" type="button" id="wordExamBackToItems">← Back to questions</button>
+        <button class="button primary" type="button" id="wordExamSubmit">최종 제출 · Submit exam</button>
+      </div>
+    </div>`;
+  el.querySelectorAll("[data-review-index]").forEach((btn) => {
+    btn.addEventListener("click", () => { a.index = Number(btn.dataset.reviewIndex); a.stage = "attempt"; queueScreenMotion("back", -1); renderWordExamAttempt(); });
+  });
+  el.querySelector("#wordExamBackToItems").addEventListener("click", () => { a.stage = "attempt"; queueScreenMotion("back", -1); renderWordExamAttempt(); });
+  el.querySelector("#wordExamSubmit").addEventListener("click", () => confirmWordExamSubmit(unanswered));
+  animateExamFrame(el, "word-review", 8000);
+}
+
+function confirmWordExamSubmit(unanswered) {
+  if (unanswered <= 0) { submitWordExamAttempt(false); return; }
+  if (document.getElementById("examQuitOverlay")) return;
+  const overlay = document.createElement("div");
+  overlay.id = "examQuitOverlay";
+  overlay.className = "exam-quit-overlay";
+  overlay.innerHTML = `
+    <div class="exam-quit-dialog" role="alertdialog" aria-modal="true">
+      <h3>제출하시겠습니까? · Submit now?</h3>
+      <p>${unanswered} item${unanswered === 1 ? " is" : "s are"} still unanswered and will be marked incorrect. You cannot change answers after submitting.</p>
+      <div class="exam-quit-actions">
+        <button class="button secondary" type="button" id="wordExamSubmitCancel">Keep reviewing</button>
+        <button class="button primary" type="button" id="wordExamSubmitGo">Submit exam</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector("#wordExamSubmitCancel").addEventListener("click", () => overlay.remove());
+  overlay.querySelector("#wordExamSubmitGo").addEventListener("click", () => { overlay.remove(); submitWordExamAttempt(false); });
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+function showWordExamQuitConfirm(onProceed) {
+  if (document.getElementById("examQuitOverlay")) return;
+  const overlay = document.createElement("div");
+  overlay.id = "examQuitOverlay";
+  overlay.className = "exam-quit-overlay";
+  overlay.innerHTML = `
+    <div class="exam-quit-dialog" role="alertdialog" aria-modal="true">
+      <h3>시험을 종료하시겠습니까? · Quit the exam?</h3>
+      <p>Leaving now discards this attempt. Your answers are not saved, and this attempt does not count.</p>
+      <div class="exam-quit-actions">
+        <button class="button secondary" type="button" id="wordExamQuitCancel">Resume exam</button>
+        <button class="button exam-quit-discard" type="button" id="wordExamQuitGo">Quit &amp; discard</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector("#wordExamQuitCancel").addEventListener("click", () => overlay.remove());
+  overlay.querySelector("#wordExamQuitGo").addEventListener("click", () => { overlay.remove(); discardWordExamAttempt(); if (typeof onProceed === "function") onProceed(); else renderWordExamHub(); });
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ── Submit, grade, persist, retention ────────────────────────────────────────
+function submitWordExamAttempt(auto) {
+  const a = wordExamAttempt;
+  const engine = getWordExamEngine();
+  if (!a || a.submitted || !engine) return;
+  a.submitted = true;
+  examActive = false;
+  clearWordExamCountdown();
+  stopSpeech();
+  const result = engine.gradeAttempt({ items: a.items }, a.answers);
+  const bands = engine.evaluateBands(a.exam, result, a.mode);
+  const now = wordExamNow();
+  const rec = getWordExamRecord(a.exam.id);
+
+  // Compact, learning-state-safe persistence (never touches SRS/progress).
+  rec.attempts += 1;
+  rec.lastAttemptAt = now;
+  rec.bestPct = Math.max(rec.bestPct, result.pct);
+  if (bands.passed) rec.passed = true;
+  if (bands.distinguished) rec.distinguished = true;
+  rec.lastResult = compactWordExamResult(result, bands, a.mode);
+
+  if (a.exam.retention) {
+    if (a.mode === "confirmation") {
+      if (bands.passed && !rec.masteryEarnedAt) rec.masteryEarnedAt = now; // sticky
+    } else {
+      // Full final: opening the delayed retention confirmation on qualification.
+      if (!rec.masteryEarnedAt && engine.qualifiesForConfirmation(a.exam, result)) {
+        const status = wordExamRetentionStatus(a.exam);
+        if (status.phase !== "open" && status.phase !== "waiting") {
+          rec.confirmationDueFrom = now + a.exam.retention.opensAfterDays * DAY_MS;
+          rec.confirmationExpiresAt = rec.confirmationDueFrom + a.exam.retention.expiresAfterDays * DAY_MS;
+          rec.qualifyingTargetIds = a.items.map((it) => it.targetWordId);
+        }
+      }
+    }
+  }
+  saveState(); // persists state.wordExams only; no learning state mutated
+
+  a.result = { result, bands };
+  a.stage = "results";
+  queueScreenMotion("forward", 1);
+  renderWordExamResult();
+}
+
+function compactWordExamResult(result, bands, mode) {
+  const macro = {};
+  Object.keys(result.byMacrostrand).forEach((k) => { const m = result.byMacrostrand[k]; macro[k] = { correct: m.correct, total: m.total }; });
+  const weakestUnitIds = rankWeak(result.byUnit).slice(0, 3);
+  const weakestCompetencyIds = rankWeak(result.byCompetency).slice(0, 3);
+  return {
+    correct: result.correct, total: result.total, pct: result.pct, unanswered: result.unanswered,
+    passed: bands.passed, distinguished: bands.distinguished, mode,
+    byMacrostrand: macro,
+    weakestUnitIds, weakestCompetencyIds,
+  };
+}
+function rankWeak(map) {
+  const meta = getWordExamMeta();
+  const min = meta.minSubscoreItems || 3;
+  return Object.keys(map)
+    .filter((k) => k && k !== "null" && map[k].total >= min)
+    .map((k) => ({ k, pct: map[k].total ? (map[k].correct / map[k].total) * 100 : 100 }))
+    .sort((x, y) => x.pct - y.pct)
+    .filter((x) => x.pct < 100)
+    .map((x) => x.k);
+}
+
+// ── Result ceremony + diagnostics + full review ─────────────────────────────
+function wordExamMacroRowsHtml(result) {
+  const meta = getWordExamMeta();
+  const min = meta.minSubscoreItems || 3;
+  return ["R", "C", "P", "X", "F", "D"].map((code) => {
+    const m = result.byMacrostrand[code];
+    if (!m || !m.total) return "";
+    const enough = m.total >= min;
+    const pct = m.total ? Math.round((m.correct / m.total) * 100) : 0;
+    return `
+      <div class="word-exam-macro-row">
+        <span class="word-exam-macro-name">${WORD_EXAM_MACRO[code].label}</span>
+        <span class="word-exam-macro-score">${enough ? `${m.correct}/${m.total} · ${pct}%` : `Not enough evidence this attempt`}</span>
+      </div>`;
+  }).join("");
+}
+
+function wordExamWeakRoutesHtml(result) {
+  const weak = rankWeak(result.byUnit).slice(0, 3);
+  if (!weak.length) return "";
+  const rows = weak.map((uid) => {
+    const u = getWordUnitById(uid);
+    const s = u ? getWordSectionById(u.sectionId) : null;
+    return `<button class="button secondary compact" type="button" data-word-weak-section="${escapeHtml(u ? u.sectionId : "")}">Review ${escapeHtml(u ? u.name : uid)}${s ? ` · ${escapeHtml(s.name)}` : ""} →</button>`;
+  }).join("");
+  return `<div class="word-exam-weak"><div class="word-exam-weak-title">Weakest units — route back to study.</div>${rows}</div>`;
+}
+
+function wordExamFullReviewHtml(a) {
+  const engine = getWordExamEngine();
+  const rows = a.items.map((it, i) => {
+    const given = a.answers[it.id];
+    const ok = engine.gradeItem(it, given);
+    const givenText = given != null && String(given).trim() !== "" ? String(given) : "— (blank)";
+    const correctText = it.options ? it.answer : (it.acceptedAnswers || [it.answer]).join(" / ");
+    return `
+      <div class="exam-review-row ${ok ? "is-correct" : "is-wrong"}">
+        <span class="exam-review-mark" aria-hidden="true">${ok ? "✓" : "✗"}</span>
+        <div class="exam-review-body">
+          <div class="exam-review-prompt">${i + 1}. ${escapeHtml(it.promptEn || it.promptKo)}</div>
+          <div class="exam-review-answers">
+            <span class="exam-review-given" lang="ko">Your answer: ${escapeHtml(givenText)}</span>
+            <span class="exam-review-correct" lang="ko">Correct: ${escapeHtml(correctText)}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+  return `<details class="exam-review-part"><summary><span>답안 확인 · Full answer review</span><span class="exam-review-part-score">${a.result.result.correct}/${a.result.result.total}</span></summary><div class="exam-review-list">${rows}</div></details>`;
+}
+
+function renderWordExamResult() {
+  const a = wordExamAttempt;
+  if (!a || !a.result) { renderWordExamHub(); return; }
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("exam", "시험 결과 · Results", () => { wordExamAttempt = null; queueScreenMotion("back", -1); renderWordExamHub(); }, "Core Words");
+  const { result, bands } = a.result;
+  const rec = getWordExamRecord(a.exam.id);
+  const isConfirmation = a.mode === "confirmation";
+  const mastered = a.exam.retention && rec.masteryEarnedAt && isConfirmation && bands.passed;
+  let tone = "neutral", icon = "spark", eyebrow, title, copy;
+  if (mastered) {
+    tone = "crown"; icon = "crown"; eyebrow = "핵심 낱말 완전 습득 · Core Words mastered";
+    title = "Core Words mastered"; copy = "Delayed retention confirmed. This achievement stays on your record.";
+  } else if (bands.distinguished) {
+    tone = "success"; icon = "check"; eyebrow = "우수 · Distinction"; title = "Distinction"; copy = "Strong, well-balanced achievement across every strand.";
+  } else if (bands.passed) {
+    tone = "success"; icon = "check"; eyebrow = "합격 · Passed"; title = isConfirmation ? "Retention confirmed" : "Exam passed"; copy = "You cleared the achievement standard for this exam.";
+  } else {
+    tone = "neutral"; icon = "spark"; eyebrow = "아직 합격 전 · Not yet passed"; title = "Keep going"; copy = "Review the weakest areas below and try again with a fresh set.";
+  }
+  const timeUsed = formatExamClock(Date.now() - a.startedAt);
+  const stats = [
+    { value: `${result.pct}%`, label: "Overall" },
+    { value: `${result.correct}/${result.total}`, label: "Correct" },
+    { value: timeUsed, label: "Time used" },
+    { value: `${result.unanswered}`, label: "Unanswered" },
+  ];
+  // Retention next-step note for the final.
+  let retentionNote = "";
+  if (a.exam.retention && !isConfirmation) {
+    const status = wordExamRetentionStatus(a.exam);
+    if (status.phase === "waiting") {
+      const days = Math.max(1, Math.ceil((status.opensAt - wordExamNow()) / DAY_MS));
+      retentionNote = `<div class="word-exam-retention-note">You qualified for mastery. A 60-item retention confirmation opens in ~${days} day${days === 1 ? "" : "s"} and stays open for ${a.exam.retention.expiresAfterDays} days.</div>`;
+    }
+  }
+  const detailsHtml = `
+    ${retentionNote}
+    <div class="word-exam-macro-profile"><div class="word-exam-weak-title">Strand profile</div>${wordExamMacroRowsHtml(result)}</div>
+    ${wordExamWeakRoutesHtml(result)}
+    ${wordExamFullReviewHtml(a)}`;
+  const actionsHtml = `
+    <button class="button primary" type="button" id="wordExamRetake">다시 응시 · Retake with a new set</button>
+    <button class="button secondary" type="button" id="wordExamBackHub">Back to Core Words exams</button>`;
+  el.innerHTML = premiumCompletionHtml({
+    tone, icon, eyebrow, title, copy,
+    score: { value: `${result.pct}%`, label: bands.passed ? (bands.distinguished ? "Distinction" : "Passed") : "Achievement score" },
+    stats, detailsHtml, actionsHtml,
+    celebrate: bands.passed,
+    className: "exam-completion word-exam-completion",
+  });
+  el.querySelectorAll("[data-word-weak-section]").forEach((btn) => {
+    btn.addEventListener("click", () => { wordExamAttempt = null; openWordSectionStudy(btn.dataset.wordWeakSection); });
+  });
+  const retake = el.querySelector("#wordExamRetake");
+  if (retake) retake.addEventListener("click", () => startWordExamAttempt(a.exam.id, { mode: a.mode }));
+  const back = el.querySelector("#wordExamBackHub");
+  if (back) back.addEventListener("click", () => { wordExamAttempt = null; queueScreenMotion("back", -1); renderWordExamHub(); });
+  queueScreenMotion("forward", 1);
+}
+
+// Weak-area route: open the Words study surface (Learn → Vocabulary).
+function openWordSectionStudy() {
+  activeHub = "learn";
+  setNavActive("learn");
+  state.route = { hub: "learn", item: "vocabulary", stage: null };
+  saveState();
+  openHubItem("learn", "vocabulary");
+}
+
+// Query-string-gated acceptance-test hook (spec §11 allows explicit test hooks).
+// Only active when the page URL carries `?__wetest=1`; it exposes existing
+// test-gated helpers so browser acceptance tests can unlock sections and inject
+// retention dates. It is inert in normal use and grants no new capability.
+if (typeof window !== "undefined" && typeof location !== "undefined" && /[?&]__wetest=1\b/.test(location.search)) {
+  window.__wordExamTest = {
+    unlockAll() { getWordSections().forEach((s) => completeWordSectionForTesting(s.id)); refreshProgressionState(); },
+    openHub() { renderWordExamHub(); },
+    engine() { return getWordExamEngine(); },
+    record(id) { return getWordExamRecord(id); },
+    attempt() { return wordExamAttempt; },
+    setNow(t) { window.__WORD_EXAM_NOW = t; },
+    submitNow(auto) { submitWordExamAttempt(Boolean(auto)); },
+    startAttempt(id, opts) { startWordExamAttempt(id, opts || {}); },
+    saveState() { saveState(); },
+  };
 }
 
 function renderAlphabetPractice() {
