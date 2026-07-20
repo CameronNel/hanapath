@@ -2646,6 +2646,70 @@ function getPracticeQuizSession(scope = getCurrentQuizScope()) {
   return practiceQuizSessions[normalizeMainTab(scope)] || null;
 }
 
+const RECENT_QUESTION_LIMIT = 100;
+
+function getRecentQuestionKeys(scope) {
+  const safeScope = normalizeMainTab(scope);
+  if (!state.recentQuestionKeys || typeof state.recentQuestionKeys !== "object") {
+    state.recentQuestionKeys = {};
+  }
+  const current = Array.isArray(state.recentQuestionKeys[safeScope])
+    ? state.recentQuestionKeys[safeScope].filter((key) => typeof key === "string" && key)
+    : [];
+  state.recentQuestionKeys[safeScope] = current.slice(-RECENT_QUESTION_LIMIT);
+  return state.recentQuestionKeys[safeScope];
+}
+
+function learningQuestionKey(question, scope = getCurrentQuizScope()) {
+  if (!question) return "";
+  if (question.questionKey) return String(question.questionKey);
+  if (question.srsWordId) {
+    return `word:${question.srsWordId}:${question.srsDirection || question.direction || question.mode || "practice"}`;
+  }
+  const clean = (value) => String(value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+  return [normalizeMainTab(scope), question.kind, question.mode, question.prompt, question.visual, question.answer, question.voiceText]
+    .map(clean)
+    .join("|");
+}
+
+function rememberRecentQuestionKey(scope, key, persist = true) {
+  const safeKey = String(key || "");
+  if (!safeKey) return;
+  const safeScope = normalizeMainTab(scope);
+  const history = getRecentQuestionKeys(safeScope);
+  state.recentQuestionKeys[safeScope] = history
+    .filter((item) => item !== safeKey)
+    .concat(safeKey)
+    .slice(-RECENT_QUESTION_LIMIT);
+  if (persist) saveState();
+}
+
+function generateFreshQuestion(scope = getCurrentQuizScope()) {
+  const safeScope = normalizeMainTab(scope);
+  const recent = new Set(getRecentQuestionKeys(safeScope));
+  let fallback = null;
+  // Every live lab has thousands of semantic identities. The bounded retry is
+  // only a guard for a temporarily narrow due queue or partially loaded bank.
+  for (let attempt = 0; attempt < 500; attempt += 1) {
+    const question = generateQuestion();
+    const key = learningQuestionKey(question, safeScope);
+    fallback = { question, key };
+    if (!recent.has(key)) {
+      question.questionKey = key;
+      rememberRecentQuestionKey(safeScope, key);
+      return question;
+    }
+  }
+  if (!fallback) return generateQuestion();
+  fallback.question.questionKey = fallback.key;
+  rememberRecentQuestionKey(safeScope, fallback.key);
+  return fallback.question;
+}
+
 function startGenericPracticeSession(scope, total = GENERIC_PRACTICE_LENGTH) {
   const safeScope = normalizeMainTab(scope);
   practiceQuizSessions[safeScope] = {
@@ -2949,6 +3013,10 @@ function loadState() {
     alphabetWeakSpots: {},
     // One-time flag: show the Drill Lab first-open explainer only once.
     drillLabSeen: false,
+    // Exact learner-facing question identities shown most recently in each
+    // practice lab. A bounded history keeps restarts from immediately serving
+    // the same prompt again without turning the saved profile into a log.
+    recentQuestionKeys: { alphabet: [], vocabulary: [], sentences: [], listening: [] },
     mainTab: "alphabet",
     alphabetView: "vowels",
     // [2026-06-29] Persisted prefs for the Entire Korean Alphabet board (view mode + label density).
@@ -3470,8 +3538,11 @@ function getVocabStudyBands() {
 }
 
 function getVocabStudyPool() {
-  const bands = new Set(getVocabStudyBands());
-  const pool = vocabBank.filter((entry) => bands.has(entry.frequencyBand));
+  // The source CSV groups ranks in 1,000-word labels while the UI advances in
+  // 500-word levels. Rank is the stable boundary; comparing the label strings
+  // made every level silently fall back to all 5,000 rows.
+  const maxRank = getLevelBand(getTrackLevel("vocabulary"), VOCAB_BANDS.length) * 500;
+  const pool = vocabBank.filter((entry) => Number(entry.rank) <= maxRank);
   return pool.length ? pool : vocabBank;
 }
 
@@ -5083,17 +5154,30 @@ function getWordSyllableTiles(word) {
 // ── Word question generators (lessons, reviews, and the vocabulary quiz) ────
 
 function pickWordMeaningChoices(word) {
-  const pool = getCuratedWords()
-    .filter((other) => other.id !== word.id && other.meaningShort !== word.meaningShort)
-    .map((other) => other.meaningShort);
+  const buckets = [[], [], []];
+  getCuratedWords().forEach((other) => {
+    if (other.id === word.id || other.meaningShort === word.meaningShort) return;
+    const bucket = other.pos === word.pos && other.lessonGroup === word.lessonGroup
+      ? 0
+      : other.pos === word.pos ? 1 : 2;
+    buckets[bucket].push(other.meaningShort);
+  });
+  const pool = [...new Set(buckets.flat())];
   return makeTextChoices(word.meaningShort, pool, 4);
 }
 
 function pickWordKoreanChoices(word) {
   const answer = word.display || word.korean;
-  const pool = getCuratedWords()
-    .filter((other) => other.id !== word.id && (other.display || other.korean) !== answer)
-    .map((other) => other.display || other.korean);
+  const buckets = [[], [], []];
+  getCuratedWords().forEach((other) => {
+    const value = other.display || other.korean;
+    if (other.id === word.id || value === answer || other.meaningShort === word.meaningShort) return;
+    const bucket = other.pos === word.pos && other.lessonGroup === word.lessonGroup
+      ? 0
+      : other.pos === word.pos ? 1 : 2;
+    buckets[bucket].push(value);
+  });
+  const pool = [...new Set(buckets.flat())];
   return makeTextChoices(answer, pool, 4);
 }
 
@@ -5194,9 +5278,13 @@ function generateWordQuestionFor(word, direction) {
     kind: "Words",
     wordId: word.id,
     direction,
+    questionKey: `word:${word.id}:${direction}`,
     srsWordId: word.id,
     srsDirection: direction,
-    detail: wordQuestionDetail(word),
+    // Keep live retrieval cues pure. POS, pronunciation, and lesson labels can
+    // literally equal a short English answer (for example “food” or “pen”).
+    // Those facts remain in the post-answer explanation and study cards.
+    detail: "",
     explanation: wordQuestionExplanation(word),
     voiceText: word.voiceText || word.korean,
   };
@@ -5205,8 +5293,8 @@ function generateWordQuestionFor(word, direction) {
     return {
       ...base,
       mode: "Korean → meaning",
-      prompt: "What does this word mean?",
-      visual: `<div class="big-glyph" lang="ko">${escapeHtml(display)}</div>`,
+      prompt: "Choose the matching English definition.",
+      visual: `<div class="big-glyph" lang="ko">${escapeHtml(word.korean)}</div>`,
       options: pickWordMeaningChoices(word),
       answer: word.meaningShort,
     };
@@ -5216,8 +5304,8 @@ function generateWordQuestionFor(word, direction) {
     return {
       ...base,
       mode: "Listen → meaning",
-      prompt: "Listen, then choose the meaning.",
-      visual: `<div class="big-glyph">♪</div><div class="fs-xs text-muted-2">Tap Replay to hear it again</div>`,
+      prompt: "Choose the matching definition for the audio.",
+      visual: '<div class="big-glyph" aria-hidden="true">♪</div>',
       options: pickWordMeaningChoices(word),
       answer: word.meaningShort,
       autoSpeak: true,
@@ -5240,7 +5328,7 @@ function generateWordQuestionFor(word, direction) {
       ...base,
       mode: "Listen → Korean",
       prompt: "Listen, then choose what you heard.",
-      visual: `<div class="big-glyph">♪</div><div class="fs-xs text-muted-2">${escapeHtml(word.meaningShort)}</div>`,
+      visual: '<div class="big-glyph" aria-hidden="true">♪</div><div class="fs-xs text-muted-2">Audio only</div>',
       options: pickWordKoreanChoices(word),
       answer: display,
       autoSpeak: true,
@@ -5255,7 +5343,7 @@ function generateWordQuestionFor(word, direction) {
       visual: `<div class="big-glyph">${escapeHtml(word.meaningShort)}</div>`,
       interaction: "type",
       placeholder: "Type the Korean word",
-      helper: "No Korean keyboard? Use the on-screen keys below.",
+      helper: "Use your Korean keyboard, or tap “Need Hangul keys?” for the built-in keyboard.",
       options: [],
       answer: getWordTypeTarget(word),
       acceptedAnswers: getWordAcceptedAnswers(word),
@@ -9713,6 +9801,7 @@ function getQuestionComponents(question) {
 function renderCheckpointVisualHtml(question) {
   const visualText = String(question.visual || "").trim();
   const components = getQuestionComponents(question);
+  const revealDerivedComponents = Boolean(phaseOneView.answered || visualText.includes("+") || question.type === "build");
 
   let html = '<div class="checkpoint-visual-container">';
 
@@ -9729,7 +9818,7 @@ function renderCheckpointVisualHtml(question) {
     html += '</div>';
   } else {
     html += `<div class="visual-target" data-visual-target>${escapeHtml(visualText)}</div>`;
-    if (components.length > 0) {
+    if (revealDerivedComponents && components.length > 0) {
       html += '<div class="components-breakdown">';
       components.forEach((comp, index) => {
         html += `<button class="visual-comp" type="button" data-comp-index="${index}" data-checkpoint-speak-component="${escapeHtml(comp)}" aria-label="Hear ${escapeHtml(comp)}">${escapeHtml(comp)}</button>`;
@@ -9790,13 +9879,17 @@ function renderCheckpointAudioHelpers(lesson, question) {
   const isBlockGeometry = lesson.id === "block-geometry";
   const isBuildQuestion = question.type === "build";
   if (!isBlockGeometry && !isBuildQuestion) return "";
-  const targetText = question.voiceText || question.target || question.answer || "";
+  const targetText = question.type === "build"
+    ? (question.voiceText || question.target || "")
+    : phaseOneView.answered
+      ? (question.voiceText || question.target || "")
+      : "";
   const hasTarget = targetText && /^[가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(targetText);
   const answerPool = isBuildQuestion ? (question.tray || []) : (question.options || []);
   // Stage 7's word-building choices are especially unpleasant as one long spoken
   // sequence. Keep target and per-option tap audio, but omit "Preview answers"
   // for this stage only.
-  const hasPreviewableAnswers = lesson.id !== "reading-graduation"
+  const hasPreviewableAnswers = phaseOneView.answered && lesson.id !== "reading-graduation"
     && answerPool.some((option) => isSpeakableAnswerOption(option));
 
   if (!hasTarget && !hasPreviewableAnswers) return "";
@@ -10074,7 +10167,8 @@ function renderPhaseOnePlayer() {
     renderPhaseOneResult(lesson);
   }
 
-  const showReference = true;
+  const unansweredCheckpoint = phaseOneView.mode === "check" && !phaseOneView.answered;
+  const showReference = !unansweredCheckpoint;
   if (els.phaseOneReferenceButton) {
     els.phaseOneReferenceButton.style.display = showReference ? "" : "none";
   }
@@ -11019,7 +11113,7 @@ function getWeakSpotList() {
   });
   return [...merged.values()].sort((a, b) => b.count - a.count || a.id.localeCompare(b.id));
 }
-function makeLetterDrillQuestion(forceLetter, forceDirection = "") {
+function makeLetterDrillQuestion(forceLetter, forceDirection = "", forcedKey = "") {
   const enrolled = getEnrolledLetters();
   const letters = enrolled.length ? enrolled : [...consonantAtlas.map((c) => c.char), ...vowelAtlas.map((v) => v.char)];
   const letter = forceLetter && letters.includes(forceLetter) && LETTER_SOUND[forceLetter]
@@ -11029,7 +11123,8 @@ function makeLetterDrillQuestion(forceLetter, forceDirection = "") {
     ? forceDirection
     : randomItem(ALPHABET_LETTER_QUESTION_DIRECTIONS);
   const sound = LETTER_SOUND[letter] || "";
-  const otherLetters = shuffle(letters.filter((item) => item !== letter && LETTER_SOUND[item] !== sound));
+  const sameClass = /^[ㄱ-ㅎ]$/.test(letter) ? /^[ㄱ-ㅎ]$/ : /^[ㅏ-ㅣ]$/;
+  const otherLetters = shuffle(letters.filter((item) => sameClass.test(item) && item !== letter && LETTER_SOUND[item] !== sound));
   const asksForLetter = direction === "sound-to-letter";
   const distract = asksForLetter
     ? otherLetters.slice(0, 3)
@@ -11037,21 +11132,25 @@ function makeLetterDrillQuestion(forceLetter, forceDirection = "") {
   return {
     kind: "Letter",
     prompt: asksForLetter
-      ? "Which Hangul letter matches this reading label?"
+      ? "Listen. Which Hangul letter matches the sound?"
       : "Which reading label matches this Hangul letter?",
     detail: asksForLetter
-      ? "Recall the symbol from its sound clue. Tap the clue to hear it."
-      : "Recall the sound from the symbol. Tap the letter to hear it.",
+      ? "Choose the symbol you heard."
+      : "Read the symbol, then choose its sound label.",
     visual: asksForLetter
-      ? `<span class="drill-reading-label" lang="en">${escapeHtml(sound)}</span>`
+      ? '<span class="drill-listen-cue" aria-hidden="true">♪</span>'
       : `<span class="big-glyph" lang="ko">${escapeHtml(letter)}</span>`,
     options: shuffle([asksForLetter ? letter : sound, ...distract]),
     answer: asksForLetter ? letter : sound,
     explanation: `${letter} uses the reading label “${sound}”.`,
-    voiceText: HANGUL_JAMO_SPEAK[letter] || letter, weakKey: letter, weakKind: "letter",
-    drillWholeLabel: asksForLetter ? "Sound clue" : "Letter",
+    promptAudioText: asksForLetter ? (HANGUL_JAMO_SPEAK[letter] || letter) : "",
+    autoSpeak: asksForLetter,
+    answerAudioText: HANGUL_JAMO_SPEAK[letter] || letter,
+    weakKey: letter, weakKind: "letter",
+    drillWholeLabel: "Hear sound",
     coverageJamo: letter,
     coverageDirection: direction,
+    questionKey: forcedKey || `alphabet:letter:${letter}:${direction}`,
   };
 }
 
@@ -11075,6 +11174,7 @@ function hasLocalDrillAudio(text) {
   return Boolean(lookupAudioUrl(text));
 }
 const drillAudioSyllableCache = new Map();
+const alphabetDrillDescriptorCache = new Map();
 function getAudioBackedDrillSyllables(pools, withFinal) {
   const finals = withFinal ? pools.finals.filter(Boolean) : [""];
   const key = [pools.initials.join(""), pools.medials.join(""), finals.join(""), withFinal ? "closed" : "open"].join("|");
@@ -11098,12 +11198,119 @@ function getBatchimAudioText(letter) {
   const group = getBatchimGroupForLetter(letter);
   return group ? BATCHIM_GROUP_SOUND_SPEAK[group.group] || "" : "";
 }
+
+// A semantic descriptor represents one genuinely different retrieval task.
+// Option order is intentionally absent from its identity: reshuffling answers
+// never turns a repeated question into a new one.
+function getAlphabetDrillDescriptors(mode, pools = drillPools()) {
+  const cacheKey = [mode, pools.initials.join(""), pools.medials.join(""), pools.finals.join("")].join("|");
+  if (alphabetDrillDescriptorCache.has(cacheKey)) return alphabetDrillDescriptorCache.get(cacheKey);
+  const open = getAudioBackedDrillSyllables(pools, false);
+  const closed = pools.finals.some(Boolean) ? getAudioBackedDrillSyllables(pools, true) : [];
+  const all = [...open, ...closed];
+  const enrolled = getEnrolledLetters();
+  const letters = enrolled.length ? enrolled : [...consonantAtlas.map((item) => item.char), ...vowelAtlas.map((item) => item.char)];
+  const catalogs = {
+    build: all.map((syllable) => ({ mode: "build", syllable, questionKey: `alphabet:build:${syllable}` })),
+    split: all.flatMap((syllable) => {
+      const parts = decomposeHangul(syllable);
+      return ["initial", "medial", ...(parts?.final ? ["final"] : [])]
+        .map((part) => ({ mode: "split", syllable, part, questionKey: `alphabet:split:${syllable}:${part}` }));
+    }),
+    letters: [
+      ...letters.flatMap((letter) => ALPHABET_LETTER_QUESTION_DIRECTIONS.map((direction) => ({
+        mode: "letters", letter, direction, direct: true, questionKey: `alphabet:letter:${letter}:${direction}`,
+      }))),
+      ...all.map((syllable) => ({
+        mode: "letters", syllable, direction: "hangul-to-sound", questionKey: `alphabet:syllable:${syllable}:hangul-to-sound`,
+      })),
+      ...open.map((syllable) => ({
+        mode: "letters", syllable, direction: "sound-to-hangul", questionKey: `alphabet:syllable:${syllable}:sound-to-hangul`,
+      })),
+    ],
+    batchim: closed.map((syllable) => ({ mode: "batchim", syllable, questionKey: `alphabet:batchim:${syllable}` })),
+  };
+  catalogs.mixed = [...catalogs.build, ...catalogs.split, ...catalogs.letters, ...catalogs.batchim];
+  const descriptors = catalogs[mode] || catalogs.mixed;
+  alphabetDrillDescriptorCache.set(cacheKey, descriptors);
+  return descriptors;
+}
+
+function takeAlphabetDrillDescriptor(mode, predicate = null) {
+  if (!drillSession) return null;
+  const queueKey = predicate ? `${mode}:filtered` : mode;
+  const queues = drillSession.questionQueues || (drillSession.questionQueues = {});
+  const recent = new Set(getRecentQuestionKeys("alphabet"));
+  if (!Array.isArray(queues[queueKey]) || !queues[queueKey].length) {
+    const source = getAlphabetDrillDescriptors(mode).filter((descriptor) => !predicate || predicate(descriptor));
+    const fresh = source.filter((descriptor) => !recent.has(descriptor.questionKey));
+    queues[queueKey] = shuffle(fresh.length ? fresh : source);
+  }
+  let descriptor = queues[queueKey].shift() || null;
+  // Filtered weak-spot queues change their predicate for every saved spot, so
+  // never reuse their remaining entries for the next spot.
+  if (predicate) delete queues[queueKey];
+  if (descriptor) rememberRecentQuestionKey("alphabet", descriptor.questionKey);
+  return descriptor;
+}
+
+function getSyllableReading(syllable) {
+  return romanizeHangulSyllable(syllable) || String(syllable || "");
+}
+
+function pickConfusableSyllables(target, candidates, count = 3) {
+  const targetParts = decomposeHangul(target);
+  const targetReading = getSyllableReading(target);
+  const ranked = candidates
+    .filter((syllable) => syllable !== target && getSyllableReading(syllable) !== targetReading)
+    .map((syllable) => {
+      const parts = decomposeHangul(syllable);
+      const shared = Number(parts?.initial === targetParts?.initial) + Number(parts?.medial === targetParts?.medial) + Number(parts?.final === targetParts?.final);
+      return { syllable, score: shared + Math.random() * 0.2 };
+    })
+    .sort((a, b) => b.score - a.score);
+  return ranked.slice(0, count).map((entry) => entry.syllable);
+}
+
+function makeSyllableReadingDrillQuestion(pools, descriptor) {
+  const target = descriptor.syllable;
+  const reading = getSyllableReading(target);
+  const open = getAudioBackedDrillSyllables(pools, false);
+  const closed = getAudioBackedDrillSyllables(pools, true);
+  const asksForHangul = descriptor.direction === "sound-to-hangul";
+  const candidatePool = decomposeHangul(target)?.final ? closed : open;
+  const distractors = pickConfusableSyllables(target, candidatePool, 3);
+  const readingDistractors = [...new Set(distractors.map(getSyllableReading).filter((item) => item !== reading))];
+  if (!asksForHangul) {
+    for (const syllable of shuffle(candidatePool)) {
+      const candidate = getSyllableReading(syllable);
+      if (candidate !== reading && !readingDistractors.includes(candidate)) readingDistractors.push(candidate);
+      if (readingDistractors.length >= 3) break;
+    }
+  }
+  return {
+    kind: "Syllable reading",
+    prompt: asksForHangul ? "Listen. Which Hangul block matches the sound?" : "Which reading matches this Hangul block?",
+    detail: asksForHangul ? "Choose the block you heard." : "Read the block, then choose its sound label.",
+    visual: asksForHangul
+      ? '<span class="drill-listen-cue" aria-hidden="true">♪</span>'
+      : `<span class="big-glyph" lang="ko">${escapeHtml(target)}</span>`,
+    options: shuffle(asksForHangul ? [target, ...distractors] : [reading, ...readingDistractors.slice(0, 3)]),
+    answer: asksForHangul ? target : reading,
+    promptAudioText: asksForHangul ? target : "",
+    autoSpeak: asksForHangul,
+    answerAudioText: target,
+    drillWholeLabel: "Hear sound",
+    explanation: `${target} is read “${reading}”.`,
+    questionKey: descriptor.questionKey,
+  };
+}
 // Tile-assembly build question: the learner taps jamo in seat order to build a
 // real syllable (like the lesson checkpoints, but generated and infinite).
-function makeBuildTileDrillQuestion(pools) {
-  const withFinal = Math.random() < 0.45 && pools.finals.some(Boolean);
+function makeBuildTileDrillQuestion(pools, descriptor = null) {
+  const withFinal = descriptor?.syllable ? Boolean(decomposeHangul(descriptor.syllable)?.final) : Math.random() < 0.45 && pools.finals.some(Boolean);
   const audioBacked = getAudioBackedDrillSyllables(pools, withFinal);
-  let target = randomItem(audioBacked);
+  let target = descriptor?.syllable || randomItem(audioBacked);
   if (!target) {
     target = composeHangul(
       randomItem(pools.initials),
@@ -11123,91 +11330,118 @@ function makeBuildTileDrillQuestion(pools) {
     kind: "Build", interaction: "build",
     prompt: `Build the block romanized as “${reading}”`,
     detail: `Tap the letters in order — consonant, then vowel${final ? ", then the final consonant" : ""}.`,
-    target, seq, tray, voiceText: target,
-    drillWholeLabel: "Syllable",
-    drillPartLabel: "Letters",
+    target, seq, tray,
+    promptAudioText: target,
+    autoSpeak: true,
+    answerAudioText: target,
+    drillWholeLabel: "Hear sound",
     explanation: `${seq.join(" + ")} = ${target}.`,
+    questionKey: descriptor?.questionKey || `alphabet:build:${target}`,
   };
 }
 
-function makeSplitDrillQuestion(pools) {
-  const targets = pools.finals.some(Boolean) ? ["initial", "medial", "final"] : ["initial", "medial"];
-  const target = randomItem(targets);
-  const openSyllables = getAudioBackedDrillSyllables(pools, false);
-  const closedSyllables = pools.finals.some(Boolean) ? getAudioBackedDrillSyllables(pools, true) : [];
-  const candidates = target === "final" ? closedSyllables : [...openSyllables, ...closedSyllables];
-  const question = generateDecomposeQuestion(pools, { target, syllable: randomItem(candidates) || "" });
-  question.weakKey = /^[ㄱ-ㅎㅏ-ㅣ]$/.test(question.answer) ? question.answer : null;
-  question.weakKind = question.drillWeakKind || "letter";
-  question.visual = `<span class="big-glyph" lang="ko">${escapeHtml(question.voiceText)}</span>`;
-  question.detail = "";
-  return question;
+function makeSplitDrillQuestion(pools, descriptor = null) {
+  const fallback = randomItem(getAlphabetDrillDescriptors("split", pools));
+  const targetDescriptor = descriptor || fallback;
+  const syllable = targetDescriptor?.syllable || "";
+  const partName = targetDescriptor?.part || "medial";
+  const parts = decomposeHangul(syllable);
+  const jamo = parts?.[partName] || "";
+  const batchimGroup = partName === "final" ? getBatchimGroupForLetter(jamo) : null;
+  const answer = batchimGroup?.group || LETTER_SOUND[jamo] || "";
+  const sourceJamo = partName === "initial" ? pools.initials : partName === "medial" ? pools.medials : pools.finals.filter(Boolean);
+  const soundPool = [...new Set(sourceJamo.map((item) => (
+    partName === "final" ? getBatchimGroupForLetter(item)?.group : LETTER_SOUND[item]
+  )).filter(Boolean))];
+  const distractors = shuffle(soundPool.filter((sound) => sound !== answer)).slice(0, 3);
+  const seat = partName === "initial" ? "first consonant" : partName === "medial" ? "middle vowel" : "final consonant";
+  return {
+    kind: "Block reading",
+    prompt: `What sound does the ${seat} make?`,
+    detail: "Read the Hangul block, then choose its sound label.",
+    visual: `<span class="big-glyph" lang="ko">${escapeHtml(syllable)}</span>`,
+    options: shuffle([answer, ...distractors]),
+    answer,
+    answerAudioText: partName === "final" ? getBatchimAudioText(jamo) : (HANGUL_JAMO_SPEAK[jamo] || jamo),
+    weakKey: jamo,
+    weakKind: partName === "final" ? "batchim" : "letter",
+    explanation: `${syllable} uses ${jamo} as its ${seat}; its sound label is “${answer}”.`,
+    questionKey: targetDescriptor?.questionKey || `alphabet:split:${syllable}:${partName}`,
+  };
+}
+
+function makeBatchimDrillQuestion(pools, descriptor = null) {
+  const fallback = randomItem(getAlphabetDrillDescriptors("batchim", pools));
+  const targetDescriptor = descriptor || fallback;
+  const syllable = targetDescriptor?.syllable || "";
+  const final = decomposeHangul(syllable)?.final || "";
+  const group = getBatchimGroupForLetter(final);
+  const answer = group?.group || "";
+  const availableAnswers = BATCHIM_GROUPS
+    .filter((item) => item.letters.some((letter) => pools.finals.includes(letter)))
+    .map((item) => item.group);
+  const distractors = shuffle(availableAnswers.filter((item) => item !== answer)).slice(0, 3);
+  return {
+    kind: "Batchim reading",
+    prompt: "Which closing sound does this Hangul block end with?",
+    detail: "Read the final consonant in its batchim position.",
+    visual: `<span class="big-glyph" lang="ko">${escapeHtml(syllable)}</span>`,
+    options: shuffle([answer, ...distractors]),
+    answer,
+    answerAudioText: syllable,
+    weakKey: final,
+    weakKind: "batchim",
+    explanation: `${syllable} ends in ${final}, which closes with the “${answer}” sound.`,
+    questionKey: targetDescriptor?.questionKey || `alphabet:batchim:${syllable}`,
+  };
 }
 
 function makeWeakSpotDrillQuestion(spot, pools) {
-  if (spot?.kind === "batchim") return generateBatchimQuestion(pools, spot.jamo);
-  return makeLetterDrillQuestion(spot?.jamo);
+  if (spot?.kind === "batchim") {
+    const descriptor = takeAlphabetDrillDescriptor("batchim", (item) => decomposeHangul(item.syllable)?.final === spot.jamo);
+    return makeBatchimDrillQuestion(pools, descriptor);
+  }
+  const descriptor = takeAlphabetDrillDescriptor("letters", (item) => {
+    if (item.direct) return item.letter === spot?.jamo;
+    const parts = decomposeHangul(item.syllable);
+    return parts?.initial === spot?.jamo || parts?.medial === spot?.jamo;
+  });
+  return descriptor?.direct
+    ? makeLetterDrillQuestion(descriptor.letter, descriptor.direction, descriptor.questionKey)
+    : makeSyllableReadingDrillQuestion(pools, descriptor || randomItem(getAlphabetDrillDescriptors("letters", pools)));
 }
 
 function makeDrillQuestion(mode) {
   const pools = drillPools();
-  let m = mode;
-  if (mode === "mixed") m = randomItem(["build", "split", "letters", "batchim"]);
   if (mode === "weak") {
     const spot = drillSession?.weakSpotQueue?.shift();
     if (spot) return makeWeakSpotDrillQuestion(spot, pools);
-    m = randomItem(["build", "split", "letters", "batchim"]);
   }
-  let q;
-  if (m === "build") { q = makeBuildTileDrillQuestion(pools); }
-  else if (m === "split") { q = makeSplitDrillQuestion(pools); }
-  else if (m === "batchim") { q = { ...generateBatchimQuestion(pools) }; }
-  else {
-    const target = m === "letters" ? nextLetterCoverageTarget() : null;
-    q = makeLetterDrillQuestion(target?.letter, target?.direction);
-  }
-  return q;
+  const descriptor = takeAlphabetDrillDescriptor(mode === "weak" ? "mixed" : mode);
+  if (!descriptor) return makeLetterDrillQuestion();
+  if (descriptor.mode === "build") return makeBuildTileDrillQuestion(pools, descriptor);
+  if (descriptor.mode === "split") return makeSplitDrillQuestion(pools, descriptor);
+  if (descriptor.mode === "batchim") return makeBatchimDrillQuestion(pools, descriptor);
+  if (descriptor.direct) return makeLetterDrillQuestion(descriptor.letter, descriptor.direction, descriptor.questionKey);
+  return makeSyllableReadingDrillQuestion(pools, descriptor);
 }
 
 function getDrillWholeAudioText(question) {
-  if (!question) return "";
-  return question.voiceText || question.target || question.answer || "";
-}
-
-function getDrillPartAudioText(question) {
-  if (!question || question.interaction === "build") return "";
-  if (question.drillPartVoiceText) return speakableForChunk(question.drillPartVoiceText);
-  if (question.kind === "Batchim sound" && BATCHIM_GROUP_SOUND_SPEAK[question.answer]) {
-    return BATCHIM_GROUP_SOUND_SPEAK[question.answer];
-  }
-  return question.answer ? speakableForClickableText(question.answer, { preferSoundLabels: true }) : "";
+  return question?.promptAudioText || "";
 }
 
 function renderDrillAudioButtons(question) {
   const wholeText = getDrillWholeAudioText(question);
   const wholeLabel = question?.drillWholeLabel || "Hear";
-  const partLabel = question?.drillPartLabel || "";
-  const hasPartAudio = question?.interaction === "build"
-    ? Array.isArray(question.seq) && question.seq.length > 0
-    : Boolean(getDrillPartAudioText(question));
-  return [
-    wholeText
-      ? `<button class="button secondary compact" type="button" id="drillHearWholeBtn">▶ ${escapeHtml(wholeLabel)}</button>`
-      : "",
-    partLabel && hasPartAudio
-      ? `<button class="button secondary compact" type="button" id="drillHearPartBtn">▶ ${escapeHtml(partLabel)}</button>`
-      : "",
-  ].join("");
+  return wholeText
+    ? `<button class="button secondary compact" type="button" id="drillHearWholeBtn">▶ ${escapeHtml(wholeLabel)}</button>`
+    : "";
 }
 
 function renderDrillVisualHtml(question) {
   if (!question?.visual) return "";
-  const parts = Array.isArray(question.drillVisualParts) ? question.drillVisualParts.filter(Boolean) : [];
-  return `<div class="quiz-visual${parts.length ? " has-parts" : ""}">
+  return `<div class="quiz-visual">
     <div class="drill-visual-target" data-drill-visual-target>${question.visual}</div>
-    ${parts.length ? `<div class="drill-visual-parts" aria-label="Hangul components">
-      ${parts.map((part, index) => `<span class="drill-visual-part" data-drill-visual-part="${index}" lang="ko">${escapeHtml(part)}</span>`).join("")}
-    </div>` : ""}
   </div>`;
 }
 
@@ -11296,9 +11530,22 @@ function startDrillSession(mode, len) {
     : len === "∞" ? Infinity : len;
   drillSession = {
     mode, len, total,
-    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null, weakSpotQueue, letterCoverageQueue: [], advanceTimer: 0,
+    asked: 0, correct: 0, streak: 0, bestStreak: 0, answered: false, missed: {}, current: null,
+    weakSpotQueue, questionQueues: {}, advanceTimer: 0,
   };
   renderDrillQuestion();
+}
+
+function alphabetDrillProgressHtml(session, modeLabel) {
+  const questionNumber = session.asked + 1;
+  if (session.total === Infinity) {
+    return `<div class="alphabet-progress-chip drill-quick-progress drill-infinite-counter"><div class="eyebrow">${escapeHtml(modeLabel)} · Question ${questionNumber}</div></div>`;
+  }
+  const width = Math.round((questionNumber / Math.max(1, session.total)) * 100);
+  return `<div class="alphabet-progress-chip drill-quick-progress">
+    <div class="eyebrow">${escapeHtml(modeLabel)} · ${questionNumber} / ${session.total}</div>
+    <div class="alphabet-progress-track" aria-label="Drill progress"><span style="width:${width}%"></span></div>
+  </div>`;
 }
 
 function renderDrillQuestion(reuseCurrent = false) {
@@ -11338,19 +11585,10 @@ function renderDrillQuestion(reuseCurrent = false) {
     : `<div class="quiz-options" id="drillOptions">
          ${q.options.map((o) => `<button class="option" type="button" data-drill-option="${escapeHtml(o)}" ${textLanguageAttr(o)}>${escapeHtml(o)}</button>`).join("")}
        </div>`;
-  const progressLabel = s.total === Infinity
-    ? `${modeLabel} · Question ${s.asked + 1}`
-    : `${modeLabel} · ${s.asked + 1} / ${s.total}`;
-  const progressWidth = s.total === Infinity
-    ? ((s.asked % 10) + 1) * 10
-    : Math.round(((s.asked + 1) / Math.max(1, s.total)) * 100);
   el.innerHTML = `
     <div class="lesson-player-wrap alphabet-lesson-player drill-quick-runner" data-lesson-motion-root>
       <div class="player-head drill-quick-head">
-        <div class="alphabet-progress-chip drill-quick-progress">
-          <div class="eyebrow">${escapeHtml(progressLabel)}</div>
-          <div class="alphabet-progress-track" aria-label="Drill progress"><span style="width:${progressWidth}%"></span></div>
-        </div>
+        ${alphabetDrillProgressHtml(s, modeLabel)}
       </div>
       <div class="drill-quick-question">
         ${visualHtml}
@@ -11360,8 +11598,7 @@ function renderDrillQuestion(reuseCurrent = false) {
         ${interactiveHtml}
       </div>
       <div class="player-actions word-card-nav-actions drill-quick-actions">
-        <button class="button secondary compact" type="button" id="drillPreviousBtn">Previous</button>
-        <button class="button primary compact" type="button" id="drillReferenceBtn">📚 Hangul</button>
+        <button class="button secondary compact" type="button" id="drillEndBtn">End session</button>
       </div>
     </div>`;
   const hearWhole = document.getElementById("drillHearWholeBtn");
@@ -11369,31 +11606,6 @@ function renderDrillQuestion(reuseCurrent = false) {
     const target = el.querySelector("[data-drill-visual-target], [data-drill-assembled]");
     void playDrillHighlightedAudio(el, getDrillWholeAudioText(q), target);
   });
-  bindAlphabetReferenceButtons(el);
-  const hearPart = document.getElementById("drillHearPartBtn");
-  if (hearPart) {
-    hearPart.addEventListener("click", async () => {
-      if (!isBuild) {
-        const partIndex = Number.isInteger(q.drillPartIndex) ? q.drillPartIndex : -1;
-        const target = partIndex >= 0
-          ? el.querySelector(`[data-drill-visual-part="${partIndex}"]`)
-          : el.querySelector("[data-drill-visual-target]");
-        void playDrillHighlightedAudio(el, getDrillPartAudioText(q), target);
-        return;
-      }
-      const tokenId = ++drillPlaybackId;
-      clearDrillAudioHighlights(el);
-      for (const [index, part] of (q.seq || []).entries()) {
-        if (tokenId !== drillPlaybackId) break;
-        clearDrillAudioHighlights(el);
-        el.querySelector(`[data-drill-slot="${index}"]`)?.classList.add("active-highlight");
-        const partAudio = index === 2 ? getBatchimAudioText(part) : speakableForChunk(part);
-        await speak(partAudio || speakableForChunk(part), { preserveSequence: true });
-        await new Promise((resolve) => window.setTimeout(resolve, 180));
-      }
-      if (tokenId === drillPlaybackId) clearDrillAudioHighlights(el);
-    });
-  }
   if (isBuild) {
     document.querySelectorAll("#drillTray .bd-tile").forEach((b) =>
       b.addEventListener("click", () => answerDrillBuild(b.dataset.drillJamo, b)));
@@ -11401,17 +11613,11 @@ function renderDrillQuestion(reuseCurrent = false) {
     document.querySelectorAll("#drillOptions .option").forEach((b) =>
       b.addEventListener("click", () => answerDrill(b.dataset.drillOption, b)));
   }
-  document.getElementById("drillPreviousBtn").addEventListener("click", () => {
+  document.getElementById("drillEndBtn").addEventListener("click", () => {
     cancelDrillAutoAdvance(s);
-    renderAlphabetDrillLab();
+    renderDrillResult();
   });
-  document.getElementById("drillReferenceBtn").addEventListener("click", () => {
-    cancelDrillAutoAdvance(s);
-    alphabetQuickRefReturn = () => renderDrillQuestion(true);
-    state.quickRefActive = true;
-    saveState();
-    openEntireAlphabet();
-  });
+  if (q.autoSpeak && hearWhole) window.setTimeout(() => hearWhole.click(), 180);
   animateLessonFrame(el.querySelector("[data-lesson-motion-root]"), "drill", {
     key: `question:${s.asked}`,
     order: s.asked,
@@ -11433,10 +11639,8 @@ function recordDrillMiss(session, jamo, kind = "letter") {
 }
 
 function lockDrillRunnerNavigation() {
-  ["drillPreviousBtn", "drillReferenceBtn"].forEach((id) => {
-    const button = document.getElementById(id);
-    if (button) button.disabled = true;
-  });
+  // The learner must always be able to end an Infinite run, including during
+  // the brief feedback pause between questions.
 }
 
 function revealDrillBuildAnswer(question) {
@@ -11703,71 +11907,13 @@ function generateComposeQuestion(pools) {
 }
 
 function generateDecomposeQuestion(pools, forced = {}) {
-  const targetChoices = ["initial", "medial"];
-  if (Array.isArray(pools?.finals) && pools.finals.some((item) => item)) {
-    targetChoices.push("final");
-  }
-
-  const target = targetChoices.includes(forced.target) ? forced.target : randomItem(targetChoices);
-  let initial;
-  let medial;
-  let final;
-  let syllable;
-
-  const forcedParts = forced.syllable ? decomposeHangul(forced.syllable) : null;
-  if (forcedParts && (target !== "final" || forcedParts.final)) {
-    ({ initial, medial, final } = forcedParts);
-    syllable = forced.syllable;
-  }
-
-  if (!syllable) {
-    do {
-      initial = randomItem(pools.initials);
-      medial = randomItem(pools.medials);
-      final = target === "final" ? randomItem(pools.finals.filter((item) => item !== "")) : randomItem(pools.finals);
-      syllable = composeHangul(initial, medial, final);
-    } while (!syllable || (target === "final" && final === ""));
-  }
-
-  const answerMap = {
-    initial,
-    medial,
-    final: normalizeFinal(final),
-  };
-
-  const answer = answerMap[target];
-  const choicePool =
-    target === "initial"
-      ? pools.initials
-      : target === "medial"
-        ? pools.medials
-        : ["없음", ...pools.finals.filter((item) => item !== "")].map(normalizeFinal);
-
-  const options = makeTextChoices(answer, choicePool, 4);
-
-  return {
-    kind: "Split it",
-    mode: "Syllable breakdown",
-    prompt:
-      target === "initial"
-        ? "Which consonant starts this syllable?"
-        : target === "medial"
-          ? "Which vowel sits in the middle?"
-          : "Which final consonant closes this syllable?",
-    detail: syllable,
-    visual: `<div class="big-glyph">${escapeHtml(syllable)}</div>`,
-    options,
-    answer,
-    explanation: `The block ${syllable} breaks into ${initial} + ${medial} + ${normalizeFinal(final)}.`,
-    voiceText: syllable,
-    drillWholeLabel: "Syllable",
-    drillPartLabel: target === "medial" ? "Vowel" : target === "final" ? "Final" : "Consonant",
-    drillPartVoiceText: target === "final" ? getBatchimAudioText(answer) : answer,
-    drillVisualParts: [initial, medial, final].filter(Boolean),
-    drillPartIndex: target === "initial" ? 0 : target === "medial" ? 1 : 2,
-    drillChoiceKind: target === "final" ? "batchim" : "letter",
-    drillWeakKind: target === "final" ? "batchim" : "letter",
-  };
+  const targetChoices = ["initial", "medial", ...(pools.finals.some(Boolean) ? ["final"] : [])];
+  const part = targetChoices.includes(forced.target) ? forced.target : randomItem(targetChoices);
+  const candidates = getAlphabetDrillDescriptors("split", pools).filter((item) => (
+    item.part === part && (!forced.syllable || item.syllable === forced.syllable)
+  ));
+  const descriptor = randomItem(candidates) || randomItem(getAlphabetDrillDescriptors("split", pools));
+  return makeSplitDrillQuestion(pools, descriptor);
 }
 
 function generateFamilyQuestion(pools) {
@@ -12255,38 +12401,11 @@ function generateTenseQuestion(pools) {
 }
 
 function generateBatchimQuestion(pools, forcedLetter = "") {
-  const allowedFinals = new Set((pools?.finals || BATCHIM_FINALS).filter(Boolean));
-  const availableGroups = BATCHIM_GROUPS
-    .map((group) => ({ ...group, letters: group.letters.filter((letter) => allowedFinals.has(letter)) }))
-    .filter((group) => group.letters.length > 0);
-  const forcedGroup = forcedLetter
-    ? availableGroups.find((group) => group.letters.includes(forcedLetter))
-    : null;
-  const group = forcedGroup || randomItem(availableGroups);
-  const letter = forcedGroup ? forcedLetter : randomItem(group.letters);
-  const answer = group.group;
-  const options = makeTextChoices(answer, availableGroups.map((item) => item.group), Math.min(4, availableGroups.length));
-  const sample = BATCHIM_GROUP_WORD_SAMPLE[answer] || composeHangul("ㅇ", "ㅏ", letter);
-  const sampleParts = decomposeHangul(sample);
-
-  return {
-    kind: "Batchim sound",
-    mode: "Final consonant groups",
-    prompt: `Which closing sound group does ${letter} usually fall into?`,
-    detail: "Hear the word sample, then match the final letter to its usual closing sound.",
-    visual: `<span class="big-glyph" lang="ko">${escapeHtml(sample)}</span>`,
-    options,
-    answer,
-    explanation: `In ${sample}, ${letter} closes as ${answer}. Batchim practice makes real Korean reading much easier.`,
-    voiceText: sample,
-    weakKey: letter,
-    weakKind: "batchim",
-    drillWholeLabel: "Sample",
-    drillPartLabel: "Closing sound",
-    drillPartVoiceText: BATCHIM_GROUP_SOUND_SPEAK[answer] || "",
-    drillVisualParts: sampleParts ? [sampleParts.initial, sampleParts.medial, sampleParts.final].filter(Boolean) : [],
-    drillPartIndex: 2,
-  };
+  const descriptors = getAlphabetDrillDescriptors("batchim", pools);
+  const eligible = forcedLetter
+    ? descriptors.filter((item) => decomposeHangul(item.syllable)?.final === forcedLetter)
+    : descriptors;
+  return makeBatchimDrillQuestion(pools, randomItem(eligible) || randomItem(descriptors));
 }
 
 function generateListenQuestion(pools) {
@@ -12320,8 +12439,95 @@ const CURATED_QUIZ_DECK = [
   "audioToKo",
   "typeKo",
   "context",
-  "reading-check",
 ];
+
+let safeCuratedQuestionDescriptorCache = null;
+let safeCuratedQuestionDescriptorSource = null;
+
+function normalizeWordQuestionIdentity(value) {
+  return String(value || "").normalize("NFC").toLowerCase().replace(/[.!?…,~'“”\"()]/g, "").replace(/\s+/g, " ").trim();
+}
+
+function visibleCueContainsAnswer(surface, answer) {
+  const cue = normalizeWordQuestionIdentity(String(surface || "").replace(/<[^>]*>/g, " "));
+  const target = normalizeWordQuestionIdentity(answer);
+  if (!cue || !target) return false;
+  if (HANGUL_TEXT_PATTERN.test(target)) return cue.includes(target);
+  return ` ${cue} `.includes(` ${target} `);
+}
+
+function isSafeWordDescriptorSurface(word, direction) {
+  const display = word.display || word.korean;
+  if (direction === "koToMeaning") {
+    return !visibleCueContainsAnswer(`Choose the matching English definition. ${word.korean}`, word.meaningShort);
+  }
+  if (direction === "audioToMeaning") {
+    return !visibleCueContainsAnswer("Choose the matching definition for the audio.", word.meaningShort);
+  }
+  if (direction === "context") {
+    const blank = makeWordSentenceBlank(word);
+    return Boolean(blank && !visibleCueContainsAnswer(`${blank.blanked} ${word.exampleEn || ""}`, blank.answer));
+  }
+  // Meaning/audio -> Korean directions keep their Hangul response out of all
+  // visible cue text by construction.
+  return !visibleCueContainsAnswer(direction === "audioToKo" ? "Audio only" : word.meaningShort, direction === "typeKo" ? getWordTypeTarget(word) : display);
+}
+
+// Exclude retrieval directions that have more than one defensible answer.
+// The result is a large procedural bank of stable semantic tasks; rows that
+// would look identical to the learner are deduplicated even if their data IDs
+// differ.
+function getSafeCuratedQuestionDescriptors() {
+  const words = getCuratedWords();
+  if (safeCuratedQuestionDescriptorCache && safeCuratedQuestionDescriptorSource === words) {
+    return safeCuratedQuestionDescriptorCache;
+  }
+  const displays = new Map();
+  const meanings = new Map();
+  const voices = new Map();
+  const voiceMeanings = new Map();
+  const addToGroup = (map, key, value) => {
+    if (!map.has(key)) map.set(key, new Set());
+    map.get(key).add(value);
+  };
+  words.forEach((word) => {
+    const display = normalizeWordQuestionIdentity(word.display || word.korean);
+    const meaning = normalizeWordQuestionIdentity(word.meaningShort);
+    const voice = normalizeWordQuestionIdentity(word.voiceText || word.korean);
+    addToGroup(displays, display, meaning);
+    addToGroup(meanings, meaning, display);
+    addToGroup(voices, voice, display);
+    addToGroup(voiceMeanings, voice, meaning);
+  });
+
+  const semanticTasks = new Map();
+  const add = (word, direction, cue, answer) => {
+    if (!isSafeWordDescriptorSurface(word, direction)) return;
+    const identity = `${direction}|${normalizeWordQuestionIdentity(cue)}|${normalizeWordQuestionIdentity(answer)}`;
+    if (semanticTasks.has(identity)) return;
+    semanticTasks.set(identity, { word, direction, questionKey: `word:${word.id}:${direction}` });
+  };
+  words.forEach((word) => {
+    const display = word.display || word.korean;
+    const displayKey = normalizeWordQuestionIdentity(display);
+    const meaningKey = normalizeWordQuestionIdentity(word.meaningShort);
+    const voiceKey = normalizeWordQuestionIdentity(word.voiceText || word.korean);
+    if (displays.get(displayKey)?.size === 1) {
+      add(word, "koToMeaning", display, word.meaningShort);
+      if (voiceMeanings.get(voiceKey)?.size === 1) add(word, "audioToMeaning", voiceKey, word.meaningShort);
+    }
+    if (meanings.get(meaningKey)?.size === 1) {
+      add(word, "meaningToKo", word.meaningShort, display);
+      add(word, "typeKo", word.meaningShort, getWordTypeTarget(word));
+    }
+    if (voices.get(voiceKey)?.size === 1) add(word, "audioToKo", voiceKey, display);
+    const blank = makeWordSentenceBlank(word);
+    if (blank) add(word, "context", blank.blanked, blank.answer);
+  });
+  safeCuratedQuestionDescriptorSource = words;
+  safeCuratedQuestionDescriptorCache = [...semanticTasks.values()];
+  return safeCuratedQuestionDescriptorCache;
+}
 
 function getCuratedQuizPool() {
   const curated = getCuratedWords();
@@ -12337,19 +12543,32 @@ function getCuratedQuizPool() {
     if (lesson) lesson.newWordIds.forEach((id) => studiedIds.add(id));
   }
   const studied = curated.filter((word) => studiedIds.has(word.id));
-  // Weight due words heavily, then studied words, then everything curated.
-  if (due.length) return [...due, ...due, ...(studied.length ? studied : curated)];
-  return studied.length ? studied : curated;
+  // Weight due and studied words without collapsing the generator to a tiny
+  // with-replacement pool. The full curated bank remains available so the
+  // 100-question freshness window can always find a different retrieval.
+  if (due.length) return [...due, ...due, ...due, ...studied, ...studied, ...curated];
+  return studied.length ? [...studied, ...studied, ...curated] : curated;
 }
 
 function generateCuratedVocabQuestion() {
-  const pool = getCuratedQuizPool();
-  if (!pool.length) return null;
-  const type = randomItem(CURATED_QUIZ_DECK);
-  if (type === "reading-check") return null; // fall through to the legacy quiz
-  const word = randomItem(pool);
-  let question = generateWordQuestionFor(word, type);
-  if (!question) question = generateWordQuestionFor(word, "koToMeaning");
+  const descriptors = getSafeCuratedQuestionDescriptors();
+  if (!descriptors.length) return null;
+  const recentKeys = getRecentQuestionKeys("vocabulary");
+  const recentWordIds = new Set(recentKeys.map((key) => /^word:([^:]+):/.exec(key)?.[1]).filter(Boolean));
+  const fresh = descriptors.filter((descriptor) => !recentWordIds.has(String(descriptor.word.id)));
+  const candidates = fresh.length ? fresh : descriptors;
+  const dueIds = new Set(getDueVocabReviews(100).map((item) => String(item.word?.id || "")));
+  const studiedIds = new Set();
+  (state.vocabLessonCompleted || []).forEach((lessonId) => {
+    getWordLessonById(lessonId)?.newWordIds?.forEach((id) => studiedIds.add(String(id)));
+  });
+  getWordLessonById(state.vocabLessonActive)?.newWordIds?.forEach((id) => studiedIds.add(String(id)));
+  const due = candidates.filter((descriptor) => dueIds.has(String(descriptor.word.id)));
+  const studied = candidates.filter((descriptor) => studiedIds.has(String(descriptor.word.id)));
+  const descriptor = randomItem(due.length ? due : studied.length ? studied : candidates);
+  let question = generateWordQuestionFor(descriptor.word, descriptor.direction);
+  if (!question) question = generateWordQuestionFor(descriptor.word, "koToMeaning");
+  if (question) question.questionKey = descriptor.questionKey;
   if (question && question.interaction === "type") {
     // The generic quiz card's typed answer is graded against `answer`; accept
     // any listed form by normalizing to the canonical target on grade.
@@ -12419,7 +12638,7 @@ function generateVocabQuestion(forcedType) {
       mode: "Listen and match",
       prompt: "Listen, then choose the Hangul spelling.",
       detail,
-      visual: `<div class="big-glyph">♪</div><div class="fs-xs text-muted-2">${escapeHtml(englishSpelling)}</div>`,
+      visual: '<div class="big-glyph" aria-hidden="true">♪</div><div class="fs-xs text-muted-2">Audio only</div>',
       options,
       answer: item.korean,
       explanation: `You heard ${item.korean}. The pronunciation is ${pronunciation}.${noteSuffix}`,
@@ -12586,7 +12805,7 @@ function generateQuestion() {
   }
 
   if (studio === "vocab") {
-    return generateVocabQuestion(type);
+    return generateVocabQuestion();
   }
 
   if (studio === "sentences") {
@@ -12652,6 +12871,7 @@ function createQuestionResponse(question) {
     return {
       slots: [],
       value: "",
+      keyboardVisible: false,
       choice: "",
       noticeHtml: "",
       feedbackHtml: "",
@@ -12842,7 +13062,7 @@ function renderTypeQuestion(question, quizOptions) {
         class="sentence-input"
         id="${ids.options}Input"
         type="text"
-        inputmode="none"
+        inputmode="text"
         autocomplete="off"
         autocapitalize="off"
         spellcheck="false"
@@ -12852,8 +13072,9 @@ function renderTypeQuestion(question, quizOptions) {
       />
       <div class="sentence-type-actions">
         <button class="button secondary compact" type="button" id="${ids.options}Clear" ${currentAnswered ? "disabled" : ""}>Clear</button>
+        <button class="button secondary compact" type="button" id="${ids.options}KeyboardToggle" ${currentAnswered ? "disabled" : ""}>${response.keyboardVisible ? "Hide Hangul keys" : "Need Hangul keys?"}</button>
       </div>
-      <div class="virtual-keyboard" id="${ids.options}Keyboard" ${currentAnswered ? "hidden" : ""}>
+      <div class="virtual-keyboard" id="${ids.options}Keyboard" ${currentAnswered || !response.keyboardVisible ? "hidden" : ""}>
          <div class="vk-row">
             <button type="button" class="vk-key" data-key="ㅂ" data-shift="ㅃ">ㅂ</button>
             <button type="button" class="vk-key" data-key="ㅈ" data-shift="ㅉ">ㅈ</button>
@@ -12899,6 +13120,7 @@ function renderTypeQuestion(question, quizOptions) {
 
   const input = document.getElementById(`${ids.options}Input`);
   const clearBtn = document.getElementById(`${ids.options}Clear`);
+  const keyboardToggle = document.getElementById(`${ids.options}KeyboardToggle`);
   const vkKeyboard = document.getElementById(`${ids.options}Keyboard`);
   const vkShift = document.getElementById(`${ids.options}VkShift`);
 
@@ -12974,6 +13196,13 @@ function renderTypeQuestion(question, quizOptions) {
     });
   }
 
+  if (keyboardToggle) {
+    keyboardToggle.addEventListener("click", () => {
+      response.keyboardVisible = !response.keyboardVisible;
+      renderQuestion(question, { preserveState: true, scope: getCurrentQuizScope() });
+    });
+  }
+
   if (clearBtn) {
     clearBtn.addEventListener("click", () => {
       response.value = "";
@@ -13045,9 +13274,9 @@ function renderQuestion(question, options = {}) {
   }
 
   if (speakBtn) {
-    const answerIsHangul = HANGUL_TEXT_PATTERN.test(String(question.answer || ""));
     const audioIsPrompt = Boolean(question.autoSpeak || /listen|audio/i.test(`${question.kind || ""} ${question.mode || ""}`));
-    const canReplay = Boolean(question.voiceText && (currentAnswered || audioIsPrompt || !answerIsHangul));
+    const replayText = currentAnswered ? (question.answerAudioText || question.voiceText) : question.voiceText;
+    const canReplay = Boolean(replayText && (currentAnswered || audioIsPrompt));
     speakBtn.hidden = !canReplay;
     speakBtn.disabled = !canReplay;
     if (speakBtn.dataset.boundQuizControl !== "true") {
@@ -13056,7 +13285,10 @@ function renderQuestion(question, options = {}) {
         if (currentQuizScope === "alphabet") {
           flashElement(quizVisual);
         }
-        void speak(currentQuestion?.voiceText || currentQuestion?.answer || "");
+        const text = currentAnswered
+          ? (currentQuestion?.answerAudioText || currentQuestion?.voiceText || "")
+          : (currentQuestion?.voiceText || "");
+        if (text) void speak(text);
       });
     }
   }
@@ -13086,7 +13318,7 @@ function renderScopedQuestion(scope) {
     renderQuestion(cached.question, { preserveState: true, scope: normalized });
     return;
   }
-  renderQuestion(generateQuestion(), { scope: normalized });
+  renderQuestion(generateFreshQuestion(normalized), { scope: normalized });
 }
 
 function finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml) {
@@ -13220,7 +13452,7 @@ function nextQuestion() {
     practiceSession.index += 1;
   }
   state.round += 1;
-  renderQuestion(generateQuestion(), { scope: getCurrentQuizScope() });
+  renderQuestion(generateFreshQuestion(getCurrentQuizScope()), { scope: getCurrentQuizScope() });
 }
 
 function bindKeyboardShortcuts() {
@@ -18402,8 +18634,14 @@ function getSentenceRowsForBand(band) {
   const metWords = getMetWords();
   const available = rows.filter((row) => isSentenceAvailable(row, metWords));
   const atBand = available.filter((row) => row.band === band);
-  if (atBand.length >= SENTENCE_SESSION_LENGTH) return atBand;
-  return atBand.concat(available.filter((row) => row.band < band));
+  const preferred = atBand.concat(available.filter((row) => row.band < band));
+  if (preferred.length >= RECENT_QUESTION_LIMIT + SENTENCE_SESSION_LENGTH) return preferred;
+  // A new learner can have fewer than 100 met-word rows. Drill Studio still
+  // needs a real freshness guarantee, so widen within the selected difficulty
+  // before repeating a sentence; these remain authored rows, never synthetic
+  // option-order variants.
+  const seen = new Set(preferred.map((row) => row.id));
+  return preferred.concat(rows.filter((row) => row.band <= band && !seen.has(row.id)));
 }
 
 function getUnmetFocusWordsCountForBand(band) {
@@ -18501,12 +18739,29 @@ function getSentenceAnalyticsSnapshot(activeProgress = null, activeRows = null) 
 
 // Least-practiced-first selection with random tie-breaking.
 // EXTENSION (roadmap C3): replace with the sentence SRS due queue.
-function pickSentenceSessionRows(band, count = SENTENCE_SESSION_LENGTH) {
+function sentenceQuestionKey(row, mode, transform = null) {
+  return `sentence:${row.id}:${mode}${transform?.id ? `:${transform.id}` : ""}`;
+}
+
+function pickSentenceSessionRows(band, count = SENTENCE_SESSION_LENGTH, modeId = "mixed") {
   const progress = getSentencesProgress();
   const results = progress.results;
   const now = Date.now();
 
-  const candidates = getSentenceRowsForBand(band);
+  const recentRowIds = new Set(getRecentQuestionKeys("sentences")
+    .map((key) => /^sentence:([^:]+):/.exec(key)?.[1])
+    .filter(Boolean));
+  const seenEnglish = new Set();
+  const suitable = getSentenceRowsForBand(band)
+    .filter((row) => modeId !== "build" || tokenizeSentence(row.korean).length >= 3)
+    .filter((row) => {
+      const identity = normalizeStudyText(row.english);
+      if (seenEnglish.has(identity)) return false;
+      seenEnglish.add(identity);
+      return true;
+    });
+  const fresh = suitable.filter((row) => !recentRowIds.has(String(row.id)));
+  const candidates = fresh.length >= count ? fresh : suitable;
 
   const due = [];
   const unseen = [];
@@ -18567,7 +18822,8 @@ function pickSentenceSessionRows(band, count = SENTENCE_SESSION_LENGTH) {
 function checkSentenceAnswer(row, typed) {
   const guess = normalizeKoreanAnswer(typed, { ignoreSpaces: true });
   if (!guess) return false;
-  const targets = [row.korean].concat(Array.isArray(row.acceptAlso) ? row.acceptAlso : []);
+  const equivalentRows = getSentenceBankRows().filter((other) => normalizeStudyText(other.english) === normalizeStudyText(row.english));
+  const targets = equivalentRows.flatMap((other) => [other.korean].concat(Array.isArray(other.acceptAlso) ? other.acceptAlso : []));
   return targets.some((t) => normalizeKoreanAnswer(t, { ignoreSpaces: true }) === guess);
 }
 
@@ -18690,8 +18946,16 @@ function pickSentenceTransformRows(band, count = SENTENCE_SESSION_LENGTH) {
   const easier = band > 1
     ? Array.from({ length: band - 1 }, (_, index) => getSentenceTransformRowsForBand(index + 1)).flat()
     : [];
+  const preferred = exact.concat(easier);
+  const expanded = preferred.length >= RECENT_QUESTION_LIMIT + count
+    ? preferred
+    : preferred.concat(getSentenceBankRows().map((row) => ({ row, transform: buildSentenceTransformForRow(row) })).filter((item) => item.transform));
+  const recentRowIds = new Set(getRecentQuestionKeys("sentences")
+    .map((key) => /^sentence:([^:]+):/.exec(key)?.[1])
+    .filter(Boolean));
+  const fresh = expanded.filter((item) => !recentRowIds.has(String(item.row.id)));
   const seen = new Set();
-  return shuffle(exact.concat(easier))
+  return shuffle(fresh.length >= count ? fresh : expanded)
     .filter((item) => {
       if (seen.has(item.row.id)) return false;
       seen.add(item.row.id);
@@ -18716,7 +18980,7 @@ function startSentenceStudioSession(modeId) {
   const progress = getSentencesProgress();
   const rows = modeId === "transform"
     ? pickSentenceTransformRows(progress.band)
-    : pickSentenceSessionRows(progress.band);
+    : pickSentenceSessionRows(progress.band, SENTENCE_SESSION_LENGTH, modeId);
   if (!rows.length) return;
   sentenceLessonView = null;
   sentenceStudioSession = {
@@ -18824,8 +19088,11 @@ function startSentenceLessonSession(lessonId) {
   if (!rows.length) return;
   resetLessonMotion("sentence");
   queueScreenMotion("forward", 1, { replace: false });
-  const drillPlan = lesson.type === "content"
-    ? (Array.isArray(lesson.drillPlan) ? lesson.drillPlan : [])
+  const contentPlan = lesson.type === "content" ? buildSentenceLessonQuestionPlan(lesson, rows) : null;
+  const studyRows = contentPlan ? contentPlan.studyRows : rows;
+  const questionRows = contentPlan ? contentPlan.rows : rows;
+  const drillPlan = contentPlan
+    ? contentPlan.drillPlan
     : rows.map((row, index) => ({
       sentenceId: row.id,
       mode: index === rows.length - 1 ? "listen" : index === rows.length - 2 ? "build" : "translate",
@@ -18907,13 +19174,11 @@ function prepareSentenceQuestion() {
   if (sentenceQuestionMode() === "build") {
     const row = session.rows[session.index];
     session.tilePool = makeSentenceTilePool(row, getSentenceRowsForBand(getSentencesProgress().band));
-  } else if (sentenceQuestionMode() === "transform") {
-    const row = session.rows[session.index];
-    const transform = getSentenceTransformForSessionRow(session, row);
-    session.helperTilePool = transform
-      ? makeSentenceTokenPool(transform.tokens || tokenizeSentence(transform.expected), 4).map((tile) => tile.text)
-      : [];
   }
+  const row = session.rows[session.index];
+  const mode = sentenceQuestionMode(session);
+  const transform = mode === "transform" ? getSentenceTransformForSessionRow(session, row) : null;
+  rememberRecentQuestionKey("sentences", sentenceQuestionKey(row, mode, transform));
 }
 
 function markSentenceHelperUsed(name) {
@@ -18988,16 +19253,24 @@ function finishSentenceQuestion(correct, revealed = false, meta = {}) {
   clearSentenceSessionTimeouts();
   const session = sentenceStudioSession;
   const row = session.rows[session.index];
+  const transform = sentenceQuestionMode(session) === "transform" ? getSentenceTransformForSessionRow(session, row) : null;
+  const answerAudioText = transform?.expected || row.voiceText || row.korean;
   if (revealed) markSentenceHelperUsed("reveal");
   recordSentenceResult(row, correct, revealed, meta);
   session.phase = "feedback";
   if (correct) {
     playCorrectSound();
-    speak(row.voiceText || row.korean);
+    speak(answerAudioText);
   } else {
     playIncorrectSound();
   }
   renderPracticeView();
+}
+
+function getSentencePlaybackRow(session, row) {
+  if (session?.phase !== "feedback" || sentenceQuestionMode(session) !== "transform") return row;
+  const transform = getSentenceTransformForSessionRow(session, row);
+  return transform ? { ...row, korean: transform.expected, voiceText: transform.expected, tokens: transform.tokens } : row;
 }
 
 function advanceSentenceSession() {
@@ -19486,6 +19759,9 @@ function sentenceStudyHtml(session) {
 }
 
 function sentenceSessionProgressHtml(current, total, label = "Line", allowReference = false) {
+  if (total === Infinity) {
+    return `<div class="word-card-progress-row"><div class="word-card-progress-tile"><div class="eyebrow">${escapeHtml(label)} · Question ${Math.max(1, Number(current) || 1)}</div></div></div>`;
+  }
   const safeTotal = Math.max(1, Number(total) || 1);
   const safeCurrent = Math.min(safeTotal, Math.max(1, Number(current) || 1));
   const progressPct = Math.round((safeCurrent / safeTotal) * 100);
@@ -19506,8 +19782,8 @@ function sentencePatternPillsHtml(row) {
     .join("");
 }
 
-function sentenceModeMetaHtml(row, modeLabel) {
-  const pills = sentencePatternPillsHtml(row);
+function sentenceModeMetaHtml(row, modeLabel, revealPatterns = false) {
+  const pills = revealPatterns ? sentencePatternPillsHtml(row) : "";
   return `<div class="word-card-definition sentence-mode-meta">
     ${pills ? `<div class="sentence-pattern-pills">${pills}</div><span aria-hidden="true">|</span>` : ""}
     <span>${escapeHtml(modeLabel)}</span>
@@ -19640,9 +19916,10 @@ function sentenceQuestionHtml(session) {
         </div>
       `;
     } else {
-      const tiles = (session.helperTilePool || [])
-        .map((tile) => `<button class="word-tile" type="button" data-sentence-helper-tile="${escapeHtml(tile)}" lang="ko">${escapeHtml(tile)}</button>`)
-        .join("");
+      const transformRow = { ...row, korean: transform.expected, tokens: transform.tokens, voiceText: transform.expected };
+      const transformHelper = session.helperLevel >= 2
+        ? sentenceWordBankHelperHtml(session, transformRow)
+        : `<div class="ss-helper-ladder"><div class="word-card-actions ss-helper-actions"><button class="button secondary compact" type="button" data-sentence-helper="wordBank">Word bank</button></div></div>`;
       innerContent = `
         ${sentenceSessionProgressHtml(session.index + 1, session.rows.length)}
         <div class="word-card-heading">
@@ -19656,12 +19933,7 @@ function sentenceQuestionHtml(session) {
         </div>
         ${sentenceModeMetaHtml(row, "Transform")}
         <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(transform.prompt)} for <strong lang="ko">${escapeHtml(transform.sourceSurface)}</strong>.</div>
-        ${sentenceAnswerBoxHtml(session, "Type the transformed Korean sentence", `
-          <div class="ss-helper-panel">
-            <div class="ss-helper-title">Word bank</div>
-            <div class="word-tile-row">${tiles}</div>
-          </div>
-        `)}
+        ${sentenceAnswerBoxHtml(session, "Type the transformed Korean sentence", transformHelper)}
       `;
     }
   } else if (mode === "shadow") {
@@ -19779,7 +20051,7 @@ function sentenceFeedbackHtml(session) {
   const attempt = session.typed;
   const mode = result.mode || sentenceQuestionMode(session);
   const transform = mode === "transform" ? getSentenceTransformForSessionRow(session, row) : null;
-  const targetRow = transform ? { ...row, korean: transform.expected, tokens: transform.tokens } : row;
+  const targetRow = transform ? { ...row, korean: transform.expected, voiceText: transform.expected, tokens: transform.tokens } : row;
   const answerText = transform ? transform.expected : row.korean;
 
   const diff = !result.correct && attempt && mode !== "build" && mode !== "shadow"
@@ -19815,13 +20087,13 @@ function sentenceFeedbackHtml(session) {
         <div class="word-card-ko-tile">
           <button class="sent-card-ko" type="button" lang="ko" data-sentence-play aria-label="Hear ${escapeHtml(answerText)}">
             <span class="word-card-ko-main">${escapeHtml(answerText)}</span>
-            <span class="word-card-ko-rom">${escapeHtml(approximateSentenceRomanization(targetRow.voiceText || targetRow.korean))}</span>
+            <span class="word-card-ko-rom">${escapeHtml(approximateSentenceRomanization(answerText))}</span>
           </button>
           <button class="word-card-ko-play" type="button" lang="ko" data-sentence-play aria-label="Play ${escapeHtml(answerText)}" title="Play Hangul">▶</button>
         </div>
       </div>
 
-      ${sentenceModeMetaHtml(row, row.english)}
+      ${sentenceModeMetaHtml(row, row.english, true)}
 
       <div class="ss-result ${result.correct ? "ss-result-good" : "ss-result-bad"}" style="margin: 14px 8px 4px; font-weight: bold; color: ${result.correct ? "var(--accent-2)" : "var(--accent-4)"};">
         ${result.correct ? "잘했어요! Nice." : "Here's the sentence:"}
@@ -20164,7 +20436,16 @@ function openSentenceSlowOverlay(row) {
 
 function useSentenceHelper(helper) {
   const session = sentenceStudioSession;
-  if (!session || session.phase !== "question" || sentenceQuestionMode(session) !== "translate") return;
+  if (!session || session.phase !== "question") return;
+  const mode = sentenceQuestionMode(session);
+  if (mode === "transform" && helper === "wordBank") {
+    session.helperLevel = Math.max(session.helperLevel, 2);
+    markSentenceHelperUsed("wordBank");
+    persistSentenceLessonSession();
+    renderPracticeView();
+    return;
+  }
+  if (mode !== "translate") return;
   const row = session.rows[session.index];
   if (helper === "tip") {
     session.helperLevel = Math.max(session.helperLevel, 1);
@@ -20315,7 +20596,8 @@ function bindSentenceSessionRoot(root) {
     if (playBtn && root.contains(playBtn)) {
       clearSentenceSessionTimeouts();
       session.showRepeatPrompt = true;
-      void speak(row.voiceText || row.korean);
+      const playbackRow = getSentencePlaybackRow(session, row);
+      void speak(playbackRow.voiceText || playbackRow.korean);
       renderPracticeView();
       return;
     }
@@ -20323,8 +20605,9 @@ function bindSentenceSessionRoot(root) {
     if (slowBtn && root.contains(slowBtn)) {
       clearSentenceSessionTimeouts();
       session.showRepeatPrompt = true;
-      if (sentenceQuestionMode(session) === "shadow") speakSentenceSlow(row.voiceText || row.korean);
-      else openSentenceSlowOverlay(row);
+      const playbackRow = getSentencePlaybackRow(session, row);
+      if (sentenceQuestionMode(session) === "shadow") speakSentenceSlow(playbackRow.voiceText || playbackRow.korean);
+      else openSentenceSlowOverlay(playbackRow);
       renderPracticeView();
       return;
     }
@@ -20534,6 +20817,15 @@ function renderVocabulary() {
 
   currentQuizScope = "vocabulary";
   state.studio = "vocab";
+
+  // Practice is a focused drill surface. The learning hero, level rail, and
+  // explanatory cards belong to the picker, not above every live question.
+  if (currentFocus === "practice") {
+    const practiceSession = getPracticeQuizSession("vocabulary") || startGenericPracticeSession("vocabulary");
+    el.innerHTML = `<div class="generic-drill-session" aria-label="Vocabulary Drill Lab">${renderQuizCard("vocabulary")}</div>`;
+    if (!practiceSession.complete) renderScopedQuestion("vocabulary");
+    return;
+  }
 
   // Capture search box focus & cursor selection before rebuilding the DOM
   const activeEl = document.activeElement;

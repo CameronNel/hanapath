@@ -3062,6 +3062,120 @@ li { margin-bottom: 4px; }
   display: none !important;
 }
 
+/* Drill Labs use a question-first shell. Keep the unanswered state inside one
+   phone viewport; optional helpers may expand below it only when requested. */
+.generic-drill-session {
+  width: min(100%, 760px);
+  margin: 0 auto;
+}
+.generic-drill-session > .card {
+  margin: 0;
+  padding: 12px;
+}
+.generic-drill-session .review-stats {
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.generic-drill-session .rev-stat {
+  min-width: 0;
+  padding: 7px 4px;
+}
+.generic-drill-session .rev-stat .sv { font-size: 1rem; }
+.generic-drill-session .rev-stat .sl { font-size: .61rem; }
+.generic-drill-session .quiz-card {
+  margin-bottom: 8px;
+  padding: 12px;
+}
+.generic-drill-session .quiz-meta { margin-bottom: 8px; }
+.generic-drill-session .quiz-visual {
+  min-height: 66px;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  font-size: clamp(1.9rem, 9vw, 2.65rem);
+}
+.generic-drill-session .quiz-prompt { margin-bottom: 4px; }
+.generic-drill-session .quiz-detail { margin-bottom: 8px; }
+.generic-drill-session .quiz-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+.generic-drill-session .option {
+  min-height: 46px;
+  padding: 8px;
+  overflow-wrap: anywhere;
+}
+.generic-drill-session .quiz-feedback { min-height: 20px; }
+.generic-drill-session .review-actions { gap: 8px; }
+.generic-drill-session .review-actions .button { min-height: 44px; }
+.generic-drill-session .sentence-input { min-height: 48px; }
+.generic-drill-session .virtual-keyboard { margin-top: 8px; padding: 8px; gap: 5px; }
+.generic-drill-session .vk-row { gap: 4px; }
+.generic-drill-session .vk-key { height: 44px; font-size: 1.05rem; }
+
+.drill-listen-cue {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border: 1px solid rgba(var(--accent-rgb), .32);
+  border-radius: 50%;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), .1);
+  font: 800 1.8rem/1 "Outfit", sans-serif;
+}
+.drill-infinite-counter {
+  height: auto;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+.drill-quick-runner .drill-audio-row {
+  grid-template-columns: minmax(0, 180px);
+  justify-content: center;
+}
+.drill-quick-runner .drill-audio-row .button,
+.alphabet-lesson-player .player-actions.word-card-nav-actions.drill-quick-actions > .button {
+  min-height: 44px;
+}
+
+.sent-session .word-input-erase,
+.sent-session [aria-label="Translate helpers"] .button.compact {
+  min-width: 44px;
+  min-height: 44px;
+}
+.alphabet-lesson-player .player-actions.word-card-nav-actions.drill-quick-actions {
+  grid-template-columns: minmax(0, 150px);
+}
+
+@media (max-height: 700px), (max-width: 390px) {
+  .drill-quick-runner { padding: 10px; }
+  .drill-quick-head { margin-bottom: 5px; }
+  .drill-quick-progress { height: 46px; }
+  .drill-infinite-counter { height: auto; }
+  .drill-quick-question { gap: 5px; }
+  .drill-quick-runner .quiz-visual { min-height: 54px; padding: 5px 8px; }
+  .drill-quick-detail { font-size: .7rem; }
+  .drill-quick-runner .option,
+  .drill-quick-runner .bd-tile { min-height: 44px; height: 44px; }
+  .alphabet-lesson-player .player-actions.word-card-nav-actions.drill-quick-actions { margin-top: 5px !important; }
+
+  .sent-session { padding: 11px; }
+  .sent-session .word-card-progress-row { margin-bottom: 7px; }
+  .sent-session .word-card-progress-tile { min-height: 42px; padding: 8px 10px; }
+  .sent-session .word-card-heading { margin-bottom: 7px; }
+  .sent-session .sentence-prompt-tile { min-height: 62px; padding: 10px; }
+  .sent-session .sentence-prompt-tile.is-listening { min-height: 70px; }
+  .sent-session .sentence-prompt-text { font-size: 1.02rem; line-height: 1.3; }
+  .sent-session .word-card-ko-tile { margin-top: 7px; padding-top: 9px; padding-bottom: 9px; }
+  .sent-session .sent-type-box { margin-top: 8px; padding: 9px; }
+  .sent-session .sentence-input { min-height: 46px; padding: 10px 12px; }
+  .sent-session .sent-input-hint { margin-top: 5px; font-size: .68rem; }
+  .sent-session .sent-live-feedback { min-height: 18px; margin-top: 4px; }
+  .sent-session .word-card-nav-actions { margin-top: 9px; }
+  .sent-session .ss-helper-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .sent-session .ss-helper-actions .button { min-height: 44px; }
+  .sent-session .ss-shadow-listen-hero { min-height: 82px; padding: 11px; }
+}
+
 /* ── ENTIRE KOREAN ALPHABET BOARD ─────────────────────────────── */
 /* [2026-06-29] Styles for the new full-alphabet reference (keyboard + list views). */
 .alphabet-menu-grid {
@@ -3982,7 +4096,7 @@ li { margin-bottom: 4px; }
 .drill-quick-runner .drill-audio-row .button {
   width: 100%;
   min-width: 0;
-  min-height: 36px;
+  min-height: 44px;
   padding: 6px 8px;
   font-size: .78rem;
   white-space: normal;
@@ -4034,7 +4148,7 @@ li { margin-bottom: 4px; }
   margin-top: 8px !important;
 }
 .alphabet-lesson-player .player-actions.word-card-nav-actions.drill-quick-actions > .button {
-  min-height: 36px;
+  min-height: 44px;
   padding: 6px 10px;
   border-radius: 999px;
   box-shadow: none;
@@ -4089,6 +4203,37 @@ li { margin-bottom: 4px; }
   .drill-quick-question { gap: 7px; }
   .drill-quick-runner .option { min-height: 44px; }
   .drill-quick-runner .bd-tile { height: 44px; min-height: 44px; }
+}
+
+@media (max-width: 420px) and (max-height: 620px) {
+  .generic-drill-session > .card { padding: 8px; }
+  .generic-drill-session .review-stats { gap: 4px; margin-bottom: 4px; }
+  .generic-drill-session .rev-stat { padding: 3px 2px; }
+  .generic-drill-session .rev-stat .sv { font-size: .82rem; }
+  .generic-drill-session .rev-stat .sl { font-size: .52rem; }
+  .generic-drill-session .quiz-card { padding: 8px; margin-bottom: 4px; }
+  .generic-drill-session .quiz-meta { margin-bottom: 4px; }
+  .generic-drill-session .quiz-visual { min-height: 52px; padding: 4px 6px; margin-bottom: 4px; }
+  .generic-drill-session .quiz-visual .big-glyph {
+    padding: 2px;
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+  .generic-drill-session .quiz-prompt { margin-bottom: 2px; font-size: .82rem; line-height: 1.2; }
+  .generic-drill-session .quiz-detail { margin-bottom: 4px; font-size: .68rem; }
+  .generic-drill-session .quiz-options { gap: 4px; margin-bottom: 4px; }
+  .generic-drill-session .sentence-type { gap: 4px; }
+  .generic-drill-session .sentence-input { min-height: 44px; padding: 8px 10px; }
+  .generic-drill-session .sentence-type-actions { gap: 6px; }
+  .generic-drill-session .sentence-type-actions .button { min-height: 44px; padding: 6px 9px; }
+  .generic-drill-session .quiz-feedback {
+    min-height: 0;
+    margin-bottom: 4px;
+    padding: 4px 6px;
+    font-size: .65rem;
+    line-height: 1.2;
+  }
+  .generic-drill-session .review-actions { gap: 4px; }
 }
 
 /* Drill Lab tile-build slots + first-try checkpoint note */

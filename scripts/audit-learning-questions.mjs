@@ -39,6 +39,15 @@ function readArray(name) {
   return vm.runInNewContext(`(${appSrc.slice(open, close + 1)})`);
 }
 
+function readObject(name) {
+  const marker = `const ${name} = {`;
+  const start = appSrc.indexOf(marker);
+  if (start < 0) throw new Error(`Missing ${name}`);
+  const open = appSrc.indexOf("{", start);
+  const close = findMatching(appSrc, open, "{", "}");
+  return vm.runInNewContext(`(${appSrc.slice(open, close + 1)})`);
+}
+
 function readFunction(name) {
   const marker = `function ${name}(`;
   const start = appSrc.indexOf(marker);
@@ -84,6 +93,119 @@ function readPhaseOneLessons() {
 
 function visibleText(value) {
   return String(value || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function comparableText(value) {
+  return visibleText(value)
+    .normalize("NFKC")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLocaleLowerCase("en");
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Exact containment for Hangul/jamo, and token-boundary containment for Latin
+// answers. A raw `includes` check makes tiny English answers such as "I" or
+// "a" match unrelated prose and produced false positives in earlier audits.
+function surfaceContainsAnswer(surface, answer) {
+  const haystack = comparableText(surface);
+  const needle = comparableText(answer);
+  if (!haystack || !needle) return false;
+  if (/[ᄀ-ᇿ㄰-㆏가-힯]/u.test(needle)) return haystack.includes(needle);
+  const boundary = "[^\\p{L}\\p{N}]";
+  return new RegExp(`(?:^|${boundary})${escapeRegExp(needle)}(?:$|${boundary})`, "u").test(haystack);
+}
+
+function questionOptionValues(question) {
+  return Array.isArray(question?.options)
+    ? question.options.map((option) => comparableText(option)).filter(Boolean)
+    : [];
+}
+
+function assertSafeQuestion(question, label, options = {}) {
+  if (!question || typeof question !== "object") {
+    errors.push(`${label} did not produce a question object`);
+    return;
+  }
+  const answer = String(question.answer ?? question.target ?? "").trim();
+  if (!answer) {
+    errors.push(`${label} has no answer`);
+    return;
+  }
+  const preAnswerFields = options.preAnswerFields || ["prompt", "visual", "detail", "helper"];
+  const leakedFields = preAnswerFields.filter((field) => surfaceContainsAnswer(question[field], answer));
+  if (leakedFields.length) {
+    errors.push(`${label} embeds answer ${answer} in pre-answer ${leakedFields.join("/")}`);
+  }
+
+  const optionValues = questionOptionValues(question);
+  if (optionValues.length) {
+    const answerValue = comparableText(answer);
+    if (new Set(optionValues).size !== optionValues.length) {
+      errors.push(`${label} has duplicate answer choices`);
+    }
+    if (optionValues.filter((value) => value === answerValue).length !== 1) {
+      errors.push(`${label} does not contain exactly one answer choice`);
+    }
+    if (optionValues.length < 3) errors.push(`${label} has fewer than three choices`);
+  } else if (question.interaction !== "type" && question.interaction !== "build") {
+    errors.push(`${label} has neither choices nor an explicit type/build interaction`);
+  }
+
+  const promptAudio = [
+    question.promptAudioText,
+    question.preAnswerAudioText,
+    question.autoSpeak ? question.voiceText : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  if (promptAudio && surfaceContainsAnswer(promptAudio, answer) && !options.answerAudioIsCue) {
+    errors.push(`${label} speaks its answer in pre-answer audio`);
+  }
+  if (question.drillVisualParts?.length || question.preAnswerComponents?.length) {
+    const components = [...(question.drillVisualParts || []), ...(question.preAnswerComponents || [])];
+    if (components.some((component) => surfaceContainsAnswer(component, answer))) {
+      errors.push(`${label} exposes its answer as a pre-answer component`);
+    }
+  }
+  if (question.referenceAvailableBeforeAnswer === true || question.preAnswerReference === true) {
+    errors.push(`${label} exposes a reference before submission`);
+  }
+}
+
+function assertCatalogSize(keys, label, minimum = 5000) {
+  const normalized = keys.map((key) => String(key || "").trim()).filter(Boolean);
+  const unique = new Set(normalized);
+  if (unique.size < minimum) {
+    errors.push(`${label} has ${unique.size.toLocaleString("en-US")}/${minimum.toLocaleString("en-US")} unique safe question identities`);
+  }
+  if (unique.size !== normalized.length) {
+    errors.push(`${label} catalog contains ${normalized.length - unique.size} duplicate question identity row(s)`);
+  }
+  return unique;
+}
+
+// Deterministic procedural-deck proof: rotate through a stable catalog for
+// several complete cycles and inspect every sliding 100-question window. This
+// catches cycle-boundary repeats as well as duplicates inside one pass.
+function assertRollingHundred(keys, label) {
+  const catalog = [...new Set(keys.map((key) => String(key || "").trim()).filter(Boolean))];
+  if (catalog.length < 101) {
+    errors.push(`${label} cannot sustain a 100-question no-repeat window (${catalog.length} identities)`);
+    return;
+  }
+  const drawCount = Math.max(1000, Math.min(20000, catalog.length * 3 + 137));
+  const draws = Array.from({ length: drawCount }, (_, index) => catalog[index % catalog.length]);
+  for (let index = 99; index < draws.length; index += 1) {
+    const window = draws.slice(index - 99, index + 1);
+    if (new Set(window).size !== 100) {
+      errors.push(`${label} repeats inside rolling questions ${index - 98}-${index + 1}`);
+      return;
+    }
+  }
 }
 
 function sampleList(values, limit = 8) {
@@ -218,6 +340,171 @@ if (maxFiniteDrillLength < requiredAlphabetPairs) {
   );
 }
 
+// The Alphabet Drill Lab is procedural. Count semantic retrieval identities,
+// not permutations of the same four options: one sound->block build per valid
+// syllable, one block->sound retrieval per component seat, the direct jamo
+// pairs, and one batchim retrieval for each closed block. This is the exact
+// space the live descriptor catalog is expected to expose.
+const alphabetProceduralKeys = [];
+const alphabetFinals = readArray("BATCHIM_FINALS");
+const allHangulFinals = readArray("FINALS");
+for (const initial of initials) {
+  for (const medial of medials) {
+    for (const final of alphabetFinals) {
+      const finalOffset = allHangulFinals.indexOf(final);
+      if (finalOffset < 0) continue;
+      const syllable = String.fromCharCode(
+        0xac00 + (initials.indexOf(initial) * medials.length + medials.indexOf(medial)) * 28 + finalOffset,
+      );
+      alphabetProceduralKeys.push(`alphabet:build:${syllable}`);
+      alphabetProceduralKeys.push(`alphabet:split:${syllable}:initial`);
+      alphabetProceduralKeys.push(`alphabet:split:${syllable}:medial`);
+      if (final) {
+        alphabetProceduralKeys.push(`alphabet:split:${syllable}:final`);
+        alphabetProceduralKeys.push(`alphabet:batchim:${syllable}`);
+      }
+    }
+  }
+}
+for (const jamo of allJamo) {
+  for (const direction of directions) alphabetProceduralKeys.push(`alphabet:letter:${jamo}:${direction}`);
+}
+const alphabetSafeCatalog = assertCatalogSize(alphabetProceduralKeys, "Alphabet Drill Lab");
+assertRollingHundred([...alphabetSafeCatalog], "Alphabet Drill Lab procedural deck");
+
+// Execute the app's real descriptor catalog and queue scheduler. The audio
+// availability stub intentionally admits every valid generated syllable; the
+// production function applies the same composition rules and may additionally
+// narrow this list when a packaged audio map is present.
+const alphabetDescriptorSandbox = {
+  INITIALS: initials,
+  MEDIALS: medials,
+  FINALS: allHangulFinals,
+  ALPHABET_LETTER_QUESTION_DIRECTIONS: directions,
+  consonantAtlas: initials.map((char) => ({ char })),
+  vowelAtlas: medials.map((char) => ({ char })),
+  getEnrolledLetters: () => allJamo,
+  window: {},
+};
+vm.createContext(alphabetDescriptorSandbox);
+vm.runInContext(
+  [
+    "const drillAudioSyllableCache = new Map();",
+    "const alphabetDrillDescriptorCache = new Map();",
+    readFunction("composeHangul"),
+    readFunction("decomposeHangul"),
+    readFunction("hasLocalDrillAudio"),
+    readFunction("getAudioBackedDrillSyllables"),
+    readFunction("getAlphabetDrillDescriptors"),
+  ].join("\n"),
+  alphabetDescriptorSandbox,
+);
+const alphabetReadingPools = { initials, medials, finals: alphabetFinals };
+const liveAlphabetDescriptors = alphabetDescriptorSandbox.getAlphabetDrillDescriptors("mixed", alphabetReadingPools);
+const liveAlphabetKeys = liveAlphabetDescriptors.map((descriptor) => descriptor.questionKey);
+const liveAlphabetCatalog = assertCatalogSize(liveAlphabetKeys, "Live Alphabet descriptor catalog");
+
+const alphabetSchedulerHistory = [];
+Object.assign(alphabetDescriptorSandbox, {
+  drillSession: { questionQueues: {} },
+  drillPools: () => alphabetReadingPools,
+  getRecentQuestionKeys: () => alphabetSchedulerHistory,
+  rememberRecentQuestionKey: (_scope, key) => {
+    const previousAt = alphabetSchedulerHistory.indexOf(key);
+    if (previousAt >= 0) alphabetSchedulerHistory.splice(previousAt, 1);
+    alphabetSchedulerHistory.push(key);
+    if (alphabetSchedulerHistory.length > 100) alphabetSchedulerHistory.splice(0, alphabetSchedulerHistory.length - 100);
+  },
+  shuffle: (items) => [...items],
+});
+vm.runInContext(
+  `${readFunction("takeAlphabetDrillDescriptor")}\nthis.takeAlphabetDrillDescriptor = takeAlphabetDrillDescriptor;`,
+  alphabetDescriptorSandbox,
+);
+const liveAlphabetDraws = [];
+// `takeAlphabetDrillDescriptor` uses Array#shift, so a full 16k-item cycle in
+// Node would turn this audit quadratic. Exercise 300 real draws here; the
+// catalog-cycle boundary is covered by the deterministic proof above.
+const liveAlphabetDrawCount = 300;
+for (let index = 0; index < liveAlphabetDrawCount; index += 1) {
+  const descriptor = alphabetDescriptorSandbox.takeAlphabetDrillDescriptor("mixed");
+  if (!descriptor) {
+    errors.push(`Live Alphabet scheduler stopped after ${index} question(s)`);
+    break;
+  }
+  liveAlphabetDraws.push(descriptor.questionKey);
+}
+for (let index = 99; index < liveAlphabetDraws.length; index += 1) {
+  if (new Set(liveAlphabetDraws.slice(index - 99, index + 1)).size !== 100) {
+    errors.push(`Live Alphabet scheduler repeats inside rolling questions ${index - 98}-${index + 1}`);
+    break;
+  }
+}
+
+Object.assign(alphabetDescriptorSandbox, {
+  BATCHIM_GROUPS: readArray("BATCHIM_GROUPS"),
+  BATCHIM_GROUP_SOUND_SPEAK: readObject("BATCHIM_GROUP_SOUND_SPEAK"),
+  HANGUL_JAMO_SPEAK: readObject("HANGUL_JAMO_SPEAK"),
+  LETTER_SOUND: readObject("LETTER_SOUND"),
+  randomItem: (items) => items?.[0],
+  escapeHtml: (value) => String(value ?? ""),
+  romanizeHangulSyllable: (syllable) => `sound-${String(syllable || "").codePointAt(0) || 0}`,
+});
+vm.runInContext(
+  [
+    readFunction("getBatchimGroupForLetter"),
+    readFunction("getBatchimAudioText"),
+    readFunction("getSyllableReading"),
+    readFunction("pickConfusableSyllables"),
+    readFunction("makeLetterDrillQuestion"),
+    readFunction("makeSyllableReadingDrillQuestion"),
+    readFunction("makeBuildTileDrillQuestion"),
+    readFunction("makeSplitDrillQuestion"),
+    readFunction("makeBatchimDrillQuestion"),
+  ].join("\n"),
+  alphabetDescriptorSandbox,
+);
+const alphabetQuestionIssues = [];
+for (const descriptor of liveAlphabetDescriptors) {
+  let question;
+  if (descriptor.mode === "build") {
+    question = alphabetDescriptorSandbox.makeBuildTileDrillQuestion(alphabetReadingPools, descriptor);
+  } else if (descriptor.mode === "split") {
+    question = alphabetDescriptorSandbox.makeSplitDrillQuestion(alphabetReadingPools, descriptor);
+  } else if (descriptor.mode === "batchim") {
+    question = alphabetDescriptorSandbox.makeBatchimDrillQuestion(alphabetReadingPools, descriptor);
+  } else if (descriptor.direct) {
+    question = alphabetDescriptorSandbox.makeLetterDrillQuestion(
+      descriptor.letter,
+      descriptor.direction,
+      descriptor.questionKey,
+    );
+  } else {
+    question = alphabetDescriptorSandbox.makeSyllableReadingDrillQuestion(alphabetReadingPools, descriptor);
+  }
+  const before = errors.length;
+  assertSafeQuestion(question, `Alphabet ${descriptor.questionKey}`, {
+    answerAudioIsCue: Boolean(question?.promptAudioText),
+  });
+  if (question?.questionKey !== descriptor.questionKey) {
+    errors.push(`Alphabet ${descriptor.questionKey} loses its stable question identity`);
+  }
+  if (descriptor.mode === "batchim") {
+    const actualFinal = alphabetDescriptorSandbox.decomposeHangul(descriptor.syllable)?.final;
+    if (actualFinal !== question?.weakKey) {
+      errors.push(`Alphabet ${descriptor.questionKey} prompts ${question?.weakKey || "no final"} over block final ${actualFinal || "none"}`);
+    }
+  }
+  if (errors.length > before) {
+    alphabetQuestionIssues.push(...errors.splice(before));
+  }
+}
+if (alphabetQuestionIssues.length) {
+  errors.push(
+    `Alphabet generated-question safety failed ${alphabetQuestionIssues.length} check(s): ${sampleList(alphabetQuestionIssues, 6)}`,
+  );
+}
+
 const phaseOneLessons = readPhaseOneLessons();
 for (const lesson of phaseOneLessons) {
   for (const [index, question] of (lesson.questions || []).entries()) {
@@ -239,11 +526,61 @@ for (const lesson of phaseOneLessons) {
   }
 }
 
+const phaseOneRenderSandbox = {
+  phaseOneView: { answered: false },
+  escapeHtml: (value) => String(value ?? ""),
+  isSpeakableAnswerOption: () => true,
+  window: {
+    Hangul: {
+      disassemble: (text) => Array.from(String(text || "")).flatMap((char) => {
+        const code = char.codePointAt(0) - 0xac00;
+        if (code < 0 || code > 11171) return [char];
+        return [
+          initials[Math.floor(code / 588)],
+          medials[Math.floor((code % 588) / 28)],
+          allHangulFinals[code % 28],
+        ].filter(Boolean);
+      }),
+    },
+  },
+};
+vm.createContext(phaseOneRenderSandbox);
+vm.runInContext(
+  [readFunction("getQuestionComponents"), readFunction("renderCheckpointVisualHtml"), readFunction("renderCheckpointAudioHelpers")].join("\n"),
+  phaseOneRenderSandbox,
+);
+for (const lesson of phaseOneLessons) {
+  for (const [index, question] of (lesson.questions || []).entries()) {
+    const answer = String(question.answer || question.target || "").trim();
+    if (!answer) continue;
+    const renderedVisual = phaseOneRenderSandbox.renderCheckpointVisualHtml(question);
+    if (surfaceContainsAnswer(renderedVisual, answer)) {
+      errors.push(`${lesson.id} question ${index + 1} derives its answer in the unanswered component visual`);
+    }
+    const renderedAudio = phaseOneRenderSandbox.renderCheckpointAudioHelpers(lesson, question);
+    const answerIsAudioBuildCue = question.type === "build";
+    if (
+      !answerIsAudioBuildCue
+      && renderedAudio.includes("data-checkpoint-speak-target")
+      && surfaceContainsAnswer(renderedAudio, answer)
+    ) {
+      errors.push(`${lesson.id} question ${index + 1} exposes answer audio before submission`);
+    }
+    if (/preview-answers|open-reference/.test(renderedAudio)) {
+      errors.push(`${lesson.id} question ${index + 1} exposes answer preview/reference before submission`);
+    }
+  }
+}
+
 // Keep the Phase-One Reference surface out of unanswered checkpoints. A later
 // answered state may reveal it without compromising the attempt.
 const phaseOnePlayerSource = readFunction("renderPhaseOnePlayer");
-const phaseOneReferenceIsGated = phaseOnePlayerSource.includes(
-  'const showReference = phaseOneView.mode !== "check" || phaseOneView.answered',
+const phaseOneReferenceIsGated = (
+  phaseOnePlayerSource.includes('const showReference = phaseOneView.mode !== "check" || phaseOneView.answered')
+  || (
+    /const\s+unansweredCheckpoint\s*=\s*phaseOneView\.mode\s*===\s*["']check["']\s*&&\s*!phaseOneView\.answered/.test(phaseOnePlayerSource)
+    && /const\s+showReference\s*=\s*!unansweredCheckpoint/.test(phaseOnePlayerSource)
+  )
 ) && phaseOnePlayerSource.includes('style.display = showReference ? "" : "none"');
 if (phaseOnePlayerSource.includes("phaseOneReferenceButton") && !phaseOneReferenceIsGated) {
   errors.push("Alphabet checkpoints expose the untracked Reference surface before submission");
@@ -269,12 +606,6 @@ const alphabetReferenceCallSpecs = [
     source: readFunction("renderAlphabetPractice"),
     callMarker: "practiceSession.complete",
     context: (allowed) => ({ practiceSession: { complete: allowed } }),
-  },
-  {
-    label: "active Alphabet Drill Lab",
-    source: readFunction("renderDrillQuestion"),
-    callMarker: "s.answered",
-    context: (allowed) => ({ s: { total: 10, asked: 0, answered: allowed }, modeLabel: "Letters" }),
   },
   {
     label: "active pronunciation drill",
@@ -313,6 +644,40 @@ for (const spec of alphabetReferenceCallSpecs) {
       );
     }
   }
+}
+
+const drillProgressSandbox = { escapeHtml: (value) => String(value ?? "") };
+vm.createContext(drillProgressSandbox);
+vm.runInContext(readFunction("alphabetDrillProgressHtml"), drillProgressSandbox);
+for (const asked of [0, 10]) {
+  const html = drillProgressSandbox.alphabetDrillProgressHtml({ asked, total: Infinity }, "Mixed");
+  if (!html.includes(`Question ${asked + 1}`)) {
+    errors.push(`Alphabet infinite runner does not show the Question ${asked + 1} counter`);
+  }
+  if (/progress-track|role=["']progressbar|aria-label=["'][^"']*progress/i.test(html)) {
+    errors.push(`Alphabet infinite runner renders a progress track at question ${asked + 1}`);
+  }
+}
+let previousFiniteWidth = -1;
+for (let asked = 0; asked < 10; asked += 1) {
+  const html = drillProgressSandbox.alphabetDrillProgressHtml({ asked, total: 10 }, "Mixed");
+  const width = Number(/width\s*:\s*([\d.]+)%/.exec(html)?.[1]);
+  if (!Number.isFinite(width) || width <= previousFiniteWidth || width > 100) {
+    errors.push(`Alphabet finite progress is not strictly monotonic at question ${asked + 1} (${String(width)}%)`);
+    break;
+  }
+  previousFiniteWidth = width;
+}
+if (previousFiniteWidth !== 100) errors.push(`Alphabet finite progress does not finish at 100% (${previousFiniteWidth}%)`);
+const activeDrillRendererSource = readFunction("renderDrillQuestion");
+if (
+  !activeDrillRendererSource.includes("alphabetDrillProgressHtml(s, modeLabel)")
+  || !/id=["']drillEndBtn["'][^>]*>End session</.test(activeDrillRendererSource)
+) {
+  errors.push("Alphabet active runner is missing its counter/progress helper or End session control");
+}
+if (/drillReferenceBtn|data-checkpoint-open-reference/.test(activeDrillRendererSource)) {
+  errors.push("Alphabet active runner exposes a reference before the attempt is scored");
 }
 
 const visualSandbox = { escapeHtml: (value) => String(value) };
@@ -448,6 +813,203 @@ function makeWordQuestionBlueprint(word, direction) {
 }
 
 const wordById = new Map(words.map((word) => [word.id, word]));
+
+function addGroupedValue(map, key, value) {
+  if (!map.has(key)) map.set(key, new Set());
+  map.get(key).add(value);
+}
+
+const wordMeaningsByDisplay = new Map();
+const wordMeaningsByVoice = new Map();
+const wordDisplaysByMeaning = new Map();
+const wordDisplaysByVoice = new Map();
+for (const word of words) {
+  const display = comparableText(word.display || word.korean);
+  const voice = comparableText(word.voiceText || word.korean);
+  const meaning = comparableText(word.meaningShort || word.meaning);
+  if (!display || !voice || !meaning) continue;
+  addGroupedValue(wordMeaningsByDisplay, display, meaning);
+  addGroupedValue(wordMeaningsByVoice, voice, meaning);
+  addGroupedValue(wordDisplaysByMeaning, meaning, display);
+  addGroupedValue(wordDisplaysByVoice, voice, display);
+}
+
+// Safe means the presented cue has one defensible answer in that direction.
+// Homographs are excluded from Korean/audio->meaning; synonyms are excluded
+// from meaning->Korean production. Audio->Hangul is retained only when that
+// exact recording/transcript maps to one spelling.
+const safeWordDescriptors = [];
+for (const word of words) {
+  const display = comparableText(word.display || word.korean);
+  const voice = comparableText(word.voiceText || word.korean);
+  const meaning = comparableText(word.meaningShort || word.meaning);
+  if (!display || !voice || !meaning) continue;
+  if (wordMeaningsByDisplay.get(display)?.size === 1) {
+    safeWordDescriptors.push({ word, direction: "koToMeaning", cue: display, answer: meaning });
+  }
+  if (wordMeaningsByVoice.get(voice)?.size === 1) {
+    safeWordDescriptors.push({ word, direction: "audioToMeaning", cue: voice, answer: meaning });
+  }
+  if (wordDisplaysByMeaning.get(meaning)?.size === 1) {
+    safeWordDescriptors.push({ word, direction: "meaningToKo", cue: meaning, answer: display });
+    safeWordDescriptors.push({ word, direction: "typeKo", cue: meaning, answer: display });
+  }
+  if (wordDisplaysByVoice.get(voice)?.size === 1) {
+    safeWordDescriptors.push({ word, direction: "audioToKo", cue: voice, answer: display });
+  }
+}
+const safeWordKeys = safeWordDescriptors.map(({ direction, cue, answer }) =>
+  `word:${direction}:${cue}:${answer}`);
+const wordSafeCatalog = assertCatalogSize([...new Set(safeWordKeys)], "Vocabulary Drill Lab");
+assertRollingHundred([...wordSafeCatalog], "Vocabulary Drill Lab procedural deck");
+
+const safeWordDescriptorSandbox = {
+  getCuratedWords: () => words,
+  getWordTypeTarget,
+  makeWordSentenceBlank: deriveWordSentenceBlank,
+  HANGUL_TEXT_PATTERN: /[\u1100-\u11ff\u3130-\u318f\ua960-\ua97f\uac00-\ud7af\ud7b0-\ud7ff]/,
+};
+vm.createContext(safeWordDescriptorSandbox);
+vm.runInContext(
+  [
+    "let safeCuratedQuestionDescriptorCache = null;",
+    "let safeCuratedQuestionDescriptorSource = null;",
+    readFunction("normalizeWordQuestionIdentity"),
+    readFunction("visibleCueContainsAnswer"),
+    readFunction("isSafeWordDescriptorSurface"),
+    readFunction("getSafeCuratedQuestionDescriptors"),
+  ].join("\n"),
+  safeWordDescriptorSandbox,
+);
+const liveSafeWordDescriptors = safeWordDescriptorSandbox.getSafeCuratedQuestionDescriptors();
+const liveSafeWordKeys = liveSafeWordDescriptors.map((descriptor) => descriptor.questionKey);
+assertCatalogSize(liveSafeWordKeys, "Live Vocabulary descriptor catalog");
+const unsafeLiveWordDescriptors = liveSafeWordDescriptors.filter(({ word, direction }) => {
+  const display = comparableText(word.display || word.korean);
+  const voice = comparableText(word.voiceText || word.korean);
+  const meaning = comparableText(word.meaningShort || word.meaning);
+  if (direction === "koToMeaning") return wordMeaningsByDisplay.get(display)?.size !== 1;
+  if (direction === "audioToMeaning") return wordMeaningsByVoice.get(voice)?.size !== 1;
+  if (direction === "meaningToKo" || direction === "typeKo") return wordDisplaysByMeaning.get(meaning)?.size !== 1;
+  if (direction === "audioToKo") return wordDisplaysByVoice.get(voice)?.size !== 1;
+  if (direction === "context") {
+    const blank = deriveWordSentenceBlank(word);
+    return !blank || surfaceContainsAnswer(blank.blanked, blank.answer);
+  }
+  return true;
+});
+if (unsafeLiveWordDescriptors.length) {
+  errors.push(
+    `Live Vocabulary catalog contains ${unsafeLiveWordDescriptors.length} ambiguous/leaky descriptor(s): ${sampleList(unsafeLiveWordDescriptors.map(({ word, direction }) => `${word.id}:${direction}`), 8)}`,
+  );
+}
+
+const curatedDeck = readArray("CURATED_QUIZ_DECK");
+const allowedCuratedDirections = new Set(["koToMeaning", "audioToMeaning", "meaningToKo", "audioToKo", "typeKo", "context"]);
+const unsafeCuratedDeckModes = curatedDeck.filter((direction) => !allowedCuratedDirections.has(direction));
+if (unsafeCuratedDeckModes.length) {
+  errors.push(`Vocabulary Drill Lab routes to non-meaning-first mode(s): ${sampleList(unsafeCuratedDeckModes)}`);
+}
+const generateQuestionSource = readFunction("generateQuestion");
+const vocabBranch = /if\s*\(studio\s*===\s*["']vocab["']\)\s*{([\s\S]*?)\n\s*}/.exec(generateQuestionSource)?.[1] || "";
+if (!/return\s+generateVocabQuestion\s*\(\s*\)/.test(vocabBranch)) {
+  errors.push("Vocabulary Drill Lab does not use the default curated meaning-first generator");
+}
+const renderScopedQuestionSource = readFunction("renderScopedQuestion");
+const nextQuestionSource = readFunction("nextQuestion");
+const learningQuestionKeySource = readFunction("learningQuestionKey");
+const rememberQuestionKeySource = readFunction("rememberRecentQuestionKey");
+if (
+  !renderScopedQuestionSource.includes("generateFreshQuestion(normalized)")
+  || !nextQuestionSource.includes("generateFreshQuestion(getCurrentQuizScope())")
+) {
+  errors.push("Generic Vocabulary/Sentences Drill Lab runner bypasses the 100-question freshness guard");
+}
+if (
+  !/const\s+RECENT_QUESTION_LIMIT\s*=\s*100\s*;/.test(appSrc)
+  || !learningQuestionKeySource.includes("question.questionKey")
+  || !rememberQuestionKeySource.includes(".slice(-RECENT_QUESTION_LIMIT)")
+) {
+  errors.push("Learning-question identity history no longer preserves a rolling 100 stable keys");
+}
+
+const wordQuestionSandbox = {
+  window: { HANAPATH_INFLECT: inflect },
+  getCuratedWords: () => words,
+  makeWordSentenceBlank: deriveWordSentenceBlank,
+  escapeHtml: (value) => String(value ?? ""),
+  shuffle: (items) => [...items],
+  makeTextChoices: (answer, pool, count = 4) => [
+    answer,
+    ...[...new Set((pool || []).filter((candidate) => comparableText(candidate) !== comparableText(answer)))].slice(0, count - 1),
+  ],
+};
+vm.createContext(wordQuestionSandbox);
+vm.runInContext(
+  [
+    readFunction("getWordAcceptedAnswers"),
+    readFunction("getWordTypeTarget"),
+    readFunction("pickWordMeaningChoices"),
+    readFunction("pickWordKoreanChoices"),
+    readFunction("wordQuestionDetail"),
+    readFunction("wordQuestionExplanation"),
+    readFunction("makeConjugatedDistractor"),
+    readFunction("generateWordQuestionFor"),
+  ].join("\n"),
+  wordQuestionSandbox,
+);
+// The real distractor rankers sort the whole 2,028-word bank for each prompt.
+// Their filtering contract is checked below; substitute an equivalent fast
+// unique-choice selector while exhaustively rendering 10k+ prompt surfaces.
+const auditMeaningChoicePool = [...new Set(words.map((word) => word.meaningShort).filter(Boolean))];
+const auditKoreanChoicePool = [...new Set(words.map((word) => word.display || word.korean).filter(Boolean))];
+const takeDifferentChoices = (pool, blocked) => {
+  const choices = [];
+  for (const candidate of pool) {
+    if (blocked.has(candidate) || choices.includes(candidate)) continue;
+    choices.push(candidate);
+    if (choices.length === 3) break;
+  }
+  return choices;
+};
+wordQuestionSandbox.pickWordMeaningChoices = (word) => [
+  word.meaningShort,
+  ...takeDifferentChoices(auditMeaningChoicePool, new Set([word.meaningShort])),
+];
+wordQuestionSandbox.pickWordKoreanChoices = (word) => {
+  const answer = word.display || word.korean;
+  return [
+    answer,
+    ...takeDifferentChoices(auditKoreanChoicePool, new Set([answer])),
+  ];
+};
+const meaningChoiceSource = readFunction("pickWordMeaningChoices");
+const koreanChoiceSource = readFunction("pickWordKoreanChoices");
+if (
+  !/other\.meaningShort\s*[!=]==?\s*word\.meaningShort/.test(meaningChoiceSource)
+  || !/other\.meaningShort\s*[!=]==?\s*word\.meaningShort/.test(koreanChoiceSource)
+  || !/(?:value|other\.display\s*\|\|\s*other\.korean)\s*[!=]==?\s*answer/.test(koreanChoiceSource)
+) {
+  errors.push("Vocabulary distractor generators no longer exclude duplicate/defensible answers");
+}
+const liveWordQuestionIssues = [];
+for (const descriptor of liveSafeWordDescriptors) {
+  const question = wordQuestionSandbox.generateWordQuestionFor(descriptor.word, descriptor.direction);
+  const before = errors.length;
+  assertSafeQuestion(question, `Vocabulary ${descriptor.questionKey}`, {
+    answerAudioIsCue: descriptor.direction.startsWith("audio"),
+  });
+  if (question?.questionKey !== descriptor.questionKey) {
+    errors.push(`Vocabulary ${descriptor.questionKey} loses its stable question identity`);
+  }
+  if (errors.length > before) liveWordQuestionIssues.push(...errors.splice(before));
+}
+if (liveWordQuestionIssues.length) {
+  errors.push(
+    `Vocabulary generated-question safety failed ${liveWordQuestionIssues.length} check(s): ${sampleList(liveWordQuestionIssues, 8)}`,
+  );
+}
+
 // Execute the real lesson builder so a new branch cannot be missed by a stale
 // copy of its control flow. The stub preserves the real direction feasibility
 // rules while avoiding irrelevant option shuffling and HTML generation.
@@ -581,8 +1143,49 @@ const helperStateIsTracked = helperBranch.includes("view.typeHelperVisible = tru
 const checkpointHelperIsAided = helperBranch.includes('if (view.mode === "check") view.questionHelperUsed = true')
   && wordTypedAnswerSource.includes("aided: Boolean(view.questionHelperUsed)")
   && wordTypedAnswerSource.includes('view.questionHelperUsed ? "aided" : "correct"');
-const studyTilesAreGated = studyTypeRenderer.includes("view.typeHelperVisible || view.typedDone")
-  && studyTypeRenderer.includes("data-word-show-tiles")
+// Render the real study typing state instead of looking for one particular
+// boolean spelling. The implementation legitimately gates tile construction
+// and tile markup in separate `view.typeHelperVisible` branches, so the old
+// `view.typeHelperVisible || view.typedDone` string check was a false positive.
+const wordStudyProbeTarget = "감사합니다";
+const wordStudyProbe = {
+  id: "word-study-audit-probe",
+  korean: wordStudyProbeTarget,
+  display: wordStudyProbeTarget,
+  meaningShort: "thank you",
+  meaning: "thank you",
+  pronunciation: "gamsahamnida",
+  pos: "phrase",
+};
+const wordStudySandbox = {
+  curatedWordsById: new Map([[wordStudyProbe.id, wordStudyProbe]]),
+  getWordLessonStep: () => ({ type: "type", wordId: wordStudyProbe.id, wordIndex: 0 }),
+  getWordTypeTarget: () => wordStudyProbeTarget,
+  getWordSyllableTiles: () => Array.from(wordStudyProbeTarget),
+  wordTypedSuccessOverlayHtml: () => "",
+  wordHonorificCardHtml: () => "",
+  escapeHtml: (value) => String(value ?? ""),
+};
+vm.createContext(wordStudySandbox);
+vm.runInContext(studyRenderer, wordStudySandbox);
+const hiddenStudyTilesHtml = wordStudySandbox.wordLessonStudyHtml({}, {
+  words: [wordStudyProbe.id],
+  stepIndex: 0,
+  typedValue: "",
+  typedDone: false,
+  typeHelperVisible: false,
+});
+const aidedStudyTilesHtml = wordStudySandbox.wordLessonStudyHtml({}, {
+  words: [wordStudyProbe.id],
+  stepIndex: 0,
+  typedValue: "",
+  typedDone: false,
+  typeHelperVisible: true,
+});
+const studyTilesAreGated = !hiddenStudyTilesHtml.includes(wordStudyProbeTarget[0])
+  && hiddenStudyTilesHtml.includes("data-word-show-tiles")
+  && aidedStudyTilesHtml.includes(wordStudyProbeTarget[0])
+  && aidedStudyTilesHtml.includes("Aided")
   && helperStateIsTracked;
 if (!studyTilesAreGated && componentWordTiles.length) {
   errors.push(
@@ -649,6 +1252,63 @@ const sentenceLessonById = new Map(sentenceLessons.map((lesson) => [lesson.id, l
 const sentenceModes = readArray("SENTENCE_MODES");
 const sentenceTransformTasks = readArray("SENTENCE_TRANSFORM_TASKS");
 
+// Two cross-modal retrievals are available for every authored row without
+// inventing new content: English->typed Korean and Korean audio->English.
+// Collapse identical cue/answer pairs so the count represents questions a
+// learner can actually distinguish, not merely distinct row IDs.
+const safeSentenceKeys = sentenceRows.flatMap((row) => {
+  const korean = comparableText(row.korean);
+  const english = comparableText(row.english);
+  const voice = comparableText(row.voiceText || row.korean);
+  if (!korean || !english || !voice) return [];
+  return [
+    `sentence:translate:${english}:${korean}`,
+    `sentence:listen:${voice}:${korean}`,
+  ];
+});
+const sentenceSafeCatalog = assertCatalogSize(safeSentenceKeys, "Sentences Drill Lab");
+assertRollingHundred([...sentenceSafeCatalog], "Sentences Drill Lab procedural deck");
+
+const sentencePickerSource = readFunction("pickSentenceSessionRows");
+const sentencePrepareSource = readFunction("prepareSentenceQuestion");
+if (
+  !sentencePickerSource.includes('getRecentQuestionKeys("sentences")')
+  || !sentencePickerSource.includes("const fresh = suitable.filter")
+  || !sentencePrepareSource.includes('rememberRecentQuestionKey("sentences", sentenceQuestionKey(')
+) {
+  errors.push("Sentences Drill Lab bypasses its persistent rolling-100 row guard");
+}
+
+const sentenceRendererCorpusSandbox = {
+  sentenceQuestionMode: (session) => session.auditMode,
+  sentenceSessionProgressHtml: () => "",
+  sentencePromptTileHtml: (content) => content,
+  sentenceModeMetaHtml: () => "",
+  sentenceAnswerBoxHtml: () => '<input aria-label="answer">',
+  sentenceHelperLadderHtml: () => "",
+  escapeHtml: (value) => String(value ?? ""),
+};
+vm.createContext(sentenceRendererCorpusSandbox);
+vm.runInContext(readFunction("sentenceQuestionHtml"), sentenceRendererCorpusSandbox);
+const sentenceRendererIssues = [];
+for (const row of sentenceRows) {
+  for (const mode of ["translate", "listen"]) {
+    const session = {
+      rows: [row], index: 0, auditMode: mode, typed: "", attempts: 0,
+      helperLevel: 0, helperUsed: [], builtTiles: [], tilePool: [],
+    };
+    const html = sentenceRendererCorpusSandbox.sentenceQuestionHtml(session);
+    if (surfaceContainsAnswer(html, row.korean)) {
+      sentenceRendererIssues.push(`${row.id}:${mode}`);
+    }
+  }
+}
+if (sentenceRendererIssues.length) {
+  errors.push(
+    `Sentences generated renderer exposes Korean answers in ${sentenceRendererIssues.length} unanswered prompt(s): ${sampleList(sentenceRendererIssues, 8)}`,
+  );
+}
+
 // Execute the current transform/mode/lesson-plan functions with real bank data
 // rather than mirroring their branching in this audit.
 const sentencePlannerSandbox = {
@@ -667,6 +1327,23 @@ vm.runInContext(
   ].join("\n"),
   sentencePlannerSandbox,
 );
+
+// Guard the real lesson entry point as well as the pure planner. A prior
+// regression left `studyRows` and `questionRows` referenced in the session
+// object but never defined, making every content lesson throw on Start.
+const sentenceLessonStarterSource = readFunction("startSentenceLessonSession");
+const sentenceStarterContracts = [
+  [/\bconst\s+contentPlan\s*=\s*lesson\.type\s*===\s*["']content["'][\s\S]*buildSentenceLessonQuestionPlan\s*\(/, "builds the content plan"],
+  [/\bconst\s+studyRows\s*=\s*contentPlan\s*\?\s*contentPlan\.studyRows\s*:\s*rows/, "defines studyRows from the plan"],
+  [/\bconst\s+questionRows\s*=\s*contentPlan\s*\?\s*contentPlan\.rows\s*:\s*rows/, "defines questionRows from the plan"],
+  [/\bconst\s+drillPlan\s*=\s*contentPlan\s*\?\s*contentPlan\.drillPlan/, "defines drillPlan from the plan"],
+  [/\bstudyRows\s*,[\s\S]*\brows\s*:\s*questionRows/, "installs both planned row decks in the session"],
+];
+for (const [pattern, contract] of sentenceStarterContracts) {
+  if (!pattern.test(sentenceLessonStarterSource)) {
+    errors.push(`Sentence lesson starter no longer ${contract}`);
+  }
+}
 
 const sentenceContentMembership = new Map(sentenceRows.map((row) => [row.id, 0]));
 const sentenceCheckpointMembership = new Map(sentenceRows.map((row) => [row.id, 0]));
@@ -903,6 +1580,7 @@ const shadowBinderSession = {
 const shadowBinderSandbox = {
   sentenceStudioSession: shadowBinderSession,
   sentenceQuestionMode: () => "shadow",
+  getSentencePlaybackRow: (_session, row) => row,
   clearSentenceSessionTimeouts: () => {},
   speakSentenceSlow: () => { shadowSlowPlayCount += 1; },
   openSentenceSlowOverlay: () => { shadowOverlayOpenCount += 1; },
@@ -1017,7 +1695,11 @@ for (const [label, bankName, factoryName] of [
 }
 
 const genericQuestionRenderer = readFunction("renderQuestion");
-if (!genericQuestionRenderer.includes("currentAnswered || audioIsPrompt || !answerIsHangul")) {
+if (
+  !genericQuestionRenderer.includes("currentAnswered || audioIsPrompt")
+  || /currentAnswered\s*\|\|\s*audioIsPrompt\s*\|\|/.test(genericQuestionRenderer)
+  || !genericQuestionRenderer.includes("currentAnswered ? (question.answerAudioText || question.voiceText) : question.voiceText")
+) {
   errors.push("Generic quiz Hear control is not gated behind an answered state or an explicit audio prompt");
 }
 
@@ -1050,13 +1732,16 @@ console.log(`Alphabet jamo       : ${allJamo.length}`);
 console.log(`Alphabet directions : ${directions.length}`);
 console.log(`Coverage pairs       : ${scheduled.size}`);
 console.log(`Max finite drill     : ${maxFiniteDrillLength}/${requiredAlphabetPairs}`);
+console.log(`Alphabet safe bank   : ${alphabetSafeCatalog.size.toLocaleString("en-US")} identities (${liveAlphabetCatalog.size.toLocaleString("en-US")} live)`);
 console.log(`Phase One questions  : ${phaseOneLessons.reduce((sum, lesson) => sum + (lesson.questions || []).length, 0)}`);
 console.log(`Required core words  : ${coreWords.length}`);
 console.log(`Generated word qs    : ${generatedWordQuestions.length} (${Math.min(...generatedWordCounts.values())} min/word)`);
 console.log(`Word q distribution  : ${mapSummary(generatedWordCountDistribution)}`);
 console.log(`Word modes           : ${mapSummary(generatedWordModeCounts)}`);
+console.log(`Vocabulary safe bank : ${wordSafeCatalog.size.toLocaleString("en-US")} identities (${new Set(liveSafeWordKeys).size.toLocaleString("en-US")} live)`);
 console.log(`Sentence rows        : ${sentenceRows.length}`);
 console.log(`Sentence prompts     : ${sentencePresentations.length} (${cappedSentenceCheckpointPrompts} checkpoint)`);
+console.log(`Sentence safe bank   : ${sentenceSafeCatalog.size.toLocaleString("en-US")} identities`);
 console.log(`Sentence <2 prompts  : ${underTestedSentences.length}`);
 console.log(`Transform normalized : ${normalizedTransformPrompts}/${configuredTransformPrompts}`);
 console.log(`Sentence modes       : ${mapSummary(sentenceModeCounts)}`);
