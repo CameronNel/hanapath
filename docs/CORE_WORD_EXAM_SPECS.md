@@ -902,34 +902,16 @@ Also:
 
 The design is informed by:
 
-- National Institute for International Education, TOPIK overview and test
-  structure: proficiency tests sample broader language skills and should not be
-  conflated with a lexical achievement test.
-- National Institute of Korean Language, Korean Standard Curriculum: teaching
-  and assessment align linguistic knowledge with communicative contexts and
-  curriculum achievement.
-- King Sejong Institute beginner materials: vocabulary, grammar, and functions
-  are practised across varied contexts; speaking/listening materials deploy
-  previously learned vocabulary and grammar in everyday dialogues.
-- Council of Europe, *CEFR Companion Volume* (2020): curriculum, teaching, and
-  assessment should be coherent, with profiles across communicative activities
-  and competences rather than a single decontextualised grammar score.
-- ACTFL Proficiency Guidelines 2024: proficiency concerns what learners can do
-  in real-world listening, speaking, reading, and writing; this Words suite is
-  narrower and must say so.
-- Webb, S. (2009), “The Effects of Receptive and Productive Learning of Word
-  Pairs on Vocabulary Knowledge,” `10.1177/0033688209343854`: receptive and
-  productive learning produce different knowledge gains.
-- Edmonds et al. (2022), “Exploring the construct validity of tests used to
-  assess L2 productive vocabulary knowledge,” `10.1016/j.system.2022.102855`:
-  receptive and productive vocabulary emerge as distinct constructs.
-- Nakata & Suzuki (2019), “Mixing Grammar Exercises Facilitates Long-Term
-  Retention,” `10.1111/modl.12581`: interleaved grammar practice improved the
-  delayed post-test in that study.
-- Pan et al. (2019), “Does Interleaved Practice Enhance Foreign Language
-  Learning?” `10.1037/edu0000290`: findings on Spanish tense learning were more
-  mixed, supporting a balanced blocked-practice/mixed-assessment policy rather
-  than a simplistic universal claim.
+- [National Institute for International Education — TOPIK overview](https://www.niied.go.kr/web/NIIED/contents/niiedEng/eng_topikOverview): proficiency tests sample broader language skills and should not be conflated with a lexical achievement test.
+- [National Institute of Korean Language — Korean Standard Curriculum resources](https://www.korean.go.kr/front/etcData/etcDataView.do?etc_seq=660&mn_id=208): teaching and assessment align linguistic knowledge with communicative contexts and curriculum achievement.
+- [King Sejong Institute beginner workbook 1A](https://nuri.iksi.or.kr/front/cms/contents/layout2/learningsejong/detail.do?csCmsMastrSeq=15227&menuSn=649): vocabulary, grammar, and functions are practised across varied contexts.
+- [King Sejong Korean Conversation design](https://www.ksif.or.kr/newsletter_eng/18_06/1-2.html): listening and speaking stages deploy previously learned vocabulary and grammar in everyday dialogues.
+- [Council of Europe — CEFR Companion Volume](https://www.coe.int/en/web/common-european-framework-reference-languages/cefr-companion-volume-and-its-language-versions): curriculum, teaching, and assessment should be coherent, with profiles across communicative activities and competences rather than a single decontextualised grammar score.
+- [ACTFL Proficiency Guidelines 2024 overview](https://www.actfl.org/proficiency-guidelines-overview): proficiency concerns what learners can do in real-world listening, speaking, reading, and writing; this Words suite is narrower and must say so.
+- Webb, S. (2009), “The Effects of Receptive and Productive Learning of Word Pairs on Vocabulary Knowledge,” [`10.1177/0033688209343854`](https://doi.org/10.1177/0033688209343854): receptive and productive learning produce different knowledge gains.
+- Edmonds et al. (2022), “Exploring the construct validity of tests used to assess L2 productive vocabulary knowledge,” [`10.1016/j.system.2022.102855`](https://doi.org/10.1016/j.system.2022.102855): receptive and productive vocabulary emerge as distinct constructs.
+- Nakata & Suzuki (2019), “Mixing Grammar Exercises Facilitates Long-Term Retention,” [`10.1111/modl.12581`](https://doi.org/10.1111/modl.12581): interleaved grammar practice improved the delayed post-test in that study.
+- Pan et al. (2019), “Does Interleaved Practice Enhance Foreign Language Learning?” [`10.1037/edu0000290`](https://doi.org/10.1037/edu0000290): findings on Spanish tense learning were more mixed, supporting a balanced blocked-practice/mixed-assessment policy rather than a simplistic universal claim.
 
 # Opus 4.8 Handover Prompt
 
