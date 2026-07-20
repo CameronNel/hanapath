@@ -1,12 +1,12 @@
 // [2026-07-20] Cache bumped for the all-access Handwriting Coach testing mode.
-const CACHE_NAME = "hanapath-shell-v431";
+const CACHE_NAME = "hanapath-shell-v432";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260720f",
+  "./styles.css?v=20260720g",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260717u",
