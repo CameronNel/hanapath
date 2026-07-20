@@ -15128,8 +15128,8 @@ function renderWritingPracticeHub() {
       <div class="screen-sub" style="margin-bottom:0;">Draw with your finger or stylus. Each source builds its sets from what you are learning.</div>
     </div>
     <button class="card word-section-card" type="button" data-writing-source="alphabet"><div><div class="eyebrow">Alphabet</div><div class="section-card-title" lang="en">Alphabet writing</div><div class="screen-sub" style="margin-bottom:0;">Letters and syllable blocks from the Hangul stages.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가</span></button>
-    <button class="card word-section-card" type="button" data-writing-source="vocabulary"><div><div class="eyebrow">Handwriting Coach · Paid</div><div class="section-card-title" lang="en">Words</div><div class="screen-sub" style="margin-bottom:0;">Write learned words one Hangul block at a time.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">말</span></button>
-    <button class="card word-section-card" type="button" data-writing-source="sentences"><div><div class="eyebrow">Handwriting Coach · Paid</div><div class="section-card-title" lang="en">Phrases & sentences</div><div class="screen-sub" style="margin-bottom:0;">Bank each block smoothly to complete real Korean lines.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">문</span></button>
+    <button class="card word-section-card" type="button" data-writing-source="vocabulary"><div><div class="eyebrow">Handwriting Coach</div><div class="section-card-title" lang="en">Words</div><div class="screen-sub" style="margin-bottom:0;">Write learned words one Hangul block at a time.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">말</span></button>
+    <button class="card word-section-card" type="button" data-writing-source="sentences"><div><div class="eyebrow">Handwriting Coach</div><div class="section-card-title" lang="en">Phrases & sentences</div><div class="screen-sub" style="margin-bottom:0;">Bank each block smoothly to complete real Korean lines.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">문</span></button>
   `;
   el.querySelectorAll("[data-writing-source]").forEach((button) => {
     button.addEventListener("click", () => enterWritingForSource(button.dataset.writingSource, { returnTo: "writingHub" }));
@@ -17714,10 +17714,19 @@ function renderHangulWriting() {
 
 // ─── PREMIUM HANDWRITING COACH ──────────────────────────────────────────────
 // Alphabet writing above remains the free, single-block `$Q` experience.
-// Words, phrases, and sentences use a separate native-only entitlement and
-// ML Kit readiness boundary; neither entitlement nor model state is persisted
-// as a trusted local boolean.
+// Words, phrases, and sentences use native ML Kit recognition. Billing remains
+// implemented for a later release, but one build-time mode controls access for
+// the whole app so testers never need to flip per-device or in-app switches.
 const PREMIUM_WRITING_PRODUCT_KEY = "handwriting_coach";
+const PREMIUM_WRITING_ACCESS_MODE = "free_all"; // Later: change once to "store" when checkout is ready to ship.
+
+function premiumWritingPurchasesEnabled() {
+  return PREMIUM_WRITING_ACCESS_MODE === "store";
+}
+
+function premiumWritingAccessGranted() {
+  return PREMIUM_WRITING_ACCESS_MODE === "free_all" || premiumWritingState.store?.entitled === true;
+}
 
 const PremiumWritingStore = {
   getPlugin() {
@@ -17946,12 +17955,14 @@ function premiumWritingDetailBar() {
 
 async function refreshPremiumWritingAccess() {
   const [store, model] = await Promise.all([
-    PremiumWritingStore.getStatus(),
+    premiumWritingPurchasesEnabled()
+      ? PremiumWritingStore.getStatus()
+      : Promise.resolve({ available: false, configured: false, entitled: false, pending: false, product: null, error: "free_all" }),
     HangulNativeRecognizer.checkModelStatus(),
   ]);
   premiumWritingState.store = store;
   premiumWritingState.model = model;
-  if (store.entitled && model.downloaded) {
+  if (premiumWritingAccessGranted() && model.downloaded && model.operational === true) {
     premiumWritingState.units = buildPremiumWritingUnits(premiumWritingState.source);
   }
   renderPremiumWriting();
@@ -17987,8 +17998,56 @@ function renderPremiumWritingGate(el) {
   const store = premiumWritingState.store;
   const model = premiumWritingState.model;
   if (!store || !model) {
-    el.innerHTML = '<div class="card premium-writing-gate"><div class="eyebrow">Handwriting Coach</div><h2 class="screen-title">Checking this device…</h2><div class="screen-sub">No purchase can start until handwriting and store access are confirmed.</div></div>';
+    el.innerHTML = `<div class="card premium-writing-gate"><div class="eyebrow">Handwriting Coach</div><h2 class="screen-title">Checking this device…</h2><div class="screen-sub">${premiumWritingPurchasesEnabled() ? "Handwriting and store access are being confirmed." : "On-device Korean handwriting recognition is being confirmed."}</div></div>`;
     return;
+  }
+
+  if (!premiumWritingPurchasesEnabled()) {
+    if (!isHanaPathNative()) {
+      el.innerHTML = `
+        <div class="card premium-writing-gate">
+          <div class="eyebrow">Handwriting Coach · Mobile app</div>
+          <h2 class="screen-title">Continue on an Android or iOS device</h2>
+          <div class="screen-sub">Word and sentence recognition runs privately on your device. Alphabet block writing remains available in this browser.</div>
+          <button class="button secondary" type="button" id="premiumWritingFree">Practise Hangul blocks</button>
+        </div>`;
+      el.querySelector("#premiumWritingFree")?.addEventListener("click", () => enterHangulWriting("alphabet", { returnTo: "writingHub" }));
+      return;
+    }
+    if (!model.downloaded) {
+      el.innerHTML = `
+        <div class="card premium-writing-gate">
+          <div class="eyebrow">One-time setup</div>
+          <h2 class="screen-title">Install Korean handwriting recognition</h2>
+          <div class="screen-sub">Download the approximately 20 MiB Korean model once. Recognition then stays private and runs on this device.</div>
+          <button class="button primary" type="button" id="premiumWritingDownload">Download Korean model</button>
+          <button class="button secondary" type="button" id="premiumWritingTyped">Use typed practice instead</button>
+          <div class="quiz-feedback" id="premiumWritingGateStatus" role="status" aria-live="polite"></div>
+        </div>`;
+      el.querySelector("#premiumWritingDownload")?.addEventListener("click", async (event) => {
+        event.currentTarget.disabled = true;
+        const status = el.querySelector("#premiumWritingGateStatus");
+        if (status) status.textContent = "Downloading the Korean model…";
+        const result = await HangulNativeRecognizer.downloadModel();
+        if (result.status !== "success" && status) status.textContent = `Download did not finish: ${result.error || "unknown error"}.`;
+        await refreshPremiumWritingAccess();
+      });
+      el.querySelector("#premiumWritingTyped")?.addEventListener("click", () => leavePremiumWritingForTypedPractice());
+      return;
+    }
+    if (model.operational !== true) {
+      el.innerHTML = `
+        <div class="card premium-writing-gate">
+          <div class="eyebrow">Device check incomplete</div>
+          <h2 class="screen-title">Recognition needs another check</h2>
+          <div class="screen-sub">The Korean model is installed, but its warm-up did not complete. Retry the check or continue with typed practice.</div>
+          <button class="button primary" type="button" id="premiumWritingRefresh">Retry device check</button>
+          <button class="button secondary" type="button" id="premiumWritingTyped">Use typed practice instead</button>
+        </div>`;
+      el.querySelector("#premiumWritingRefresh")?.addEventListener("click", () => refreshPremiumWritingAccess());
+      el.querySelector("#premiumWritingTyped")?.addEventListener("click", () => leavePremiumWritingForTypedPractice());
+      return;
+    }
   }
 
   if (!isHanaPathNative()) {
@@ -18112,7 +18171,7 @@ function renderPremiumWritingUnitPicker(el) {
       <span class="premium-writing-unit-preview" lang="ko">${escapeHtml(unit.prompts[0]?.text || "")}</span>
     </button>`).join("");
   el.innerHTML = `
-    <div class="card premium-writing-picker-intro"><div class="eyebrow">Handwriting Coach · Unlocked</div><h2 class="screen-title">Choose what to write</h2><div class="screen-sub">The active block is highlighted. A clear match banks it immediately and keeps the canvas ready for the next block.</div></div>
+    <div class="card premium-writing-picker-intro"><div class="eyebrow">Handwriting Coach</div><h2 class="screen-title">Choose what to write</h2><div class="screen-sub">The active block is highlighted. A clear match banks it immediately and keeps the canvas ready for the next block.</div></div>
     ${cards || '<div class="card"><div class="screen-sub">Finish some matching lessons first so HanaPath can build a handwriting set from learned content.</div></div>'}`;
   el.querySelectorAll("[data-premium-writing-unit]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -18428,7 +18487,7 @@ function renderPremiumWriting() {
   const el = showScreen("detail");
   if (!el) return;
   premiumWritingDetailBar();
-  if (!premiumWritingState.store || !premiumWritingState.model || !premiumWritingState.store.entitled || !premiumWritingState.model.downloaded || premiumWritingState.model.operational !== true) {
+  if (!premiumWritingState.store || !premiumWritingState.model || !premiumWritingAccessGranted() || !premiumWritingState.model.downloaded || premiumWritingState.model.operational !== true) {
     renderPremiumWritingGate(el);
     return;
   }

@@ -50,10 +50,14 @@ requireCheck(blocks.at(-1)?.character === "." && !blocks.at(-1)?.writable, "punc
 
 requireCheck(app.includes('source === "alphabet") enterHangulWriting(source, options)'), "free Alphabet writing is not kept on its existing path");
 requireCheck(app.includes('else enterPremiumWriting(source, options)'), "Words/Sentences do not route through the premium boundary");
+requireCheck(app.includes('const PREMIUM_WRITING_ACCESS_MODE = "free_all"'), "Handwriting Coach is not in the owner-approved all-access testing mode");
+requireCheck(app.includes('return PREMIUM_WRITING_ACCESS_MODE === "free_all" || premiumWritingState.store?.entitled === true'), "free-all access does not cleanly fall back to verified store entitlement");
+requireCheck(app.includes('premiumWritingPurchasesEnabled()\n      ? PremiumWritingStore.getStatus()'), "free-all mode still queries billing on entry");
+requireCheck(!app.includes("Handwriting Coach · Paid") && !app.includes("Handwriting Coach · Unlocked"), "testing UI still exposes paid/unlocked labels");
 requireCheck(app.includes('getHanaPathNativePlugin("PremiumWriting")'), "store entitlement is not read through a native bridge");
 requireCheck(app.includes('appPlugin.addListener("appStateChange"') && app.includes("refreshPremiumWritingAccess()"), "premium access is not re-queried when the native app resumes");
 requireCheck(!/premiumWritingEntitled\s*:/.test(app), "a trusted premium entitlement appears to be persisted locally");
-requireCheck(app.includes("!premiumWritingState.store.entitled || !premiumWritingState.model.downloaded || premiumWritingState.model.operational !== true"), "premium practice is not gated on entitlement, downloaded model, and successful warm-up");
+requireCheck(app.includes("!premiumWritingAccessGranted() || !premiumWritingState.model.downloaded || premiumWritingState.model.operational !== true"), "multi-block practice is not gated on active access mode, downloaded model, and successful warm-up");
 requireCheck(app.includes("model.operational !== true"), "checkout is not blocked when the native recognizer warm-up fails");
 requireCheck(app.includes('candidates[0] === expected'), "automatic banking is not restricted to an exact top candidate");
 requireCheck(app.includes("bankPremiumWritingBlock(canvas)"), "successful blocks do not reach the immediate banking path");
@@ -75,15 +79,17 @@ requireCheck(java.includes("product_unconfigured"), "billing bridge does not fai
 requireCheck(manifest.includes("com.android.vending.BILLING"), "Play Billing normal permission is missing");
 requireCheck(strings.includes('name="premium_writing_product_id"') && strings.includes('name="play_billing_public_key"'), "public Play product configuration slots are missing");
 requireCheck(plan.includes("Purchase availability and feature availability are separate states"), "premium safety contract is missing from the governing plan");
+requireCheck(plan.includes("billing bridge is not queried"), "the dormant-billing testing contract is missing from the governing plan");
 
 console.log("Premium handwriting audit");
 console.log("=========================");
 console.log(`sample writable blocks : ${writable.length}`);
 console.log(`sample static chars    : ${blocks.length - writable.length}`);
 console.log(`free Alphabet boundary : ${errors.some((error) => error.includes("free Alphabet")) ? "fail" : "pass"}`);
+console.log(`all-access test mode   : ${errors.some((error) => /all-access|free-all|paid\/unlocked|billing on entry/.test(error)) ? "fail" : "pass"}`);
 console.log(`top-1 bank contract    : ${errors.some((error) => error.includes("top candidate")) ? "fail" : "pass"}`);
 console.log(`billing fail-closed    : ${errors.some((error) => /billing|purchase|Play/.test(error)) ? "fail" : "pass"}`);
 console.log(`errors                 : ${errors.length}`);
 errors.forEach((error) => console.log(`  ERROR ${error}`));
 if (errors.length) process.exitCode = 1;
-else console.log("Result: premium content is entitlement + model gated; blocks bank only on exact ML Kit top-1 matches; purchase recovery is wired and unconfigured checkout fails closed.");
+else console.log("Result: multi-block writing is free for testing and model-gated; billing stays dormant but production-safe; blocks bank only on exact ML Kit top-1 matches.");

@@ -1,27 +1,31 @@
-# Premium handwriting plan — words, phrases, and sentences
+# Handwriting Coach plan — words, phrases, and sentences
 
 > **Owner approved 2026-07-20.** This plan supersedes the older owner gate in
 > `HANGUL_WRITING_PLAN.md` for multi-block content writing. Alphabet writing
 > remains free and capped at one jamo or syllable block. Word, phrase, and
-> sentence handwriting is a paid native-app feature.
+> sentence handwriting uses native on-device recognition. On 2026-07-20 the
+> owner changed the active product mode to `free_all` while the app is being
+> finished and tested. Billing remains implemented but dormant.
 
 ## 1. Product contract
 
-- **Free:** the existing Alphabet writing experience for individual jamo and
-  syllable blocks. It keeps the authored-guide + `$Q` offline path and must not
-  require a purchase or model download.
-- **Paid:** a restorable, non-consumable **Handwriting Coach** entitlement for
-  writing learned words, short sentence phrases, and full sentences one Hangul
-  block at a time.
-- The hosted website/PWA keeps free Alphabet writing. It may explain the paid
-  native feature, but it must never fake a purchase or weaken the free flow.
-- Pricing and permanent Android/iOS product identifiers remain owner decisions.
-  Until each store returns a real localized product and a verified entitlement,
-  checkout is unavailable and premium practice remains locked.
+- **Current `free_all` mode:** every native-app user can write learned words,
+  short phrases, and full sentences one Hangul block at a time. The app shows
+  no paywall, price, purchase button, restore button, or paid/unlocked label.
+- Alphabet writing keeps its authored-guide + `$Q` offline path and does not
+  require the native model.
+- Multi-block writing still requires the supported native app and Korean ML Kit
+  model; this is a capability boundary, not a purchase boundary.
+- **Future `store` mode:** the existing restorable non-consumable entitlement
+  path may be activated only when store setup and release evidence are ready.
+- Access mode is one source-level constant, not a user setting or persisted
+  entitlement override. Testers never need to change settings on their phones.
 
 ## 2. Payment-without-service safety contract
 
-Purchase availability and feature availability are separate states:
+Purchase availability and feature availability are separate states. In
+`free_all` mode the billing bridge is not queried and access depends only on
+native recognizer readiness. If `store` mode is activated later, it requires:
 
 1. **Platform capable:** a supported native shell and store bridge exist.
 2. **Recognizer ready:** the Korean on-device model is downloaded and a warm-up
