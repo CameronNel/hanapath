@@ -19,6 +19,7 @@ on:
       - "lib/**"
       - "icons/**"
       - "scripts/audit-mobile-package.mjs"
+      - "scripts/audit-premium-handwriting.mjs"
       - "scripts/audit-app-shell.mjs"
       - ".github/workflows/android-build.yml"
   push:
@@ -69,6 +70,7 @@ jobs:
           node scripts/audit-sentences-data.mjs --strict
           node scripts/audit-alphabet-audio.mjs --strict
           node scripts/audit-hangul-recognition.mjs
+          node scripts/audit-premium-handwriting.mjs
 
       - name: Install mobile dependencies
         working-directory: mobile
@@ -103,10 +105,11 @@ jobs:
           perms=$(grep -oE '<uses-permission(-sdk-23)?[^>]*android:name="[^"]*"' "$merged" | grep -oE '"[^"]*"$' | tr -d '"' | sort -u || true)
           echo "Declared uses-permissions:"
           echo "${perms:-<none>}"
-          # Allowed: INTERNET (Capacitor default; future optional model download)
-          # and the app's own signature-level DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+          # Allowed: INTERNET (Capacitor/model download), BILLING (the optional
+          # Handwriting Coach purchase), and the app's own signature-level
+          # DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
           # that androidx.core adds as receiver-export hardening.
-          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
+          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^com\.android\.vending\.BILLING$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
           if [ -n "$unexpected" ]; then
             echo "Unexpected permissions in merged manifest:" >&2
             echo "$unexpected" >&2

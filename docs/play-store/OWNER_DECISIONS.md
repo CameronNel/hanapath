@@ -41,9 +41,10 @@
   search keywords) or `HanaPath — Korean from zero`.
 - Changeable later, unlike the package ID, but churn hurts recognition.
 
-### 3. Free vs paid — ⏳
+### 3. Free vs paid — ✅ owner-confirmed 2026-07-20
 
-**Proposed: Free.**
+**Confirmed: Free listing with an optional paid, restorable Handwriting Coach
+in-app purchase.**
 
 - Matches the current product (no ads, no accounts, no tracking).
 - Irreversibility warning: a **free listing can never become paid**; a paid
@@ -86,10 +87,9 @@ accounts show the verified name rules Google applies at registration).
 
 - **Drafted (M5):** `privacy.html` now exists at the repository root and goes
   live at that URL on merge (GitHub Pages serves the repo root). It states
-  the actual behaviour: all learning state and handwriting stay on-device; no
-  ads, no analytics, no accounts; network use is only fetching the hosted app
-  (plus GitHub's standard hosting logs) and the optional, opt-in on-device
-  ML Kit Korean handwriting model download in the native app.
+  the actual behaviour: learning state and handwriting content stay on-device;
+  there are no ads, accounts, or developer analytics; Google ML Kit may send
+  limited SDK diagnostics and Google Play handles the optional purchase.
 - Required for Data Safety even for apps that collect nothing. The URL
   entered in Play Console is this decision; the page existing does not
   confirm it.
@@ -100,7 +100,7 @@ accounts show the verified name rules Google applies at registration).
 |---|---|---|---|---|
 | 1 | Package ID | ⏳ | — | — |
 | 2 | Store app name | ⏳ | — | — |
-| 3 | Free vs paid | ⏳ | — | — |
+| 3 | Free vs paid | ✅ | Free listing; optional Handwriting Coach IAP | 2026-07-20 |
 | 4 | Audience/countries | ⏳ | — | — |
 | 5 | Account type | ⏳ | — | — |
 | 6 | Publisher name | ⏳ | — | — |

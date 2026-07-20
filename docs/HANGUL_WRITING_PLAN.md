@@ -11,12 +11,14 @@
 Learners should be able to **draw Hangul with a finger/stylus/mouse** to learn
 letter shapes and stroke order, inside the existing Alphabet section flows.
 
-Owner-set scope boundary (2026-07-10):
+Owner-set scope boundary (2026-07-10), amended by the owner on 2026-07-20:
 
 - **Alphabet section: writing caps at a single syllable block** (jamo → CV →
   CVC). Nothing longer than one block ever appears here.
-- **Words section: multi-block/word writing is a future, separate expansion.**
-  Out of scope for this entire plan; do not build toward it yet.
+- **Words/Sentences:** the owner approved the separate paid multi-block
+  expansion on 2026-07-20. Its governing contract is
+  [`PREMIUM_HANDWRITING_PLAN.md`](PREMIUM_HANDWRITING_PLAN.md). Alphabet
+  writing remains free and capped at a single block.
 
 ## 2. Hard constraints (inherited from CLAUDE.md — restated because they bind every phase)
 
@@ -117,9 +119,9 @@ stub comments.
   recognition stress coverage, and full offline app-shell wiring. Architecture
   must remain suitable for eventual Google Play packaging.
 
-Anything beyond W3 (writing SRS, Words-section word writing, handwriting
-recognition) is **owner-gated 🔒 — propose, don't build.** W4 is the explicit
-owner-approved exception; it does not authorize word writing or writing SRS.
+Writing SRS remains owner-gated. Multi-block word, phrase, and sentence
+writing is now owner-approved only under `PREMIUM_HANDWRITING_PLAN.md`; W4's
+single-block Alphabet contract remains unchanged.
 
 ## 5. Design decisions already made (don't relitigate)
 
@@ -139,11 +141,12 @@ owner-approved exception; it does not authorize word writing or writing SRS.
 - Unlock gating mirrors the lesson that *teaches* the glyphs (see
   `unlockLessonIndex` in the shell). Writing never unlocks anything else.
 
-## 6. Future (out of scope, recorded so nobody builds it early)
+## 6. Approved separate expansion
 
-- **Words section:** multi-block word writing (e.g. write 한국 after learning
-  it), possibly wired to the Words SRS. Needs its own plan doc and owner
-  sign-off; the syllable cap in the Alphabet section stands regardless.
+- **Words/Phrases/Sentences:** sequential block-banking handwriting is approved
+  as a paid native feature under `PREMIUM_HANDWRITING_PLAN.md`. It does not
+  write to Words/Sentences SRS until a separate pedagogy decision is recorded.
+  The single-block cap and free access in the Alphabet section stand.
 
 ## 7. W2 grading pipeline — normative spec (implement exactly; don't redesign)
 

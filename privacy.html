@@ -57,21 +57,27 @@
 <body>
   <main>
     <h1>HanaPath Privacy Policy</h1>
-    <p class="updated">Last updated: 16 July 2026 · Applies to the HanaPath
+    <p class="updated">Last updated: 20 July 2026 · Applies to the HanaPath
     website/PWA at <a href="https://cameronnel.github.io/hanapath/">cameronnel.github.io/hanapath</a>
     and the HanaPath Android app (<code>io.github.cameronnel.hanapath</code>).</p>
 
     <div class="card">
-      <p><strong>The short version:</strong> HanaPath does not collect, store,
-      or share any personal data. There are no accounts, no ads, no analytics,
-      and no tracking. Everything you do in the app — your lesson progress,
-      review schedule, and handwriting — stays on your device.</p>
+      <p><strong>The short version:</strong> HanaPath has no accounts, ads,
+      tracking, or developer-operated server. Your lesson progress and actual
+      handwriting stay on your device. The Android app uses Google ML Kit for
+      on-device handwriting recognition and Google Play for an optional
+      purchase; those Google services process the limited technical and store
+      data described below.</p>
     </div>
 
     <h2>What data HanaPath collects</h2>
-    <p>None. HanaPath has no sign-up, no login, and no server of its own. We
-    (the developer) never receive, see, or store anything about you or your
-    learning activity.</p>
+    <p>HanaPath has no sign-up, no login, and no server of its own. We do not
+    receive your lesson progress, typed answers, or handwriting. Google ML Kit
+    may collect limited device/app information, per-installation identifiers,
+    performance and feature-event diagnostics, and the configured recognition
+    language. Google states that this information is encrypted in transit and
+    is not shared with third parties. It does not include your handwriting
+    strokes or recognition results.</p>
 
     <h2>What stays on your device</h2>
     <ul>
@@ -94,36 +100,43 @@
       service; see <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's
       privacy statement</a>. HanaPath adds no analytics or tracking on top,
       and once installed as a PWA it works offline.</li>
-      <li><strong>Android app:</strong> all lessons and audio are bundled;
-      the core app works fully offline and makes no network requests of its
-      own. One optional exception: if you explicitly enable the experimental
-      native handwriting-diagnostics feature, the device downloads a Korean
-      handwriting-recognition model (roughly 20&nbsp;MB) once, on-device, via
-      Google Play services. Recognition itself still happens entirely on your
-      device — your handwriting is never sent anywhere. Google's handling of
-      Play services is described in
-      <a href="https://policies.google.com/privacy">Google's privacy policy</a>.</li>
+      <li><strong>Android app:</strong> all lessons and audio are bundled and
+      the free learning paths work offline. If you use native handwriting, ML
+      Kit downloads a Korean recognition model (roughly 20&nbsp;MB). Recognition
+      remains on-device, while the SDK may send the limited diagnostics listed
+      above. See Google's
+      <a href="https://developers.google.com/ml-kit/android-data-disclosure">ML Kit data disclosure</a>
+      and <a href="https://policies.google.com/privacy">privacy policy</a>.</li>
+      <li><strong>Optional purchase:</strong> the Android app can offer a
+      one-time, restorable Handwriting Coach unlock. Google Play processes the
+      purchase, account, and payment information under Google's policy.
+      HanaPath receives only the product and purchase state needed to unlock or
+      restore access; we do not receive payment-card details. Normal order
+      records may be visible to the developer through Play Console.</li>
     </ul>
 
-    <h2>Ads, analytics, and third-party SDKs</h2>
-    <p>HanaPath contains no advertising, no analytics or crash-reporting
-    SDKs, and no social or tracking integrations. If that ever changes, this
-    policy will be updated first and the change will be reflected in the
-    app's Google Play Data Safety declaration.</p>
+    <h2>Ads, analytics, and third-party services</h2>
+    <p>HanaPath contains no advertising, social, cross-app tracking, or
+    developer analytics service. The Android package includes Google ML Kit
+    Digital Ink Recognition and Google Play Billing for the purposes described
+    above. If that changes, this policy and the Google Play Data Safety
+    declaration will be updated.</p>
 
     <h2>Children</h2>
     <p>HanaPath is a general-audience language-learning app and is not
-    directed at children. Because it collects no data from anyone, it also
-    collects no data from children.</p>
+    directed at children. The same limited Google-service processing described
+    above applies regardless of age.</p>
 
     <h2>Your choices</h2>
     <ul>
       <li>Delete all local data at any time by uninstalling the app or
       clearing the site's browsing data.</li>
-      <li>Use the app fully offline (native app, or the PWA after first
-      load).</li>
-      <li>Ignore the optional handwriting-model download — the app never
-      requires it.</li>
+      <li>Use the bundled free lessons offline (native app, or the PWA after
+      first load).</li>
+      <li>Skip the handwriting-model download and optional Handwriting Coach;
+      free Alphabet block practice remains available.</li>
+      <li>Manage Google Play purchases and payment data through your Google
+      Play account.</li>
     </ul>
 
     <h2>Changes to this policy</h2>

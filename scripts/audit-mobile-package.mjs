@@ -74,10 +74,13 @@ const REMOTE_DEPENDENCY_PATTERNS = [
   /\bnew\s+Worker\(\s*["'`]https?:\/\//,
 ];
 
-// Android permissions the foundation is allowed to declare. INTERNET is a
-// normal (non-dangerous) permission needed by the hosted/browser product and
-// a future optional ML Kit model download.
-const ALLOWED_ANDROID_PERMISSIONS = new Set(["android.permission.INTERNET"]);
+// Android permissions the app is allowed to declare. Both are normal
+// (non-dangerous): INTERNET supports the hosted product/model download and
+// BILLING supports the owner-approved, restorable Handwriting Coach IAP.
+const ALLOWED_ANDROID_PERMISSIONS = new Set([
+  "android.permission.INTERNET",
+  "com.android.vending.BILLING",
+]);
 
 function walk(dir, out = []) {
   for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name, "en"))) {

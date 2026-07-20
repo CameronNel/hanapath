@@ -14418,7 +14418,7 @@ function renderLearnStageMenu(itemId) {
   el.querySelectorAll("[data-learn-writing]").forEach((btn) => {
     btn.addEventListener("click", () => {
       queueScreenMotion("forward", 1);
-      enterHangulWriting(btn.dataset.learnWriting, { returnTo: `learn-${itemId}` });
+      enterWritingForSource(btn.dataset.learnWriting, { returnTo: `learn-${itemId}` });
     });
   });
   el.querySelector("[data-open-entire-alphabet]")?.addEventListener("click", () => openEntireAlphabet());
@@ -15128,11 +15128,11 @@ function renderWritingPracticeHub() {
       <div class="screen-sub" style="margin-bottom:0;">Draw with your finger or stylus. Each source builds its sets from what you are learning.</div>
     </div>
     <button class="card word-section-card" type="button" data-writing-source="alphabet"><div><div class="eyebrow">Alphabet</div><div class="section-card-title" lang="en">Alphabet writing</div><div class="screen-sub" style="margin-bottom:0;">Letters and syllable blocks from the Hangul stages.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가</span></button>
-    <button class="card word-section-card" type="button" data-writing-source="vocabulary"><div><div class="eyebrow">Vocabulary</div><div class="section-card-title" lang="en">Vocabulary writing</div><div class="screen-sub" style="margin-bottom:0;">Syllables pulled from the words you are learning.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">말</span></button>
-    <button class="card word-section-card" type="button" data-writing-source="sentences"><div><div class="eyebrow">Sentences</div><div class="section-card-title" lang="en">Sentence writing</div><div class="screen-sub" style="margin-bottom:0;">Syllables pulled from your current sentence band.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">문</span></button>
+    <button class="card word-section-card" type="button" data-writing-source="vocabulary"><div><div class="eyebrow">Handwriting Coach · Paid</div><div class="section-card-title" lang="en">Words</div><div class="screen-sub" style="margin-bottom:0;">Write learned words one Hangul block at a time.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">말</span></button>
+    <button class="card word-section-card" type="button" data-writing-source="sentences"><div><div class="eyebrow">Handwriting Coach · Paid</div><div class="section-card-title" lang="en">Phrases & sentences</div><div class="screen-sub" style="margin-bottom:0;">Bank each block smoothly to complete real Korean lines.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">문</span></button>
   `;
   el.querySelectorAll("[data-writing-source]").forEach((button) => {
-    button.addEventListener("click", () => enterHangulWriting(button.dataset.writingSource, { returnTo: "writingHub" }));
+    button.addEventListener("click", () => enterWritingForSource(button.dataset.writingSource, { returnTo: "writingHub" }));
   });
 }
 
@@ -15608,6 +15608,11 @@ function renderHangulWritingReentryPrompt() {
   });
 }
 
+function enterWritingForSource(source = "alphabet", options = {}) {
+  if (source === "alphabet") enterHangulWriting(source, options);
+  else enterPremiumWriting(source, options);
+}
+
 function enterHangulWriting(source = "alphabet", { returnTo = "" } = {}) {
   refreshProgressionState();
   const nextSource = ["alphabet", "vocabulary", "sentences"].includes(source) ? source : "alphabet";
@@ -15912,7 +15917,7 @@ const HangulNativeRecognizer = {
     }
   },
 
-  async recognize(strokes, width = 480, height = 480) {
+  async recognize(strokes, width = 480, height = 480, preContext = "") {
     const plugin = this.getPlugin();
     if (!plugin) {
       return this.normalizeResult("mlkit", null, 0, "bridge_missing");
@@ -15923,7 +15928,12 @@ const HangulNativeRecognizer = {
     }
     const startTime = performance.now();
     try {
-      const res = await plugin.recognize({ strokes, width, height });
+      const res = await plugin.recognize({
+        strokes,
+        width,
+        height,
+        preContext: Array.from(String(preContext || "")).slice(-20).join(""),
+      });
       const latencyMs = Math.round(performance.now() - startTime);
       return this.normalizeResult("mlkit", res, latencyMs, null);
     } catch (e) {
@@ -15957,6 +15967,7 @@ async function recognizeHangulInkWithProvider({
   strokes,
   writingArea = { width: 480, height: 480 },
   limit = 3,
+  preContext = "",
 }) {
   const width = Number(writingArea?.width);
   const height = Number(writingArea?.height);
@@ -15971,7 +15982,7 @@ async function recognizeHangulInkWithProvider({
     };
   }
   if (provider === "mlkit") {
-    return HangulNativeRecognizer.recognize(strokes, width, height);
+    return HangulNativeRecognizer.recognize(strokes, width, height, preContext);
   }
 
   const startedAt = performance.now();
@@ -17699,6 +17710,731 @@ function renderHangulWriting() {
     return;
   }
   renderHangulWritingPractice(el, unit);
+}
+
+// ─── PREMIUM HANDWRITING COACH ──────────────────────────────────────────────
+// Alphabet writing above remains the free, single-block `$Q` experience.
+// Words, phrases, and sentences use a separate native-only entitlement and
+// ML Kit readiness boundary; neither entitlement nor model state is persisted
+// as a trusted local boolean.
+const PREMIUM_WRITING_PRODUCT_KEY = "handwriting_coach";
+
+const PremiumWritingStore = {
+  getPlugin() {
+    return getHanaPathNativePlugin("PremiumWriting");
+  },
+
+  async getStatus() {
+    const plugin = this.getPlugin();
+    if (!plugin) {
+      return {
+        available: false,
+        configured: false,
+        entitled: false,
+        pending: false,
+        product: null,
+        error: isHanaPathNative() ? "bridge_missing" : "native_only",
+      };
+    }
+    try {
+      const result = await plugin.getStatus({ productKey: PREMIUM_WRITING_PRODUCT_KEY });
+      return {
+        available: result?.available === true,
+        configured: result?.configured === true,
+        entitled: result?.entitled === true,
+        pending: result?.pending === true,
+        product: result?.product && typeof result.product === "object" ? result.product : null,
+        error: result?.error ? String(result.error) : null,
+      };
+    } catch (error) {
+      return { available: false, configured: false, entitled: false, pending: false, product: null, error: error?.message || String(error) };
+    }
+  },
+
+  async purchase() {
+    const plugin = this.getPlugin();
+    if (!plugin) return { status: "unavailable", error: "bridge_missing" };
+    try {
+      return await plugin.purchase({ productKey: PREMIUM_WRITING_PRODUCT_KEY });
+    } catch (error) {
+      return { status: "error", error: error?.message || String(error) };
+    }
+  },
+
+  async restore() {
+    const plugin = this.getPlugin();
+    if (!plugin) return { status: "unavailable", error: "bridge_missing" };
+    try {
+      return await plugin.restore({ productKey: PREMIUM_WRITING_PRODUCT_KEY });
+    } catch (error) {
+      return { status: "error", error: error?.message || String(error) };
+    }
+  },
+};
+
+let premiumWritingState = {
+  source: "vocabulary",
+  returnTo: "writingHub",
+  store: null,
+  model: null,
+  units: [],
+  unitId: null,
+  promptIndex: 0,
+  blockIndex: 0,
+  strokes: [],
+  revision: 0,
+  checking: false,
+  transitioning: false,
+  attempts: 0,
+  successes: 0,
+};
+let premiumWritingRecognitionTimer = null;
+let premiumWritingTransitionTimer = null;
+
+function clearPremiumWritingRecognitionTimer() {
+  if (premiumWritingRecognitionTimer !== null) {
+    window.clearTimeout(premiumWritingRecognitionTimer);
+    premiumWritingRecognitionTimer = null;
+  }
+}
+
+function clearPremiumWritingTransitionTimer() {
+  if (premiumWritingTransitionTimer !== null) {
+    window.clearTimeout(premiumWritingTransitionTimer);
+    premiumWritingTransitionTimer = null;
+  }
+}
+
+function resetPremiumWritingSession({ keepAccess = true } = {}) {
+  clearPremiumWritingRecognitionTimer();
+  clearPremiumWritingTransitionTimer();
+  premiumWritingState = {
+    source: premiumWritingState.source || "vocabulary",
+    returnTo: premiumWritingState.returnTo || "writingHub",
+    store: keepAccess ? premiumWritingState.store : null,
+    model: keepAccess ? premiumWritingState.model : null,
+    units: keepAccess ? premiumWritingState.units : [],
+    unitId: null,
+    promptIndex: 0,
+    blockIndex: 0,
+    strokes: [],
+    revision: premiumWritingState.revision + 1,
+    checking: false,
+    transitioning: false,
+    attempts: 0,
+    successes: 0,
+  };
+}
+
+function normalizePremiumWritingText(value) {
+  return String(value || "").normalize("NFC");
+}
+
+function buildPremiumWritingBlockModel(text) {
+  let writableIndex = 0;
+  return Array.from(normalizePremiumWritingText(text)).map((character, textIndex) => {
+    const writable = /^[가-힣]$/u.test(character);
+    const block = { character, textIndex, writable, writableIndex: writable ? writableIndex : -1 };
+    if (writable) writableIndex += 1;
+    return block;
+  });
+}
+
+function countPremiumWritingBlocks(text) {
+  return buildPremiumWritingBlockModel(text).filter((block) => block.writable).length;
+}
+
+function makePremiumWritingUnits(prompts, { source, kind, label, size }) {
+  const units = [];
+  for (let index = 0; index < prompts.length; index += size) {
+    const group = prompts.slice(index, index + size);
+    if (!group.length) continue;
+    units.push({
+      id: `premium-${source}-${kind}-${index / size + 1}`,
+      source,
+      kind,
+      eyebrow: `${label} ${index / size + 1}`,
+      label: `${label} ${index / size + 1}`,
+      sub: `${group.length} ${kind === "word" ? "words" : kind === "phrase" ? "phrases" : "sentences"} · write every Hangul block`,
+      prompts: group,
+    });
+  }
+  return units;
+}
+
+function buildPremiumWritingUnits(source) {
+  if (source === "vocabulary") {
+    const allWords = getCuratedWords();
+    const learned = allWords.filter((word) => Number(state.vocabSrs?.[word.id]?.seen) > 0);
+    const selected = (learned.length ? learned : allWords.filter((word) => (word.priority || "core") === "core")).slice(0, 48);
+    const prompts = selected.map((word) => ({
+      id: word.id,
+      text: normalizePremiumWritingText(word.display || word.korean),
+      cue: word.meaningShort || word.meaning || "Write the word",
+      audio: word.voiceText || word.display || word.korean,
+    })).filter((prompt) => countPremiumWritingBlocks(prompt.text) >= 2);
+    return makePremiumWritingUnits(prompts, { source, kind: "word", label: "Word set", size: 6 });
+  }
+
+  const progress = getSentencesProgress();
+  const rows = getSentenceRowsForBand(progress.band).slice(0, 30);
+  const phraseKeys = new Set();
+  const phrasePrompts = [];
+  rows.forEach((row) => {
+    (Array.isArray(row.tokens) ? row.tokens : []).forEach((token, tokenIndex) => {
+      const text = normalizePremiumWritingText(token);
+      if (countPremiumWritingBlocks(text) < 2 || phraseKeys.has(text)) return;
+      phraseKeys.add(text);
+      phrasePrompts.push({ id: `${row.id}-token-${tokenIndex}`, text, cue: row.english || "Write the phrase", audio: text });
+    });
+  });
+  const sentencePrompts = rows.map((row) => ({
+    id: row.id,
+    text: normalizePremiumWritingText(row.korean),
+    cue: row.english || "Write the sentence",
+    audio: row.voiceText || row.korean,
+  })).filter((prompt) => countPremiumWritingBlocks(prompt.text) >= 2);
+  return [
+    ...makePremiumWritingUnits(phrasePrompts.slice(0, 24), { source, kind: "phrase", label: "Phrase set", size: 6 }),
+    ...makePremiumWritingUnits(sentencePrompts, { source, kind: "sentence", label: "Sentence set", size: 5 }),
+  ];
+}
+
+function getPremiumWritingUnit() {
+  return premiumWritingState.units.find((unit) => unit.id === premiumWritingState.unitId) || null;
+}
+
+function getPremiumWritingPrompt() {
+  return getPremiumWritingUnit()?.prompts?.[premiumWritingState.promptIndex] || null;
+}
+
+function getPremiumWritingTarget() {
+  const prompt = getPremiumWritingPrompt();
+  if (!prompt) return null;
+  return buildPremiumWritingBlockModel(prompt.text).find((block) => block.writableIndex === premiumWritingState.blockIndex) || null;
+}
+
+function getPremiumWritingPreContext() {
+  const prompt = getPremiumWritingPrompt();
+  const target = getPremiumWritingTarget();
+  if (!prompt || !target) return "";
+  return Array.from(prompt.text).slice(0, target.textIndex).slice(-20).join("");
+}
+
+function leavePremiumWriting() {
+  clearPremiumWritingRecognitionTimer();
+  clearPremiumWritingTransitionTimer();
+  premiumWritingState.strokes = [];
+  premiumWritingState.revision += 1;
+  premiumWritingState.checking = false;
+  premiumWritingState.transitioning = false;
+  // Access is always re-queried on re-entry; only harmless session position is retained.
+  premiumWritingState.store = null;
+  premiumWritingState.model = null;
+  if (premiumWritingState.returnTo === "writingHub") renderWritingPracticeHub();
+  else if (premiumWritingState.returnTo === "learn-vocabulary") openLearnStageMenu("vocabulary");
+  else if (premiumWritingState.returnTo === "learn-sentences") openLearnStageMenu("sentences");
+  else renderWritingPracticeHub();
+}
+
+function premiumWritingDetailBar() {
+  activeHub = String(premiumWritingState.returnTo).startsWith("learn-") ? "learn" : "practice";
+  setNavActive(activeHub);
+  const title = premiumWritingState.source === "vocabulary" ? "Word handwriting" : "Phrase & sentence handwriting";
+  showDetailBarWithBack(activeHub, title, () => leavePremiumWriting(), premiumWritingState.returnTo === "writingHub" ? "Writing practice" : "Learn");
+}
+
+async function refreshPremiumWritingAccess() {
+  const [store, model] = await Promise.all([
+    PremiumWritingStore.getStatus(),
+    HangulNativeRecognizer.checkModelStatus(),
+  ]);
+  premiumWritingState.store = store;
+  premiumWritingState.model = model;
+  if (store.entitled && model.downloaded) {
+    premiumWritingState.units = buildPremiumWritingUnits(premiumWritingState.source);
+  }
+  renderPremiumWriting();
+}
+
+function enterPremiumWriting(source, { returnTo = "" } = {}) {
+  const nextSource = source === "sentences" ? "sentences" : "vocabulary";
+  const sourceChanged = premiumWritingState.source !== nextSource;
+  premiumWritingState.source = nextSource;
+  premiumWritingState.returnTo = returnTo || "writingHub";
+  if (sourceChanged) resetPremiumWritingSession({ keepAccess: false });
+  else {
+    clearPremiumWritingRecognitionTimer();
+    clearPremiumWritingTransitionTimer();
+    premiumWritingState.store = null;
+    premiumWritingState.model = null;
+    premiumWritingState.strokes = [];
+    premiumWritingState.revision += 1;
+    premiumWritingState.checking = false;
+    premiumWritingState.transitioning = false;
+  }
+  renderPremiumWriting();
+  void refreshPremiumWritingAccess();
+}
+
+function leavePremiumWritingForTypedPractice() {
+  const source = premiumWritingState.source;
+  leavePremiumWriting();
+  openLearnStageMenu(source);
+}
+
+function renderPremiumWritingGate(el) {
+  const store = premiumWritingState.store;
+  const model = premiumWritingState.model;
+  if (!store || !model) {
+    el.innerHTML = '<div class="card premium-writing-gate"><div class="eyebrow">Handwriting Coach</div><h2 class="screen-title">Checking this device…</h2><div class="screen-sub">No purchase can start until handwriting and store access are confirmed.</div></div>';
+    return;
+  }
+
+  if (!isHanaPathNative()) {
+    el.innerHTML = `
+      <div class="card premium-writing-gate">
+        <div class="eyebrow">Handwriting Coach · Native app</div>
+        <h2 class="screen-title">Words and sentences need on-device recognition</h2>
+        <div class="screen-sub">Free Alphabet block writing stays available here. Paid word, phrase, and sentence writing is offered only inside a supported Android or iOS app, where purchases can be restored safely.</div>
+        <button class="button secondary" type="button" id="premiumWritingFree">Practise free Hangul blocks</button>
+      </div>`;
+    el.querySelector("#premiumWritingFree")?.addEventListener("click", () => enterHangulWriting("alphabet", { returnTo: "writingHub" }));
+    return;
+  }
+
+  const entitled = store.entitled === true;
+  if (!model.downloaded) {
+    el.innerHTML = `
+      <div class="card premium-writing-gate">
+        <div class="eyebrow">${entitled ? "Purchase restored" : "Device readiness first"}</div>
+        <h2 class="screen-title">Install Korean handwriting recognition</h2>
+        <div class="screen-sub">The approximately 20 MiB Korean model must work on this device before ${entitled ? "your Handwriting Coach can continue" : "HanaPath will offer a purchase"}. Recognition stays on-device after download.</div>
+        <div class="premium-writing-safety-note">${entitled ? "You still own Handwriting Coach. You will never be asked to buy it again because a model is missing." : "No checkout is available yet, so you cannot pay without first confirming the service works."}</div>
+        <button class="button primary" type="button" id="premiumWritingDownload">Download Korean model</button>
+        <button class="button secondary" type="button" id="premiumWritingTyped">Use typed practice instead</button>
+        ${store.available ? '<button class="button secondary" type="button" id="premiumWritingRestore">Restore purchases</button>' : ""}
+        <div class="quiz-feedback" id="premiumWritingGateStatus" role="status" aria-live="polite"></div>
+      </div>`;
+    el.querySelector("#premiumWritingDownload")?.addEventListener("click", async (event) => {
+      event.currentTarget.disabled = true;
+      const status = el.querySelector("#premiumWritingGateStatus");
+      if (status) status.textContent = "Downloading the Korean model…";
+      const result = await HangulNativeRecognizer.downloadModel();
+      if (result.status !== "success" && status) status.textContent = `Download did not finish: ${result.error || "unknown error"}. No purchase was made.`;
+      await refreshPremiumWritingAccess();
+    });
+    el.querySelector("#premiumWritingTyped")?.addEventListener("click", () => leavePremiumWritingForTypedPractice());
+    el.querySelector("#premiumWritingRestore")?.addEventListener("click", () => restorePremiumWritingPurchase(el));
+    return;
+  }
+
+  if (model.operational !== true) {
+    el.innerHTML = `
+      <div class="card premium-writing-gate">
+        <div class="eyebrow">Device check incomplete</div>
+        <h2 class="screen-title">Recognition is not ready to sell</h2>
+        <div class="screen-sub">The Korean model exists, but its recognition warm-up did not complete on this device. Checkout stays disabled.</div>
+        <div class="premium-writing-safety-note">Nothing has been charged. Retry the device check or keep learning with typed practice.</div>
+        <button class="button primary" type="button" id="premiumWritingRefresh">Retry device check</button>
+        <button class="button secondary" type="button" id="premiumWritingTyped">Use typed practice instead</button>
+        ${store.available ? '<button class="button secondary" type="button" id="premiumWritingRestore">Restore purchases</button>' : ""}
+      </div>`;
+    el.querySelector("#premiumWritingRefresh")?.addEventListener("click", () => refreshPremiumWritingAccess());
+    el.querySelector("#premiumWritingTyped")?.addEventListener("click", () => leavePremiumWritingForTypedPractice());
+    el.querySelector("#premiumWritingRestore")?.addEventListener("click", () => restorePremiumWritingPurchase(el));
+    return;
+  }
+
+  if (!store.available || !store.configured || !store.product) {
+    el.innerHTML = `
+      <div class="card premium-writing-gate">
+        <div class="eyebrow">Handwriting Coach</div>
+        <h2 class="screen-title">Purchases are not available in this build</h2>
+        <div class="screen-sub">The handwriting model is ready, but the app store has not returned a real product and localized price. HanaPath will not show a placeholder checkout.</div>
+        <div class="premium-writing-safety-note">Nothing has been charged. Try again after installing a store release.</div>
+        ${store.available ? '<button class="button secondary" type="button" id="premiumWritingRestore">Restore purchases</button>' : ""}
+      </div>`;
+    el.querySelector("#premiumWritingRestore")?.addEventListener("click", () => restorePremiumWritingPurchase(el));
+    return;
+  }
+
+  if (store.pending) {
+    el.innerHTML = `
+      <div class="card premium-writing-gate">
+        <div class="eyebrow">Purchase pending</div>
+        <h2 class="screen-title">Payment has not completed</h2>
+        <div class="screen-sub">HanaPath will unlock only after the store confirms payment. Reopening the app or restoring purchases checks again; you will not be charged twice.</div>
+        <button class="button primary" type="button" id="premiumWritingRefresh">Check again</button>
+        <button class="button secondary" type="button" id="premiumWritingRestore">Restore purchases</button>
+      </div>`;
+    el.querySelector("#premiumWritingRefresh")?.addEventListener("click", () => refreshPremiumWritingAccess());
+    el.querySelector("#premiumWritingRestore")?.addEventListener("click", () => restorePremiumWritingPurchase(el));
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="card premium-writing-gate">
+      <div class="eyebrow">Handwriting Coach · One-time unlock</div>
+      <h2 class="screen-title">Write complete Korean, block by block</h2>
+      <div class="screen-sub">Words, phrases, and sentences from your learning path. Your device and Korean model are ready.</div>
+      <div class="premium-writing-product"><strong>${escapeHtml(store.product.title || "Handwriting Coach")}</strong><span>${escapeHtml(store.product.price || "")}</span></div>
+      <div class="premium-writing-safety-note">Restorable purchase · the store confirms ownership · model readiness checked before checkout.</div>
+      <button class="button primary" type="button" id="premiumWritingPurchase">Unlock for ${escapeHtml(store.product.price || "the store price")}</button>
+      <button class="button secondary" type="button" id="premiumWritingRestore">Restore purchases</button>
+      <div class="quiz-feedback" id="premiumWritingGateStatus" role="status" aria-live="polite"></div>
+    </div>`;
+  el.querySelector("#premiumWritingPurchase")?.addEventListener("click", async (event) => {
+    event.currentTarget.disabled = true;
+    const status = el.querySelector("#premiumWritingGateStatus");
+    if (status) status.textContent = "Opening the app store…";
+    const result = await PremiumWritingStore.purchase();
+    if (result?.status === "cancelled" && status) status.textContent = "Purchase cancelled. Nothing was charged by HanaPath.";
+    else if (result?.status === "pending" && status) status.textContent = "Purchase pending. Access will unlock only after the store confirms payment.";
+    else if (result?.status !== "success" && status) status.textContent = `Purchase did not complete: ${result?.error || "store unavailable"}.`;
+    await refreshPremiumWritingAccess();
+  });
+  el.querySelector("#premiumWritingRestore")?.addEventListener("click", () => restorePremiumWritingPurchase(el));
+}
+
+async function restorePremiumWritingPurchase(el) {
+  const status = el.querySelector("#premiumWritingGateStatus");
+  if (status) status.textContent = "Checking the store for an existing purchase…";
+  const result = await PremiumWritingStore.restore();
+  if (result?.status !== "success" && status) status.textContent = `Restore did not complete: ${result?.error || "store unavailable"}.`;
+  await refreshPremiumWritingAccess();
+}
+
+function renderPremiumWritingUnitPicker(el) {
+  const cards = premiumWritingState.units.map((unit) => `
+    <button class="card word-section-card premium-writing-unit" type="button" data-premium-writing-unit="${escapeHtml(unit.id)}">
+      <div><div class="eyebrow">${escapeHtml(unit.eyebrow)}</div><div class="section-card-title">${escapeHtml(unit.label)}</div><div class="screen-sub" style="margin-bottom:0;">${escapeHtml(unit.sub)}</div></div>
+      <span class="premium-writing-unit-preview" lang="ko">${escapeHtml(unit.prompts[0]?.text || "")}</span>
+    </button>`).join("");
+  el.innerHTML = `
+    <div class="card premium-writing-picker-intro"><div class="eyebrow">Handwriting Coach · Unlocked</div><h2 class="screen-title">Choose what to write</h2><div class="screen-sub">The active block is highlighted. A clear match banks it immediately and keeps the canvas ready for the next block.</div></div>
+    ${cards || '<div class="card"><div class="screen-sub">Finish some matching lessons first so HanaPath can build a handwriting set from learned content.</div></div>'}`;
+  el.querySelectorAll("[data-premium-writing-unit]").forEach((button) => {
+    button.addEventListener("click", () => {
+      premiumWritingState.unitId = button.dataset.premiumWritingUnit;
+      premiumWritingState.promptIndex = 0;
+      premiumWritingState.blockIndex = 0;
+      premiumWritingState.strokes = [];
+      premiumWritingState.attempts = 0;
+      premiumWritingState.successes = 0;
+      renderPremiumWriting();
+    });
+  });
+}
+
+function premiumWritingBlocksHtml(prompt) {
+  return buildPremiumWritingBlockModel(prompt.text).map((block) => {
+    if (!block.writable) return `<span class="premium-writing-static">${block.character === " " ? "&nbsp;" : escapeHtml(block.character)}</span>`;
+    const stateClass = block.writableIndex < premiumWritingState.blockIndex
+      ? "completed"
+      : block.writableIndex === premiumWritingState.blockIndex
+        ? "active"
+        : "waiting";
+    return `<span class="premium-writing-block ${stateClass}" lang="ko" data-premium-block="${block.writableIndex}"${stateClass === "active" ? ' aria-current="step"' : ""}><span>${escapeHtml(block.character)}</span>${stateClass === "completed" ? '<small aria-hidden="true">✓</small>' : ""}</span>`;
+  }).join("");
+}
+
+function drawPremiumWritingCanvas(canvas) {
+  const context = canvas.getContext("2d");
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#58a6ff";
+  context.lineWidth = Math.max(6, Math.min(28, Number(state.writingLineWidth) || 14));
+  premiumWritingState.strokes.forEach((stroke) => {
+    if (!stroke.length) return;
+    context.beginPath();
+    context.moveTo(stroke[0].x, stroke[0].y);
+    for (let index = 1; index < stroke.length; index += 1) context.lineTo(stroke[index].x, stroke[index].y);
+    context.stroke();
+  });
+}
+
+function updatePremiumWritingCanvasControls() {
+  const hasInk = premiumWritingState.strokes.length > 0;
+  const disabled = premiumWritingState.transitioning || premiumWritingState.checking;
+  const undo = document.getElementById("premiumWritingUndo");
+  const clear = document.getElementById("premiumWritingClear");
+  const check = document.getElementById("premiumWritingCheck");
+  if (undo) undo.disabled = !hasInk || disabled;
+  if (clear) clear.disabled = !hasInk || disabled;
+  if (check) check.disabled = !hasInk || disabled;
+}
+
+function setPremiumWritingFeedback(message, tone = "") {
+  const element = document.getElementById("premiumWritingFeedback");
+  if (!element) return;
+  element.className = `writing-recognition premium-writing-feedback${tone ? ` ${tone}` : ""}`;
+  element.textContent = message;
+}
+
+function updatePremiumWritingBlockBank() {
+  const prompt = getPremiumWritingPrompt();
+  const bank = document.getElementById("premiumWritingBlocks");
+  const target = getPremiumWritingTarget();
+  if (bank && prompt) bank.innerHTML = premiumWritingBlocksHtml(prompt);
+  const targetElement = document.getElementById("premiumWritingTarget");
+  if (targetElement) targetElement.textContent = target?.character || "";
+  const back = document.getElementById("premiumWritingBackBlock");
+  if (back) back.disabled = premiumWritingState.blockIndex <= 0 || premiumWritingState.transitioning;
+}
+
+function bankPremiumWritingBlock(canvas) {
+  const prompt = getPremiumWritingPrompt();
+  if (!prompt) return;
+  premiumWritingState.successes += 1;
+  premiumWritingState.blockIndex += 1;
+  premiumWritingState.strokes = [];
+  premiumWritingState.revision += 1;
+  premiumWritingState.checking = false;
+  drawPremiumWritingCanvas(canvas);
+  updatePremiumWritingCanvasControls();
+  updatePremiumWritingBlockBank();
+  const totalBlocks = countPremiumWritingBlocks(prompt.text);
+  if (premiumWritingState.blockIndex < totalBlocks) {
+    setPremiumWritingFeedback("Block banked — write the highlighted block.", "correct");
+    canvas.focus({ preventScroll: true });
+    return;
+  }
+
+  premiumWritingState.transitioning = true;
+  setPremiumWritingFeedback("Line complete — every block is banked.", "correct");
+  premiumWritingTransitionTimer = window.setTimeout(() => {
+    premiumWritingTransitionTimer = null;
+    const unit = getPremiumWritingUnit();
+    if (!unit) return;
+    premiumWritingState.promptIndex += 1;
+    premiumWritingState.blockIndex = 0;
+    premiumWritingState.transitioning = false;
+    premiumWritingState.strokes = [];
+    if (premiumWritingState.promptIndex >= unit.prompts.length) {
+      renderPremiumWritingCompletion();
+    } else {
+      renderPremiumWriting();
+    }
+  }, 480);
+}
+
+async function recognizePremiumWritingBlock(canvas) {
+  clearPremiumWritingRecognitionTimer();
+  if (premiumWritingState.checking || premiumWritingState.transitioning || !premiumWritingState.strokes.length) return;
+  const target = getPremiumWritingTarget();
+  if (!target) return;
+  const revision = premiumWritingState.revision;
+  const strokes = premiumWritingState.strokes.map((stroke) => stroke.map((point) => ({ x: point.x, y: point.y, t: point.t })));
+  premiumWritingState.checking = true;
+  premiumWritingState.attempts += 1;
+  updatePremiumWritingCanvasControls();
+  setPremiumWritingFeedback("Reading this block…", "working");
+  const result = await recognizeHangulInkWithProvider({
+    provider: "mlkit",
+    strokes,
+    writingArea: { width: canvas.width, height: canvas.height },
+    preContext: getPremiumWritingPreContext(),
+  });
+  if (revision !== premiumWritingState.revision || !document.getElementById("premiumWritingCanvas")) return;
+  premiumWritingState.checking = false;
+  updatePremiumWritingCanvasControls();
+  if (!result.ready || result.error) {
+    setPremiumWritingFeedback(`Recognition paused: ${result.error || "Korean model unavailable"}. Your ink is still here.`, "wrong");
+    return;
+  }
+  const candidates = result.candidates.map((candidate) => normalizePremiumWritingText(candidate.name).trim()).filter(Boolean);
+  const expected = normalizePremiumWritingText(target.character);
+  if (candidates[0] === expected) {
+    bankPremiumWritingBlock(canvas);
+    return;
+  }
+  const reading = candidates[0] || "a different shape";
+  const alternative = candidates.slice(1).includes(expected);
+  setPremiumWritingFeedback(alternative
+    ? `Close — ${expected} was an alternative, but I read ${reading} first. Keep the block clear and retry.`
+    : `I read this as ${reading}. Keep the highlighted ${expected} block clear and retry.`, "close");
+}
+
+function schedulePremiumWritingRecognition(canvas) {
+  clearPremiumWritingRecognitionTimer();
+  premiumWritingRecognitionTimer = window.setTimeout(() => {
+    premiumWritingRecognitionTimer = null;
+    void recognizePremiumWritingBlock(canvas);
+  }, 560);
+}
+
+function bindPremiumWritingCanvas(canvas) {
+  let activeStroke = null;
+  const pointFromEvent = (event) => {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: ((event.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((event.clientY - rect.top) / rect.height) * canvas.height,
+      t: Date.now(),
+    };
+  };
+  canvas.addEventListener("pointerdown", (event) => {
+    if (premiumWritingState.transitioning || premiumWritingState.checking || event.isPrimary === false) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    event.preventDefault();
+    clearPremiumWritingRecognitionTimer();
+    premiumWritingState.revision += 1;
+    canvas.setPointerCapture(event.pointerId);
+    activeStroke = [pointFromEvent(event)];
+    premiumWritingState.strokes.push(activeStroke);
+    setPremiumWritingFeedback("Writing…", "working");
+    drawPremiumWritingCanvas(canvas);
+    updatePremiumWritingCanvasControls();
+  });
+  canvas.addEventListener("pointermove", (event) => {
+    if (!activeStroke) return;
+    event.preventDefault();
+    const samples = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : [event];
+    (samples.length ? samples : [event]).forEach((sample) => activeStroke.push(pointFromEvent(sample)));
+    drawPremiumWritingCanvas(canvas);
+  });
+  const finish = (event) => {
+    if (!activeStroke) return;
+    event.preventDefault();
+    activeStroke.push(pointFromEvent(event));
+    const finished = activeStroke;
+    activeStroke = null;
+    const cleaned = cleanHangulInkStroke(normalizeHangulInkStroke(finished, canvas));
+    if (!cleaned) premiumWritingState.strokes.pop();
+    drawPremiumWritingCanvas(canvas);
+    updatePremiumWritingCanvasControls();
+    if (cleaned) schedulePremiumWritingRecognition(canvas);
+  };
+  canvas.addEventListener("pointerup", finish);
+  const cancel = () => {
+    if (!activeStroke) return;
+    activeStroke = null;
+    premiumWritingState.strokes.pop();
+    premiumWritingState.revision += 1;
+    drawPremiumWritingCanvas(canvas);
+    updatePremiumWritingCanvasControls();
+  };
+  canvas.addEventListener("pointercancel", cancel);
+  canvas.addEventListener("lostpointercapture", cancel);
+}
+
+function renderPremiumWritingPractice(el) {
+  const unit = getPremiumWritingUnit();
+  const prompt = getPremiumWritingPrompt();
+  const target = getPremiumWritingTarget();
+  if (!unit || !prompt || !target) {
+    premiumWritingState.unitId = null;
+    renderPremiumWritingUnitPicker(el);
+    return;
+  }
+  const progress = Math.round(((premiumWritingState.promptIndex + premiumWritingState.blockIndex / Math.max(1, countPremiumWritingBlocks(prompt.text))) / unit.prompts.length) * 100);
+  el.innerHTML = `
+    <div class="card word-card premium-writing-practice" data-lesson-motion-root>
+      <div class="writing-progress-tile"><div class="writing-progress-line"><span class="eyebrow">${escapeHtml(unit.label)}</span><span class="writing-progress-count">${premiumWritingState.promptIndex + 1} of ${unit.prompts.length}</span></div><div class="word-card-progress-track"><span style="width:${progress}%"></span></div></div>
+      <div class="premium-writing-cue">${escapeHtml(prompt.cue)}</div>
+      <div class="premium-writing-blocks" id="premiumWritingBlocks" lang="ko" aria-label="Writing progress">${premiumWritingBlocksHtml(prompt)}</div>
+      <div class="premium-writing-now">Write <strong id="premiumWritingTarget" lang="ko">${escapeHtml(target.character)}</strong> now</div>
+      <div class="writing-canvas-wrap premium-writing-canvas-wrap">
+        <canvas id="premiumWritingCanvas" class="writing-canvas" width="480" height="480" aria-label="Write the highlighted Hangul block"></canvas>
+        <button class="writing-canvas-action writing-canvas-clear" type="button" id="premiumWritingClear" disabled>Erase all</button>
+        <button class="writing-canvas-action writing-canvas-undo" type="button" id="premiumWritingUndo" disabled>Undo stroke</button>
+        <button class="writing-canvas-action writing-canvas-check" type="button" id="premiumWritingCheck" disabled>Check block</button>
+        <div class="writing-recognition premium-writing-feedback" id="premiumWritingFeedback" role="status" aria-live="polite">Write naturally — the block banks after a clear match.</div>
+      </div>
+      <div class="premium-writing-actions">
+        <button class="button secondary compact" type="button" id="premiumWritingBackBlock" ${premiumWritingState.blockIndex ? "" : "disabled"}>Previous block</button>
+        <button class="button secondary compact" type="button" id="premiumWritingChooseUnit">Choose another set</button>
+      </div>
+    </div>`;
+  const canvas = el.querySelector("#premiumWritingCanvas");
+  drawPremiumWritingCanvas(canvas);
+  bindPremiumWritingCanvas(canvas);
+  updatePremiumWritingCanvasControls();
+  el.querySelector("#premiumWritingClear")?.addEventListener("click", () => {
+    clearPremiumWritingRecognitionTimer();
+    premiumWritingState.strokes = [];
+    premiumWritingState.revision += 1;
+    drawPremiumWritingCanvas(canvas);
+    updatePremiumWritingCanvasControls();
+    setPremiumWritingFeedback("Canvas cleared — write the highlighted block.");
+  });
+  el.querySelector("#premiumWritingUndo")?.addEventListener("click", () => {
+    clearPremiumWritingRecognitionTimer();
+    premiumWritingState.strokes.pop();
+    premiumWritingState.revision += 1;
+    drawPremiumWritingCanvas(canvas);
+    updatePremiumWritingCanvasControls();
+    setPremiumWritingFeedback(premiumWritingState.strokes.length ? "Last stroke removed." : "Write the highlighted block.");
+  });
+  el.querySelector("#premiumWritingCheck")?.addEventListener("click", () => recognizePremiumWritingBlock(canvas));
+  el.querySelector("#premiumWritingBackBlock")?.addEventListener("click", () => {
+    if (premiumWritingState.blockIndex <= 0) return;
+    clearPremiumWritingRecognitionTimer();
+    premiumWritingState.blockIndex -= 1;
+    premiumWritingState.strokes = [];
+    premiumWritingState.revision += 1;
+    drawPremiumWritingCanvas(canvas);
+    updatePremiumWritingCanvasControls();
+    updatePremiumWritingBlockBank();
+    setPremiumWritingFeedback("Previous block reopened.");
+  });
+  el.querySelector("#premiumWritingChooseUnit")?.addEventListener("click", () => {
+    resetPremiumWritingSession();
+    renderPremiumWriting();
+  });
+  bindTapToHearToken(el.querySelector("[data-speak]"));
+  canvas.focus({ preventScroll: true });
+}
+
+function renderPremiumWritingCompletion() {
+  clearPremiumWritingRecognitionTimer();
+  const el = showScreen("detail");
+  if (!el) return;
+  premiumWritingDetailBar();
+  const unit = getPremiumWritingUnit();
+  const accuracy = premiumWritingState.attempts ? Math.round((premiumWritingState.successes / premiumWritingState.attempts) * 100) : 100;
+  el.innerHTML = premiumCompletionHtml({
+    tone: "success",
+    icon: "check",
+    eyebrow: "Handwriting Coach",
+    title: "Set complete",
+    copy: `${unit?.prompts?.length || 0} ${unit?.kind === "word" ? "words" : unit?.kind === "phrase" ? "phrases" : "sentences"} completed block by block.`,
+    score: { value: `${accuracy}%`, label: "Clean recognition" },
+    stats: [
+      { value: premiumWritingState.successes, label: "Blocks banked" },
+      { value: premiumWritingState.attempts, label: "Recognition checks" },
+    ],
+    actionsHtml: '<button class="button secondary" type="button" id="premiumWritingSets">Choose another set</button><button class="button primary" type="button" id="premiumWritingRepeat">Repeat this set</button>',
+    className: "premium-writing-completion",
+  });
+  el.querySelector("#premiumWritingSets")?.addEventListener("click", () => {
+    resetPremiumWritingSession();
+    renderPremiumWriting();
+  });
+  el.querySelector("#premiumWritingRepeat")?.addEventListener("click", () => {
+    premiumWritingState.promptIndex = 0;
+    premiumWritingState.blockIndex = 0;
+    premiumWritingState.strokes = [];
+    premiumWritingState.attempts = 0;
+    premiumWritingState.successes = 0;
+    renderPremiumWriting();
+  });
+}
+
+function renderPremiumWriting() {
+  clearPremiumWritingRecognitionTimer();
+  const el = showScreen("detail");
+  if (!el) return;
+  premiumWritingDetailBar();
+  if (!premiumWritingState.store || !premiumWritingState.model || !premiumWritingState.store.entitled || !premiumWritingState.model.downloaded || premiumWritingState.model.operational !== true) {
+    renderPremiumWritingGate(el);
+    return;
+  }
+  if (!premiumWritingState.units.length) premiumWritingState.units = buildPremiumWritingUnits(premiumWritingState.source);
+  if (!premiumWritingState.unitId) renderPremiumWritingUnitPicker(el);
+  else renderPremiumWritingPractice(el);
 }
 
 // ─── ALPHABET LETTER REVIEW (SRS) ─────────────────────────────────────────────
@@ -21340,6 +22076,14 @@ function registerNativeBackButton() {
     } else if (typeof appPlugin.exitApp === "function") {
       appPlugin.exitApp();
     }
+  });
+  appPlugin.addListener("appStateChange", ({ isActive }) => {
+    if (!isActive) return;
+    const detail = document.getElementById("screen-detail");
+    const premiumVisible = detail && !detail.hidden && detail.querySelector(
+      ".premium-writing-gate, .premium-writing-picker-intro, #premiumWritingCanvas, #premiumWritingSets, #premiumWritingRepeat"
+    );
+    if (premiumVisible) void refreshPremiumWritingAccess();
   });
 }
 
