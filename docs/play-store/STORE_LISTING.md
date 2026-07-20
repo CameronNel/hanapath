@@ -1,6 +1,7 @@
 # Google Play store listing — text drafts and asset checklist (M5)
 
-> Drafts prepared 2026-07-16 (handover §15.3). Everything here is a
+> Drafts prepared 2026-07-16 and revised 2026-07-20 for the approved optional
+> Handwriting Coach purchase. Everything here is a
 > **proposal for the owner to edit and approve** — nothing is submitted
 > anywhere by an agent. Names/contacts marked ⏳ trace to
 > [`OWNER_DECISIONS.md`](OWNER_DECISIONS.md). Claims below describe features
@@ -46,6 +47,12 @@ Alternatives:
 > (hint → word bank → next chunk → reveal) that supports you exactly as much
 > as you need.
 >
+> **✍️ Handwriting Coach (optional one-time purchase)**
+> On supported phones, write complete words, phrases, and sentences one Hangul
+> block at a time. Each clearly recognized block is banked immediately and the
+> next block is highlighted. The unlock is restorable; the Korean recognition
+> model is tested on your device before checkout is offered.
+>
 > **🔒 Private by design**
 > No account. No ads. No analytics. Your progress stays on your device — and
 > you can export or import it as a backup file whenever you like.
@@ -82,4 +89,4 @@ repository.
 | Website | `https://cameronnel.github.io/hanapath/` |
 | Privacy policy | `https://cameronnel.github.io/hanapath/privacy.html` (⏳ decision #8) |
 | Countries | All (⏳ decision #4) |
-| Price | Free (⏳ decision #3 — irreversible; see OWNER_DECISIONS) |
+| Price | Free download; optional one-time, restorable Handwriting Coach in-app product (decision #3 ✅; product ID and price still ⏳) |

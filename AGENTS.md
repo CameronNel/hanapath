@@ -55,6 +55,8 @@ Words v1 queue was deleted 2026-07-10; recover from git history if needed).
 3. **Run the audits** after touching learning data: `node scripts/audit-words-data.mjs --strict`,
    `node scripts/audit-sentences-data.mjs --strict`,
    and `node scripts/audit-alphabet-audio.mjs --strict`; run
+   `node scripts/audit-premium-handwriting.mjs` after touching premium writing,
+   native recognition, or billing; run
    `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
    any loaded asset version; `node --check` any JS you edit.
 4. **Bump caches** when you change `app.js`, `styles.css`, or any loaded data

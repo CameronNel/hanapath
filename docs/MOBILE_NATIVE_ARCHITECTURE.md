@@ -1,6 +1,6 @@
 # Mobile native architecture record (M0)
 
-> Status: **M5 drafts + M4 scaffolding + M3 code-side proof of concept** on
+> Status: **M5 drafts + M4 scaffolding + Android premium-handwriting implementation** on
 > top of
 > M1 (reproducible Capacitor Android shell) and M2 code (back contract,
 > progress export/import, device-test checklist; the real-device evidence in
@@ -81,20 +81,32 @@ none of these numbers is authoritative forever.
    install-time asset pack. No remote streaming, no hand-edits to
    `audio_map.js`.
 5. **Recognition**: `$Q` stays the web implementation and universal fallback.
-   ML Kit Digital Ink (`ko`) may become the preferred *native* recognizer only
-   by passing the comparison gate in handover §10.3, measured by a shared
-   fixture harness. The M3 proof of concept is opt-in diagnostics only: it uses
+   ML Kit Digital Ink (`ko`) remains diagnostic-only for free Alphabet writing,
+   but is the explicitly approved recognizer for the separately entitled
+   Handwriting Coach word/phrase/sentence flow. Public sale remains blocked on
+   the comparison and device gates in `PREMIUM_HANDWRITING_PLAN.md`. The bridge uses
    a narrow `HangulRecognition` Capacitor plugin, on-demand model download,
    real pointer timestamps, writing-area context, and a cancellable JSON report
    containing candidates, target rank, false accepts, latency, and fallback
-   rate. It does not affect learner pass/fail decisions before device sign-off.
-6. **No new permissions** in the foundation; CI fails on unexpected manifest
-   permissions (handover §9.3). The ML Kit dependency transitively contributes
+   rate, plus banked-text context for premium recognition. The native status
+   check performs a real recognition warm-up; checkout is unavailable unless
+   both model presence and that warm-up succeed.
+6. **Minimal permissions**: CI fails on unexpected manifest permissions
+   (handover §9.3). The ML Kit dependency transitively contributes
    WorkManager permissions; HanaPath removes those declarations in its app
-   manifest so the merged artifact remains `INTERNET`-only. The M3 device
+   manifest. The intentional allowlist is now `INTERNET` plus the normal
+   `com.android.vending.BILLING` permission for the optional unlock. The M3 device
    matrix must therefore cover interrupted and backgrounded downloads.
 7. **Milestone PRs M0→M6** as sequenced in handover §16; every native PR
    re-runs the full web audit gate (§12.2).
+8. **Premium entitlement boundary**: Android uses a one-time, restorable Play
+   product. Product ID and Play public key are empty public resources by
+   default, so checkout fails closed. A verified, purchased, non-pending store
+   transaction is required; local learner state never grants entitlement.
+   Client-side signature verification implements the requested no-server
+   architecture, but Google recommends server verification and the owner must
+   reaffirm this trade-off before public sale. iOS requires a separate StoreKit
+   2 adapter built and tested on macOS/Xcode.
 
 ## 5. Build and verify (M1)
 
@@ -128,6 +140,13 @@ artifacts. Owner setup and the release runbook live in
   code-side ML Kit proof of concept is present, but the comparison matrix and
   fallback scenarios in `MOBILE_DEVICE_TEST_CHECKLIST.md` must be executed
   before ML Kit can become authoritative.
+- **Premium product activation** — owner-created Play product ID, price, Play
+  license-test setup, public-key configuration, no-backend trade-off
+  reaffirmation, and all recognition/purchase cases in the device checklist.
+  Empty configuration intentionally exposes no checkout.
+- **iOS parity** — an iOS Capacitor shell, ML Kit adapter, StoreKit 2
+  entitlement/restore flow, and device evidence require macOS/Xcode; the
+  Windows Android implementation does not satisfy this gate.
 - **M4 first signed build** — owner actions in
   [`play-store/SIGNING_AND_RELEASE.md`](play-store/SIGNING_AND_RELEASE.md):
   generate the upload keystore, create the protected `google-play-release`

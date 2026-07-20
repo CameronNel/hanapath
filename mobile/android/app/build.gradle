@@ -56,6 +56,9 @@ dependencies {
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
     implementation 'com.google.mlkit:digital-ink-recognition:19.0.0'
+    // One-time, restorable Handwriting Coach entitlement. The bridge fails
+    // closed until Play Console product id + licence public key are configured.
+    implementation 'com.android.billingclient:billing:9.1.0'
     testImplementation "junit:junit:$junitVersion"
     testImplementation 'org.json:json:20240303'
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"

@@ -1,12 +1,12 @@
-// [2026-07-20] Cache bumped for Drill Lab freshness, cue safety, and compact runners.
-const CACHE_NAME = "hanapath-shell-v429";
+// [2026-07-20] Cache bumped for the all-access Handwriting Coach testing mode.
+const CACHE_NAME = "hanapath-shell-v431";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260720e",
+  "./styles.css?v=20260720f",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260717u",
@@ -17,7 +17,7 @@ const APP_SHELL = [
   "./sentences_core.js?v=20260717u",
   "./sentences_lesson_plan.js?v=20260717u",
   "./hangul_strokes.js?v=20260715b",
-  "./app.js?v=20260720e",
+  "./app.js?v=20260720g",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

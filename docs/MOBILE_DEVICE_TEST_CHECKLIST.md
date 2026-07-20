@@ -71,6 +71,29 @@ grader.
 - [ ] Low-storage/download interruption returns to `$Q` cleanly and does not leave a false “ready” state.
 - [ ] Only after evidence review: record the provider decision in the PR and change learner grading authority in a separate, explicitly reviewed patch if ML Kit wins.
 
+## E3. Premium Handwriting Coach safety evidence
+
+Public checkout must remain disabled until every case below has recorded
+evidence. Use Play license testers and the real configured non-consumable; never
+test real-money purchases from an unreviewed build.
+
+- [ ] Free Alphabet block writing works before model download and without an entitlement.
+- [ ] Model absent/offline, interrupted, and low-storage cases expose no purchase button and charge nothing.
+- [ ] A downloaded model must also pass the native recognition warm-up before checkout appears.
+- [ ] Product missing, inactive, wrong ID, or unavailable to the tester exposes no placeholder price or checkout.
+- [ ] Store-supplied localized title and price exactly match the Play test product.
+- [ ] Cancelled purchase leaves the feature locked and explains that no purchase completed.
+- [ ] Pending purchase stays locked and is never acknowledged as delivered; completion unlocks after re-query.
+- [ ] Network loss immediately after approval recovers on relaunch/Restore without a second charge.
+- [ ] Reinstall and a second device restore ownership; clearing HanaPath local data cannot create or remove ownership.
+- [ ] Refunded/revoked purchase loses access after the next store query.
+- [ ] An entitled user with a deleted model keeps ownership, sees recovery/typed-practice actions, and is never offered repurchase.
+- [ ] Write at least 100 varied real Korean blocks across multiple writers; record top-1 accuracy, false accepts, retry rate, mean latency, and p95.
+- [ ] A correct exact top-1 result banks once, clears the canvas, highlights the next block immediately, and never skips spaces/punctuation incorrectly.
+- [ ] A lower-ranked target, wrong result, recognition error, or lost connectivity does not bank; ink remains editable.
+- [ ] Leave and re-enter mid-line: block/prompt position resumes, but store ownership and model readiness are re-queried.
+- [ ] Complete word, phrase, and sentence sets on narrow phone, typical phone, and tablet with finger and stylus.
+
 ## F. Layout, safe areas, system UI
 
 - [ ] No content under the status bar, gesture bar, or camera cutout (portrait + landscape).

@@ -116,16 +116,50 @@ public class HangulRecognitionPlugin extends Plugin {
         }
         modelManager.isModelDownloaded(model)
             .addOnSuccessListener(isDownloaded -> {
-                JSObject ret = new JSObject();
-                ret.put("downloaded", isDownloaded);
-                ret.put("downloading", isDownloading);
-                // ML Kit Korean digital ink model size is roughly 20 MiB
-                ret.put("sizeBytes", 20 * 1024 * 1024);
-                call.resolve(ret);
+                if (!isDownloaded || recognizer == null) {
+                    call.resolve(makeModelStatus(isDownloaded, false));
+                    return;
+                }
+
+                // Exercise the same recognizer/context pipeline before checkout can
+                // be shown. The sample is a simple 가 written in a 480px square.
+                Ink.Builder warmUpInk = Ink.builder();
+                warmUpInk.addStroke(Ink.Stroke.builder()
+                    .addPoint(Ink.Point.create(90, 110, 1))
+                    .addPoint(Ink.Point.create(240, 110, 2))
+                    .addPoint(Ink.Point.create(240, 310, 3))
+                    .build());
+                warmUpInk.addStroke(Ink.Stroke.builder()
+                    .addPoint(Ink.Point.create(325, 80, 4))
+                    .addPoint(Ink.Point.create(325, 330, 5))
+                    .build());
+                warmUpInk.addStroke(Ink.Stroke.builder()
+                    .addPoint(Ink.Point.create(325, 195, 6))
+                    .addPoint(Ink.Point.create(405, 195, 7))
+                    .build());
+                RecognitionContext warmUpContext = RecognitionContext.builder()
+                    .setPreContext("")
+                    .setWritingArea(new WritingArea(480, 480))
+                    .build();
+                recognizer.recognize(warmUpInk.build(), warmUpContext)
+                    .addOnSuccessListener(result ->
+                        call.resolve(makeModelStatus(true, !result.getCandidates().isEmpty())))
+                    .addOnFailureListener(e ->
+                        call.reject("Korean recognizer warm-up failed", "MODEL_WARMUP_FAILED", e));
             })
             .addOnFailureListener(e -> {
                 call.reject("Failed to check model status", "MODEL_STATUS_FAILED", e);
             });
+    }
+
+    private JSObject makeModelStatus(boolean downloaded, boolean operational) {
+        JSObject ret = new JSObject();
+        ret.put("downloaded", downloaded);
+        ret.put("operational", operational);
+        ret.put("downloading", isDownloading);
+        // ML Kit Korean digital ink model size is roughly 20 MiB
+        ret.put("sizeBytes", 20 * 1024 * 1024);
+        return ret;
     }
 
     @PluginMethod
@@ -160,6 +194,14 @@ public class HangulRecognitionPlugin extends Plugin {
         }
 
         long startTime = System.currentTimeMillis();
+        String preContext = call.getString("preContext", "");
+        if (preContext == null) preContext = "";
+        int preContextCodePoints = preContext.codePointCount(0, preContext.length());
+        if (preContextCodePoints > 20) {
+            int start = preContext.offsetByCodePoints(0, preContextCodePoints - 20);
+            preContext = preContext.substring(start);
+        }
+        final String recognitionPreContext = preContext;
 
         JSArray strokesArray = call.getArray("strokes");
         String validationError = validateStrokes(strokesArray);
@@ -200,6 +242,7 @@ public class HangulRecognitionPlugin extends Plugin {
 
                     Ink ink = inkBuilder.build();
                     RecognitionContext context = RecognitionContext.builder()
+                        .setPreContext(recognitionPreContext)
                         .setWritingArea(new WritingArea(width.floatValue(), height.floatValue()))
                         .build();
 

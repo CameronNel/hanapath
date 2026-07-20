@@ -5761,6 +5761,130 @@ li { margin-bottom: 4px; }
   margin-top: 10px;
 }
 .writing-summary-actions .button { min-height: 45px; font-size: .76rem; }
+
+/* Paid native Handwriting Coach: sequential syllable-block banking. */
+.premium-writing-gate,
+.premium-writing-picker-intro,
+.premium-writing-practice {
+  max-width: 720px;
+  margin-inline: auto;
+}
+.premium-writing-gate {
+  display: grid;
+  gap: 14px;
+}
+.premium-writing-gate .screen-title,
+.premium-writing-gate .screen-sub { margin-bottom: 0; }
+.premium-writing-safety-note {
+  padding: 12px 14px;
+  border: 1px solid rgba(56, 189, 248, .28);
+  border-radius: 14px;
+  background: rgba(14, 165, 233, .08);
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.5;
+}
+.premium-writing-product {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .045);
+  border: 1px solid var(--border);
+}
+.premium-writing-product strong { color: var(--text); }
+.premium-writing-product span { color: var(--accent-2); font-weight: 800; white-space: nowrap; }
+.premium-writing-unit { align-items: center; }
+.premium-writing-unit-preview {
+  max-width: 42%;
+  color: var(--accent-2);
+  font: 750 1rem "Noto Sans KR", sans-serif;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.premium-writing-cue {
+  margin: 16px 0 10px;
+  color: var(--muted);
+  font-size: .86rem;
+  text-align: center;
+}
+.premium-writing-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 70px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(2, 6, 20, .3);
+  border: 1px solid var(--border);
+}
+.premium-writing-block,
+.premium-writing-static {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: 38px;
+  min-height: 44px;
+  border-radius: 10px;
+  font: 800 1.3rem "Noto Sans KR", sans-serif;
+}
+.premium-writing-static { min-width: 10px; color: var(--muted); }
+.premium-writing-block {
+  border: 1px solid rgba(148, 163, 184, .24);
+  background: rgba(148, 163, 184, .055);
+  color: var(--muted);
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+.premium-writing-block.active {
+  color: var(--accent-2);
+  border: 2px solid var(--accent);
+  background: rgba(56, 189, 248, .12);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, .09);
+  transform: translateY(-2px);
+}
+.premium-writing-block.completed {
+  color: #d1fae5;
+  border-color: rgba(52, 211, 153, .58);
+  background: rgba(16, 185, 129, .18);
+}
+.premium-writing-block.completed small {
+  position: absolute;
+  right: -4px;
+  bottom: -5px;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #052e26;
+  font: 900 .65rem/1 sans-serif;
+}
+.premium-writing-now {
+  margin: 10px 0 2px;
+  text-align: center;
+  color: var(--muted);
+  font-size: .76rem;
+}
+.premium-writing-now strong {
+  color: var(--accent-2);
+  font: 850 1.25rem "Noto Sans KR", sans-serif;
+}
+.premium-writing-canvas-wrap { margin-top: 6px; }
+.premium-writing-feedback { max-width: calc(100% - 112px); }
+.premium-writing-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.premium-writing-completion { max-width: 720px; margin-inline: auto; }
 @keyframes writing-result-backdrop-in { from { opacity: 0; } }
 @keyframes writing-result-sheet-in { from { opacity: 0; transform: translateY(6px) scale(.98); } }
 @keyframes writing-result-draw { to { stroke-dashoffset: 0; } }
@@ -5799,6 +5923,10 @@ li { margin-bottom: 4px; }
   .writing-summary-card { padding: 12px; }
   .writing-summary-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .writing-summary-actions { grid-template-columns: 1fr; }
+  .premium-writing-unit-preview { max-width: 34%; font-size: .86rem; }
+  .premium-writing-blocks { gap: 5px; padding: 10px 7px; }
+  .premium-writing-block { min-width: 34px; min-height: 40px; font-size: 1.15rem; }
+  .premium-writing-actions { grid-template-columns: 1fr; }
 }
 
 /* ── SETTINGS (hub tile + screen) ────────────────── */
