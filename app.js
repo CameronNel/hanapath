@@ -15274,8 +15274,8 @@ function renderHangulMasteryExamIntro() {
   });
 }
 
-// ── ATTEMPT RUNNER (NOT YET IMPLEMENTED) ────────────────────────────────────
-// Full one-shot build contract: docs/EXAM_RUNNER_ONE_SHOT_PROMPT.md.
+// ── ATTEMPT RUNNER ──────────────────────────────────────────────────────────
+// Full build contract: docs/EXAM_RUNNER_ONE_SHOT_PROMPT.md.
 // Owner overrides of 2026-07-20 (supersede spec §3/§4 where they conflict):
 //   · forward-only — Next locks each item; no Previous, no flags, no revisit
 //   · after submission, show the FULL per-item answer review (prompt, given
@@ -15285,22 +15285,784 @@ function renderHangulMasteryExamIntro() {
 // Everything else per spec: reshuffle per attempt, audio ≤ 2 plays, 90-min
 // countdown, NFC strict typed grading, blank canvases with hidden targets
 // ('great' verdict only), quit discards the attempt, mastery ⇔ exactly
-// 200/200. Copy the alphabet-lesson visual language; reuse existing engines.
+// 200/200. Copies the alphabet-lesson visual language and reuses existing
+// engines (speak()/AUDIO_MAP, the typed-input pattern, and the Hangul writing
+// recognizer) rather than building parallel ones.
+
+// Attempt state is module-level and NEVER persisted — leaving discards it.
+let examActive = false;
+let hangulExamAttempt = null;
+let examCountdownHandle = 0;
+
+const EXAM_OPTION_MARKS = ["①", "②", "③", "④", "⑤", "⑥"];
+// Representative alphabet stage each part routes back to on a failed attempt.
+const EXAM_PART_STAGE = { 1: 1, 2: 5, 3: 3, 4: 6, 5: 7, 6: 2, 7: 1 };
+
+function clearExamCountdown() {
+  if (examCountdownHandle) { window.clearInterval(examCountdownHandle); examCountdownHandle = 0; }
+}
+
+function formatExamClock(ms) {
+  const totalSeconds = Math.max(0, Math.round(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+// Fresh attempt: reshuffle item order within each part and reshuffle every
+// MCQ's six options (spec §3). Pre-checks are not scored items.
+function buildHangulExamAttempt(bank) {
+  const parts = bank.sections.map((section) => ({
+    section,
+    items: shuffle(section.items).map((item) =>
+      item.type === "mcq" ? { ...item, options: shuffle(item.options) } : { ...item }),
+  }));
+  const now = Date.now();
+  return {
+    bank,
+    parts,
+    answers: {},     // id → chosen/typed value; draw items store { drawn: bool }
+    verdicts: {},    // id → boolean graded correct
+    audioPlays: {},  // id → play count (audio ≤ audioPlayLimit)
+    startedAt: now,
+    deadline: now + (Number(bank.timeLimitMinutes) || 90) * 60 * 1000,
+    stage: "audioCheck", // audioCheck → keyboardCheck → part → confirm → results
+    partIndex: 0,
+    itemIndex: -1,       // -1 = part-intro card, otherwise the item within the part
+    submitted: false,
+    result: null,
+  };
+}
+
+function getExamFlatItems(attempt) {
+  return attempt.parts.flatMap((part) => part.items);
+}
+
+function examItemAnswered(attempt, item) {
+  const given = attempt.answers[item.id];
+  if (item.type === "draw") return Boolean(given && given.drawn);
+  return given != null && String(given).trim() !== "";
+}
+
 function startHangulMasteryExamAttempt() {
+  const bank = getHangulMasteryExamBank();
+  if (!bank) { renderAlphabetExamHub(); return; }
+  resetLessonMotion("exam");
+  clearExamCountdown();
+  hangulExamAttempt = buildHangulExamAttempt(bank);
+  examActive = true;
+  startExamCountdown();
+  renderExamStep();
+}
+
+// Retake (spec/prompt §3): fresh shuffle, straight to Part 1 — the candidate
+// instructions and pre-checks are only required on the first entry.
+function retakeHangulExam() {
+  const bank = getHangulMasteryExamBank();
+  if (!bank) { renderAlphabetExamHub(); return; }
+  resetLessonMotion("exam");
+  clearExamCountdown();
+  hangulExamAttempt = buildHangulExamAttempt(bank);
+  hangulExamAttempt.stage = "part";
+  examActive = true;
+  startExamCountdown();
+  queueScreenMotion("forward", 1);
+  renderExamStep();
+}
+
+function startExamCountdown() {
+  clearExamCountdown();
+  examCountdownHandle = window.setInterval(() => {
+    const attempt = hangulExamAttempt;
+    if (!attempt || !examActive) { clearExamCountdown(); return; }
+    const remaining = attempt.deadline - Date.now();
+    const clock = document.getElementById("examCountdown");
+    if (clock) {
+      clock.textContent = formatExamClock(remaining);
+      clock.classList.toggle("exam-countdown-low", remaining <= 5 * 60 * 1000);
+    }
+    if (remaining <= 0) {
+      clearExamCountdown();
+      submitHangulExam(true); // time up: grade whatever is answered (rest score 0)
+    }
+  }, 1000);
+}
+
+function animateExamFrame(el, key, order) {
+  const root = el.querySelector("[data-lesson-motion-root]");
+  if (root) animateLessonFrame(root, "exam", { key, order, phase: "question" });
+}
+
+// Detail-bar back during the exam routes through the quit confirmation.
+function mountExamScreen(title) {
+  const el = showScreen("detail");
+  if (!el) return null;
+  showDetailBarWithBack("exam", title, () => requestExamQuit(() => {
+    queueScreenMotion("back", -1);
+    renderAlphabetExamHub();
+  }), "Hangul Mastery Exam");
+  return el;
+}
+
+// Position + time only — no streaks, accuracy, or correctness (spec §4).
+function examProgressHtml(titleKo, secondary, positionLabel) {
+  const remaining = hangulExamAttempt ? hangulExamAttempt.deadline - Date.now() : 0;
+  return `
+    <div class="exam-progress">
+      <div class="exam-progress-heading">
+        <span class="eyebrow">${escapeHtml(titleKo)}</span>
+        <span class="exam-progress-secondary">${escapeHtml(secondary)}</span>
+      </div>
+      <div class="exam-progress-meta">
+        <span class="exam-progress-position">${escapeHtml(positionLabel)}</span>
+        <span class="exam-countdown${remaining <= 5 * 60 * 1000 ? " exam-countdown-low" : ""}" id="examCountdown" aria-label="Time remaining">${escapeHtml(formatExamClock(remaining))}</span>
+      </div>
+    </div>`;
+}
+
+function renderExamStep() {
+  const attempt = hangulExamAttempt;
+  if (!attempt) { renderAlphabetExamHub(); return; }
+  if (attempt.stage === "audioCheck") return renderExamAudioCheck();
+  if (attempt.stage === "keyboardCheck") return renderExamKeyboardCheck();
+  if (attempt.stage === "confirm") return renderExamConfirm();
+  if (attempt.stage === "results") return renderExamResults();
+  return renderExamQuestionStep();
+}
+
+// ── Pre-checks ──────────────────────────────────────────────────────────────
+function renderExamAudioCheck() {
+  const el = mountExamScreen("소리 확인 · Audio check");
+  if (!el) return;
+  const sample = "가";
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">
+        ${examProgressHtml("소리 확인", "Audio check", "사전 점검 · Pre-check")}
+      </div>
+      <div class="exam-question exam-precheck">
+        <div class="eyebrow">소리 확인 · Audio check</div>
+        <h3 class="exam-prompt">시험을 시작하기 전에 소리를 확인하십시오.</h3>
+        <p class="screen-sub">Play the sample and confirm you can hear the audio before the examination begins.</p>
+        <div class="exam-audio-row">
+          <button class="button secondary compact" type="button" id="examAudioSample">▶ 소리 재생 · Play sample</button>
+        </div>
+      </div>
+      <div class="player-actions exam-actions">
+        <button class="button primary" type="button" id="examAudioOk">소리가 들립니다 · I can hear it</button>
+      </div>
+    </div>`;
+  el.querySelector("#examAudioSample").addEventListener("click", () => { void speak(sample); });
+  el.querySelector("#examAudioOk").addEventListener("click", () => {
+    hangulExamAttempt.stage = "keyboardCheck";
+    queueScreenMotion("forward", 1);
+    renderExamStep();
+  });
+  scheduleAutoSpeak(sample, 280);
+  animateExamFrame(el, "precheck-audio", 0);
+}
+
+function renderExamKeyboardCheck() {
+  const el = mountExamScreen("한글 입력 확인 · Keyboard check");
+  if (!el) return;
+  const target = normalizeHangulExamInput("한글");
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">
+        ${examProgressHtml("한글 입력 확인", "Korean keyboard check", "사전 점검 · Pre-check")}
+      </div>
+      <div class="exam-question exam-precheck">
+        <div class="eyebrow">한글 입력 확인 · Korean keyboard check</div>
+        <h3 class="exam-prompt" lang="ko">한국어 키보드로 “한글”이라고 입력하십시오.</h3>
+        <p class="screen-sub">Switch to your Korean keyboard and type 한글 to confirm input works.</p>
+        <input class="sentence-input exam-input" id="examKeyboardInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="여기에 입력" lang="ko" />
+        <div class="exam-input-status" id="examKeyboardStatus" aria-live="polite"></div>
+      </div>
+      <div class="player-actions exam-actions">
+        <button class="button primary" type="button" id="examKeyboardOk" disabled>다음 · Continue</button>
+      </div>
+    </div>`;
+  const input = el.querySelector("#examKeyboardInput");
+  const ok = el.querySelector("#examKeyboardOk");
+  const status = el.querySelector("#examKeyboardStatus");
+  const check = () => {
+    const good = normalizeHangulExamInput(input.value) === target;
+    ok.disabled = !good;
+    status.textContent = good ? "확인되었습니다 · Keyboard ready." : "";
+    status.className = `exam-input-status${good ? " ok" : ""}`;
+  };
+  input.addEventListener("input", check);
+  ok.addEventListener("click", () => {
+    hangulExamAttempt.stage = "part";
+    hangulExamAttempt.partIndex = 0;
+    hangulExamAttempt.itemIndex = -1;
+    queueScreenMotion("forward", 1);
+    renderExamStep();
+  });
+  window.setTimeout(() => { try { input.focus(); } catch (_) {} }, 140);
+  animateExamFrame(el, "precheck-keyboard", 1);
+}
+
+// ── Question flow ───────────────────────────────────────────────────────────
+function renderExamQuestionStep() {
+  const attempt = hangulExamAttempt;
+  const part = attempt.parts[attempt.partIndex];
+  if (!part) { attempt.stage = "confirm"; return renderExamStep(); }
+  if (attempt.itemIndex < 0) return renderExamPartIntro(part);
+  const item = part.items[attempt.itemIndex];
+  if (!item) { attempt.partIndex += 1; attempt.itemIndex = -1; return renderExamQuestionStep(); }
+  if (item.type === "mcq") return renderExamMcq(part, item);
+  if (item.type === "type") return renderExamType(part, item);
+  return renderExamDraw(part, item);
+}
+
+function isLastExamItem() {
+  const attempt = hangulExamAttempt;
+  return attempt.partIndex === attempt.parts.length - 1
+    && attempt.itemIndex === attempt.parts[attempt.partIndex].items.length - 1;
+}
+
+function examNextLabel() {
+  return isLastExamItem() ? "최종 제출 검토 · Review & submit" : "다음 · Next";
+}
+
+// Advance the forward-only cursor after an item is locked. Once past the last
+// part, move to the final-submission confirm screen.
+function advanceExam() {
+  const attempt = hangulExamAttempt;
+  attempt.itemIndex += 1;
+  if (attempt.itemIndex >= attempt.parts[attempt.partIndex].items.length) {
+    attempt.partIndex += 1;
+    attempt.itemIndex = -1;
+    if (attempt.partIndex >= attempt.parts.length) attempt.stage = "confirm";
+  }
+  queueScreenMotion("forward", 1);
+  renderExamStep();
+}
+
+function gradeExamItem(item) {
+  const attempt = hangulExamAttempt;
+  if (item.type === "mcq") {
+    attempt.verdicts[item.id] = attempt.answers[item.id] === item.answer;
+  } else if (item.type === "type") {
+    const given = attempt.answers[item.id];
+    attempt.verdicts[item.id] = given != null && normalizeHangulExamInput(given) === item.answer;
+  } else {
+    // draw verdict is computed against the canvas at lock time (below)
+    attempt.verdicts[item.id] = attempt.verdicts[item.id] === true;
+  }
+}
+
+function lockAndAdvanceExam(item) {
+  gradeExamItem(item);
+  advanceExam();
+}
+
+function renderExamPartIntro(part) {
+  const attempt = hangulExamAttempt;
+  const section = part.section;
+  const el = mountExamScreen(`파트 ${section.part} · ${section.titleKo}`);
+  if (!el) return;
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">
+        ${examProgressHtml(`파트 ${section.part} · ${section.titleKo}`, section.titleEn, `파트 ${section.part} / ${attempt.parts.length}`)}
+      </div>
+      <div class="exam-question exam-part-intro">
+        <div class="eyebrow">파트 ${section.part} · Part ${section.part}</div>
+        <h2 class="exam-part-title" lang="ko">${escapeHtml(section.titleKo)}</h2>
+        <div class="exam-part-title-en">${escapeHtml(section.titleEn)}</div>
+        <p class="exam-part-instruction" lang="ko">${escapeHtml(section.instructionKo)}</p>
+        <p class="screen-sub">${escapeHtml(section.instructionEn)}</p>
+        <div class="exam-part-count">${part.items.length} ${part.items.length === 1 ? "item · 1 mark" : `items · ${part.items.length} marks`}</div>
+      </div>
+      <div class="player-actions exam-actions">
+        <button class="button primary" type="button" id="examPartStart">시작 · Begin part ${section.part}</button>
+      </div>
+    </div>`;
+  el.querySelector("#examPartStart").addEventListener("click", () => {
+    attempt.itemIndex = 0;
+    queueScreenMotion("forward", 1);
+    renderExamStep();
+  });
+  animateExamFrame(el, `part-intro:${section.part}`, section.part * 100);
+}
+
+function examAudioPlaysLeft(item) {
+  const limit = Number(hangulExamAttempt.bank.audioPlayLimit) || 2;
+  return Math.max(0, limit - (hangulExamAttempt.audioPlays[item.id] || 0));
+}
+
+function examAudioButtonHtml(item) {
+  if (!item.audioText) return "";
+  const left = examAudioPlaysLeft(item);
+  return `<button class="button secondary compact exam-audio-btn" type="button" id="examAudioBtn" ${left <= 0 ? "disabled" : ""}>▶ 소리 듣기 · Play <span class="exam-audio-left" id="examAudioLeft">(${left} left)</span></button>`;
+}
+
+function bindExamAudioButton(el, item) {
+  const btn = el.querySelector("#examAudioBtn");
+  if (!btn || !item.audioText) return;
+  btn.addEventListener("click", () => {
+    if (examAudioPlaysLeft(item) <= 0) return;
+    hangulExamAttempt.audioPlays[item.id] = (hangulExamAttempt.audioPlays[item.id] || 0) + 1;
+    void speak(item.audioText);
+    const left = examAudioPlaysLeft(item);
+    const label = el.querySelector("#examAudioLeft");
+    if (label) label.textContent = `(${left} left)`;
+    if (left <= 0) btn.disabled = true;
+  });
+}
+
+function renderExamMcq(part, item) {
+  const attempt = hangulExamAttempt;
+  const section = part.section;
+  const el = mountExamScreen(`파트 ${section.part} · ${section.titleKo}`);
+  if (!el) return;
+  const qNum = attempt.itemIndex + 1;
+  const selected = attempt.answers[item.id];
+  // Stimulus is shown only when there is no audio cue (audio parts hide it so
+  // the answer is heard, not read).
+  const stimulusHtml = item.stimulus && !item.audioText
+    ? `<div class="exam-stimulus">${escapeHtml(item.stimulus)}</div>` : "";
+  const optionsHtml = item.options.map((opt, i) => `
+      <button class="option exam-option${selected === opt ? " exam-selected" : ""}" type="button" data-exam-option="${escapeHtml(opt)}" ${textLanguageAttr(opt)}>
+        <span class="exam-option-mark" aria-hidden="true">${EXAM_OPTION_MARKS[i]}</span>
+        <span class="exam-option-text">${escapeHtml(opt)}</span>
+      </button>`).join("");
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">
+        ${examProgressHtml(`파트 ${section.part} · ${section.titleKo}`, `Question ${qNum} of ${part.items.length}`, `파트 ${section.part} / ${attempt.parts.length}`)}
+      </div>
+      <div class="exam-question">
+        ${item.audioText ? `<div class="exam-audio-row">${examAudioButtonHtml(item)}</div>` : ""}
+        ${stimulusHtml}
+        <h3 class="exam-prompt" lang="ko">${escapeHtml(item.promptKo)}</h3>
+        <div class="exam-prompt-en">${escapeHtml(item.promptEn)}</div>
+        <div class="quiz-options exam-options">${optionsHtml}</div>
+      </div>
+      <div class="player-actions exam-actions">
+        <button class="button primary" type="button" id="examNext">${examNextLabel()}</button>
+      </div>
+    </div>`;
+  bindExamAudioButton(el, item);
+  el.querySelectorAll("[data-exam-option]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      attempt.answers[item.id] = btn.dataset.examOption;
+      el.querySelectorAll("[data-exam-option]").forEach((b) => b.classList.toggle("exam-selected", b === btn));
+    });
+  });
+  el.querySelector("#examNext").addEventListener("click", () => lockAndAdvanceExam(item));
+  animateExamFrame(el, `q:${item.id}`, 1000 + attempt.partIndex * 100 + attempt.itemIndex);
+}
+
+function renderExamType(part, item) {
+  const attempt = hangulExamAttempt;
+  const section = part.section;
+  const el = mountExamScreen(`파트 ${section.part} · ${section.titleKo}`);
+  if (!el) return;
+  const qNum = attempt.itemIndex + 1;
+  const current = attempt.answers[item.id] || "";
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">
+        ${examProgressHtml(`파트 ${section.part} · ${section.titleKo}`, `Question ${qNum} of ${part.items.length}`, `파트 ${section.part} / ${attempt.parts.length}`)}
+      </div>
+      <div class="exam-question">
+        ${item.audioText ? `<div class="exam-audio-row">${examAudioButtonHtml(item)}</div>` : ""}
+        <h3 class="exam-prompt" lang="ko">${escapeHtml(item.promptKo)}</h3>
+        <div class="exam-prompt-en">${escapeHtml(item.promptEn)}</div>
+        <input class="sentence-input exam-input" id="examTypeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="한국어로 입력" value="${escapeHtml(current)}" lang="ko" />
+      </div>
+      <div class="player-actions exam-actions">
+        <button class="button primary" type="button" id="examNext">${examNextLabel()}</button>
+      </div>
+    </div>`;
+  bindExamAudioButton(el, item);
+  const input = el.querySelector("#examTypeInput");
+  input.addEventListener("input", () => { attempt.answers[item.id] = input.value; });
+  input.addEventListener("keydown", (event) => { if (event.key === "Enter") { attempt.answers[item.id] = input.value; lockAndAdvanceExam(item); } });
+  el.querySelector("#examNext").addEventListener("click", () => {
+    attempt.answers[item.id] = input.value;
+    lockAndAdvanceExam(item);
+  });
+  window.setTimeout(() => { try { input.focus(); } catch (_) {} }, 140);
+  animateExamFrame(el, `q:${item.id}`, 1000 + attempt.partIndex * 100 + attempt.itemIndex);
+}
+
+// Blank canvas, learner ink only (spec §6 / Part 7): no ghost glyph, guide, or
+// tracing overlay, and item.target is NEVER rendered. Reuses the shared Hangul
+// recognizer + ink primitives.
+function drawExamCanvas(canvas, strokes) {
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.strokeStyle = "#7a5cff";
+  ctx.lineWidth = Math.max(6, Math.min(28, Number(state.writingLineWidth) || 14));
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  strokes.forEach((stroke) => {
+    if (stroke.length < 2) return;
+    ctx.beginPath();
+    ctx.moveTo(stroke[0].x, stroke[0].y);
+    for (let i = 1; i < stroke.length; i += 1) ctx.lineTo(stroke[i].x, stroke[i].y);
+    ctx.stroke();
+  });
+  ctx.restore();
+}
+
+function bindExamCanvas(canvas, strokes, onChange) {
+  let active = null;
+  const pointFromEvent = (event) => {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: ((event.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((event.clientY - rect.top) / rect.height) * canvas.height,
+      t: Date.now(),
+    };
+  };
+  canvas.addEventListener("pointerdown", (event) => {
+    if (event.isPrimary === false) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (active) return;
+    event.preventDefault();
+    try { canvas.setPointerCapture(event.pointerId); } catch (_) {}
+    active = [pointFromEvent(event)];
+    strokes.push(active);
+    onChange();
+  });
+  canvas.addEventListener("pointermove", (event) => {
+    if (!active) return;
+    event.preventDefault();
+    const samples = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : [event];
+    (samples.length ? samples : [event]).forEach((sample) => active.push(pointFromEvent(sample)));
+    onChange();
+  });
+  const finish = () => { if (!active) return; active = null; onChange(); };
+  canvas.addEventListener("pointerup", finish);
+  const cancel = () => { if (!active) return; active = null; strokes.pop(); onChange(); };
+  canvas.addEventListener("pointercancel", cancel);
+  canvas.addEventListener("lostpointercapture", cancel);
+}
+
+// Grade a Part 7 drawing: only an exact-glyph 'great' recognition earns the
+// mark (spec §3 — a 'close' drawing scores zero). Reuses the shared recognizer.
+function gradeExamDrawing(canvas, strokes, target) {
+  if (!strokes.length) return false;
+  const recognizer = getHangulWritingRecognizer();
+  if (!recognizer) return false;
+  const normalized = strokes
+    .map((stroke) => cleanHangulInkStroke(normalizeHangulInkStroke(stroke, canvas)))
+    .filter(Boolean);
+  if (!normalized.length) return false;
+  const matches = recognizer.recognize(normalized, getHangulWritingRecognitionGlyphs().length);
+  return isHangulFreehandRecognitionMatch(matches, target, normalized) === true;
+}
+
+function renderExamDraw(part, item) {
+  const attempt = hangulExamAttempt;
+  const section = part.section;
+  const el = mountExamScreen(`파트 ${section.part} · ${section.titleKo}`);
+  if (!el) return;
+  const qNum = attempt.itemIndex + 1;
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">
+        ${examProgressHtml(`파트 ${section.part} · ${section.titleKo}`, `Question ${qNum} of ${part.items.length}`, `파트 ${section.part} / ${attempt.parts.length}`)}
+      </div>
+      <div class="exam-question exam-draw-question">
+        ${item.audioText ? `<div class="exam-audio-row">${examAudioButtonHtml(item)}</div>` : ""}
+        <h3 class="exam-prompt" lang="ko">${escapeHtml(item.promptKo)}</h3>
+        <div class="exam-prompt-en">${escapeHtml(item.promptEn)}</div>
+        <div class="exam-canvas-wrap">
+          <canvas id="examDrawCanvas" class="exam-canvas" width="480" height="480" aria-label="Drawing area"></canvas>
+        </div>
+        <div class="exam-draw-controls">
+          <button class="button secondary compact" type="button" id="examDrawUndo" disabled>실행 취소 · Undo</button>
+          <button class="button secondary compact" type="button" id="examDrawClear" disabled>지우기 · Clear</button>
+        </div>
+      </div>
+      <div class="player-actions exam-actions">
+        <button class="button primary" type="button" id="examNext">${examNextLabel()}</button>
+      </div>
+    </div>`;
+  bindExamAudioButton(el, item);
+  const canvas = el.querySelector("#examDrawCanvas");
+  const undo = el.querySelector("#examDrawUndo");
+  const clear = el.querySelector("#examDrawClear");
+  const strokes = [];
+  const updateControls = () => { undo.disabled = clear.disabled = strokes.length === 0; };
+  const refresh = () => { drawExamCanvas(canvas, strokes); updateControls(); };
+  bindExamCanvas(canvas, strokes, refresh);
+  undo.addEventListener("click", () => { strokes.pop(); refresh(); });
+  clear.addEventListener("click", () => { strokes.length = 0; refresh(); });
+  el.querySelector("#examNext").addEventListener("click", () => {
+    attempt.verdicts[item.id] = gradeExamDrawing(canvas, strokes, item.target);
+    attempt.answers[item.id] = { drawn: strokes.length > 0 };
+    lockAndAdvanceExam(item);
+  });
+  animateExamFrame(el, `q:${item.id}`, 1000 + attempt.partIndex * 100 + attempt.itemIndex);
+}
+
+// ── Final submission ────────────────────────────────────────────────────────
+function renderExamConfirm() {
+  const attempt = hangulExamAttempt;
+  const el = mountExamScreen("최종 제출 · Final submission");
+  if (!el) return;
+  const flat = getExamFlatItems(attempt);
+  const unanswered = flat.filter((item) => !examItemAnswered(attempt, item)).length;
+  el.innerHTML = `
+    <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
+      <div class="player-head exam-head">
+        ${examProgressHtml("최종 제출", "Final submission", "제출 · Submit")}
+      </div>
+      <div class="exam-question exam-confirm">
+        <div class="eyebrow">최종 제출 · Final submission</div>
+        <h2 class="exam-part-title">Submit your exam?</h2>
+        <p class="screen-sub">You have reached the end of the examination. Answers cannot be changed after submission, and there is no way to return to earlier items.</p>
+        <div class="exam-confirm-stat"><strong>${unanswered}</strong> of ${flat.length} left unanswered</div>
+        <p class="screen-sub">${unanswered > 0
+          ? "Unanswered items are scored as incorrect. A flawless 200/200 is required for 한글 완전 습득 · Hangul mastered."
+          : "Every item has an answer. A flawless 200/200 is required for 한글 완전 습득 · Hangul mastered."}</p>
+      </div>
+      <div class="player-actions exam-actions">
+        <button class="button primary" type="button" id="examSubmit">최종 제출 · Submit exam</button>
+      </div>
+    </div>`;
+  el.querySelector("#examSubmit").addEventListener("click", () => submitHangulExam(false));
+  animateExamFrame(el, "confirm", 9000);
+}
+
+// Spec §3: mastered ⇔ correct === 200 && total === 200 && unanswered === 0 &&
+// ungraded === 0. Every item carries a boolean verdict, so ungraded is always 0.
+function submitHangulExam(auto) {
+  const attempt = hangulExamAttempt;
+  if (!attempt || attempt.submitted) return;
+  attempt.submitted = true;
+  examActive = false;
+  clearExamCountdown();
+  stopSpeech();
+  const flat = getExamFlatItems(attempt);
+  flat.forEach((item) => { if (!(item.id in attempt.verdicts)) attempt.verdicts[item.id] = false; });
+  const total = flat.length;
+  const correct = flat.reduce((sum, item) => sum + (attempt.verdicts[item.id] ? 1 : 0), 0);
+  const unanswered = flat.filter((item) => !examItemAnswered(attempt, item)).length;
+  const mastered = correct === 200 && total === 200 && unanswered === 0;
+
+  const record = normalizeAlphabetMasteryExam(state.alphabetMasteryExam);
+  record.attempts += 1;
+  record.bestCorrect = Math.max(record.bestCorrect, correct);
+  if (mastered) record.mastered = true; // once earned, never regressed
+  record.completedAt = new Date().toISOString();
+  state.alphabetMasteryExam = record;
+  saveState(); // never re-locks previously unlocked content
+
+  attempt.result = { total, correct, unanswered, mastered, auto, timeUsedMs: Date.now() - attempt.startedAt };
+  attempt.stage = "results";
+  queueScreenMotion("forward", 1);
+  renderExamResults();
+}
+
+// ── Results ceremony + per-part breakdown + full answer review ──────────────
+function examTypeTotals(attempt) {
+  const totals = { mcq: { earned: 0, total: 0 }, type: { earned: 0, total: 0 }, draw: { earned: 0, total: 0 } };
+  getExamFlatItems(attempt).forEach((item) => {
+    const bucket = totals[item.type];
+    if (!bucket) return;
+    bucket.total += 1;
+    if (attempt.verdicts[item.id]) bucket.earned += 1;
+  });
+  return totals;
+}
+
+function examPartStats(attempt) {
+  return attempt.parts.map((part) => {
+    const earned = part.items.reduce((sum, item) => sum + (attempt.verdicts[item.id] ? 1 : 0), 0);
+    return { part: part.section.part, titleKo: part.section.titleKo, titleEn: part.section.titleEn, earned, total: part.items.length };
+  });
+}
+
+function examBreakdownHtml(partStats) {
+  const missed = partStats
+    .filter((stat) => stat.earned < stat.total)
+    .sort((a, b) => (b.total - b.earned) - (a.total - a.earned));
+  if (!missed.length) return "";
+  const rows = missed.map((stat) => `
+      <div class="exam-breakdown-row">
+        <div class="exam-breakdown-part">
+          <span lang="ko">파트 ${stat.part} · ${escapeHtml(stat.titleKo)}</span>
+          <span class="exam-breakdown-en">${escapeHtml(stat.titleEn)}</span>
+        </div>
+        <div class="exam-breakdown-score">${stat.earned}/${stat.total}</div>
+        <button class="button secondary compact" type="button" data-exam-route="${EXAM_PART_STAGE[stat.part] || 1}">Review Stage 0${EXAM_PART_STAGE[stat.part] || 1} →</button>
+      </div>`).join("");
+  return `<div class="exam-breakdown">
+      <div class="exam-breakdown-title">Weakest parts — route back to the stage that teaches each skill.</div>
+      ${rows}
+    </div>`;
+}
+
+function examReviewRowHtml(attempt, item) {
+  const correct = attempt.verdicts[item.id] === true;
+  const given = attempt.answers[item.id];
+  let givenText;
+  let correctText;
+  if (item.type === "draw") {
+    givenText = given && given.drawn ? "✍️ drawn" : "— (blank)";
+    correctText = item.target;
+  } else {
+    givenText = given != null && String(given).trim() !== "" ? String(given) : "— (blank)";
+    correctText = item.answer;
+  }
+  return `<div class="exam-review-row ${correct ? "is-correct" : "is-wrong"}">
+      <span class="exam-review-mark" aria-hidden="true">${correct ? "✓" : "✗"}</span>
+      <div class="exam-review-body">
+        <div class="exam-review-prompt">${escapeHtml(item.promptEn || item.promptKo)}</div>
+        <div class="exam-review-answers">
+          <span class="exam-review-given" lang="ko">Your answer: ${escapeHtml(givenText)}</span>
+          <span class="exam-review-correct" lang="ko">Correct: ${escapeHtml(correctText)}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function examReviewHtml(attempt) {
+  const parts = attempt.parts.map((part) => {
+    const earned = part.items.reduce((sum, item) => sum + (attempt.verdicts[item.id] ? 1 : 0), 0);
+    const rows = part.items.map((item) => examReviewRowHtml(attempt, item)).join("");
+    return `<details class="exam-review-part">
+        <summary><span lang="ko">파트 ${part.section.part} · ${escapeHtml(part.section.titleKo)}</span><span class="exam-review-part-score">${earned}/${part.items.length}</span></summary>
+        <div class="exam-review-list">${rows}</div>
+      </details>`;
+  }).join("");
+  return `<div class="exam-review">
+      <div class="exam-review-title">답안 확인 · Full answer review</div>
+      ${parts}
+    </div>`;
+}
+
+function renderExamResults() {
+  const attempt = hangulExamAttempt;
+  if (!attempt || !attempt.result) { renderAlphabetExamHub(); return; }
   const el = showScreen("detail");
   if (!el) return;
-  showDetailBarWithBack("exam", "Hangul Mastery Exam", () => renderAlphabetExamHub(), "Hangul Mastery Exam");
-  el.innerHTML = `
-    <div class="card word-card exam-intro-card">
-      <div class="eyebrow">시험 준비 중 · Exam under construction</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">The examination hall isn't open yet</h2>
-      <div class="screen-sub">The 200-item bank, grading contract, and this exam section are in place; the attempt runner ships in a follow-up PR (see docs/EXAM_TAB_HANDOVER.md). Your progress is unaffected.</div>
-      <button class="button secondary" type="button" id="examBackBtn">Back to the exam overview</button>
-    </div>`;
-  el.querySelector("#examBackBtn").addEventListener("click", () => {
+  showDetailBarWithBack("exam", "시험 결과 · Exam results", () => {
+    hangulExamAttempt = null;
+    queueScreenMotion("back", -1);
+    renderAlphabetExamHub();
+  }, "Hangul Mastery Exam");
+
+  const { correct, mastered, timeUsedMs } = attempt.result;
+  const totals = examTypeTotals(attempt);
+  const partStats = examPartStats(attempt);
+  const stats = [
+    { value: formatExamClock(timeUsedMs), label: "Time used" },
+    { value: `${totals.mcq.earned}/${totals.mcq.total}`, label: "Multiple choice" },
+    { value: `${totals.type.earned}/${totals.type.total}`, label: "Keyboard" },
+    { value: `${totals.draw.earned}/${totals.draw.total}`, label: "Handwriting" },
+  ];
+  const actionsHtml = `
+      <button class="button primary" type="button" id="examRetake">다시 응시 · Retake exam</button>
+      <button class="button secondary" type="button" id="examBackHub">Back to exam overview</button>`;
+
+  const detailsHtml = mastered
+    ? examReviewHtml(attempt)
+    : `${examBreakdownHtml(partStats)}${examReviewHtml(attempt)}`;
+
+  el.innerHTML = mastered
+    ? premiumCompletionHtml({
+        tone: "crown",
+        icon: "crown",
+        eyebrow: "한글 완전 습득 · Hangul mastered",
+        title: "Hangul mastered",
+        copy: "A flawless 200/200 across all seven parts. 한글을 완전히 습득했습니다.",
+        score: { value: "200/200", label: "Perfect score" },
+        stats,
+        detailsHtml,
+        actionsHtml,
+        celebrate: true,
+        className: "exam-completion",
+      })
+    : premiumCompletionHtml({
+        tone: "neutral",
+        icon: "spark",
+        eyebrow: "아직 완전 습득 전 · Not yet mastered",
+        title: `${correct} / 200`,
+        copy: "Only a flawless 200/200 earns 한글 완전 습득. Review the weakest parts below, then retake when ready.",
+        score: { value: `${correct}/200`, label: "This attempt" },
+        stats,
+        detailsHtml,
+        actionsHtml,
+        celebrate: false,
+        className: "exam-completion",
+      });
+
+  el.querySelector("#examRetake")?.addEventListener("click", retakeHangulExam);
+  el.querySelector("#examBackHub")?.addEventListener("click", () => {
+    hangulExamAttempt = null;
     queueScreenMotion("back", -1);
     renderAlphabetExamHub();
   });
+  el.querySelectorAll("[data-exam-route]").forEach((btn) => {
+    btn.addEventListener("click", () => routeBackToAlphabetStage(Number(btn.dataset.examRoute)));
+  });
+  animateLessonFrame(el.querySelector(".completion-stage"), "exam", { key: "complete", order: 20000, phase: "complete", complete: true });
+}
+
+function routeBackToAlphabetStage(stageNumber) {
+  hangulExamAttempt = null;
+  examActive = false;
+  clearExamCountdown();
+  const count = getLearnStageCount("alphabet") || 1;
+  const target = Math.min(Math.max(1, stageNumber || 1), count);
+  queueScreenMotion("forward", 1);
+  if (getLearnStageStatus("alphabet", target) === "locked") { openLearnStageMenu("alphabet"); return; }
+  openLearnStage("alphabet", target);
+}
+
+// ── Quit interception (spec §4) ─────────────────────────────────────────────
+function discardExamAttempt() {
+  examActive = false;
+  clearExamCountdown();
+  stopSpeech();
+  hangulExamAttempt = null;
+}
+
+function requestExamQuit(onProceed) {
+  if (!examActive) {
+    hangulExamAttempt = null;
+    if (typeof onProceed === "function") onProceed();
+    else renderAlphabetExamHub();
+    return;
+  }
+  showExamQuitConfirm(onProceed);
+}
+
+function showExamQuitConfirm(onProceed) {
+  if (document.getElementById("examQuitOverlay")) return;
+  const overlay = document.createElement("div");
+  overlay.id = "examQuitOverlay";
+  overlay.className = "exam-quit-overlay";
+  overlay.innerHTML = `
+    <div class="exam-quit-dialog" role="alertdialog" aria-modal="true" aria-labelledby="examQuitTitle">
+      <h3 id="examQuitTitle">시험을 종료하시겠습니까? · Quit the exam?</h3>
+      <p>Leaving now discards this attempt. Your answers are not saved, and the exam restarts from the beginning next time.</p>
+      <div class="exam-quit-actions">
+        <button class="button secondary" type="button" id="examQuitCancel">계속 · Resume exam</button>
+        <button class="button exam-quit-discard" type="button" id="examQuitConfirm">종료 · Quit &amp; discard</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const cancel = overlay.querySelector("#examQuitCancel");
+  overlay.querySelector("#examQuitConfirm").addEventListener("click", () => {
+    overlay.remove();
+    discardExamAttempt();
+    if (typeof onProceed === "function") onProceed();
+    else renderAlphabetExamHub();
+  });
+  cancel.addEventListener("click", () => overlay.remove());
+  overlay.addEventListener("click", (event) => { if (event.target === overlay) overlay.remove(); });
+  window.setTimeout(() => { try { cancel.focus(); } catch (_) {} }, 40);
 }
 
 function renderAlphabetPractice() {
@@ -22236,11 +22998,17 @@ async function init() {
   });
   document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const previousIndex = Math.max(0, HUBS.indexOf(activeHub));
-      const nextIndex = Math.max(0, HUBS.indexOf(btn.dataset.nav));
-      queueScreenMotion("tab", nextIndex >= previousIndex ? 1 : -1);
-      if (btn.dataset.nav === "learn") tapLearnTab();
-      else goHub(btn.dataset.nav);
+      const go = () => {
+        const previousIndex = Math.max(0, HUBS.indexOf(activeHub));
+        const nextIndex = Math.max(0, HUBS.indexOf(btn.dataset.nav));
+        queueScreenMotion("tab", nextIndex >= previousIndex ? 1 : -1);
+        if (btn.dataset.nav === "learn") tapLearnTab();
+        else goHub(btn.dataset.nav);
+      };
+      // A live exam attempt intercepts navigation with a quit confirmation;
+      // leaving discards the attempt (spec §4).
+      if (examActive) { requestExamQuit(go); return; }
+      go();
     });
   });
   document.addEventListener("visibilitychange", () => {

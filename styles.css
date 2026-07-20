@@ -6764,3 +6764,196 @@ li { margin-bottom: 4px; }
   gap: 8px;
 }
 .exam-rules-list li { line-height: 1.45; }
+
+/* ─── Exam attempt runner (2026-07-20) ──────────────────────────────────────
+   Reuses the alphabet drill-runner shell (.lesson-player-wrap.alphabet-lesson-player,
+   .player-head, .player-actions) with a neutral, sober exam skin — position and
+   time only, no streaks/accuracy/correctness while the attempt is active. */
+.exam-runner { gap: 14px; }
+.exam-head { display: block; }
+.exam-progress {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.exam-progress-heading { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.exam-progress-secondary { font-size: .82rem; color: var(--text-muted, #9aa); }
+.exam-progress-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.exam-progress-position { font-size: .78rem; color: var(--text-muted, #9aa); }
+.exam-countdown {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: .02em;
+  padding: 2px 10px;
+  border-radius: var(--radius-xs);
+  border: 1.5px solid var(--line);
+}
+.exam-countdown-low { color: var(--bad); border-color: var(--bad); }
+
+.exam-question { display: flex; flex-direction: column; gap: 12px; }
+.exam-audio-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.exam-audio-left { opacity: .8; font-variant-numeric: tabular-nums; }
+.exam-stimulus {
+  font-size: .9rem;
+  color: var(--text-muted, #9aa);
+  padding: 8px 12px;
+  border-radius: var(--radius-xs);
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--line);
+}
+.exam-prompt { margin: 0; font-size: 1.12rem; line-height: 1.35; }
+.exam-prompt-en { font-size: .92rem; color: var(--text-muted, #9aa); }
+
+.exam-options { grid-template-columns: 1fr 1fr; }
+.exam-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  justify-content: flex-start;
+}
+.exam-option-mark { font-size: 1.05rem; opacity: .7; flex: 0 0 auto; }
+.exam-option-text { font-size: 1.05rem; overflow-wrap: anywhere; }
+/* Neutral selection — chosen, never "correct/incorrect" during the exam. */
+.exam-option.exam-selected {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb),.14);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb),.35);
+}
+
+.exam-input { width: 100%; font-size: 1.15rem; text-align: center; }
+.exam-input-status { min-height: 1.1em; font-size: .85rem; color: var(--text-muted, #9aa); }
+.exam-input-status.ok { color: var(--good); }
+
+.exam-part-intro { align-items: flex-start; text-align: left; }
+.exam-part-title { margin: 4px 0 0; font-size: 1.4rem; }
+.exam-part-title-en { font-size: .95rem; color: var(--text-muted, #9aa); }
+.exam-part-instruction { margin: 8px 0 0; font-size: 1.02rem; }
+.exam-part-count {
+  margin-top: 6px;
+  font-size: .82rem;
+  color: var(--text-muted, #9aa);
+  font-variant-numeric: tabular-nums;
+}
+
+.exam-canvas-wrap {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+}
+.exam-canvas {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm, 12px);
+  background: rgba(255,255,255,.03);
+  touch-action: none;
+  cursor: crosshair;
+  display: block;
+}
+.exam-draw-controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+.exam-confirm { align-items: flex-start; text-align: left; }
+.exam-confirm-stat {
+  font-size: 1.05rem;
+  padding: 10px 14px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.04);
+}
+.exam-confirm-stat strong { font-size: 1.3rem; }
+
+/* Results: breakdown + collapsible per-part answer review below the ceremony. */
+.exam-completion .completion-details { text-align: left; }
+.exam-breakdown { display: grid; gap: 8px; margin-bottom: 16px; }
+.exam-breakdown-title { font-size: .88rem; color: var(--text-muted, #9aa); }
+.exam-breakdown-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  background: rgba(248,113,113,.06);
+}
+.exam-breakdown-part { display: flex; flex-direction: column; gap: 2px; flex: 1 1 140px; min-width: 0; }
+.exam-breakdown-en { font-size: .78rem; color: var(--text-muted, #9aa); }
+.exam-breakdown-score { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.exam-review { display: grid; gap: 8px; }
+.exam-review-title { font-size: .9rem; font-weight: 700; }
+.exam-review-part {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+.exam-review-part > summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+.exam-review-part > summary::-webkit-details-marker { display: none; }
+.exam-review-part-score { font-variant-numeric: tabular-nums; opacity: .85; }
+.exam-review-list { display: grid; gap: 6px; padding: 4px 12px 12px; }
+.exam-review-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: var(--radius-xs);
+  background: rgba(255,255,255,.03);
+}
+.exam-review-row.is-correct { border-left: 3px solid var(--good); }
+.exam-review-row.is-wrong { border-left: 3px solid var(--bad); }
+.exam-review-mark { font-weight: 800; flex: 0 0 auto; }
+.exam-review-row.is-correct .exam-review-mark { color: var(--good); }
+.exam-review-row.is-wrong .exam-review-mark { color: var(--bad); }
+.exam-review-body { display: grid; gap: 3px; min-width: 0; }
+.exam-review-prompt { font-size: .88rem; }
+.exam-review-answers { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .82rem; color: var(--text-muted, #9aa); }
+.exam-review-correct { color: var(--good); }
+
+/* Quit confirmation overlay (spec §4 — leaving discards the attempt). */
+.exam-quit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(2px);
+}
+.exam-quit-dialog {
+  max-width: 420px;
+  width: 100%;
+  background: var(--surface, #12141c);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 14px);
+  padding: 22px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.5);
+}
+.exam-quit-dialog h3 { margin: 0 0 8px; font-size: 1.15rem; }
+.exam-quit-dialog p { margin: 0 0 18px; font-size: .92rem; color: var(--text-muted, #9aa); line-height: 1.45; }
+.exam-quit-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.button.exam-quit-discard {
+  background: var(--bad);
+  color: #fff;
+  border: 1.5px solid var(--bad);
+}
+.button.exam-quit-discard:hover:not(:disabled) { filter: brightness(1.08); }
+
+@media (max-width: 480px) {
+  .exam-options { grid-template-columns: 1fr; }
+}

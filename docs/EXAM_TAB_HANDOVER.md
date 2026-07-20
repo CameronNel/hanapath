@@ -52,7 +52,37 @@
 - `styles.css` — a small neutral `.exam-*` block (entry card, status row,
   rules list). Runner styles are yours to add.
 
-## 2. What you must build (the one shot)
+## 2. What you must build (the one shot) — ✅ DONE (2026-07-20)
+
+**Status: shipped.** The `startHangulMasteryExamAttempt()` stub is replaced by
+the full forward-only attempt runner in `app.js` (search
+`EXAM HUB · HANGUL MASTERY EXAMINATION`), with runner styles under the
+`Exam attempt runner (2026-07-20)` block in `styles.css`. Caches bumped
+(`sw.js` `CACHE_NAME` → `hanapath-shell-v434`; `app.js` → `?v=20260720j`,
+`styles.css` → `?v=20260720h`). All six audits stay green and a headless
+Chromium pass exercised the full flow (six options + reshuffle, audio limit
+stops at 2, NFC typed grading, blank canvases with no target leak, real
+recognizer awards the mark on a clean trace, 199/200 ≠ mastery, 200/200 →
+crown + persists across reload, quit discards the attempt).
+
+**Deviations / decisions worth noting:**
+
+- **Pre-checks are gates, not scored items.** 소리 확인 plays a `가` sample via
+  `speak()`; 한글 입력 확인 requires typing `한글` (NFC) before continuing.
+- **Retake skips the pre-checks** and lands directly on the Part 1 intro card,
+  per the one-shot prompt ("straight to Part 1"); the candidate-instructions
+  screen is only shown on first entry.
+- **Draw grading reuses the shared recognizer** (`getHangulWritingRecognizer` +
+  `isHangulFreehandRecognitionMatch` + the `normalizeHangulInkStroke` /
+  `cleanHangulInkStroke` ink primitives). The exam keeps its own lightweight
+  canvas + pointer binding (id `examDrawCanvas`) so the guided-practice
+  auto-check/feedback path never runs mid-exam — no parallel *engine*, just an
+  isolated feedback-free capture surface.
+- **Failed-attempt routing** maps each part to a representative alphabet stage
+  (`EXAM_PART_STAGE`) and opens that stage (or the stage menu if locked); it
+  never exposes teaching content while `examActive`.
+- **Answer review** (owner override §1.2) is a collapsible per-part list shown
+  only after submission; nothing signals correctness during the attempt.
 
 > **⚠ Owner overrides (2026-07-20, after this file was first written):** the
 > runner is **forward-only** (no Previous / flags / 답안 확인 revisit — Next
