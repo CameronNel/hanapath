@@ -241,6 +241,15 @@ The report must answer, explicitly:
 - where subject honorific production becomes eligible;
 - where modifier and irregular-family production becomes eligible.
 
+**Known audit concern:** the curated schema names a `tense-negation` source group,
+but the visible v2 grammar-unit sequence does not, by title alone, establish a
+clear dedicated past-and-negation milestone. The implementation must trace those
+source rows into their actual v2 lesson/unit placements and inspect the lesson
+practice modes. If explicit teaching cannot be demonstrated, past/negation may
+not receive scored production quotas merely because `words_inflect.js` can
+produce the forms. Open a separate curriculum issue rather than silently
+pretending the content was taught.
+
 If a competency cannot be tied to an explicit completed lesson/unit, it may
 appear only as an unscored research candidate—not in the released exam.
 
