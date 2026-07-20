@@ -54,6 +54,15 @@
 
 ## 2. What you must build (the one shot)
 
+> **⚠ Owner overrides (2026-07-20, after this file was first written):** the
+> runner is **forward-only** (no Previous / flags / 답안 확인 revisit — Next
+> locks each item), the **full per-item answer review is shown after
+> submission** (superseding spec §3's answer-key secrecy), and results are a
+> polished `premiumCompletionHtml()` score ceremony in the alphabet-lesson
+> visual style. The authoritative, paste-ready build contract is
+> **[`EXAM_RUNNER_ONE_SHOT_PROMPT.md`](EXAM_RUNNER_ONE_SHOT_PROMPT.md)** —
+> where the list below or the spec conflicts with it, that file wins.
+
 Replace the `startHangulMasteryExamAttempt()` stub with the full attempt
 runner. The ordered contract is written as a comment directly above the stub
 in `app.js`; it condenses spec §§1–6:

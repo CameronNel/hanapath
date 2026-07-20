@@ -15275,28 +15275,17 @@ function renderHangulMasteryExamIntro() {
 }
 
 // ── ATTEMPT RUNNER (NOT YET IMPLEMENTED) ────────────────────────────────────
-// One-shot finishing contract — implement in this order, reusing existing
-// engines (do NOT build parallel ones):
-//   1. Pre-checks: 소리 확인 audio check (speak() + AUDIO_MAP playback) and
-//      한글 입력 확인 keyboard check (normalizeHangulExamInput echo field).
-//   2. Attempt state: build from getHangulMasteryExamBank() — shuffle item
-//      order within each part and shuffle each MCQ's six options per attempt;
-//      keep {answers, flags, audioPlays, startedAt} in a module-level object,
-//      NOT in persisted state (leaving discards the attempt, spec §4).
-//   3. Set examActive = true; while active suppress reference surfaces
-//      (All Hangul board, hints, reveals, option audio previews, tracing
-//      guides) and intercept nav via a quit-confirmation.
-//   4. Render parts 1–5 as six-option MCQs (① – ⑥ order, explicit Prev/Next,
-//      Flag for review, Clear answer; no auto-advance, no answer coloring).
-//   5. Part 6: Korean text input graded later via normalizeHangulExamInput
-//      strict equality. Part 7: blank canvas per item — reuse the Hangul
-//      writing canvas + HANGUL_STROKES recognition adapter; store the verdict;
-//      only exact glyph + 'great' verdict earns the mark. Never show `target`.
-//   6. 답안 확인 review screen (unanswered + flagged) → 최종 제출 confirm.
-//   7. Grade: correct/total/unanswered/ungraded; mastered ⇔ 200/200 exactly.
-//      Update state.alphabetMasteryExam {bestCorrect, attempts, mastered,
-//      completedAt}, saveState(), then show section-level missed skills with
-//      stage routes — never the full answer key (spec §3).
+// Full one-shot build contract: docs/EXAM_RUNNER_ONE_SHOT_PROMPT.md.
+// Owner overrides of 2026-07-20 (supersede spec §3/§4 where they conflict):
+//   · forward-only — Next locks each item; no Previous, no flags, no revisit
+//   · after submission, show the FULL per-item answer review (prompt, given
+//     answer, correct answer, ✓/✗) — never any feedback during the exam
+//   · results are a polished premiumCompletionHtml() score ceremony
+//     (crown + confetti at 200/200; sober neutral tone below 200)
+// Everything else per spec: reshuffle per attempt, audio ≤ 2 plays, 90-min
+// countdown, NFC strict typed grading, blank canvases with hidden targets
+// ('great' verdict only), quit discards the attempt, mastery ⇔ exactly
+// 200/200. Copy the alphabet-lesson visual language; reuse existing engines.
 function startHangulMasteryExamAttempt() {
   const el = showScreen("detail");
   if (!el) return;
