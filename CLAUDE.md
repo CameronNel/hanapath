@@ -68,6 +68,8 @@ Sentences queue.
 | `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, **verbatim** (source of record) |
 | `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; reference for its pedagogy + data axes) |
 | `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — reuse these engines for Sentences) |
+| **`docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md`** | Hangul Mastery Examination contract: 200-item bank, grading, exam-mode rules (Exam tab) |
+| **`docs/EXAM_TAB_HANDOVER.md`** | Exam-tab structure shipped 2026-07-20 + one-shot runbook for finishing the exam attempt runner |
 | **`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`** | Owner-approved Capacitor/Android/Google Play execution handover; preserves browser/PWA and later iOS compatibility |
 | `HANDOVER.md` | Repo snapshot + conventions for the next contributor |
 | `.agents/AGENTS.md` | Offline audio-generation pipeline rules |
@@ -89,6 +91,8 @@ Sentences queue.
    recognition, stroke templates, or its browser adapter; run
    `node scripts/audit-premium-handwriting.mjs` after touching premium writing,
    native recognition, or billing; run
+   `node scripts/audit-hangul-mastery-exam.mjs` after touching the Exam tab or
+   `hangul_mastery_exam.js`; run
    `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
    any loaded asset version; `node --check` any JS you edit.
 4. **Bump caches** when you change `app.js`, `styles.css`, or any loaded data
