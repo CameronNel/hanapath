@@ -1,0 +1,162 @@
+name: Workstream 0 Box 0A bootstrap
+
+on:
+  push:
+    branches:
+      - exec/workstream-0-box-0a
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: exec/workstream-0-box-0a
+          fetch-depth: 0
+
+      - name: Wire the load-time migration and app shell
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          app_path = Path('app.js')
+          app = app_path.read_text(encoding='utf-8')
+          if 'HANAPATH_EXAM_INTEGRITY.migrateExamIntegrityState(state' not in app:
+              match = re.search(r'(?m)^(const|let) state = loadState\(\);$', app)
+              if not match:
+                  raise SystemExit('Could not locate state = loadState() integration anchor')
+              block = "\n".join([
+                  match.group(0),
+                  '',
+                  '// Workstream 0 · Box 0A: add immutable exam provenance collections and',
+                  '// wrap knowable v2 Hangul/Words history before the app initializes. The old',
+                  '// summary records remain untouched as compatibility indexes.',
+                  'const examIntegrityMigration = window.HANAPATH_EXAM_INTEGRITY.migrateExamIntegrityState(state, {',
+                  '  wordExamBlueprints: Array.isArray(window.HANAPATH_WORD_EXAMS) ? window.HANAPATH_WORD_EXAMS : [],',
+                  '});',
+                  'if (examIntegrityMigration.changed) saveState();',
+              ])
+              app = app[:match.start()] + block + app[match.end():]
+              app_path.write_text(app, encoding='utf-8')
+
+          index_path = Path('index.html')
+          index = index_path.read_text(encoding='utf-8')
+          old_app = '<script defer src="./app.js?v=20260720w"></script>'
+          new_app = '<script defer src="./exam_integrity.js?v=20260721a"></script>\n    <script defer src="./app.js?v=20260721a"></script>'
+          if './exam_integrity.js?v=20260721a' not in index:
+              if old_app not in index:
+                  raise SystemExit('Could not locate index app.js cache-query anchor')
+              index = index.replace(old_app, new_app, 1)
+          index_path.write_text(index, encoding='utf-8')
+
+          sw_path = Path('sw.js')
+          sw = sw_path.read_text(encoding='utf-8')
+          sw = sw.replace('// [2026-07-20] Cache bumped for the Core Word Examination Suite (blueprints + engine + runner).',
+                          '// [2026-07-21] Cache bumped for Workstream 0 Box 0A provenance migration.')
+          if 'hanapath-shell-v436' not in sw:
+              if 'hanapath-shell-v435' not in sw:
+                  raise SystemExit('Could not locate service-worker cache version anchor')
+              sw = sw.replace('hanapath-shell-v435', 'hanapath-shell-v436', 1)
+          old_sw_app = '  "./app.js?v=20260720w",'
+          new_sw_app = '  "./exam_integrity.js?v=20260721a",\n  "./app.js?v=20260721a",'
+          if './exam_integrity.js?v=20260721a' not in sw:
+              if old_sw_app not in sw:
+                  raise SystemExit('Could not locate service-worker app.js shell anchor')
+              sw = sw.replace(old_sw_app, new_sw_app, 1)
+          sw_path.write_text(sw, encoding='utf-8')
+          PY
+
+      - name: Run syntax, migration, and repository audits
+        shell: bash
+        run: |
+          set -o pipefail
+          {
+            echo '$ node --check app.js sw.js exam_integrity.js scripts/audit-exam-integrity.mjs'
+            node --check app.js
+            node --check sw.js
+            node --check exam_integrity.js
+            node --check scripts/audit-exam-integrity.mjs
+            echo
+            echo '$ node scripts/audit-exam-integrity.mjs'
+            node scripts/audit-exam-integrity.mjs
+            echo
+            echo '$ node scripts/audit-words-data.mjs --strict'
+            node scripts/audit-words-data.mjs --strict
+            echo
+            echo '$ node scripts/audit-sentences-data.mjs --strict'
+            node scripts/audit-sentences-data.mjs --strict
+            echo
+            echo '$ node scripts/audit-alphabet-audio.mjs --strict'
+            node scripts/audit-alphabet-audio.mjs --strict
+            echo
+            echo '$ node scripts/audit-hangul-mastery-exam.mjs'
+            node scripts/audit-hangul-mastery-exam.mjs
+            echo
+            echo '$ node scripts/audit-word-exams.mjs'
+            node scripts/audit-word-exams.mjs
+            echo
+            echo '$ node scripts/audit-app-shell.mjs'
+            node scripts/audit-app-shell.mjs
+            echo
+            echo '$ git diff --check'
+            git diff --check
+          } 2>&1 | tee WORKSTREAM_0_0A_AUDIT.txt
+
+      - name: Static browser smoke test
+        shell: bash
+        run: |
+          cat > .ws0-smoke.html <<'HTML'
+          <!doctype html><meta charset="utf-8">
+          <script src="./exam_integrity.js?v=20260721a"></script>
+          <script>
+          let state={alphabetMasteryExam:{version:2,bestCorrect:200,mastered:true,completedAt:'2026-07-20T15:30:00.000Z',attempts:2}};
+          let saves=0; function saveState(){saves+=1;}
+          const migration=window.HANAPATH_EXAM_INTEGRITY.migrateExamIntegrityState(state,{wordExamBlueprints:[]});
+          if(migration.changed) saveState();
+          const record=Object.values(state.examResults.byAttemptId)[0];
+          document.documentElement.dataset.pass=String(saves===1 && state.examResults.version===1 && state.examIntegrity.version===1 && record.status==='legacy-incomplete' && state.alphabetMasteryExam.mastered===true);
+          </script>
+          HTML
+          python -m http.server 8000 >/tmp/ws0-http.log 2>&1 &
+          server=$!
+          trap 'kill $server || true' EXIT
+          for i in {1..20}; do curl -fsS http://127.0.0.1:8000/.ws0-smoke.html >/dev/null && break; sleep 0.25; done
+          browser="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
+          if [ -z "$browser" ]; then
+            echo 'No headless browser available on runner' >&2
+            exit 1
+          fi
+          "$browser" --headless --no-sandbox --disable-gpu --dump-dom http://127.0.0.1:8000/.ws0-smoke.html | tee WORKSTREAM_0_0A_BROWSER.txt
+          grep -q 'data-pass="true"' WORKSTREAM_0_0A_BROWSER.txt
+          echo 'BROWSER SMOKE: PASS — static server, browser-global load, migration, save, and compatibility preservation' | tee -a WORKSTREAM_0_0A_AUDIT.txt
+          rm .ws0-smoke.html WORKSTREAM_0_0A_BROWSER.txt
+
+      - name: Commit verified implementation
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app.js index.html sw.js WORKSTREAM_0_0A_AUDIT.txt
+          git commit -m 'Wire immutable exam provenance migration'
+          git push origin HEAD:exec/workstream-0-box-0a
+
+      - name: Post audit output to draft PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '## Automated Box 0A verification'
+            echo
+            echo '```text'
+            cat WORKSTREAM_0_0A_AUDIT.txt
+            echo '```'
+          } > /tmp/pr-comment.md
+          gh pr comment 323 --repo CameronNel/hanapath --body-file /tmp/pr-comment.md
