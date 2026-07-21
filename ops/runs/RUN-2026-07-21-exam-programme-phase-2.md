@@ -92,3 +92,20 @@ Review notes:
   remaining runnable work; qwen waits on TASK-002 or the TASK-009 owner
   decision, and gemini-flash waits on TASK-004 before beginning eligibility
   batches.
+
+## Heartbeat 3 — 2026-07-21T22:34:11+02:00
+
+- Queue: 8 ready, 1 claimed, 0 in-review, 1 merged, 1 blocked-owner,
+  0 handoff-incomplete.
+- In progress: TASK-001 (claimed by opus). Dependency-ready work remains
+  TASK-004 and TASK-010; TASK-002/TASK-003 and TASK-005–TASK-008 remain
+  dependency-gated.
+- Merged this heartbeat: none; no submissions were awaiting review and no
+  handoff-incomplete tasks required salvage.
+- Blocked-owner: TASK-009 remains parked on the four curriculum/pool decisions
+  recorded in its report.
+- Orphan `task/*` branches: none.
+- Agent health: opus enabled; qwen enabled; gemini-flash enabled; no disabled
+  flags present.
+- What happens next: Opus completes TASK-001; its submission will be reviewed
+  on the next heartbeat, while qwen and gemini-flash remain dependency-gated.
