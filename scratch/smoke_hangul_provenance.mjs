@@ -2,12 +2,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
-import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
-const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const api = require(path.join(ROOT, "exam_integrity.js"));
 
 // Set up mock window and state
 const dom = {
@@ -49,10 +46,10 @@ const context = vm.createContext({
   String,
   Boolean,
   RegExp,
-  HANAPATH_EXAM_INTEGRITY: api,
   globalThis: dom.window,
 });
 
+vm.runInContext(fs.readFileSync(path.join(ROOT, "exam_integrity.js"), "utf8"), context);
 vm.runInContext(appCode, context);
 
 // Test 1: Untainted submitHangulExam
@@ -73,6 +70,7 @@ hangulExamAttempt = {
   stage: "confirm",
   submitted: false,
   overrideFlags: [],
+  overrideEventIds: [],
 };
 
 submitHangulExam(false);
@@ -93,7 +91,7 @@ assert.equal(untaintedRecord.status, "hanaPath");
 assert.equal(state1.alphabetMasteryExam.mastered, true);
 assert.equal(state1.alphabetMasteryExam.bestCorrect, 200);
 
-// Test 2: Tainted submitHangulExam (via ?__wetest=1 query)
+// Test 2: an override active at generation remains attached after the query is cleared.
 context.window.location.search = "?__wetest=1";
 vm.runInContext(`
 Object.assign(state, {
@@ -103,16 +101,17 @@ Object.assign(state, {
   examIntegrity: { version: 1, taintEvents: [], resultRelations: [], migrationLog: [] },
 });
 
-hangulExamAttempt = {
-  bank: { timeLimitMinutes: 90 },
-  parts: [{ section: { part: 1 }, items: Array(200).fill().map((_, i) => ({ id: "q" + i, type: "mcq", answer: "A" })) }],
-  answers: Object.fromEntries(Array(200).fill().map((_, i) => ["q" + i, "A"])),
-  verdicts: Object.fromEntries(Array(200).fill().map((_, i) => ["q" + i, true])),
-  startedAt: Date.now() - 100000,
-  stage: "confirm",
-  submitted: false,
-  overrideFlags: ["__wetest"],
-};
+hangulExamAttempt = buildHangulExamAttempt({
+  id: "hangul-mastery-v2",
+  version: 2,
+  timeLimitMinutes: 90,
+  sections: [{ part: 1, items: Array(200).fill().map((_, i) => ({ id: "q" + i, type: "mcq", answer: "A", options: ["A"] })) }],
+});
+hangulExamAttempt.answers = Object.fromEntries(Array(200).fill().map((_, i) => ["q" + i, "A"]));
+hangulExamAttempt.verdicts = Object.fromEntries(Array(200).fill().map((_, i) => ["q" + i, true]));
+hangulExamAttempt.startedAt = Date.now() - 100000;
+hangulExamAttempt.stage = "confirm";
+window.location.search = "";
 
 submitHangulExam(false);
 `, context);
@@ -126,10 +125,12 @@ console.log("Attempt ID:", taintedRecord.attemptId);
 console.log("Exam ID:", taintedRecord.examId);
 console.log("Status:", taintedRecord.status);
 console.log("Override Flags:", taintedRecord.overrideFlags);
+console.log("Override Event IDs:", taintedRecord.overrideEventIds);
 console.log("Score:", taintedRecord.scoreSummary);
 console.log("Mastered in state:", state2.alphabetMasteryExam.mastered);
 console.log("BestCorrect in state:", state2.alphabetMasteryExam.bestCorrect);
 assert.equal(taintedRecord.status, "practice");
+assert.deepEqual(taintedRecord.overrideFlags, ["__wetest"]);
 assert.equal(state2.alphabetMasteryExam.mastered, false);
 assert.equal(state2.alphabetMasteryExam.bestCorrect, 0);
 

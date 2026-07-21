@@ -59,7 +59,11 @@ function auditBrowserWiring() {
   assert.match(sw, /\.\/exam_integrity\.js\?v=20260721b/);
   assert.match(sw, /\.\/app\.js\?v=20260721c/);
   assert.match(app, /function submitHangulExam/);
+  assert.match(app, /const initialTaintContext = getHangulExamTaintContext\(initialOverrideFlags\)/);
+  assert.match(app, /\.\.\.\(attempt\.overrideEventIds \|\| \[\]\)/);
   assert.match(app, /getAttemptTaintContext\(state, \["alphabet"\]/);
+  assert.match(app, /const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v438"/);
+  assert.match(app, /const EXAM_INTEGRITY_ASSET_REVISION = "20260721c"/);
   assert.match(app, /function isWordExamTestQueryActive\(\)/);
   assert.match(app, /TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive\(\)/);
   assert.match(app, /Exams covering this section become Practice results and cannot award HanaPath mastery or retention\./);

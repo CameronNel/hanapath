@@ -7,8 +7,10 @@ task and do not wait for dependency-by-dependency dispatch.
 1. Read `AI_INSTRUCTIONS.md`, `ops/PROTOCOL.md`, every unfinished task in
    `ops/queue/`, the active run manifest, and all specification files those
    tasks cite.
-2. Synchronize from `origin/main` and create/reset the single branch
-   `task/gemini-final-megabatch` from it.
+2. Resume the existing `task/gemini-final-megabatch` worktree exactly as it
+   stands. Preserve every tracked modification already present. If the branch
+   does not yet exist, create it from `origin/main`; never reset or discard
+   existing megabatch work.
 3. Incorporate the complete work from the existing draft branches/PRs:
    `task/001-hangul-provenance` (#329),
    `task/004-sentence-eligibility-schema` (#330), and

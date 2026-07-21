@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v437";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260721b";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v438";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260721c";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -15504,6 +15504,7 @@ function buildHangulExamAttempt(bank) {
   }));
   const now = Date.now();
   const initialOverrideFlags = typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive() ? ["__wetest"] : [];
+  const initialTaintContext = getHangulExamTaintContext(initialOverrideFlags);
   return {
     bank,
     parts,
@@ -15517,7 +15518,23 @@ function buildHangulExamAttempt(bank) {
     itemIndex: -1,       // -1 = part-intro card, otherwise the item within the part
     submitted: false,
     result: null,
-    overrideFlags: initialOverrideFlags,
+    overrideFlags: initialTaintContext.overrideFlags,
+    overrideEventIds: initialTaintContext.overrideEventIds,
+  };
+}
+
+function getHangulExamTaintContext(overrideFlags) {
+  const normalizedFlags = Array.from(new Set(Array.isArray(overrideFlags) ? overrideFlags : []));
+  const integrityApi = (typeof window !== "undefined" && window.HANAPATH_EXAM_INTEGRITY)
+    || (typeof HANAPATH_EXAM_INTEGRITY !== "undefined" ? HANAPATH_EXAM_INTEGRITY : null);
+  if (integrityApi && typeof integrityApi.getAttemptTaintContext === "function") {
+    return integrityApi.getAttemptTaintContext(state, ["alphabet"], normalizedFlags);
+  }
+  return {
+    overrideEventIds: [],
+    overrideFlags: normalizedFlags,
+    status: normalizedFlags.length ? "practice" : "hanaPath",
+    isPractice: Boolean(normalizedFlags.length),
   };
 }
 
@@ -16037,32 +16054,30 @@ function submitHangulExam(auto) {
   const mastered = correct === 200 && total === 200 && unanswered === 0;
 
   const currentOverrideFlags = typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive() ? ["__wetest"] : [];
-  const combinedOverrideFlags = Array.from(new Set([
+  const currentTaintContext = getHangulExamTaintContext(currentOverrideFlags);
+  const overrideFlags = Array.from(new Set([
     ...(attempt.overrideFlags || []),
-    ...currentOverrideFlags,
+    ...currentTaintContext.overrideFlags,
   ]));
-
-  const integrityApi = (typeof window !== "undefined" && window.HANAPATH_EXAM_INTEGRITY)
-    || (typeof HANAPATH_EXAM_INTEGRITY !== "undefined" ? HANAPATH_EXAM_INTEGRITY : null);
-
-  const taintContext = integrityApi && typeof integrityApi.getAttemptTaintContext === "function"
-    ? integrityApi.getAttemptTaintContext(state, ["alphabet"], combinedOverrideFlags)
-    : {
-        overrideEventIds: [],
-        overrideFlags: combinedOverrideFlags,
-        status: combinedOverrideFlags.length ? "practice" : "hanaPath",
-        isPractice: Boolean(combinedOverrideFlags.length),
-      };
-
-  const isPractice = taintContext.isPractice;
+  const overrideEventIds = Array.from(new Set([
+    ...(attempt.overrideEventIds || []),
+    ...currentTaintContext.overrideEventIds,
+  ]));
+  const isPractice = Boolean(overrideFlags.length || overrideEventIds.length);
+  const taintContext = {
+    overrideEventIds,
+    overrideFlags,
+    status: isPractice ? "practice" : "hanaPath",
+    isPractice,
+  };
 
   const record = normalizeAlphabetMasteryExam(state.alphabetMasteryExam);
   record.attempts += 1;
   if (!isPractice) {
     record.bestCorrect = Math.max(record.bestCorrect, correct);
     if (mastered) record.mastered = true; // once earned, never regressed
+    record.completedAt = new Date().toISOString();
   }
-  record.completedAt = new Date().toISOString();
   state.alphabetMasteryExam = record;
 
   const cryptoApi = typeof globalThis !== "undefined" ? globalThis.crypto : null;
@@ -16079,10 +16094,10 @@ function submitHangulExam(auto) {
     attemptId: attemptId,
     examId: "hangul-mastery-exam",
     attemptMode: null,
-    blueprintVersion: 2,
+    blueprintVersion: Number.isInteger(attempt.bank.version) ? attempt.bank.version : 2,
     engineVersion: null,
     generationSeed: null,
-    contentBankRevision: "hangul-v2",
+    contentBankRevision: typeof attempt.bank.id === "string" ? attempt.bank.id : null,
     eligibilityRevision: null,
     generatedAt: generatedAt,
     submittedAt: submittedAt,
