@@ -50,30 +50,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          repo="$GITHUB_REPOSITORY"
-          base_commit="$(gh api "repos/$repo/git/ref/heads/$BRANCH_NAME" --jq .object.sha)"
-          base_tree="$(gh api "repos/$repo/git/commits/$base_commit" --jq .tree.sha)"
-          payload="$(python - <<'PY'
-          import base64, json, pathlib
-          data = pathlib.Path('WS0B_INSPECT.txt').read_bytes()
-          print(json.dumps({'content': base64.b64encode(data).decode('ascii'), 'encoding': 'base64'}))
-          PY
-          )"
-          blob="$(printf '%s' "$payload" | gh api --method POST "repos/$repo/git/blobs" --input - --jq .sha)"
-          tree="$(python - "$base_tree" "$blob" <<'PY' | gh api --method POST "repos/'"$repo"'/git/trees" --input - --jq .sha
-          import json, sys
-          print(json.dumps({'base_tree': sys.argv[1], 'tree': [{'path': 'WS0B_INSPECT.txt', 'mode': '100644', 'type': 'blob', 'sha': sys.argv[2]}]}))
-          PY
-          )"
-          commit="$(python - "$base_commit" "$tree" <<'PY' | gh api --method POST "repos/'"$repo"'/git/commits" --input - --jq .sha
-          import json, sys
-          print(json.dumps({'message': 'Record Workstream 0 gate inspection', 'tree': sys.argv[2], 'parents': [sys.argv[1]]}))
-          PY
-          )"
-          python - "$commit" <<'PY' | gh api --method PATCH "repos/$repo/git/refs/heads/$BRANCH_NAME" --input - >/dev/null
-          import json, sys
-          print(json.dumps({'sha': sys.argv[1], 'force': False}))
-          PY
+          encoded="$(base64 -w0 WS0B_INSPECT.txt)"
+          gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/WS0B_INSPECT.txt" \
+            -f message='Record Workstream 0 gate inspection' \
+            -f content="$encoded" \
+            -f branch="$BRANCH_NAME" >/dev/null
 
       - name: Check app syntax
         run: node --check app.js
