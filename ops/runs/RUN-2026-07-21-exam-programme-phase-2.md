@@ -160,3 +160,22 @@ Review notes:
   flags present.
 - What happens next: Opus completes TASK-001; its submission will be reviewed
   on the next heartbeat, while qwen and gemini-flash remain dependency-gated.
+
+## Heartbeat 7 — 2026-07-21T22:46:45+02:00
+
+- Queue: 8 ready, 1 claimed, 0 in-review, 1 merged, 1 blocked-owner,
+  0 handoff-incomplete.
+- In progress: TASK-001 (claimed by gemini-flash after the owner reassigned
+  Opus work). Dependency-ready work remains TASK-004 and TASK-010;
+  TASK-002/TASK-003 and TASK-005–TASK-008 remain dependency-gated.
+- Merged this heartbeat: none; no submissions were awaiting review and no
+  handoff-incomplete tasks required salvage.
+- Blocked-owner: TASK-009 remains parked on the four curriculum/pool decisions
+  recorded in its report.
+- Orphan `task/*` branches: none.
+- Agent health: opus disabled by a rate-limit flag until 23:00
+  Africa/Johannesburg; qwen enabled; gemini-flash enabled. The transient flag
+  remains in place for the worker loop to respect during its stated window.
+- What happens next: gemini-flash completes TASK-001; its submission will be
+  reviewed on the next heartbeat, while the other workers remain gated by
+  dependencies or the owner decision.
