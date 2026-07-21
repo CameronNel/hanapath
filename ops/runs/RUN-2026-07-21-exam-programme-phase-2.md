@@ -71,3 +71,22 @@ Review notes:
   flags present.
 - What happens next: worker loops claim the three runnable tasks; Sol's next
   heartbeat reviews any submissions and unlocks dependency successors.
+
+## Heartbeat 2 — 2026-07-21T22:30:19+02:00
+
+- Queue: 9 ready, 0 claimed, 0 in-review, 1 merged, 1 blocked-owner,
+  0 handoff-incomplete.
+- Runnable now: TASK-001, TASK-004, TASK-010. TASK-002/TASK-003 and
+  TASK-005–TASK-008 remain dependency-gated.
+- Merged this heartbeat: TASK-011 via PR #328 after confirming the docs-only
+  diff, checking its claims against the live Exam implementation and handover,
+  and passing `node scripts/audit-app-shell.mjs` (0 errors, 0 warnings).
+- Blocked-owner: TASK-009 needs a decision on the undersized ㅎ-irregular
+  pool plus target-key, gating, connective-unlock, and polite-present pool
+  semantics; its task report contains the measured evidence and choices.
+- Orphan `task/*` branches: none.
+- Agent health: opus enabled; qwen enabled; gemini-flash enabled; no disabled
+  flags present.
+- What happens next: Opus claims the highest-priority runnable task; qwen waits
+  on TASK-002 or the TASK-009 owner decision, and gemini-flash waits on
+  TASK-004 before beginning eligibility batches.
