@@ -15671,7 +15671,11 @@ function renderExamKeyboardCheck() {
   const ok = el.querySelector("#examKeyboardOk");
   const status = el.querySelector("#examKeyboardStatus");
   const check = () => {
-    const good = normalizeHangulExamInput(input.value) === target;
+    // Some mobile Korean IMEs (e.g. Samsung Keyboard predictive input) insert
+    // a space between committed syllable blocks. This pre-check only confirms
+    // the keyboard *works*, so ignore stray internal spaces here (unlike the
+    // strict no-spaces grading used for scored typed-answer exam items).
+    const good = normalizeHangulExamInput(input.value).replace(/\s+/g, "") === target;
     ok.disabled = !good;
     status.textContent = good ? "확인되었습니다 · Keyboard ready." : "";
     status.className = `exam-input-status${good ? " ok" : ""}`;
