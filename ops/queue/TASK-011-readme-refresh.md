@@ -2,13 +2,13 @@
 id: TASK-011
 title: Refresh stale root README (Learn · Exam · Progress; current scale)
 assignee: gemini-flash
-status: ready
+status: claimed
 branch: task/011-readme-refresh
 depends_on: []
 verify:
   - node scripts/audit-app-shell.mjs
 priority: 4
-claimedAt: null
+claimedAt: "2026-07-21T22:22:50+02:00"
 pr: null
 ---
 ## Instruction
