@@ -1,0 +1,8 @@
+{
+  "onboarded": false,
+  "route": { "hub": "learn", "item": null, "stage": null },
+  "phaseOneCompleted": [],
+  "vocabSrs": {},
+  "vocabLessonCompleted": [],
+  "sentencesProgress": { "band": 1, "results": {}, "sessionsDone": 0 }
+}
