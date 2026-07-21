@@ -1,7 +1,7 @@
 ---
 id: TASK-004
 title: Sentence exam A1/A2 tooling — eligibility schema, census, and fail-loudly audit
-assignee: opus
+assignee: gemini-flash
 status: ready
 branch: task/004-sentence-eligibility-schema
 depends_on: []

@@ -1,7 +1,7 @@
 ---
 id: TASK-002
 title: Workstream 0 Box 0D — bind Words results, qualification, retention to provenance/taint
-assignee: opus
+assignee: gemini-flash
 status: ready
 branch: task/002-words-provenance
 depends_on: [TASK-001]

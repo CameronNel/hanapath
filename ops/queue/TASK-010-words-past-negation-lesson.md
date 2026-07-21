@@ -1,7 +1,7 @@
 ---
 id: TASK-010
 title: Words C1 — additive lesson s3-grammar-u2-l3 (typed past & negation production)
-assignee: opus
+assignee: gemini-flash
 status: ready
 branch: task/010-past-negation-lesson
 depends_on: []
