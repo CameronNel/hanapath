@@ -1,9 +1,14 @@
 # Paste-ready ChatGPT kickoff prompt — Exam Programme research
 
 > **Owner instructions (not part of the prompt):** open ChatGPT in deep
-> research mode. If your ChatGPT can read GitHub, connect
-> `CameronNel/hanapath` read-only at commit `55ac8898`; otherwise attach
-> `docs/CHATGPT_EXAM_PROGRAMME_RESEARCH_BRIEF.md` as a file. Then paste
+> research mode. Attach `docs/CHATGPT_EXAM_PROGRAMME_RESEARCH_BRIEF.md`
+> as a file, and connect `CameronNel/hanapath` read-only for repository
+> inspection if your ChatGPT can read GitHub. Treat application code at
+> commit `55ac88981fdab0eb79cafd1770b25cde25340234` (`main`) as the
+> audited baseline. The research documents (the brief and this prompt)
+> live on branch `claude/exam-section-audit-fxv6nh` (PR #319), **not** at
+> that baseline commit — if connecting the branch instead, distinguish
+> those added research docs from baseline application code. Then paste
 > everything below the line as your message. When it returns Phase 1,
 > bring both documents back to Claude before answering the decision memo.
 

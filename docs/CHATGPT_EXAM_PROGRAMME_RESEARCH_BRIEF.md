@@ -541,26 +541,35 @@ than silently using new numbers.
   tip → word bank → next chunk → reveal helper ladder (exam mode = ladder
   off). Listening tab reads the full bank.
 
-### 10.3 Pattern-tag census (rows per tag, key tags)
+### 10.3 Pattern-tag census (complete — all 37 tags, rows per tag)
 
 | Tag | Rows | | Tag | Rows |
 |---|---:|---|---|---:|
-| `present-polite` | 1,963 | | `imperative-seyo` | 262 |
-| `past-polite` | 1,044 | | `honorific-si` | 237 |
-| `object-eul-reul` | 2,008 | | `formal-nida` | 190 |
-| `subject-i-ga` | 1,344 | | `if-myeon` | 189 |
-| `topic-neun` | 746 | | `existence-itda` | 171 |
-| `time-expression` | 648 | | `must-ya-dwaeda` | 79 |
-| `location-e` | 620 | | `can-su-itda` | 79 |
-| `location-eseo` | 433 | | `want-go-sipda` | 69 |
-| `possessive-ui` | 334 | | `neg-ji-anta` | 65 |
-| `because-aseo` | 284 | | `neg-an` | 64 |
-| `copula-ieyo` | 256 | | `neg-mot` | 53 |
-| `direction-euro` | 245 | | **`future-geoyeoyo`** → see note | **52** |
-| `and-go` | 203 | | `copula-negative-anieyo` | 23 |
+| `object-eul-reul` | 2,008 | | `counter-phrase` | 115 |
+| `present-polite` | 1,963 | | `when-ttae` | 91 |
+| `subject-i-ga` | 1,344 | | `can-su-itda` | 79 |
+| `past-polite` | 1,044 | | `must-ya-dwaeda` | 79 |
+| `topic-neun` | 746 | | `also-do` | 73 |
+| `time-expression` | 648 | | `comparison-boda` | 73 |
+| `location-e` | 620 | | `want-go-sipda` | 69 |
+| `location-eseo` | 433 | | `neg-ji-anta` | 65 |
+| `possessive-ui` | 334 | | `neg-an` | 64 |
+| `because-aseo` | 284 | | `neg-mot` | 53 |
+| `imperative-seyo` | 262 | | **`future-geoyeyo`** | **52** |
+| `copula-ieyo` | 256 | | `until-kkaji` | 52 |
+| `direction-euro` | 245 | | `propositive-eyo` | 41 |
+| `honorific-si` | 237 | | `but-jiman` | 36 |
+| `and-go` | 203 | | `only-man` | 36 |
+| `question-polite` | 203 | | `from-buteo` | 34 |
+| `with-hago-wa` | 191 | | `copula-negative-anieyo` | 23 |
+| `formal-nida` | 190 | | | |
+| `if-myeon` | 189 | | | |
+| `existence-itda` | 171 | | | |
 
-Note: the future tag's exact string is `future-geoyeyo` (52 rows).
-Registers: polite ≈ 2,055 · plain ≈ 1,995 · formal ≈ 122.
+Two distinct row fields describe register — do not conflate them:
+`register` (polite 2,055 · everyday 1,983 · formal 122 · honorific 17)
+and `speechLevel` (polite informal 2,062 · plain 1,995 · polite formal
+120).
 
 ### 10.4 Hangul exam (for parallel-structure reference only)
 
@@ -702,30 +711,91 @@ $ node scripts/audit-hangul-recognition.mjs   # 11,172 syllables + 40 jamo, 0 fa
 # all passed, 0 errors
 ```
 
-### A.2 Census commands (reproduce §10 numbers)
+### A.2 Census commands (reproduce §10 numbers — complete, paste-ready)
+
+**Sentence bank: full pattern-tag census, register/speechLevel counts,
+`acceptAlso` usage** (deterministic output: tags sorted by count desc,
+then name):
+
+```bash
+node -e "
+global.window = global;
+require('./sentences_core.js');
+const rows = window.HANAPATH_SENTENCES;
+const count = (field) => {
+  const m = new Map();
+  for (const r of rows) m.set(r[field], (m.get(r[field]) || 0) + 1);
+  return [...m].sort((a, b) => b[1] - a[1]);
+};
+const tags = new Map();
+for (const r of rows) for (const t of r.patternTags || []) tags.set(t, (tags.get(t) || 0) + 1);
+console.log('rows=' + rows.length,
+  'acceptAlso=' + rows.filter(x => Array.isArray(x.acceptAlso) && x.acceptAlso.length).length);
+console.log('register:', JSON.stringify(count('register')));
+console.log('speechLevel:', JSON.stringify(count('speechLevel')));
+for (const [t, n] of [...tags].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])))
+  console.log(String(n).padStart(5), t);
+"
+```
+
+Captured output (first lines; the 37-tag list matches §10.3 exactly):
 
 ```text
-# Sentence bank size + acceptAlso usage
-$ node -e "global.window=global;require('./sentences_core.js');
-  const r=window.HANAPATH_SENTENCES;
-  console.log(r.length, r.filter(x=>Array.isArray(x.acceptAlso)&&x.acceptAlso.length).length)"
-4177 98
+rows=4177 acceptAlso=98
+register: [["polite",2055],["everyday",1983],["formal",122],["honorific",17]]
+speechLevel: [["polite informal",2062],["plain",1995],["polite formal",120]]
+ 2008 object-eul-reul
+ 1963 present-polite
+ ...
+   52 future-geoyeyo
+ ...
+   23 copula-negative-anieyo
+```
 
-# Sentences curriculum shape
-$ node -e "global.window=global;require('./sentences_lesson_plan.js');
-  console.log(window.HANAPATH_SENTENCE_SECTIONS.length,
-              window.HANAPATH_SENTENCE_UNITS.length,
-              window.HANAPATH_SENTENCE_LESSONS.length)"
-8 75 703
+**Sentences curriculum shape:**
 
-# Pattern-tag counts (per tag)
-$ grep -o '"future-geoyeyo"' sentences_core.js | wc -l     # → 52
-$ grep -o '"past-polite"'    sentences_core.js | wc -l     # → 1044
-# (repeat per tag; full census table in §10.3 derived this way)
+```bash
+node -e "
+global.window = global;
+require('./sentences_lesson_plan.js');
+console.log(window.HANAPATH_SENTENCE_SECTIONS.length,
+            window.HANAPATH_SENTENCE_UNITS.length,
+            window.HANAPATH_SENTENCE_LESSONS.length)"
+# → 8 75 703
+```
 
-# Word-exam distinct-target coverage (seed 12345, one full pass)
-$ node --input-type=module -e "…generateAttempt per exam, union targetWordIds…"
-640 items; 520 distinct curated words tested (bank 2,028 senses)
+**Word-exam distinct-target coverage** (seed 12345, one full pass through
+all ten exams; per-exam lines sorted by blueprint order):
+
+```bash
+node --input-type=module -e "
+import fs from 'node:fs'; import vm from 'node:vm';
+const sandbox = { window: {} }; sandbox.globalThis = sandbox; vm.createContext(sandbox);
+for (const f of ['audio_map.js','words_curated_core.js','words_lesson_plan.js',
+                 'words_inflect.js','word_exam_blueprints.js','word_exam_engine.js'])
+  vm.runInContext(fs.readFileSync(f, 'utf8'), sandbox);
+const W = sandbox.window, ENG = W.HANAPATH_WORD_EXAM_ENGINE;
+const union = new Set(); let total = 0;
+for (const e of W.HANAPATH_WORD_EXAMS) {
+  const a = ENG.generateAttempt(e.id, 12345);
+  total += a.items.length;
+  a.items.forEach((it) => union.add(it.targetWordId));
+  console.log(e.id, a.items.length + ' items',
+              new Set(a.items.map((i) => i.targetWordId)).size + ' distinct');
+}
+console.log('TOTAL', total, 'items;', union.size, 'distinct curated words');
+"
+```
+
+Captured output:
+
+```text
+word-exam-1 40 items 34 distinct    word-exam-6 50 items 46 distinct
+word-exam-2 50 items 41 distinct    word-exam-7 50 items 44 distinct
+word-exam-3 50 items 44 distinct    word-exam-8 60 items 55 distinct
+word-exam-4 50 items 46 distinct    word-exam-9 60 items 55 distinct
+word-exam-5 80 items 77 distinct    word-exam-10 150 items 144 distinct
+TOTAL 640 items; 520 distinct curated words   (bank: 2,028 senses)
 ```
 
 ### A.3 Structural claims
