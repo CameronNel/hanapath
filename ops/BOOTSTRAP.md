@@ -7,35 +7,39 @@
    each logged in to its account and authorised for autonomous edits.
 2. Clone this repo somewhere the CLIs can use, with push access.
 3. `chmod +x ops/run-worker.sh`.
-4. Give Sol (ChatGPT 5.6) repository access via its GitHub connector.
-5. **Sol's heartbeat:** create a ChatGPT scheduled task, every 30–60
-   minutes:
-
-   > Pull CameronNel/hanapath. If ops/runs/ has a run manifest that is not
-   > marked finished, act as Sol per ops/agents/SOL_ORCHESTRATOR.md:
-   > process one heartbeat, then stop. If no active run exists, do nothing.
-
-   (No scheduling available? You are the heartbeat: message Sol
-   "process the queue" whenever you pass by.)
+4. **Sol runs through the Codex CLI** (`codex`), authenticated in this
+   repo. Her heartbeat is automatic: `./ops/run-worker.sh sol 1800` polls
+   like any worker and processes one heartbeat per cycle whenever an
+   unfinished run manifest exists. No ChatGPT-app setup is required.
+   (Alternative, if you prefer Sol in the ChatGPT app: skip the sol loop
+   and create a scheduled task with the same heartbeat instruction — but
+   the loop is the zero-touch default.)
 
 ## Per-run flow (owner, ~1 minute)
 
-1. Give Sol one message:
-
-   > Read ops/agents/SOL_ORCHESTRATOR.md in CameronNel/hanapath and take
-   > charge of the following plan. Run autonomously for 24 hours or until
-   > done: <PLAN — prose, a doc link, or "the seeded queue in ops/queue/">
-
-2. Start a terminal per worker you want active:
+1. Kick off the run — one command in the repo:
 
    ```bash
+   codex exec --full-auto "You are Sol. Read ops/agents/SOL_ORCHESTRATOR.md \
+   and take charge of the following plan; perform the kickoff now (open the \
+   run manifest, dispatch planning/first tasks), then stop — your heartbeat \
+   loop continues from there. Plan: <PLAN — prose, a doc link, or 'the \
+   seeded queue in ops/queue/'>"
+   ```
+
+2. Start the loops (tmux sessions or one terminal each):
+
+   ```bash
+   ./ops/run-worker.sh sol 1800
    ./ops/run-worker.sh opus
    ./ops/run-worker.sh qwen
    ./ops/run-worker.sh gemini-flash 180
    ```
 
 3. Walk away. Catch up later by reading the newest `ops/runs/RUN-*.md`
-   and answering anything Sol parked as `blocked-owner`.
+   and answering anything Sol parked as `blocked-owner`. Stop the fleet
+   any time: `touch ops/agents/<agent>.disabled` per agent (Sol's stop
+   conditions also end runs on their own).
 
 ## Who maintains what
 
