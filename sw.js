@@ -1,5 +1,5 @@
-// [2026-07-20] Cache bumped for the Core Word Examination Suite (blueprints + engine + runner).
-const CACHE_NAME = "hanapath-shell-v435";
+// [2026-07-21] Cache bumped for Workstream 0 Box 0A provenance migration.
+const CACHE_NAME = "hanapath-shell-v436";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -20,7 +20,8 @@ const APP_SHELL = [
   "./hangul_mastery_exam.js?v=20260720a",
   "./word_exam_blueprints.js?v=20260720w",
   "./word_exam_engine.js?v=20260720w",
-  "./app.js?v=20260720w",
+  "./exam_integrity.js?v=20260721a",
+  "./app.js?v=20260721a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

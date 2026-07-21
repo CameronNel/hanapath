@@ -1,0 +1,106 @@
+$ node --check app.js sw.js exam_integrity.js scripts/audit-exam-integrity.mjs
+
+$ node scripts/audit-exam-integrity.mjs
+Workstream 0 · Box 0A exam-integrity audit
+Fixtures: 5
+Assertions: 94
+Legacy wrappers: 2
+Counts:
+{
+  "exam": {
+    "hangul-mastery-exam": 1,
+    "word-exam-10": 1
+  },
+  "status": {
+    "legacy-incomplete": 2
+  },
+  "blueprintVersion": {
+    "2": 2
+  },
+  "bankRevision": {
+    "null": 2
+  },
+  "overrideType": {
+    "null": 2
+  },
+  "legacyProvenance": {
+    "legacy-incomplete": 2
+  }
+}
+PASS: provenance schema, safe migration, immutable history, and legacy-incomplete guards are green.
+
+$ node scripts/audit-words-data.mjs --strict
+Audio coverage: 0 missing/empty asset(s); 1 documented silence key(s)
+Curated words: 2028
+Lessons: 283
+Annotation sources: {"register":{"explicit":2028,"inferred":0,"absent":0},"speechLevel":{"explicit":2028,"inferred":0,"absent":0},"originType":{"explicit":2028,"inferred":0,"absent":0},"morphTag":{"explicit":2028,"inferred":0,"absent":0},"hanja":{"explicit":2,"inferred":0,"absent":2026}}
+Errors: 0
+Warnings: 0
+Words data audit passed (strict).
+
+$ node scripts/audit-sentences-data.mjs --strict
+Sentences rows: 4177
+Unique sentence ids: 4177
+Unique korean sentences: 4177
+Annotation sources: {"band":{"explicit":4177,"inferred":0,"absent":0},"patternTags":{"explicit":4177,"inferred":0,"absent":0}}
+Audio coverage: 0 sentence issue(s); 0 word/example issue(s); 1 documented silence key(s)
+Errors: 0
+Warnings: 0
+Sentences data audit passed (strict).
+
+$ node scripts/audit-alphabet-audio.mjs --strict
+Alphabet audio audit
+====================
+audio_map.js keys : 37867
+required tokens   : 77
+present           : 77
+missing           : 0
+invalid files     : 0
+documented silent : 1
+non-NFC map keys  : 0 (rescued by normalizeAudioKey at runtime)
+
+Result: all required alphabet and Drill Lab audio is present.
+
+$ node scripts/audit-hangul-mastery-exam.mjs
+audit-hangul-mastery-exam: OK — 200 items (120 MCQ / 40 typed / 40 drawn), 39 audio tokens verified
+
+$ node scripts/audit-word-exams.mjs
+  audited word-exam-1: 250 seeds
+  audited word-exam-2: 250 seeds
+  audited word-exam-3: 250 seeds
+  audited word-exam-4: 250 seeds
+  audited word-exam-5: 500 seeds
+  audited word-exam-6: 250 seeds
+  audited word-exam-7: 250 seeds
+  audited word-exam-8: 250 seeds
+  audited word-exam-9: 250 seeds
+  audited word-exam-10: 1000 seeds
+  audited retention confirmation: 200 seeds
+
+Content-validity matrix (exam × macrostrand exposure; mean items/attempt):
+exam         | R    C    P    X    F    D   | units  POS classes
+word-exam-1  | 14.0  4.0  8.0  8.0  3.0  3.0 |     3  9 POS
+word-exam-2  | 18.0  4.0 10.0 10.0  5.0  3.0 |    11  9 POS
+word-exam-3  | 18.0  4.0 10.0  9.0  6.0  3.0 |    11  7 POS
+word-exam-4  | 18.0  4.0 10.0  9.0  5.0  4.0 |    10  5 POS
+word-exam-5  | 26.0  6.0 16.0 16.0 10.0  6.0 |    35  13 POS
+word-exam-6  | 16.0  4.0 10.0 10.0  7.0  3.0 |    10  7 POS
+word-exam-7  | 16.0  4.0 10.0 10.0  7.0  3.0 |    10  4 POS
+word-exam-8  | 18.0  4.0 12.0 12.0  9.0  5.0 |    10  9 POS
+word-exam-9  | 18.0  4.0 12.0 12.0  9.0  5.0 |    10  5 POS
+word-exam-10 | 45.0 10.0 30.0 30.0 20.0 15.0 |    75  14 POS
+
+Final per-unit exposure across 1000 seeds — min 1554, max 6504, mean 2000.0 (every unit ≥ 1 = Layer A anchor).
+
+Word-exam audit passed (full seed counts).
+
+$ node scripts/audit-app-shell.mjs
+Index local assets: 18
+Service worker shell assets: 191
+Cache name: hanapath-shell-v436
+Errors: 0
+Warnings: 0
+App shell audit passed.
+
+$ git diff --check
+BROWSER SMOKE: PASS — static server, browser-global load, migration, save, and compatibility preservation
