@@ -6957,3 +6957,68 @@ li { margin-bottom: 4px; }
 @media (max-width: 480px) {
   .exam-options { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Core Word Examination Suite (v2) — hub cards, flag/review, diagnostics.
+   Reuses the shared .exam-* runner language; only the suite-specific pieces
+   live here. Theme-aware via the existing custom properties.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.word-exam-hub { padding: 4px 2px 24px; }
+.word-exam-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.word-exam-card {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+  text-align: left; padding: 14px 16px; border-radius: var(--radius);
+  border: 1px solid var(--line); background: var(--panel); color: inherit;
+  cursor: pointer; transition: border-color .18s var(--ease-out), transform .18s var(--ease-out), box-shadow .18s var(--ease-out);
+}
+.word-exam-card:not(.is-locked):hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow); }
+.word-exam-card.is-locked { opacity: .62; cursor: not-allowed; }
+.word-exam-card-head { display: flex; align-items: center; gap: 12px; }
+.word-exam-card-order {
+  flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: .92rem;
+  background: rgba(var(--accent-rgb), .14); color: var(--accent);
+}
+.word-exam-card-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.word-exam-card-title { font-weight: 650; font-size: 1.02rem; }
+.word-exam-card-scope { font-size: .82rem; color: var(--muted); }
+.word-exam-lock { font-size: .82rem; color: var(--muted); }
+.word-exam-badge {
+  font-size: .8rem; color: var(--muted); padding: 3px 10px; border-radius: 999px;
+  background: rgba(var(--accent-rgb), .1); align-self: flex-start;
+}
+.word-exam-badge--mastered { background: rgba(var(--completion-rgb, var(--accent-rgb)), .18); color: var(--completion-color, var(--accent)); font-weight: 650; }
+.word-exam-badge--retention { background: rgba(var(--accent-rgb), .18); color: var(--accent); font-weight: 600; }
+.word-exam-macro-list { margin: 12px 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: .9rem; }
+.word-exam-macro-list strong { color: inherit; }
+.word-exam-fineprint { font-size: .82rem; color: var(--muted); }
+.word-exam-prior { margin-top: 8px; font-size: .85rem; color: var(--muted); }
+
+.word-exam-flag-row { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+.word-exam-flag.is-flagged { color: var(--accent); }
+.word-exam-nav { display: flex; gap: 8px; align-items: center; }
+.word-exam-nav .button.primary { margin-left: auto; }
+
+.word-exam-review-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-height: 46vh; overflow-y: auto; }
+.word-exam-review-row {
+  display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center;
+  width: 100%; text-align: left; padding: 9px 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--line); background: var(--panel); color: inherit; cursor: pointer;
+}
+.word-exam-review-row.is-unanswered { border-color: rgba(var(--accent-rgb), .5); }
+.word-exam-review-row.is-flagged { box-shadow: inset 3px 0 0 var(--accent); }
+.word-exam-review-num { font-weight: 700; color: var(--muted); }
+.word-exam-review-state { font-size: .88rem; }
+.word-exam-review-strand { font-size: .78rem; color: var(--muted); }
+
+.word-exam-macro-profile { margin: 4px 0 12px; }
+.word-exam-macro-row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+.word-exam-macro-name { color: var(--muted); }
+.word-exam-macro-score { font-weight: 600; }
+.word-exam-weak { margin: 12px 0; display: flex; flex-direction: column; gap: 8px; }
+.word-exam-weak-title { font-size: .85rem; color: var(--muted); font-weight: 600; }
+.word-exam-retention-note { margin-bottom: 12px; padding: 10px 12px; border-radius: var(--radius-sm); background: rgba(var(--accent-rgb), .1); font-size: .9rem; }
+@media (max-width: 420px) {
+  .word-exam-nav { flex-wrap: wrap; }
+  .word-exam-nav .button { flex: 1 1 auto; }
+}

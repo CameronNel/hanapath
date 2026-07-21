@@ -140,3 +140,67 @@ Bump `CACHE_NAME` in `sw.js` and the matching `?v=` strings in `index.html` +
 smoke tests in spec §10 (six options render, reshuffle on retake, audio play
 limits, NFC grading, blank canvases, 199/200 ≠ mastery, 200/200 persists,
 old saves keep unlocked content). Done-when is spec §11.
+
+---
+
+## Core Word Examination Suite (shipped 2026-07-20)
+
+> **Source of truth:** [`CORE_WORD_EXAM_SPECS.md`](CORE_WORD_EXAM_SPECS.md).
+> This section records the **actual shipped behaviour** and the deliberate
+> deviations. The Suite sits beneath the Hangul Mastery Examination on the Exam
+> tab (`HUB_DEFS.exam.items` → tile `corewords`, custom `wordExamHub`).
+
+### Files
+
+- **`word_exam_blueprints.js`** — `window.HANAPATH_WORD_EXAMS` (ten v2
+  blueprints: IDs, order, scope, unlocks, item counts, times, macrostrand
+  allocations §6.2, coverage floors, scoring bands §7.1, Exam 10 final layers +
+  retention contract §7.2) and `window.HANAPATH_WORD_EXAM_COMPETENCIES` (the
+  reviewed milestone map). Declarative only — no frozen item IDs.
+- **`word_exam_engine.js`** — `window.HANAPATH_WORD_EXAM_ENGINE`: one pure,
+  deterministic, seeded generator + grader + band evaluator, used **identically**
+  by the browser runner and the audit. Never reads SRS/recent-history/error
+  state. Memoized data build; annotated words for speed.
+- **`scripts/build-word-exam-competency-map.mjs`** — first-gate report generator;
+  re-derives the competency milestones from live data, fails on drift, writes
+  `docs/CORE_WORD_EXAM_COMPETENCY_MAP.md`.
+- **`scripts/audit-word-exams.mjs`** — implements every §9 hard failure across
+  the mandated seed counts (250 section / 500 midterm / 1000 final; 200
+  retention seeds), prints the content-validity matrix + exposure summary.
+- **`app.js`** exam block (search `CORE WORD EXAMINATION SUITE`): the shared
+  runner — `renderWordExamHub`, `renderWordExamIntro`, `startWordExamAttempt`,
+  `renderWordExamAttempt` (Prev/Next/flag, two-play audio, no feedback),
+  `renderWordExamReview` (pre-submission), `submitWordExamAttempt`,
+  `renderWordExamResult` (band, strand profile, weak-unit routes, full
+  post-submission review, retake). `normalizeWordExams` gives backward-
+  compatible `state.wordExams` v2 persistence; retention windows via
+  `wordExamRetentionStatus`. A query-gated (`?__wetest=1`) `window.__wordExamTest`
+  hook exists for acceptance tests only.
+
+### Behaviour confirmed by browser acceptance (26/26 checks)
+
+Ten cards gate on section completion; runner opens with a live timer and no
+correctness feedback; option select / flag / Prev / Next / review all work; a
+perfect attempt passes and shows the full answer review; records persist across
+reload; **Exam 10 retention**: a qualifying final opens the 60-item confirmation
+only after 7 days, the confirmation avoids qualifying-attempt targets, and a
+successful confirmation awards sticky **Core Words mastered**; the Hangul exam is
+unchanged; no horizontal overflow at 375 px.
+
+### Deliberate deviations / limitations (documented, not silent)
+
+1. **Past & negation are recognition/context only — never scored typed
+   production.** The live v2 path teaches `-았어요/었어요`, 안/못/지 않다/지 못하다 in
+   `s3-grammar-u2-l2` with `ko-to-meaning / meaning-to-ko / sentence-blank /
+   function-usage` — no typed-production practice. Per spec §3.3 the suite does
+   **not** assign scored past/negation production quotas. Enforced by the
+   competency gate + audit. See the follow-up curriculum issue.
+2. **F "production where supported" is realised as context-driven
+   `register-choice`** (scenario → uniquely appropriate produced form), not free
+   typed conjugation. The spec forbids instruction-named form prompts ("Use the
+   past tense"), which makes unambiguous free typed production impractical;
+   typed lemma production supplies the P evidence. All register-choice options
+   are inflection-engine outputs, so every tested form is engine-supported.
+3. **`words_curriculum_v2.js` does not exist** as a standalone file; the v2
+   curriculum lives in `words_lesson_plan.js` (the handover's filename was
+   aspirational). The engine reads the live globals from that file.

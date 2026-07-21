@@ -1,24 +1,26 @@
-// [2026-07-20] Cache bumped for the exam-runner contract update (owner overrides in app.js comment).
-const CACHE_NAME = "hanapath-shell-v434";
+// [2026-07-20] Cache bumped for the Core Word Examination Suite (blueprints + engine + runner).
+const CACHE_NAME = "hanapath-shell-v435";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260720h",
+  "./styles.css?v=20260720w",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260717u",
   "./words_curated_core.js?v=20260705e",
   "./words_inflect.js?v=20260703c",
-  "./words_lesson_plan.js?v=20260709f",
+  "./words_lesson_plan.js?v=20260720w",
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260717u",
   "./sentences_lesson_plan.js?v=20260717u",
   "./hangul_strokes.js?v=20260715b",
   "./hangul_mastery_exam.js?v=20260720a",
-  "./app.js?v=20260720j",
+  "./word_exam_blueprints.js?v=20260720w",
+  "./word_exam_engine.js?v=20260720w",
+  "./app.js?v=20260720w",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

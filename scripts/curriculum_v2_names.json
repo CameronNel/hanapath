@@ -237,7 +237,7 @@
       "emoji": "✏️"
     },
     "s7-daily-u6": {
-      "name": "Morning routines to brea",
+      "name": "Morning routines",
       "emoji": "✏️"
     },
     "s7-feelings-u6": {
@@ -245,7 +245,7 @@
       "emoji": "✏️"
     },
     "s7-study-u6": {
-      "name": "In the classroom absence",
+      "name": "In the classroom",
       "emoji": "✏️"
     },
     "s7-travel-u6": {
@@ -253,11 +253,11 @@
       "emoji": "✏️"
     },
     "s7-feelings-u10": {
-      "name": "A bright morning cheerfu",
+      "name": "A bright morning",
       "emoji": "✏️"
     },
     "s7-feelings-u11": {
-      "name": "Small talk outside thick",
+      "name": "Small talk outside",
       "emoji": "✏️"
     },
     "s8-people-u2": {
@@ -273,31 +273,31 @@
       "emoji": "✏️"
     },
     "s8-actions-u7": {
-      "name": "Getting things done to p",
+      "name": "Getting things done",
       "emoji": "✏️"
     },
     "s8-feelings-u7": {
-      "name": "How was your day rumor",
+      "name": "How was your day",
       "emoji": "✏️"
     },
     "s8-travel-u7": {
-      "name": "Finding your way going o",
+      "name": "Finding your way",
       "emoji": "✏️"
     },
     "s8-feelings-u8": {
-      "name": "Rainy-day moods freshnes",
+      "name": "Rainy-day moods",
       "emoji": "✏️"
     },
     "s8-travel-u8": {
-      "name": "Getting around town to g",
+      "name": "Getting around town",
       "emoji": "✏️"
     },
     "s8-feelings-u9": {
-      "name": "Describing the room to g",
+      "name": "Describing the room",
       "emoji": "✏️"
     },
     "s8-travel-u9": {
-      "name": "At the station tourist s",
+      "name": "At the station",
       "emoji": "✏️"
     }
   },
@@ -1443,7 +1443,7 @@
       "goal": "Use to be late in a simple Korean exchange."
     },
     "s7-daily-u6-cp": {
-      "title": "Morning routines to brea review",
+      "title": "Morning routines review",
       "subtitle": "Review 27 words",
       "goal": "Recall the words from this unit."
     },
@@ -1478,7 +1478,7 @@
       "goal": "Use regularity in a simple Korean exchange."
     },
     "s7-study-u6-cp": {
-      "title": "In the classroom absence review",
+      "title": "In the classroom review",
       "subtitle": "Review 18 words",
       "goal": "Recall the words from this unit."
     },
@@ -1518,7 +1518,7 @@
       "goal": "Use suddenness in a simple Korean exchange."
     },
     "s7-feelings-u10-cp": {
-      "title": "A bright morning cheerfu review",
+      "title": "A bright morning review",
       "subtitle": "Review 30 words",
       "goal": "Recall the words from this unit."
     },
@@ -1538,7 +1538,7 @@
       "goal": "Use reality in a simple Korean exchange."
     },
     "s7-feelings-u11-cp": {
-      "title": "Small talk outside thick review",
+      "title": "Small talk outside review",
       "subtitle": "Review 29 words",
       "goal": "Recall the words from this unit."
     },
@@ -1603,7 +1603,7 @@
       "goal": "Use to hesitate in a simple Korean exchange."
     },
     "s8-actions-u7-cp": {
-      "title": "Getting things done to p review",
+      "title": "Getting things done review",
       "subtitle": "Review 20 words",
       "goal": "Recall the words from this unit."
     },
@@ -1623,7 +1623,7 @@
       "goal": "Use uniqueness in a simple Korean exchange."
     },
     "s8-feelings-u7-cp": {
-      "title": "How was your day rumor review",
+      "title": "How was your day review",
       "subtitle": "Review 30 words",
       "goal": "Recall the words from this unit."
     },
@@ -1643,7 +1643,7 @@
       "goal": "Use gas station in a simple Korean exchange."
     },
     "s8-travel-u7-cp": {
-      "title": "Finding your way going o review",
+      "title": "Finding your way review",
       "subtitle": "Review 30 words",
       "goal": "Recall the words from this unit."
     },
@@ -1663,7 +1663,7 @@
       "goal": "Use blue color in a simple Korean exchange."
     },
     "s8-feelings-u8-cp": {
-      "title": "Rainy-day moods freshnes review",
+      "title": "Rainy-day moods review",
       "subtitle": "Review 30 words",
       "goal": "Recall the words from this unit."
     },
@@ -1678,7 +1678,7 @@
       "goal": "Use riverbank in a simple Korean exchange."
     },
     "s8-travel-u8-cp": {
-      "title": "Getting around town to g review",
+      "title": "Getting around town review",
       "subtitle": "Review 19 words",
       "goal": "Recall the words from this unit."
     },
@@ -1698,7 +1698,7 @@
       "goal": "Use to be healthy in a simple Korean exchange."
     },
     "s8-feelings-u9-cp": {
-      "title": "Describing the room to g review",
+      "title": "Describing the room review",
       "subtitle": "Review 30 words",
       "goal": "Recall the words from this unit."
     },
@@ -1713,7 +1713,7 @@
       "goal": "Use inside and out in a simple Korean exchange."
     },
     "s8-travel-u9-cp": {
-      "title": "At the station tourist s review",
+      "title": "At the station review",
       "subtitle": "Review 18 words",
       "goal": "Recall the words from this unit."
     }
