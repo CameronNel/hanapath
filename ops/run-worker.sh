@@ -6,8 +6,7 @@
 #   ./ops/run-worker.sh qwen            # Qwen via Qwen Code CLI
 #   ./ops/run-worker.sh gemini-flash    # Gemini 3.6 Flash via Gemini CLI
 #
-# Optional second argument: poll interval in seconds (default 600; use a
-# shorter interval for gemini-flash batch runs, e.g. 180).
+# Optional second argument: poll interval in seconds (default 60).
 #
 # The wrapper pulls main every cycle, so Sol's edits to WORKER_LOOP.md,
 # notes files, and the queue propagate automatically. It exits when Sol or
@@ -16,7 +15,7 @@
 # depends on it.
 set -u
 AGENT="${1:?usage: run-worker.sh <sol|opus|qwen|gemini-flash> [interval-seconds]}"
-INTERVAL="${2:-600}"
+INTERVAL="${2:-60}"
 CODEX_BIN="codex"
 if [ -x "$HOME/.codex/.sandbox-bin/codex.exe" ]; then
   CODEX_BIN="$HOME/.codex/.sandbox-bin/codex.exe"
