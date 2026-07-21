@@ -43,7 +43,7 @@ jobs:
           cat WS0B_INSPECT.txt
 
       - name: Publish inspection file
-        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+        if: github.actor != 'github-actions[bot]'
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH_NAME: exec/workstream-0-box-0b
