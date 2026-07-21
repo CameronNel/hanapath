@@ -160,6 +160,26 @@ code-behaviour assumption `[IMPL: …]` as the brief instructs.
 - The decision memo presents each choice as a numbered menu: your
   recommendation, the strongest argument against it, and what changes
   downstream if the owner picks differently.
-- Output: two Markdown documents, titled exactly
-  `EXAM_PROGRAMME_RESEARCH_REPORT.md` and
-  `EXAM_PROGRAMME_DECISION_MEMO.md`. Then stop and wait.
+
+## Delivery — a PR containing the two .md files
+
+Deliver Phase 1 as a **pull request**, not chat prose:
+
+1. Create a new branch off `main` (suggested name:
+   `research/exam-programme-phase-1`).
+2. Add exactly two files, and touch nothing else:
+   - `docs/EXAM_PROGRAMME_RESEARCH_REPORT.md`
+   - `docs/EXAM_PROGRAMME_DECISION_MEMO.md`
+3. Open a **draft** pull request against `main` titled
+   `docs: exam programme Phase 1 — research report + decision memo`.
+   In the body: a short summary of your headline recommendations, the
+   list of decisions awaiting the owner, and a reference to PR #319 (the
+   commissioning brief). Do not mark it ready for review — the owner
+   reviews drafts.
+4. These are docs-only changes: no cache bumps, no code, no edits to any
+   existing file.
+
+If you cannot push to the repository or open a PR from your environment,
+output both documents in full, each as a single complete Markdown code
+block with its exact target path stated above it, so the owner can commit
+them verbatim. Then stop and wait for the locked decision memo.
