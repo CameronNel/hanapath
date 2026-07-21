@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, exec/workstream-0-box-0b]
   workflow_dispatch:
 
 permissions:
@@ -25,6 +25,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Inspect Workstream 0 Box 0B paths
+        shell: bash
+        run: |
+          echo '=== relevant symbols ==='
+          grep -n -C 25 -E 'TEST_ENABLE_WORD_SECTION_COMPLETION|__wetest|completeWordSectionForTesting|word-section-completion|Complete section|complete section' app.js || true
+          echo '=== save/load/export/import symbols ==='
+          grep -n -C 12 -E 'function saveState|function loadState|export.*backup|import.*backup|download.*backup|restore.*backup' app.js || true
+          echo '=== app shell versions ==='
+          grep -n -E 'CACHE_NAME|exam_integrity.js|app.js\?v=' sw.js index.html
 
       - name: Check app syntax
         run: node --check app.js
