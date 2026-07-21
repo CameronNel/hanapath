@@ -43,7 +43,7 @@ while true; do
       "$CODEX_BIN" exec --sandbox danger-full-access "You are Sol, the senior orchestrator of the HanaPath multi-agent system. If ops/runs/ contains a run manifest that is not marked finished, act per ops/agents/SOL_ORCHESTRATOR.md and process exactly ONE heartbeat, then stop. If no unfinished run manifest exists, do nothing and exit silently."
       ;;
     opus)
-      claude -p "$PROMPT" --permission-mode acceptEdits --model claude-opus-4-8
+      claude -p "$PROMPT" --permission-mode bypassPermissions --model claude-opus-4-8
       ;;
     qwen)
       qwen -p "$PROMPT" --yolo
