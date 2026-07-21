@@ -2,7 +2,7 @@
 id: TASK-011
 title: Refresh stale root README (Learn · Exam · Progress; current scale)
 assignee: gemini-flash
-status: in-review
+status: merged
 branch: task/011-readme-refresh
 depends_on: []
 verify:
@@ -31,4 +31,3 @@ change nothing outside `README.md`. Do not describe unshipped features
 - Verification command `node scripts/audit-app-shell.mjs` passed cleanly with 0 errors and 0 warnings.
 
 ## Handoff
-
