@@ -26,8 +26,40 @@ jobs:
         with:
           node-version: 22
 
-      - name: Check app syntax
-        run: node --check app.js
+      # Syntax-check every hand-edited runtime/data file the megabatch touches.
+      - name: Check syntax
+        run: node --check app.js sw.js exam_integrity.js sentence_exam_eligibility.js words_lesson_plan.js
 
+      # Exam programme + integrity gate.
+      - name: Audit exam integrity
+        run: node scripts/audit-exam-integrity.mjs
+      - name: Audit Hangul Mastery exam
+        run: node scripts/audit-hangul-mastery-exam.mjs
+      - name: Check word-exam competency map
+        run: node scripts/build-word-exam-competency-map.mjs --check
+      - name: Audit word exams
+        run: node scripts/audit-word-exams.mjs
+
+      # Learning-data gate (mirrors the Android workflow's learning-data step).
+      - name: Audit words data
+        run: node scripts/audit-words-data.mjs --strict
+      - name: Thin-lesson heuristic regression
+        run: node scripts/test-thin-lesson-heuristic.mjs
+      - name: Audit sentences data
+        run: node scripts/audit-sentences-data.mjs --strict
+      # NOTE: sentence-exam eligibility classification is still in progress
+      # (see PR body). CI enforces the schema/tooling and progress via
+      # --allow-incomplete; strict mode is the pre-merge gate and is added once
+      # rows s0001–s4177 are fully reviewed.
+      - name: Audit sentence eligibility (schema + progress)
+        run: node scripts/audit-sentence-eligibility.mjs --allow-incomplete
+
+      # Alphabet / recognition / handwriting / shell gate.
       - name: Audit alphabet audio coverage
         run: node scripts/audit-alphabet-audio.mjs --strict
+      - name: Audit Hangul recognition
+        run: node scripts/audit-hangul-recognition.mjs
+      - name: Audit premium handwriting
+        run: node scripts/audit-premium-handwriting.mjs
+      - name: Audit app shell
+        run: node scripts/audit-app-shell.mjs
