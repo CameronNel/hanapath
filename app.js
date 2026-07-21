@@ -14647,12 +14647,6 @@ function renderLearnStageMenu(itemId) {
       openLearnStage(itemId, Number(btn.dataset.learnStage));
     });
   });
-  const completeAlphabetBtn = el.querySelector("[data-complete-alphabet-section]");
-  if (completeAlphabetBtn) completeAlphabetBtn.addEventListener("click", (event) => {
-    event.stopPropagation();
-    completeAlphabetSectionForTesting();
-    renderLearnStageMenu("alphabet");
-  });
   if (itemId === "alphabet") {
     bindAlphabetSectionCards(el);
   }
