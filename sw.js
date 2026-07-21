@@ -1,5 +1,5 @@
-// [2026-07-21] Cache bumped for Workstream 0 Box 0B taint-gated completion controls.
-const CACHE_NAME = "hanapath-shell-v437";
+// [2026-07-21] Cache bumped for Workstream 0 Box 0C Hangul exam provenance binding.
+const CACHE_NAME = "hanapath-shell-v438";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -21,7 +21,7 @@ const APP_SHELL = [
   "./word_exam_blueprints.js?v=20260720w",
   "./word_exam_engine.js?v=20260720w",
   "./exam_integrity.js?v=20260721b",
-  "./app.js?v=20260721b",
+  "./app.js?v=20260721c",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

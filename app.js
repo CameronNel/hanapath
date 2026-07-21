@@ -15503,6 +15503,7 @@ function buildHangulExamAttempt(bank) {
       item.type === "mcq" ? { ...item, options: shuffle(item.options) } : { ...item }),
   }));
   const now = Date.now();
+  const initialOverrideFlags = typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive() ? ["__wetest"] : [];
   return {
     bank,
     parts,
@@ -15516,6 +15517,7 @@ function buildHangulExamAttempt(bank) {
     itemIndex: -1,       // -1 = part-intro card, otherwise the item within the part
     submitted: false,
     result: null,
+    overrideFlags: initialOverrideFlags,
   };
 }
 
@@ -16034,15 +16036,100 @@ function submitHangulExam(auto) {
   const unanswered = flat.filter((item) => !examItemAnswered(attempt, item)).length;
   const mastered = correct === 200 && total === 200 && unanswered === 0;
 
+  const currentOverrideFlags = typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive() ? ["__wetest"] : [];
+  const combinedOverrideFlags = Array.from(new Set([
+    ...(attempt.overrideFlags || []),
+    ...currentOverrideFlags,
+  ]));
+
+  const integrityApi = (typeof window !== "undefined" && window.HANAPATH_EXAM_INTEGRITY)
+    || (typeof HANAPATH_EXAM_INTEGRITY !== "undefined" ? HANAPATH_EXAM_INTEGRITY : null);
+
+  const taintContext = integrityApi && typeof integrityApi.getAttemptTaintContext === "function"
+    ? integrityApi.getAttemptTaintContext(state, ["alphabet"], combinedOverrideFlags)
+    : {
+        overrideEventIds: [],
+        overrideFlags: combinedOverrideFlags,
+        status: combinedOverrideFlags.length ? "practice" : "hanaPath",
+        isPractice: Boolean(combinedOverrideFlags.length),
+      };
+
+  const isPractice = taintContext.isPractice;
+
   const record = normalizeAlphabetMasteryExam(state.alphabetMasteryExam);
   record.attempts += 1;
-  record.bestCorrect = Math.max(record.bestCorrect, correct);
-  if (mastered) record.mastered = true; // once earned, never regressed
+  if (!isPractice) {
+    record.bestCorrect = Math.max(record.bestCorrect, correct);
+    if (mastered) record.mastered = true; // once earned, never regressed
+  }
   record.completedAt = new Date().toISOString();
   state.alphabetMasteryExam = record;
+
+  const cryptoApi = typeof globalThis !== "undefined" ? globalThis.crypto : null;
+  const attemptId = (cryptoApi && typeof cryptoApi.randomUUID === "function")
+    ? `attempt-${cryptoApi.randomUUID()}`
+    : `attempt-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+  const submittedAt = Date.now();
+  const generatedAt = attempt.startedAt || submittedAt;
+  const durationSeconds = Math.max(0, Math.round((submittedAt - generatedAt) / 1000));
+
+  const resultRecord = {
+    resultSchemaVersion: 1,
+    attemptId: attemptId,
+    examId: "hangul-mastery-exam",
+    attemptMode: null,
+    blueprintVersion: 2,
+    engineVersion: null,
+    generationSeed: null,
+    contentBankRevision: "hangul-v2",
+    eligibilityRevision: null,
+    generatedAt: generatedAt,
+    submittedAt: submittedAt,
+    durationSeconds: durationSeconds,
+    scopeSectionIds: ["alphabet"],
+    itemCount: total,
+    scoreSummary: {
+      correct: correct,
+      total: total,
+      pct: Math.round((correct / total) * 1000) / 10,
+      unanswered: unanswered,
+    },
+    floorSummary: {
+      passed: mastered,
+      distinguished: null,
+      details: { mastered: mastered, auto: Boolean(auto) },
+    },
+    status: taintContext.status,
+    overrideFlags: taintContext.overrideFlags,
+    overrideEventIds: taintContext.overrideEventIds,
+    qualifyingAttemptId: null,
+    retentionAttemptId: null,
+    legacyProvenanceStatus: null,
+    checksum: null,
+  };
+
+  if (!state.examResults || typeof state.examResults !== "object") {
+    state.examResults = { version: 1, byAttemptId: {} };
+  }
+  if (!state.examResults.byAttemptId) {
+    state.examResults.byAttemptId = {};
+  }
+  state.examResults.byAttemptId[attemptId] = resultRecord;
+
   saveState(); // never re-locks previously unlocked content
 
-  attempt.result = { total, correct, unanswered, mastered, auto, timeUsedMs: Date.now() - attempt.startedAt };
+  attempt.result = {
+    total,
+    correct,
+    unanswered,
+    mastered,
+    auto,
+    timeUsedMs: Date.now() - attempt.startedAt,
+    status: taintContext.status,
+    isPractice: isPractice,
+    attemptId: attemptId,
+  };
   attempt.stage = "results";
   queueScreenMotion("forward", 1);
   renderExamResults();

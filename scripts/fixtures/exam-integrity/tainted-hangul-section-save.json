@@ -1,0 +1,79 @@
+{
+  "onboarded": true,
+  "level": "K1",
+  "route": { "hub": "learn", "item": "alphabet", "stage": null },
+  "phaseOneCompleted": [
+    "anchor-vowels",
+    "basic-consonants",
+    "block-geometry",
+    "strong-consonants",
+    "combined-vowels",
+    "batchim-basics",
+    "sound-rules",
+    "reading-graduation"
+  ],
+  "vocabLessonCompleted": [],
+  "examResults": {
+    "version": 1,
+    "byAttemptId": {
+      "attempt-hangul-practice-001": {
+        "resultSchemaVersion": 1,
+        "attemptId": "attempt-hangul-practice-001",
+        "examId": "hangul-mastery-exam",
+        "attemptMode": null,
+        "blueprintVersion": 2,
+        "engineVersion": null,
+        "generationSeed": null,
+        "contentBankRevision": "hangul-v2",
+        "eligibilityRevision": null,
+        "generatedAt": 1784640000000,
+        "submittedAt": 1784641000000,
+        "durationSeconds": 1000,
+        "scopeSectionIds": ["alphabet"],
+        "itemCount": 200,
+        "scoreSummary": {
+          "correct": 200,
+          "total": 200,
+          "pct": 100,
+          "unanswered": 0
+        },
+        "floorSummary": {
+          "passed": true,
+          "distinguished": null,
+          "details": { "mastered": true, "auto": false }
+        },
+        "status": "practice",
+        "overrideFlags": [],
+        "overrideEventIds": ["taint-fixture-alphabet-sec"],
+        "qualifyingAttemptId": null,
+        "retentionAttemptId": null,
+        "legacyProvenanceStatus": null,
+        "checksum": null
+      }
+    }
+  },
+  "examIntegrity": {
+    "version": 1,
+    "taintEvents": [
+      {
+        "taintSchemaVersion": 1,
+        "taintEventId": "taint-fixture-alphabet-sec",
+        "controlId": "alphabet-section-completion",
+        "affectedPillars": ["alphabet"],
+        "scopeSectionIds": ["alphabet"],
+        "scopeUnitIds": ["anchor-vowels"],
+        "scopeLessonIds": ["anchor-vowels"],
+        "activatedAt": 1784640000000,
+        "appVersion": "hanapath-shell-v438",
+        "appAssetRevision": "20260721c",
+        "queryGate": "__wetest",
+        "sourceRoute": { "hub": "learn", "item": "alphabet", "stage": null },
+        "note": "Owner testing override",
+        "clearedAt": null,
+        "globalExamOverride": false
+      }
+    ],
+    "resultRelations": [],
+    "migrationLog": []
+  }
+}
