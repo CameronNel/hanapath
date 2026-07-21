@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -18,23 +18,62 @@ jobs:
     name: Validate static app
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout branch head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Inspect Workstream 0 Box 0B paths
+      - name: Capture Workstream 0 Box 0B paths
         shell: bash
         run: |
-          echo '=== relevant symbols ==='
-          grep -n -C 25 -E 'TEST_ENABLE_WORD_SECTION_COMPLETION|__wetest|completeWordSectionForTesting|word-section-completion|Complete section|complete section' app.js || true
-          echo '=== save/load/export/import symbols ==='
-          grep -n -C 12 -E 'function saveState|function loadState|export.*backup|import.*backup|download.*backup|restore.*backup' app.js || true
-          echo '=== app shell versions ==='
-          grep -n -E 'CACHE_NAME|exam_integrity.js|app.js\?v=' sw.js index.html
+          {
+            echo '=== relevant symbols ==='
+            grep -n -C 30 -E 'TEST_ENABLE_WORD_SECTION_COMPLETION|__wetest|completeWordSectionForTesting|word-section-completion|Complete section|complete section' app.js || true
+            echo '=== save/load/export/import symbols ==='
+            grep -n -C 16 -E 'function saveState|function loadState|export.*backup|import.*backup|download.*backup|restore.*backup' app.js || true
+            echo '=== app shell versions ==='
+            grep -n -E 'CACHE_NAME|exam_integrity.js|app.js\?v=' sw.js index.html
+          } > WS0B_INSPECT.txt
+          cat WS0B_INSPECT.txt
+
+      - name: Publish inspection file
+        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: exec/workstream-0-box-0b
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          base_commit="$(gh api "repos/$repo/git/ref/heads/$BRANCH_NAME" --jq .object.sha)"
+          base_tree="$(gh api "repos/$repo/git/commits/$base_commit" --jq .tree.sha)"
+          payload="$(python - <<'PY'
+          import base64, json, pathlib
+          data = pathlib.Path('WS0B_INSPECT.txt').read_bytes()
+          print(json.dumps({'content': base64.b64encode(data).decode('ascii'), 'encoding': 'base64'}))
+          PY
+          )"
+          blob="$(printf '%s' "$payload" | gh api --method POST "repos/$repo/git/blobs" --input - --jq .sha)"
+          tree="$(python - "$base_tree" "$blob" <<'PY' | gh api --method POST "repos/'"$repo"'/git/trees" --input - --jq .sha
+          import json, sys
+          print(json.dumps({'base_tree': sys.argv[1], 'tree': [{'path': 'WS0B_INSPECT.txt', 'mode': '100644', 'type': 'blob', 'sha': sys.argv[2]}]}))
+          PY
+          )"
+          commit="$(python - "$base_commit" "$tree" <<'PY' | gh api --method POST "repos/'"$repo"'/git/commits" --input - --jq .sha
+          import json, sys
+          print(json.dumps({'message': 'Record Workstream 0 gate inspection', 'tree': sys.argv[2], 'parents': [sys.argv[1]]}))
+          PY
+          )"
+          python - "$commit" <<'PY' | gh api --method PATCH "repos/$repo/git/refs/heads/$BRANCH_NAME" --input - >/dev/null
+          import json, sys
+          print(json.dumps({'sha': sys.argv[1], 'force': False}))
+          PY
 
       - name: Check app syntax
         run: node --check app.js
