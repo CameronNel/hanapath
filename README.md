@@ -3,7 +3,7 @@
 HanaPath is a mobile-first Korean learning app built around three tabs:
 
 - Learn
-- Practice
+- Exam
 - Progress
 
 ## Delivery targets
@@ -24,14 +24,16 @@ fallbacks.
 
 [Open the live PWA](https://cameronnel.github.io/hanapath/)
 
-The app teaches Hangul first (a complete 8-stage alphabet course), then a
-curated ~1,900-sense Words curriculum with SRS review, an inflection engine,
-pronunciation drills, and the 5k frequency word bank as reference.
+The app teaches Hangul first (a complete 8-stage alphabet course), followed by a
+curated 2,028-sense Words curriculum with SRS review, an inflection engine,
+pronunciation drills, the 5k frequency word bank as reference, and a
+4,177-sentence bank structured into an 8-stage, 75-lesson, 703-item core
+curriculum.
 
 ## What each tab does
 
-- `Learn` holds the study material: the alphabet course, vocabulary lessons and the full Word Bank, sentences, and listening.
-- `Practice` handles quizzes, review sessions, and drills.
+- `Learn` holds the study material and practice drills: the alphabet course, vocabulary lessons, full Word Bank, sentence curriculum, listening practice, and direct practice drills (quizzes, review sessions, writing practice).
+- `Exam` holds formal assessments: the 200-item Hangul Mastery Examination and the Core Word Examination Suite (ten achievement exams with macrostrand scoring and retention confirmation).
 - `Progress` shows mastery, review analytics, and retention metrics.
 
 ## Run locally
@@ -83,10 +85,12 @@ cross-install synchronization.
 ## Verify
 
 ```bash
-node --check app.js sw.js words_curated_core.js words_inflect.js scripts/audit-words-data.mjs scripts/audit-app-shell.mjs
+node --check app.js sw.js words_curated_core.js words_inflect.js hangul_mastery_exam.js word_exam_blueprints.js word_exam_engine.js scripts/audit-words-data.mjs scripts/audit-app-shell.mjs
 node scripts/audit-words-data.mjs --strict
-node scripts/audit-sentences-foundation.mjs
+node scripts/audit-sentences-data.mjs --strict
 node scripts/audit-alphabet-audio.mjs --strict
+node scripts/audit-hangul-mastery-exam.mjs
+node scripts/audit-word-exams.mjs
 node scripts/audit-app-shell.mjs
 ```
 
@@ -107,6 +111,8 @@ version numbers:
 
 - `index.html`, `app.js`, `styles.css`
 - `words_curated_core.js`, `words_lesson_plan.js`, `words_inflect.js` — Words data + inflection engine
+- `sentences_core.js`, `sentences_lesson_plan.js` — Sentences data + curriculum v2 plan
+- `hangul_mastery_exam.js`, `word_exam_blueprints.js`, `word_exam_engine.js` — Hangul & Core Word examination data and engine
 - `korean_5000_claude_ready.csv`, `raw_word_meanings.js` — 5k frequency reference
 - `audio_map.js`, `audio/` — pre-generated TTS assets
 - `sw.js` — service worker (cache-versioned app shell)
@@ -116,6 +122,7 @@ version numbers:
 - **[`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md)** — the "continue the project" runbook for an AI/agent (orient → pick next task → build → verify → ship).
 - **[`AGENTS.md`](AGENTS.md)** — repository-wide rules and document routing for AI agents.
 - **[`CLAUDE.md`](CLAUDE.md)** — read-this-first guide for contributors and AI agents (rules + document map).
+- **[`docs/EXAM_TAB_HANDOVER.md`](docs/EXAM_TAB_HANDOVER.md)** — Exam tab structure and handover for the Hangul Mastery Exam and Core Word Examination Suite.
 - **[`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md)** — owner-approved Android/Capacitor/Google Play execution handover, with later iOS compatibility.
 - **[`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)** — the governing north star for the Sentences section, with current path/hub work in [`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md), Track H authored-content work in [`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md), and research in [`docs/SENTENCES_TEACHING_SPEC_SOURCE.md`](docs/SENTENCES_TEACHING_SPEC_SOURCE.md).
 - [`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md) — the north star for the (shipped) Words section.
