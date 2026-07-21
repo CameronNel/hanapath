@@ -2912,6 +2912,15 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v437";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260721b";
+
+// Reuse the Core Words acceptance-test query precedent as the single private
+// gate for owner testing controls. This is obscurity against accidental use,
+// not an authentication or security boundary.
+function isWordExamTestQueryActive() {
+  return typeof location !== "undefined" && /[?&]__wetest=1\b/.test(location.search);
+}
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -3116,9 +3125,13 @@ function loadState() {
 
 function saveState() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const serialized = JSON.stringify(state);
+    localStorage.setItem(STORAGE_KEY, serialized);
+    return localStorage.getItem(STORAGE_KEY) === serialized;
   } catch {
-    // Ignore storage errors; the app still works without persistence.
+    // Most app flows remain usable without persistence. Integrity-sensitive
+    // controls explicitly inspect this boolean and refuse to mutate progress.
+    return false;
   }
 }
 
@@ -4506,26 +4519,174 @@ function isWordSectionUnlocked(section) {
   return Boolean(previous && getWordUnits().filter((unit) => unit.sectionId === previous.id).every(isWordUnitCrowned));
 }
 
-function completeWordSectionForTesting(sectionId) {
-  if (!TEST_ENABLE_WORD_SECTION_COMPLETION) return;
+function getWordSectionCompletionScope(sectionId) {
   const section = getWordSectionById(sectionId);
-  if (!section || !isWordCurriculumV2()) return;
-  const lessonIds = getWordUnits()
-    .filter((unit) => unit.sectionId === section.id)
+  if (!section || !isWordCurriculumV2()) return null;
+  const completed = new Set(Array.isArray(state.vocabLessonCompleted) ? state.vocabLessonCompleted : []);
+  const units = getWordUnits().filter((unit) => unit.sectionId === section.id);
+  const lessonIds = units
     .flatMap((unit) => [...unit.lessonIds, unit.checkpointId])
-    .filter(Boolean);
-  state.vocabLessonCompleted = [...new Set([...(state.vocabLessonCompleted || []), ...lessonIds])];
-  if (state.vocabLessonActive && lessonIds.includes(state.vocabLessonActive)) {
+    .filter((lessonId) => lessonId && !completed.has(lessonId));
+  const pending = new Set(lessonIds);
+  return {
+    controlId: "word-section-completion",
+    affectedPillars: ["words"],
+    sectionName: `Section ${section.id.toUpperCase()} · ${section.name}`,
+    scopeSectionIds: [section.id],
+    scopeUnitIds: units
+      .filter((unit) => unit.lessonIds.some((lessonId) => pending.has(lessonId)) || pending.has(unit.checkpointId))
+      .map((unit) => unit.id),
+    scopeLessonIds: lessonIds,
+  };
+}
+
+function getAlphabetSectionCompletionScope() {
+  const completed = new Set(Array.isArray(state.phaseOneCompleted) ? state.phaseOneCompleted : []);
+  return {
+    controlId: "alphabet-section-completion",
+    affectedPillars: ["alphabet", "words"],
+    sectionName: "Alphabet · Learning lessons",
+    scopeSectionIds: ["alphabet"],
+    scopeUnitIds: [],
+    scopeLessonIds: phaseOneLessons.map((lesson) => lesson.id).filter((lessonId) => !completed.has(lessonId)),
+  };
+}
+
+function verifyPersistedTaintEvent(taintEventId) {
+  try {
+    const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    return Boolean(persisted.examIntegrity
+      && Array.isArray(persisted.examIntegrity.taintEvents)
+      && persisted.examIntegrity.taintEvents.some((event) => event && event.taintEventId === taintEventId));
+  } catch {
+    return false;
+  }
+}
+
+function persistTaintBeforeCompletion(event) {
+  const api = window.HANAPATH_EXAM_INTEGRITY;
+  if (!api || typeof api.appendTaintEvent !== "function") return false;
+  const previousIntegrity = state.examIntegrity ? JSON.parse(JSON.stringify(state.examIntegrity)) : null;
+  const appended = api.appendTaintEvent(state, event);
+  if (!appended.added) return false;
+  if (saveState() && verifyPersistedTaintEvent(event.taintEventId)) return true;
+  state.examIntegrity = previousIntegrity;
+  return false;
+}
+
+function createSectionCompletionTaint(scope) {
+  const api = window.HANAPATH_EXAM_INTEGRITY;
+  if (!api || typeof api.createTaintEvent !== "function") return null;
+  return api.createTaintEvent({
+    controlId: scope.controlId,
+    affectedPillars: scope.affectedPillars,
+    scopeSectionIds: scope.scopeSectionIds,
+    scopeUnitIds: scope.scopeUnitIds,
+    scopeLessonIds: scope.scopeLessonIds,
+    activatedAt: Date.now(),
+    appVersion: EXAM_INTEGRITY_APP_VERSION,
+    appAssetRevision: EXAM_INTEGRITY_ASSET_REVISION,
+    queryGate: "__wetest",
+    sourceRoute: state.route && typeof state.route === "object" ? { ...state.route } : null,
+    note: "Owner testing override",
+    clearedAt: null,
+    globalExamOverride: false,
+  });
+}
+
+function showSectionCompletionConfirm(scope, commit, onSuccess) {
+  if (document.getElementById("sectionCompletionOverlay")) return;
+  const overlay = document.createElement("div");
+  overlay.id = "sectionCompletionOverlay";
+  overlay.className = "exam-quit-overlay";
+  overlay.innerHTML = `
+    <div class="exam-quit-dialog" role="alertdialog" aria-modal="true" aria-labelledby="sectionCompletionTitle">
+      <h3 id="sectionCompletionTitle">Complete ${escapeHtml(scope.sectionName)} for testing?</h3>
+      <p>This permanently records a local testing override for ${escapeHtml(scope.sectionName)}. Exams covering this section become Practice results and cannot award HanaPath mastery or retention.</p>
+      <div class="lesson-feedback" id="sectionCompletionFeedback" aria-live="polite"></div>
+      <div class="exam-quit-actions">
+        <button class="button secondary" type="button" id="sectionCompletionCancel">Cancel</button>
+        <button class="button exam-quit-discard" type="button" id="sectionCompletionConfirm">Complete for testing</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector("#sectionCompletionCancel").addEventListener("click", () => overlay.remove());
+  overlay.addEventListener("click", (event) => { if (event.target === overlay) overlay.remove(); });
+  overlay.querySelector("#sectionCompletionConfirm").addEventListener("click", () => {
+    const button = overlay.querySelector("#sectionCompletionConfirm");
+    const feedback = overlay.querySelector("#sectionCompletionFeedback");
+    button.disabled = true;
+    const result = commit();
+    if (result && result.ok) {
+      overlay.remove();
+      if (typeof onSuccess === "function") onSuccess(result);
+      return;
+    }
+    feedback.innerHTML = "<strong>Not completed.</strong> The taint event could not be durably saved, so no progression was changed.";
+    button.disabled = false;
+  });
+}
+
+function completeWordSectionForTesting(sectionId, options = {}) {
+  if (!TEST_ENABLE_WORD_SECTION_COMPLETION || !isWordExamTestQueryActive()) return { ok: false, reason: "gate" };
+  const scope = getWordSectionCompletionScope(sectionId);
+  if (!scope || !scope.scopeLessonIds.length) return { ok: false, reason: "nothing-to-complete" };
+  if (!options.confirmed) {
+    showSectionCompletionConfirm(
+      scope,
+      () => completeWordSectionForTesting(sectionId, { confirmed: true }),
+      () => renderVocabulary(),
+    );
+    return { ok: false, pendingConfirmation: true };
+  }
+
+  const event = createSectionCompletionTaint(scope);
+  if (!event || !persistTaintBeforeCompletion(event)) return { ok: false, reason: "taint-persistence" };
+
+  const previousCompleted = [...(state.vocabLessonCompleted || [])];
+  const previousActive = state.vocabLessonActive;
+  const previousSession = state.vocabLessonSession;
+  state.vocabLessonCompleted = [...new Set([...previousCompleted, ...scope.scopeLessonIds])];
+  if (state.vocabLessonActive && scope.scopeLessonIds.includes(state.vocabLessonActive)) {
     state.vocabLessonActive = null;
     state.vocabLessonSession = null;
   }
-  saveState();
+  if (!saveState() || !verifyPersistedTaintEvent(event.taintEventId)) {
+    state.vocabLessonCompleted = previousCompleted;
+    state.vocabLessonActive = previousActive;
+    state.vocabLessonSession = previousSession;
+    saveState();
+    return { ok: false, reason: "completion-persistence", taintEventId: event.taintEventId };
+  }
+  refreshProgressionState();
+  return { ok: true, taintEventId: event.taintEventId };
 }
 
-function completeAlphabetSectionForTesting() {
-  if (!TEST_ENABLE_WORD_SECTION_COMPLETION) return;
-  state.phaseOneCompleted = phaseOneLessons.map((lesson) => lesson.id);
-  saveState();
+function completeAlphabetSectionForTesting(options = {}) {
+  if (!TEST_ENABLE_WORD_SECTION_COMPLETION || !isWordExamTestQueryActive()) return { ok: false, reason: "gate" };
+  const scope = getAlphabetSectionCompletionScope();
+  if (!scope.scopeLessonIds.length) return { ok: false, reason: "nothing-to-complete" };
+  if (!options.confirmed) {
+    showSectionCompletionConfirm(
+      scope,
+      () => completeAlphabetSectionForTesting({ confirmed: true }),
+      () => openLearnStageMenu("alphabet"),
+    );
+    return { ok: false, pendingConfirmation: true };
+  }
+
+  const event = createSectionCompletionTaint(scope);
+  if (!event || !persistTaintBeforeCompletion(event)) return { ok: false, reason: "taint-persistence" };
+
+  const previousCompleted = [...(state.phaseOneCompleted || [])];
+  state.phaseOneCompleted = [...new Set([...previousCompleted, ...scope.scopeLessonIds])];
+  if (!saveState() || !verifyPersistedTaintEvent(event.taintEventId)) {
+    state.phaseOneCompleted = previousCompleted;
+    saveState();
+    return { ok: false, reason: "completion-persistence", taintEventId: event.taintEventId };
+  }
+  refreshProgressionState();
+  return { ok: true, taintEventId: event.taintEventId };
 }
 function isWordUnitUnlocked(unit) {
   if (!unit || !isWordSectionUnlocked(getWordSectionById(unit.sectionId))) return false;
@@ -7486,7 +7647,7 @@ function alphabetStagesSectionHtml() {
         </span>
         ${progress.complete ? `<span class="pill accent alphabet-step-pill">${progress.completedCount}/${progress.total}</span>` : ""}
       </button>
-      ${TEST_ENABLE_WORD_SECTION_COMPLETION && !progress.complete ? '<button class="button secondary compact alphabet-step-complete" type="button" data-complete-alphabet-section>Complete</button>' : ""}
+      ${TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive() && !progress.complete ? '<button class="button secondary compact alphabet-step-complete" type="button" data-complete-alphabet-section>Testing override</button>' : ""}
     </div>
   `;
 }
@@ -7580,7 +7741,7 @@ function wordPathV2Html() {
         <div><div class="eyebrow">Section ${escapeHtml(section.id.toUpperCase())}</div><h3 class="vocab-path-section-title">${escapeHtml(section.name)}</h3></div>
         <div class="flex gap-8" style="align-items:center; flex-wrap:wrap; justify-content:flex-end;">
           <span class="pill ${unlocked ? "accent" : "muted"}">${unlocked ? `${crowned}/${sectionUnits.length} crowned` : "🔒 Locked"}</span>
-          ${TEST_ENABLE_WORD_SECTION_COMPLETION ? `<button class="button secondary compact" type="button" data-word-complete-section="${escapeHtml(section.id)}">Complete section</button>` : ""}
+          ${TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive() ? `<button class="button secondary compact" type="button" data-word-complete-section="${escapeHtml(section.id)}">Testing override</button>` : ""}
         </div>
       </div>
       ${unlocked ? (sectionOpen ? sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("") : `<details class="vocab-path-explore"><summary>Explore topics · ${sectionUnits.length} units</summary><div class="vocab-path-unit-list">${sectionUnits.map((unit) => wordPathV2UnitHtml(unit, activeUnitId)).join("")}</div></details>`) : `<div class="vocab-path-lock-note">Finish ${escapeHtml(section.prerequisiteSectionId ? getWordSectionById(section.prerequisiteSectionId)?.name || "the previous section" : "Hangul")} to unlock this section.</div>`}
@@ -7860,6 +8021,13 @@ function bindAlphabetSectionCards(el) {
   el.querySelectorAll("[data-alphabet-section]").forEach((btn) => {
     btn.addEventListener("click", () => openAlphabetSubsection(btn.dataset.alphabetSection));
   });
+  const completeButton = el.querySelector("[data-complete-alphabet-section]");
+  if (completeButton) {
+    completeButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      completeAlphabetSectionForTesting();
+    });
+  }
 }
 
 // Words home content (the "learn" view of the vocabulary section): continue
@@ -7935,7 +8103,6 @@ function bindWordsHomeContent(el) {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
       completeWordSectionForTesting(button.dataset.wordCompleteSection);
-      renderVocabulary();
     });
   });
   const reviewBtn = el.querySelector("[data-words-start-review]");
@@ -16740,9 +16907,9 @@ function openWordSectionStudy() {
 // Only active when the page URL carries `?__wetest=1`; it exposes existing
 // test-gated helpers so browser acceptance tests can unlock sections and inject
 // retention dates. It is inert in normal use and grants no new capability.
-if (typeof window !== "undefined" && typeof location !== "undefined" && /[?&]__wetest=1\b/.test(location.search)) {
+if (typeof window !== "undefined" && isWordExamTestQueryActive()) {
   window.__wordExamTest = {
-    unlockAll() { getWordSections().forEach((s) => completeWordSectionForTesting(s.id)); refreshProgressionState(); },
+    unlockAll() { getWordSections().forEach((s) => completeWordSectionForTesting(s.id, { confirmed: true })); refreshProgressionState(); },
     openHub() { renderWordExamHub(); },
     engine() { return getWordExamEngine(); },
     record(id) { return getWordExamRecord(id); },

@@ -22,6 +22,23 @@
   const RESULT_SCHEMA_VERSION = 1;
   const INTEGRITY_SCHEMA_VERSION = 1;
   const MIGRATION_VERSION = 1;
+  const TAINT_SCHEMA_VERSION = 1;
+  const REQUIRED_TAINT_FIELDS = Object.freeze([
+    "taintSchemaVersion",
+    "taintEventId",
+    "controlId",
+    "affectedPillars",
+    "scopeSectionIds",
+    "scopeUnitIds",
+    "scopeLessonIds",
+    "activatedAt",
+    "appVersion",
+    "appAssetRevision",
+    "queryGate",
+    "sourceRoute",
+    "note",
+    "clearedAt",
+  ]);
   const VALID_RESULT_STATUSES = Object.freeze([
     "hanaPath",
     "practice",
@@ -111,6 +128,141 @@
 
   function safeArray(value) {
     return Array.isArray(value) ? cloneJson(value) : null;
+  }
+
+  function normalizeStringList(value) {
+    if (!Array.isArray(value)) return [];
+    return [...new Set(value.filter((item) => typeof item === "string" && item.length > 0))];
+  }
+
+  function makeTaintEventId(options = {}) {
+    if (typeof options.taintEventId === "string" && options.taintEventId) {
+      return options.taintEventId;
+    }
+    const cryptoApi = typeof globalThis !== "undefined" ? globalThis.crypto : null;
+    if (cryptoApi && typeof cryptoApi.randomUUID === "function") {
+      return `taint-${cryptoApi.randomUUID()}`;
+    }
+    const now = finiteNumber(options.now) ?? Date.now();
+    const entropy = finiteNumber(options.randomValue) ?? Math.random();
+    return `taint-${now.toString(36)}-${fingerprint({ now, entropy })}`;
+  }
+
+  function createTaintEvent(input = {}, options = {}) {
+    const activatedAt = finiteNumber(input.activatedAt)
+      ?? finiteNumber(options.now)
+      ?? Date.now();
+    return {
+      taintSchemaVersion: TAINT_SCHEMA_VERSION,
+      taintEventId: makeTaintEventId({
+        taintEventId: input.taintEventId,
+        now: activatedAt,
+        randomValue: options.randomValue,
+      }),
+      controlId: typeof input.controlId === "string" ? input.controlId : "",
+      affectedPillars: normalizeStringList(input.affectedPillars),
+      scopeSectionIds: normalizeStringList(input.scopeSectionIds),
+      scopeUnitIds: normalizeStringList(input.scopeUnitIds),
+      scopeLessonIds: normalizeStringList(input.scopeLessonIds),
+      activatedAt,
+      appVersion: typeof input.appVersion === "string" ? input.appVersion : "",
+      appAssetRevision: typeof input.appAssetRevision === "string" ? input.appAssetRevision : "",
+      queryGate: typeof input.queryGate === "string" ? input.queryGate : "",
+      sourceRoute: isPlainObject(input.sourceRoute) ? cloneJson(input.sourceRoute) : null,
+      note: typeof input.note === "string" ? input.note : "",
+      clearedAt: finiteNumber(input.clearedAt),
+      globalExamOverride: input.globalExamOverride === true,
+    };
+  }
+
+  function validateTaintEvent(event, index = 0) {
+    const errors = [];
+    const label = isPlainObject(event) && event.taintEventId
+      ? event.taintEventId
+      : String(index);
+    if (!isPlainObject(event)) return [`taint event ${label} must be an object`];
+    REQUIRED_TAINT_FIELDS.forEach((field) => {
+      if (!Object.prototype.hasOwnProperty.call(event, field)) {
+        errors.push(`taint event ${label} missing ${field}`);
+      }
+    });
+    if (event.taintSchemaVersion !== TAINT_SCHEMA_VERSION) {
+      errors.push(`taint event ${label} has invalid schema version`);
+    }
+    if (typeof event.taintEventId !== "string" || !event.taintEventId) {
+      errors.push(`taint event ${label} missing taintEventId`);
+    }
+    if (typeof event.controlId !== "string" || !event.controlId) {
+      errors.push(`taint event ${label} missing controlId`);
+    }
+    if (!Number.isFinite(event.activatedAt)) {
+      errors.push(`taint event ${label} missing activatedAt`);
+    }
+    if (typeof event.appVersion !== "string" || !event.appVersion) {
+      errors.push(`taint event ${label} missing appVersion`);
+    }
+    if (typeof event.appAssetRevision !== "string" || !event.appAssetRevision) {
+      errors.push(`taint event ${label} missing appAssetRevision`);
+    }
+    if (event.queryGate !== "__wetest") {
+      errors.push(`taint event ${label} has invalid queryGate`);
+    }
+    ["affectedPillars", "scopeSectionIds", "scopeUnitIds", "scopeLessonIds"].forEach((field) => {
+      if (!Array.isArray(event[field]) || event[field].some((item) => typeof item !== "string" || !item)) {
+        errors.push(`taint event ${label} has invalid ${field}`);
+      }
+    });
+    if (event.controlId.endsWith("section-completion") && (!Array.isArray(event.scopeSectionIds) || !event.scopeSectionIds.length)) {
+      errors.push(`taint event ${label} missing section scope`);
+    }
+    if (event.clearedAt !== null && !Number.isFinite(event.clearedAt)) {
+      errors.push(`taint event ${label} has invalid clearedAt`);
+    }
+    return errors;
+  }
+
+  function appendTaintEvent(stateValue, event) {
+    if (!isPlainObject(stateValue)) return { added: false, reason: "invalid-state" };
+    const eventErrors = validateTaintEvent(event);
+    if (eventErrors.length) return { added: false, reason: "invalid-event", errors: eventErrors };
+    const integrity = normalizeExamIntegrityContainer(stateValue.examIntegrity);
+    if (integrity.taintEvents.some((item) => item && item.taintEventId === event.taintEventId)) {
+      return { added: false, reason: "duplicate-id", eventId: event.taintEventId };
+    }
+    integrity.taintEvents.push(cloneJson(event));
+    stateValue.examIntegrity = integrity;
+    return { added: true, eventId: event.taintEventId };
+  }
+
+  function getTaintEventById(stateValue, taintEventId) {
+    const events = stateValue && stateValue.examIntegrity && Array.isArray(stateValue.examIntegrity.taintEvents)
+      ? stateValue.examIntegrity.taintEvents
+      : [];
+    return events.find((event) => event && event.taintEventId === taintEventId) || null;
+  }
+
+  function getIntersectingTaintEventIds(stateValue, scopeSectionIds) {
+    const scope = new Set(normalizeStringList(scopeSectionIds));
+    const events = stateValue && stateValue.examIntegrity && Array.isArray(stateValue.examIntegrity.taintEvents)
+      ? stateValue.examIntegrity.taintEvents
+      : [];
+    return events
+      .filter((event) => isPlainObject(event) && event.clearedAt == null)
+      .filter((event) => event.globalExamOverride === true
+        || (Array.isArray(event.scopeSectionIds) && event.scopeSectionIds.some((sectionId) => scope.has(sectionId))))
+      .map((event) => event.taintEventId)
+      .filter((eventId) => typeof eventId === "string" && eventId.length > 0);
+  }
+
+  function getAttemptTaintContext(stateValue, scopeSectionIds, overrideFlags = []) {
+    const eventIds = getIntersectingTaintEventIds(stateValue, scopeSectionIds);
+    const flags = normalizeStringList(overrideFlags);
+    return {
+      overrideEventIds: eventIds,
+      overrideFlags: flags,
+      status: eventIds.length || flags.length ? "practice" : "hanaPath",
+      isPractice: Boolean(eventIds.length || flags.length),
+    };
   }
 
   function normalizeExamResultsContainer(raw) {
@@ -421,6 +573,25 @@
       if (!Array.isArray(integrity[field])) errors.push(`examIntegrity.${field} must be an array`);
     });
 
+    if (Array.isArray(integrity.taintEvents)) {
+      const taintIds = new Set();
+      const completedLessonIds = new Set([
+        ...(Array.isArray(stateValue.vocabLessonCompleted) ? stateValue.vocabLessonCompleted : []),
+        ...(Array.isArray(stateValue.phaseOneCompleted) ? stateValue.phaseOneCompleted : []),
+      ]);
+      integrity.taintEvents.forEach((event, index) => {
+        errors.push(...validateTaintEvent(event, index));
+        if (!isPlainObject(event) || typeof event.taintEventId !== "string" || !event.taintEventId) return;
+        if (taintIds.has(event.taintEventId)) errors.push(`duplicate taintEventId ${event.taintEventId}`);
+        else taintIds.add(event.taintEventId);
+        if (event.clearedAt != null
+            && Array.isArray(event.scopeLessonIds)
+            && event.scopeLessonIds.some((lessonId) => completedLessonIds.has(lessonId))) {
+          errors.push(`taint event ${event.taintEventId} clears taint while preserving test-awarded progression`);
+        }
+      });
+    }
+
     const records = results.byAttemptId;
     const seenAttemptIds = new Set();
     Object.keys(records).forEach((key) => {
@@ -543,10 +714,18 @@
     RESULT_SCHEMA_VERSION,
     INTEGRITY_SCHEMA_VERSION,
     MIGRATION_VERSION,
+    TAINT_SCHEMA_VERSION,
+    REQUIRED_TAINT_FIELDS,
     VALID_RESULT_STATUSES,
     REQUIRED_RESULT_FIELDS,
     stableStringify,
     fingerprint,
+    createTaintEvent,
+    validateTaintEvent,
+    appendTaintEvent,
+    getTaintEventById,
+    getIntersectingTaintEventIds,
+    getAttemptTaintContext,
     collectExpectedLegacyRecords,
     migrateExamIntegrityState,
     validateExamIntegrityState,
