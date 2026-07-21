@@ -17,6 +17,10 @@
 set -u
 AGENT="${1:?usage: run-worker.sh <sol|opus|qwen|gemini-flash> [interval-seconds]}"
 INTERVAL="${2:-600}"
+CODEX_BIN="codex"
+if [ -x "$HOME/.codex/.sandbox-bin/codex.exe" ]; then
+  CODEX_BIN="$HOME/.codex/.sandbox-bin/codex.exe"
+fi
 cd "$(dirname "$0")/.." || exit 1
 
 echo "[run-worker] agent=${AGENT} interval=${INTERVAL}s repo=$(pwd)"
@@ -29,16 +33,16 @@ while true; do
   PROMPT="You are worker agent '${AGENT}' in the HanaPath multi-agent system. Read and follow ops/agents/WORKER_LOOP.md exactly. One invocation, at most one task."
   case "$AGENT" in
     sol)
-      codex exec --full-auto "You are Sol, the senior orchestrator of the HanaPath multi-agent system. If ops/runs/ contains a run manifest that is not marked finished, act per ops/agents/SOL_ORCHESTRATOR.md and process exactly ONE heartbeat, then stop. If no unfinished run manifest exists, do nothing and exit silently."
+      "$CODEX_BIN" exec --full-auto "You are Sol, the senior orchestrator of the HanaPath multi-agent system. If ops/runs/ contains a run manifest that is not marked finished, act per ops/agents/SOL_ORCHESTRATOR.md and process exactly ONE heartbeat, then stop. If no unfinished run manifest exists, do nothing and exit silently."
       ;;
     opus)
-      claude -p "$PROMPT" --permission-mode acceptEdits
+      claude -p "$PROMPT" --permission-mode acceptEdits --model claude-opus-4-8
       ;;
     qwen)
       qwen -p "$PROMPT" --yolo
       ;;
     gemini-flash)
-      gemini -p "$PROMPT" --yolo
+      gemini -p "$PROMPT" --yolo --skip-trust --model gemini-3-flash
       ;;
     *)
       echo "[run-worker] unknown agent: ${AGENT}" >&2
