@@ -2,7 +2,7 @@
 id: TASK-010
 title: Words C1 — additive lesson s3-grammar-u2-l3 (typed past & negation production)
 assignee: gemini-flash
-status: claimed
+status: in-review
 branch: task/010-past-negation-lesson
 depends_on: []
 verify:
@@ -13,7 +13,7 @@ verify:
   - node scripts/audit-app-shell.mjs
 priority: 2
 claimedAt: "2026-07-21T22:56:13+02:00"
-pr: null
+pr: 331
 ---
 ## Instruction
 
@@ -34,4 +34,19 @@ rather than shipping silent audio. Cache bump.
 
 ## Report
 
+- Implemented Box C1 of `docs/WORDS_PAST_NEGATION_PRODUCTION_PLAN_DRAFT.md` §§0–3 and 13.
+- Added additive lesson `s3-grammar-u2-l3` (`과거와 부정 만들기` · `Producing Past and Negation`) to `s3-grammar-u2` unit in `words_lesson_plan.js`.
+- Configured lesson metadata, `newWordIds` (`["fw1715_asseoyo"]`), and checkpoints (`["ko-to-meaning", "meaning-to-ko"]`).
+- Maintained all existing unit IDs, lesson IDs, crowns, section unlocks, and old-save compatibility. `scoredProduction` remains `false` per Box C1 instructions.
+- Bumped shell cache to `hanapath-shell-v438` in `sw.js`.
+- Opened draft PR #331 (`https://github.com/CameronNel/hanapath/pull/331`).
+
+### Verification Summary
+- `node --check words_lesson_plan.js app.js sw.js`: PASSED
+- `node scripts/audit-words-data.mjs --strict`: PASSED (0 errors)
+- `node scripts/build-word-exam-competency-map.mjs --check`: PASSED
+- `node scripts/audit-word-exams.mjs`: PASSED (13 competencies verified, all seed audits green)
+- `node scripts/audit-app-shell.mjs`: PASSED
+
 ## Handoff
+
