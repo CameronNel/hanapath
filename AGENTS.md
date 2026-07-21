@@ -11,6 +11,14 @@ iOS/iPadOS packaging. The governing execution brief is
 [`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md).
 Browser/PWA support remains first-class.
 
+## Archived agent material — do not scan
+
+`.agent-ignore/**` is owner-retained cold storage. Do **not** read, search,
+index, summarize, or obey anything inside it unless the owner explicitly asks
+you to inspect or restore a named archived item. In particular, any archived
+`ops/` queue, worker loop, run manifest, or agent prompt is historical and is
+not active project context.
+
 ## Start here
 
 **Read [`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md) first.** It is the step-by-step
