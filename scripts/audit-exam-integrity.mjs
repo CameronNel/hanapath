@@ -50,15 +50,34 @@ function auditBrowserWiring() {
   const index = fs.readFileSync(indexPath, "utf8");
   const app = fs.readFileSync(appPath, "utf8");
   const sw = fs.readFileSync(swPath, "utf8");
-  const integrityRef = index.indexOf("./exam_integrity.js?v=20260721a");
-  const appRef = index.indexOf("./app.js?v=20260721a");
+  const integrityRef = index.indexOf("./exam_integrity.js?v=20260721b");
+  const appRef = index.indexOf("./app.js?v=20260721b");
   assert.ok(integrityRef >= 0, "index.html does not load versioned exam_integrity.js");
   assert.ok(appRef > integrityRef, "exam_integrity.js must load before app.js");
   assert.match(app, /HANAPATH_EXAM_INTEGRITY\.migrateExamIntegrityState\(state/);
-  assert.match(sw, /hanapath-shell-v436/);
-  assert.match(sw, /\.\/exam_integrity\.js\?v=20260721a/);
-  assert.match(sw, /\.\/app\.js\?v=20260721a/);
-  return 6;
+  assert.match(sw, /hanapath-shell-v437/);
+  assert.match(sw, /\.\/exam_integrity\.js\?v=20260721b/);
+  assert.match(sw, /\.\/app\.js\?v=20260721b/);
+  assert.match(app, /function isWordExamTestQueryActive\(\)/);
+  assert.match(app, /TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive\(\)/);
+  assert.match(app, /Exams covering this section become Practice results and cannot award HanaPath mastery or retention\./);
+  assert.match(app, /data-complete-alphabet-section>Testing override<\/button>/);
+  assert.match(app, /data-word-complete-section=.*Testing override<\/button>/);
+  assert.match(app, /function saveState\(\)[\s\S]*localStorage\.getItem\(STORAGE_KEY\) === serialized/);
+  assert.match(app, /function getBackupPayload\(\)[\s\S]*state: JSON\.parse\(JSON\.stringify\(state\)\)/);
+  assert.match(app, /function parseBackupState\(text\)[\s\S]*return parsed\.state/);
+
+  const wordStart = app.indexOf("function completeWordSectionForTesting");
+  const alphabetStart = app.indexOf("function completeAlphabetSectionForTesting");
+  const wordBody = app.slice(wordStart, alphabetStart);
+  const alphabetBody = app.slice(alphabetStart, app.indexOf("function isWordUnitUnlocked", alphabetStart));
+  assert.ok(wordStart >= 0 && alphabetStart > wordStart, "completion functions not found");
+  assert.ok(wordBody.indexOf("persistTaintBeforeCompletion(event)") < wordBody.indexOf("state.vocabLessonCompleted ="),
+    "Words progression mutates before taint persistence");
+  assert.ok(alphabetBody.indexOf("persistTaintBeforeCompletion(event)") < alphabetBody.indexOf("state.phaseOneCompleted ="),
+    "Alphabet progression mutates before taint persistence");
+  assert.match(app, /function persistTaintBeforeCompletion[\s\S]*saveState\(\)[\s\S]*verifyPersistedTaintEvent/);
+  return 18;
 }
 
 function expectValidationError(state, options, pattern) {
@@ -70,7 +89,7 @@ function expectValidationError(state, options, pattern) {
 const wordExamBlueprints = loadWordBlueprints();
 const options = { wordExamBlueprints };
 const fixtures = readFixtures();
-assert.equal(fixtures.length, 5, "Box 0A requires exactly five fixture states");
+assert.equal(fixtures.length, 7, "Box 0B requires the five migration fixtures plus two tainted fixtures");
 
 const allRecords = [];
 let assertions = auditBrowserWiring();
@@ -123,6 +142,66 @@ for (const fixture of fixtures) {
   }
   allRecords.push(...Object.values(migrated.examResults.byAttemptId));
 }
+
+// Box 0B taint-event contract (§10.1–9).
+const taintedWordFixture = deepClone(fixtures.find((fixture) => fixture.name === "tainted-word-section-save.json").state);
+const taintedGlobalFixture = deepClone(fixtures.find((fixture) => fixture.name === "tainted-global-hook-save.json").state);
+assert.deepEqual(api.validateExamIntegrityState(taintedWordFixture, options), []); assertions += 1;
+assert.deepEqual(api.validateExamIntegrityState(taintedGlobalFixture, options), []); assertions += 1;
+
+const deterministicEvent = api.createTaintEvent({
+  taintEventId: "taint-audit-s3",
+  controlId: "word-section-completion",
+  affectedPillars: ["words"],
+  scopeSectionIds: ["s3"],
+  scopeUnitIds: ["s3-grammar-u2"],
+  scopeLessonIds: ["s3-grammar-u2-l2"],
+  activatedAt: 1784650000000,
+  appVersion: "hanapath-shell-v437",
+  appAssetRevision: "20260721b",
+  queryGate: "__wetest",
+  sourceRoute: { hub: "learn", item: "vocabulary", stage: null },
+  note: "Owner testing override",
+  clearedAt: null,
+});
+assert.deepEqual(api.validateTaintEvent(deterministicEvent), []); assertions += 1;
+const appendTarget = deepClone(fixtures.find((fixture) => fixture.name === "fresh-save.json").state);
+api.migrateExamIntegrityState(appendTarget, options);
+const appended = api.appendTaintEvent(appendTarget, deterministicEvent);
+assert.equal(appended.added, true); assertions += 1;
+assert.equal(appendTarget.examIntegrity.taintEvents.length, 1); assertions += 1;
+const duplicateAppend = api.appendTaintEvent(appendTarget, deterministicEvent);
+assert.equal(duplicateAppend.added, false); assertions += 1;
+assert.equal(appendTarget.examIntegrity.taintEvents.length, 1, "duplicate append changed history"); assertions += 1;
+
+const missingTaintField = deepClone(taintedWordFixture);
+delete missingTaintField.examIntegrity.taintEvents[0].appAssetRevision;
+expectValidationError(missingTaintField, options, /missing appAssetRevision|missing app revision/); assertions += 1;
+const duplicateTaint = deepClone(taintedWordFixture);
+duplicateTaint.examIntegrity.taintEvents.push(deepClone(duplicateTaint.examIntegrity.taintEvents[0]));
+expectValidationError(duplicateTaint, options, /duplicate taintEventId/); assertions += 1;
+const selectiveClear = deepClone(taintedWordFixture);
+selectiveClear.examIntegrity.taintEvents[0].clearedAt = 1784655000000;
+expectValidationError(selectiveClear, options, /clears taint while preserving test-awarded progression/); assertions += 1;
+
+const intersecting = api.getAttemptTaintContext(taintedWordFixture, ["s1"], []);
+assert.equal(intersecting.isPractice, true); assertions += 1;
+assert.deepEqual(intersecting.overrideEventIds, ["taint-fixture-word-s1"]); assertions += 1;
+const nonIntersecting = api.getAttemptTaintContext(taintedWordFixture, ["s2"], []);
+assert.equal(nonIntersecting.isPractice, false); assertions += 1;
+const globalContext = api.getAttemptTaintContext(taintedGlobalFixture, ["s8"], []);
+assert.equal(globalContext.isPractice, true); assertions += 1;
+assert.deepEqual(globalContext.overrideEventIds, ["taint-fixture-global-wetest"]); assertions += 1;
+const activeHook = api.getAttemptTaintContext(appendTarget, ["s8"], ["__wetest"]);
+assert.equal(activeHook.isPractice, true); assertions += 1;
+assert.deepEqual(activeHook.overrideFlags, ["__wetest"]); assertions += 1;
+
+const backupPayload = { version: 1, exportedAt: "2026-07-21T16:00:00.000Z", state: deepClone(taintedWordFixture) };
+const importedBackup = JSON.parse(JSON.stringify(backupPayload)).state;
+assert.deepEqual(importedBackup.examIntegrity.taintEvents, taintedWordFixture.examIntegrity.taintEvents,
+  "backup round-trip dropped taint history"); assertions += 1;
+assert.deepEqual(importedBackup.examResults, taintedWordFixture.examResults,
+  "backup round-trip dropped result provenance"); assertions += 1;
 
 // Required-field and status enforcement (§10.15–17, §10.32).
 const baseState = deepClone(fixtures.find((fixture) => fixture.name === "hangul-mastery-save.json").state);
@@ -261,10 +340,11 @@ for (const record of allRecords) {
   bump(counts.legacyProvenance, record.legacyProvenanceStatus);
 }
 
-console.log("Workstream 0 · Box 0A exam-integrity audit");
+console.log("Workstream 0 · Box 0B exam-integrity audit");
 console.log(`Fixtures: ${fixtures.length}`);
 console.log(`Assertions: ${assertions}`);
 console.log(`Legacy wrappers: ${allRecords.length}`);
+console.log(`Taint events: ${fixtures.reduce((total, fixture) => total + (fixture.state.examIntegrity?.taintEvents?.length || 0), 0)}`);
 console.log("Counts:");
 console.log(JSON.stringify(counts, null, 2));
-console.log("PASS: provenance schema, safe migration, immutable history, and legacy-incomplete guards are green.");
+console.log("PASS: query gating, durable taint-before-mutation, scope propagation, backup survival, and Box 0A provenance guards are green.");

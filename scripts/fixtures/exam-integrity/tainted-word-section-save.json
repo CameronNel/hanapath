@@ -1,0 +1,46 @@
+{
+  "onboarded": true,
+  "level": "K3",
+  "route": { "hub": "learn", "item": "vocabulary", "stage": null },
+  "phaseOneCompleted": [
+    "anchor-vowels",
+    "basic-consonants",
+    "block-geometry",
+    "strong-consonants",
+    "combined-vowels",
+    "batchim-basics",
+    "sound-rules",
+    "reading-graduation"
+  ],
+  "vocabLessonCompleted": [
+    "s1-firstwords-u1-l1"
+  ],
+  "examResults": {
+    "version": 1,
+    "byAttemptId": {}
+  },
+  "examIntegrity": {
+    "version": 1,
+    "taintEvents": [
+      {
+        "taintSchemaVersion": 1,
+        "taintEventId": "taint-fixture-word-s1",
+        "controlId": "word-section-completion",
+        "affectedPillars": ["words"],
+        "scopeSectionIds": ["s1"],
+        "scopeUnitIds": ["s1-firstwords-u1"],
+        "scopeLessonIds": ["s1-firstwords-u1-l1"],
+        "activatedAt": 1784640000000,
+        "appVersion": "hanapath-shell-v437",
+        "appAssetRevision": "20260721b",
+        "queryGate": "__wetest",
+        "sourceRoute": { "hub": "learn", "item": "vocabulary", "stage": null },
+        "note": "Owner testing override",
+        "clearedAt": null,
+        "globalExamOverride": false
+      }
+    ],
+    "resultRelations": [],
+    "migrationLog": []
+  }
+}
