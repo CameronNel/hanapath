@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref }}
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -85,15 +85,60 @@ jobs:
           sw_path.write_text(sw, encoding='utf-8')
           PY
 
-      - name: Commit verified implementation
+      - name: Commit verified implementation through Git Data API
         if: github.event_name == 'pull_request' && github.actor != 'github-actions[bot]'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ github.head_ref }}
         shell: bash
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app.js index.html sw.js
-          git commit -m 'Wire immutable exam provenance migration'
-          git push origin HEAD:${{ github.head_ref }}
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          base_commit="$(gh api "repos/$repo/git/ref/heads/$BRANCH_NAME" --jq .object.sha)"
+          base_tree="$(gh api "repos/$repo/git/commits/$base_commit" --jq .tree.sha)"
+
+          make_blob() {
+            local file="$1"
+            local payload="/tmp/$(basename "$file").blob.json"
+            python - "$file" > "$payload" <<'PY'
+          import base64, json, pathlib, sys
+          data = pathlib.Path(sys.argv[1]).read_bytes()
+          json.dump({"content": base64.b64encode(data).decode("ascii"), "encoding": "base64"}, sys.stdout)
+          PY
+            gh api --method POST "repos/$repo/git/blobs" --input "$payload" --jq .sha
+          }
+
+          app_blob="$(make_blob app.js)"
+          index_blob="$(make_blob index.html)"
+          sw_blob="$(make_blob sw.js)"
+
+          python - "$base_tree" "$app_blob" "$index_blob" "$sw_blob" > /tmp/tree.json <<'PY'
+          import json, sys
+          base_tree, app_blob, index_blob, sw_blob = sys.argv[1:]
+          json.dump({
+              "base_tree": base_tree,
+              "tree": [
+                  {"path": "app.js", "mode": "100644", "type": "blob", "sha": app_blob},
+                  {"path": "index.html", "mode": "100644", "type": "blob", "sha": index_blob},
+                  {"path": "sw.js", "mode": "100644", "type": "blob", "sha": sw_blob},
+              ],
+          }, sys.stdout)
+          PY
+          tree_sha="$(gh api --method POST "repos/$repo/git/trees" --input /tmp/tree.json --jq .sha)"
+
+          python - "$base_commit" "$tree_sha" > /tmp/commit.json <<'PY'
+          import json, sys
+          parent, tree = sys.argv[1:]
+          json.dump({"message": "Wire immutable exam provenance migration", "tree": tree, "parents": [parent]}, sys.stdout)
+          PY
+          commit_sha="$(gh api --method POST "repos/$repo/git/commits" --input /tmp/commit.json --jq .sha)"
+
+          python - "$commit_sha" > /tmp/ref.json <<'PY'
+          import json, sys
+          json.dump({"sha": sys.argv[1], "force": False}, sys.stdout)
+          PY
+          gh api --method PATCH "repos/$repo/git/refs/heads/$BRANCH_NAME" --input /tmp/ref.json >/dev/null
+          echo "Published implementation commit $commit_sha"
 
       - name: Run full Box 0A verification
         shell: bash
