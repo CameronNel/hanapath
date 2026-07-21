@@ -1,0 +1,33 @@
+{
+  "onboarded": true,
+  "level": "K2",
+  "route": { "hub": "exam", "item": "corewords", "stage": null },
+  "examResults": {
+    "version": 1,
+    "byAttemptId": {}
+  },
+  "examIntegrity": {
+    "version": 1,
+    "taintEvents": [
+      {
+        "taintSchemaVersion": 1,
+        "taintEventId": "taint-fixture-global-wetest",
+        "controlId": "wetest-global-hook",
+        "affectedPillars": ["exam"],
+        "scopeSectionIds": [],
+        "scopeUnitIds": [],
+        "scopeLessonIds": [],
+        "activatedAt": 1784643600000,
+        "appVersion": "hanapath-shell-v437",
+        "appAssetRevision": "20260721b",
+        "queryGate": "__wetest",
+        "sourceRoute": { "hub": "exam", "item": "corewords", "stage": null },
+        "note": "Owner testing override",
+        "clearedAt": null,
+        "globalExamOverride": true
+      }
+    ],
+    "resultRelations": [],
+    "migrationLog": []
+  }
+}
