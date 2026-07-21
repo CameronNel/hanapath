@@ -51,13 +51,15 @@ function auditBrowserWiring() {
   const app = fs.readFileSync(appPath, "utf8");
   const sw = fs.readFileSync(swPath, "utf8");
   const integrityRef = index.indexOf("./exam_integrity.js?v=20260721b");
-  const appRef = index.indexOf("./app.js?v=20260721b");
+  const appRef = index.indexOf("./app.js?v=20260721c");
   assert.ok(integrityRef >= 0, "index.html does not load versioned exam_integrity.js");
   assert.ok(appRef > integrityRef, "exam_integrity.js must load before app.js");
   assert.match(app, /HANAPATH_EXAM_INTEGRITY\.migrateExamIntegrityState\(state/);
-  assert.match(sw, /hanapath-shell-v437/);
+  assert.match(sw, /hanapath-shell-v438/);
   assert.match(sw, /\.\/exam_integrity\.js\?v=20260721b/);
-  assert.match(sw, /\.\/app\.js\?v=20260721b/);
+  assert.match(sw, /\.\/app\.js\?v=20260721c/);
+  assert.match(app, /function submitHangulExam/);
+  assert.match(app, /getAttemptTaintContext\(state, \["alphabet"\]/);
   assert.match(app, /function isWordExamTestQueryActive\(\)/);
   assert.match(app, /TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive\(\)/);
   assert.match(app, /Exams covering this section become Practice results and cannot award HanaPath mastery or retention\./);
@@ -89,7 +91,7 @@ function expectValidationError(state, options, pattern) {
 const wordExamBlueprints = loadWordBlueprints();
 const options = { wordExamBlueprints };
 const fixtures = readFixtures();
-assert.equal(fixtures.length, 7, "Box 0B requires the five migration fixtures plus two tainted fixtures");
+assert.equal(fixtures.length, 8, "Box 0C requires five migration fixtures, two tainted Word fixtures, plus tainted Hangul fixture");
 
 const allRecords = [];
 let assertions = auditBrowserWiring();
@@ -140,14 +142,20 @@ for (const fixture of fixtures) {
     assert.equal(record.floorSummary.details.confirmationDueFrom, 1785236400000); assertions += 1;
     assert.deepEqual(migrated.wordExams, fixture.state.wordExams); assertions += 1;
   }
-  allRecords.push(...Object.values(migrated.examResults.byAttemptId));
+  allRecords.push(...first.addedAttemptIds.map((id) => migrated.examResults.byAttemptId[id]));
 }
 
-// Box 0B taint-event contract (§10.1–9).
+// Box 0B & 0C taint-event contracts.
 const taintedWordFixture = deepClone(fixtures.find((fixture) => fixture.name === "tainted-word-section-save.json").state);
 const taintedGlobalFixture = deepClone(fixtures.find((fixture) => fixture.name === "tainted-global-hook-save.json").state);
+const taintedHangulFixture = deepClone(fixtures.find((fixture) => fixture.name === "tainted-hangul-section-save.json").state);
 assert.deepEqual(api.validateExamIntegrityState(taintedWordFixture, options), []); assertions += 1;
 assert.deepEqual(api.validateExamIntegrityState(taintedGlobalFixture, options), []); assertions += 1;
+assert.deepEqual(api.validateExamIntegrityState(taintedHangulFixture, options), []); assertions += 1;
+
+const hangulTaintContext = api.getAttemptTaintContext(taintedHangulFixture, ["alphabet"], []);
+assert.equal(hangulTaintContext.isPractice, true); assertions += 1;
+assert.deepEqual(hangulTaintContext.overrideEventIds, ["taint-fixture-alphabet-sec"]); assertions += 1;
 
 const deterministicEvent = api.createTaintEvent({
   taintEventId: "taint-audit-s3",
