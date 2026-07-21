@@ -21,6 +21,13 @@ CODEX_BIN="codex"
 if [ -x "$HOME/.codex/.sandbox-bin/codex.exe" ]; then
   CODEX_BIN="$HOME/.codex/.sandbox-bin/codex.exe"
 fi
+AGY_BIN="agy"
+for candidate in "$HOME"/AppData/Local/Microsoft/WinGet/Packages/Google.AntigravityCLI_*/agy.exe; do
+  if [ -x "$candidate" ]; then
+    AGY_BIN="$candidate"
+    break
+  fi
+done
 cd "$(dirname "$0")/.." || exit 1
 
 echo "[run-worker] agent=${AGENT} interval=${INTERVAL}s repo=$(pwd)"
@@ -42,7 +49,7 @@ while true; do
       qwen -p "$PROMPT" --yolo
       ;;
     gemini-flash)
-      gemini -p "$PROMPT" --yolo --skip-trust --model gemini-3-flash
+      "$AGY_BIN" --print "$PROMPT" --dangerously-skip-permissions --model gemini-3.6-flash-medium
       ;;
     *)
       echo "[run-worker] unknown agent: ${AGENT}" >&2
