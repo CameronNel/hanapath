@@ -33,7 +33,7 @@ while true; do
   PROMPT="You are worker agent '${AGENT}' in the HanaPath multi-agent system. Read and follow ops/agents/WORKER_LOOP.md exactly. One invocation, at most one task."
   case "$AGENT" in
     sol)
-      "$CODEX_BIN" exec --full-auto "You are Sol, the senior orchestrator of the HanaPath multi-agent system. If ops/runs/ contains a run manifest that is not marked finished, act per ops/agents/SOL_ORCHESTRATOR.md and process exactly ONE heartbeat, then stop. If no unfinished run manifest exists, do nothing and exit silently."
+      "$CODEX_BIN" exec --sandbox danger-full-access "You are Sol, the senior orchestrator of the HanaPath multi-agent system. If ops/runs/ contains a run manifest that is not marked finished, act per ops/agents/SOL_ORCHESTRATOR.md and process exactly ONE heartbeat, then stop. If no unfinished run manifest exists, do nothing and exit silently."
       ;;
     opus)
       claude -p "$PROMPT" --permission-mode acceptEdits --model claude-opus-4-8
