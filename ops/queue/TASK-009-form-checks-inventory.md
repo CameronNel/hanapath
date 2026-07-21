@@ -1,8 +1,8 @@
 ---
 id: TASK-009
 title: Form Checks B1 — declarative inventory, exact lesson routes, audit
-assignee: qwen
-status: blocked-owner
+assignee: gemini-flash
+status: ready
 branch: task/009-form-checks-inventory
 depends_on: []
 verify:

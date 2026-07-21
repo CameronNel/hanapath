@@ -1,7 +1,7 @@
 ---
 id: TASK-003
 title: Workstream 0 Box 0E — result labels, disclosure copy, backup import validation
-assignee: qwen
+assignee: gemini-flash
 status: ready
 branch: task/003-result-labels
 depends_on: [TASK-002]
