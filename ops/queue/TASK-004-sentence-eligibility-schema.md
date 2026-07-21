@@ -2,7 +2,7 @@
 id: TASK-004
 title: Sentence exam A1/A2 tooling — eligibility schema, census, and fail-loudly audit
 assignee: gemini-flash
-status: ready
+status: claimed
 branch: task/004-sentence-eligibility-schema
 depends_on: []
 verify:
@@ -11,7 +11,7 @@ verify:
   - node scripts/audit-sentences-data.mjs --strict
   - node scripts/audit-app-shell.mjs
 priority: 2
-claimedAt: null
+claimedAt: "2026-07-21T20:52:00Z"
 pr: null
 ---
 ## Instruction
