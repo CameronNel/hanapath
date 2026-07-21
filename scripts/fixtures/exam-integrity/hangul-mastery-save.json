@@ -1,0 +1,13 @@
+{
+  "onboarded": true,
+  "phaseOneCompleted": ["anchor-vowels", "basic-consonants", "reading-graduation"],
+  "alphabetMasteryExam": {
+    "version": 2,
+    "bestCorrect": 200,
+    "mastered": true,
+    "completedAt": "2026-07-20T15:30:00.000Z",
+    "attempts": 2
+  },
+  "vocabSrs": {},
+  "vocabLessonCompleted": []
+}

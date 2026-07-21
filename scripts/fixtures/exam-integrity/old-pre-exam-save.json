@@ -1,0 +1,10 @@
+{
+  "onboarded": true,
+  "level": "K2",
+  "phaseOneCompleted": ["anchor-vowels", "basic-consonants"],
+  "vocabSrs": { "w0101_annyeonghaseyo": { "seen": 1, "box": 0, "due": 0 } },
+  "vocabLessonCompleted": [],
+  "todayDone": ["alphabet"],
+  "totalMinutes": 90,
+  "studyDays": 3
+}

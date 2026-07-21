@@ -1,0 +1,17 @@
+{
+  "onboarded": true,
+  "level": "K3",
+  "route": { "hub": "learn", "item": "vocabulary", "stage": 3 },
+  "phaseOneCompleted": ["anchor-vowels", "basic-consonants", "block-geometry"],
+  "vocabSrs": {
+    "w0001_hangul": { "seen": 3, "box": 2, "due": 1784635200000 }
+  },
+  "vocabLessonCompleted": ["s1-firstwords-u1-l1"],
+  "sentencesProgress": {
+    "band": 2,
+    "results": { "s0001": { "box": 1, "due": 1784635200000 } },
+    "sessionsDone": 4
+  },
+  "totalMinutes": 420,
+  "studyDays": 12
+}

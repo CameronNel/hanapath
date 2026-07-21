@@ -1,0 +1,41 @@
+{
+  "onboarded": true,
+  "vocabSrs": { "w0001_hangul": { "seen": 4, "box": 3, "due": 1785000000000 } },
+  "vocabLessonCompleted": ["s1-firstwords-u1-l1", "s1-firstwords-u1-cp"],
+  "wordExams": {
+    "version": 2,
+    "byExamId": {
+      "word-exam-10": {
+        "blueprintVersion": 2,
+        "attempts": 3,
+        "bestPct": 90.7,
+        "passed": true,
+        "distinguished": true,
+        "masteryEarnedAt": null,
+        "confirmationDueFrom": 1785236400000,
+        "confirmationExpiresAt": 1787050800000,
+        "qualifyingTargetIds": ["w0001_hangul", "w0101_annyeonghaseyo", "w0201_jeo_i"],
+        "lastAttemptAt": 1784631600000,
+        "lastResult": {
+          "correct": 136,
+          "total": 150,
+          "pct": 90.7,
+          "unanswered": 0,
+          "passed": true,
+          "distinguished": true,
+          "mode": "full",
+          "byMacrostrand": {
+            "R": { "correct": 44, "total": 45 },
+            "C": { "correct": 9, "total": 10 },
+            "P": { "correct": 27, "total": 30 },
+            "X": { "correct": 27, "total": 30 },
+            "F": { "correct": 18, "total": 20 },
+            "D": { "correct": 11, "total": 15 }
+          },
+          "weakestUnitIds": ["s7-grammar-u4"],
+          "weakestCompetencyIds": ["irregular-families"]
+        }
+      }
+    }
+  }
+}

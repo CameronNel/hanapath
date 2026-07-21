@@ -2961,6 +2961,18 @@ function migrateAlphabetProgress() {
 }
 
 const state = loadState();
+
+// Workstream 0 · Box 0A: add immutable exam provenance collections and
+// wrap knowable v2 Hangul/Words history before the app initializes. The old
+// summary records remain untouched as compatibility indexes. Guarded like the
+// other pre-app globals so a missing script degrades to no migration instead
+// of a boot failure.
+const examIntegrityMigration = window.HANAPATH_EXAM_INTEGRITY
+  ? window.HANAPATH_EXAM_INTEGRITY.migrateExamIntegrityState(state, {
+      wordExamBlueprints: Array.isArray(window.HANAPATH_WORD_EXAMS) ? window.HANAPATH_WORD_EXAMS : [],
+    })
+  : { changed: false, addedAttemptIds: [], conflicts: [] };
+if (examIntegrityMigration.changed) saveState();
 if (state.soundEffectPresetVersion !== 3) {
   if (state.activeCorrectSound === 2 || state.activeCorrectSound === 6 || !Number.isInteger(state.activeCorrectSound)) {
     state.activeCorrectSound = 14;
