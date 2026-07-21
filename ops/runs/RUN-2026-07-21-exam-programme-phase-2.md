@@ -58,3 +58,16 @@ Review notes:
   exist and match the current file-based claim/submit protocol.
 - What happens next: worker loops claim the three runnable tasks; Sol's next
   heartbeat reviews submissions and unlocks dependency successors.
+
+## Heartbeat 1 — 2026-07-21T22:03:00+02:00
+
+- Queue: 11 ready, 0 claimed, 0 in-review, 0 merged, 0 blocked-owner,
+  0 handoff-incomplete.
+- Runnable now: TASK-001, TASK-009, TASK-011.
+- Merged this heartbeat: none; no submissions were awaiting review.
+- Blocked-owner: none.
+- Orphan `task/*` branches: none.
+- Agent health: opus enabled; qwen enabled; gemini-flash enabled; no disabled
+  flags present.
+- What happens next: worker loops claim the three runnable tasks; Sol's next
+  heartbeat reviews any submissions and unlocks dependency successors.
