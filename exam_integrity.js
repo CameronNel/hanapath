@@ -356,10 +356,22 @@
         .map((entry) => entry.migrationId)
         .filter((value) => typeof value === "string"),
     );
+    // One wrapper per source, ever. A summary record keeps evolving through
+    // the pre-provenance runners after Box 0A ships; re-wrapping each new
+    // aggregate state would mint an unbounded series of pseudo-historical
+    // records. The first wrap captures the knowable pre-migration history;
+    // later activity is recorded for real by Boxes 0C/0D.
+    const migratedSourceKeys = new Set(
+      examIntegrity.migrationLog
+        .filter(isPlainObject)
+        .map((entry) => `${entry.sourceKind}:${entry.sourceKey}`),
+    );
     const addedAttemptIds = [];
     const conflicts = [];
 
     collectExpectedLegacyRecords(stateValue, options).forEach((record) => {
+      const sourceKey = `${record.legacySource.kind}:${record.legacySource.key}`;
+      if (migratedSourceKeys.has(sourceKey)) return;
       const existing = examResults.byAttemptId[record.attemptId];
       if (!existing) {
         examResults.byAttemptId[record.attemptId] = record;
@@ -374,6 +386,7 @@
       if (!existingLogIds.has(log.migrationId)) {
         examIntegrity.migrationLog.push(log);
         existingLogIds.add(log.migrationId);
+        migratedSourceKeys.add(sourceKey);
       }
     });
 
@@ -494,22 +507,32 @@
       });
     }
 
-    // Compatibility-index agreement: every current historical summary has an
-    // immutable wrapper with the exact captured source snapshot. Existing
-    // wrappers are never regenerated from later blueprint changes.
+    // Compatibility-index agreement: every source that currently carries
+    // history has been wrapped exactly once, and each stored wrapper is
+    // self-consistent with the snapshot it captured. The live summary may
+    // legitimately evolve past the snapshot afterwards (pre-provenance
+    // runners keep updating it until Boxes 0C/0D), so equality with the
+    // current summary is deliberately NOT required.
+    const wrappedSources = new Set();
+    Object.keys(records).forEach((key) => {
+      const record = records[key];
+      if (!isPlainObject(record) || !isPlainObject(record.legacySource)) return;
+      const source = record.legacySource;
+      wrappedSources.add(`${source.kind}:${source.key}`);
+      const recomputed = source.kind === "wordExams"
+        ? fingerprint({ examId: source.key, record: source.compatibilitySnapshot })
+        : fingerprint(source.compatibilitySnapshot);
+      if (recomputed !== source.compatibilityFingerprint) {
+        errors.push(`legacy result ${key} disagrees with its captured snapshot`);
+      }
+      if (record.status !== "legacy-incomplete") {
+        errors.push(`legacy result ${key} silently upgraded from compatibility index`);
+      }
+    });
     collectExpectedLegacyRecords(stateValue, options).forEach((expected) => {
-      const stored = records[expected.attemptId];
-      if (!stored) {
-        errors.push(`compatibility index missing legacy result ${expected.attemptId}`);
-        return;
-      }
-      if (!stored.legacySource ||
-          stableStringify(stored.legacySource.compatibilitySnapshot) !==
-            stableStringify(expected.legacySource.compatibilitySnapshot)) {
-        errors.push(`legacy result ${expected.attemptId} disagrees with compatibility index`);
-      }
-      if (stored.status !== "legacy-incomplete") {
-        errors.push(`legacy result ${expected.attemptId} silently upgraded from compatibility index`);
+      const sourceKey = `${expected.legacySource.kind}:${expected.legacySource.key}`;
+      if (!wrappedSources.has(sourceKey)) {
+        errors.push(`compatibility index missing legacy result for ${sourceKey}`);
       }
     });
 

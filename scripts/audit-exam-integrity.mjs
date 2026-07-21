@@ -201,6 +201,24 @@ api.migrateExamIntegrityState(immutable, { wordExamBlueprints: changedBlueprints
 assert.equal(JSON.stringify(immutable.examResults.byAttemptId), immutableBefore,
   "blueprint changes recomputed immutable history"); assertions += 1;
 
+// One wrapper per source, ever: a summary record that keeps evolving through
+// the pre-provenance runners after Box 0A must NOT mint additional legacy
+// wrappers on later loads, and validation must accept the divergence between
+// the live summary and the frozen snapshot.
+const evolving = deepClone(fixtures.find((fixture) => fixture.name === "hangul-mastery-save.json").state);
+api.migrateExamIntegrityState(evolving, options);
+evolving.alphabetMasteryExam.attempts += 1;
+evolving.alphabetMasteryExam.bestCorrect = 199;
+const evolved = api.migrateExamIntegrityState(evolving, options);
+assert.equal(evolved.changed, false,
+  "post-migration summary evolution re-triggered migration"); assertions += 1;
+assert.equal(Object.keys(evolving.examResults.byAttemptId).length, 1,
+  "post-migration summary evolution minted a second legacy wrapper"); assertions += 1;
+assert.equal(evolving.examIntegrity.migrationLog.length, 1,
+  "post-migration summary evolution appended a second migration log entry"); assertions += 1;
+assert.deepEqual(api.validateExamIntegrityState(evolving, options), [],
+  "validation rejected a legitimately evolved post-migration summary"); assertions += 1;
+
 // Malformed provenance must not replace a good immutable result (§10.31).
 const preserveGood = deepClone(crossing);
 delete preserveGood.examIntegrity.resultRelations[0];
