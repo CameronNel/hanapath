@@ -151,16 +151,6 @@ jobs:
           echo 'BROWSER SMOKE: PASS — static server, browser-global load, migration, save, and compatibility preservation' | tee -a WORKSTREAM_0_0A_AUDIT.txt
           rm .ws0-smoke.html WORKSTREAM_0_0A_BROWSER.txt
 
-      - name: Commit verified implementation
-        if: github.event_name == 'pull_request' && github.actor != 'github-actions[bot]'
-        shell: bash
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app.js index.html sw.js WORKSTREAM_0_0A_AUDIT.txt
-          git commit -m 'Wire immutable exam provenance migration'
-          git push origin HEAD:${{ github.head_ref }}
-
       - name: Post full audit output
         if: github.event_name == 'pull_request' && github.actor != 'github-actions[bot]'
         env:
@@ -175,3 +165,13 @@ jobs:
             echo '```'
           } > /tmp/pr-comment.md
           gh pr comment ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --body-file /tmp/pr-comment.md
+
+      - name: Commit verified implementation
+        if: github.event_name == 'pull_request' && github.actor != 'github-actions[bot]'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app.js index.html sw.js
+          git commit -m 'Wire immutable exam provenance migration'
+          git push origin HEAD:${{ github.head_ref }}
