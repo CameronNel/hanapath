@@ -2,7 +2,7 @@
 id: TASK-001
 title: Workstream 0 Box 0C — bind Hangul Mastery results to provenance/taint
 assignee: opus
-status: ready
+status: claimed
 branch: task/001-hangul-provenance
 depends_on: []
 verify:
@@ -11,7 +11,7 @@ verify:
   - node scripts/audit-hangul-mastery-exam.mjs
   - node scripts/audit-app-shell.mjs
 priority: 1
-claimedAt: null
+claimedAt: 2026-07-21T20:30:24Z
 pr: null
 ---
 ## Instruction
