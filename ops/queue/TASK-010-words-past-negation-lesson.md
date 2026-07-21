@@ -2,7 +2,7 @@
 id: TASK-010
 title: Words C1 — additive lesson s3-grammar-u2-l3 (typed past & negation production)
 assignee: gemini-flash
-status: ready
+status: claimed
 branch: task/010-past-negation-lesson
 depends_on: []
 verify:
@@ -12,7 +12,7 @@ verify:
   - node scripts/audit-word-exams.mjs
   - node scripts/audit-app-shell.mjs
 priority: 2
-claimedAt: null
+claimedAt: "2026-07-21T22:56:13+02:00"
 pr: null
 ---
 ## Instruction
