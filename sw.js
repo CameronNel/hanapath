@@ -1,5 +1,5 @@
-// [2026-07-21] Cache bumped for Workstream 0 Box 0B taint-gated completion controls.
-const CACHE_NAME = "hanapath-shell-v437";
+// [2026-07-21] Cache bumped for TASK-010 Words C1 s3-grammar-u2-l3 additive lesson.
+const CACHE_NAME = "hanapath-shell-v438";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
