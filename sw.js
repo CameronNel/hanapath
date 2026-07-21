@@ -1,4 +1,4 @@
-// [2026-07-21] Cache bumped for Workstream 0 Box 0C Hangul exam provenance binding.
+// [2026-07-21] Cache bumped for Gemini final megabatch consolidated run.
 const CACHE_NAME = "hanapath-shell-v438";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
@@ -16,6 +16,7 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260717u",
   "./sentences_lesson_plan.js?v=20260717u",
+  "./sentence_exam_eligibility.js?v=20260721a",
   "./hangul_strokes.js?v=20260715b",
   "./hangul_mastery_exam.js?v=20260720a",
   "./word_exam_blueprints.js?v=20260720w",
