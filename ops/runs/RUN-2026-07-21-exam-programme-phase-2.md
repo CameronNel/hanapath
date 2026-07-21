@@ -74,9 +74,10 @@ Review notes:
 
 ## Heartbeat 2 — 2026-07-21T22:30:19+02:00
 
-- Queue: 9 ready, 0 claimed, 0 in-review, 1 merged, 1 blocked-owner,
+- Queue: 8 ready, 1 claimed, 0 in-review, 1 merged, 1 blocked-owner,
   0 handoff-incomplete.
-- Runnable now: TASK-001, TASK-004, TASK-010. TASK-002/TASK-003 and
+- In progress: TASK-001 (claimed by opus). Runnable now: TASK-004, TASK-010.
+  TASK-002/TASK-003 and
   TASK-005–TASK-008 remain dependency-gated.
 - Merged this heartbeat: TASK-011 via PR #328 after confirming the docs-only
   diff, checking its claims against the live Exam implementation and handover,
@@ -87,6 +88,7 @@ Review notes:
 - Orphan `task/*` branches: none.
 - Agent health: opus enabled; qwen enabled; gemini-flash enabled; no disabled
   flags present.
-- What happens next: Opus claims the highest-priority runnable task; qwen waits
-  on TASK-002 or the TASK-009 owner decision, and gemini-flash waits on
-  TASK-004 before beginning eligibility batches.
+- What happens next: Opus completes TASK-001, then proceeds through the
+  remaining runnable work; qwen waits on TASK-002 or the TASK-009 owner
+  decision, and gemini-flash waits on TASK-004 before beginning eligibility
+  batches.
