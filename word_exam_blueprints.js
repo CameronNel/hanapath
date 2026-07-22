@@ -19,12 +19,13 @@
   // ── Reviewed competency milestone map (spec §3.2–§3.4) ────────────────────
   // Re-derived from the live curriculum in scripts/build-word-exam-competency-map.mjs,
   // which fails loudly on drift. `firstTeachingUnitId` is the unit whose lessons
-  // first teach/practise the competency; `minimumExamSection` is the earliest
-  // section-exam that may test it. `scoredProduction` gates typed form-production:
-  // past tense and negation are TAUGHT only for recognition and contextual use
-  // (s3-grammar-u2-l2 has no type-ko/form-production mode), so they never receive
-  // scored typed-production quotas. See the map report + PR for the deliberate
-  // past/negation limitation and issue-linked follow-up.
+  // first teach/practise the competency; `firstProductionLessonId` is the lesson
+  // that first teaches typed form-production for it; `minimumExamSection` is the
+  // earliest section-exam that may test it. `scoredProduction` gates typed
+  // form-production. Past tense and negation typed production is taught in
+  // s3-grammar-u2-l3 (Words C1), so both are production-eligible (Words C2).
+  // C2 updates evidence metadata only: v2 exam generation, quotas, and lengths
+  // remain unchanged until the v3 generator work (Words C3).
   var COMPETENCIES = {
     "lexeme-identity": {
       learnerLabel: "Word identity",
@@ -66,19 +67,21 @@
       learnerLabel: "Past tense",
       strands: ["R", "X", "F"],
       firstTeachingUnitId: "s3-grammar-u2",
+      firstProductionLessonId: "s3-grammar-u2-l3",
       minimumExamSection: 3,
-      scoredProduction: false,
-      acceptedFormsSource: "authored:pattern",
-      evidence: "s3-grammar-u2-l2 (Building with not) teaches -았어요/었어요 via ko-to-meaning / meaning-to-ko / sentence-blank / function-usage. No typed production mode → recognition & context only.",
+      scoredProduction: true,
+      acceptedFormsSource: "inflect:past",
+      evidence: "s3-grammar-u2-l3 teaches six reviewed typed polite-past production items across four previously taught verbs.",
     },
     "negation": {
       learnerLabel: "Negation",
       strands: ["X", "F"],
       firstTeachingUnitId: "s3-grammar-u2",
+      firstProductionLessonId: "s3-grammar-u2-l3",
       minimumExamSection: 3,
-      scoredProduction: false,
+      scoredProduction: true,
       acceptedFormsSource: "authored:pattern",
-      evidence: "s3-grammar-u2-l2 teaches 안 / 못 / 지 않다 / 지 못하다 via function-usage and sentence-blank. Recognition & context only.",
+      evidence: "s3-grammar-u2-l3 teaches ten reviewed typed 안, 못, -지 않아요, and -지 못해요 production items with finite authored answer sets.",
     },
     "formal-register": {
       learnerLabel: "Formal & polite register",

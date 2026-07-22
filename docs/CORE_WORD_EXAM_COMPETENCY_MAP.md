@@ -12,35 +12,40 @@ same contract.
 
 ## Milestone table
 
-| Competency | Learner label | Strands | Authored first unit | Live-derived first unit | Min exam | Scored production | Eligible words | Practised modes |
-|---|---|---|---|---|---|---|---|---|
-| `lexeme-identity` | Word identity | R/C/P | s1-firstwords-u1 | s1-firstwords-u1 | S1 | yes | 2028 | ko-to-meaning, meaning-to-ko, type-ko |
-| `polite-present` | Polite present form | F/R | s1-firstwords-u1 | s1-firstwords-u1 | S1 | no | 269 | ko-to-meaning, meaning-to-ko, type-ko |
-| `particle-function` | Particle & ending function | F/X | s2-grammar-u1 | s2-grammar-u1 | S2 | no | 10 | function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
-| `connectives` | Connectives & clause links | F/X | s3-grammar-u2 | s3-grammar-u2 | S3 | yes | 22 | audio-to-meaning, form-production, form-recognition, function-usage, ko-to-meaning, meaning-to-ko, sentence-blank, type-ko |
-| `past-tense` | Past tense | R/X/F | s3-grammar-u2 | s3-grammar-u2 | S3 | no | 1 | function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
-| `negation` | Negation | X/F | s3-grammar-u2 | s3-grammar-u2 | S3 | no | 4 | function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
-| `formal-register` | Formal & polite register | F | s5-grammar-u3 | s5-grammar-u3 | S5 | yes | 6 | form-production, form-recognition, function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
-| `subject-honorific` | Subject honorifics | F | s5-grammar-u3 | s5-grammar-u3 | S5 | yes | 7 | form-production, form-recognition, ko-to-meaning, meaning-to-ko, sentence-blank |
-| `honorific-lexical` | Honorific & humble words | F/D | s5-grammar-u3 | s5-grammar-u3 | S5 | no | 7 | form-production, form-recognition, ko-to-meaning, meaning-to-ko, sentence-blank |
-| `noun-modification` | Noun modifiers | F | s7-grammar-u4 | s7-grammar-u4 | S7 | yes | 6 | function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
-| `irregular-families` | Irregular verb families | F | s7-grammar-u4 | s7-grammar-u4 | S7 | yes | 10 | form-production, form-recognition, ko-to-meaning, meaning-to-ko, sentence-blank |
-| `sense-distinction` | Sense & contrast depth | D | — | (per-word) | S1 | no | 263 | sense-disambiguation, collocation-choice |
-| `collocation` | Collocation depth | D | — | (per-word) | S1 | no | 2028 | sense-disambiguation, collocation-choice |
+| Competency | Learner label | Strands | Authored first unit | Live-derived first unit | First production lesson | Min exam | Scored production | Eligible words | Practised modes |
+|---|---|---|---|---|---|---|---|---|---|
+| `lexeme-identity` | Word identity | R/C/P | s1-firstwords-u1 | s1-firstwords-u1 | — | S1 | yes | 2028 | ko-to-meaning, meaning-to-ko, type-ko |
+| `polite-present` | Polite present form | F/R | s1-firstwords-u1 | s1-firstwords-u1 | — | S1 | no | 269 | ko-to-meaning, meaning-to-ko, type-ko |
+| `particle-function` | Particle & ending function | F/X | s2-grammar-u1 | s2-grammar-u1 | — | S2 | no | 10 | function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
+| `connectives` | Connectives & clause links | F/X | s3-grammar-u2 | s3-grammar-u2 | — | S3 | yes | 22 | audio-to-meaning, form-production, form-recognition, function-usage, ko-to-meaning, meaning-to-ko, sentence-blank, type-ko |
+| `past-tense` | Past tense | R/X/F | s3-grammar-u2 | s3-grammar-u2 | s3-grammar-u2-l3 | S3 | yes | 1 | form-production, ko-to-meaning, meaning-to-ko |
+| `negation` | Negation | X/F | s3-grammar-u2 | s3-grammar-u2 | s3-grammar-u2-l3 | S3 | yes | 4 | form-production, function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
+| `formal-register` | Formal & polite register | F | s5-grammar-u3 | s5-grammar-u3 | — | S5 | yes | 6 | form-production, form-recognition, function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
+| `subject-honorific` | Subject honorifics | F | s5-grammar-u3 | s5-grammar-u3 | — | S5 | yes | 7 | form-production, form-recognition, ko-to-meaning, meaning-to-ko, sentence-blank |
+| `honorific-lexical` | Honorific & humble words | F/D | s5-grammar-u3 | s5-grammar-u3 | — | S5 | no | 7 | form-production, form-recognition, ko-to-meaning, meaning-to-ko, sentence-blank |
+| `noun-modification` | Noun modifiers | F | s7-grammar-u4 | s7-grammar-u4 | — | S7 | yes | 6 | function-usage, ko-to-meaning, meaning-to-ko, sentence-blank |
+| `irregular-families` | Irregular verb families | F | s7-grammar-u4 | s7-grammar-u4 | — | S7 | yes | 10 | form-production, form-recognition, ko-to-meaning, meaning-to-ko, sentence-blank |
+| `sense-distinction` | Sense & contrast depth | D | — | (per-word) | — | S1 | no | 263 | sense-disambiguation, collocation-choice |
+| `collocation` | Collocation depth | D | — | (per-word) | — | S1 | no | 2028 | sense-disambiguation, collocation-choice |
+
+## Typed past/negation production evidence
+
+| Competency | Production lesson | Authored item count | Unique target count | Target ids | Mode | Accepted-forms source |
+|---|---|---|---|---|---|---|
+| `past-tense` | s3-grammar-u2-l3 | 6 | 4 | w0006_ikda, w0007_deutda, w0008_sseuda, w0704_boda | form-production | inflect:past |
+| `negation` | s3-grammar-u2-l3 | 10 | 4 | w0006_ikda, w0007_deutda, w0008_sseuda, w0704_boda | form-production | authored:pattern |
 
 ## Where each production milestone first becomes eligible (spec §3.3)
 
-- **Past production:** NOT eligible. `s3-grammar-u2-l2` teaches `-았어요/었어요` via `ko-to-meaning, meaning-to-ko, sentence-blank, function-usage` — recognition and contextual use only, no typed production. Scored past-tense items are recognition/context (R/X/F-recognition) only.
-- **Negation production:** NOT eligible for the same reason; 안 / 못 / 지 않다 / 지 못하다 are tested through function-usage and recognition only.
+- **Past production:** eligible from **s3-grammar-u2-l3** (Section 3) — 6 reviewed typed polite-past production items across four previously taught verbs, accepted-forms source `inflect:past`.
+- **Negation production:** eligible from **s3-grammar-u2-l3** (Section 3) — 10 reviewed typed 안, 못, -지 않아요, and -지 못해요 production items with finite authored answer sets, accepted-forms source `authored:pattern`.
 - **Polite formal production:** eligible from **s5-grammar-u3** (Section 5), realised as context-driven `register-choice` form selection (the spec forbids instruction-named form prompts, so free typed conjugation is not used; typed lemma production supplies the P evidence).
 - **Subject honorific production:** eligible from **s5-grammar-u3** (Section 5).
 - **Modifier / irregular-family production:** eligible from **s7-grammar-u4** (Section 7).
 - **Connective production:** eligible from **s3-grammar-u2** (Section 3), which has form-recognition + form-production practice for connectives.
 
-## Deliberate limitation (opened as a follow-up curriculum issue)
+## C2 scope note
 
-The curated bank names a `tense-negation` group, but the live v2 path teaches it inside
-the Section 3 *Connecting clauses* unit with recognition/context modes only. Until the
-curriculum adds an explicit typed past/negation production practice, the exam suite does
-not assign scored typed past/negation production. This keeps all form quotas satisfiable
-with genuinely-taught competencies and is enforced by this gate and the audit.
+Words C2 changes competency evidence metadata only: `past-tense` and `negation` are now
+production-eligible because `s3-grammar-u2-l3` teaches the reviewed typed items. v2 exam
+generation, quotas, and paper lengths remain unchanged until the v3 generator work (Words C3).

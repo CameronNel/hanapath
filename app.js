@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v443";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260722e";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v444";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260722f";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,

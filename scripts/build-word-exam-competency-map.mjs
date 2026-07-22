@@ -93,6 +93,7 @@ for (const [id, c] of Object.entries(COMPETENCIES)) {
     learnerLabel: c.learnerLabel,
     strands: c.strands,
     authoredFirstUnit: c.firstTeachingUnitId,
+    firstProductionLessonId: c.firstProductionLessonId || null,
     minimumExamSection: c.minimumExamSection,
     scoredProduction: c.scoredProduction,
     acceptedFormsSource: c.acceptedFormsSource,
@@ -100,6 +101,11 @@ for (const [id, c] of Object.entries(COMPETENCIES)) {
     supportingLessonIds: [],
     eligibleWordCount: 0,
     supportedModes: [],
+    productionItemCount: 0,
+    productionTargetIds: [],
+    productionSupportingLessonIds: [],
+    productionModes: [],
+    productionAcceptedFormsSources: [],
     evidence: c.evidence,
   };
   const group = GROUP_FOR_COMPETENCY[id];
@@ -134,6 +140,21 @@ for (const [id, c] of Object.entries(COMPETENCIES)) {
       : words.filter((w) => w.exampleKo).length;
     rec.supportedModes = ["sense-disambiguation", "collocation-choice"];
   }
+  // ── Production evidence from the authored production lesson (Words C2) ─────
+  // Proof source is lesson.authoredItems (NOT newWordIds): the typed production
+  // items are authored, so the recognition-pool derivation above stays separate.
+  if (c.firstProductionLessonId) {
+    const prodLesson = lessons.find((l) => l.id === c.firstProductionLessonId);
+    const authored = (prodLesson && prodLesson.authoredItems) || [];
+    const prodItems = authored.filter((it) => it.competencyId === id && it.mode === "form-production");
+    rec.productionItemCount = prodItems.length;
+    rec.productionTargetIds = [...new Set(prodItems.map((it) => it.targetWordId))].sort();
+    rec.productionSupportingLessonIds = [...new Set(prodItems.map((it) => it.supportingLessonId))].sort();
+    rec.productionModes = [...new Set(prodItems.map((it) => it.mode))].sort();
+    rec.productionAcceptedFormsSources = [...new Set(prodItems.map((it) => it.acceptedFormsSource))].sort();
+    rec.supportingLessonIds = [...new Set([...rec.supportingLessonIds, c.firstProductionLessonId])].sort();
+    rec.supportedModes = [...new Set([...rec.supportedModes, "form-production"])].sort();
+  }
   records[id] = rec;
 
   // ── Verification (fail loudly on drift) ──────────────────────────────────
@@ -150,21 +171,69 @@ for (const [id, c] of Object.entries(COMPETENCIES)) {
   }
 }
 
-// ── Mandatory past/negation investigation (spec §3.3 known concern) ──────────
-const pastNegUnit = "s3-grammar-u2";
+// ── Past/negation production milestone (Words C2) ────────────────────────────
+// s3-grammar-u2-l2 must stay receptive/contextual: no typed production mode.
 const pastNegLesson = lessons.find((l) => l.id === "s3-grammar-u2-l2");
 const pastNegModes = pastNegLesson ? new Set(pastNegLesson.checkpoints || []) : new Set();
 const teachesTypedProduction = pastNegModes.has("type-ko") || pastNegModes.has("form-production");
 if (teachesTypedProduction) {
-  fail("past/negation: s3-grammar-u2-l2 now includes a typed production mode — re-evaluate scoredProduction for past-tense/negation");
+  fail("past/negation: s3-grammar-u2-l2 now includes a typed production mode — it must stay receptive/contextual");
 }
-if (COMPETENCIES["past-tense"].scoredProduction || COMPETENCIES["negation"].scoredProduction) {
-  fail("past/negation: scoredProduction must remain false until a typed production milestone is demonstrated");
+
+// The production bridge s3-grammar-u2-l3 must belong to the s3-grammar-u2 unit.
+const pastNegUnit = unitById.get("s3-grammar-u2");
+if (!pastNegUnit) {
+  fail("past/negation: unit s3-grammar-u2 does not exist");
+} else if (!(pastNegUnit.lessonIds || []).includes("s3-grammar-u2-l3")) {
+  fail("past/negation: s3-grammar-u2 does not contain s3-grammar-u2-l3 in lessonIds");
+}
+
+// Exact C2 production-evidence proof for past-tense and negation.
+const C2_EXPECT = {
+  "past-tense": { count: 6, source: "inflect:past" },
+  "negation": { count: 10, source: "authored:pattern" },
+};
+const C2_TARGETS = ["w0006_ikda", "w0007_deutda", "w0008_sseuda", "w0704_boda"];
+const wordById = new Map(words.map((w) => [w.id, w]));
+for (const [id, expect] of Object.entries(C2_EXPECT)) {
+  const comp = COMPETENCIES[id];
+  const rec = records[id];
+  if (comp.scoredProduction !== true) fail(`${id}: blueprint scoredProduction must be true`);
+  if (comp.firstProductionLessonId !== "s3-grammar-u2-l3") fail(`${id}: blueprint firstProductionLessonId must be s3-grammar-u2-l3`);
+  const prodLesson = lessons.find((l) => l.id === "s3-grammar-u2-l3");
+  if (!prodLesson) {
+    fail(`${id}: production lesson s3-grammar-u2-l3 does not exist`);
+  } else {
+    if (prodLesson.type !== "content") fail(`${id}: production lesson s3-grammar-u2-l3 is not a content lesson`);
+    if (prodLesson.unitId !== "s3-grammar-u2") fail(`${id}: production lesson s3-grammar-u2-l3 is not in unit s3-grammar-u2`);
+  }
+  if (rec.productionItemCount !== expect.count) fail(`${id}: expected ${expect.count} form-production items, found ${rec.productionItemCount}`);
+  if (JSON.stringify(rec.productionTargetIds) !== JSON.stringify(C2_TARGETS)) fail(`${id}: production targets ${JSON.stringify(rec.productionTargetIds)} != ${JSON.stringify(C2_TARGETS)}`);
+  for (const tid of rec.productionTargetIds) {
+    if (!wordById.has(tid)) fail(`${id}: production target ${tid} does not exist in HANAPATH_CURATED_WORDS`);
+  }
+  if (rec.productionModes.length !== 1 || rec.productionModes[0] !== "form-production") fail(`${id}: every production mode must be form-production, found ${JSON.stringify(rec.productionModes)}`);
+  if (rec.productionSupportingLessonIds.length !== 1 || rec.productionSupportingLessonIds[0] !== "s3-grammar-u2-l3") fail(`${id}: every production supporting lesson must be s3-grammar-u2-l3, found ${JSON.stringify(rec.productionSupportingLessonIds)}`);
+  if (rec.productionAcceptedFormsSources.length !== 1 || rec.productionAcceptedFormsSources[0] !== expect.source) fail(`${id}: accepted-forms source must be ${expect.source}, found ${JSON.stringify(rec.productionAcceptedFormsSources)}`);
+  const authored = (prodLesson && prodLesson.authoredItems) || [];
+  const prodItems = authored.filter((it) => it.competencyId === id && it.mode === "form-production");
+  for (const it of prodItems) {
+    if (typeof it.prompt !== "string" || !it.prompt.trim()) fail(`${id}: production item has an empty prompt`);
+    if (typeof it.answer !== "string" || !it.answer.trim()) fail(`${id}: production item has an empty answer`);
+    if (!Array.isArray(it.acceptedAnswers) || it.acceptedAnswers.length === 0) {
+      fail(`${id}: production item acceptedAnswers must be a non-empty array`);
+    } else {
+      for (const aa of it.acceptedAnswers) {
+        if (typeof aa !== "string" || !aa.trim()) fail(`${id}: production item acceptedAnswers must contain only non-empty strings`);
+      }
+      if (!it.acceptedAnswers.includes(it.answer)) fail(`${id}: production item canonical answer "${it.answer}" is missing from acceptedAnswers`);
+    }
+  }
 }
 
 // ── Report ───────────────────────────────────────────────────────────────────
 function tableRow(rec) {
-  return `| \`${rec.competencyId}\` | ${rec.learnerLabel} | ${rec.strands.join("/")} | ${rec.authoredFirstUnit || "—"} | ${rec.derivedFirstUnit || "(per-word)"} | S${rec.minimumExamSection} | ${rec.scoredProduction ? "yes" : "no"} | ${rec.eligibleWordCount} | ${rec.supportedModes.join(", ") || "—"} |`;
+  return `| \`${rec.competencyId}\` | ${rec.learnerLabel} | ${rec.strands.join("/")} | ${rec.authoredFirstUnit || "—"} | ${rec.derivedFirstUnit || "(per-word)"} | ${rec.firstProductionLessonId || "—"} | S${rec.minimumExamSection} | ${rec.scoredProduction ? "yes" : "no"} | ${rec.eligibleWordCount} | ${rec.supportedModes.join(", ") || "—"} |`;
 }
 
 const lines = [];
@@ -182,17 +251,26 @@ lines.push("same contract.");
 lines.push("");
 lines.push("## Milestone table");
 lines.push("");
-lines.push("| Competency | Learner label | Strands | Authored first unit | Live-derived first unit | Min exam | Scored production | Eligible words | Practised modes |");
-lines.push("|---|---|---|---|---|---|---|---|---|");
+lines.push("| Competency | Learner label | Strands | Authored first unit | Live-derived first unit | First production lesson | Min exam | Scored production | Eligible words | Practised modes |");
+lines.push("|---|---|---|---|---|---|---|---|---|---|");
 for (const id of Object.keys(COMPETENCIES)) lines.push(tableRow(records[id]));
+lines.push("");
+lines.push("## Typed past/negation production evidence");
+lines.push("");
+lines.push("| Competency | Production lesson | Authored item count | Unique target count | Target ids | Mode | Accepted-forms source |");
+lines.push("|---|---|---|---|---|---|---|");
+for (const id of ["past-tense", "negation"]) {
+  const rec = records[id];
+  lines.push(`| \`${id}\` | ${rec.firstProductionLessonId || "—"} | ${rec.productionItemCount} | ${rec.productionTargetIds.length} | ${rec.productionTargetIds.join(", ")} | ${rec.productionModes.join(", ")} | ${rec.productionAcceptedFormsSources.join(", ")} |`);
+}
 lines.push("");
 lines.push("## Where each production milestone first becomes eligible (spec §3.3)");
 lines.push("");
-lines.push("- **Past production:** NOT eligible. `s3-grammar-u2-l2` teaches `-았어요/었어요` via " +
-  `\`${[...pastNegModes].join(", ")}\`` + " — recognition and contextual use only, no typed" +
-  " production. Scored past-tense items are recognition/context (R/X/F-recognition) only.");
-lines.push("- **Negation production:** NOT eligible for the same reason; 안 / 못 / 지 않다 / 지 못하다 are" +
-  " tested through function-usage and recognition only.");
+lines.push("- **Past production:** eligible from **s3-grammar-u2-l3** (Section 3) — 6 reviewed typed" +
+  " polite-past production items across four previously taught verbs, accepted-forms source `inflect:past`.");
+lines.push("- **Negation production:** eligible from **s3-grammar-u2-l3** (Section 3) — 10 reviewed typed" +
+  " 안, 못, -지 않아요, and -지 못해요 production items with finite authored answer sets," +
+  " accepted-forms source `authored:pattern`.");
 lines.push("- **Polite formal production:** eligible from **s5-grammar-u3** (Section 5), realised as" +
   " context-driven `register-choice` form selection (the spec forbids instruction-named form" +
   " prompts, so free typed conjugation is not used; typed lemma production supplies the P evidence).");
@@ -201,13 +279,11 @@ lines.push("- **Modifier / irregular-family production:** eligible from **s7-gra
 lines.push("- **Connective production:** eligible from **s3-grammar-u2** (Section 3), which has" +
   " form-recognition + form-production practice for connectives.");
 lines.push("");
-lines.push("## Deliberate limitation (opened as a follow-up curriculum issue)");
+lines.push("## C2 scope note");
 lines.push("");
-lines.push("The curated bank names a `tense-negation` group, but the live v2 path teaches it inside");
-lines.push("the Section 3 *Connecting clauses* unit with recognition/context modes only. Until the");
-lines.push("curriculum adds an explicit typed past/negation production practice, the exam suite does");
-lines.push("not assign scored typed past/negation production. This keeps all form quotas satisfiable");
-lines.push("with genuinely-taught competencies and is enforced by this gate and the audit.");
+lines.push("Words C2 changes competency evidence metadata only: `past-tense` and `negation` are now");
+lines.push("production-eligible because `s3-grammar-u2-l3` teaches the reviewed typed items. v2 exam");
+lines.push("generation, quotas, and paper lengths remain unchanged until the v3 generator work (Words C3).");
 lines.push("");
 
 if (failures.length) {
