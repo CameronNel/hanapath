@@ -7686,18 +7686,20 @@ function vocabularyStageRowsHtml() {
 
 function alphabetStagesSectionHtml() {
   const progress = getLearnProgress("alphabet");
+  const testingOverride = TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive() && !progress.complete
+    ? '<button class="button secondary compact alphabet-step-override" type="button" data-complete-alphabet-section>Testing override</button>'
+    : "";
   return `
-    <div class="card word-section-card alphabet-step-card alphabet-step-card-compound">
-      <button class="alphabet-step-main" type="button" data-alphabet-section="stages">
-        <span class="alphabet-step-copy">
-          <span class="eyebrow">Step 1</span>
-          <span class="study-row-ko">Learning lessons</span>
-          <span class="screen-sub">${progress.complete ? "All 8 Hangul stages completed." : `Continue ${escapeHtml(getLearnStageInfo("alphabet", progress.currentStage).detail)}.`}</span>
-        </span>
-        ${progress.complete ? `<span class="pill accent alphabet-step-pill">${progress.completedCount}/${progress.total}</span>` : ""}
-      </button>
-      ${TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive() && !progress.complete ? '<button class="button secondary compact alphabet-step-complete" type="button" data-complete-alphabet-section>Testing override</button>' : ""}
-    </div>
+    <button class="hub-tile alphabet-step-tile" type="button" data-alphabet-section="stages">
+      <span class="hub-tile-icon">📖</span>
+      <span class="hub-tile-text">
+        <span class="hub-tile-eyebrow">Step 1</span>
+        <strong>Learning lessons</strong>
+        <small>${progress.complete ? "All 8 Hangul stages completed." : `Continue ${escapeHtml(getLearnStageInfo("alphabet", progress.currentStage).detail)}.`}</small>
+      </span>
+      ${progress.complete ? `<span class="pill accent">${progress.completedCount}/${progress.total}</span>` : `<span class="hub-tile-go" aria-hidden="true">›</span>`}
+    </button>
+    ${testingOverride}
   `;
 }
 
@@ -14627,44 +14629,56 @@ function renderLearnStageMenu(itemId) {
     vocabulary: "Draw the syllables from the words you are learning.",
     sentences: "Draw the syllables from your current sentence band.",
   };
-  const writingStepHtml = writingSource
-    ? `
-    <button class="card word-section-card learn-writing-step${itemId === "alphabet" ? " alphabet-step-card" : ""}" type="button" data-learn-writing="${writingSource}">
+  const writingStepHtml = !writingSource
+    ? ""
+    : itemId === "alphabet"
+      ? `
+    <button class="hub-tile alphabet-step-tile" type="button" data-learn-writing="${writingSource}">
+      <span class="hub-tile-icon">✍️</span>
+      <span class="hub-tile-text">
+        <span class="hub-tile-eyebrow">Step 2</span>
+        <strong>Writing practice</strong>
+        <small>${escapeHtml(writingCopy[writingSource])}</small>
+      </span>
+      <span class="hub-tile-go" aria-hidden="true">›</span>
+    </button>`
+      : `
+    <button class="card word-section-card learn-writing-step" type="button" data-learn-writing="${writingSource}">
       <div>
-        <div class="eyebrow">${itemId === "alphabet" ? "Step 2" : "Last step · Write it"}</div>
+        <div class="eyebrow">Last step · Write it</div>
         <div class="study-row-ko">Writing practice</div>
         <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(writingCopy[writingSource])}</div>
       </div>
       <span class="alpha-board-entry-glyphs" aria-hidden="true">✍</span>
-    </button>`
-    : "";
+    </button>`;
 
   const alphabetDrillUnlocked = progress.complete || TEST_UNLOCK_ALL_STAGES;
   const alphabetDrillStepHtml = itemId === "alphabet"
     ? `
-    <button class="card word-section-card alphabet-step-card${alphabetDrillUnlocked ? "" : " is-locked"}" type="button" data-learn-drill ${alphabetDrillUnlocked ? "" : 'disabled aria-disabled="true"'}>
-      <div>
-        <div class="eyebrow">Step 3</div>
-        <div class="study-row-ko">Drill lab</div>
-        <div class="screen-sub" style="margin-bottom:0;">${alphabetDrillUnlocked ? "Quick mixed, build, split, letter, and batchim drills." : "Complete Step 1 to unlock quick drills."}</div>
-      </div>
-      <span class="alpha-board-entry-glyphs" aria-hidden="true">∞</span>
+    <button class="hub-tile alphabet-step-tile${alphabetDrillUnlocked ? "" : " is-locked"}" type="button" data-learn-drill ${alphabetDrillUnlocked ? "" : 'disabled aria-disabled="true"'}>
+      <span class="hub-tile-icon">🎯</span>
+      <span class="hub-tile-text">
+        <span class="hub-tile-eyebrow">Step 3</span>
+        <strong>Drill lab</strong>
+        <small>${alphabetDrillUnlocked ? "Quick mixed, build, split, letter, and batchim drills." : "Complete Step 1 to unlock quick drills."}</small>
+      </span>
+      <span class="hub-tile-go" aria-hidden="true">${alphabetDrillUnlocked ? "›" : "🔒"}</span>
     </button>`
     : "";
 
   const alphabetGridHtml = itemId === "alphabet"
     ? `
-    <div class="alphabet-three-step-grid">
+    <div class="hub-tiles alphabet-step-tiles">
       ${stagesHtml}
       ${writingStepHtml}
       ${alphabetDrillStepHtml}
     </div>`
     : "";
 
-  el.classList.toggle("alphabet-three-step-screen", itemId === "alphabet");
+  el.classList.remove("alphabet-three-step-screen");
   el.innerHTML = `
-    <div class="learn-stage-menu-layout${itemId === "alphabet" ? " alphabet-three-step-layout" : ""}">
-    <div class="card learn-stage-header-card${itemId === "alphabet" ? " alphabet-three-step-header" : ""}">
+    <div class="learn-stage-menu-layout">
+    <div class="card learn-stage-header-card">
       <div class="learn-stage-header-copy">
         <div class="eyebrow">Learn ${escapeHtml(itemId === "alphabet" ? "Alphabet" : item.title)}</div>
         <h2 class="screen-title" style="margin-bottom:0;">${itemId === "alphabet" ? "Choose a step" : "Choose a stage"}</h2>
@@ -23352,7 +23366,7 @@ function sentenceQuestionHtml(session) {
     const words = (row.sourceWordIds || []).map(id => curatedWordsById.get(id)).filter(Boolean);
     const soundNotes = words.map(w => w.soundNote).filter(Boolean);
     const soundNoteHtml = soundNotes.length
-      ? `<div class="ss-sound-note-panel" style="margin: 8px 0; padding: 10px; border-radius: var(--radius-xs); background: rgba(91,157,255,.08); border-left: 3px solid var(--accent); font-size: 0.9rem;">
+      ? `<div class="ss-sound-note-panel" style="margin: 8px 0; padding: 10px; border-radius: var(--radius-xs); background: rgba(var(--accent-rgb),.08); border-left: 3px solid var(--accent); font-size: 0.9rem;">
            <div style="font-weight: bold; margin-bottom: 4px; color: var(--accent);">Pronunciation Note</div>
            ${soundNotes.map(note => `<div class="screen-sub" style="margin-bottom: 0; color: var(--text);">${escapeHtml(note)}</div>`).join("")}
          </div>`
