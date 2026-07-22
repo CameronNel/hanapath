@@ -4364,7 +4364,7 @@
         "explanation": "Stem + 지 못해요: 듣지 못해요. ㄷ stays before the consonant ㅈ in -지."
       },
       {
-        "competencyId": "past-tense",
+        "competencyId": "negation",
         "mode": "form-production",
         "targetWordId": "w0006_ikda",
         "prompt": "Use 안 in the past: 'I didn't read a book yesterday.' (읽다)",
