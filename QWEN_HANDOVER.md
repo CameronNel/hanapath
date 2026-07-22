@@ -194,4 +194,4 @@ node -e "const I = require('./words_inflect.js'); console.log(I.conjugate('ë³´ë‹
 
 ## Final commit hash
 
-_(updated after commit)_
+`6d9dc3cae89107e5912d5b8c911b62237b54e407`
