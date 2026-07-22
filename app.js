@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v439";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260722a";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v440";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260722b";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -13707,6 +13707,7 @@ const HUB_DEFS = {
       { id: "sentence-studio",   icon: "🎯", title: "Sentence Studio",   sub: "Review due lines or choose a sentence drill.", target: "practice", drill: true },
       { id: "listening-quiz",    icon: "🎯", title: "Listening quiz",    sub: "Choose or type what you heard.", target: "listening", drill: true },
       { id: "writing",           icon: "✍", title: "Writing practice",  sub: "Draw Hangul from the alphabet, your words, or your sentences.", custom: "writingHub", drill: true },
+      { id: "form-checks",       icon: "🔎", title: "Form Checks",       sub: "Short blocked practice with instant correction.", custom: "formChecksHub", drill: true },
     ],
   },
   exam: {
@@ -14776,6 +14777,10 @@ function openHubItem(hub, itemId) {
   }
   if (item.custom === "writingHub") {
     renderWritingPracticeHub();
+    return;
+  }
+  if (item.custom === "formChecksHub") {
+    renderFormChecksHub();
     return;
   }
 
@@ -17243,6 +17248,328 @@ if (typeof window !== "undefined" && isWordExamTestQueryActive()) {
     startAttempt(id, opts) { startWordExamAttempt(id, opts || {}); },
     saveState() { saveState(); },
   };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FORM CHECKS · Workstream B · Box B2 — shared blocked practice runner
+// ═══════════════════════════════════════════════════════════════════════════
+// Short, blocked, immediately-corrective diagnostics under Learn. Fully
+// isolated: its own session state and DOM loop, reusing the pure
+// generateWordQuestionFor() item generator. Never touches SRS, crowns, lesson
+// completion, or exam records; never appears on the Exam tab; never awards
+// pass/mastery/retention. Data contract: form_check_blueprints.js (Box B1).
+let formCheckSession = null;
+
+function getFormChecks() {
+  return (typeof window !== "undefined" && Array.isArray(window.HANAPATH_FORM_CHECKS)) ? window.HANAPATH_FORM_CHECKS : [];
+}
+function getFormCheckById(id) { return getFormChecks().find((c) => c.id === id) || null; }
+
+// Lightweight, analytics-only persistence (spec §8): no pass/mastery, no
+// retention, no exam provenance, no effect on progression.
+function normalizeFormChecks(raw) {
+  const out = { version: 1, byCheckId: {} };
+  const prev = raw && typeof raw === "object" && raw.byCheckId && typeof raw.byCheckId === "object" ? raw.byCheckId : {};
+  getFormChecks().forEach((check) => {
+    const r = prev[check.id] && typeof prev[check.id] === "object" ? prev[check.id] : {};
+    out.byCheckId[check.id] = {
+      sessions: Number.isInteger(r.sessions) ? r.sessions : 0,
+      lastCompletedAt: typeof r.lastCompletedAt === "number" ? r.lastCompletedAt : null,
+      lastCorrect: Number.isInteger(r.lastCorrect) ? r.lastCorrect : 0,
+      lastTotal: Number.isInteger(r.lastTotal) ? r.lastTotal : check.itemCount,
+      recentTargetKeys: Array.isArray(r.recentTargetKeys) ? r.recentTargetKeys.filter((k) => typeof k === "string").slice(-40) : [],
+    };
+  });
+  return out;
+}
+function getFormCheckRecord(checkId) {
+  if (!state.formChecks || typeof state.formChecks !== "object") state.formChecks = normalizeFormChecks(state.formChecks);
+  if (!state.formChecks.byCheckId[checkId]) state.formChecks = normalizeFormChecks(state.formChecks);
+  return state.formChecks.byCheckId[checkId] || null;
+}
+
+function isFormCheckUnlocked(check) {
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  if (check.surface === "sentences") {
+    // Sentence-pattern checks (Box B4) route per row from sentence metadata;
+    // their interactive runner ships later.
+    return false;
+  }
+  const lessonIds = (check.unlock && check.unlock.lessonIds) || [];
+  return lessonIds.length > 0 && lessonIds.every((id) => isWordLessonCompleted(id));
+}
+
+// Eligible curated word targets for a words check: the taught set in the
+// check's unlock scope (its unlock lessons plus their unit siblings), filtered
+// by family for irregular checks and to predicates for production-only checks.
+function getFormCheckTargets(check) {
+  if (check.surface !== "words") return [];
+  if (check.targetFamily) {
+    const taught = new Set(getWordLessons().flatMap((l) => l.newWordIds || []));
+    return [...curatedWordsById.values()].filter((w) => w.irregularFamily === check.targetFamily && taught.has(w.id));
+  }
+  const ids = new Set();
+  (check.unlock.lessonIds || []).forEach((lid) => {
+    const lesson = getWordLessonById(lid);
+    if (!lesson) return;
+    (lesson.newWordIds || []).forEach((id) => ids.add(id));
+    const unit = getWordUnitById(lesson.unitId);
+    if (unit) (unit.lessonIds || []).forEach((sib) => {
+      const sl = getWordLessonById(sib);
+      if (sl) (sl.newWordIds || []).forEach((id) => ids.add(id));
+    });
+  });
+  let targets = [...ids].map((id) => curatedWordsById.get(id)).filter(Boolean);
+  const productionOnly = (check.modes || []).every((m) => m === "form-production" || m === "form-recognition");
+  if (productionOnly) targets = targets.filter((w) => w.pos === "verb" || w.pos === "adjective");
+  return targets;
+}
+
+const FORM_CHECK_MODE_DIRECTION = {
+  "form-recognition": "formRecognition",
+  "form-production": "formProduction",
+  "sentence-blank": "context",
+  "function-usage": "functionUsage",
+  "ko-to-meaning": "koToMeaning",
+  "meaning-to-ko": "meaningToKo",
+  "register-choice": "formProduction",
+};
+
+// Route an error to the exact lesson that teaches the target (spec §4).
+function formCheckRouteFor(check, word) {
+  const rem = check.remediation || {};
+  if (rem.register && rem.honorific) {
+    const honorific = word && (word.lessonGroup === "honorifics" || /honorific/i.test(word.grammarRole || ""));
+    return honorific ? rem.honorific : rem.register;
+  }
+  return rem.default || rem.alt || (check.unlock.lessonIds || [])[0] || null;
+}
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function seededShuffle(arr, rng) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i -= 1) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+// Build the blocked item set: unique canonical targets within one session
+// (spec §3, target key = (wordId, mode)), each carrying its exact supporting
+// lesson route. Distinct words are preferred first; extra modes on the same
+// word only fill a pool too small to reach the item count (e.g. ㅎ-irregular).
+function buildFormCheckItems(check, seed) {
+  const rng = mulberry32(seed);
+  const targets = seededShuffle(getFormCheckTargets(check), rng);
+  const modes = check.modes || [];
+  const candidates = [];
+  const usedKeys = new Set();
+  for (const word of targets) {
+    for (const mode of modes) {
+      const direction = FORM_CHECK_MODE_DIRECTION[mode];
+      if (!direction) continue;
+      const targetKey = `${word.id}:${direction}`;
+      if (usedKeys.has(targetKey)) continue;
+      const q = generateWordQuestionFor(word, direction);
+      if (!q) continue;
+      usedKeys.add(targetKey);
+      candidates.push({ wordId: word.id, item: { ...q, formCheckMode: mode, targetKey, supportingLessonId: formCheckRouteFor(check, word) } });
+    }
+  }
+  // Prefer the first item of each distinct word before reusing a word.
+  const seenWord = new Set();
+  const firstPass = [];
+  const rest = [];
+  for (const c of candidates) {
+    if (seenWord.has(c.wordId)) rest.push(c);
+    else { seenWord.add(c.wordId); firstPass.push(c); }
+  }
+  return firstPass.concat(rest).slice(0, check.itemCount).map((c) => c.item);
+}
+
+function renderFormChecksHub() {
+  refreshProgressionState();
+  activeHub = "learn";
+  setNavActive("learn");
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("learn", "확인 · Form Checks", () => { formCheckSession = null; renderHubMenu("learn"); }, "Form Checks");
+  const cards = getFormChecks().map((check) => {
+    const unlocked = isFormCheckUnlocked(check);
+    const rec = getFormCheckRecord(check.id);
+    const last = rec && rec.sessions ? `<div class="form-check-last">Last: ${rec.lastCorrect} of ${rec.lastTotal} correct</div>` : "";
+    const soon = check.surface === "sentences" ? `<div class="form-check-soon">Sentence checks arrive in a later update.</div>` : "";
+    const gate = !unlocked && check.surface !== "sentences"
+      ? `<div class="form-check-locked">Locked — complete ${(check.unlock.lessonIds || []).map((id) => escapeHtml(lessonTitleForRoute(id))).join(" + ")} first.</div>`
+      : "";
+    return `
+      <div class="card form-check-card ${unlocked ? "" : "is-locked"}">
+        <div class="form-check-head"><span class="form-check-title" lang="ko">${escapeHtml(check.titleKo)}</span><span class="form-check-sub">${escapeHtml(check.title)}</span></div>
+        <div class="form-check-meta">${check.itemCount} items · immediate feedback · practice only</div>
+        ${last}${soon}${gate}
+        ${unlocked ? `<button class="button primary compact" type="button" data-form-check="${escapeHtml(check.id)}">시작 · Start check</button>` : ""}
+      </div>`;
+  }).join("");
+  el.innerHTML = `
+    <div class="form-checks-hub">
+      <div class="eyebrow">연습 진단 · Practice diagnostics</div>
+      <h2 class="screen-title" style="margin-bottom:6px;">Form Checks</h2>
+      <p class="screen-sub">Short, blocked practice with instant correction. These are not exams — nothing here changes your progress, crowns, or exam results.</p>
+      ${cards}
+    </div>`;
+  el.querySelectorAll("[data-form-check]").forEach((btn) => {
+    btn.addEventListener("click", () => renderFormCheckIntro(btn.dataset.formCheck));
+  });
+}
+
+function lessonTitleForRoute(lessonId) {
+  const lesson = getWordLessonById(lessonId);
+  return lesson ? (lesson.title || lessonId) : lessonId;
+}
+
+function renderFormCheckIntro(checkId) {
+  const check = getFormCheckById(checkId);
+  if (!check || !isFormCheckUnlocked(check)) { renderFormChecksHub(); return; }
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("learn", check.title, () => renderFormChecksHub(), "Form Checks");
+  el.innerHTML = `
+    <div class="card form-check-card">
+      <div class="eyebrow" lang="ko">${escapeHtml(check.titleKo)}</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(check.title)}</h2>
+      <p class="screen-sub">${check.itemCount} items drawn from what you've already learned. You'll see whether each answer is right immediately, with the correct form and a route back to the exact lesson. Repeatable, no score kept.</p>
+      <button class="button primary" type="button" id="formCheckBegin">시작 · Start check</button>
+    </div>`;
+  el.querySelector("#formCheckBegin").addEventListener("click", () => startFormCheck(check.id));
+}
+
+function startFormCheck(checkId, seed) {
+  const check = getFormCheckById(checkId);
+  if (!check || !isFormCheckUnlocked(check)) { renderFormChecksHub(); return; }
+  const useSeed = Number.isFinite(seed) ? seed : (Math.floor(Math.random() * 1e9) + 1);
+  const items = buildFormCheckItems(check, useSeed);
+  if (!items.length) { renderFormChecksHub(); return; }
+  formCheckSession = { check, items, index: 0, correct: 0, answered: false, results: [], seed: useSeed };
+  queueScreenMotion("forward", 1);
+  renderFormCheckItem();
+}
+
+function renderFormCheckItem() {
+  const s = formCheckSession;
+  if (!s) { renderFormChecksHub(); return; }
+  const item = s.items[s.index];
+  if (!item) { renderFormCheckCompletion(); return; }
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("learn", `${s.check.title} · ${s.index + 1}/${s.items.length}`, () => { formCheckSession = null; renderFormChecksHub(); }, "Form Checks");
+  const isType = item.interaction === "type";
+  const optionsHtml = !isType && Array.isArray(item.options)
+    ? `<div class="form-check-options">${item.options.map((opt, i) => `<button class="button secondary form-check-option" type="button" data-fc-opt="${i}">${escapeHtml(opt)}</button>`).join("")}</div>`
+    : "";
+  const inputHtml = isType
+    ? `<input id="formCheckInput" class="text-input" type="text" lang="ko" autocomplete="off" autocapitalize="off" placeholder="${escapeHtml(item.placeholder || "Type your answer")}" /><button class="button primary compact" type="button" id="formCheckCheck">확인 · Check</button>`
+    : "";
+  el.innerHTML = `
+    <div class="card form-check-card form-check-item">
+      <div class="form-check-progress">${s.index + 1} / ${s.items.length}</div>
+      <div class="form-check-prompt">${escapeHtml(item.prompt || "")}</div>
+      ${item.visual || ""}
+      ${optionsHtml}${inputHtml}
+      <div id="formCheckFeedback" class="form-check-feedback" aria-live="polite"></div>
+    </div>`;
+  if (isType) {
+    const input = el.querySelector("#formCheckInput");
+    if (input) input.focus();
+    el.querySelector("#formCheckCheck").addEventListener("click", () => gradeFormCheckItem(input ? input.value : ""));
+    if (input) input.addEventListener("keydown", (e) => { if (e.key === "Enter") gradeFormCheckItem(input.value); });
+  } else {
+    el.querySelectorAll("[data-fc-opt]").forEach((btn) => {
+      btn.addEventListener("click", () => gradeFormCheckItem(item.options[Number(btn.dataset.fcOpt)]));
+    });
+  }
+}
+
+function gradeFormCheckItem(rawAnswer) {
+  const s = formCheckSession;
+  if (!s || s.answered) return;
+  const item = s.items[s.index];
+  const given = String(rawAnswer == null ? "" : rawAnswer).trim();
+  if (item.interaction === "type" && !given) return;
+  const accepted = Array.isArray(item.acceptedAnswers) ? item.acceptedAnswers : [item.answer];
+  const correct = item.interaction === "type"
+    ? (normalizeStudyText(given) === normalizeStudyText(item.answer)
+        || accepted.some((a) => normalizeKoreanAnswer(a, { ignoreSpaces: true }) === normalizeKoreanAnswer(given, { ignoreSpaces: true })))
+    : (given === item.answer);
+  s.answered = true;
+  if (correct) s.correct += 1;
+  s.results.push({ targetKey: item.targetKey, correct, mode: item.formCheckMode });
+
+  const canonical = (item.acceptedAnswers || [item.answer]).join(" / ");
+  const route = item.supportingLessonId;
+  const el = document.getElementById("formCheckFeedback");
+  if (el) {
+    el.innerHTML = `
+      <div class="form-check-verdict ${correct ? "is-correct" : "is-wrong"}">${correct ? "✓ Correct" : "✗ Not quite"}</div>
+      ${correct ? "" : `<div class="form-check-answer">Correct form: <strong lang="ko">${escapeHtml(canonical)}</strong></div>`}
+      <div class="form-check-explain">${escapeHtml(item.explanation || "")}</div>
+      <div class="form-check-actions">
+        ${item.voiceText ? `<button class="button secondary compact" type="button" id="formCheckSpeak">🔊 Listen</button>` : ""}
+        ${route ? `<button class="button secondary compact" type="button" id="formCheckRoute">Review this lesson →</button>` : ""}
+        <button class="button primary compact" type="button" id="formCheckNext">${s.index + 1 >= s.items.length ? "Finish" : "다음 · Next"}</button>
+      </div>`;
+    // Disable inputs after answering (blocked practice: no changing the answer).
+    document.querySelectorAll("[data-fc-opt]").forEach((b) => { b.disabled = true; if (b.textContent === item.answer) b.classList.add("is-correct"); });
+    const input = document.getElementById("formCheckInput");
+    if (input) input.disabled = true;
+    const speak2 = document.getElementById("formCheckSpeak");
+    if (speak2) speak2.addEventListener("click", () => speak(item.voiceText));
+    const routeBtn = document.getElementById("formCheckRoute");
+    if (routeBtn && route) routeBtn.addEventListener("click", () => { formCheckSession = null; openWordLesson(route); });
+    const next = document.getElementById("formCheckNext");
+    if (next) next.addEventListener("click", () => { s.index += 1; s.answered = false; renderFormCheckItem(); });
+  }
+  if (item.voiceText && correct) speak(item.voiceText);
+}
+
+function renderFormCheckCompletion() {
+  const s = formCheckSession;
+  if (!s) { renderFormChecksHub(); return; }
+  // Lightweight, non-certifying summary (spec §8): never mutates progression.
+  const rec = getFormCheckRecord(s.check.id);
+  if (rec) {
+    rec.sessions += 1;
+    rec.lastCompletedAt = Date.now();
+    rec.lastCorrect = s.correct;
+    rec.lastTotal = s.items.length;
+    rec.recentTargetKeys = [...new Set([...(rec.recentTargetKeys || []), ...s.results.map((r) => r.targetKey)])].slice(-40);
+    saveState(); // persists state.formChecks only; no SRS/crown/lesson/exam change
+  }
+  const wrong = s.results.filter((r) => !r.correct);
+  const el = showScreen("detail");
+  if (!el) return;
+  showDetailBarWithBack("learn", `${s.check.title} · complete`, () => { formCheckSession = null; renderFormChecksHub(); }, "Form Checks");
+  const route = s.check.remediation && (s.check.remediation.default || s.check.remediation.register);
+  el.innerHTML = `
+    <div class="card form-check-card form-check-complete">
+      <div class="eyebrow">확인 완료 · Check complete</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">${s.correct} of ${s.items.length} correct</h2>
+      <p class="screen-sub">${wrong.length ? `Review these ${wrong.length} form${wrong.length === 1 ? "" : "s"}, then try again.` : "Every form correct. Try again any time for fresh practice."}</p>
+      <div class="form-check-actions">
+        <button class="button primary" type="button" id="formCheckRetry">다시 · Try again</button>
+        ${wrong.length && route ? `<button class="button secondary" type="button" id="formCheckReview">Review the lesson →</button>` : ""}
+        <button class="button secondary" type="button" id="formCheckDone">Back to Form Checks</button>
+      </div>
+    </div>`;
+  el.querySelector("#formCheckRetry").addEventListener("click", () => startFormCheck(s.check.id));
+  const review = el.querySelector("#formCheckReview");
+  if (review && route) review.addEventListener("click", () => { formCheckSession = null; openWordLesson(route); });
+  el.querySelector("#formCheckDone").addEventListener("click", () => { formCheckSession = null; renderFormChecksHub(); });
 }
 
 function renderAlphabetPractice() {

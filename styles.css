@@ -6890,6 +6890,28 @@ li { margin-bottom: 4px; }
 .exam-provenance-row span:first-child { color: var(--text-muted, #9aa); }
 .exam-provenance-row span:last-child { font-variant-numeric: tabular-nums; word-break: break-all; text-align: right; }
 .exam-provenance-disclosure { font-size: .8rem; color: var(--text-muted, #9aa); line-height: 1.5; }
+/* Form Checks (Workstream B · Box B2) — blocked practice diagnostics */
+.form-checks-hub { display: flex; flex-direction: column; gap: 12px; }
+.form-check-card { display: flex; flex-direction: column; gap: 8px; }
+.form-check-card.is-locked { opacity: .72; }
+.form-check-head { display: flex; flex-direction: column; gap: 2px; }
+.form-check-title { font-weight: 700; }
+.form-check-sub { font-size: .84rem; color: var(--text-muted, #9aa); }
+.form-check-meta { font-size: .78rem; color: var(--text-muted, #9aa); }
+.form-check-last { font-size: .8rem; color: var(--text-muted, #9aa); }
+.form-check-locked, .form-check-soon { font-size: .8rem; color: var(--text-muted, #9aa); font-style: italic; }
+.form-check-progress { font-size: .78rem; color: var(--text-muted, #9aa); font-variant-numeric: tabular-nums; }
+.form-check-prompt { font-size: 1rem; font-weight: 600; margin: 6px 0; }
+.form-check-options { display: grid; gap: 8px; margin-top: 10px; }
+.form-check-option.is-correct { border-color: rgba(28,122,74,.5); background: rgba(28,122,74,.12); }
+.form-check-feedback { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.form-check-feedback:empty { display: none; }
+.form-check-verdict { font-weight: 700; }
+.form-check-verdict.is-correct { color: #1c7a4a; }
+.form-check-verdict.is-wrong { color: #b4462a; }
+.form-check-answer { font-size: .92rem; }
+.form-check-explain { font-size: .86rem; color: var(--text-muted, #9aa); line-height: 1.5; }
+.form-check-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .exam-breakdown { display: grid; gap: 8px; margin-bottom: 16px; }
 .exam-breakdown-title { font-size: .88rem; color: var(--text-muted, #9aa); }
 .exam-breakdown-row {
