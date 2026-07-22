@@ -1,12 +1,12 @@
-// [2026-07-21] Cache bumped for Workstream 0 Box 0B taint-gated completion controls.
-const CACHE_NAME = "hanapath-shell-v437";
+// [2026-07-21] Cache bumped for Gemini final megabatch consolidated run.
+const CACHE_NAME = "hanapath-shell-v439";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260720w",
+  "./styles.css?v=20260722a",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260717u",
@@ -16,12 +16,13 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260717u",
   "./sentences_lesson_plan.js?v=20260717u",
+  "./sentence_exam_eligibility.js?v=20260721a",
   "./hangul_strokes.js?v=20260715b",
   "./hangul_mastery_exam.js?v=20260720a",
   "./word_exam_blueprints.js?v=20260720w",
   "./word_exam_engine.js?v=20260720w",
   "./exam_integrity.js?v=20260721b",
-  "./app.js?v=20260721b",
+  "./app.js?v=20260722a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

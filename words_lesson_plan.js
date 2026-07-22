@@ -406,7 +406,8 @@
     "prerequisiteUnitId": "s2-grammar-u1",
     "lessonIds": [
       "s3-grammar-u2-l1",
-      "s3-grammar-u2-l2"
+      "s3-grammar-u2-l2",
+      "s3-grammar-u2-l3"
     ],
     "checkpointId": "s3-grammar-u2-cp",
     "senseSafeException": null
@@ -4166,8 +4167,7 @@
       "fw1711_an",
       "fw1712_mot",
       "fw1713_ji_anta",
-      "fw1714_ji_mothada",
-      "fw1715_asseoyo"
+      "fw1714_ji_mothada"
     ],
     "reviewPolicy": {
       "includeDue": true,
@@ -4178,6 +4178,31 @@
       "meaning-to-ko",
       "sentence-blank",
       "function-usage"
+    ],
+    "pass": {
+      "minFirstTryPct": 60,
+      "requireTypedAttempt": false
+    }
+  },
+  {
+    "id": "s3-grammar-u2-l3",
+    "unitId": "s3-grammar-u2",
+    "stage": "s3",
+    "type": "content",
+    "title": "과거와 부정 만들기",
+    "subtitle": "Producing Past and Negation",
+    "goal": "Produce polite past forms and choose an explicitly taught negation pattern from context, then type the complete reviewed answer.",
+    "tutorial": false,
+    "newWordIds": [
+      "fw1715_asseoyo"
+    ],
+    "reviewPolicy": {
+      "includeDue": true,
+      "maxReviewCards": 4
+    },
+    "checkpoints": [
+      "ko-to-meaning",
+      "meaning-to-ko"
     ],
     "pass": {
       "minFirstTryPct": 60,

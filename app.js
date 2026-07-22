@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v437";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260721b";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v439";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260722a";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -14431,6 +14431,14 @@ function renderSettingsScreen(hub = activeHub) {
         setBackupStatus(`That file is not a valid HanaPath backup — nothing was changed. (${error && error.message ? error.message : "unreadable file"})`);
         return;
       }
+      // Box 0E — validate the candidate's exam-integrity collections before it
+      // is allowed to replace live state. A malformed/duplicate/broken-linkage
+      // integrity payload is rejected outright; current progress is untouched.
+      const integrityErrors = validateImportedExamIntegrity(imported);
+      if (integrityErrors.length) {
+        setBackupStatus(`That backup has invalid exam-result data — nothing was changed. (${integrityErrors[0]})`);
+        return;
+      }
       const proceed = window.confirm("Replace the progress on this device with the backup file? Your current progress is kept as a one-step rollback copy.");
       if (!proceed) {
         setBackupStatus("Import cancelled — nothing was changed.");
@@ -15450,6 +15458,7 @@ function renderHangulMasteryExamIntro() {
         <li>Answers remain editable until final submission. You may flag items for review (답안 확인).</li>
         <li>Leaving the exam discards the attempt.</li>
         <li>한글 완전 습득 · <strong>Hangul mastered</strong> is awarded only at 200/200.</li>
+        <li>${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</li>
       </ul>
       <button class="button primary" type="button" id="examBeginBtn">시험 시작 · Begin the exam</button>
     </div>`;
@@ -15503,6 +15512,8 @@ function buildHangulExamAttempt(bank) {
       item.type === "mcq" ? { ...item, options: shuffle(item.options) } : { ...item }),
   }));
   const now = Date.now();
+  const initialOverrideFlags = typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive() ? ["__wetest"] : [];
+  const initialTaintContext = getHangulExamTaintContext(initialOverrideFlags);
   return {
     bank,
     parts,
@@ -15516,7 +15527,169 @@ function buildHangulExamAttempt(bank) {
     itemIndex: -1,       // -1 = part-intro card, otherwise the item within the part
     submitted: false,
     result: null,
+    overrideFlags: initialTaintContext.overrideFlags,
+    overrideEventIds: initialTaintContext.overrideEventIds,
   };
+}
+
+function getHangulExamTaintContext(overrideFlags) {
+  const normalizedFlags = Array.from(new Set(Array.isArray(overrideFlags) ? overrideFlags : []));
+  const integrityApi = (typeof window !== "undefined" && window.HANAPATH_EXAM_INTEGRITY)
+    || (typeof HANAPATH_EXAM_INTEGRITY !== "undefined" ? HANAPATH_EXAM_INTEGRITY : null);
+  if (integrityApi && typeof integrityApi.getAttemptTaintContext === "function") {
+    return integrityApi.getAttemptTaintContext(state, ["alphabet"], normalizedFlags);
+  }
+  return {
+    overrideEventIds: [],
+    overrideFlags: normalizedFlags,
+    status: normalizedFlags.length ? "practice" : "hanaPath",
+    isPractice: Boolean(normalizedFlags.length),
+  };
+}
+
+// ── Exam result provenance helpers (Workstream 0 · Boxes 0C/0D) ─────────────
+// Shared by the Hangul Mastery and Core Word runners so both write immutable
+// provenance records the same way. UI-invisible; never mutates learning state.
+const WORD_EXAM_ENGINE_VERSION = "1";
+let wordExamBankRevisionCache = null;
+
+function makeExamAttemptId() {
+  const cryptoApi = typeof globalThis !== "undefined" ? globalThis.crypto : null;
+  if (cryptoApi && typeof cryptoApi.randomUUID === "function") return `attempt-${cryptoApi.randomUUID()}`;
+  return `attempt-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function getExamResultRecord(attemptId) {
+  const byId = state.examResults && state.examResults.byAttemptId;
+  return (byId && typeof byId === "object" && byId[attemptId]) || null;
+}
+
+function writeExamResultRecord(attemptId, resultRecord) {
+  if (!state.examResults || typeof state.examResults !== "object") {
+    state.examResults = { version: 1, byAttemptId: {} };
+  }
+  if (!state.examResults.byAttemptId || typeof state.examResults.byAttemptId !== "object") {
+    state.examResults.byAttemptId = {};
+  }
+  state.examResults.byAttemptId[attemptId] = resultRecord;
+}
+
+// Append a result relation (e.g. retention pairing) once. Immutable history:
+// never rewrites an existing relation with the same id.
+function appendExamResultRelation(relation) {
+  if (!relation || typeof relation.fromAttemptId !== "string" || typeof relation.toAttemptId !== "string") return null;
+  if (!state.examIntegrity || typeof state.examIntegrity !== "object") {
+    state.examIntegrity = { version: 1, taintEvents: [], resultRelations: [], migrationLog: [] };
+  }
+  if (!Array.isArray(state.examIntegrity.resultRelations)) state.examIntegrity.resultRelations = [];
+  const relationId = `${relation.type || "relation"}-${relation.fromAttemptId}-${relation.toAttemptId}`;
+  if (state.examIntegrity.resultRelations.some((existing) => existing && existing.relationId === relationId)) return relationId;
+  state.examIntegrity.resultRelations.push({
+    relationId,
+    type: relation.type || "relation",
+    fromAttemptId: relation.fromAttemptId,
+    toAttemptId: relation.toAttemptId,
+    createdAt: Date.now(),
+  });
+  return relationId;
+}
+
+// Blueprint MAJOR version — a retention confirmation may only bind to a
+// qualifier of the same major (spec §5.3 / Box 0D). Live blueprints are
+// integers, so the major is the integer itself.
+function examBlueprintMajor(version) {
+  return Number.isFinite(version) ? Math.trunc(version) : null;
+}
+
+// A reproducible content-bank revision for the Core Word exams: a stable
+// fingerprint of the curated word ids the engine draws from, tagged with the
+// blueprint version. Honest and deterministic; computed once per session.
+function getWordExamBankRevision() {
+  if (wordExamBankRevisionCache) return wordExamBankRevisionCache;
+  const meta = getWordExamMeta();
+  const api = typeof window !== "undefined" ? window.HANAPATH_EXAM_INTEGRITY : null;
+  const words = (typeof window !== "undefined" && Array.isArray(window.HANAPATH_CURATED_WORDS)) ? window.HANAPATH_CURATED_WORDS : [];
+  const ids = words.map((w) => w && w.id).filter(Boolean).sort();
+  const tag = api && typeof api.fingerprint === "function" ? api.fingerprint(ids) : String(ids.length);
+  wordExamBankRevisionCache = `cw-v${meta.blueprintVersion || 2}-${tag}`;
+  return wordExamBankRevisionCache;
+}
+
+// Taint context for a Core Word attempt (mirrors getHangulExamTaintContext but
+// scoped to the exam's own sections).
+function getWordExamTaintContext(exam, overrideFlags) {
+  const normalizedFlags = Array.from(new Set(Array.isArray(overrideFlags) ? overrideFlags : []));
+  const api = (typeof window !== "undefined" && window.HANAPATH_EXAM_INTEGRITY) || null;
+  const scope = exam && Array.isArray(exam.scopeSectionIds) ? exam.scopeSectionIds : [];
+  if (api && typeof api.getAttemptTaintContext === "function") {
+    return api.getAttemptTaintContext(state, scope, normalizedFlags);
+  }
+  return {
+    overrideEventIds: [],
+    overrideFlags: normalizedFlags,
+    status: normalizedFlags.length ? "practice" : "hanaPath",
+    isPractice: Boolean(normalizedFlags.length),
+  };
+}
+
+// Learner-facing result class for a stored provenance record (Box 0E).
+function examResultLabel(status) {
+  if (status === "hanaPath") return "HanaPath result";
+  if (status === "practice") return "Practice result";
+  return "Legacy result · provenance incomplete";
+}
+
+// The full device-local disclosure, one interaction away from every result
+// card and present in exam help (Box 0E / spec §8).
+const EXAM_INTEGRITY_DISCLOSURE = "Results are stored on this device. They are not proctored, independently verified, or tamper-proof credentials.";
+
+// Box 0E — the result-class label plus provenance details and the disclosure,
+// rendered from a stored result record. One <summary> interaction reveals the
+// full detail. Uses only plain, non-credential language (spec §8.1).
+function examProvenanceCardHtml(record) {
+  if (!record || typeof record !== "object") return "";
+  const label = examResultLabel(record.status);
+  const cls = record.status === "hanaPath" ? "hana" : (record.status === "practice" ? "practice" : "legacy");
+  const rows = [];
+  if (record.blueprintVersion != null) rows.push(["Blueprint version", String(record.blueprintVersion)]);
+  if (record.engineVersion != null) rows.push(["Engine version", String(record.engineVersion)]);
+  if (record.contentBankRevision != null) rows.push(["Content bank", String(record.contentBankRevision)]);
+  if (record.eligibilityRevision != null) rows.push(["Eligibility revision", String(record.eligibilityRevision)]);
+  if (record.generationSeed != null) rows.push(["Generation seed", String(record.generationSeed)]);
+  rows.push(["Status", label]);
+  if (record.qualifyingAttemptId) rows.push(["Retention qualifier", String(record.qualifyingAttemptId)]);
+  const detailRows = rows
+    .map(([k, v]) => `<div class="exam-provenance-row"><span>${escapeHtml(k)}</span><span>${escapeHtml(v)}</span></div>`)
+    .join("");
+  const practiceCopy = record.status === "practice"
+    ? `<div class="exam-provenance-practice">Practice result — recorded for your own review only. It does not count toward passing, distinction, mastery, or retention.</div>`
+    : "";
+  return `
+    <div class="exam-result-label exam-result-label-${cls}">${escapeHtml(label)}</div>
+    ${practiceCopy}
+    <details class="exam-provenance">
+      <summary>Result details &amp; disclosure</summary>
+      <div class="exam-provenance-rows">${detailRows}</div>
+      <div class="exam-provenance-disclosure">${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</div>
+    </details>`;
+}
+
+// Box 0E — reject a backup whose exam-integrity collections are malformed
+// before it can overwrite live state. Returns a list of errors ([] = accept).
+// Backups without any integrity collections (older exports) are allowed and
+// flow through the normal load/migrate path.
+function validateImportedExamIntegrity(candidate) {
+  const api = (typeof window !== "undefined" && window.HANAPATH_EXAM_INTEGRITY) || null;
+  if (!api || typeof api.validateExamIntegrityState !== "function") return [];
+  if (!candidate || (candidate.examResults == null && candidate.examIntegrity == null)) return [];
+  let clone;
+  try { clone = JSON.parse(JSON.stringify(candidate)); } catch (error) { return ["exam-result data is unreadable"]; }
+  try {
+    if (typeof api.migrateExamIntegrityState === "function") {
+      api.migrateExamIntegrityState(clone, { wordExamBlueprints: getWordExamsList() });
+    }
+  } catch (error) { return ["exam-result data could not be migrated"]; }
+  return api.validateExamIntegrityState(clone, { wordExamBlueprints: getWordExamsList() });
 }
 
 function getExamFlatItems(attempt) {
@@ -16034,15 +16207,89 @@ function submitHangulExam(auto) {
   const unanswered = flat.filter((item) => !examItemAnswered(attempt, item)).length;
   const mastered = correct === 200 && total === 200 && unanswered === 0;
 
+  const currentOverrideFlags = typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive() ? ["__wetest"] : [];
+  const currentTaintContext = getHangulExamTaintContext(currentOverrideFlags);
+  const overrideFlags = Array.from(new Set([
+    ...(attempt.overrideFlags || []),
+    ...currentTaintContext.overrideFlags,
+  ]));
+  const overrideEventIds = Array.from(new Set([
+    ...(attempt.overrideEventIds || []),
+    ...currentTaintContext.overrideEventIds,
+  ]));
+  const isPractice = Boolean(overrideFlags.length || overrideEventIds.length);
+  const taintContext = {
+    overrideEventIds,
+    overrideFlags,
+    status: isPractice ? "practice" : "hanaPath",
+    isPractice,
+  };
+
   const record = normalizeAlphabetMasteryExam(state.alphabetMasteryExam);
   record.attempts += 1;
-  record.bestCorrect = Math.max(record.bestCorrect, correct);
-  if (mastered) record.mastered = true; // once earned, never regressed
-  record.completedAt = new Date().toISOString();
+  if (!isPractice) {
+    record.bestCorrect = Math.max(record.bestCorrect, correct);
+    if (mastered) record.mastered = true; // once earned, never regressed
+    record.completedAt = new Date().toISOString();
+  }
   state.alphabetMasteryExam = record;
+
+  const attemptId = makeExamAttemptId();
+
+  const submittedAt = Date.now();
+  const generatedAt = attempt.startedAt || submittedAt;
+  const durationSeconds = Math.max(0, Math.round((submittedAt - generatedAt) / 1000));
+
+  const resultRecord = {
+    resultSchemaVersion: 1,
+    attemptId: attemptId,
+    examId: "hangul-mastery-exam",
+    attemptMode: null,
+    blueprintVersion: Number.isInteger(attempt.bank.version) ? attempt.bank.version : 2,
+    engineVersion: null,
+    generationSeed: null,
+    contentBankRevision: typeof attempt.bank.id === "string" ? attempt.bank.id : null,
+    eligibilityRevision: null,
+    generatedAt: generatedAt,
+    submittedAt: submittedAt,
+    durationSeconds: durationSeconds,
+    scopeSectionIds: ["alphabet"],
+    itemCount: total,
+    scoreSummary: {
+      correct: correct,
+      total: total,
+      pct: Math.round((correct / total) * 1000) / 10,
+      unanswered: unanswered,
+    },
+    floorSummary: {
+      passed: mastered,
+      distinguished: null,
+      details: { mastered: mastered, auto: Boolean(auto) },
+    },
+    status: taintContext.status,
+    overrideFlags: taintContext.overrideFlags,
+    overrideEventIds: taintContext.overrideEventIds,
+    qualifyingAttemptId: null,
+    retentionAttemptId: null,
+    legacyProvenanceStatus: null,
+    checksum: null,
+  };
+
+  writeExamResultRecord(attemptId, resultRecord);
+
   saveState(); // never re-locks previously unlocked content
 
-  attempt.result = { total, correct, unanswered, mastered, auto, timeUsedMs: Date.now() - attempt.startedAt };
+  attempt.result = {
+    total,
+    correct,
+    unanswered,
+    mastered,
+    auto,
+    timeUsedMs: Date.now() - attempt.startedAt,
+    status: taintContext.status,
+    isPractice: isPractice,
+    attemptId: attemptId,
+  };
   attempt.stage = "results";
   queueScreenMotion("forward", 1);
   renderExamResults();
@@ -16138,6 +16385,9 @@ function renderExamResults() {
   }, "Hangul Mastery Exam");
 
   const { correct, mastered, timeUsedMs } = attempt.result;
+  // Box 0E — a practice attempt never presents the mastery crown, even at a
+  // perfect 200/200; it did not set state mastery and must not claim it.
+  const showMastered = mastered && attempt.result.isPractice !== true;
   const totals = examTypeTotals(attempt);
   const partStats = examPartStats(attempt);
   const stats = [
@@ -16150,11 +16400,12 @@ function renderExamResults() {
       <button class="button primary" type="button" id="examRetake">다시 응시 · Retake exam</button>
       <button class="button secondary" type="button" id="examBackHub">Back to exam overview</button>`;
 
-  const detailsHtml = mastered
-    ? examReviewHtml(attempt)
-    : `${examBreakdownHtml(partStats)}${examReviewHtml(attempt)}`;
+  const provenanceHtml = examProvenanceCardHtml(getExamResultRecord(attempt.result.attemptId));
+  const detailsHtml = showMastered
+    ? `${provenanceHtml}${examReviewHtml(attempt)}`
+    : `${provenanceHtml}${examBreakdownHtml(partStats)}${examReviewHtml(attempt)}`;
 
-  el.innerHTML = mastered
+  el.innerHTML = showMastered
     ? premiumCompletionHtml({
         tone: "crown",
         icon: "crown",
@@ -16311,6 +16562,7 @@ function normalizeWordExams(raw) {
       confirmationDueFrom: typeof r.confirmationDueFrom === "number" ? r.confirmationDueFrom : null,
       confirmationExpiresAt: typeof r.confirmationExpiresAt === "number" ? r.confirmationExpiresAt : null,
       qualifyingTargetIds: Array.isArray(r.qualifyingTargetIds) ? r.qualifyingTargetIds : null,
+      qualifyingAttemptId: typeof r.qualifyingAttemptId === "string" ? r.qualifyingAttemptId : null,
       lastAttemptAt: typeof r.lastAttemptAt === "number" ? r.lastAttemptAt : null,
       lastResult: r.lastResult && typeof r.lastResult === "object" ? r.lastResult : null,
     };
@@ -16440,6 +16692,7 @@ function renderWordExamIntro(examId) {
           : `${itemCount} items · ${timeMin} minutes. You may move Previous/Next, flag items, and review before submitting. No feedback appears until you submit.`}</p>
         <ul class="word-exam-macro-list">${macroList}</ul>
         <p class="screen-sub word-exam-fineprint">Provisional HanaPath achievement standard. Audio plays at most twice per item. Leaving the exam discards the attempt. This exam never changes your Words progress or review schedule.</p>
+        <p class="screen-sub word-exam-fineprint">${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</p>
         ${prior}
       </div>
       <div class="player-actions exam-actions">
@@ -16472,11 +16725,15 @@ function startWordExamAttempt(examId, opts) {
   clearWordExamCountdown();
   const now = Date.now();
   const timeMin = mode === "confirmation" ? exam.retention.confirmationTimeMinutes : exam.timeMinutes;
+  const startFlags = (typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive()) ? ["__wetest"] : [];
+  const startTaint = getWordExamTaintContext(exam, startFlags);
   wordExamAttempt = {
     exam, mode, seed, items: attempt.items,
     index: 0, answers: {}, audioPlays: {}, flagged: new Set(),
     startedAt: now, deadline: now + timeMin * 60 * 1000,
     submitted: false, result: null, stage: "attempt",
+    overrideFlags: startTaint.overrideFlags,
+    overrideEventIds: startTaint.overrideEventIds,
   };
   examActive = true;
   startWordExamCountdown();
@@ -16722,32 +16979,96 @@ function submitWordExamAttempt(auto) {
   const now = wordExamNow();
   const rec = getWordExamRecord(a.exam.id);
 
+  // Box 0D — taint context: union the generation-time and submission-time
+  // classifications so a taint created mid-attempt is still caught (spec §5.1).
+  const submitFlags = (typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive()) ? ["__wetest"] : [];
+  const submitTaint = getWordExamTaintContext(a.exam, submitFlags);
+  let overrideFlags = Array.from(new Set([...(a.overrideFlags || []), ...submitTaint.overrideFlags]));
+  const overrideEventIds = Array.from(new Set([...(a.overrideEventIds || []), ...submitTaint.overrideEventIds]));
+
+  // Retention pairing (spec §5.3): a confirmation may only count as HanaPath
+  // when it binds to a clean, provenance-complete, blueprint-compatible
+  // HanaPath qualifier. A tainted / missing / legacy-incomplete / incompatible
+  // qualifier degrades the confirmation to Practice.
+  let qualifyingAttemptId = null;
+  if (a.exam.retention && a.mode === "confirmation") {
+    qualifyingAttemptId = typeof rec.qualifyingAttemptId === "string" ? rec.qualifyingAttemptId : null;
+    const qualifier = qualifyingAttemptId ? getExamResultRecord(qualifyingAttemptId) : null;
+    const qualifierOk = Boolean(qualifier)
+      && qualifier.status === "hanaPath"
+      && qualifier.legacyProvenanceStatus == null
+      && qualifier.examId === a.exam.id
+      && examBlueprintMajor(qualifier.blueprintVersion) === examBlueprintMajor(a.exam.version);
+    if (!qualifierOk) overrideFlags = Array.from(new Set([...overrideFlags, "retention-qualifier-invalid"]));
+  }
+
+  const isPractice = Boolean(overrideFlags.length || overrideEventIds.length);
+  const status = isPractice ? "practice" : "hanaPath";
+  const attemptId = makeExamAttemptId();
+
   // Compact, learning-state-safe persistence (never touches SRS/progress).
+  // Attempts and the reviewable last result are always recorded; every
+  // achievement-bearing field is gated behind a clean HanaPath attempt.
   rec.attempts += 1;
   rec.lastAttemptAt = now;
-  rec.bestPct = Math.max(rec.bestPct, result.pct);
-  if (bands.passed) rec.passed = true;
-  if (bands.distinguished) rec.distinguished = true;
   rec.lastResult = compactWordExamResult(result, bands, a.mode);
-
-  if (a.exam.retention) {
-    if (a.mode === "confirmation") {
-      if (bands.passed && !rec.masteryEarnedAt) rec.masteryEarnedAt = now; // sticky
-    } else {
-      // Full final: opening the delayed retention confirmation on qualification.
-      if (!rec.masteryEarnedAt && engine.qualifiesForConfirmation(a.exam, result)) {
-        const status = wordExamRetentionStatus(a.exam);
-        if (status.phase !== "open" && status.phase !== "waiting") {
+  if (!isPractice) {
+    rec.bestPct = Math.max(rec.bestPct, result.pct);
+    if (bands.passed) rec.passed = true;
+    if (bands.distinguished) rec.distinguished = true;
+    if (a.exam.retention) {
+      if (a.mode === "confirmation") {
+        if (bands.passed && !rec.masteryEarnedAt) rec.masteryEarnedAt = now; // sticky
+      } else if (!rec.masteryEarnedAt && engine.qualifiesForConfirmation(a.exam, result)) {
+        const retentionPhase = wordExamRetentionStatus(a.exam);
+        if (retentionPhase.phase !== "open" && retentionPhase.phase !== "waiting") {
           rec.confirmationDueFrom = now + a.exam.retention.opensAfterDays * DAY_MS;
           rec.confirmationExpiresAt = rec.confirmationDueFrom + a.exam.retention.expiresAfterDays * DAY_MS;
           rec.qualifyingTargetIds = a.items.map((it) => it.targetWordId);
+          rec.qualifyingAttemptId = attemptId; // bind a later confirmation to this qualifier
         }
       }
     }
   }
-  saveState(); // persists state.wordExams only; no learning state mutated
 
-  a.result = { result, bands };
+  // Immutable provenance record (Box 0D).
+  const submittedAt = Date.now();
+  const generatedAt = a.startedAt || submittedAt;
+  const resultRecord = {
+    resultSchemaVersion: 1,
+    attemptId,
+    examId: a.exam.id,
+    attemptMode: a.mode,
+    blueprintVersion: Number.isInteger(a.exam.version) ? a.exam.version : (getWordExamMeta().blueprintVersion || 2),
+    engineVersion: WORD_EXAM_ENGINE_VERSION,
+    generationSeed: String(a.seed),
+    contentBankRevision: getWordExamBankRevision(),
+    eligibilityRevision: null,
+    generatedAt,
+    submittedAt,
+    durationSeconds: Math.max(0, Math.round((submittedAt - generatedAt) / 1000)),
+    scopeSectionIds: Array.isArray(a.exam.scopeSectionIds) ? a.exam.scopeSectionIds.slice() : [],
+    itemCount: result.total,
+    scoreSummary: { correct: result.correct, total: result.total, pct: result.pct, unanswered: result.unanswered },
+    floorSummary: { passed: bands.passed, distinguished: bands.distinguished, details: { mode: a.mode, auto: Boolean(auto) } },
+    status,
+    overrideFlags,
+    overrideEventIds,
+    qualifyingAttemptId: (a.mode === "confirmation" && !isPractice) ? qualifyingAttemptId : null,
+    retentionAttemptId: null,
+    legacyProvenanceStatus: null,
+    checksum: null,
+  };
+  writeExamResultRecord(attemptId, resultRecord);
+
+  // A clean confirmation bound to a valid qualifier records the retention pair.
+  if (!isPractice && a.mode === "confirmation" && qualifyingAttemptId) {
+    appendExamResultRelation({ type: "retention", fromAttemptId: qualifyingAttemptId, toAttemptId: attemptId });
+  }
+
+  saveState(); // persists state.wordExams + examResults; no learning state mutated
+
+  a.result = { result, bands, status, isPractice, attemptId };
   a.stage = "results";
   queueScreenMotion("forward", 1);
   renderWordExamResult();
@@ -16847,6 +17168,14 @@ function renderWordExamResult() {
   } else {
     tone = "neutral"; icon = "spark"; eyebrow = "아직 합격 전 · Not yet passed"; title = "Keep going"; copy = "Review the weakest areas below and try again with a fresh set.";
   }
+  // Box 0E — a practice attempt never presents a pass/distinction/mastery
+  // ceremony, regardless of raw score. Its score is shown for review only.
+  const isPracticeResult = a.result.isPractice === true;
+  if (isPracticeResult) {
+    tone = "neutral"; icon = "spark"; eyebrow = "연습 · Practice";
+    title = "Practice result";
+    copy = "This attempt ran in practice/testing mode. Your score is shown for review but does not count toward passing, distinction, mastery, or retention.";
+  }
   const timeUsed = formatExamClock(Date.now() - a.startedAt);
   const stats = [
     { value: `${result.pct}%`, label: "Overall" },
@@ -16864,6 +17193,7 @@ function renderWordExamResult() {
     }
   }
   const detailsHtml = `
+    ${examProvenanceCardHtml(getExamResultRecord(a.result.attemptId))}
     ${retentionNote}
     <div class="word-exam-macro-profile"><div class="word-exam-weak-title">Strand profile</div>${wordExamMacroRowsHtml(result)}</div>
     ${wordExamWeakRoutesHtml(result)}
@@ -16873,9 +17203,9 @@ function renderWordExamResult() {
     <button class="button secondary" type="button" id="wordExamBackHub">Back to Core Words exams</button>`;
   el.innerHTML = premiumCompletionHtml({
     tone, icon, eyebrow, title, copy,
-    score: { value: `${result.pct}%`, label: bands.passed ? (bands.distinguished ? "Distinction" : "Passed") : "Achievement score" },
+    score: { value: `${result.pct}%`, label: isPracticeResult ? "Practice score" : (bands.passed ? (bands.distinguished ? "Distinction" : "Passed") : "Achievement score") },
     stats, detailsHtml, actionsHtml,
-    celebrate: bands.passed,
+    celebrate: bands.passed && !isPracticeResult,
     className: "exam-completion word-exam-completion",
   });
   el.querySelectorAll("[data-word-weak-section]").forEach((btn) => {

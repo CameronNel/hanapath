@@ -6869,6 +6869,27 @@ li { margin-bottom: 4px; }
 
 /* Results: breakdown + collapsible per-part answer review below the ceremony. */
 .exam-completion .completion-details { text-align: left; }
+/* Result provenance label + disclosure (Workstream 0 · Box 0E) */
+.exam-result-label {
+  display: inline-block;
+  font-size: .82rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border, #33384a);
+}
+.exam-result-label-hana { color: #1c7a4a; background: rgba(28, 122, 74, .12); border-color: rgba(28, 122, 74, .35); }
+.exam-result-label-practice { color: #8a6d1a; background: rgba(180, 140, 30, .14); border-color: rgba(180, 140, 30, .4); }
+.exam-result-label-legacy { color: var(--text-muted, #9aa); background: rgba(140, 150, 170, .12); }
+.exam-provenance-practice { font-size: .86rem; color: var(--text-muted, #9aa); margin-bottom: 10px; }
+.exam-provenance { margin-bottom: 14px; }
+.exam-provenance > summary { cursor: pointer; font-size: .86rem; color: var(--text-muted, #9aa); }
+.exam-provenance-rows { display: grid; gap: 4px; margin: 8px 0; }
+.exam-provenance-row { display: flex; justify-content: space-between; gap: 12px; font-size: .82rem; }
+.exam-provenance-row span:first-child { color: var(--text-muted, #9aa); }
+.exam-provenance-row span:last-child { font-variant-numeric: tabular-nums; word-break: break-all; text-align: right; }
+.exam-provenance-disclosure { font-size: .8rem; color: var(--text-muted, #9aa); line-height: 1.5; }
 .exam-breakdown { display: grid; gap: 8px; margin-bottom: 16px; }
 .exam-breakdown-title { font-size: .88rem; color: var(--text-muted, #9aa); }
 .exam-breakdown-row {

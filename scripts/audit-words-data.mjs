@@ -23,6 +23,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import vm from "node:vm";
+import { isThinLessonWarning } from "./lib/thin-lesson.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const strict = process.argv.includes("--strict");
@@ -279,6 +280,7 @@ for (const lesson of lessons || []) {
   if (!lesson.stage) continue;
   stageLessonCounts.set(lesson.stage, (stageLessonCounts.get(lesson.stage) || 0) + 1);
 }
+const unitTrackById = new Map((units || []).map((unit) => [unit.id, unit.track]));
 
 const lessonIds = new Set();
 for (const lesson of lessons || []) {
@@ -308,8 +310,10 @@ for (const lesson of lessons || []) {
   if (subtitleMatch && Number(subtitleMatch[1]) !== lesson.newWordIds.length) {
     errors.push(`${label}: subtitle claims ${subtitleMatch[1]} words but newWordIds has ${lesson.newWordIds.length}`);
   }
-  const hasFoldableSibling = lesson.stage && (stageLessonCounts.get(lesson.stage) || 0) > 1;
-  if (!isCheckpoint && lesson.newWordIds.length < 4 && hasFoldableSibling) {
+  // Grammar-track production lessons are deliberately word-thin (they drill
+  // forms of already-taught words); the shared heuristic exempts them. See
+  // scripts/lib/thin-lesson.mjs.
+  if (isThinLessonWarning(lesson, { isCheckpoint, stageLessonCounts, unitTrackById })) {
     warnings.push(`${label}: thin lesson with only ${lesson.newWordIds.length} word(s) - consider folding into a same-stage sibling`);
   }
 }
