@@ -47,6 +47,8 @@ jobs:
         run: node scripts/test-thin-lesson-heuristic.mjs
       - name: Audit sentences data
         run: node scripts/audit-sentences-data.mjs --strict
+      - name: Audit form checks
+        run: node scripts/audit-form-checks.mjs
       # NOTE: sentence-exam eligibility classification is still in progress
       # (see PR body). CI enforces the schema/tooling and progress via
       # --allow-incomplete; strict mode is the pre-merge gate and is added once
