@@ -15538,6 +15538,102 @@ function getHangulExamTaintContext(overrideFlags) {
   };
 }
 
+// ── Exam result provenance helpers (Workstream 0 · Boxes 0C/0D) ─────────────
+// Shared by the Hangul Mastery and Core Word runners so both write immutable
+// provenance records the same way. UI-invisible; never mutates learning state.
+const WORD_EXAM_ENGINE_VERSION = "1";
+let wordExamBankRevisionCache = null;
+
+function makeExamAttemptId() {
+  const cryptoApi = typeof globalThis !== "undefined" ? globalThis.crypto : null;
+  if (cryptoApi && typeof cryptoApi.randomUUID === "function") return `attempt-${cryptoApi.randomUUID()}`;
+  return `attempt-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function getExamResultRecord(attemptId) {
+  const byId = state.examResults && state.examResults.byAttemptId;
+  return (byId && typeof byId === "object" && byId[attemptId]) || null;
+}
+
+function writeExamResultRecord(attemptId, resultRecord) {
+  if (!state.examResults || typeof state.examResults !== "object") {
+    state.examResults = { version: 1, byAttemptId: {} };
+  }
+  if (!state.examResults.byAttemptId || typeof state.examResults.byAttemptId !== "object") {
+    state.examResults.byAttemptId = {};
+  }
+  state.examResults.byAttemptId[attemptId] = resultRecord;
+}
+
+// Append a result relation (e.g. retention pairing) once. Immutable history:
+// never rewrites an existing relation with the same id.
+function appendExamResultRelation(relation) {
+  if (!relation || typeof relation.fromAttemptId !== "string" || typeof relation.toAttemptId !== "string") return null;
+  if (!state.examIntegrity || typeof state.examIntegrity !== "object") {
+    state.examIntegrity = { version: 1, taintEvents: [], resultRelations: [], migrationLog: [] };
+  }
+  if (!Array.isArray(state.examIntegrity.resultRelations)) state.examIntegrity.resultRelations = [];
+  const relationId = `${relation.type || "relation"}-${relation.fromAttemptId}-${relation.toAttemptId}`;
+  if (state.examIntegrity.resultRelations.some((existing) => existing && existing.relationId === relationId)) return relationId;
+  state.examIntegrity.resultRelations.push({
+    relationId,
+    type: relation.type || "relation",
+    fromAttemptId: relation.fromAttemptId,
+    toAttemptId: relation.toAttemptId,
+    createdAt: Date.now(),
+  });
+  return relationId;
+}
+
+// Blueprint MAJOR version — a retention confirmation may only bind to a
+// qualifier of the same major (spec §5.3 / Box 0D). Live blueprints are
+// integers, so the major is the integer itself.
+function examBlueprintMajor(version) {
+  return Number.isFinite(version) ? Math.trunc(version) : null;
+}
+
+// A reproducible content-bank revision for the Core Word exams: a stable
+// fingerprint of the curated word ids the engine draws from, tagged with the
+// blueprint version. Honest and deterministic; computed once per session.
+function getWordExamBankRevision() {
+  if (wordExamBankRevisionCache) return wordExamBankRevisionCache;
+  const meta = getWordExamMeta();
+  const api = typeof window !== "undefined" ? window.HANAPATH_EXAM_INTEGRITY : null;
+  const words = (typeof window !== "undefined" && Array.isArray(window.HANAPATH_CURATED_WORDS)) ? window.HANAPATH_CURATED_WORDS : [];
+  const ids = words.map((w) => w && w.id).filter(Boolean).sort();
+  const tag = api && typeof api.fingerprint === "function" ? api.fingerprint(ids) : String(ids.length);
+  wordExamBankRevisionCache = `cw-v${meta.blueprintVersion || 2}-${tag}`;
+  return wordExamBankRevisionCache;
+}
+
+// Taint context for a Core Word attempt (mirrors getHangulExamTaintContext but
+// scoped to the exam's own sections).
+function getWordExamTaintContext(exam, overrideFlags) {
+  const normalizedFlags = Array.from(new Set(Array.isArray(overrideFlags) ? overrideFlags : []));
+  const api = (typeof window !== "undefined" && window.HANAPATH_EXAM_INTEGRITY) || null;
+  const scope = exam && Array.isArray(exam.scopeSectionIds) ? exam.scopeSectionIds : [];
+  if (api && typeof api.getAttemptTaintContext === "function") {
+    return api.getAttemptTaintContext(state, scope, normalizedFlags);
+  }
+  return {
+    overrideEventIds: [],
+    overrideFlags: normalizedFlags,
+    status: normalizedFlags.length ? "practice" : "hanaPath",
+    isPractice: Boolean(normalizedFlags.length),
+  };
+}
+
+// Learner-facing result class for a stored provenance record (Box 0E).
+function examResultLabel(status) {
+  if (status === "hanaPath") return "HanaPath result";
+  if (status === "practice") return "Practice result";
+  return "Legacy result · provenance incomplete";
+}
+
+// The full device-local disclosure, one interaction away from every result
+// card and present in exam help (Box 0E / spec §8).
+const EXAM_INTEGRITY_DISCLOSURE = "Results are stored on this device. They are not proctored, independently verified, or tamper-proof credentials.";
+
 function getExamFlatItems(attempt) {
   return attempt.parts.flatMap((part) => part.items);
 }
@@ -16080,10 +16176,7 @@ function submitHangulExam(auto) {
   }
   state.alphabetMasteryExam = record;
 
-  const cryptoApi = typeof globalThis !== "undefined" ? globalThis.crypto : null;
-  const attemptId = (cryptoApi && typeof cryptoApi.randomUUID === "function")
-    ? `attempt-${cryptoApi.randomUUID()}`
-    : `attempt-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  const attemptId = makeExamAttemptId();
 
   const submittedAt = Date.now();
   const generatedAt = attempt.startedAt || submittedAt;
@@ -16124,13 +16217,7 @@ function submitHangulExam(auto) {
     checksum: null,
   };
 
-  if (!state.examResults || typeof state.examResults !== "object") {
-    state.examResults = { version: 1, byAttemptId: {} };
-  }
-  if (!state.examResults.byAttemptId) {
-    state.examResults.byAttemptId = {};
-  }
-  state.examResults.byAttemptId[attemptId] = resultRecord;
+  writeExamResultRecord(attemptId, resultRecord);
 
   saveState(); // never re-locks previously unlocked content
 
@@ -16413,6 +16500,7 @@ function normalizeWordExams(raw) {
       confirmationDueFrom: typeof r.confirmationDueFrom === "number" ? r.confirmationDueFrom : null,
       confirmationExpiresAt: typeof r.confirmationExpiresAt === "number" ? r.confirmationExpiresAt : null,
       qualifyingTargetIds: Array.isArray(r.qualifyingTargetIds) ? r.qualifyingTargetIds : null,
+      qualifyingAttemptId: typeof r.qualifyingAttemptId === "string" ? r.qualifyingAttemptId : null,
       lastAttemptAt: typeof r.lastAttemptAt === "number" ? r.lastAttemptAt : null,
       lastResult: r.lastResult && typeof r.lastResult === "object" ? r.lastResult : null,
     };
@@ -16574,11 +16662,15 @@ function startWordExamAttempt(examId, opts) {
   clearWordExamCountdown();
   const now = Date.now();
   const timeMin = mode === "confirmation" ? exam.retention.confirmationTimeMinutes : exam.timeMinutes;
+  const startFlags = (typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive()) ? ["__wetest"] : [];
+  const startTaint = getWordExamTaintContext(exam, startFlags);
   wordExamAttempt = {
     exam, mode, seed, items: attempt.items,
     index: 0, answers: {}, audioPlays: {}, flagged: new Set(),
     startedAt: now, deadline: now + timeMin * 60 * 1000,
     submitted: false, result: null, stage: "attempt",
+    overrideFlags: startTaint.overrideFlags,
+    overrideEventIds: startTaint.overrideEventIds,
   };
   examActive = true;
   startWordExamCountdown();
@@ -16824,32 +16916,96 @@ function submitWordExamAttempt(auto) {
   const now = wordExamNow();
   const rec = getWordExamRecord(a.exam.id);
 
+  // Box 0D — taint context: union the generation-time and submission-time
+  // classifications so a taint created mid-attempt is still caught (spec §5.1).
+  const submitFlags = (typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive()) ? ["__wetest"] : [];
+  const submitTaint = getWordExamTaintContext(a.exam, submitFlags);
+  let overrideFlags = Array.from(new Set([...(a.overrideFlags || []), ...submitTaint.overrideFlags]));
+  const overrideEventIds = Array.from(new Set([...(a.overrideEventIds || []), ...submitTaint.overrideEventIds]));
+
+  // Retention pairing (spec §5.3): a confirmation may only count as HanaPath
+  // when it binds to a clean, provenance-complete, blueprint-compatible
+  // HanaPath qualifier. A tainted / missing / legacy-incomplete / incompatible
+  // qualifier degrades the confirmation to Practice.
+  let qualifyingAttemptId = null;
+  if (a.exam.retention && a.mode === "confirmation") {
+    qualifyingAttemptId = typeof rec.qualifyingAttemptId === "string" ? rec.qualifyingAttemptId : null;
+    const qualifier = qualifyingAttemptId ? getExamResultRecord(qualifyingAttemptId) : null;
+    const qualifierOk = Boolean(qualifier)
+      && qualifier.status === "hanaPath"
+      && qualifier.legacyProvenanceStatus == null
+      && qualifier.examId === a.exam.id
+      && examBlueprintMajor(qualifier.blueprintVersion) === examBlueprintMajor(a.exam.version);
+    if (!qualifierOk) overrideFlags = Array.from(new Set([...overrideFlags, "retention-qualifier-invalid"]));
+  }
+
+  const isPractice = Boolean(overrideFlags.length || overrideEventIds.length);
+  const status = isPractice ? "practice" : "hanaPath";
+  const attemptId = makeExamAttemptId();
+
   // Compact, learning-state-safe persistence (never touches SRS/progress).
+  // Attempts and the reviewable last result are always recorded; every
+  // achievement-bearing field is gated behind a clean HanaPath attempt.
   rec.attempts += 1;
   rec.lastAttemptAt = now;
-  rec.bestPct = Math.max(rec.bestPct, result.pct);
-  if (bands.passed) rec.passed = true;
-  if (bands.distinguished) rec.distinguished = true;
   rec.lastResult = compactWordExamResult(result, bands, a.mode);
-
-  if (a.exam.retention) {
-    if (a.mode === "confirmation") {
-      if (bands.passed && !rec.masteryEarnedAt) rec.masteryEarnedAt = now; // sticky
-    } else {
-      // Full final: opening the delayed retention confirmation on qualification.
-      if (!rec.masteryEarnedAt && engine.qualifiesForConfirmation(a.exam, result)) {
-        const status = wordExamRetentionStatus(a.exam);
-        if (status.phase !== "open" && status.phase !== "waiting") {
+  if (!isPractice) {
+    rec.bestPct = Math.max(rec.bestPct, result.pct);
+    if (bands.passed) rec.passed = true;
+    if (bands.distinguished) rec.distinguished = true;
+    if (a.exam.retention) {
+      if (a.mode === "confirmation") {
+        if (bands.passed && !rec.masteryEarnedAt) rec.masteryEarnedAt = now; // sticky
+      } else if (!rec.masteryEarnedAt && engine.qualifiesForConfirmation(a.exam, result)) {
+        const retentionPhase = wordExamRetentionStatus(a.exam);
+        if (retentionPhase.phase !== "open" && retentionPhase.phase !== "waiting") {
           rec.confirmationDueFrom = now + a.exam.retention.opensAfterDays * DAY_MS;
           rec.confirmationExpiresAt = rec.confirmationDueFrom + a.exam.retention.expiresAfterDays * DAY_MS;
           rec.qualifyingTargetIds = a.items.map((it) => it.targetWordId);
+          rec.qualifyingAttemptId = attemptId; // bind a later confirmation to this qualifier
         }
       }
     }
   }
-  saveState(); // persists state.wordExams only; no learning state mutated
 
-  a.result = { result, bands };
+  // Immutable provenance record (Box 0D).
+  const submittedAt = Date.now();
+  const generatedAt = a.startedAt || submittedAt;
+  const resultRecord = {
+    resultSchemaVersion: 1,
+    attemptId,
+    examId: a.exam.id,
+    attemptMode: a.mode,
+    blueprintVersion: Number.isInteger(a.exam.version) ? a.exam.version : (getWordExamMeta().blueprintVersion || 2),
+    engineVersion: WORD_EXAM_ENGINE_VERSION,
+    generationSeed: String(a.seed),
+    contentBankRevision: getWordExamBankRevision(),
+    eligibilityRevision: null,
+    generatedAt,
+    submittedAt,
+    durationSeconds: Math.max(0, Math.round((submittedAt - generatedAt) / 1000)),
+    scopeSectionIds: Array.isArray(a.exam.scopeSectionIds) ? a.exam.scopeSectionIds.slice() : [],
+    itemCount: result.total,
+    scoreSummary: { correct: result.correct, total: result.total, pct: result.pct, unanswered: result.unanswered },
+    floorSummary: { passed: bands.passed, distinguished: bands.distinguished, details: { mode: a.mode, auto: Boolean(auto) } },
+    status,
+    overrideFlags,
+    overrideEventIds,
+    qualifyingAttemptId: (a.mode === "confirmation" && !isPractice) ? qualifyingAttemptId : null,
+    retentionAttemptId: null,
+    legacyProvenanceStatus: null,
+    checksum: null,
+  };
+  writeExamResultRecord(attemptId, resultRecord);
+
+  // A clean confirmation bound to a valid qualifier records the retention pair.
+  if (!isPractice && a.mode === "confirmation" && qualifyingAttemptId) {
+    appendExamResultRelation({ type: "retention", fromAttemptId: qualifyingAttemptId, toAttemptId: attemptId });
+  }
+
+  saveState(); // persists state.wordExams + examResults; no learning state mutated
+
+  a.result = { result, bands, status, isPractice, attemptId };
   a.stage = "results";
   queueScreenMotion("forward", 1);
   renderWordExamResult();
