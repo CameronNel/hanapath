@@ -192,6 +192,26 @@ python -m http.server 8000
 node -e "const I = require('./words_inflect.js'); console.log(I.conjugate('보다','verb',undefined,'past'));"
 ```
 
-## Final commit hash
+## Post-review fixes (2026-07-22)
+
+Codex reviewed PR #337 and resolved every actionable finding before merge:
+
+- Authored grammar-production questions now receive stable per-item attempt
+  keys, so the result screen counts all 16 instead of collapsing them into
+  four reused verb ids.
+- Authored grammar attempts no longer call `recordVocabAttempt`; they remain
+  part of the lesson score without promoting, resetting, or marking hard the
+  reused verb's lexical SRS record.
+- The 못 prompt now matches `못 써요` ("can't write right now").
+- The mixed past-negation prompts explicitly request `안` and
+  `-지 못했어요`, keeping their finite one-answer sets linguistically fair.
+- Cache wiring advanced to `hanapath-shell-v443` / `20260722e`.
+
+The full local gate passed after these changes, including all 10 word exams at
+their full seed counts plus the 200-seed retention confirmation. A static
+browser smoke test loaded the app and Vocabulary hub with the new asset
+versions and no console warnings or errors.
+
+## Original implementation commit
 
 `6d9dc3cae89107e5912d5b8c911b62237b54e407`

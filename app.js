@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v442";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260722d";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v443";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260722e";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -5715,11 +5715,12 @@ function ensureEveryWordTested(questions, words) {
 // exam records beyond the normal lesson-completion pathway.
 function appendAuthoredItemQuestions(questions, lesson) {
   const items = Array.isArray(lesson.authoredItems) ? lesson.authoredItems : [];
-  for (const item of items) {
+  for (const [index, item] of items.entries()) {
     if (!item || !item.answer || !item.prompt) continue;
     questions.push({
       interaction: "type",
       wordId: item.targetWordId || null,
+      attemptId: item.id || `${lesson.id}:authored:${index + 1}`,
       direction: "authoredProduction",
       prompt: item.prompt,
       answer: item.answer,
@@ -6620,16 +6621,21 @@ function answerWordLessonTyped(view) {
   view.answered = true;
   view.checkCorrect = isCorrect;
   view.results.push({ wordId: question.wordId, direction: question.direction, correct: firstTryCorrect, aided: Boolean(view.questionHelperUsed) });
-  if (question.wordId) view.typedAttempts[question.wordId] = isCorrect;
+  const typedAttemptKey = question.authoredItem ? question.attemptId : question.wordId;
+  if (typedAttemptKey) view.typedAttempts[typedAttemptKey] = isCorrect;
   view.checkFeedback = isCorrect
     ? `<strong>Correct.</strong> ${escapeHtml(question.explanation)}`
     : `<strong>Not quite.</strong> You typed <strong lang="ko">${escapeHtml(typed)}</strong>. The answer is <strong lang="ko">${escapeHtml(question.answer)}</strong>. ${escapeHtml(question.explanation)}`;
-  recordVocabAttempt(question.wordId, "typeKo", isCorrect, {
-    latencyMs: getWordLessonQuestionLatencyMs(view),
-    source: view.isReview ? "review" : "lesson",
-    lessonId: view.lessonId || null,
-    result: isCorrect ? (view.questionHelperUsed ? "aided" : "correct") : "incorrect",
-  });
+  // Authored grammar production is scored for this lesson, but must not
+  // promote, reset, or mark hard the reused base word's lexical SRS record.
+  if (!question.authoredItem) {
+    recordVocabAttempt(question.wordId, "typeKo", isCorrect, {
+      latencyMs: getWordLessonQuestionLatencyMs(view),
+      source: view.isReview ? "review" : "lesson",
+      lessonId: view.lessonId || null,
+      result: isCorrect ? (view.questionHelperUsed ? "aided" : "correct") : "incorrect",
+    });
+  }
   persistWordLessonSession(view);
   if (isCorrect) showCorrectToast();
   renderWordLesson();
