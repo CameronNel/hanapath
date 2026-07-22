@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v441";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260722c";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v443";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260722e";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -5328,8 +5328,11 @@ function getWordTypeTarget(word) {
 const WORD_TILE_DISTRACTORS = ["가", "나", "다", "리", "미", "바", "서", "아", "자", "하", "요", "은", "무", "고"];
 
 function getWordSyllableTiles(word) {
-  const target = getWordTypeTarget(word);
-  const syllables = Array.from(target).filter((ch) => /[ㄱ-ㆎ가-힣]/u.test(ch));
+  return getSyllableTilesForTarget(getWordTypeTarget(word));
+}
+
+function getSyllableTilesForTarget(target) {
+  const syllables = Array.from(String(target || "")).filter((ch) => /[ㄱ-ㆎ가-힣]/u.test(ch));
   const distractors = shuffle(WORD_TILE_DISTRACTORS.filter((ch) => !syllables.includes(ch))).slice(0, 2);
   return shuffle([...syllables, ...distractors]);
 }
@@ -5704,6 +5707,36 @@ function ensureEveryWordTested(questions, words) {
   return questions;
 }
 
+// Authored typed-production items (Workstream C, Box C1): convert per-item
+// {prompt, answer, acceptedAnswers, ...} descriptors from the lesson plan
+// into question descriptors the word-lesson check renderer already handles.
+// Modelled on the isolated authored-item approach in the Form Checks runner
+// (see FORM CHECKS · Workstream B below). Never touches SRS, crowns, or
+// exam records beyond the normal lesson-completion pathway.
+function appendAuthoredItemQuestions(questions, lesson) {
+  const items = Array.isArray(lesson.authoredItems) ? lesson.authoredItems : [];
+  for (const [index, item] of items.entries()) {
+    if (!item || !item.answer || !item.prompt) continue;
+    questions.push({
+      interaction: "type",
+      wordId: item.targetWordId || null,
+      attemptId: item.id || `${lesson.id}:authored:${index + 1}`,
+      direction: "authoredProduction",
+      prompt: item.prompt,
+      answer: item.answer,
+      acceptedAnswers: Array.isArray(item.acceptedAnswers) && item.acceptedAnswers.length ? item.acceptedAnswers : [item.answer],
+      voiceText: item.answer,
+      explanation: item.explanation || "",
+      detail: item.detail || "",
+      typeTarget: item.answer,
+      authoredItem: true,
+      competencyId: item.competencyId || null,
+      acceptedFormsSource: item.acceptedFormsSource || null,
+      supportingLessonId: item.supportingLessonId || lesson.id,
+    });
+  }
+}
+
 // Checkpoint question list for a lesson: recognition first, then recall,
 // typed recall, and context. Generated once per session and kept on the
 // volatile view so quick-reference return restores the exact same question.
@@ -5734,27 +5767,33 @@ function buildWordLessonQuestions(lesson, words) {
       }
       selected.forEach((word) => push(word, "context"));
     }
-    return ensureEveryWordTested(questions, words);
+  } else {
+    if (checkpoints.includes("ko-to-meaning")) words.forEach((word) => push(word, "koToMeaning"));
+    if (checkpoints.includes("audio-to-meaning")) words.forEach((word) => push(word, "audioToMeaning"));
+    if (checkpoints.includes("meaning-to-ko")) words.forEach((word) => push(word, "meaningToKo"));
+    if (checkpoints.includes("type-ko")) {
+      for (let index = 0; index < words.length; index += 2) push(words[index], "typeKo");
+    }
+    if (checkpoints.includes("form-recognition")) {
+      words.forEach((word) => push(word, "formRecognition"));
+    }
+    if (checkpoints.includes("form-production")) {
+      words.forEach((word) => push(word, "formProduction"));
+    }
+    if (checkpoints.includes("sentence-blank")) {
+      words.forEach((word) => push(word, "context"));
+    }
+    if (checkpoints.includes("function-usage")) {
+      words.forEach((word) => push(word, "functionUsage"));
+    }
   }
 
-  if (checkpoints.includes("ko-to-meaning")) words.forEach((word) => push(word, "koToMeaning"));
-  if (checkpoints.includes("audio-to-meaning")) words.forEach((word) => push(word, "audioToMeaning"));
-  if (checkpoints.includes("meaning-to-ko")) words.forEach((word) => push(word, "meaningToKo"));
-  if (checkpoints.includes("type-ko")) {
-    for (let index = 0; index < words.length; index += 2) push(words[index], "typeKo");
-  }
-  if (checkpoints.includes("form-recognition")) {
-    words.forEach((word) => push(word, "formRecognition"));
-  }
-  if (checkpoints.includes("form-production")) {
-    words.forEach((word) => push(word, "formProduction"));
-  }
-  if (checkpoints.includes("sentence-blank")) {
-    words.forEach((word) => push(word, "context"));
-  }
-  if (checkpoints.includes("function-usage")) {
-    words.forEach((word) => push(word, "functionUsage"));
-  }
+  // Authored typed-production items (Workstream C, Box C1): per-item
+  // {prompt, answer, acceptedAnswers} descriptors that bypass the
+  // generateWordQuestionFor word×mode cross-product. Modelled on the
+  // isolated authored-item approach in the Form Checks runner.
+  appendAuthoredItemQuestions(questions, lesson);
+
   return ensureEveryWordTested(questions, words);
 }
 
@@ -6230,8 +6269,9 @@ function wordLessonCheckHtml(lesson, view) {
   let interactionHtml = "";
   if (question.interaction === "type") {
     const word = curatedWordsById.get(question.wordId);
+    const tileTarget = question.typeTarget || getWordTypeTarget(word);
     const tiles = view.typeHelperVisible || view.answered
-      ? (view.typeTiles && view.typeTilesWordId === `q-${view.questionIndex}` ? view.typeTiles : getWordSyllableTiles(word))
+      ? (view.typeTiles && view.typeTilesWordId === `q-${view.questionIndex}` ? view.typeTiles : getSyllableTilesForTarget(tileTarget))
       : [];
     if (tiles.length) {
       view.typeTiles = tiles;
@@ -6572,21 +6612,30 @@ function answerWordLessonTyped(view) {
     showRetryToast("Type the word first — or tap the blocks.");
     return;
   }
-  const isCorrect = isWordTypedCorrect(typed, word);
+  // Authored items (C1) carry their own finite accepted-answer set; normal
+  // items fall through to the word's canonical accepted forms.
+  const isCorrect = Array.isArray(question.acceptedAnswers) && question.acceptedAnswers.length
+    ? question.acceptedAnswers.some((a) => normalizeKoreanAnswer(a, { ignoreSpaces: true }) === normalizeKoreanAnswer(typed, { ignoreSpaces: true }))
+    : isWordTypedCorrect(typed, word);
   const firstTryCorrect = Boolean(isCorrect && !view.questionHelperUsed);
   view.answered = true;
   view.checkCorrect = isCorrect;
   view.results.push({ wordId: question.wordId, direction: question.direction, correct: firstTryCorrect, aided: Boolean(view.questionHelperUsed) });
-  view.typedAttempts[question.wordId] = isCorrect;
+  const typedAttemptKey = question.authoredItem ? question.attemptId : question.wordId;
+  if (typedAttemptKey) view.typedAttempts[typedAttemptKey] = isCorrect;
   view.checkFeedback = isCorrect
     ? `<strong>Correct.</strong> ${escapeHtml(question.explanation)}`
     : `<strong>Not quite.</strong> You typed <strong lang="ko">${escapeHtml(typed)}</strong>. The answer is <strong lang="ko">${escapeHtml(question.answer)}</strong>. ${escapeHtml(question.explanation)}`;
-  recordVocabAttempt(question.wordId, "typeKo", isCorrect, {
-    latencyMs: getWordLessonQuestionLatencyMs(view),
-    source: view.isReview ? "review" : "lesson",
-    lessonId: view.lessonId || null,
-    result: isCorrect ? (view.questionHelperUsed ? "aided" : "correct") : "incorrect",
-  });
+  // Authored grammar production is scored for this lesson, but must not
+  // promote, reset, or mark hard the reused base word's lexical SRS record.
+  if (!question.authoredItem) {
+    recordVocabAttempt(question.wordId, "typeKo", isCorrect, {
+      latencyMs: getWordLessonQuestionLatencyMs(view),
+      source: view.isReview ? "review" : "lesson",
+      lessonId: view.lessonId || null,
+      result: isCorrect ? (view.questionHelperUsed ? "aided" : "correct") : "incorrect",
+    });
+  }
   persistWordLessonSession(view);
   if (isCorrect) showCorrectToast();
   renderWordLesson();
