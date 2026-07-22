@@ -6912,6 +6912,10 @@ li { margin-bottom: 4px; }
 .form-check-answer { font-size: .92rem; }
 .form-check-explain { font-size: .86rem; color: var(--text-muted, #9aa); line-height: 1.5; }
 .form-check-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.form-check-assembly { min-height: 2.4em; padding: 10px 12px; margin: 10px 0; border-radius: 10px; border: 1px dashed var(--border, #33384a); font-size: 1.05rem; line-height: 1.6; }
+.form-check-assembly:empty::before { content: "Tap the words below in order"; color: var(--text-muted, #9aa); font-size: .86rem; }
+.form-check-bank { display: flex; flex-wrap: wrap; gap: 8px; }
+.form-check-token[disabled] { opacity: .35; }
 .exam-breakdown { display: grid; gap: 8px; margin-bottom: 16px; }
 .exam-breakdown-title { font-size: .88rem; color: var(--text-muted, #9aa); }
 .exam-breakdown-row {

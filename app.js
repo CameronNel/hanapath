@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v440";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260722b";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v441";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260722c";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -17288,12 +17288,19 @@ function getFormCheckRecord(checkId) {
   return state.formChecks.byCheckId[checkId] || null;
 }
 
+// A sentence section is complete when every unit in it is crowned.
+function isSentenceSectionComplete(sectionId) {
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  const completed = new Set(getSentencesProgress().completedLessons || []);
+  const units = getSentenceUnits().filter((u) => u.sectionId === sectionId);
+  return units.length > 0 && units.every((u) => completed.has(u.checkpointId));
+}
+
 function isFormCheckUnlocked(check) {
   if (TEST_UNLOCK_ALL_STAGES) return true;
   if (check.surface === "sentences") {
-    // Sentence-pattern checks (Box B4) route per row from sentence metadata;
-    // their interactive runner ships later.
-    return false;
+    const sections = (check.unlock && check.unlock.sectionsComplete) || [];
+    return sections.length > 0 && sections.every((sid) => isSentenceSectionComplete(sid));
   }
   const lessonIds = (check.unlock && check.unlock.lessonIds) || [];
   return lessonIds.length > 0 && lessonIds.every((id) => isWordLessonCompleted(id));
@@ -17365,6 +17372,7 @@ function seededShuffle(arr, rng) {
 // lesson route. Distinct words are preferred first; extra modes on the same
 // word only fill a pool too small to reach the item count (e.g. ㅎ-irregular).
 function buildFormCheckItems(check, seed) {
+  if (check.surface === "sentences") return buildSentenceFormCheckItems(check, seed);
   const rng = mulberry32(seed);
   const targets = seededShuffle(getFormCheckTargets(check), rng);
   const modes = check.modes || [];
@@ -17393,6 +17401,84 @@ function buildFormCheckItems(check, seed) {
   return firstPass.concat(rest).slice(0, check.itemCount).map((c) => c.item);
 }
 
+// Map every sentence row id to the earliest lesson that teaches it, so an
+// error routes to an exact HANAPATH_SENTENCE_LESSONS id (spec §4), cached once.
+let formCheckSentenceLessonCache = null;
+function getSentenceLessonForRow(rowId) {
+  if (!formCheckSentenceLessonCache) {
+    formCheckSentenceLessonCache = new Map();
+    const unitSection = new Map(getSentenceUnits().map((u) => [u.id, u.sectionId]));
+    for (const lesson of getSentenceLessons()) {
+      for (const sid of lesson.sentenceIds || []) {
+        if (!formCheckSentenceLessonCache.has(sid)) {
+          formCheckSentenceLessonCache.set(sid, { lessonId: lesson.id, sectionId: unitSection.get(lesson.unitId) || null });
+        }
+      }
+    }
+  }
+  return formCheckSentenceLessonCache.get(rowId) || null;
+}
+
+// Eligible sentence rows for a check: taught in the unlocked section and
+// carrying the pattern the check drills (empty patternTags = whole section).
+function getFormCheckSentenceRows(check) {
+  const section = check.pool && check.pool.key;
+  const wanted = (check.pool && check.pool.patternTags) || [];
+  return getSentenceBankRows().filter((row) => {
+    const route = getSentenceLessonForRow(row.id);
+    if (!route || route.sectionId !== section) return false;
+    if (!wanted.length) return true;
+    return Array.isArray(row.patternTags) && row.patternTags.some((t) => wanted.includes(t));
+  });
+}
+
+function buildSentenceFormCheckItems(check, seed) {
+  const rng = mulberry32(seed);
+  const rows = seededShuffle(getFormCheckSentenceRows(check), rng);
+  const modes = check.modes || ["translate-type"];
+  const items = [];
+  for (let i = 0; i < rows.length && items.length < check.itemCount; i += 1) {
+    const row = rows[i];
+    const route = getSentenceLessonForRow(row.id);
+    if (!route) continue;
+    const korean = row.korean;
+    const tokens = Array.isArray(row.tokens) && row.tokens.length >= 2 ? row.tokens : null;
+    // Rotate modes for variety; sentence-build needs multi-token rows.
+    let mode = modes[items.length % modes.length];
+    if (mode === "sentence-build" && !tokens) mode = "translate-type";
+    const common = {
+      voiceText: row.voiceText || korean,
+      explanation: row.grammarTip || "",
+      supportingLessonId: route.lessonId,
+      routeSurface: "sentences",
+      answer: korean,
+    };
+    if (mode === "sentence-build") {
+      items.push({
+        ...common,
+        interaction: "build",
+        formCheckMode: mode,
+        targetKey: `${row.id}:build`,
+        prompt: `Put the words in the right order — “${row.english}”.`,
+        buildTokens: seededShuffle(tokens, rng),
+        correctTokens: tokens,
+      });
+    } else {
+      items.push({
+        ...common,
+        interaction: "type",
+        formCheckMode: "translate-type",
+        targetKey: `${row.id}:tt`,
+        prompt: `Type this in Korean — “${row.english}”.`,
+        placeholder: "한국어로 입력",
+        visual: "",
+        acceptedAnswers: [korean, ...(Array.isArray(row.acceptAlso) ? row.acceptAlso : [])],
+      });
+    }
+  }
+  return items;
+}
+
 function renderFormChecksHub() {
   refreshProgressionState();
   activeHub = "learn";
@@ -17404,15 +17490,15 @@ function renderFormChecksHub() {
     const unlocked = isFormCheckUnlocked(check);
     const rec = getFormCheckRecord(check.id);
     const last = rec && rec.sessions ? `<div class="form-check-last">Last: ${rec.lastCorrect} of ${rec.lastTotal} correct</div>` : "";
-    const soon = check.surface === "sentences" ? `<div class="form-check-soon">Sentence checks arrive in a later update.</div>` : "";
-    const gate = !unlocked && check.surface !== "sentences"
-      ? `<div class="form-check-locked">Locked — complete ${(check.unlock.lessonIds || []).map((id) => escapeHtml(lessonTitleForRoute(id))).join(" + ")} first.</div>`
-      : "";
+    const gateNeed = check.surface === "sentences"
+      ? `${(check.unlock.sectionsComplete || []).map((s) => escapeHtml(sentenceSectionName(s))).join(" + ")}`
+      : `${(check.unlock.lessonIds || []).map((id) => escapeHtml(lessonTitleForRoute(id))).join(" + ")}`;
+    const gate = !unlocked ? `<div class="form-check-locked">Locked — complete ${gateNeed} first.</div>` : "";
     return `
       <div class="card form-check-card ${unlocked ? "" : "is-locked"}">
         <div class="form-check-head"><span class="form-check-title" lang="ko">${escapeHtml(check.titleKo)}</span><span class="form-check-sub">${escapeHtml(check.title)}</span></div>
         <div class="form-check-meta">${check.itemCount} items · immediate feedback · practice only</div>
-        ${last}${soon}${gate}
+        ${last}${gate}
         ${unlocked ? `<button class="button primary compact" type="button" data-form-check="${escapeHtml(check.id)}">시작 · Start check</button>` : ""}
       </div>`;
   }).join("");
@@ -17431,6 +17517,16 @@ function renderFormChecksHub() {
 function lessonTitleForRoute(lessonId) {
   const lesson = getWordLessonById(lessonId);
   return lesson ? (lesson.title || lessonId) : lessonId;
+}
+function sentenceSectionName(sectionId) {
+  const s = getSentenceSections().find((x) => x.id === sectionId);
+  return s ? s.name : sectionId;
+}
+// Open the exact lesson that teaches a form-check item's target.
+function openFormCheckRoute(item) {
+  if (!item || !item.supportingLessonId) { renderFormChecksHub(); return; }
+  if (item.routeSurface === "sentences") openSentenceLesson(item.supportingLessonId);
+  else openWordLesson(item.supportingLessonId);
 }
 
 function renderFormCheckIntro(checkId) {
@@ -17469,18 +17565,24 @@ function renderFormCheckItem() {
   if (!el) return;
   showDetailBarWithBack("learn", `${s.check.title} · ${s.index + 1}/${s.items.length}`, () => { formCheckSession = null; renderFormChecksHub(); }, "Form Checks");
   const isType = item.interaction === "type";
-  const optionsHtml = !isType && Array.isArray(item.options)
+  const isBuild = item.interaction === "build";
+  const optionsHtml = !isType && !isBuild && Array.isArray(item.options)
     ? `<div class="form-check-options">${item.options.map((opt, i) => `<button class="button secondary form-check-option" type="button" data-fc-opt="${i}">${escapeHtml(opt)}</button>`).join("")}</div>`
     : "";
   const inputHtml = isType
     ? `<input id="formCheckInput" class="text-input" type="text" lang="ko" autocomplete="off" autocapitalize="off" placeholder="${escapeHtml(item.placeholder || "Type your answer")}" /><button class="button primary compact" type="button" id="formCheckCheck">확인 · Check</button>`
+    : "";
+  const buildHtml = isBuild
+    ? `<div id="formCheckAssembly" class="form-check-assembly" lang="ko" aria-label="Your sentence"></div>
+       <div class="form-check-bank">${item.buildTokens.map((tok, i) => `<button class="button secondary compact form-check-token" type="button" data-fc-token="${i}" lang="ko">${escapeHtml(tok)}</button>`).join("")}</div>
+       <div class="form-check-actions"><button class="button secondary compact" type="button" id="formCheckUndo">되돌리기 · Undo</button><button class="button primary compact" type="button" id="formCheckCheck">확인 · Check</button></div>`
     : "";
   el.innerHTML = `
     <div class="card form-check-card form-check-item">
       <div class="form-check-progress">${s.index + 1} / ${s.items.length}</div>
       <div class="form-check-prompt">${escapeHtml(item.prompt || "")}</div>
       ${item.visual || ""}
-      ${optionsHtml}${inputHtml}
+      ${optionsHtml}${inputHtml}${buildHtml}
       <div id="formCheckFeedback" class="form-check-feedback" aria-live="polite"></div>
     </div>`;
   if (isType) {
@@ -17488,6 +17590,18 @@ function renderFormCheckItem() {
     if (input) input.focus();
     el.querySelector("#formCheckCheck").addEventListener("click", () => gradeFormCheckItem(input ? input.value : ""));
     if (input) input.addEventListener("keydown", (e) => { if (e.key === "Enter") gradeFormCheckItem(input.value); });
+  } else if (isBuild) {
+    s.buildSelected = [];
+    const refresh = () => {
+      const assembly = el.querySelector("#formCheckAssembly");
+      if (assembly) assembly.textContent = s.buildSelected.map((i) => item.buildTokens[i]).join(" ");
+      el.querySelectorAll("[data-fc-token]").forEach((b) => { b.disabled = s.buildSelected.includes(Number(b.dataset.fcToken)); });
+    };
+    el.querySelectorAll("[data-fc-token]").forEach((btn) => {
+      btn.addEventListener("click", () => { if (!s.answered) { s.buildSelected.push(Number(btn.dataset.fcToken)); refresh(); } });
+    });
+    el.querySelector("#formCheckUndo").addEventListener("click", () => { if (!s.answered) { s.buildSelected.pop(); refresh(); } });
+    el.querySelector("#formCheckCheck").addEventListener("click", () => gradeFormCheckItem(s.buildSelected.map((i) => item.buildTokens[i]).join(" ")));
   } else {
     el.querySelectorAll("[data-fc-opt]").forEach((btn) => {
       btn.addEventListener("click", () => gradeFormCheckItem(item.options[Number(btn.dataset.fcOpt)]));
@@ -17500,15 +17614,21 @@ function gradeFormCheckItem(rawAnswer) {
   if (!s || s.answered) return;
   const item = s.items[s.index];
   const given = String(rawAnswer == null ? "" : rawAnswer).trim();
-  if (item.interaction === "type" && !given) return;
+  if ((item.interaction === "type" || item.interaction === "build") && !given) return;
   const accepted = Array.isArray(item.acceptedAnswers) ? item.acceptedAnswers : [item.answer];
-  const correct = item.interaction === "type"
-    ? (normalizeStudyText(given) === normalizeStudyText(item.answer)
-        || accepted.some((a) => normalizeKoreanAnswer(a, { ignoreSpaces: true }) === normalizeKoreanAnswer(given, { ignoreSpaces: true })))
-    : (given === item.answer);
+  let correct;
+  if (item.interaction === "build") {
+    // Correct only when the assembled token order matches the reviewed line.
+    correct = normalizeKoreanAnswer(given, { ignoreSpaces: true }) === normalizeKoreanAnswer(item.answer, { ignoreSpaces: true });
+  } else if (item.interaction === "type") {
+    correct = normalizeStudyText(given) === normalizeStudyText(item.answer)
+      || accepted.some((a) => normalizeKoreanAnswer(a, { ignoreSpaces: true }) === normalizeKoreanAnswer(given, { ignoreSpaces: true }));
+  } else {
+    correct = given === item.answer;
+  }
   s.answered = true;
   if (correct) s.correct += 1;
-  s.results.push({ targetKey: item.targetKey, correct, mode: item.formCheckMode });
+  s.results.push({ targetKey: item.targetKey, correct, mode: item.formCheckMode, supportingLessonId: item.supportingLessonId, routeSurface: item.routeSurface });
 
   const canonical = (item.acceptedAnswers || [item.answer]).join(" / ");
   const route = item.supportingLessonId;
@@ -17525,12 +17645,15 @@ function gradeFormCheckItem(rawAnswer) {
       </div>`;
     // Disable inputs after answering (blocked practice: no changing the answer).
     document.querySelectorAll("[data-fc-opt]").forEach((b) => { b.disabled = true; if (b.textContent === item.answer) b.classList.add("is-correct"); });
+    document.querySelectorAll("[data-fc-token]").forEach((b) => { b.disabled = true; });
     const input = document.getElementById("formCheckInput");
     if (input) input.disabled = true;
+    const undo = document.getElementById("formCheckUndo");
+    if (undo) undo.disabled = true;
     const speak2 = document.getElementById("formCheckSpeak");
     if (speak2) speak2.addEventListener("click", () => speak(item.voiceText));
     const routeBtn = document.getElementById("formCheckRoute");
-    if (routeBtn && route) routeBtn.addEventListener("click", () => { formCheckSession = null; openWordLesson(route); });
+    if (routeBtn && route) routeBtn.addEventListener("click", () => { formCheckSession = null; openFormCheckRoute(item); });
     const next = document.getElementById("formCheckNext");
     if (next) next.addEventListener("click", () => { s.index += 1; s.answered = false; renderFormCheckItem(); });
   }
@@ -17554,7 +17677,8 @@ function renderFormCheckCompletion() {
   const el = showScreen("detail");
   if (!el) return;
   showDetailBarWithBack("learn", `${s.check.title} · complete`, () => { formCheckSession = null; renderFormChecksHub(); }, "Form Checks");
-  const route = s.check.remediation && (s.check.remediation.default || s.check.remediation.register);
+  // Route the review button to the exact lesson of the first missed item.
+  const firstWrong = wrong[0] || null;
   el.innerHTML = `
     <div class="card form-check-card form-check-complete">
       <div class="eyebrow">확인 완료 · Check complete</div>
@@ -17562,13 +17686,13 @@ function renderFormCheckCompletion() {
       <p class="screen-sub">${wrong.length ? `Review these ${wrong.length} form${wrong.length === 1 ? "" : "s"}, then try again.` : "Every form correct. Try again any time for fresh practice."}</p>
       <div class="form-check-actions">
         <button class="button primary" type="button" id="formCheckRetry">다시 · Try again</button>
-        ${wrong.length && route ? `<button class="button secondary" type="button" id="formCheckReview">Review the lesson →</button>` : ""}
+        ${firstWrong && firstWrong.supportingLessonId ? `<button class="button secondary" type="button" id="formCheckReview">Review the lesson →</button>` : ""}
         <button class="button secondary" type="button" id="formCheckDone">Back to Form Checks</button>
       </div>
     </div>`;
   el.querySelector("#formCheckRetry").addEventListener("click", () => startFormCheck(s.check.id));
   const review = el.querySelector("#formCheckReview");
-  if (review && route) review.addEventListener("click", () => { formCheckSession = null; openWordLesson(route); });
+  if (review && firstWrong) review.addEventListener("click", () => { formCheckSession = null; openFormCheckRoute(firstWrong); });
   el.querySelector("#formCheckDone").addEventListener("click", () => { formCheckSession = null; renderFormChecksHub(); });
 }
 

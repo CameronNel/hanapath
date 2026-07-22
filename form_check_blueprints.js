@@ -133,20 +133,20 @@
     makeIrregularCheck("form-check-irregular-reu", "르 불규칙 확인", "르-Irregular Check", "르", 6),
     makeIrregularCheck("form-check-irregular-rieul", "ㄹ 탈락 확인", "ㄹ-Deletion Check", "ㄹ-deletion", 10),
 
-    // ── Sentence-pattern checks ──────────────────────────────────────────
-    // Row-level routing (each item's exact supportingLessonId) is resolved by
-    // the runner from the sentence eligibility metadata (Box B4). B1 validates
-    // that the unlock section resolves.
+    // ── Sentence-pattern checks (Box B4) ─────────────────────────────────
+    // Each item's exact supportingLessonId is resolved by the runner from the
+    // row → HANAPATH_SENTENCE_LESSONS mapping. pool.patternTags scopes the rows
+    // to the pattern the check drills (empty = the whole unlocked section).
     sentenceCheck("sentence-check-order", "문장 순서 확인", "Sentence Order Check", 12, "sn3",
-      ["sentence-build", "translate-type"]),
+      ["sentence-build", "translate-type"], []),
     sentenceCheck("sentence-check-tense", "문장 시제 확인", "Sentence Tense Check", 12, "sn4",
-      ["translate-type", "sentence-blank"]),
+      ["translate-type"], ["present-polite", "past-polite", "future-geoyeyo"]),
     sentenceCheck("sentence-check-negation", "문장 부정 확인", "Sentence Negation Check", 10, "sn4",
-      ["translate-type", "function-usage"]),
+      ["translate-type"], ["neg-an", "neg-mot", "neg-ji-anta", "copula-negative-anieyo"]),
     sentenceCheck("sentence-check-connectives", "문장 연결 확인", "Connected Sentence Check", 12, "sn6",
-      ["sentence-build", "sentence-blank"]),
+      ["sentence-build", "translate-type"], ["because-aseo", "and-go", "if-myeon", "when-ttae", "but-jiman"]),
     sentenceCheck("sentence-check-register", "문장 말높임 확인", "Sentence Register Check", 12, "sn8",
-      ["register-choice", "translate-type"]),
+      ["translate-type"], ["formal-nida", "honorific-si", "imperative-seyo", "propositive-eyo", "question-polite"]),
   ];
 
   function makeIrregularCheck(id, titleKo, title, family, itemCount) {
@@ -166,7 +166,7 @@
     };
   }
 
-  function sentenceCheck(id, titleKo, title, itemCount, section, modes) {
+  function sentenceCheck(id, titleKo, title, itemCount, section, modes, patternTags) {
     return {
       id: id,
       titleKo: titleKo,
@@ -178,7 +178,7 @@
       modes: modes,
       routePolicy: "row-supporting-lesson",
       remediation: { section: section },
-      pool: { source: "sentence-section", key: section },
+      pool: { source: "sentence-section", key: section, patternTags: patternTags || [] },
     };
   }
 
