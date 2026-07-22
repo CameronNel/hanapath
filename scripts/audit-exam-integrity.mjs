@@ -51,19 +51,19 @@ function auditBrowserWiring() {
   const app = fs.readFileSync(appPath, "utf8");
   const sw = fs.readFileSync(swPath, "utf8");
   const integrityRef = index.indexOf("./exam_integrity.js?v=20260721b");
-  const appRef = index.indexOf("./app.js?v=20260721c");
+  const appRef = index.indexOf("./app.js?v=20260722a");
   assert.ok(integrityRef >= 0, "index.html does not load versioned exam_integrity.js");
   assert.ok(appRef > integrityRef, "exam_integrity.js must load before app.js");
   assert.match(app, /HANAPATH_EXAM_INTEGRITY\.migrateExamIntegrityState\(state/);
-  assert.match(sw, /hanapath-shell-v438/);
+  assert.match(sw, /hanapath-shell-v439/);
   assert.match(sw, /\.\/exam_integrity\.js\?v=20260721b/);
-  assert.match(sw, /\.\/app\.js\?v=20260721c/);
+  assert.match(sw, /\.\/app\.js\?v=20260722a/);
   assert.match(app, /function submitHangulExam/);
   assert.match(app, /const initialTaintContext = getHangulExamTaintContext\(initialOverrideFlags\)/);
   assert.match(app, /\.\.\.\(attempt\.overrideEventIds \|\| \[\]\)/);
   assert.match(app, /getAttemptTaintContext\(state, \["alphabet"\]/);
-  assert.match(app, /const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v438"/);
-  assert.match(app, /const EXAM_INTEGRITY_ASSET_REVISION = "20260721c"/);
+  assert.match(app, /const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v439"/);
+  assert.match(app, /const EXAM_INTEGRITY_ASSET_REVISION = "20260722a"/);
   assert.match(app, /function isWordExamTestQueryActive\(\)/);
   assert.match(app, /TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive\(\)/);
   assert.match(app, /Exams covering this section become Practice results and cannot award HanaPath mastery or retention\./);
@@ -83,7 +83,23 @@ function auditBrowserWiring() {
   assert.ok(alphabetBody.indexOf("persistTaintBeforeCompletion(event)") < alphabetBody.indexOf("state.phaseOneCompleted ="),
     "Alphabet progression mutates before taint persistence");
   assert.match(app, /function persistTaintBeforeCompletion[\s\S]*saveState\(\)[\s\S]*verifyPersistedTaintEvent/);
-  return 18;
+
+  // Box 0D — Core Word attempts write immutable provenance and gate all
+  // achievement mutations behind a clean HanaPath classification.
+  assert.match(app, /function submitWordExamAttempt[\s\S]*getWordExamTaintContext\(a\.exam[\s\S]*writeExamResultRecord\(attemptId, resultRecord\)/);
+  assert.match(app, /if \(!isPractice\) \{[\s\S]*rec\.bestPct = Math\.max\(rec\.bestPct, result\.pct\)/);
+  assert.match(app, /overrideFlags = Array\.from\(new Set\(\[\.\.\.overrideFlags, "retention-qualifier-invalid"\]\)\)/);
+  assert.match(app, /appendExamResultRelation\(\{ type: "retention", fromAttemptId: qualifyingAttemptId, toAttemptId: attemptId \}\)/);
+  // Box 0E — labels, disclosure, honest practice ceremonies, backup validation.
+  assert.match(app, /return "HanaPath result"/);
+  assert.match(app, /return "Practice result"/);
+  assert.match(app, /return "Legacy result · provenance incomplete"/);
+  assert.match(app, /Results are stored on this device\. They are not proctored, independently verified, or tamper-proof credentials\./);
+  assert.match(app, /const isPracticeResult = a\.result\.isPractice === true/);
+  assert.match(app, /const showMastered = mastered && attempt\.result\.isPractice !== true/);
+  assert.match(app, /const integrityErrors = validateImportedExamIntegrity\(imported\)/);
+  assert.match(app, /function validateImportedExamIntegrity[\s\S]*validateExamIntegrityState/);
+  return 30;
 }
 
 function expectValidationError(state, options, pattern) {
@@ -351,6 +367,50 @@ for (const record of allRecords) {
   bump(counts.overrideType, record.overrideFlags);
   bump(counts.legacyProvenance, record.legacyProvenanceStatus);
 }
+
+// Box 0E — backup-import rejection contract. validateExamIntegrityState is the
+// gate app.js runs (via validateImportedExamIntegrity) before an imported file
+// may replace live state. Prove it rejects the malformed shapes §7.3 lists and
+// accepts a clean practice record.
+function liveWordRecord(overrides) {
+  return {
+    resultSchemaVersion: 1, attemptId: "attempt-x", examId: "word-exam-10", attemptMode: "full",
+    blueprintVersion: 2, engineVersion: "1", generationSeed: "7", contentBankRevision: "cw-v2-x",
+    eligibilityRevision: null, generatedAt: 1, submittedAt: 2, durationSeconds: 1,
+    scopeSectionIds: ["s1"], itemCount: 10,
+    scoreSummary: { correct: 10, total: 10, pct: 100, unanswered: 0 },
+    floorSummary: { passed: true, distinguished: false, details: {} },
+    status: "hanaPath", overrideFlags: [], overrideEventIds: [], qualifyingAttemptId: null,
+    retentionAttemptId: null, legacyProvenanceStatus: null, checksum: null,
+    ...overrides,
+  };
+}
+function liveState(records, relations) {
+  return {
+    examResults: { version: 1, byAttemptId: records },
+    examIntegrity: { version: 1, taintEvents: [], resultRelations: relations || [], migrationLog: [] },
+    alphabetMasteryExam: {}, wordExams: { version: 2, byExamId: {} },
+  };
+}
+const cleanState = liveState({ "attempt-x": liveWordRecord() });
+assert.deepEqual(api.validateExamIntegrityState(cleanState, options), [],
+  "a clean practice/HanaPath record must import cleanly"); assertions += 1;
+expectValidationError(
+  liveState({ "attempt-x": liveWordRecord({ attemptId: "different-id" }) }), options,
+  /disagrees with attemptId/); assertions += 1;
+expectValidationError(
+  liveState({ "attempt-x": liveWordRecord({ status: "totally-bogus" }) }), options,
+  /invalid status/); assertions += 1;
+expectValidationError(
+  liveState({ "attempt-x": liveWordRecord() },
+    [{ relationId: "r1", type: "retention", fromAttemptId: "attempt-x", toAttemptId: "missing" }]),
+  options, /broken linkage/); assertions += 1;
+expectValidationError(
+  liveState({
+    "attempt-x": liveWordRecord(),
+    "attempt-y": liveWordRecord({ attemptId: "attempt-y", blueprintVersion: 3 }),
+  }, [{ relationId: "r1", type: "retention", fromAttemptId: "attempt-x", toAttemptId: "attempt-y" }]),
+  options, /crosses blueprint versions/); assertions += 1;
 
 console.log("Workstream 0 · Box 0B exam-integrity audit");
 console.log(`Fixtures: ${fixtures.length}`);

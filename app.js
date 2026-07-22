@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v438";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260721c";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v439";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260722a";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -14431,6 +14431,14 @@ function renderSettingsScreen(hub = activeHub) {
         setBackupStatus(`That file is not a valid HanaPath backup — nothing was changed. (${error && error.message ? error.message : "unreadable file"})`);
         return;
       }
+      // Box 0E — validate the candidate's exam-integrity collections before it
+      // is allowed to replace live state. A malformed/duplicate/broken-linkage
+      // integrity payload is rejected outright; current progress is untouched.
+      const integrityErrors = validateImportedExamIntegrity(imported);
+      if (integrityErrors.length) {
+        setBackupStatus(`That backup has invalid exam-result data — nothing was changed. (${integrityErrors[0]})`);
+        return;
+      }
       const proceed = window.confirm("Replace the progress on this device with the backup file? Your current progress is kept as a one-step rollback copy.");
       if (!proceed) {
         setBackupStatus("Import cancelled — nothing was changed.");
@@ -15450,6 +15458,7 @@ function renderHangulMasteryExamIntro() {
         <li>Answers remain editable until final submission. You may flag items for review (답안 확인).</li>
         <li>Leaving the exam discards the attempt.</li>
         <li>한글 완전 습득 · <strong>Hangul mastered</strong> is awarded only at 200/200.</li>
+        <li>${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</li>
       </ul>
       <button class="button primary" type="button" id="examBeginBtn">시험 시작 · Begin the exam</button>
     </div>`;
@@ -15633,6 +15642,55 @@ function examResultLabel(status) {
 // The full device-local disclosure, one interaction away from every result
 // card and present in exam help (Box 0E / spec §8).
 const EXAM_INTEGRITY_DISCLOSURE = "Results are stored on this device. They are not proctored, independently verified, or tamper-proof credentials.";
+
+// Box 0E — the result-class label plus provenance details and the disclosure,
+// rendered from a stored result record. One <summary> interaction reveals the
+// full detail. Uses only plain, non-credential language (spec §8.1).
+function examProvenanceCardHtml(record) {
+  if (!record || typeof record !== "object") return "";
+  const label = examResultLabel(record.status);
+  const cls = record.status === "hanaPath" ? "hana" : (record.status === "practice" ? "practice" : "legacy");
+  const rows = [];
+  if (record.blueprintVersion != null) rows.push(["Blueprint version", String(record.blueprintVersion)]);
+  if (record.engineVersion != null) rows.push(["Engine version", String(record.engineVersion)]);
+  if (record.contentBankRevision != null) rows.push(["Content bank", String(record.contentBankRevision)]);
+  if (record.eligibilityRevision != null) rows.push(["Eligibility revision", String(record.eligibilityRevision)]);
+  if (record.generationSeed != null) rows.push(["Generation seed", String(record.generationSeed)]);
+  rows.push(["Status", label]);
+  if (record.qualifyingAttemptId) rows.push(["Retention qualifier", String(record.qualifyingAttemptId)]);
+  const detailRows = rows
+    .map(([k, v]) => `<div class="exam-provenance-row"><span>${escapeHtml(k)}</span><span>${escapeHtml(v)}</span></div>`)
+    .join("");
+  const practiceCopy = record.status === "practice"
+    ? `<div class="exam-provenance-practice">Practice result — recorded for your own review only. It does not count toward passing, distinction, mastery, or retention.</div>`
+    : "";
+  return `
+    <div class="exam-result-label exam-result-label-${cls}">${escapeHtml(label)}</div>
+    ${practiceCopy}
+    <details class="exam-provenance">
+      <summary>Result details &amp; disclosure</summary>
+      <div class="exam-provenance-rows">${detailRows}</div>
+      <div class="exam-provenance-disclosure">${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</div>
+    </details>`;
+}
+
+// Box 0E — reject a backup whose exam-integrity collections are malformed
+// before it can overwrite live state. Returns a list of errors ([] = accept).
+// Backups without any integrity collections (older exports) are allowed and
+// flow through the normal load/migrate path.
+function validateImportedExamIntegrity(candidate) {
+  const api = (typeof window !== "undefined" && window.HANAPATH_EXAM_INTEGRITY) || null;
+  if (!api || typeof api.validateExamIntegrityState !== "function") return [];
+  if (!candidate || (candidate.examResults == null && candidate.examIntegrity == null)) return [];
+  let clone;
+  try { clone = JSON.parse(JSON.stringify(candidate)); } catch (error) { return ["exam-result data is unreadable"]; }
+  try {
+    if (typeof api.migrateExamIntegrityState === "function") {
+      api.migrateExamIntegrityState(clone, { wordExamBlueprints: getWordExamsList() });
+    }
+  } catch (error) { return ["exam-result data could not be migrated"]; }
+  return api.validateExamIntegrityState(clone, { wordExamBlueprints: getWordExamsList() });
+}
 
 function getExamFlatItems(attempt) {
   return attempt.parts.flatMap((part) => part.items);
@@ -16327,6 +16385,9 @@ function renderExamResults() {
   }, "Hangul Mastery Exam");
 
   const { correct, mastered, timeUsedMs } = attempt.result;
+  // Box 0E — a practice attempt never presents the mastery crown, even at a
+  // perfect 200/200; it did not set state mastery and must not claim it.
+  const showMastered = mastered && attempt.result.isPractice !== true;
   const totals = examTypeTotals(attempt);
   const partStats = examPartStats(attempt);
   const stats = [
@@ -16339,11 +16400,12 @@ function renderExamResults() {
       <button class="button primary" type="button" id="examRetake">다시 응시 · Retake exam</button>
       <button class="button secondary" type="button" id="examBackHub">Back to exam overview</button>`;
 
-  const detailsHtml = mastered
-    ? examReviewHtml(attempt)
-    : `${examBreakdownHtml(partStats)}${examReviewHtml(attempt)}`;
+  const provenanceHtml = examProvenanceCardHtml(getExamResultRecord(attempt.result.attemptId));
+  const detailsHtml = showMastered
+    ? `${provenanceHtml}${examReviewHtml(attempt)}`
+    : `${provenanceHtml}${examBreakdownHtml(partStats)}${examReviewHtml(attempt)}`;
 
-  el.innerHTML = mastered
+  el.innerHTML = showMastered
     ? premiumCompletionHtml({
         tone: "crown",
         icon: "crown",
@@ -16630,6 +16692,7 @@ function renderWordExamIntro(examId) {
           : `${itemCount} items · ${timeMin} minutes. You may move Previous/Next, flag items, and review before submitting. No feedback appears until you submit.`}</p>
         <ul class="word-exam-macro-list">${macroList}</ul>
         <p class="screen-sub word-exam-fineprint">Provisional HanaPath achievement standard. Audio plays at most twice per item. Leaving the exam discards the attempt. This exam never changes your Words progress or review schedule.</p>
+        <p class="screen-sub word-exam-fineprint">${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</p>
         ${prior}
       </div>
       <div class="player-actions exam-actions">
@@ -17105,6 +17168,14 @@ function renderWordExamResult() {
   } else {
     tone = "neutral"; icon = "spark"; eyebrow = "아직 합격 전 · Not yet passed"; title = "Keep going"; copy = "Review the weakest areas below and try again with a fresh set.";
   }
+  // Box 0E — a practice attempt never presents a pass/distinction/mastery
+  // ceremony, regardless of raw score. Its score is shown for review only.
+  const isPracticeResult = a.result.isPractice === true;
+  if (isPracticeResult) {
+    tone = "neutral"; icon = "spark"; eyebrow = "연습 · Practice";
+    title = "Practice result";
+    copy = "This attempt ran in practice/testing mode. Your score is shown for review but does not count toward passing, distinction, mastery, or retention.";
+  }
   const timeUsed = formatExamClock(Date.now() - a.startedAt);
   const stats = [
     { value: `${result.pct}%`, label: "Overall" },
@@ -17122,6 +17193,7 @@ function renderWordExamResult() {
     }
   }
   const detailsHtml = `
+    ${examProvenanceCardHtml(getExamResultRecord(a.result.attemptId))}
     ${retentionNote}
     <div class="word-exam-macro-profile"><div class="word-exam-weak-title">Strand profile</div>${wordExamMacroRowsHtml(result)}</div>
     ${wordExamWeakRoutesHtml(result)}
@@ -17131,9 +17203,9 @@ function renderWordExamResult() {
     <button class="button secondary" type="button" id="wordExamBackHub">Back to Core Words exams</button>`;
   el.innerHTML = premiumCompletionHtml({
     tone, icon, eyebrow, title, copy,
-    score: { value: `${result.pct}%`, label: bands.passed ? (bands.distinguished ? "Distinction" : "Passed") : "Achievement score" },
+    score: { value: `${result.pct}%`, label: isPracticeResult ? "Practice score" : (bands.passed ? (bands.distinguished ? "Distinction" : "Passed") : "Achievement score") },
     stats, detailsHtml, actionsHtml,
-    celebrate: bands.passed,
+    celebrate: bands.passed && !isPracticeResult,
     className: "exam-completion word-exam-completion",
   });
   el.querySelectorAll("[data-word-weak-section]").forEach((btn) => {
