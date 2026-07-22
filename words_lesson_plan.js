@@ -4207,7 +4207,185 @@
     "pass": {
       "minFirstTryPct": 60,
       "requireTypedAttempt": false
-    }
+    },
+    "authoredItems": [
+      {
+        "competencyId": "past-tense",
+        "mode": "form-production",
+        "targetWordId": "w0704_boda",
+        "prompt": "Yesterday, I watched a movie. (보다 → past)",
+        "answer": "봤어요",
+        "acceptedAnswers": ["봤어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "inflect:past",
+        "explanation": "보다 → 봐요 (polite stem) → 봤어요 (past: insert ㅆ + 어요)."
+      },
+      {
+        "competencyId": "past-tense",
+        "mode": "form-production",
+        "targetWordId": "w0008_sseuda",
+        "prompt": "Last night, I wrote a letter. (쓰다 → past)",
+        "answer": "썼어요",
+        "acceptedAnswers": ["썼어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "inflect:past",
+        "explanation": "쓰다 → 써요 (polite stem, ㅡ drops) → 썼어요 (past)."
+      },
+      {
+        "competencyId": "past-tense",
+        "mode": "form-production",
+        "targetWordId": "w0006_ikda",
+        "prompt": "This morning, I read the news. (읽다 → past)",
+        "answer": "읽었어요",
+        "acceptedAnswers": ["읽었어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "inflect:past",
+        "explanation": "읽다 → 읽어요 (consonant stem + 어요) → 읽었어요 (past)."
+      },
+      {
+        "competencyId": "past-tense",
+        "mode": "form-production",
+        "targetWordId": "w0007_deutda",
+        "prompt": "Yesterday, I listened to music. (듣다 → past)",
+        "answer": "들었어요",
+        "acceptedAnswers": ["들었어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "inflect:past",
+        "explanation": "듣다 is ㄷ-irregular: ㄷ → ㄹ before a vowel. 들어요 → 들었어요 (past)."
+      },
+      {
+        "competencyId": "past-tense",
+        "mode": "form-production",
+        "targetWordId": "w0704_boda",
+        "prompt": "어제 영화를 ___. (I watched a movie yesterday.)",
+        "answer": "봤어요",
+        "acceptedAnswers": ["봤어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "inflect:past",
+        "explanation": "보다 past: 봤어요. The time word 어제 (yesterday) forces past tense."
+      },
+      {
+        "competencyId": "past-tense",
+        "mode": "form-production",
+        "targetWordId": "w0006_ikda",
+        "prompt": "아침에 신문을 ___. (I read the newspaper this morning.)",
+        "answer": "읽었어요",
+        "acceptedAnswers": ["읽었어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "inflect:past",
+        "explanation": "읽다 past: 읽었어요. 아침에 (this morning) sets a completed past context."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0006_ikda",
+        "prompt": "Negate with 안: 'I don't read books.' (읽다)",
+        "answer": "안 읽어요",
+        "acceptedAnswers": ["안 읽어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "안 + polite predicate: 안 읽어요. 안 goes right before the verb."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0704_boda",
+        "prompt": "Negate with 안: 'I don't watch TV.' (보다)",
+        "answer": "안 봐요",
+        "acceptedAnswers": ["안 봐요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "안 + polite predicate: 안 봐요. 보다 → 봐요, negated with 안."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0008_sseuda",
+        "prompt": "Negate with 못: 'I can't write well.' (쓰다)",
+        "answer": "못 써요",
+        "acceptedAnswers": ["못 써요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "못 + polite action predicate: 못 써요. 못 marks inability before the verb."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0007_deutda",
+        "prompt": "Negate with 못: 'I can't listen to music now.' (듣다)",
+        "answer": "못 들어요",
+        "acceptedAnswers": ["못 들어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "못 + polite action predicate: 못 들어요. 듣다 is ㄷ-irregular: 들어요."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0006_ikda",
+        "prompt": "Negate with -지 않아요: 'I don't read books.' (읽다)",
+        "answer": "읽지 않아요",
+        "acceptedAnswers": ["읽지 않아요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "Stem + 지 않아요: 읽지 않아요. Long negation, same meaning as 안 읽어요."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0704_boda",
+        "prompt": "Negate with -지 않아요: 'I don't watch movies.' (보다)",
+        "answer": "보지 않아요",
+        "acceptedAnswers": ["보지 않아요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "Stem + 지 않아요: 보지 않아요. Long negation, same meaning as 안 봐요."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0008_sseuda",
+        "prompt": "Negate with -지 못해요: 'I can't write today.' (쓰다)",
+        "answer": "쓰지 못해요",
+        "acceptedAnswers": ["쓰지 못해요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "Stem + 지 못해요: 쓰지 못해요. Long inability, same meaning as 못 써요."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0007_deutda",
+        "prompt": "Negate with -지 못해요: 'I can't listen to music.' (듣다)",
+        "answer": "듣지 못해요",
+        "acceptedAnswers": ["듣지 못해요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "Stem + 지 못해요: 듣지 못해요. ㄷ stays before the consonant ㅈ in -지."
+      },
+      {
+        "competencyId": "past-tense",
+        "mode": "form-production",
+        "targetWordId": "w0006_ikda",
+        "prompt": "어제는 너무 바빠서 책을 ___. (Yesterday I was too busy, so I didn't read a book.)",
+        "answer": "안 읽었어요",
+        "acceptedAnswers": ["안 읽었어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "안 + past: 안 읽었어요. Context (too busy → chose not to) selects 안 negation in the past."
+      },
+      {
+        "competencyId": "negation",
+        "mode": "form-production",
+        "targetWordId": "w0008_sseuda",
+        "prompt": "어제는 손이 아파서 글을 ___. (Yesterday my hand hurt, so I couldn't write.)",
+        "answer": "쓰지 못했어요",
+        "acceptedAnswers": ["쓰지 못했어요"],
+        "supportingLessonId": "s3-grammar-u2-l3",
+        "acceptedFormsSource": "authored:pattern",
+        "explanation": "Stem + 지 못했어요: 쓰지 못했어요. Context (hand hurt → unable) selects long inability in the past."
+      }
+    ]
   },
   {
     "id": "s3-grammar-u2-cp",
