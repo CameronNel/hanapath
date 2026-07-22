@@ -200,6 +200,7 @@ for (const [id, expect] of Object.entries(C2_EXPECT)) {
   const rec = records[id];
   if (comp.scoredProduction !== true) fail(`${id}: blueprint scoredProduction must be true`);
   if (comp.firstProductionLessonId !== "s3-grammar-u2-l3") fail(`${id}: blueprint firstProductionLessonId must be s3-grammar-u2-l3`);
+  if (comp.acceptedFormsSource !== expect.source) fail(`${id}: blueprint acceptedFormsSource must be ${expect.source}, found ${comp.acceptedFormsSource}`);
   const prodLesson = lessons.find((l) => l.id === "s3-grammar-u2-l3");
   if (!prodLesson) {
     fail(`${id}: production lesson s3-grammar-u2-l3 does not exist`);
