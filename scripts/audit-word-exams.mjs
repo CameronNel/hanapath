@@ -52,6 +52,29 @@ const audioIndex = new Set(Object.keys(AUDIO_MAP).filter((k) => AUDIO_MAP[k]).ma
 
 const failures = [];
 const fail = (m) => failures.push(m);
+const negationFramesSeen = new Set();
+const NEGATION_FRAME_CONTRACTS = {
+  "short-negative": {
+    marker: "안",
+    englishLabel: "short negation",
+    answerMatches: (answer) => answer.startsWith("안 "),
+  },
+  "short-inability": {
+    marker: "못",
+    englishLabel: "short inability",
+    answerMatches: (answer) => answer.startsWith("못 "),
+  },
+  "long-negative": {
+    marker: "-지 않아요",
+    englishLabel: "long negation",
+    answerMatches: (answer) => answer.endsWith("지 않아요"),
+  },
+  "long-inability": {
+    marker: "-지 못해요",
+    englishLabel: "long inability",
+    answerMatches: (answer) => answer.endsWith("지 못해요"),
+  },
+};
 
 // Expected structural contract (spec §6.1 / §6.2). Re-derived, not trusted.
 const EXPECTED = [
@@ -157,6 +180,46 @@ function checkItem(exam, scopeSet, it, idSet, tag) {
   } else {
     // §9.15 typed items need a finite accepted-answer set
     if (!Array.isArray(it.acceptedAnswers) || !it.acceptedAnswers.length) fail(`${tag} ${it.id} typed with no accepted answers`);
+    const accepted = (it.acceptedAnswers || []).map(nfc).filter(Boolean);
+    if (accepted.length !== new Set(accepted).size) fail(`${tag} ${it.id} typed accepted answers are not unique`);
+    // Typed answers must not be visible before submission. The browser runner
+    // renders stimulus, promptKo, and promptEn directly above the input.
+    const visibleBeforeAnswer = [
+      it.stimulus,
+      it.promptKo,
+      it.promptEn,
+      it.contextKo,
+      it.contextEn,
+    ].map(nfc).filter(Boolean);
+    accepted.forEach((answer) => {
+      // A one-syllable lexeme can unavoidably occur inside boilerplate such as
+      // 입 in 입력하십시오; that is not a usable answer reveal. Generated
+      // multi-syllable surfaces and every form-production answer are exact.
+      const exactLeakCheck = Array.from(answer).length > 1 || it.mode === "form-production";
+      if (exactLeakCheck && visibleBeforeAnswer.some((field) => field.includes(answer))) {
+        fail(`${tag} ${it.id} typed answer leaks into a pre-answer field`);
+      }
+    });
+    if (it.competencyId === "negation" && it.mode === "form-production") {
+      const contract = NEGATION_FRAME_CONTRACTS[it.negationFrame];
+      if (!contract) {
+        fail(`${tag} ${it.id} negation production has unknown frame ${it.negationFrame}`);
+      } else {
+        negationFramesSeen.add(it.negationFrame);
+        const promptEn = nfc(it.promptEn);
+        const promptKo = nfc(it.promptKo);
+        const answer = nfc(it.answer);
+        if (!promptEn.includes(contract.englishLabel) || !promptEn.includes(contract.marker)) {
+          fail(`${tag} ${it.id} does not identify ${it.negationFrame} unambiguously in promptEn`);
+        }
+        if (!promptKo.includes(contract.marker)) {
+          fail(`${tag} ${it.id} does not identify ${it.negationFrame} unambiguously in promptKo`);
+        }
+        if (!contract.answerMatches(answer)) {
+          fail(`${tag} ${it.id} answer does not match declared frame ${it.negationFrame}`);
+        }
+      }
+    }
   }
   // §9.14 audio must exist
   if (it.audioText && !audioIndex.has(nfc(it.audioText))) fail(`${tag} ${it.id} missing audio for ${it.audioText}`);
@@ -186,7 +249,8 @@ function checkAttempt(exam, scopeSet, att, tag, isFull, expected) {
   const surfaceCount = new Map();
   const unitsSeen = new Set();
   const posClassCount = { predicate: 0, function: 0, noun: 0, other: 0 };
-  let fnUsage = 0, nonCitPred = 0, typed = 0, audioUniq = new Set(), depth = 0, form = 0;
+  let fnUsage = 0, nonCitPred = 0, typed = 0, pastProduction = 0, negationProduction = 0,
+    audioUniq = new Set(), depth = 0, form = 0;
   att.items.forEach((it) => {
     checkItem(exam, scopeSet, it, idSet, tag);
     strand[it.strand] = (strand[it.strand] || 0) + 1;
@@ -197,6 +261,8 @@ function checkAttempt(exam, scopeSet, att, tag, isFull, expected) {
     if (it.mode === "function-usage") fnUsage += 1;
     if (it.isNonCitation && it.posClass === "predicate") nonCitPred += 1;
     if (it.mode === "type-ko" || it.mode === "form-production") typed += 1;
+    if (it.mode === "form-production" && it.competencyId === "past-tense") pastProduction += 1;
+    if (it.mode === "form-production" && it.competencyId === "negation") negationProduction += 1;
     if (it.audioText) audioUniq.add(nfc(it.audioText));
     if (it.strand === "D") depth += 1;
     if (it.strand === "F") form += 1;
@@ -227,6 +293,18 @@ function checkAttempt(exam, scopeSet, att, tag, isFull, expected) {
       const pxfd = strand.P + strand.X + strand.F + strand.D;
       if (Math.round((pxfd / exam.items) * 100) < exam.minProductiveContextualCombinedPct) fail(`${tag} P/X/F/D% < ${exam.minProductiveContextualCombinedPct}`);
     }
+  }
+  const minPastProduction = isFull
+    ? (exam.minPastProduction || 0)
+    : ((exam.retention && exam.retention.minPastProduction) || 0);
+  const minNegationProduction = isFull
+    ? (exam.minNegationProduction || 0)
+    : ((exam.retention && exam.retention.minNegationProduction) || 0);
+  if (pastProduction < minPastProduction) {
+    fail(`${tag} past production ${pastProduction} < ${minPastProduction}`);
+  }
+  if (negationProduction < minNegationProduction) {
+    fail(`${tag} negation production ${negationProduction} < ${minNegationProduction}`);
   }
   // §9 final invariants
   if (isFull && exam.finalInvariants) {
@@ -324,6 +402,10 @@ for (const exam of EXAMS) {
   const smallMean = sorted.slice(0, q).reduce((n, x) => n + x.exposure, 0) / q;
   const bigMean = sorted.slice(-q).reduce((n, x) => n + x.exposure, 0) / q;
   if (bigMean < smallMean) fail(`§9.24 Layer B not proportional: big-unit exposure ${bigMean.toFixed(1)} < small-unit ${smallMean.toFixed(1)}`);
+}
+
+for (const frame of Object.keys(NEGATION_FRAME_CONTRACTS)) {
+  if (!negationFramesSeen.has(frame)) fail(`negation frame ${frame} was never generated`);
 }
 
 // ── Report ───────────────────────────────────────────────────────────────────

@@ -338,7 +338,9 @@
     if (!isTypableSurface(w)) return null;
     var surface = nfc(w.korean);
     var it = baseItem(data, w, "P", "type-ko", "lexeme-identity");
-    it.promptKo = "한국어로 입력하십시오.";
+    // Keep the generic instruction lexically neutral: "한국어로" reveals the
+    // complete answer for 한국어 and partially reveals 한국.
+    it.promptKo = "입력하십시오.";
     it.promptEn = "Type the Korean for “" + fullMeaning(w) + "”.";
     it.stimulus = fullMeaning(w);
     it.answer = surface;
@@ -623,8 +625,10 @@
     return it;
   }
 
-  // P — typed past-tense production (v3). Context-driven English prompt;
-  // the learner types the polite past form. Uses the audited inflection engine.
+  // P — typed past-tense production (v3). The prompt names the target lemma
+  // and the required transformation (mirroring the taught s3-grammar-u2-l3
+  // items, e.g. "보다 → past"); no pre-answer field contains the conjugated
+  // answer. Uses the audited inflection engine.
   function buildPastProduction(data, w, scope, rng) {
     if (!isPredicate(w)) return null;
     if (!competencyEligible(data, scope.examRef, scope, "past-tense")) return null;
@@ -632,8 +636,9 @@
     if (!past) return null;
     var it = baseItem(data, w, "P", "form-production", "past-tense");
     it.isNonCitation = true;
-    it.promptEn = "Yesterday, " + fullMeaning(w) + ".";
-    it.promptKo = "어제, " + nfc(w.korean) + ".";
+    it.promptEn = "Change “" + nfc(w.korean) + "” (" + fullMeaning(w) +
+      ") to the polite past form.";
+    it.promptKo = nfc(w.korean) + " — 공손한 과거형으로 입력하십시오.";
     it.stimulus = it.promptEn;
     it.answer = past;
     it.acceptedAnswers = [past];
@@ -641,14 +646,21 @@
     return it;
   }
 
-  // F — typed negation production (v3). Context-driven English prompt;
-  // the learner types the reviewed negation frame. Authored patterns only —
-  // the inflection engine has no generic negation form.
+  // F — typed negation production (v3). The prompt names exactly one of the
+  // four taught negation frames (안 / 못 / -지 않아요 / -지 못해요, mirroring
+  // s3-grammar-u2-l3 "Negate with 안: …") so the required construction is
+  // unambiguous, but never shows the completed surface form — no pre-answer
+  // field may contain the accepted answer (PR #343 review). Authored patterns
+  // only — the inflection engine has no generic negation form.
   var NEGATION_FRAMES = [
-    { prefix: "안 ", suffix: null, actionOnly: false, label: "short-negative" },
-    { prefix: "못 ", suffix: null, actionOnly: true,  label: "short-inability" },
-    { prefix: null, suffix: "지 않아요", actionOnly: false, label: "long-negative" },
-    { prefix: null, suffix: "지 못해요", actionOnly: true,  label: "long-inability" },
+    { prefix: "안 ", suffix: null, actionOnly: false, label: "short-negative",
+      marker: "안", frameEn: "short negation" },
+    { prefix: "못 ", suffix: null, actionOnly: true,  label: "short-inability",
+      marker: "못", frameEn: "short inability" },
+    { prefix: null, suffix: "지 않아요", actionOnly: false, label: "long-negative",
+      marker: "-지 않아요", frameEn: "long negation" },
+    { prefix: null, suffix: "지 못해요", actionOnly: true,  label: "long-inability",
+      marker: "-지 못해요", frameEn: "long inability" },
   ];
   function buildNegationProduction(data, w, scope, rng) {
     if (!isPredicate(w)) return null;
@@ -669,10 +681,10 @@
     answer = nfc(answer);
     var it = baseItem(data, w, "F", "form-production", "negation");
     it.isNonCitation = true;
-    it.promptEn = frame.actionOnly
-      ? "I can't " + fullMeaning(w) + "."
-      : "I don't " + fullMeaning(w) + ".";
-    it.promptKo = nfc(w.korean) + " → " + answer;
+    it.negationFrame = frame.label;
+    it.promptEn = "Change “" + nfc(w.korean) + "” (" + fullMeaning(w) +
+      ") to the polite present using " + frame.frameEn + " " + frame.marker + ".";
+    it.promptKo = nfc(w.korean) + " — " + frame.marker + " 형식의 공손한 부정형으로 입력하십시오.";
     it.stimulus = it.promptEn;
     it.answer = answer;
     it.acceptedAnswers = [answer];
