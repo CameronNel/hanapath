@@ -1,5 +1,5 @@
-// [2026-07-22] Cache bumped for Words C2 production eligibility.
-const CACHE_NAME = "hanapath-shell-v446";
+// [2026-07-23] Cache bumped for Words C3 v3 blueprint review fixes.
+const CACHE_NAME = "hanapath-shell-v447";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -19,11 +19,11 @@ const APP_SHELL = [
   "./sentence_exam_eligibility.js?v=20260721a",
   "./hangul_strokes.js?v=20260715b",
   "./hangul_mastery_exam.js?v=20260720a",
-  "./word_exam_blueprints.js?v=20260722f",
-  "./word_exam_engine.js?v=20260720w",
+  "./word_exam_blueprints.js?v=20260723a",
+  "./word_exam_engine.js?v=20260723a",
   "./exam_integrity.js?v=20260721b",
   "./form_check_blueprints.js?v=20260722e",
-  "./app.js?v=20260723a",
+  "./app.js?v=20260723b",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

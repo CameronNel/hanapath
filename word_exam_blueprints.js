@@ -1,4 +1,4 @@
-// word_exam_blueprints.js — Core Word Examination Suite blueprints (v2).
+// word_exam_blueprints.js — Core Word Examination Suite blueprints (v3).
 // Plain browser global; must load before app.js. Governing contract:
 // docs/CORE_WORD_EXAM_SPECS.md. Edit the spec, then this file, then keep
 // scripts/audit-word-exams.mjs green after any change.
@@ -24,8 +24,8 @@
   // earliest section-exam that may test it. `scoredProduction` gates typed
   // form-production. Past tense and negation typed production is taught in
   // s3-grammar-u2-l3 (Words C1), so both are production-eligible (Words C2).
-  // C2 updates evidence metadata only: v2 exam generation, quotas, and lengths
-  // remain unchanged until the v3 generator work (Words C3).
+  // C3 adds v3 typed past/negation minima within existing P/F allocations.
+  // Paper lengths, top-level strand totals, and timers are unchanged.
   var COMPETENCIES = {
     "lexeme-identity": {
       learnerLabel: "Word identity",
@@ -190,7 +190,7 @@
     {
       id: "word-exam-1",
       order: 1,
-      version: 2,
+      version: 3,
       title: "First Words Achievement Exam",
       titleKo: "첫 낱말 성취 시험",
       scopeSectionIds: ["s1"],
@@ -207,7 +207,7 @@
     {
       id: "word-exam-2",
       order: 2,
-      version: 2,
+      version: 3,
       title: "Daily Life Achievement Exam",
       titleKo: "일상 성취 시험",
       scopeSectionIds: ["s2"],
@@ -224,7 +224,7 @@
     {
       id: "word-exam-3",
       order: 3,
-      version: 2,
+      version: 3,
       title: "Out and About Achievement Exam",
       titleKo: "바깥 활동 성취 시험",
       scopeSectionIds: ["s3"],
@@ -236,12 +236,17 @@
       posFloor: posFloor({}),
       minContextItems: 5,
       minFunctionContextItems: 4, // spec Exam 3: connecting-clause / function items
+      // v3 feasibility: s3 scope has only 1 conjugable predicate (보다 w1816).
+      // The proposed 2/2 minimum cannot be filled. Set to 0 until the curriculum
+      // adds more predicates to section 3 or the scope is widened. Owner decision.
+      minPastProduction: 0,
+      minNegationProduction: 0,
       scoring: SECTION_SCORING,
     },
     {
       id: "word-exam-4",
       order: 4,
-      version: 2,
+      version: 3,
       title: "People & Plans Achievement Exam",
       titleKo: "사람과 계획 성취 시험",
       scopeSectionIds: ["s4"],
@@ -253,12 +258,14 @@
       posFloor: posFloor({ predicate: 5 }), // spec Exam 4: ≥5 descriptive-verb targets
       minContextItems: 5,
       minTransactionalContexts: 5,
+      minPastProduction: 2,
+      minNegationProduction: 2,
       scoring: SECTION_SCORING,
     },
     {
       id: "word-exam-5",
       order: 5,
-      version: 2,
+      version: 3,
       title: "Core Foundations Midterm",
       titleKo: "핵심 기초 중간 시험",
       scopeSectionIds: ["s1", "s2", "s3", "s4"],
@@ -271,13 +278,15 @@
       posFloor: posFloor({ predicate: 6 }),
       minContextItems: 12,
       minFunctionContextItems: 6, // s2-grammar function words represented in context
+      minPastProduction: 4,
+      minNegationProduction: 4,
       cumulative: true,
       scoring: MIDTERM_SCORING,
     },
     {
       id: "word-exam-6",
       order: 6,
-      version: 2,
+      version: 3,
       title: "Getting Things Done Achievement Exam",
       titleKo: "일 처리 성취 시험",
       scopeSectionIds: ["s5"],
@@ -289,6 +298,8 @@
       posFloor: posFloor({ predicate: 6 }),
       minContextItems: 6,
       minFormItems: 7, // spec Exam 6: ≥7 F items, recognition + production
+      minPastProduction: 2,
+      minNegationProduction: 2,
       requireFormProduction: true,
       registerTagsSeparate: true, // listener / subject / lexical honorific tagged separately
       scoring: SECTION_SCORING,
@@ -296,7 +307,7 @@
     {
       id: "word-exam-7",
       order: 7,
-      version: 2,
+      version: 3,
       title: "Wider World Achievement Exam",
       titleKo: "넓은 세상 성취 시험",
       scopeSectionIds: ["s6"],
@@ -307,6 +318,8 @@
       requireEveryUnit: true,
       posFloor: posFloor({ predicate: 6 }),
       minNonCitationPredicateItems: 6, // spec Exam 7: ≥6 verb/descriptive-verb targets in non-citation forms
+      minPastProduction: 2,
+      minNegationProduction: 2,
       minContextItems: 6,
       cumulative: true,
       scoring: SECTION_SCORING,
@@ -314,7 +327,7 @@
     {
       id: "word-exam-8",
       order: 8,
-      version: 2,
+      version: 3,
       title: "Depth & Nuance Achievement Exam",
       titleKo: "깊이와 뉘앙스 성취 시험",
       scopeSectionIds: ["s7"],
@@ -327,13 +340,15 @@
       minFunctionContextItems: 3, // s7-grammar connectives/particles in context
       minFormItems: 9, // spec Exam 8: ≥9 F
       minDepthItems: 5, // spec Exam 8: ≥5 D
+      minPastProduction: 2,
+      minNegationProduction: 2,
       irregularByFamily: true,
       scoring: SECTION_SCORING,
     },
     {
       id: "word-exam-9",
       order: 9,
-      version: 2,
+      version: 3,
       title: "Finishing the Core Achievement Exam",
       titleKo: "핵심 마무리 성취 시험",
       scopeSectionIds: ["s8"],
@@ -344,13 +359,15 @@
       requireEveryUnit: true,
       posFloor: posFloor({ predicate: 6 }),
       minProductiveContextualCombinedPct: 40, // spec Exam 9: ≥40% P/X/F/D combined
+      minPastProduction: 2,
+      minNegationProduction: 2,
       cumulative: true,
       scoring: SECTION_SCORING,
     },
     {
       id: "word-exam-10",
       order: 10,
-      version: 2,
+      version: 3,
       title: "Core Words Final Achievement Exam",
       titleKo: "핵심 낱말 최종 성취 시험",
       scopeSectionIds: ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"],
@@ -361,6 +378,8 @@
       requireEveryUnit: true,
       cumulative: true,
       minFunctionContextItems: 8, // Layer C function words/connectives via contextual X
+      minPastProduction: 6,
+      minNegationProduction: 6,
       purpose: "Serious cumulative evidence of Core Words achievement.",
       // Final coverage layers (spec Exam 10). Layer sizes sum to 150.
       finalLayers: {
@@ -386,6 +405,8 @@
         opensAfterDays: 7,
         expiresAfterDays: 21,
         avoidQualifyingTargets: true,
+        minPastProduction: 3,
+        minNegationProduction: 3,
         // Qualifying = first attempt that clears these thresholds (§7.2).
         qualify: {
           overallPct: 88,
@@ -409,7 +430,7 @@
   window.HANAPATH_WORD_EXAMS = EXAMS;
   window.HANAPATH_WORD_EXAM_COMPETENCIES = COMPETENCIES;
   window.HANAPATH_WORD_EXAM_META = {
-    blueprintVersion: 2,
+    blueprintVersion: 3,
     minSubscoreItems: MIN_SUBSCORE_ITEMS,
     macrostrands: ["R", "C", "P", "X", "F", "D"],
     // Macrostrands that R_text and R_audio both roll up into.
