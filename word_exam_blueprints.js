@@ -427,9 +427,37 @@
     },
   ];
 
-  window.HANAPATH_WORD_EXAMS = EXAMS;
-  window.HANAPATH_WORD_EXAM_COMPETENCIES = COMPETENCIES;
-  window.HANAPATH_WORD_EXAM_META = {
+  // Frozen v2 blueprint definitions for backward compatibility during live v2 retention windows.
+  var EXAMS_V2 = EXAMS.map(function (e) {
+    var copy = Object.assign({}, e, {
+      version: 2,
+      minPastProduction: 0,
+      minNegationProduction: 0,
+    });
+    if (copy.retention) {
+      copy.retention = Object.assign({}, copy.retention, {
+        minPastProduction: 0,
+        minNegationProduction: 0,
+      });
+    }
+    return copy;
+  });
+
+  function resolveWordExamBlueprint(examId, version) {
+    var ver = (version == null || version === "") ? 3 : Number(version);
+    var pool = (ver === 2) ? EXAMS_V2 : EXAMS;
+    return pool.find(function (e) { return e.id === examId; }) || null;
+  }
+
+  var root = typeof window !== "undefined" ? window : (typeof globalThis !== "undefined" ? globalThis : this);
+  root.resolveWordExamBlueprint = resolveWordExamBlueprint;
+  root.HANAPATH_WORD_EXAMS = EXAMS;
+  root.HANAPATH_WORD_EXAM_COMPETENCIES = COMPETENCIES;
+  root.HANAPATH_WORD_EXAM_BLUEPRINTS = {
+    resolveWordExamBlueprint: resolveWordExamBlueprint,
+    EXAMS_V2: EXAMS_V2,
+  };
+  root.HANAPATH_WORD_EXAM_META = {
     blueprintVersion: 3,
     minSubscoreItems: MIN_SUBSCORE_ITEMS,
     macrostrands: ["R", "C", "P", "X", "F", "D"],

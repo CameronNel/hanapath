@@ -408,6 +408,38 @@ for (const frame of Object.keys(NEGATION_FRAME_CONTRACTS)) {
   if (!negationFramesSeen.has(frame)) fail(`negation frame ${frame} was never generated`);
 }
 
+// ── Package 2 (Words C4) frozen v2 blueprint resolver & version pairing audit ──
+{
+  const resolver = W.resolveWordExamBlueprint || ENG.resolveWordExamBlueprint;
+  if (typeof resolver !== "function") {
+    fail("C4 audit: resolveWordExamBlueprint is not exported");
+  } else {
+    const v2_exam10 = resolver("word-exam-10", 2);
+    const v3_exam10 = resolver("word-exam-10", 3);
+    const default_exam10 = resolver("word-exam-10");
+    if (!v2_exam10 || v2_exam10.version !== 2) fail("C4 audit: resolveWordExamBlueprint(id, 2) did not return v2 blueprint");
+    if (!v3_exam10 || v3_exam10.version !== 3) fail("C4 audit: resolveWordExamBlueprint(id, 3) did not return v3 blueprint");
+    if (!default_exam10 || default_exam10.version !== 3) fail("C4 audit: resolveWordExamBlueprint(id) did not default to v3");
+    if (v2_exam10.minPastProduction !== 0 || v2_exam10.minNegationProduction !== 0) {
+      fail("C4 audit: frozen v2 blueprint has non-zero typed past/negation minima");
+    }
+
+    // Verify v2 retention attempt generation contains no typed past/negation production items
+    const v2Attempt = ENG.generateAttempt("word-exam-10", 12345, { mode: "confirmation", version: 2 });
+    if (v2Attempt.items.some((it) => it.mode === "form-production" && (it.competencyId === "past-tense" || it.competencyId === "negation"))) {
+      fail("C4 audit: frozen v2 retention attempt generated typed past/negation production items");
+    }
+
+    // Verify v3 retention attempt generation contains required past/negation production items
+    const v3Attempt = ENG.generateAttempt("word-exam-10", 12345, { mode: "confirmation", version: 3 });
+    const v3PastProd = v3Attempt.items.filter((it) => it.mode === "form-production" && it.competencyId === "past-tense").length;
+    const v3NegProd = v3Attempt.items.filter((it) => it.mode === "form-production" && it.competencyId === "negation").length;
+    if (v3PastProd < 3 || v3NegProd < 3) {
+      fail(`C4 audit: v3 retention attempt missed minima (past=${v3PastProd}, neg=${v3NegProd})`);
+    }
+  }
+}
+
 // ── Report ───────────────────────────────────────────────────────────────────
 if (failures.length) {
   console.error(`\nWord-exam audit FAILED (${failures.length}):`);
