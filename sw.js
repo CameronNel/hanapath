@@ -1,12 +1,12 @@
-// [2026-07-23] Cache bumped for Words C3 v3 blueprint review fixes.
-const CACHE_NAME = "hanapath-shell-v447";
+// [2026-07-23] Cache bumped for Drill Lab End session styling.
+const CACHE_NAME = "hanapath-shell-v448";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260722f",
+  "./styles.css?v=20260723a",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260717u",
