@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v447";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260723b";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v448";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260723c";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -16690,6 +16690,24 @@ function wordExamBandLabel(exam, rec) {
   return "미합격 · Not yet passed";
 }
 
+function isWordsProductionBridgeComplete(targetState) {
+  const s = targetState || (typeof state !== "undefined" ? state : null);
+  return Boolean(s && Array.isArray(s.vocabLessonCompleted) && s.vocabLessonCompleted.includes("s3-grammar-u2-l3"));
+}
+if (typeof window !== "undefined") window.isWordsProductionBridgeComplete = isWordsProductionBridgeComplete;
+
+function getWordExamTargetVersion(examId, mode, targetState) {
+  const rec = getWordExamRecord(examId);
+  if (mode === "confirmation" && rec && rec.blueprintVersion === 2) {
+    return 2;
+  }
+  if (!isWordsProductionBridgeComplete(targetState)) {
+    return 2;
+  }
+  return 3;
+}
+if (typeof window !== "undefined") window.getWordExamTargetVersion = getWordExamTargetVersion;
+
 function renderWordExamHub() {
   refreshProgressionState();
   clearWordExamCountdown();
@@ -16700,6 +16718,25 @@ function renderWordExamHub() {
   if (!getWordExamEngine() || !getWordExamsList().length) {
     el.innerHTML = `<div class="card"><div class="eyebrow">Core Words</div><h2 class="screen-title">Examination suite unavailable</h2><p class="screen-sub">The exam data failed to load.</p></div>`;
     return;
+  }
+  const s3Crowned = isWordSectionComplete("s3");
+  const bridgeComplete = isWordsProductionBridgeComplete();
+  let bridgeBannerHtml = "";
+  if (s3Crowned || isWordLessonCompleted("s3-grammar-u2-l2") || bridgeComplete) {
+    if (bridgeComplete) {
+      bridgeBannerHtml = `
+        <div class="word-exam-bridge-banner word-exam-bridge-banner--ready" style="margin-bottom:14px; padding:10px 14px; border:1px solid rgba(45,212,191,.4); background:rgba(45,212,191,.1); border-radius:12px;">
+          <div style="font-weight:700; color:#2dd4bf; margin-bottom:2px;">✓ Production ready (v3)</div>
+          <div style="font-size:0.82rem; color:var(--text);">Typed polite past and negation production unlocked for Core Word exams.</div>
+        </div>`;
+    } else {
+      bridgeBannerHtml = `
+        <div class="word-exam-bridge-banner" style="margin-bottom:14px; padding:12px 14px; border:1px solid rgba(251,146,60,.45); background:rgba(251,146,60,.12); border-radius:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="font-weight:700; color:#fdba74;">Production bridge available</div>
+          <div style="font-size:0.82rem; color:var(--text);">Complete <strong>과거와 부정 만들기 (s3-grammar-u2-l3)</strong> to activate typed polite-past and negation production in exams.</div>
+          <div><button class="button secondary compact" type="button" id="openProductionBridgeBtn" data-open-bridge="s3-grammar-u2-l3">Open bridge lesson →</button></div>
+        </div>`;
+    }
   }
   const cards = getWordExamsList().map((exam) => {
     const rec = getWordExamRecord(exam.id);
@@ -16740,8 +16777,15 @@ function renderWordExamHub() {
       <div class="eyebrow">핵심 낱말 시험 · Core Words achievement exams</div>
       <h2 class="screen-title" style="margin-bottom:6px;">Core Word Examination Suite</h2>
       <p class="screen-sub">Ten achievement exams that measure how securely you recognise, retrieve, distinguish, and use the words and forms HanaPath has taught. These are HanaPath achievement standards, not TOPIK/CEFR certification. No hints or feedback appear until you submit.</p>
+      ${bridgeBannerHtml}
       <div class="word-exam-list">${cards}</div>
     </div>`;
+  const bridgeBtn = el.querySelector("[data-open-bridge]");
+  if (bridgeBtn) {
+    bridgeBtn.addEventListener("click", () => {
+      openWordLesson(bridgeBtn.dataset.openBridge);
+    });
+  }
   el.querySelectorAll("[data-word-exam]").forEach((btn) => {
     btn.addEventListener("click", () => renderWordExamIntro(btn.dataset.wordExam));
   });
@@ -16749,13 +16793,15 @@ function renderWordExamHub() {
 
 // ── Intro / requirements ─────────────────────────────────────────────────────
 function renderWordExamIntro(examId) {
-  const exam = getWordExamById(examId);
-  if (!exam) { renderWordExamHub(); return; }
-  if (!isWordExamUnlocked(exam)) { renderWordExamHub(); return; }
+  const rawExam = getWordExamById(examId);
+  if (!rawExam) { renderWordExamHub(); return; }
+  if (!isWordExamUnlocked(rawExam)) { renderWordExamHub(); return; }
   refreshProgressionState();
-  const rec = getWordExamRecord(exam.id);
-  const retention = exam.retention ? wordExamRetentionStatus(exam) : null;
+  const rec = getWordExamRecord(rawExam.id);
+  const retention = rawExam.retention ? wordExamRetentionStatus(rawExam) : null;
   const isConfirmation = retention && retention.phase === "open";
+  const targetVersion = getWordExamTargetVersion(examId, isConfirmation ? "confirmation" : "full");
+  const exam = getWordExamById(examId, targetVersion);
   const el = showScreen("detail");
   if (!el) return;
   showDetailBarWithBack("exam", exam.title, () => renderWordExamHub(), "Core Words");
@@ -16763,6 +16809,14 @@ function renderWordExamIntro(examId) {
   const timeMin = isConfirmation ? exam.retention.confirmationTimeMinutes : exam.timeMinutes;
   const macroList = ["R", "C", "P", "X", "F", "D"].map((code) => `<li><strong>${WORD_EXAM_MACRO[code].label}</strong> — ${WORD_EXAM_MACRO[code].sub}</li>`).join("");
   const prior = rec && rec.attempts ? `<div class="word-exam-prior">Attempts: ${rec.attempts} · Best: ${rec.bestPct}%${rec.distinguished ? " · Distinction" : rec.passed ? " · Passed" : ""}</div>` : "";
+  let bridgeIntroNote = "";
+  if (!isWordsProductionBridgeComplete() && (rawExam.minPastProduction > 0 || rawExam.minNegationProduction > 0)) {
+    bridgeIntroNote = `
+      <div class="word-exam-bridge-intro-note" style="margin-top:10px; margin-bottom:10px; padding:10px 12px; border:1px solid rgba(251,146,60,.35); background:rgba(251,146,60,.08); border-radius:10px; font-size:0.8rem; color:#fdba74;">
+        Production bridge available: Complete lesson <strong>과거와 부정 만들기 (s3-grammar-u2-l3)</strong> to unlock v3 typed past/negation production. Current attempt uses frozen v2 allocations.
+        <button class="button secondary compact" type="button" id="introBridgeBtn" data-open-bridge="s3-grammar-u2-l3" style="margin-top:6px; display:block;">Open bridge lesson →</button>
+      </div>`;
+  }
   el.innerHTML = `
     <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
       <div class="exam-question">
@@ -16771,6 +16825,7 @@ function renderWordExamIntro(examId) {
         <p class="screen-sub">${isConfirmation
           ? `This delayed retention confirmation seals Core Words mastery. ${itemCount} fresh items, avoiding your qualifying targets.`
           : `${itemCount} items · ${timeMin} minutes. You may move Previous/Next, flag items, and review before submitting. No feedback appears until you submit.`}</p>
+        ${bridgeIntroNote}
         <ul class="word-exam-macro-list">${macroList}</ul>
         <p class="screen-sub word-exam-fineprint">Provisional HanaPath achievement standard. Audio plays at most twice per item. Leaving the exam discards the attempt. This exam never changes your Words progress or review schedule.</p>
         <p class="screen-sub word-exam-fineprint">${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</p>
@@ -16780,6 +16835,12 @@ function renderWordExamIntro(examId) {
         <button class="button primary" type="button" id="wordExamStart">${isConfirmation ? "Begin retention confirmation" : (rec && rec.attempts ? "Retake with a new set" : "Begin exam")}</button>
       </div>
     </div>`;
+  const introBtn = el.querySelector("#introBridgeBtn");
+  if (introBtn) {
+    introBtn.addEventListener("click", () => {
+      openWordLesson(introBtn.dataset.openBridge);
+    });
+  }
   el.querySelector("#wordExamStart").addEventListener("click", () => {
     startWordExamAttempt(exam.id, { mode: isConfirmation ? "confirmation" : "full" });
   });
@@ -17387,9 +17448,14 @@ function isFormCheckUnlocked(check) {
 // by family for irregular checks and to predicates for production-only checks.
 function getFormCheckTargets(check) {
   if (check.surface !== "words") return [];
+  const wordsMap = (typeof curatedWordsById !== "undefined" && curatedWordsById.size)
+    ? curatedWordsById
+    : (typeof window !== "undefined" && Array.isArray(window.HANAPATH_CURATED_WORDS)
+      ? new Map(window.HANAPATH_CURATED_WORDS.map((w) => [w.id, w]))
+      : new Map());
   if (check.targetFamily) {
     const taught = new Set(getWordLessons().flatMap((l) => l.newWordIds || []));
-    return [...curatedWordsById.values()].filter((w) => w.irregularFamily === check.targetFamily && taught.has(w.id));
+    return [...wordsMap.values()].filter((w) => w.irregularFamily === check.targetFamily && taught.has(w.id));
   }
   const ids = new Set();
   (check.unlock.lessonIds || []).forEach((lid) => {
@@ -17402,7 +17468,7 @@ function getFormCheckTargets(check) {
       if (sl) (sl.newWordIds || []).forEach((id) => ids.add(id));
     });
   });
-  let targets = [...ids].map((id) => curatedWordsById.get(id)).filter(Boolean);
+  let targets = [...ids].map((id) => wordsMap.get(id)).filter(Boolean);
   const productionOnly = (check.modes || []).every((m) => m === "form-production" || m === "form-recognition");
   if (productionOnly) targets = targets.filter((w) => w.pos === "verb" || w.pos === "adjective");
   return targets;
@@ -17443,12 +17509,155 @@ function seededShuffle(arr, rng) {
   return a;
 }
 
+function buildPastNegationV3FormCheckItems(check, seed) {
+  const rng = mulberry32(seed);
+  const data = typeof window !== "undefined" && window.HANAPATH_WORD_EXAM_ENGINE ? window.HANAPATH_WORD_EXAM_ENGINE.buildData() : null;
+  const lessons = (typeof window !== "undefined" && Array.isArray(window.HANAPATH_WORD_LESSONS))
+    ? window.HANAPATH_WORD_LESSONS
+    : ((typeof globalThis !== "undefined" && Array.isArray(globalThis.HANAPATH_WORD_LESSONS)) ? globalThis.HANAPATH_WORD_LESSONS : []);
+  const wordsList = (typeof window !== "undefined" && Array.isArray(window.HANAPATH_CURATED_WORDS))
+    ? window.HANAPATH_CURATED_WORDS
+    : ((typeof globalThis !== "undefined" && Array.isArray(globalThis.HANAPATH_CURATED_WORDS)) ? globalThis.HANAPATH_CURATED_WORDS : []);
+  const wordsMap = (typeof curatedWordsById !== "undefined" && curatedWordsById.size)
+    ? curatedWordsById
+    : new Map(wordsList.map((w) => [w.id, w]));
+  const inflectEngine = (typeof window !== "undefined" && window.HANAPATH_INFLECT) || (typeof globalThis !== "undefined" && globalThis.HANAPATH_INFLECT) || (typeof HANAPATH_INFLECT !== "undefined" ? HANAPATH_INFLECT : null);
+
+  const taughtIds = new Set(lessons.flatMap((l) => l.newWordIds || []));
+  const taughtWords = [...taughtIds].map((id) => wordsMap.get(id)).filter(Boolean);
+
+  const predicates = seededShuffle(taughtWords.filter((w) => w.pos === "verb" || w.pos === "adjective"), rng);
+  const targets = seededShuffle(taughtWords, rng);
+  const usedWords = new Set();
+  const items = [];
+
+  // 1. 3 Typed Past items
+  for (const w of predicates) {
+    if (items.filter((it) => it.formCheckCategory === "typed-past").length >= 3) break;
+    if (usedWords.has(w.id)) continue;
+    const past = inflectEngine ? inflectEngine.conjugate(w.korean, w.pos, w.irregularFamily, "past") : null;
+    if (!past) continue;
+    usedWords.add(w.id);
+    const mean = w.meaningShort || w.meaning;
+    const promptEn = `Change “${w.korean}” (${mean}) to the polite past form.`;
+    const promptKo = `${w.korean} — 공손한 과거형으로 입력하십시오.`;
+    items.push({
+      id: `fc-past-${w.id}`,
+      targetKey: `${w.id}:typed-past`,
+      wordId: w.id,
+      competencyId: "past-tense",
+      formCheckMode: "form-production",
+      formCheckCategory: "typed-past",
+      promptEn,
+      promptKo,
+      stimulus: promptEn,
+      answer: past,
+      acceptedAnswers: [past],
+      voiceText: past,
+      supportingLessonId: "s3-grammar-u2-l3",
+    });
+  }
+
+  // 2. 3 Typed Negation items
+  const NEGATION_FRAMES = [
+    { prefix: "안 ", suffix: null, actionOnly: false, label: "short-negative", marker: "안", frameEn: "short negation" },
+    { prefix: "못 ", suffix: null, actionOnly: true,  label: "short-inability", marker: "못", frameEn: "short inability" },
+    { prefix: null, suffix: "지 않아요", actionOnly: false, label: "long-negative", marker: "-지 않아요", frameEn: "long negation" },
+    { prefix: null, suffix: "지 못해요", actionOnly: true,  label: "long-inability", marker: "-지 못해요", frameEn: "long inability" },
+  ];
+  let frameIdx = 0;
+  for (const w of predicates) {
+    if (items.filter((it) => it.formCheckCategory === "typed-negation").length >= 3) break;
+    if (usedWords.has(w.id)) continue;
+    const polite = inflectEngine ? inflectEngine.conjugate(w.korean, w.pos, w.irregularFamily, "polite") : null;
+    if (!polite) continue;
+    const isAction = w.pos === "verb" && w.morphTag !== "VA";
+    const eligibleFrames = NEGATION_FRAMES.filter((f) => !f.actionOnly || isAction);
+    const frame = eligibleFrames[frameIdx % eligibleFrames.length];
+    frameIdx += 1;
+    let answer = null;
+    if (frame.prefix) {
+      answer = frame.prefix + polite;
+    } else {
+      const stem = data && data.inflect ? data.inflect.getStem(w.korean) : (w.korean.endsWith("다") ? w.korean.slice(0, -1) : null);
+      if (!stem) continue;
+      answer = stem + frame.suffix;
+    }
+    if (!answer) continue;
+    usedWords.add(w.id);
+    const mean = w.meaningShort || w.meaning;
+    const promptEn = `Change “${w.korean}” (${mean}) to the polite present using ${frame.frameEn} ${frame.marker}.`;
+    const promptKo = `${w.korean} — ${frame.marker} 형식의 공손한 부정형으로 입력하십시오.`;
+    items.push({
+      id: `fc-neg-${w.id}`,
+      targetKey: `${w.id}:typed-negation-${frame.label}`,
+      wordId: w.id,
+      competencyId: "negation",
+      formCheckMode: "form-production",
+      formCheckCategory: "typed-negation",
+      promptEn,
+      promptKo,
+      stimulus: promptEn,
+      answer,
+      acceptedAnswers: [answer],
+      voiceText: answer,
+      supportingLessonId: "s3-grammar-u2-l3",
+    });
+  }
+
+  // 3. 3 Context/blank items
+  for (const w of targets) {
+    if (items.filter((it) => it.formCheckCategory === "context").length >= 3) break;
+    if (usedWords.has(w.id)) continue;
+    const q = generateWordQuestionFor(w, "context") || generateWordQuestionFor(w, "meaningToKo");
+    if (!q) continue;
+    usedWords.add(w.id);
+    items.push({
+      ...q,
+      targetKey: `${w.id}:context`,
+      wordId: w.id,
+      formCheckMode: "sentence-blank",
+      formCheckCategory: "context",
+      supportingLessonId: "s3-grammar-u2-l2",
+    });
+  }
+
+  // 4. 3 Recognition/discrimination items
+  for (const w of targets) {
+    if (items.filter((it) => it.formCheckCategory === "recognition").length >= 3) break;
+    if (usedWords.has(w.id)) continue;
+    const q = generateWordQuestionFor(w, "koToMeaning");
+    if (!q) continue;
+    usedWords.add(w.id);
+    items.push({
+      ...q,
+      targetKey: `${w.id}:recognition`,
+      wordId: w.id,
+      formCheckMode: "ko-to-meaning",
+      formCheckCategory: "recognition",
+      supportingLessonId: "s3-grammar-u2-l2",
+    });
+  }
+
+  return seededShuffle(items, rng);
+}
+
 // Build the blocked item set: unique canonical targets within one session
 // (spec §3, target key = (wordId, mode)), each carrying its exact supporting
 // lesson route. Distinct words are preferred first; extra modes on the same
 // word only fill a pool too small to reach the item count (e.g. ㅎ-irregular).
 function buildFormCheckItems(check, seed) {
   if (check.surface === "sentences") return buildSentenceFormCheckItems(check, seed);
+  if (check.id === "form-check-past-negation") {
+    const comps = (typeof window !== "undefined" && window.HANAPATH_WORD_EXAM_COMPETENCIES) || (typeof globalThis !== "undefined" && globalThis.HANAPATH_WORD_EXAM_COMPETENCIES) || {};
+    const currentState = (typeof window !== "undefined" && window.state) ? window.state : (typeof state !== "undefined" ? state : null);
+    const isV3 = isWordsProductionBridgeComplete(currentState)
+      && Boolean(comps["past-tense"] && comps["past-tense"].scoredProduction)
+      && Boolean(comps["negation"] && comps["negation"].scoredProduction);
+    if (isV3) {
+      return buildPastNegationV3FormCheckItems(check, seed);
+    }
+  }
   const rng = mulberry32(seed);
   const targets = seededShuffle(getFormCheckTargets(check), rng);
   const modes = check.modes || [];
@@ -17476,6 +17685,7 @@ function buildFormCheckItems(check, seed) {
   }
   return firstPass.concat(rest).slice(0, check.itemCount).map((c) => c.item);
 }
+if (typeof window !== "undefined") window.buildFormCheckItems = buildFormCheckItems;
 
 // Map every sentence row id to the earliest lesson that teaches it, so an
 // error routes to an exact HANAPATH_SENTENCE_LESSONS id (spec §4), cached once.

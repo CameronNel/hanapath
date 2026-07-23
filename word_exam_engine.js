@@ -116,8 +116,15 @@
     };
   }
 
-  function examById(examId) {
-    return (G.HANAPATH_WORD_EXAMS || []).find(function (e) { return e.id === examId; });
+  function examById(examId, version) {
+    if (G.resolveWordExamBlueprint) {
+      return G.resolveWordExamBlueprint(examId, version);
+    }
+    var ver = (version == null || version === "") ? 3 : Number(version);
+    var exams = (ver === 2 && G.HANAPATH_WORD_EXAM_BLUEPRINTS && G.HANAPATH_WORD_EXAM_BLUEPRINTS.EXAMS_V2)
+      ? G.HANAPATH_WORD_EXAM_BLUEPRINTS.EXAMS_V2
+      : (G.HANAPATH_WORD_EXAMS || []);
+    return exams.find(function (e) { return e.id === examId; });
   }
 
   // ── Word helpers ───────────────────────────────────────────────────────────
@@ -631,6 +638,7 @@
   // answer. Uses the audited inflection engine.
   function buildPastProduction(data, w, scope, rng) {
     if (!isPredicate(w)) return null;
+    if (scope.examRef && scope.examRef.version === 2) return null;
     if (!competencyEligible(data, scope.examRef, scope, "past-tense")) return null;
     var past = conjugate(data, w, "past");
     if (!past) return null;
@@ -664,6 +672,7 @@
   ];
   function buildNegationProduction(data, w, scope, rng) {
     if (!isPredicate(w)) return null;
+    if (scope.examRef && scope.examRef.version === 2) return null;
     if (!competencyEligible(data, scope.examRef, scope, "negation")) return null;
     var polite = conjugate(data, w, "polite");
     if (!polite) return null;
@@ -964,7 +973,8 @@
   }
 
   function generateAttempt(examId, seed, opts) {
-    var exam = examById(examId);
+    var ver = (opts && (opts.version != null ? opts.version : opts.blueprintVersion)) || null;
+    var exam = (opts && opts.blueprint) || examById(examId, ver);
     if (!exam) throw new Error("word-exam engine: unknown exam " + examId);
     var mode = (opts && opts.mode) || "full";
     if (exam.finalLayers && mode === "full") return generateFinal(exam, seed, mode, opts);
@@ -1092,7 +1102,8 @@
     gradeItem: gradeItem,
     evaluateBands: evaluateBands,
     qualifiesForConfirmation: qualifiesForConfirmation,
-    resolveScope: function (examId) { var e = examById(examId); return resolveScope(buildData(), e); },
+    resolveWordExamBlueprint: function (examId, version) { return examById(examId, version); },
+    resolveScope: function (examId, version) { var e = examById(examId, version); return resolveScope(buildData(), e); },
     buildData: buildData,
     resetDataCache: function () { _dataCache = null; },
     _internals: { makeRng: makeRng, nfc: nfc, competencyEligible: competencyEligible },

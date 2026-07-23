@@ -408,6 +408,104 @@ for (const frame of Object.keys(NEGATION_FRAME_CONTRACTS)) {
   if (!negationFramesSeen.has(frame)) fail(`negation frame ${frame} was never generated`);
 }
 
+// ── Package 2 (Words C4) frozen v2 blueprint resolver & version pairing audit ──
+{
+  const resolver = W.resolveWordExamBlueprint || ENG.resolveWordExamBlueprint;
+  if (typeof resolver !== "function") {
+    fail("C4 audit: resolveWordExamBlueprint is not exported");
+  } else {
+    const v2_exam10 = resolver("word-exam-10", 2);
+    const v3_exam10 = resolver("word-exam-10", 3);
+    const default_exam10 = resolver("word-exam-10");
+    if (!v2_exam10 || v2_exam10.version !== 2) fail("C4 audit: resolveWordExamBlueprint(id, 2) did not return v2 blueprint");
+    if (!v3_exam10 || v3_exam10.version !== 3) fail("C4 audit: resolveWordExamBlueprint(id, 3) did not return v3 blueprint");
+    if (!default_exam10 || default_exam10.version !== 3) fail("C4 audit: resolveWordExamBlueprint(id) did not default to v3");
+    if (v2_exam10.minPastProduction !== 0 || v2_exam10.minNegationProduction !== 0) {
+      fail("C4 audit: frozen v2 blueprint has non-zero typed past/negation minima");
+    }
+
+    // Verify v2 retention attempt generation contains no typed past/negation production items
+    const v2Attempt = ENG.generateAttempt("word-exam-10", 12345, { mode: "confirmation", version: 2 });
+    if (v2Attempt.items.some((it) => it.mode === "form-production" && (it.competencyId === "past-tense" || it.competencyId === "negation"))) {
+      fail("C4 audit: frozen v2 retention attempt generated typed past/negation production items");
+    }
+
+    // Verify v3 retention attempt generation contains required past/negation production items
+    const v3Attempt = ENG.generateAttempt("word-exam-10", 12345, { mode: "confirmation", version: 3 });
+    const v3PastProd = v3Attempt.items.filter((it) => it.mode === "form-production" && it.competencyId === "past-tense").length;
+    const v3NegProd = v3Attempt.items.filter((it) => it.mode === "form-production" && it.competencyId === "negation").length;
+    if (v3PastProd < 3 || v3NegProd < 3) {
+      fail(`C4 audit: v3 retention attempt missed minima (past=${v3PastProd}, neg=${v3NegProd})`);
+    }
+  }
+}
+
+// ── Package 3 (Words C5) v3 readiness & production bridge milestone audit ──
+{
+  const appCode = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
+  if (!appCode.includes("isWordsProductionBridgeComplete")) {
+    fail("C5 audit: isWordsProductionBridgeComplete is not defined in app.js");
+  }
+  if (!appCode.includes("getWordExamTargetVersion")) {
+    fail("C5 audit: getWordExamTargetVersion is not defined in app.js");
+  }
+  if (!appCode.includes("Production bridge available")) {
+    fail("C5 audit: 'Production bridge available' UI message missing in app.js");
+  }
+  if (!appCode.includes("s3-grammar-u2-l3")) {
+    fail("C5 audit: s3-grammar-u2-l3 bridge route missing in app.js");
+  }
+
+  // Evaluate readiness logic on four fixture states
+  const appSandbox = {
+    window: {}, state: {}, console, Map, Set,
+    document: { addEventListener: () => {}, getElementById: () => null, querySelector: () => null, querySelectorAll: () => [] },
+    location: { search: "" },
+    localStorage: { getItem: () => null, setItem: () => {} }
+  };
+  appSandbox.globalThis = appSandbox;
+  vm.createContext(appSandbox);
+  for (const f of ["words_curated_core.js", "words_lesson_plan.js", "words_inflect.js", "sentences_core.js", "sentences_lesson_plan.js", "word_exam_blueprints.js", "word_exam_engine.js"]) {
+    vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), appSandbox);
+  }
+  vm.runInContext(appCode, appSandbox);
+
+  const bridgeCheck = appSandbox.isWordsProductionBridgeComplete || appSandbox.window.isWordsProductionBridgeComplete;
+  const targetVerCheck = appSandbox.getWordExamTargetVersion || appSandbox.window.getWordExamTargetVersion;
+
+  if (typeof bridgeCheck === "function" && typeof targetVerCheck === "function") {
+    // 1. New learner (empty completion)
+    const newLearner = { vocabLessonCompleted: ["s1-firstwords-u1-l1"] };
+    if (bridgeCheck(newLearner)) fail("C5 audit: new learner reported production ready");
+    if (targetVerCheck("word-exam-5", "full", newLearner) !== 2) fail("C5 audit: new learner target version was not 2");
+
+    // 2. Old crowned learner before the bridge (s1..s3 lessons excluding l3)
+    const oldCrownedLearner = { vocabLessonCompleted: ["s1-firstwords-u1-l1", "s3-grammar-u2-l1", "s3-grammar-u2-l2", "s3-grammar-u2-cp"] };
+    if (bridgeCheck(oldCrownedLearner)) fail("C5 audit: old crowned learner before bridge reported production ready");
+    if (targetVerCheck("word-exam-5", "full", oldCrownedLearner) !== 2) fail("C5 audit: old crowned learner before bridge target version was not 2");
+
+    // 3. Same learner after completing the bridge
+    const learnerAfterBridge = { vocabLessonCompleted: ["s1-firstwords-u1-l1", "s3-grammar-u2-l1", "s3-grammar-u2-l2", "s3-grammar-u2-l3", "s3-grammar-u2-cp"] };
+    if (!bridgeCheck(learnerAfterBridge)) fail("C5 audit: learner after bridge was not reported production ready");
+    if (targetVerCheck("word-exam-5", "full", learnerAfterBridge) !== 3) fail("C5 audit: learner after bridge target version was not 3");
+
+    // 4. Learner with live v2 retention window (qualifier version 2)
+    const v2RetentionLearner = {
+      vocabLessonCompleted: ["s1-firstwords-u1-l1"],
+      wordExams: {
+        version: 2,
+        byExamId: {
+          "word-exam-10": { blueprintVersion: 2, passed: true, confirmationDueFrom: 100, confirmationExpiresAt: 9999999999999 }
+        }
+      }
+    };
+    appSandbox.state = v2RetentionLearner;
+    if (targetVerCheck("word-exam-10", "confirmation", v2RetentionLearner) !== 2) fail("C5 audit: v2 retention window target version was not 2");
+  } else {
+    fail("C5 audit: readiness functions not exported on window/global");
+  }
+}
+
 // ── Report ───────────────────────────────────────────────────────────────────
 if (failures.length) {
   console.error(`\nWord-exam audit FAILED (${failures.length}):`);
