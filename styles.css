@@ -4142,8 +4142,8 @@ li { margin-bottom: 4px; }
   font-size: clamp(1.15rem, 5.6vw, 1.45rem);
 }
 .alphabet-lesson-player .player-actions.word-card-nav-actions.drill-quick-actions {
-  grid-template-columns: repeat(2, minmax(0, 112px));
-  justify-content: center;
+  grid-template-columns: minmax(0, 112px);
+  justify-content: end;
   gap: 10px;
   margin-top: 8px !important;
 }
@@ -4154,6 +4154,15 @@ li { margin-bottom: 4px; }
   box-shadow: none;
   font-size: .76rem;
   font-weight: 700;
+}
+#drillEndBtn {
+  border: 1px solid rgba(251, 146, 60, .45);
+  background: rgba(251, 146, 60, .12);
+  color: #fdba74;
+}
+#drillEndBtn:hover:not(:disabled) {
+  background: rgba(251, 146, 60, .2);
+  border-color: rgba(251, 146, 60, .6);
 }
 #drillPreviousBtn {
   border-color: var(--line);
