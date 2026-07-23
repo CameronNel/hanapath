@@ -17448,9 +17448,14 @@ function isFormCheckUnlocked(check) {
 // by family for irregular checks and to predicates for production-only checks.
 function getFormCheckTargets(check) {
   if (check.surface !== "words") return [];
+  const wordsMap = (typeof curatedWordsById !== "undefined" && curatedWordsById.size)
+    ? curatedWordsById
+    : (typeof window !== "undefined" && Array.isArray(window.HANAPATH_CURATED_WORDS)
+      ? new Map(window.HANAPATH_CURATED_WORDS.map((w) => [w.id, w]))
+      : new Map());
   if (check.targetFamily) {
     const taught = new Set(getWordLessons().flatMap((l) => l.newWordIds || []));
-    return [...curatedWordsById.values()].filter((w) => w.irregularFamily === check.targetFamily && taught.has(w.id));
+    return [...wordsMap.values()].filter((w) => w.irregularFamily === check.targetFamily && taught.has(w.id));
   }
   const ids = new Set();
   (check.unlock.lessonIds || []).forEach((lid) => {
@@ -17463,7 +17468,7 @@ function getFormCheckTargets(check) {
       if (sl) (sl.newWordIds || []).forEach((id) => ids.add(id));
     });
   });
-  let targets = [...ids].map((id) => curatedWordsById.get(id)).filter(Boolean);
+  let targets = [...ids].map((id) => wordsMap.get(id)).filter(Boolean);
   const productionOnly = (check.modes || []).every((m) => m === "form-production" || m === "form-recognition");
   if (productionOnly) targets = targets.filter((w) => w.pos === "verb" || w.pos === "adjective");
   return targets;
@@ -17504,12 +17509,155 @@ function seededShuffle(arr, rng) {
   return a;
 }
 
+function buildPastNegationV3FormCheckItems(check, seed) {
+  const rng = mulberry32(seed);
+  const data = typeof window !== "undefined" && window.HANAPATH_WORD_EXAM_ENGINE ? window.HANAPATH_WORD_EXAM_ENGINE.buildData() : null;
+  const lessons = (typeof window !== "undefined" && Array.isArray(window.HANAPATH_WORD_LESSONS))
+    ? window.HANAPATH_WORD_LESSONS
+    : ((typeof globalThis !== "undefined" && Array.isArray(globalThis.HANAPATH_WORD_LESSONS)) ? globalThis.HANAPATH_WORD_LESSONS : []);
+  const wordsList = (typeof window !== "undefined" && Array.isArray(window.HANAPATH_CURATED_WORDS))
+    ? window.HANAPATH_CURATED_WORDS
+    : ((typeof globalThis !== "undefined" && Array.isArray(globalThis.HANAPATH_CURATED_WORDS)) ? globalThis.HANAPATH_CURATED_WORDS : []);
+  const wordsMap = (typeof curatedWordsById !== "undefined" && curatedWordsById.size)
+    ? curatedWordsById
+    : new Map(wordsList.map((w) => [w.id, w]));
+  const inflectEngine = (typeof window !== "undefined" && window.HANAPATH_INFLECT) || (typeof globalThis !== "undefined" && globalThis.HANAPATH_INFLECT) || (typeof HANAPATH_INFLECT !== "undefined" ? HANAPATH_INFLECT : null);
+
+  const taughtIds = new Set(lessons.flatMap((l) => l.newWordIds || []));
+  const taughtWords = [...taughtIds].map((id) => wordsMap.get(id)).filter(Boolean);
+
+  const predicates = seededShuffle(taughtWords.filter((w) => w.pos === "verb" || w.pos === "adjective"), rng);
+  const targets = seededShuffle(taughtWords, rng);
+  const usedWords = new Set();
+  const items = [];
+
+  // 1. 3 Typed Past items
+  for (const w of predicates) {
+    if (items.filter((it) => it.formCheckCategory === "typed-past").length >= 3) break;
+    if (usedWords.has(w.id)) continue;
+    const past = inflectEngine ? inflectEngine.conjugate(w.korean, w.pos, w.irregularFamily, "past") : null;
+    if (!past) continue;
+    usedWords.add(w.id);
+    const mean = w.meaningShort || w.meaning;
+    const promptEn = `Change “${w.korean}” (${mean}) to the polite past form.`;
+    const promptKo = `${w.korean} — 공손한 과거형으로 입력하십시오.`;
+    items.push({
+      id: `fc-past-${w.id}`,
+      targetKey: `${w.id}:typed-past`,
+      wordId: w.id,
+      competencyId: "past-tense",
+      formCheckMode: "form-production",
+      formCheckCategory: "typed-past",
+      promptEn,
+      promptKo,
+      stimulus: promptEn,
+      answer: past,
+      acceptedAnswers: [past],
+      voiceText: past,
+      supportingLessonId: "s3-grammar-u2-l3",
+    });
+  }
+
+  // 2. 3 Typed Negation items
+  const NEGATION_FRAMES = [
+    { prefix: "안 ", suffix: null, actionOnly: false, label: "short-negative", marker: "안", frameEn: "short negation" },
+    { prefix: "못 ", suffix: null, actionOnly: true,  label: "short-inability", marker: "못", frameEn: "short inability" },
+    { prefix: null, suffix: "지 않아요", actionOnly: false, label: "long-negative", marker: "-지 않아요", frameEn: "long negation" },
+    { prefix: null, suffix: "지 못해요", actionOnly: true,  label: "long-inability", marker: "-지 못해요", frameEn: "long inability" },
+  ];
+  let frameIdx = 0;
+  for (const w of predicates) {
+    if (items.filter((it) => it.formCheckCategory === "typed-negation").length >= 3) break;
+    if (usedWords.has(w.id)) continue;
+    const polite = inflectEngine ? inflectEngine.conjugate(w.korean, w.pos, w.irregularFamily, "polite") : null;
+    if (!polite) continue;
+    const isAction = w.pos === "verb" && w.morphTag !== "VA";
+    const eligibleFrames = NEGATION_FRAMES.filter((f) => !f.actionOnly || isAction);
+    const frame = eligibleFrames[frameIdx % eligibleFrames.length];
+    frameIdx += 1;
+    let answer = null;
+    if (frame.prefix) {
+      answer = frame.prefix + polite;
+    } else {
+      const stem = data && data.inflect ? data.inflect.getStem(w.korean) : (w.korean.endsWith("다") ? w.korean.slice(0, -1) : null);
+      if (!stem) continue;
+      answer = stem + frame.suffix;
+    }
+    if (!answer) continue;
+    usedWords.add(w.id);
+    const mean = w.meaningShort || w.meaning;
+    const promptEn = `Change “${w.korean}” (${mean}) to the polite present using ${frame.frameEn} ${frame.marker}.`;
+    const promptKo = `${w.korean} — ${frame.marker} 형식의 공손한 부정형으로 입력하십시오.`;
+    items.push({
+      id: `fc-neg-${w.id}`,
+      targetKey: `${w.id}:typed-negation-${frame.label}`,
+      wordId: w.id,
+      competencyId: "negation",
+      formCheckMode: "form-production",
+      formCheckCategory: "typed-negation",
+      promptEn,
+      promptKo,
+      stimulus: promptEn,
+      answer,
+      acceptedAnswers: [answer],
+      voiceText: answer,
+      supportingLessonId: "s3-grammar-u2-l3",
+    });
+  }
+
+  // 3. 3 Context/blank items
+  for (const w of targets) {
+    if (items.filter((it) => it.formCheckCategory === "context").length >= 3) break;
+    if (usedWords.has(w.id)) continue;
+    const q = generateWordQuestionFor(w, "context") || generateWordQuestionFor(w, "meaningToKo");
+    if (!q) continue;
+    usedWords.add(w.id);
+    items.push({
+      ...q,
+      targetKey: `${w.id}:context`,
+      wordId: w.id,
+      formCheckMode: "sentence-blank",
+      formCheckCategory: "context",
+      supportingLessonId: "s3-grammar-u2-l2",
+    });
+  }
+
+  // 4. 3 Recognition/discrimination items
+  for (const w of targets) {
+    if (items.filter((it) => it.formCheckCategory === "recognition").length >= 3) break;
+    if (usedWords.has(w.id)) continue;
+    const q = generateWordQuestionFor(w, "koToMeaning");
+    if (!q) continue;
+    usedWords.add(w.id);
+    items.push({
+      ...q,
+      targetKey: `${w.id}:recognition`,
+      wordId: w.id,
+      formCheckMode: "ko-to-meaning",
+      formCheckCategory: "recognition",
+      supportingLessonId: "s3-grammar-u2-l2",
+    });
+  }
+
+  return seededShuffle(items, rng);
+}
+
 // Build the blocked item set: unique canonical targets within one session
 // (spec §3, target key = (wordId, mode)), each carrying its exact supporting
 // lesson route. Distinct words are preferred first; extra modes on the same
 // word only fill a pool too small to reach the item count (e.g. ㅎ-irregular).
 function buildFormCheckItems(check, seed) {
   if (check.surface === "sentences") return buildSentenceFormCheckItems(check, seed);
+  if (check.id === "form-check-past-negation") {
+    const comps = (typeof window !== "undefined" && window.HANAPATH_WORD_EXAM_COMPETENCIES) || (typeof globalThis !== "undefined" && globalThis.HANAPATH_WORD_EXAM_COMPETENCIES) || {};
+    const currentState = (typeof window !== "undefined" && window.state) ? window.state : (typeof state !== "undefined" ? state : null);
+    const isV3 = isWordsProductionBridgeComplete(currentState)
+      && Boolean(comps["past-tense"] && comps["past-tense"].scoredProduction)
+      && Boolean(comps["negation"] && comps["negation"].scoredProduction);
+    if (isV3) {
+      return buildPastNegationV3FormCheckItems(check, seed);
+    }
+  }
   const rng = mulberry32(seed);
   const targets = seededShuffle(getFormCheckTargets(check), rng);
   const modes = check.modes || [];
@@ -17537,6 +17685,7 @@ function buildFormCheckItems(check, seed) {
   }
   return firstPass.concat(rest).slice(0, check.itemCount).map((c) => c.item);
 }
+if (typeof window !== "undefined") window.buildFormCheckItems = buildFormCheckItems;
 
 // Map every sentence row id to the earliest lesson that teaches it, so an
 // error routes to an exact HANAPATH_SENTENCE_LESSONS id (spec §4), cached once.

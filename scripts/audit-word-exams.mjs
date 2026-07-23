@@ -457,9 +457,17 @@ for (const frame of Object.keys(NEGATION_FRAME_CONTRACTS)) {
   }
 
   // Evaluate readiness logic on four fixture states
-  const appSandbox = { window: {}, state: {} };
+  const appSandbox = {
+    window: {}, state: {}, console, Map, Set,
+    document: { addEventListener: () => {}, getElementById: () => null, querySelector: () => null, querySelectorAll: () => [] },
+    location: { search: "" },
+    localStorage: { getItem: () => null, setItem: () => {} }
+  };
   appSandbox.globalThis = appSandbox;
   vm.createContext(appSandbox);
+  for (const f of ["words_curated_core.js", "words_lesson_plan.js", "words_inflect.js", "sentences_core.js", "sentences_lesson_plan.js", "word_exam_blueprints.js", "word_exam_engine.js"]) {
+    vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), appSandbox);
+  }
   vm.runInContext(appCode, appSandbox);
 
   const bridgeCheck = appSandbox.isWordsProductionBridgeComplete || appSandbox.window.isWordsProductionBridgeComplete;

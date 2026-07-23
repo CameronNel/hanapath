@@ -211,6 +211,91 @@ for (const check of checks) {
 
 for (const rid of REQUIRED_IDS) if (!seen.has(rid)) err(`missing required check: ${rid}`);
 
+// ── Package 4 (Form Checks B5) past/negation upgrade audit ──
+{
+  const appCode = readFileSync(join(root, "app.js"), "utf8");
+
+  // Run in VM sandbox to test v2 and v3 item generation for form-check-past-negation
+  const appSandbox = {
+    window: {}, console, Map, Set,
+    document: { addEventListener: () => {}, getElementById: () => null, querySelector: () => null, querySelectorAll: () => [] },
+    location: { search: "" },
+    localStorage: { getItem: () => null, setItem: () => {} }
+  };
+  appSandbox.globalThis = appSandbox;
+  vm.createContext(appSandbox);
+  for (const file of ["words_curated_core.js", "words_inflect.js", "words_lesson_plan.js", "sentences_core.js", "sentences_lesson_plan.js", "word_exam_blueprints.js", "word_exam_engine.js", "form_check_blueprints.js"]) {
+    vm.runInContext(readFileSync(join(root, file), "utf8"), appSandbox, { filename: file });
+  }
+  vm.runInContext(appCode, appSandbox);
+
+  const check = (appSandbox.window.HANAPATH_FORM_CHECKS || []).find((c) => c.id === "form-check-past-negation");
+  if (!check) err("B5 audit: form-check-past-negation not found in inventory");
+
+  const buildItems = appSandbox.buildFormCheckItems || appSandbox.window.buildFormCheckItems;
+  if (typeof buildItems !== "function") {
+    err("B5 audit: buildFormCheckItems is not exported in app.js");
+  } else {
+    // 1. Test v2 state (bridge not complete)
+    if (!appSandbox.state) appSandbox.state = {};
+    appSandbox.state.vocabLessonCompleted = ["s1-firstwords-u1-l1", "s3-grammar-u2-l2"];
+    appSandbox.window.state = appSandbox.state;
+    const v2Items = buildItems(check, 12345);
+    if (v2Items.length !== 12) err(`B5 audit v2: expected 12 items, got ${v2Items.length}`);
+    const v2TypedPast = v2Items.filter((it) => it.formCheckCategory === "typed-past" || (it.formCheckMode === "form-production" && it.competencyId === "past-tense")).length;
+    const v2TypedNeg = v2Items.filter((it) => it.formCheckCategory === "typed-negation" || (it.formCheckMode === "form-production" && it.competencyId === "negation")).length;
+    if (v2TypedPast !== 0 || v2TypedNeg !== 0) {
+      err(`B5 audit v2: early typed production present before bridge completion (past=${v2TypedPast}, neg=${v2TypedNeg})`);
+    }
+    for (const it of v2Items) {
+      if (it.supportingLessonId !== "s3-grammar-u2-l2") {
+        err(`B5 audit v2: item ${it.id} routed to ${it.supportingLessonId} instead of s3-grammar-u2-l2`);
+      }
+    }
+
+    // 2. Test v3 state (bridge complete)
+    appSandbox.state.vocabLessonCompleted = ["s1-firstwords-u1-l1", "s3-grammar-u2-l2", "s3-grammar-u2-l3"];
+    appSandbox.window.state = appSandbox.state;
+    const v3Items = buildItems(check, 12345);
+    if (v3Items.length !== 12) err(`B5 audit v3: expected 12 items, got ${v3Items.length}`);
+    const v3Past = v3Items.filter((it) => it.formCheckCategory === "typed-past");
+    const v3Neg = v3Items.filter((it) => it.formCheckCategory === "typed-negation");
+    const v3Context = v3Items.filter((it) => it.formCheckCategory === "context");
+    const v3Rec = v3Items.filter((it) => it.formCheckCategory === "recognition");
+
+    if (v3Past.length !== 3 || v3Neg.length !== 3 || v3Context.length !== 3 || v3Rec.length !== 3) {
+      err(`B5 audit v3: allocation is not 3/3/3/3 (past=${v3Past.length}, neg=${v3Neg.length}, context=${v3Context.length}, rec=${v3Rec.length})`);
+    }
+
+    // Safeguard checks on typed items
+    for (const it of [...v3Past, ...v3Neg]) {
+      if (it.supportingLessonId !== "s3-grammar-u2-l3") {
+        err(`B5 audit v3: typed item ${it.id} routed to ${it.supportingLessonId} instead of s3-grammar-u2-l3`);
+      }
+      if (!it.acceptedAnswers || !it.acceptedAnswers.length) {
+        err(`B5 audit v3: typed item ${it.id} missing finite acceptedAnswers`);
+      }
+      // Answer leakage check
+      if (it.promptEn.includes(it.answer) || it.promptKo.includes(it.answer)) {
+        err(`B5 audit v3: typed item ${it.id} prompt leaks answer "${it.answer}"`);
+      }
+    }
+
+    // Safeguard checks on context/recognition items
+    for (const it of [...v3Context, ...v3Rec]) {
+      if (it.supportingLessonId !== "s3-grammar-u2-l2") {
+        err(`B5 audit v3: context/rec item ${it.id} routed to ${it.supportingLessonId} instead of s3-grammar-u2-l2`);
+      }
+    }
+
+    // Unique target keys in session
+    const targetKeys = v3Items.map((it) => it.targetKey);
+    if (new Set(targetKeys).size !== 12) {
+      err(`B5 audit v3: session contains duplicate target keys (${targetKeys.join(", ")})`);
+    }
+  }
+}
+
 // ── Report ────────────────────────────────────────────────────────────────
 if (printPools || errors.length) {
   console.log("check × competency × mode × route × family — count / pool");

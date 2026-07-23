@@ -59,7 +59,7 @@
       titleKo: "과거와 부정 확인",
       title: "Past & Negation Check",
       surface: "words",
-      itemCount: 10,
+      itemCount: 12,
       unlock: { lessonIds: ["s3-grammar-u2-l2"] },
       competencies: ["past-tense", "negation"],
       // v2 state: recognition/context only. Typed past/negation production is
