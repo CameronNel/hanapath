@@ -2912,8 +2912,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v445";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260722g";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v446";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260723a";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -10095,9 +10095,12 @@ function alphabetPracticeProgressHtml(label, current = 0, total = 0, allowRefere
   </div>`;
 }
 
-function bindAlphabetReferenceButtons(container) {
+let alphabetQuickRefReturnTo = "lesson";
+
+function bindAlphabetReferenceButtons(container, { returnTo = "lesson" } = {}) {
   container?.querySelectorAll("[data-checkpoint-open-reference]").forEach((button) => {
     button.addEventListener("click", () => {
+      alphabetQuickRefReturnTo = returnTo;
       alphabetQuickRefReturn = null;
       state.quickRefActive = true;
       openEntireAlphabet();
@@ -11133,8 +11136,12 @@ function syncAlphabetSeg() {
 function renderEntireAlphabet() {
   currentQuizScope = "alphabet";
   state.studio = "alphabet";
-  activeHub = "learn";
-  setNavActive("learn");
+  const quickRefReturnsToWriting = !!state.quickRefActive && alphabetQuickRefReturnTo === "writing";
+  const referenceHub = quickRefReturnsToWriting
+    ? (String(hangulWritingReturnTo).startsWith("learn-") ? "learn" : "practice")
+    : "learn";
+  activeHub = referenceHub;
+  setNavActive(referenceHub);
   const el = showScreen("detail");
   if (!el) return;
 
@@ -11149,19 +11156,23 @@ function renderEntireAlphabet() {
       returnToSource();
       return;
     }
+    if (quickRefReturnsToWriting) {
+      renderHangulWriting();
+      return;
+    }
     openLearnStageMenu("alphabet");
   };
 
-  showDetailBarWithBack("learn", "Entire Korean alphabet", () => {
+  showDetailBarWithBack(referenceHub, "Entire Korean alphabet", () => {
     returnFromQuickRef();
-  }, alphabetQuickRefReturn ? "Drill Lab" : "Alphabet");
+  }, quickRefReturnsToWriting ? "Writing practice" : alphabetQuickRefReturn ? "Drill Lab" : "Alphabet");
 
   const mode = state.alphabetBoardMode === "list" ? "list" : "keyboard";
   const labels = state.alphabetBoardLabels || "none";
   if (!alphabetBoardSelected) alphabetBoardSelected = "ㄱ";
 
   const resumeBtnHtml = isQuickRef
-    ? `<button class="button primary compact alpha-reference-resume" type="button" id="resumeActiveLessonBtn">🔙 ${alphabetQuickRefReturn ? "Return to Drill Lab" : `Return to Stage ${String(activeLessonIdx + 1).padStart(2, "0")}`}</button>`
+    ? `<button class="button primary compact alpha-reference-resume" type="button" id="resumeActiveLessonBtn">🔙 ${quickRefReturnsToWriting ? "Return to Writing practice" : alphabetQuickRefReturn ? "Return to Drill Lab" : `Return to Stage ${String(activeLessonIdx + 1).padStart(2, "0")}`}</button>`
     : "";
 
   el.innerHTML = `
@@ -11195,7 +11206,7 @@ function renderEntireAlphabet() {
   const resumeBtn = el.querySelector("#resumeActiveLessonBtn");
   if (resumeBtn) {
     resumeBtn.addEventListener("click", () => {
-      if (alphabetQuickRefReturn) {
+      if (alphabetQuickRefReturn || quickRefReturnsToWriting) {
         returnFromQuickRef();
         return;
       }
@@ -14971,6 +14982,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   renderPhaseOnePlayer();
 
   els.phaseOneReferenceButton.addEventListener("click", () => {
+    alphabetQuickRefReturnTo = "lesson";
     alphabetQuickRefReturn = null;
     state.quickRefActive = true;
     openEntireAlphabet();
@@ -15025,6 +15037,7 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   stageEl.addEventListener("click", (e) => {
     const openRef = e.target.closest("[data-checkpoint-open-reference]");
     if (openRef) {
+      alphabetQuickRefReturnTo = "lesson";
       state.quickRefActive = true;
       openEntireAlphabet();
       return;
@@ -20137,7 +20150,7 @@ function renderHangulWritingUnitPicker(el) {
     updateNativeRecognitionUI();
   }
 
-  bindAlphabetReferenceButtons(el);
+  bindAlphabetReferenceButtons(el, { returnTo: "writing" });
   el.querySelectorAll("[data-writing-unit]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exercise = btn.dataset.writingExercise || "shape";
@@ -20260,7 +20273,7 @@ function renderHangulWritingPractice(el, unit) {
     </div>
   `;
 
-  bindAlphabetReferenceButtons(el);
+  bindAlphabetReferenceButtons(el, { returnTo: "writing" });
   const canvas = el.querySelector("#writingCanvas");
   fitHangulWritingCanvas();
   bindHangulWritingResize();
