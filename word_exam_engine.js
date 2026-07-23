@@ -1,4 +1,4 @@
-// word_exam_engine.js — Core Word Examination Suite deterministic engine (v2).
+// word_exam_engine.js — Core Word Examination Suite deterministic engine (v3).
 // Plain browser global; must load before app.js and after word_exam_blueprints.js.
 // Governing contract: docs/CORE_WORD_EXAM_SPECS.md.
 //
@@ -623,6 +623,63 @@
     return it;
   }
 
+  // P — typed past-tense production (v3). Context-driven English prompt;
+  // the learner types the polite past form. Uses the audited inflection engine.
+  function buildPastProduction(data, w, scope, rng) {
+    if (!isPredicate(w)) return null;
+    if (!competencyEligible(data, scope.examRef, scope, "past-tense")) return null;
+    var past = conjugate(data, w, "past");
+    if (!past) return null;
+    var it = baseItem(data, w, "P", "form-production", "past-tense");
+    it.isNonCitation = true;
+    it.promptEn = "Yesterday, " + fullMeaning(w) + ".";
+    it.promptKo = "어제, " + nfc(w.korean) + ".";
+    it.stimulus = it.promptEn;
+    it.answer = past;
+    it.acceptedAnswers = [past];
+    it.typeTarget = past;
+    return it;
+  }
+
+  // F — typed negation production (v3). Context-driven English prompt;
+  // the learner types the reviewed negation frame. Authored patterns only —
+  // the inflection engine has no generic negation form.
+  var NEGATION_FRAMES = [
+    { prefix: "안 ", suffix: null, actionOnly: false, label: "short-negative" },
+    { prefix: "못 ", suffix: null, actionOnly: true,  label: "short-inability" },
+    { prefix: null, suffix: "지 않아요", actionOnly: false, label: "long-negative" },
+    { prefix: null, suffix: "지 못해요", actionOnly: true,  label: "long-inability" },
+  ];
+  function buildNegationProduction(data, w, scope, rng) {
+    if (!isPredicate(w)) return null;
+    if (!competencyEligible(data, scope.examRef, scope, "negation")) return null;
+    var polite = conjugate(data, w, "polite");
+    if (!polite) return null;
+    var isAction = w.pos === "verb" && w.morphTag !== "VA";
+    var eligible = NEGATION_FRAMES.filter(function (f) { return !f.actionOnly || isAction; });
+    var frame = eligible[Math.floor(rng() * eligible.length)];
+    var stem = data.inflect ? data.inflect.getStem(nfc(w.korean)) : null;
+    var answer;
+    if (frame.prefix) {
+      answer = frame.prefix + polite;
+    } else {
+      if (!stem) return null;
+      answer = stem + frame.suffix;
+    }
+    answer = nfc(answer);
+    var it = baseItem(data, w, "F", "form-production", "negation");
+    it.isNonCitation = true;
+    it.promptEn = frame.actionOnly
+      ? "I can't " + fullMeaning(w) + "."
+      : "I don't " + fullMeaning(w) + ".";
+    it.promptKo = nfc(w.korean) + " → " + answer;
+    it.stimulus = it.promptEn;
+    it.answer = answer;
+    it.acceptedAnswers = [answer];
+    it.typeTarget = answer;
+    return it;
+  }
+
   // ── Strand fill order (scarcest pools first) ───────────────────────────────
   var STRAND_SLOTS = ["R_text", "R_audio", "C", "P", "X", "F", "D"];
   var STRAND_PRIMARY = { R_text: "R", R_audio: "R", C: "C", P: "P", X: "X", F: "F", D: "D" };
@@ -679,6 +736,8 @@
         if (!preferClass) return 0;
         if (preferClass === "function") return (isFunctionish(w) || isGrammarWord(w)) ? 0 : 1;
         if (preferClass === "predicate") return isPredicate(w) ? 0 : 1;
+        if (preferClass === "past-production") return isPredicate(w) ? 0 : 1;
+        if (preferClass === "negation-production") return isPredicate(w) ? 0 : 1;
         return 0;
       }
       // Stable 4-bucket partition equivalent to sorting by (prefRank, unitNeeded).
@@ -697,9 +756,15 @@
         if (slot === "R_text") it = buildKoToMeaning(data, w, scope, rng);
         else if (slot === "R_audio") it = buildAudioToMeaning(data, w, scope, rng);
         else if (slot === "C") it = buildMeaningToKo(data, w, scope, rng);
-        else if (slot === "P") it = buildTypeKo(data, w, scope, rng, false);
+        else if (slot === "P") {
+          if (preferClass === "past-production") it = buildPastProduction(data, w, scope, rng);
+          if (!it) it = buildTypeKo(data, w, scope, rng, false);
+        }
         else if (slot === "X") it = buildX(w);
-        else if (slot === "F") it = buildF(w, { wantNonCitation: preferClass === "predicate" });
+        else if (slot === "F") {
+          if (preferClass === "negation-production") it = buildNegationProduction(data, w, scope, rng);
+          if (!it) it = buildF(w, { wantNonCitation: preferClass === "predicate" });
+        }
         else if (slot === "D") it = buildD(w);
         if (it) return it;
       }
@@ -770,23 +835,31 @@
     var fnCtxTarget = exam.minFunctionContextItems || 0;
     var nonCitPredTarget = (exam.finalInvariants && exam.finalInvariants.minNonCitationPredicateItems) ||
       exam.minNonCitationPredicateItems || 0;
+    var pastProdTarget = (mode === "confirmation" && exam.retention && exam.retention.minPastProduction) ||
+      exam.minPastProduction || 0;
+    var negProdTarget = (mode === "confirmation" && exam.retention && exam.retention.minNegationProduction) ||
+      exam.minNegationProduction || 0;
     function functionCount() { return items.filter(function (x) { return x.posClass === "function"; }).length; }
     function predCount() { return items.filter(function (x) { return x.posClass === "predicate"; }).length; }
     function fnUsageCount() { return items.filter(function (x) { return x.mode === "function-usage"; }).length; }
     function nonCitPredCount() { return items.filter(function (x) { return x.isNonCitation && x.posClass === "predicate"; }).length; }
+    function pastProdCount() { return items.filter(function (x) { return x.competencyId === "past-tense" && x.mode === "form-production"; }).length; }
+    function negProdCount() { return items.filter(function (x) { return x.competencyId === "negation" && x.mode === "form-production"; }).length; }
 
     // Pass 1 — fill every slot, biasing scarce floors first.
     for (var s = 0; s < slotList.length; s++) {
       var slot = slotList[s];
       var prefer = null;
       if (slot === "F") {
-        if (functionCount() < functionPosTarget) prefer = "function";
+        if (negProdCount() < negProdTarget) prefer = "negation-production";
+        else if (functionCount() < functionPosTarget) prefer = "function";
         else if (nonCitPredCount() < nonCitPredTarget) prefer = "predicate";
         else if (predCount() < predTarget) prefer = "predicate";
       } else if (slot === "X") {
         if (fnUsageCount() < fnCtxTarget) prefer = "function";
       } else if (slot === "P") {
-        if (predCount() < predTarget) prefer = "predicate";
+        if (pastProdCount() < pastProdTarget) prefer = "past-production";
+        else if (predCount() < predTarget) prefer = "predicate";
       }
       var it = buildForSlot(slot, null, prefer);
       if (!it && prefer) it = buildForSlot(slot, null, null); // relax preference before failing

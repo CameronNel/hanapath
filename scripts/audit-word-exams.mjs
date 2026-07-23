@@ -196,7 +196,7 @@ function checkAttempt(exam, scopeSet, att, tag, isFull, expected) {
     posClassCount[it.posClass] = (posClassCount[it.posClass] || 0) + 1;
     if (it.mode === "function-usage") fnUsage += 1;
     if (it.isNonCitation && it.posClass === "predicate") nonCitPred += 1;
-    if (it.mode === "type-ko") typed += 1;
+    if (it.mode === "type-ko" || it.mode === "form-production") typed += 1;
     if (it.audioText) audioUniq.add(nfc(it.audioText));
     if (it.strand === "D") depth += 1;
     if (it.strand === "F") form += 1;
