@@ -1,12 +1,12 @@
 // [2026-07-22] Cache bumped for Words C2 production eligibility.
-const CACHE_NAME = "hanapath-shell-v445";
+const CACHE_NAME = "hanapath-shell-v446";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260722e",
+  "./styles.css?v=20260722f",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260717u",
@@ -23,7 +23,7 @@ const APP_SHELL = [
   "./word_exam_engine.js?v=20260720w",
   "./exam_integrity.js?v=20260721b",
   "./form_check_blueprints.js?v=20260722e",
-  "./app.js?v=20260722g",
+  "./app.js?v=20260723a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
