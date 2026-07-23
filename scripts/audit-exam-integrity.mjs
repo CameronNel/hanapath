@@ -55,14 +55,14 @@ function auditBrowserWiring() {
   assert.ok(integrityRef >= 0, "index.html does not load versioned exam_integrity.js");
   assert.ok(appRef > integrityRef, "exam_integrity.js must load before app.js");
   assert.match(app, /HANAPATH_EXAM_INTEGRITY\.migrateExamIntegrityState\(state/);
-  assert.match(sw, /hanapath-shell-v445/);
+  assert.match(sw, /hanapath-shell-v447/);
   assert.match(sw, /\.\/exam_integrity\.js\?v=20260721b/);
   assert.match(sw, /\.\/app\.js\?v=20260723a/);
   assert.match(app, /function submitHangulExam/);
   assert.match(app, /const initialTaintContext = getHangulExamTaintContext\(initialOverrideFlags\)/);
   assert.match(app, /\.\.\.\(attempt\.overrideEventIds \|\| \[\]\)/);
   assert.match(app, /getAttemptTaintContext\(state, \["alphabet"\]/);
-  assert.match(app, /const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v445"/);
+  assert.match(app, /const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v447"/);
   assert.match(app, /const EXAM_INTEGRITY_ASSET_REVISION = "20260723a"/);
   assert.match(app, /function isWordExamTestQueryActive\(\)/);
   assert.match(app, /TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive\(\)/);
