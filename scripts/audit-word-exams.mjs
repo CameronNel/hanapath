@@ -440,6 +440,64 @@ for (const frame of Object.keys(NEGATION_FRAME_CONTRACTS)) {
   }
 }
 
+// ── Package 3 (Words C5) v3 readiness & production bridge milestone audit ──
+{
+  const appCode = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
+  if (!appCode.includes("isWordsProductionBridgeComplete")) {
+    fail("C5 audit: isWordsProductionBridgeComplete is not defined in app.js");
+  }
+  if (!appCode.includes("getWordExamTargetVersion")) {
+    fail("C5 audit: getWordExamTargetVersion is not defined in app.js");
+  }
+  if (!appCode.includes("Production bridge available")) {
+    fail("C5 audit: 'Production bridge available' UI message missing in app.js");
+  }
+  if (!appCode.includes("s3-grammar-u2-l3")) {
+    fail("C5 audit: s3-grammar-u2-l3 bridge route missing in app.js");
+  }
+
+  // Evaluate readiness logic on four fixture states
+  const appSandbox = { window: {}, state: {} };
+  appSandbox.globalThis = appSandbox;
+  vm.createContext(appSandbox);
+  vm.runInContext(appCode, appSandbox);
+
+  const bridgeCheck = appSandbox.isWordsProductionBridgeComplete || appSandbox.window.isWordsProductionBridgeComplete;
+  const targetVerCheck = appSandbox.getWordExamTargetVersion || appSandbox.window.getWordExamTargetVersion;
+
+  if (typeof bridgeCheck === "function" && typeof targetVerCheck === "function") {
+    // 1. New learner (empty completion)
+    const newLearner = { vocabLessonCompleted: ["s1-firstwords-u1-l1"] };
+    if (bridgeCheck(newLearner)) fail("C5 audit: new learner reported production ready");
+    if (targetVerCheck("word-exam-5", "full", newLearner) !== 2) fail("C5 audit: new learner target version was not 2");
+
+    // 2. Old crowned learner before the bridge (s1..s3 lessons excluding l3)
+    const oldCrownedLearner = { vocabLessonCompleted: ["s1-firstwords-u1-l1", "s3-grammar-u2-l1", "s3-grammar-u2-l2", "s3-grammar-u2-cp"] };
+    if (bridgeCheck(oldCrownedLearner)) fail("C5 audit: old crowned learner before bridge reported production ready");
+    if (targetVerCheck("word-exam-5", "full", oldCrownedLearner) !== 2) fail("C5 audit: old crowned learner before bridge target version was not 2");
+
+    // 3. Same learner after completing the bridge
+    const learnerAfterBridge = { vocabLessonCompleted: ["s1-firstwords-u1-l1", "s3-grammar-u2-l1", "s3-grammar-u2-l2", "s3-grammar-u2-l3", "s3-grammar-u2-cp"] };
+    if (!bridgeCheck(learnerAfterBridge)) fail("C5 audit: learner after bridge was not reported production ready");
+    if (targetVerCheck("word-exam-5", "full", learnerAfterBridge) !== 3) fail("C5 audit: learner after bridge target version was not 3");
+
+    // 4. Learner with live v2 retention window (qualifier version 2)
+    const v2RetentionLearner = {
+      vocabLessonCompleted: ["s1-firstwords-u1-l1"],
+      wordExams: {
+        version: 2,
+        byExamId: {
+          "word-exam-10": { blueprintVersion: 2, passed: true, confirmationDueFrom: 100, confirmationExpiresAt: 9999999999999 }
+        }
+      }
+    };
+    appSandbox.state = v2RetentionLearner;
+    if (targetVerCheck("word-exam-10", "confirmation", v2RetentionLearner) !== 2) fail("C5 audit: v2 retention window target version was not 2");
+  } else {
+    fail("C5 audit: readiness functions not exported on window/global");
+  }
+}
+
 // ── Report ───────────────────────────────────────────────────────────────────
 if (failures.length) {
   console.error(`\nWord-exam audit FAILED (${failures.length}):`);

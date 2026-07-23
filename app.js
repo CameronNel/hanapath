@@ -16690,6 +16690,24 @@ function wordExamBandLabel(exam, rec) {
   return "미합격 · Not yet passed";
 }
 
+function isWordsProductionBridgeComplete(targetState) {
+  const s = targetState || (typeof state !== "undefined" ? state : null);
+  return Boolean(s && Array.isArray(s.vocabLessonCompleted) && s.vocabLessonCompleted.includes("s3-grammar-u2-l3"));
+}
+if (typeof window !== "undefined") window.isWordsProductionBridgeComplete = isWordsProductionBridgeComplete;
+
+function getWordExamTargetVersion(examId, mode, targetState) {
+  const rec = getWordExamRecord(examId);
+  if (mode === "confirmation" && rec && rec.blueprintVersion === 2) {
+    return 2;
+  }
+  if (!isWordsProductionBridgeComplete(targetState)) {
+    return 2;
+  }
+  return 3;
+}
+if (typeof window !== "undefined") window.getWordExamTargetVersion = getWordExamTargetVersion;
+
 function renderWordExamHub() {
   refreshProgressionState();
   clearWordExamCountdown();
@@ -16700,6 +16718,25 @@ function renderWordExamHub() {
   if (!getWordExamEngine() || !getWordExamsList().length) {
     el.innerHTML = `<div class="card"><div class="eyebrow">Core Words</div><h2 class="screen-title">Examination suite unavailable</h2><p class="screen-sub">The exam data failed to load.</p></div>`;
     return;
+  }
+  const s3Crowned = isWordSectionComplete("s3");
+  const bridgeComplete = isWordsProductionBridgeComplete();
+  let bridgeBannerHtml = "";
+  if (s3Crowned || isWordLessonCompleted("s3-grammar-u2-l2") || bridgeComplete) {
+    if (bridgeComplete) {
+      bridgeBannerHtml = `
+        <div class="word-exam-bridge-banner word-exam-bridge-banner--ready" style="margin-bottom:14px; padding:10px 14px; border:1px solid rgba(45,212,191,.4); background:rgba(45,212,191,.1); border-radius:12px;">
+          <div style="font-weight:700; color:#2dd4bf; margin-bottom:2px;">✓ Production ready (v3)</div>
+          <div style="font-size:0.82rem; color:var(--text);">Typed polite past and negation production unlocked for Core Word exams.</div>
+        </div>`;
+    } else {
+      bridgeBannerHtml = `
+        <div class="word-exam-bridge-banner" style="margin-bottom:14px; padding:12px 14px; border:1px solid rgba(251,146,60,.45); background:rgba(251,146,60,.12); border-radius:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="font-weight:700; color:#fdba74;">Production bridge available</div>
+          <div style="font-size:0.82rem; color:var(--text);">Complete <strong>과거와 부정 만들기 (s3-grammar-u2-l3)</strong> to activate typed polite-past and negation production in exams.</div>
+          <div><button class="button secondary compact" type="button" id="openProductionBridgeBtn" data-open-bridge="s3-grammar-u2-l3">Open bridge lesson →</button></div>
+        </div>`;
+    }
   }
   const cards = getWordExamsList().map((exam) => {
     const rec = getWordExamRecord(exam.id);
@@ -16740,8 +16777,15 @@ function renderWordExamHub() {
       <div class="eyebrow">핵심 낱말 시험 · Core Words achievement exams</div>
       <h2 class="screen-title" style="margin-bottom:6px;">Core Word Examination Suite</h2>
       <p class="screen-sub">Ten achievement exams that measure how securely you recognise, retrieve, distinguish, and use the words and forms HanaPath has taught. These are HanaPath achievement standards, not TOPIK/CEFR certification. No hints or feedback appear until you submit.</p>
+      ${bridgeBannerHtml}
       <div class="word-exam-list">${cards}</div>
     </div>`;
+  const bridgeBtn = el.querySelector("[data-open-bridge]");
+  if (bridgeBtn) {
+    bridgeBtn.addEventListener("click", () => {
+      openWordLesson(bridgeBtn.dataset.openBridge);
+    });
+  }
   el.querySelectorAll("[data-word-exam]").forEach((btn) => {
     btn.addEventListener("click", () => renderWordExamIntro(btn.dataset.wordExam));
   });
@@ -16749,13 +16793,15 @@ function renderWordExamHub() {
 
 // ── Intro / requirements ─────────────────────────────────────────────────────
 function renderWordExamIntro(examId) {
-  const exam = getWordExamById(examId);
-  if (!exam) { renderWordExamHub(); return; }
-  if (!isWordExamUnlocked(exam)) { renderWordExamHub(); return; }
+  const rawExam = getWordExamById(examId);
+  if (!rawExam) { renderWordExamHub(); return; }
+  if (!isWordExamUnlocked(rawExam)) { renderWordExamHub(); return; }
   refreshProgressionState();
-  const rec = getWordExamRecord(exam.id);
-  const retention = exam.retention ? wordExamRetentionStatus(exam) : null;
+  const rec = getWordExamRecord(rawExam.id);
+  const retention = rawExam.retention ? wordExamRetentionStatus(rawExam) : null;
   const isConfirmation = retention && retention.phase === "open";
+  const targetVersion = getWordExamTargetVersion(examId, isConfirmation ? "confirmation" : "full");
+  const exam = getWordExamById(examId, targetVersion);
   const el = showScreen("detail");
   if (!el) return;
   showDetailBarWithBack("exam", exam.title, () => renderWordExamHub(), "Core Words");
@@ -16763,6 +16809,14 @@ function renderWordExamIntro(examId) {
   const timeMin = isConfirmation ? exam.retention.confirmationTimeMinutes : exam.timeMinutes;
   const macroList = ["R", "C", "P", "X", "F", "D"].map((code) => `<li><strong>${WORD_EXAM_MACRO[code].label}</strong> — ${WORD_EXAM_MACRO[code].sub}</li>`).join("");
   const prior = rec && rec.attempts ? `<div class="word-exam-prior">Attempts: ${rec.attempts} · Best: ${rec.bestPct}%${rec.distinguished ? " · Distinction" : rec.passed ? " · Passed" : ""}</div>` : "";
+  let bridgeIntroNote = "";
+  if (!isWordsProductionBridgeComplete() && (rawExam.minPastProduction > 0 || rawExam.minNegationProduction > 0)) {
+    bridgeIntroNote = `
+      <div class="word-exam-bridge-intro-note" style="margin-top:10px; margin-bottom:10px; padding:10px 12px; border:1px solid rgba(251,146,60,.35); background:rgba(251,146,60,.08); border-radius:10px; font-size:0.8rem; color:#fdba74;">
+        Production bridge available: Complete lesson <strong>과거와 부정 만들기 (s3-grammar-u2-l3)</strong> to unlock v3 typed past/negation production. Current attempt uses frozen v2 allocations.
+        <button class="button secondary compact" type="button" id="introBridgeBtn" data-open-bridge="s3-grammar-u2-l3" style="margin-top:6px; display:block;">Open bridge lesson →</button>
+      </div>`;
+  }
   el.innerHTML = `
     <div class="lesson-player-wrap alphabet-lesson-player exam-runner" data-lesson-motion-root>
       <div class="exam-question">
@@ -16771,6 +16825,7 @@ function renderWordExamIntro(examId) {
         <p class="screen-sub">${isConfirmation
           ? `This delayed retention confirmation seals Core Words mastery. ${itemCount} fresh items, avoiding your qualifying targets.`
           : `${itemCount} items · ${timeMin} minutes. You may move Previous/Next, flag items, and review before submitting. No feedback appears until you submit.`}</p>
+        ${bridgeIntroNote}
         <ul class="word-exam-macro-list">${macroList}</ul>
         <p class="screen-sub word-exam-fineprint">Provisional HanaPath achievement standard. Audio plays at most twice per item. Leaving the exam discards the attempt. This exam never changes your Words progress or review schedule.</p>
         <p class="screen-sub word-exam-fineprint">${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</p>
@@ -16780,6 +16835,12 @@ function renderWordExamIntro(examId) {
         <button class="button primary" type="button" id="wordExamStart">${isConfirmation ? "Begin retention confirmation" : (rec && rec.attempts ? "Retake with a new set" : "Begin exam")}</button>
       </div>
     </div>`;
+  const introBtn = el.querySelector("#introBridgeBtn");
+  if (introBtn) {
+    introBtn.addEventListener("click", () => {
+      openWordLesson(introBtn.dataset.openBridge);
+    });
+  }
   el.querySelector("#wordExamStart").addEventListener("click", () => {
     startWordExamAttempt(exam.id, { mode: isConfirmation ? "confirmation" : "full" });
   });
