@@ -27,8 +27,14 @@ jobs:
           node-version: 22
 
       # Syntax-check every hand-edited runtime/data file the megabatch touches.
+      # NOTE: `node --check` only checks its first filename argument, so each
+      # file must be checked in its own invocation.
       - name: Check syntax
-        run: node --check app.js sw.js exam_integrity.js sentence_exam_eligibility.js words_lesson_plan.js
+        run: |
+          for f in app.js sw.js exam_integrity.js sentence_exam_eligibility.js words_lesson_plan.js; do
+            echo "node --check $f"
+            node --check "$f"
+          done
 
       # Exam programme + integrity gate.
       - name: Audit exam integrity

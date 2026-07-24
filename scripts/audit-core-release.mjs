@@ -25,9 +25,9 @@
 // reads data files and shells out to the existing audits.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -76,6 +76,51 @@ function len(value) {
   return 0;
 }
 
+// App-shell metrics, derived from the static wiring the same way
+// audit-app-shell.mjs reads them (index.html loads + sw.js APP_SHELL / cache).
+function deriveShell() {
+  const indexHtml = readFileSync(join(ROOT, "index.html"), "utf8");
+  const swJs = readFileSync(join(ROOT, "sw.js"), "utf8");
+
+  const indexAssets = [];
+  for (const m of indexHtml.matchAll(
+    /<link\b[^>]*\brel=["']stylesheet["'][^>]*\bhref=["']([^"']+)["'][^>]*>/gi
+  )) {
+    indexAssets.push(m[1]);
+  }
+  for (const m of indexHtml.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)) {
+    indexAssets.push(m[1]);
+  }
+  const localIndexAssets = indexAssets.filter((a) => a.startsWith("./"));
+
+  const shellMatch = swJs.match(/const\s+APP_SHELL\s*=\s*\[([\s\S]*?)\];/);
+  const shellAssets = shellMatch
+    ? [...shellMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1])
+    : [];
+
+  const cacheMatch = swJs.match(/const\s+CACHE_NAME\s*=\s*"([^"]+)";/);
+
+  return {
+    cacheName: cacheMatch ? cacheMatch[1] : null,
+    indexLocalAssets: localIndexAssets.length,
+    precachedShellAssets: shellAssets.length,
+  };
+}
+
+// Sentence Mastery examination is delivered across several packets (E2, X1,
+// X2). Report each milestone artifact separately by presence so the status
+// never flips to "done" just because one file (e.g. the X1 seed audit) lands.
+function deriveSentenceExamReadiness() {
+  const has = (rel) => existsSync(join(ROOT, rel));
+  return [
+    { id: "eligibility-corpus", label: "Reviewed eligibility corpus (E2)", present: false, note: "20/4177 reviewed; strict freeze pending" },
+    { id: "blueprints", label: "Exam blueprints (X1)", present: has("sentence_exam_blueprints.js") },
+    { id: "engine", label: "Pure generator/grader engine (X1)", present: has("sentence_exam_engine.js") },
+    { id: "seed-audit", label: "Seed audit (X1)", present: has("scripts/audit-sentence-exams.mjs") },
+    { id: "runner", label: "Browser runner + provenance + retention (X2)", present: false, note: "lives in app.js; not file-detectable here" },
+  ];
+}
+
 function deriveStatus() {
   const W = loadDataGlobals();
 
@@ -98,6 +143,8 @@ function deriveStatus() {
   const wordExamMeta = W.HANAPATH_WORD_EXAM_META || {};
 
   return {
+    shell: deriveShell(),
+    sentenceExam: deriveSentenceExamReadiness(),
     alphabet: {
       strokeGuides: Number(W.HANGUL_STROKE_GUIDE_COUNT) || len(W.HANGUL_STROKES),
       hangulExamItems: hangulItems,
@@ -138,35 +185,22 @@ function pct(part, whole) {
 // Gate definition
 // ---------------------------------------------------------------------------
 
-// Every root browser script is syntax-checked. Discovered deterministically so
-// a newly added data file cannot silently escape the check.
-const SYNTAX_FILES = [
-  "app.js",
-  "sw.js",
-  "app_intro.js",
-  "app_intro_timeline.js",
-  "exam_integrity.js",
-  "sentence_exam_eligibility.js",
-  "hangul_mastery_exam.js",
-  "word_exam_blueprints.js",
-  "word_exam_engine.js",
-  "form_check_blueprints.js",
-  "words_lesson_plan.js",
-  "words_curated_core.js",
-  "words_inflect.js",
-  "sentences_lesson_plan.js",
-  "sentences_core.js",
-  "audio_map.js",
-  "hangul_strokes.js",
-  "alphabet_skill_srs.js",
-  "raw_word_meanings.js",
-];
+// Every root-level browser script is syntax-checked. Discovered
+// deterministically (sorted) from the repository root so a newly added root
+// script cannot silently escape the check and no hand-maintained list drifts.
+function discoverRootScripts() {
+  return readdirSync(ROOT)
+    .filter((name) => name.endsWith(".js"))
+    .sort();
+}
+const SYNTAX_FILES = discoverRootScripts();
 
 // Each step is a blocking audit unless marked optional. `quickArgs` replaces
 // `fullArgs` in --quick mode. `requiresPath` steps SKIP (do not fail) when the
 // path is absent — used for validations the local environment cannot perform.
 const GATE_STEPS = [
   { id: "syntax", label: "Syntax check (node --check, all root scripts)", internal: "syntax" },
+  { id: "syntax-gate-regression", label: "Syntax-gate regression (every file checked)", script: "scripts/test-core-release-syntax-gate.mjs" },
   { id: "exam-integrity", label: "Exam integrity", script: "scripts/audit-exam-integrity.mjs" },
   { id: "hangul-mastery", label: "Hangul Mastery examination", script: "scripts/audit-hangul-mastery-exam.mjs" },
   { id: "word-competency-map", label: "Word-exam competency map", script: "scripts/build-word-exam-competency-map.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
@@ -210,12 +244,14 @@ const GATE_STEPS = [
   { id: "status-freshness", label: "CORE_APP_STATUS.md freshness", internal: "status-check" },
 ];
 
-// Documented but intentionally excluded from the gate, with the reason.
+// Documented but intentionally excluded from the gate, each with the reason and
+// a named owning packet so no coverage gap floats indefinitely.
 const EXCLUDED = [
   {
     script: "scripts/audit-learning-questions.mjs",
+    owner: "packet L1 (lesson reachability / question coverage)",
     reason:
-      "throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect); not wired into CI. Repair is out of scope for C1.",
+      "throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect) and is not wired into CI, so learner-question coverage and answer-leak safety are not yet protected by this one-command gate.",
   },
 ];
 
@@ -298,6 +334,27 @@ function renderStatusMarkdown(status) {
   lines.push("|---|---|");
   lines.push(`| Mapped audio keys | ${status.audio.mappedKeys} |`);
   lines.push("");
+  lines.push("### App shell");
+  lines.push("");
+  lines.push("| Metric | Value |");
+  lines.push("|---|---|");
+  lines.push(`| Service-worker cache name | ${status.shell.cacheName} |`);
+  lines.push(`| Versioned local assets loaded by index.html | ${status.shell.indexLocalAssets} |`);
+  lines.push(`| Precached service-worker shell assets | ${status.shell.precachedShellAssets} |`);
+  lines.push("");
+  lines.push("### Sentence Mastery examination readiness");
+  lines.push("");
+  lines.push("Delivered across packets E2/X1/X2. Each milestone is tracked separately so");
+  lines.push("the report never reads \"done\" because a single file landed.");
+  lines.push("");
+  lines.push("| Milestone | Present |");
+  lines.push("|---|---|");
+  for (const item of status.sentenceExam) {
+    const mark = item.present ? "yes" : "no";
+    const note = item.note ? ` — ${item.note}` : "";
+    lines.push(`| ${item.label} | ${mark}${note} |`);
+  }
+  lines.push("");
 
   lines.push("## Core gate steps");
   lines.push("");
@@ -334,10 +391,15 @@ function renderStatusMarkdown(status) {
   );
   lines.push("");
 
-  lines.push("## Excluded from the gate");
+  lines.push("## Coverage gaps (this gate is not yet the complete lesson/exam matrix)");
+  lines.push("");
+  lines.push(
+    "The roadmap §9 universal verification matrix is broader than the checks wired in"
+  );
+  lines.push("here. The following are deliberately excluded, each with a named owning packet:");
   lines.push("");
   for (const item of EXCLUDED) {
-    lines.push(`- \`${item.script}\` — ${item.reason}`);
+    lines.push(`- \`${item.script}\` — ${item.reason} **Owner: ${item.owner}.**`);
   }
   lines.push("");
 
@@ -348,12 +410,24 @@ function renderStatusMarkdown(status) {
 // Runners
 // ---------------------------------------------------------------------------
 
+// `node --check` only checks its FIRST filename argument; any further filenames
+// are ignored. So every file must be passed in its own invocation, otherwise the
+// gate silently skips all but the first script. Returns true only if every file
+// passes; reports each failing file.
+export function checkSyntax(files, cwd = ROOT) {
+  let ok = true;
+  for (const file of files) {
+    const result = spawnSync("node", ["--check", file], { cwd, stdio: "inherit" });
+    if (result.status !== 0) {
+      console.error(`  syntax check failed: ${file}`);
+      ok = false;
+    }
+  }
+  return ok;
+}
+
 function runSyntaxStep() {
-  const result = spawnSync("node", ["--check", ...SYNTAX_FILES], {
-    cwd: ROOT,
-    stdio: "inherit",
-  });
-  return result.status === 0;
+  return checkSyntax(SYNTAX_FILES);
 }
 
 function runStatusCheckStep() {
@@ -425,28 +499,40 @@ function runGate() {
 // Entry point
 // ---------------------------------------------------------------------------
 
-if (args.includes("--list")) {
-  for (const step of GATE_STEPS) {
-    let command;
-    if (step.internal === "syntax") command = "node --check " + SYNTAX_FILES.join(" ");
-    else if (step.internal === "status-check") command = "(internal status freshness check)";
-    else command = "node " + [step.script, ...stepArgs(step)].join(" ");
-    const tag = step.requiresPath ? " [conditional]" : "";
-    console.log(`${step.id}${tag}: ${command}`);
+// Exported so scripts/test-core-release-syntax-gate.mjs can import checkSyntax /
+// deriveStatus / renderStatusMarkdown without triggering the gate below.
+export { deriveStatus, renderStatusMarkdown };
+
+function main() {
+  if (args.includes("--list")) {
+    for (const step of GATE_STEPS) {
+      let command;
+      if (step.internal === "syntax")
+        command = `node --check <each of ${SYNTAX_FILES.length} root scripts, separately>`;
+      else if (step.internal === "status-check") command = "(internal status freshness check)";
+      else command = "node " + [step.script, ...stepArgs(step)].join(" ");
+      const tag = step.requiresPath ? " [conditional]" : "";
+      console.log(`${step.id}${tag}: ${command}`);
+    }
+    process.exit(0);
   }
-  process.exit(0);
+
+  if (args.includes("--write-status")) {
+    const markdown = renderStatusMarkdown(deriveStatus());
+    writeFileSync(STATUS_FILE, markdown);
+    console.log(`Wrote ${STATUS_FILE}`);
+    process.exit(0);
+  }
+
+  if (args.includes("--check-status")) {
+    const ok = runStatusCheckStep();
+    process.exit(ok ? 0 : 1);
+  }
+
+  runGate();
 }
 
-if (args.includes("--write-status")) {
-  const markdown = renderStatusMarkdown(deriveStatus());
-  writeFileSync(STATUS_FILE, markdown);
-  console.log(`Wrote ${STATUS_FILE}`);
-  process.exit(0);
+// Only run when invoked directly, not when imported by the regression test.
+if (pathToFileURL(process.argv[1] || "").href === import.meta.url) {
+  main();
 }
-
-if (args.includes("--check-status")) {
-  const ok = runStatusCheckStep();
-  process.exit(ok ? 0 : 1);
-}
-
-runGate();
