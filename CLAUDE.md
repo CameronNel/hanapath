@@ -1,118 +1,130 @@
-# CLAUDE.md — read this first
+# CLAUDE.md: read this first
 
-> **Continuing the project?** Start with **[`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md)** —
-> the step-by-step runbook (orient → find the next task → build → verify → ship).
-> This file is the rules + document map it refers back to.
+> **Continuing HanaPath?** Read
+> [`docs/CORE_APP_COMPLETION_ROADMAP.md`](docs/CORE_APP_COMPLETION_ROADMAP.md).
+> It is the only active task queue. `AI_INSTRUCTIONS.md` contains the short
+> dispatch protocol; this file contains the durable rules and specification map.
 
-HanaPath is a **vanilla static Korean-learning PWA**: no framework, no bundler,
-**no build step**, no `package.json`. `app.js` is one large plain browser script
-loaded via `<script defer>`. Keep it that way unless the owner explicitly asks
-otherwise.
+HanaPath is a vanilla static Korean-learning PWA. The root app has no framework,
+bundler, package system, or build step. `app.js` is a large plain browser script
+loaded with `<script defer>`.
 
-**Owner-approved native-packaging exception (2026-07-16):** the canonical web
-app remains vanilla and build-free, but an isolated `mobile/` Capacitor project
-may contain its own package/build/native tooling for Android Google Play and a
-later iOS/iPadOS shell. Follow
-[`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md);
-do not turn the root app into a framework project or remove browser/PWA support.
+The owner-approved native exception is isolated under `mobile/`, where Capacitor
+and Android tooling package the same audited web application. Do not turn the
+root app into a framework project or demote browser/PWA support.
 
-## The Sentences section has a governing north star (current active work)
+## Completion-sprint authority
 
-> The **Sentences section** is being rebuilt toward a specific target, defined
-> in **[`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)** —
-> the source of truth for **what and how** the Sentences section should teach.
-> The flagship feature is **Translate & Type**: English prompt → learner types
-> the Korean in Hangul, with a tip / word-bank / next-chunk / reveal helper
-> ladder.
->
-> **The curriculum-v2 path restructure is shipped and Phase 1 is closed
-> (owner-accepted 2026-07-10):** the Sentences lesson/hub structure now runs
-> the Duolingo-style path from
-> **[`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md)**
-> (S2-A…S2-G all complete). **Phase 2 (§5) — authored expansion via Track H —
-> is also complete: the 21-batch queue closed 2026-07-19** (s2061–s4177,
-> 2,117 authored rows; ledger in the roadmap §13). Any further scenario pack
-> requires fresh owner approval of themes — do not author one autonomously.
-> Track I closed 2026-07-19: the Listening tab reads the full bank and the
-> legacy aggregation is deleted. Remaining: the plan's §8 carried-over items.
-> Bank-level and authored-content work (Track H) still follows
-> **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)**
-> (one box = one PR; owner-gated items are marked 🔒), cross-checked against
-> the spec's **status scorecard (§8)** and **milestone sheet (§9)**.
+The repository accumulated overlapping roadmaps, one-shot prompts, rescue
+handovers, and model queues. They are no longer active instructions.
 
-The **Alphabet section is complete and protected**. The Words section is now
-restructured under the live v2 curriculum plan:
-[`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md). Read
-that plan before changing Words; its hardened owner decisions override older
-provisional Words prose. The old Words finalization queue is historical
-(deleted 2026-07-10 with the rest of `docs/archive/`; recover from git history
-if ever needed). Do not regress either section; the audits are the guard.
+During the core completion sprint:
 
-Do not assume "done" or "not done" from memory or from a checkmark: **verify
-scorecard claims against the actual data** (the Words scorecard was wrong four
-times: PRs #50, #51, #54, and the b385e77 merge loss).
+- the core roadmap alone decides what is READY;
+- one packet equals one branch and draft PR;
+- workers do not merge their own packet PRs;
+- one designated high-intelligence integrator reviews and squash-merges;
+- no agent creates another handover, roadmap, or shadow queue;
+- optional curriculum expansion is frozen.
 
-Gemini completed Words Phase 2 P2-0 tooling; Claude completed the top-1,000
-sweep and first draft pack, which Codex independently reviewed and merged.
-**Luna** owns the remaining Words Phase 2 marathon queue from rank 1001 onward
-in `docs/LUNA_WORDS_PHASE_2_BATCH_PROMPT.md`. This is not part of the active
-Sentences queue.
+This sprint-specific merge rule overrides the older model-family auto-merge
+policy until packet Q2 closes the release candidate.
 
-## Document map (what to read for what)
+## Current product reality
 
-| Doc | Purpose |
+### Lessons
+
+- Alphabet: complete 8-stage course, writing, Drill Lab, audio, skill review.
+- Words: 2,028 curated senses, 75 units, 284 lessons, SRS, inflection,
+  pronunciation, production bridge, and 17 Form Checks.
+- Sentences: 4,177 unique audio-backed rows, 75-unit path, shadowing,
+  Translate & Type, build, dictation, transform, checkpoints, SRS, and listening.
+
+No new Words imports or Sentence scenario packs belong to core completion.
+
+### Examinations
+
+- Hangul Mastery: shipped, 200 items.
+- Core Words: shipped, 10 exams, v3 typed past/negation production, delayed
+  retention, valid frozen-v2 retention compatibility.
+- Sentence Mastery: not shipped. Eligibility covers 20 of 4,177 rows; strict
+  review, blueprints, engine, runner, provenance, and retention remain.
+
+### Integrity
+
+`exam_integrity.js` provides immutable result records, Practice/taint handling,
+legacy-incomplete labelling, qualifier/retention relations, migration, and
+backup validation. Never bypass or weaken this layer.
+
+## Hard rules
+
+1. **Vanilla/static root.** Plain browser globals load before `app.js`.
+2. **Native isolation.** Build/native tooling stays in `mobile/`.
+3. **Additive compatibility.** Preserve existing IDs, old saves, SRS, crowns,
+   result records, qualifiers, and valid retention windows.
+4. **Honest evidence.** Re-derive every count and semantic claim from live data.
+   Historical scorecards have been wrong and a prior merge silently dropped
+   reviewed work while audits stayed green.
+5. **Fair grading.** Never broaden accepted answers, invent alternatives,
+   collapse Korean spaces in formal Sentence exams, fabricate provenance, or
+   let Practice attempts award achievement.
+6. **Audio pipeline.** New Korean text goes through `generate_assets.py`; never
+   hand-edit `audio_map.js`.
+7. **Cache discipline.** Loaded-file changes require coordinated `CACHE_NAME`
+   and query-string bumps in `index.html` and `sw.js`, plus matching integrity
+   pins where applicable.
+8. **Alphabet protection.** Use `getAlphabetProgress()` and existing progression
+   helpers.
+9. **Packet boundaries.** Touch only the files assigned by the roadmap and avoid
+   concurrent `app.js` ownership.
+10. **Browser proof.** Learner-facing code needs real static-browser acceptance,
+    not only source inspection or Node audits.
+
+## Specification map
+
+| Document | Authority |
 |---|---|
-| **`docs/SENTENCES_CURRICULUM_V2_PLAN.md`** | Sentences **path restructure**: K-pop-trainee-themed Duolingo-style curriculum plan + execution queue (current active work) |
-| **`docs/SENTENCES_TEACHING_SPEC.md`** | Sentences **north star**: pedagogy, bank schema, pattern tags, bands, drill modes, status scorecard, milestone sheet |
-| **`docs/SENTENCES_FINAL_ROADMAP.md`** | Sentences v1 build record + **Track H authored-content queue** (bank-level work) |
-| `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, **verbatim** (source of record) |
-| `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; reference for its pedagogy + data axes) |
-| `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — reuse these engines for Sentences) |
-| **`docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md`** | Hangul Mastery Examination contract: 200-item bank, grading, exam-mode rules (Exam tab) |
-| **`docs/CORE_WORD_EXAM_SPECS.md`** | Core Word Examination Suite contract: ten achievement exams, macrostrands, generation, scoring, retention, audit (Exam tab, beneath Hangul) |
-| **`docs/CORE_WORD_EXAM_COMPETENCY_MAP.md`** | Generated competency milestone map (first gate) proving every scored form was taught before it is tested |
-| **`docs/EXAM_TAB_HANDOVER.md`** | Exam-tab structure shipped 2026-07-20 + one-shot runbook for finishing the exam attempt runner |
-| **`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`** | Owner-approved Capacitor/Android/Google Play execution handover; preserves browser/PWA and later iOS compatibility |
-| `HANDOVER.md` | Repo snapshot + conventions for the next contributor |
-| `.agents/AGENTS.md` | Offline audio-generation pipeline rules |
-| `README.md` | Product overview + run instructions |
+| `docs/CORE_APP_COMPLETION_ROADMAP.md` | Only active packet queue, merge order, definition of done |
+| `docs/SENTENCES_TEACHING_SPEC.md` | Sentence lesson pedagogy, schema, tags, bands, drills, SRS |
+| `docs/SENTENCES_CURRICULUM_V2_PLAN.md` | Shipped Sentence path design and historical implementation record |
+| `docs/SENTENCES_FINAL_ROADMAP.md` | Historical Sentence build/content record, not an active queue |
+| `docs/SENTENCE_ELIGIBILITY_AUTHORING.md` | Binding row-classification rules for Sentence exams |
+| `docs/SENTENCE_MASTERY_EXAM_SPEC_DRAFT.md` | Binding Sentence stage/final/retention contract for roadmap packets E/X |
+| `docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md` | Hangul Mastery design contract |
+| `docs/CORE_WORD_EXAM_SPECS.md` | Core Word suite contract; shipped v3 changes and compatibility must remain audited |
+| `docs/CORE_WORD_EXAM_COMPETENCY_MAP.md` | Generated proof of taught-before-tested Word competencies |
+| `docs/INTEGRITY_AND_PROVENANCE_SPEC_DRAFT.md` | Result provenance, taint, migration, disclosure, and relation contract |
+| `docs/FORM_CHECKS_PLAN_DRAFT.md` | Design contract for the shipped 17 Form Checks |
+| `docs/WORDS_PAST_NEGATION_PRODUCTION_PLAN_DRAFT.md` | Design contract/history for the shipped production bridge and v3 work |
+| `docs/EXAM_TAB_HANDOVER.md` | Current Exam-tab status and file map |
+| `docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md` | Post-core Android/Play execution contract |
+| `HANDOVER.md` | Concise current-state snapshot |
+| `.agents/AGENTS.md` | Offline audio-generation rules |
 
-## Hard rules for any agent
+A document labelled “draft” may still be a binding design contract when the
+roadmap names it. It is not an active queue unless the core roadmap says so.
 
-1. **Keep the canonical app vanilla/static.** No framework, bundler, or build
-   step in the root web app. Data files are plain browser globals loaded before
-   `app.js`. The only approved exception is isolated native packaging under
-   `mobile/`, governed by `docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`.
-2. **Additive, backward-compatible changes** to the Words and Sentences data
-   schemas. Existing curated rows and lessons must keep passing the audits.
-3. **Run the audits** after touching learning data:
-   `node scripts/audit-words-data.mjs --strict`,
-   `node scripts/audit-sentences-data.mjs --strict`, and
-   `node scripts/audit-alphabet-audio.mjs --strict`; run
-   `node scripts/audit-hangul-recognition.mjs` after changing Hangul writing
-   recognition, stroke templates, or its browser adapter; run
-   `node scripts/audit-premium-handwriting.mjs` after touching premium writing,
-   native recognition, or billing; run
-   `node scripts/audit-hangul-mastery-exam.mjs` after touching the Exam tab or
-   `hangul_mastery_exam.js`; run
-   `node scripts/audit-word-exams.mjs` (and
-   `node scripts/build-word-exam-competency-map.mjs --check`) after touching the
-   Core Word Examination Suite (`word_exam_blueprints.js`, `word_exam_engine.js`,
-   or the Words curriculum/curated data it reads); run
-   `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
-   any loaded asset version; `node --check` any JS you edit.
-4. **Bump caches** when you change `app.js`, `styles.css`, or any loaded data
-   file: update `CACHE_NAME` in `sw.js` **and** the matching `?v=...` query
-   strings in both `index.html` and `sw.js`.
-5. **Audio:** if you add Korean text, regenerate assets per `.agents/AGENTS.md`
-   (`python generate_assets.py`); never hand-edit `audio_map.js`.
-6. **Alphabet section is complete and protected** — don't regress it. Go through
-   `getAlphabetProgress()` for progression.
-7. **Workflow:** branch off `main`, open a **draft PR**, keep it small and
-   single-purpose. The owner marks ready and squash-merges.
+## Verification
 
-## Verify like a cold learner
+Run the packet-specific commands and the applicable full matrix from roadmap
+section 9. Core audit families include:
 
-Serve statically (`python -m http.server 8000`) and open `index.html`. There is
-no test framework; validate with `node --check`, the audit scripts, and a
-browser smoke test (state persists in `localStorage` under `hanapath-v1`).
+- syntax, shell, cache wiring;
+- Words/Sentences data and curriculum foundation;
+- Alphabet/full audio coverage;
+- Hangul recognition and Handwriting Coach;
+- exam integrity, Hangul, Core Word, and later Sentence exams;
+- Form Checks and Sentence eligibility;
+- browser journeys and migration fixtures;
+- Android package/build checks for native or packaged changes.
+
+After a data merge, independently compare merged `main` with the reviewed head
+at row/field level. After a UI merge, rerun the critical browser route on fresh
+`main`.
+
+## Cold-learner standard
+
+Serve the app statically and test fresh, progressed, legacy, tainted, and
+imported profiles. Fail on uncaught errors, blank routes, unreachable lessons,
+wrong grading, lost state, stale assets, clipped primary controls, or horizontal
+overflow at phone width.
