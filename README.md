@@ -92,9 +92,11 @@ tests.
 ## Current verification gate
 
 ```bash
-node --check app.js sw.js exam_integrity.js sentence_exam_eligibility.js \
+for file in app.js sw.js exam_integrity.js sentence_exam_eligibility.js \
   hangul_mastery_exam.js word_exam_blueprints.js word_exam_engine.js \
-  form_check_blueprints.js
+  form_check_blueprints.js; do
+  node --check "$file"
+done
 
 node scripts/audit-exam-integrity.mjs
 node scripts/audit-hangul-mastery-exam.mjs
