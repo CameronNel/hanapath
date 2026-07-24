@@ -65,3 +65,23 @@ jobs:
         run: node scripts/audit-premium-handwriting.mjs
       - name: Audit app shell
         run: node scripts/audit-app-shell.mjs
+
+  core-gate:
+    name: Core-release gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Single deterministic superset gate (docs/CORE_APP_COMPLETION_ROADMAP.md
+      # packet C1). Runs the full required audit matrix, verifies the generated
+      # status report is fresh, and exits non-zero on any child failure. The
+      # mobile-package step SKIPs here (no prepared mobile/www); the Android
+      # workflow performs that validation.
+      - name: Run full core-release gate
+        run: node scripts/audit-core-release.mjs --full
