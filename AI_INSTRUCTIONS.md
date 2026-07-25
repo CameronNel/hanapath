@@ -71,7 +71,9 @@ argument, so check each edited file in its own invocation — never
 At minimum:
 
 ```bash
-node --check <every edited JavaScript file>
+for file in <every edited JavaScript file>; do
+  node --check "$file" || exit 1
+done
 node scripts/audit-words-data.mjs --strict
 node scripts/audit-sentences-data.mjs --strict
 node scripts/audit-exam-integrity.mjs
