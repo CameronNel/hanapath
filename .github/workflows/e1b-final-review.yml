@@ -58,3 +58,5 @@ jobs:
           git add sentence_exam_eligibility_shard_b.js docs/CORE_APP_STATUS.md scripts/e1b-final-review.mjs .github/workflows/e1b-final-review.yml
           git commit -m "E1B: apply independent reviewer corrections"
           git push origin HEAD:core/e1b-review-s1051-s2100
+
+# Triggered after workflow registration so GitHub executes the correction job.
