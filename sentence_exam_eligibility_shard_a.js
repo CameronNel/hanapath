@@ -573,11 +573,12 @@
         "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0024": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for the topic already under discussion, speaking casually to a close friend, ask this complete lesson question: “Where are you going? (casual)” Use the lesson expression meaning “you (casual)”.",
         "canonicalTargetKey": "너는 어디 가?",
         "acceptedAnswers": [
-          "너는 어디 가?"
+          "너는 어디 가?",
+          "넌 어디 가?"
         ],
         "eligibleModes": [
           "translate-type",
@@ -594,7 +595,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. Contraction only (no particle omission), no paraphrase, particle swap, reorder, or register conversion."
       },
       "s0025": {
         "typedClass": "canonical",
@@ -6880,11 +6881,14 @@
         "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
       },
       "s0282": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for the topic already under discussion, speaking politely to a classmate, express this complete lesson sentence: “I don't eat spicy things.” Use the lesson expression meaning “do not”.",
         "canonicalTargetKey": "저는 매운 것을 먹지 않아요.",
         "acceptedAnswers": [
-          "저는 매운 것을 먹지 않아요."
+          "저는 매운 것을 먹지 않아요.",
+          "전 매운 것을 먹지 않아요.",
+          "저는 매운 걸 먹지 않아요.",
+          "전 매운 걸 먹지 않아요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -6904,7 +6908,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. Contraction only (no particle omission), no paraphrase, particle swap, reorder, or register conversion."
       },
       "s0283": {
         "typedClass": "excluded",
