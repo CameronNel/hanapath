@@ -41,11 +41,12 @@
         "reviewerNote": "Worked example from spec §5.1 Route revalidated against the live curriculum in E1A."
       },
       "s0002": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for me, say that I study Korean.",
         "canonicalTargetKey": "저는 한국어를 공부해요.",
         "acceptedAnswers": [
-          "저는 한국어를 공부해요."
+          "저는 한국어를 공부해요.",
+          "전 한국어를 공부해요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -63,7 +64,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Worked example Route revalidated against the live curriculum in E1A."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0003": {
         "typedClass": "canonical",
@@ -258,11 +259,12 @@
         "reviewerNote": "Worked example Route revalidated against the live curriculum in E1A."
       },
       "s0011": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "Say hello and that as for me, I am a student.",
         "canonicalTargetKey": "안녕하세요. 저는 학생이에요.",
         "acceptedAnswers": [
-          "안녕하세요. 저는 학생이에요."
+          "안녕하세요. 저는 학생이에요.",
+          "안녕하세요. 전 학생이에요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -280,7 +282,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Worked example Route revalidated against the live curriculum in E1A."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0012": {
         "typedClass": "canonical",
@@ -473,11 +475,12 @@
         "reviewerNote": "Worked example Route revalidated against the live curriculum in E1A."
       },
       "s0020": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for me, say that I do not know well.",
         "canonicalTargetKey": "저는 잘 몰라요.",
         "acceptedAnswers": [
-          "저는 잘 몰라요."
+          "저는 잘 몰라요.",
+          "전 잘 몰라요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -494,7 +497,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Worked example Route revalidated against the live curriculum in E1A."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0021": {
         "typedClass": "canonical",
@@ -521,11 +524,12 @@
         "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
       },
       "s0022": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for the topic already under discussion, speaking politely to a classmate, express this complete lesson sentence: “I am a student.” Use the lesson expression meaning “I (polite)”.",
         "canonicalTargetKey": "저는 학생이에요.",
         "acceptedAnswers": [
-          "저는 학생이에요."
+          "저는 학생이에요.",
+          "전 학생이에요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -542,14 +546,15 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0023": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for the topic already under discussion, speaking casually to a close friend, express this complete lesson sentence: “I like coffee. (casual)” Use the lesson expression meaning “I (casual)”.",
         "canonicalTargetKey": "나는 커피 좋아해.",
         "acceptedAnswers": [
-          "나는 커피 좋아해."
+          "나는 커피 좋아해.",
+          "난 커피 좋아해."
         ],
         "eligibleModes": [
           "translate-type",
@@ -565,7 +570,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0024": {
         "typedClass": "canonical",
@@ -906,11 +911,14 @@
         "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
       },
       "s0038": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for the topic already under discussion, speaking politely to a classmate, express this complete lesson sentence: “This is mine.” Use the lesson expression meaning “thing”.",
         "canonicalTargetKey": "이것은 제 것이에요.",
         "acceptedAnswers": [
-          "이것은 제 것이에요."
+          "이것은 제 것이에요.",
+          "이건 제 것이에요.",
+          "이것은 제 거예요.",
+          "이건 제 거예요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -927,7 +935,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0039": {
         "typedClass": "canonical",
@@ -7202,11 +7210,12 @@
         "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
       },
       "s0295": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "Answering what or who is at issue, speaking politely to a classmate, express this complete lesson sentence: “It's the one I bought.” Use the lesson expression meaning “thing / one”.",
         "canonicalTargetKey": "제가 산 것이에요.",
         "acceptedAnswers": [
-          "제가 산 것이에요."
+          "제가 산 것이에요.",
+          "제가 산 거예요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -7223,7 +7232,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0296": {
         "typedClass": "canonical",
@@ -8914,11 +8923,12 @@
         "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
       },
       "s0364": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "Answering what or who is at issue, speaking politely to a classmate, express this complete lesson sentence: “My older brother helps me.” Use the lesson expression meaning “older brother (of a female)”.",
         "canonicalTargetKey": "오빠가 저를 도와줘요.",
         "acceptedAnswers": [
-          "오빠가 저를 도와줘요."
+          "오빠가 저를 도와줘요.",
+          "오빠가 절 도와줘요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -8936,7 +8946,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0365": {
         "typedClass": "canonical",
@@ -15231,11 +15241,12 @@
         "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
       },
       "s0618": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for the topic already under discussion, speaking politely to a classmate, express this complete lesson sentence: “This is my book.” Use the lesson expression meaning “this thing”.",
         "canonicalTargetKey": "이것은 제 책이에요.",
         "acceptedAnswers": [
-          "이것은 제 책이에요."
+          "이것은 제 책이에요.",
+          "이건 제 책이에요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -15252,14 +15263,17 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0619": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "Speaking respectfully in a senior social context, make this complete lesson request: “Please give that to me.” Use the lesson expression meaning “that thing”.",
         "canonicalTargetKey": "그것을 저에게 주세요.",
         "acceptedAnswers": [
-          "그것을 저에게 주세요."
+          "그것을 저에게 주세요.",
+          "그걸 저에게 주세요.",
+          "그것을 제게 주세요.",
+          "그걸 제게 주세요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -15277,14 +15291,15 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0620": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "As for the topic already under discussion, speaking politely to a classmate, ask this complete lesson question: “Whose car is that over there?” Use the lesson expression meaning “that thing over there”.",
         "canonicalTargetKey": "저것은 누구 차예요?",
         "acceptedAnswers": [
-          "저것은 누구 차예요?"
+          "저것은 누구 차예요?",
+          "저건 누구 차예요?"
         ],
         "eligibleModes": [
           "translate-type",
@@ -15302,7 +15317,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0621": {
         "typedClass": "canonical",
@@ -19450,11 +19465,12 @@
         "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
       },
       "s0786": {
-        "typedClass": "canonical",
+        "typedClass": "finite",
         "examPromptEn": "Answering what or who is at issue, speaking politely to a classmate, express this complete lesson sentence: “That is a historical fact.” Use the lesson expression meaning “fact / truth”.",
         "canonicalTargetKey": "그것이 역사적 사실이에요.",
         "acceptedAnswers": [
-          "그것이 역사적 사실이에요."
+          "그것이 역사적 사실이에요.",
+          "그게 역사적 사실이에요."
         ],
         "eligibleModes": [
           "translate-type",
@@ -19471,7 +19487,7 @@
         "exclusionReasons": [],
         "reviewStatus": "approved",
         "reviewedAt": "2026-07-25T17:00:20Z",
-        "reviewerNote": "Context cue fixes listener setting, discourse role, time reference where applicable, and the lesson lexical choice."
+        "reviewerNote": "E1A integrator: authored standard register-safe contraction variant(s) per SENTENCE_ELIGIBILITY_AUTHORING §2.5/§3; typedClass set to finite. No paraphrase, particle swap, reorder, or register conversion."
       },
       "s0787": {
         "typedClass": "excluded",
