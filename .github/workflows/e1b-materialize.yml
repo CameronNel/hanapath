@@ -26,18 +26,31 @@ jobs:
       - name: Generate, audit, and commit E1B
         shell: bash
         run: |
-          set -euo pipefail
-          base64 -d .e1b-payload/part-003 | gzip -d > /tmp/generate-e1b.mjs
-          node /tmp/generate-e1b.mjs
-          node --check sentence_exam_eligibility_shard_b.js
-          node scripts/audit-sentence-eligibility.mjs --allow-incomplete
-          node scripts/test-sentence-eligibility-shards.mjs
-          node scripts/audit-core-release.mjs --write-status
-          node scripts/audit-core-release.mjs --full
-          git diff --check
-          rm -rf .e1b-payload .github/workflows/e1b-materialize.yml
+          set +e
+          {
+            set -x
+            base64 -d .e1b-payload/part-003 | gzip -d > /tmp/generate-e1b.mjs
+            node /tmp/generate-e1b.mjs
+            node --check sentence_exam_eligibility_shard_b.js
+            node scripts/audit-sentence-eligibility.mjs --allow-incomplete
+            node scripts/test-sentence-eligibility-shards.mjs
+            node scripts/audit-core-release.mjs --write-status
+            node scripts/audit-core-release.mjs --full
+            git diff --check
+          } > /tmp/e1b-materialize.log 2>&1
+          status=$?
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "$status" -ne 0 ]; then
+            cp /tmp/e1b-materialize.log .e1b-debug.log
+            rm -f .github/workflows/e1b-materialize.yml
+            git add .e1b-debug.log
+            git add -u .github/workflows/e1b-materialize.yml
+            git commit -m "Capture E1B materialization failure"
+            git push origin HEAD:core/e1b-review-s1051-s2100
+            exit "$status"
+          fi
+          rm -rf .e1b-payload .github/workflows/e1b-materialize.yml
           git add sentence_exam_eligibility_shard_b.js docs/CORE_APP_STATUS.md
           git add -u .e1b-payload .github/workflows/e1b-materialize.yml
           git commit -m "E1B: classify Sentence eligibility rows s1051-s2100"
