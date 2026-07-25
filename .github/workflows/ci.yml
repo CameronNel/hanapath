@@ -43,7 +43,7 @@ jobs:
                   lines[index] = "  s2049: 'Formally acknowledge an instruction with the formal lesson expression built from 알다, meaning that you understand.',"
                   prompt_count += 1
               if 'if (particleCount >= 3 ||' in line:
-                  lines[index] = '  if (particleCount >= 3) {'
+                  lines[index] = "  if (particleCount >= 3) reasons.push('productive-word-order-family');"
                   reason_count += 1
           if prompt_count != 1:
               raise SystemExit(f'Expected one s2049 prompt line, got {prompt_count}')
