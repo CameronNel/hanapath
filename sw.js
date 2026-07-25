@@ -1,5 +1,5 @@
-// [2026-07-23] Cache bumped for Words B5 past & negation form-check upgrade + Drill Lab End session styling.
-const CACHE_NAME = "hanapath-shell-v448";
+// [2026-07-25] Cache bumped for E0 Sentence-eligibility sharding (four new browser-loaded shard files + merger).
+const CACHE_NAME = "hanapath-shell-v449";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -27,7 +27,7 @@ const APP_SHELL = [
   "./word_exam_engine.js?v=20260723a",
   "./exam_integrity.js?v=20260721b",
   "./form_check_blueprints.js?v=20260723a",
-  "./app.js?v=20260723c",
+  "./app.js?v=20260725a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

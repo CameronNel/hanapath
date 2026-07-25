@@ -1,11 +1,21 @@
 #!/usr/bin/env node
 // Regression: prove the E0 shard-integrity validator HARD-FAILS on each class
-// of corruption it is meant to catch, and PASSES on a well-formed registry.
+// of corruption it is meant to catch, and PASSES on a well-formed registry;
+// and prove the browser merger FAILS CLOSED (throws, publishes nothing) when a
+// shard is missing.
 //
-// This documents the six hard failures required by packet E0:
+// This documents the packet-E0 hard failures:
 //   duplicate IDs, missing IDs, overlapping shard ranges, out-of-range IDs,
-//   malformed records, and reviewed IDs absent from the live Sentence bank.
+//   malformed records, reviewed IDs absent from the live bank, EXTRA IDs (a
+//   shortened bank the ranges still claim), partition COUNT mismatch, and
+//   malformed/duplicate live-bank IDs.
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 import { validateShardIntegrity, EXPECTED_SHARD_RANGES } from "./audit-sentence-eligibility.mjs";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 let failures = 0;
 function check(name, cond) {
@@ -105,6 +115,66 @@ const hasErr = (errs, needle) => errs.some((e) => e.includes(needle));
 {
   const errs = validateShardIntegrity(undefined, bankIds);
   check("missing registry → hard fail", hasErr(errs, "missing or not an object"));
+}
+
+// A well-formed bank as an ARRAY (lets the validator see multiplicity).
+const bankIdArray = [];
+for (let n = 1; n <= 4177; n++) bankIdArray.push(`s${String(n).padStart(4, "0")}`);
+
+// 8. Extra ID / shortened bank: a row the ranges still claim was removed.
+{
+  const shortened = bankIdArray.filter((id) => id !== "s4177");
+  const errs = validateShardIntegrity(baselineShards(), shortened);
+  check("shortened bank (removed row) → 'Extra ID' hard fail", hasErr(errs, "Extra ID s4177"));
+  check("shortened bank → 'Partition count mismatch' hard fail", hasErr(errs, "Partition count mismatch"));
+}
+
+// 9. Duplicate live-bank ID.
+{
+  const dupBank = [...bankIdArray, "s0100"];
+  const errs = validateShardIntegrity(baselineShards(), dupBank);
+  check("duplicate live-bank ID → hard fail", hasErr(errs, "Duplicate live-bank ID s0100"));
+}
+
+// 10. Malformed live-bank ID.
+{
+  const badBank = [...bankIdArray, "sABCD"];
+  const errs = validateShardIntegrity(baselineShards(), badBank);
+  check("malformed live-bank ID → hard fail", hasErr(errs, "Malformed live-bank ID 'sABCD'"));
+}
+
+// 11. Merger fails closed when a shard is missing (browser runtime guard).
+function runInSandbox(files) {
+  const window = {};
+  const sandbox = { window, self: window, globalThis: window };
+  vm.createContext(sandbox);
+  for (const f of files) vm.runInContext(readFileSync(join(ROOT, f), "utf8"), sandbox, { filename: f });
+  return sandbox.window;
+}
+const ALL_SHARDS = [
+  "sentence_exam_eligibility_shard_a.js",
+  "sentence_exam_eligibility_shard_b.js",
+  "sentence_exam_eligibility_shard_c.js",
+  "sentence_exam_eligibility_shard_d.js",
+];
+const MERGER = "sentence_exam_eligibility.js";
+{
+  // All four shards present → publishes the aggregate.
+  const w = runInSandbox([...ALL_SHARDS, MERGER]);
+  check("merger with all four shards → publishes aggregate", !!w.HANAPATH_SENTENCE_EXAM_ELIGIBILITY);
+
+  // Shard D omitted → must throw and leave the global unset (fail closed).
+  let threw = false;
+  let published = true;
+  try {
+    const w2 = runInSandbox([...ALL_SHARDS.slice(0, 3), MERGER]);
+    published = !!w2.HANAPATH_SENTENCE_EXAM_ELIGIBILITY;
+  } catch {
+    threw = true;
+    published = false;
+  }
+  check("merger with a missing shard → throws (fail closed)", threw);
+  check("merger with a missing shard → does NOT publish a partial aggregate", published === false);
 }
 
 if (failures > 0) {

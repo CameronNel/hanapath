@@ -68,16 +68,43 @@ function loadShardedEligibility() {
 // strings (empty === valid). These are HARD failures independent of
 // --allow-incomplete: they signal data corruption, not review incompleteness.
 //
+// `bankIds` may be an array (preferred — lets the audit detect duplicate and
+// malformed live-bank IDs) or a Set.
+//
 // Hard failures covered:
 //   - malformed records (bad shard shape, bad row ID, non-object row);
 //   - overlapping shard ranges;
 //   - missing IDs (a live bank ID covered by no shard range);
+//   - EXTRA IDs (an ID the shard ranges claim that is absent from the bank);
+//   - a bank-vs-partition COUNT mismatch;
 //   - duplicate IDs (a row reviewed in more than one shard);
 //   - IDs outside the assigned range (a row in the wrong shard);
-//   - reviewed IDs absent from the live Sentence bank.
+//   - reviewed IDs absent from the live Sentence bank;
+//   - malformed or duplicate live-bank IDs (when `bankIds` is an array).
+//
+// The bank/partition comparison is BIDIRECTIONAL: the set of IDs the four
+// ranges enumerate must equal the set of live bank IDs exactly — neither a hole
+// in coverage nor a range claiming a row the bank no longer has may pass.
 export function validateShardIntegrity(shards, bankIds) {
   const errors = [];
-  const bankIdSet = bankIds instanceof Set ? bankIds : new Set(bankIds);
+
+  // Normalise the bank IDs; detect malformed/duplicate entries when an array
+  // (with its original multiplicity) is available.
+  const bankIdSet = new Set();
+  if (Array.isArray(bankIds)) {
+    const seen = new Set();
+    for (const id of bankIds) {
+      if (typeof id !== "string" || !ID_PATTERN.test(id)) {
+        errors.push(`Malformed live-bank ID '${id}': does not match /^s\\d{4}$/`);
+        continue;
+      }
+      if (seen.has(id)) errors.push(`Duplicate live-bank ID ${id}`);
+      seen.add(id);
+      bankIdSet.add(id);
+    }
+  } else if (bankIds instanceof Set) {
+    for (const id of bankIds) bankIdSet.add(id);
+  }
 
   if (!shards || typeof shards !== "object") {
     errors.push("Shard registry (HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS) is missing or not an object");
@@ -170,7 +197,17 @@ export function validateShardIntegrity(shards, bankIds) {
     }
   }
 
-  // Missing IDs: every live bank ID must be covered by exactly one shard range.
+  // Exact partition, BOTH directions. Build the full ID set the ranges
+  // enumerate, then compare it against the live bank set for holes AND for
+  // rows the ranges claim that the bank no longer contains.
+  const expectedIdSet = new Set();
+  for (const r of rangeList) {
+    for (let n = r.fromNum; n <= r.toNum; n++) {
+      expectedIdSet.add(`s${String(n).padStart(4, "0")}`);
+    }
+  }
+
+  // Direction 1 — coverage: every live bank ID must fall in exactly one range.
   for (const id of bankIdSet) {
     const n = idToNum(id);
     if (Number.isNaN(n)) continue;
@@ -180,6 +217,22 @@ export function validateShardIntegrity(shards, bankIds) {
     } else if (covering.length > 1) {
       errors.push(`Ambiguous ID ${id}: covered by multiple shard ranges (${covering.map((r) => r.key).join(", ")})`);
     }
+  }
+
+  // Direction 2 — no phantom coverage: every ID the ranges enumerate must exist
+  // in the live bank (catches a shortened bank / a removed row the range still
+  // claims).
+  for (const id of expectedIdSet) {
+    if (!bankIdSet.has(id)) {
+      errors.push(`Extra ID ${id}: enumerated by the shard ranges but absent from the live Sentence bank`);
+    }
+  }
+
+  // Count parity — a fast, explicit exact-partition assertion.
+  if (expectedIdSet.size !== bankIdSet.size) {
+    errors.push(
+      `Partition count mismatch: shard ranges enumerate ${expectedIdSet.size} IDs but the live bank has ${bankIdSet.size}`
+    );
   }
 
   return errors;
@@ -241,8 +294,8 @@ function main() {
   }
 
   // Shard integrity — hard failures regardless of --allow-incomplete.
-  const bankIdSet = new Set(sentences.map((s) => s.id));
-  const shardErrors = validateShardIntegrity(shards, bankIdSet);
+  // Pass the raw ID array (not a Set) so duplicate/malformed bank IDs surface.
+  const shardErrors = validateShardIntegrity(shards, sentences.map((s) => s.id));
   for (const err of shardErrors) errors.push(err);
   console.log(`Shard integrity     : ${shardErrors.length === 0 ? "OK" : `${shardErrors.length} error(s)`} (4 shards: A/B/C/D)`);
 

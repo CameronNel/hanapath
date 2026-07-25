@@ -14,31 +14,54 @@
 // (loaded BEFORE this file). This merger publishes the single, unchanged public
 // contract window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY with the same shape as
 // before the split ({ schemaVersion, revision, reviewedRows }), plus additive
-// shardRanges metadata. Structural invariants (no duplicate/out-of-range/
-// overlapping/malformed rows, and reviewed IDs present in the live bank) are
-// enforced by scripts/audit-sentence-eligibility.mjs, not at browser load time.
+// shardRanges metadata.
+//
+// FAIL CLOSED: the aggregate is published only when all four expected shards
+// (A/B/C/D) are present and each carries a range + reviewedRows object. A failed
+// shard request, transient 404, or malformed registration must NOT yield a
+// valid-looking but truncated aggregate — once E1A–E1D fill these files, that
+// would silently drop hundreds of reviewed rows. On any missing/malformed shard
+// this throws and leaves window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY unset.
+// Deeper structural invariants (duplicate/out-of-range/overlapping/malformed
+// rows, and reviewed IDs present in the live bank) are enforced by
+// scripts/audit-sentence-eligibility.mjs.
 (function () {
   "use strict";
 
   var SHARD_ORDER = ["A", "B", "C", "D"];
-  var registry = window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS || {};
+  var registry = window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS;
+
+  if (!registry || typeof registry !== "object") {
+    throw new Error(
+      "HanaPath eligibility: shard registry " +
+        "(window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS) is missing — refusing " +
+        "to publish eligibility. Load the four shard files before this merger."
+    );
+  }
 
   var reviewedRows = {};
   var shardRanges = [];
 
   for (var i = 0; i < SHARD_ORDER.length; i++) {
-    var shard = registry[SHARD_ORDER[i]];
-    if (!shard) continue;
-    if (shard.range) {
-      shardRanges.push({
-        shardId: shard.shardId,
-        fromId: shard.range.fromId,
-        toId: shard.range.toId,
-        fromNum: shard.range.fromNum,
-        toNum: shard.range.toNum
-      });
+    var key = SHARD_ORDER[i];
+    var shard = registry[key];
+
+    if (!shard || typeof shard !== "object" || !shard.range || !shard.reviewedRows) {
+      throw new Error(
+        "HanaPath eligibility: shard " + key + " is missing or malformed — " +
+          "refusing to publish a partial aggregate (fail closed)."
+      );
     }
-    var rows = shard.reviewedRows || {};
+
+    shardRanges.push({
+      shardId: shard.shardId,
+      fromId: shard.range.fromId,
+      toId: shard.range.toId,
+      fromNum: shard.range.fromNum,
+      toNum: shard.range.toNum
+    });
+
+    var rows = shard.reviewedRows;
     var ids = Object.keys(rows);
     for (var j = 0; j < ids.length; j++) {
       var id = ids[j];
