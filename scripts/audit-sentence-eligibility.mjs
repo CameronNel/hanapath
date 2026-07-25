@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import { ROOT, SENTENCES_FILE } from "./sentences-bank.mjs";
 
@@ -13,6 +14,31 @@ export function normalizeSentenceExamAnswer(value) {
 
 const ELIGIBILITY_FILE = join(ROOT, "sentence_exam_eligibility.js");
 
+// The four deterministic, non-overlapping eligibility shards (packet E0). They
+// load BEFORE the merger, in this order, into the same browser window; the
+// merger publishes window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY.
+export const SHARD_FILES = [
+  "sentence_exam_eligibility_shard_a.js",
+  "sentence_exam_eligibility_shard_b.js",
+  "sentence_exam_eligibility_shard_c.js",
+  "sentence_exam_eligibility_shard_d.js",
+];
+
+// Canonical range each shard MUST declare. The audit hard-fails if a shard's
+// self-declared range drifts from this contract.
+export const EXPECTED_SHARD_RANGES = {
+  A: { fromId: "s0001", toId: "s1050", fromNum: 1, toNum: 1050 },
+  B: { fromId: "s1051", toId: "s2100", fromNum: 1051, toNum: 2100 },
+  C: { fromId: "s2101", toId: "s3150", fromNum: 2101, toNum: 3150 },
+  D: { fromId: "s3151", toId: "s4177", fromNum: 3151, toNum: 4177 },
+};
+
+const ID_PATTERN = /^s\d{4}$/;
+
+function idToNum(id) {
+  return ID_PATTERN.test(id) ? parseInt(id.slice(1), 10) : NaN;
+}
+
 function loadBrowserGlobal(filePath, globalName) {
   const window = {};
   const sandbox = { window, self: window, globalThis: window };
@@ -20,6 +46,143 @@ function loadBrowserGlobal(filePath, globalName) {
   const code = readFileSync(filePath, "utf8");
   vm.runInContext(code, sandbox, { filename: filePath });
   return sandbox.window[globalName];
+}
+
+// Run every shard file + the merger in ONE window (browser load order) and
+// return both the raw shard registry and the merged public contract.
+function loadShardedEligibility() {
+  const window = {};
+  const sandbox = { window, self: window, globalThis: window };
+  vm.createContext(sandbox);
+  for (const file of SHARD_FILES) {
+    vm.runInContext(readFileSync(join(ROOT, file), "utf8"), sandbox, { filename: file });
+  }
+  vm.runInContext(readFileSync(ELIGIBILITY_FILE, "utf8"), sandbox, { filename: "sentence_exam_eligibility.js" });
+  return {
+    shards: sandbox.window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS,
+    eligibility: sandbox.window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY,
+  };
+}
+
+// Pure structural validation of the shard registry. Returns an array of error
+// strings (empty === valid). These are HARD failures independent of
+// --allow-incomplete: they signal data corruption, not review incompleteness.
+//
+// Hard failures covered:
+//   - malformed records (bad shard shape, bad row ID, non-object row);
+//   - overlapping shard ranges;
+//   - missing IDs (a live bank ID covered by no shard range);
+//   - duplicate IDs (a row reviewed in more than one shard);
+//   - IDs outside the assigned range (a row in the wrong shard);
+//   - reviewed IDs absent from the live Sentence bank.
+export function validateShardIntegrity(shards, bankIds) {
+  const errors = [];
+  const bankIdSet = bankIds instanceof Set ? bankIds : new Set(bankIds);
+
+  if (!shards || typeof shards !== "object") {
+    errors.push("Shard registry (HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS) is missing or not an object");
+    return errors;
+  }
+
+  const expectedKeys = Object.keys(EXPECTED_SHARD_RANGES);
+
+  // Unexpected shard keys → malformed.
+  for (const key of Object.keys(shards)) {
+    if (!expectedKeys.includes(key)) {
+      errors.push(`Malformed registry: unexpected shard key '${key}' (expected exactly ${expectedKeys.join(", ")})`);
+    }
+  }
+
+  const rangeList = [];
+  const idToShards = new Map(); // id -> [shardKey, ...] for duplicate detection
+
+  for (const key of expectedKeys) {
+    const shard = shards[key];
+    const expected = EXPECTED_SHARD_RANGES[key];
+
+    if (!shard || typeof shard !== "object") {
+      errors.push(`Malformed shard ${key}: missing or not an object`);
+      continue;
+    }
+    if (shard.shardId !== key) {
+      errors.push(`Malformed shard ${key}: shardId '${shard.shardId}' does not match its registry key '${key}'`);
+    }
+    const range = shard.range;
+    if (!range || typeof range !== "object") {
+      errors.push(`Malformed shard ${key}: missing range metadata`);
+      continue;
+    }
+    if (
+      range.fromId !== expected.fromId ||
+      range.toId !== expected.toId ||
+      range.fromNum !== expected.fromNum ||
+      range.toNum !== expected.toNum
+    ) {
+      errors.push(
+        `Shard ${key}: declared range ${JSON.stringify(range)} drifted from the locked contract ${JSON.stringify(expected)}`
+      );
+    }
+    if (!Number.isInteger(range.fromNum) || !Number.isInteger(range.toNum) || range.fromNum > range.toNum) {
+      errors.push(`Malformed shard ${key}: range bounds must be integers with fromNum <= toNum`);
+      continue;
+    }
+    rangeList.push({ key, fromNum: range.fromNum, toNum: range.toNum });
+
+    const rows = shard.reviewedRows;
+    if (!rows || typeof rows !== "object") {
+      errors.push(`Malformed shard ${key}: reviewedRows must be an object`);
+      continue;
+    }
+    for (const [id, entry] of Object.entries(rows)) {
+      if (!ID_PATTERN.test(id)) {
+        errors.push(`Malformed record in shard ${key}: row ID '${id}' does not match /^s\\d{4}$/`);
+        continue;
+      }
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+        errors.push(`Malformed record ${id} in shard ${key}: entry must be an object`);
+      }
+      const n = idToNum(id);
+      if (n < range.fromNum || n > range.toNum) {
+        errors.push(`Out-of-range ID ${id} in shard ${key}: outside its declared range [${range.fromNum}..${range.toNum}]`);
+      }
+      if (!bankIdSet.has(id)) {
+        errors.push(`Reviewed ID ${id} in shard ${key} is absent from the live Sentence bank`);
+      }
+      if (!idToShards.has(id)) idToShards.set(id, []);
+      idToShards.get(id).push(key);
+    }
+  }
+
+  // Duplicate IDs across shards.
+  for (const [id, keys] of idToShards) {
+    if (keys.length > 1) {
+      errors.push(`Duplicate ID ${id}: reviewed in more than one shard (${keys.join(", ")})`);
+    }
+  }
+
+  // Overlapping shard ranges.
+  const sorted = [...rangeList].sort((a, b) => a.fromNum - b.fromNum);
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i].fromNum <= sorted[i - 1].toNum) {
+      errors.push(
+        `Overlapping shard ranges: ${sorted[i - 1].key} [..${sorted[i - 1].toNum}] and ${sorted[i].key} [${sorted[i].fromNum}..]`
+      );
+    }
+  }
+
+  // Missing IDs: every live bank ID must be covered by exactly one shard range.
+  for (const id of bankIdSet) {
+    const n = idToNum(id);
+    if (Number.isNaN(n)) continue;
+    const covering = rangeList.filter((r) => n >= r.fromNum && n <= r.toNum);
+    if (covering.length === 0) {
+      errors.push(`Missing ID ${id}: not covered by any shard range`);
+    } else if (covering.length > 1) {
+      errors.push(`Ambiguous ID ${id}: covered by multiple shard ranges (${covering.map((r) => r.key).join(", ")})`);
+    }
+  }
+
+  return errors;
 }
 
 const allowIncomplete = process.argv.includes("--allow-incomplete");
@@ -70,12 +233,18 @@ const LOCKED_TAG_FLOORS = [
 function main() {
   const errors = [];
   const sentences = loadBrowserGlobal(SENTENCES_FILE, "HANAPATH_SENTENCES") || [];
-  const eligibility = loadBrowserGlobal(ELIGIBILITY_FILE, "HANAPATH_SENTENCE_EXAM_ELIGIBILITY");
+  const { shards, eligibility } = loadShardedEligibility();
 
   if (!eligibility) {
-    console.error("ERROR: HANAPATH_SENTENCE_EXAM_ELIGIBILITY global not found in sentence_exam_eligibility.js");
+    console.error("ERROR: HANAPATH_SENTENCE_EXAM_ELIGIBILITY global not published by sentence_exam_eligibility.js");
     process.exit(1);
   }
+
+  // Shard integrity — hard failures regardless of --allow-incomplete.
+  const bankIdSet = new Set(sentences.map((s) => s.id));
+  const shardErrors = validateShardIntegrity(shards, bankIdSet);
+  for (const err of shardErrors) errors.push(err);
+  console.log(`Shard integrity     : ${shardErrors.length === 0 ? "OK" : `${shardErrors.length} error(s)`} (4 shards: A/B/C/D)`);
 
   if (eligibility.schemaVersion !== 1) {
     errors.push(`Invalid schemaVersion: expected 1, got ${eligibility.schemaVersion}`);
@@ -257,4 +426,8 @@ function main() {
   process.exit(0);
 }
 
-main();
+// Only run the gate when invoked directly, so the regression test can import
+// validateShardIntegrity / EXPECTED_SHARD_RANGES without exiting the process.
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  main();
+}

@@ -54,9 +54,9 @@ owns *what to do next*; this file owns *what currently exists*.
 
 | Metric | Value |
 |---|---|
-| Service-worker cache name | hanapath-shell-v448 |
-| Versioned local assets loaded by index.html | 20 |
-| Precached service-worker shell assets | 193 |
+| Service-worker cache name | hanapath-shell-v449 |
+| Versioned local assets loaded by index.html | 24 |
+| Precached service-worker shell assets | 197 |
 
 ### Sentence Mastery examination readiness
 
@@ -95,6 +95,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentences foundation coverage | `node scripts/audit-sentences-foundation.mjs` | blocking |
 | Form Checks | `node scripts/audit-form-checks.mjs` | blocking |
 | Sentence eligibility (schema + progress) | `node scripts/audit-sentence-eligibility.mjs --allow-incomplete` | blocking |
+| Eligibility shard-integrity fixtures (E0) | `node scripts/test-sentence-eligibility-shards.mjs` | blocking |
 | Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | conditional |
 | Audio coverage | `node scripts/audit-audio-coverage.mjs` | blocking |
 | Alphabet audio coverage | `node scripts/audit-alphabet-audio.mjs --strict` | blocking |

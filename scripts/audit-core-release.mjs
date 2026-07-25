@@ -53,6 +53,11 @@ const DATA_FILES = [
   "form_check_blueprints.js",
   "sentences_core.js",
   "sentences_lesson_plan.js",
+  // Eligibility shards (E0) load before the merger, matching browser order.
+  "sentence_exam_eligibility_shard_a.js",
+  "sentence_exam_eligibility_shard_b.js",
+  "sentence_exam_eligibility_shard_c.js",
+  "sentence_exam_eligibility_shard_d.js",
   "sentence_exam_eligibility.js",
   "hangul_mastery_exam.js",
   "hangul_strokes.js",
@@ -289,6 +294,7 @@ const GATE_STEPS = [
     fullArgs: ["--allow-incomplete"],
     quickArgs: ["--allow-incomplete"],
   },
+  { id: "eligibility-shards-regression", label: "Eligibility shard-integrity fixtures (E0)", script: "scripts/test-sentence-eligibility-shards.mjs" },
   {
     id: "sentence-exams",
     label: "Sentence Mastery examination seed audit",
