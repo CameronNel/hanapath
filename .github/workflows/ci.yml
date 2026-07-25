@@ -7,129 +7,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  materialize-e1b-review:
-    if: github.event_name == 'pull_request' && github.head_ref == 'core/e1b-review-s1051-s2100'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout packet branch
-        uses: actions/checkout@v4
-        with:
-          ref: core/e1b-review-s1051-s2100
-          fetch-depth: 0
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Patch reviewed metadata and generate corrected E1B shard
-        run: |
-          python <<'PY'
-          from pathlib import Path
-          path = Path('scripts/e1b-final-review.mjs')
-          lines = path.read_text(encoding='utf-8').splitlines()
-          prompt_count = 0
-          reason_count = 0
-          for index, line in enumerate(lines):
-              if line.startswith('  s2049:'):
-                  lines[index] = "  s2049: 'Formally acknowledge an instruction with the formal lesson expression built from 알다, meaning that you understand.',"
-                  prompt_count += 1
-              if 'if (particleCount >= 3 ||' in line:
-                  lines[index] = "  if (particleCount >= 3) reasons.push('productive-word-order-family');"
-                  reason_count += 1
-          if prompt_count != 1:
-              raise SystemExit(f'Expected one s2049 prompt line, got {prompt_count}')
-          if reason_count != 1:
-              raise SystemExit(f'Expected one length-proxy condition, got {reason_count}')
-          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
-          PY
-          node scripts/e1b-final-review.mjs
-
-      - name: Run independent reviewer invariants
-        run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-          const vm = require('node:vm');
-          const window = {};
-          const sandbox = { window, self: window, globalThis: window };
-          vm.createContext(sandbox);
-          for (const file of ['sentences_core.js', 'sentence_exam_eligibility_shard_b.js']) {
-            vm.runInContext(fs.readFileSync(file, 'utf8'), sandbox, { filename: file });
-          }
-          const bank = new Map(window.HANAPATH_SENTENCES.map((row) => [row.id, row]));
-          const rows = window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS.B.reviewedRows;
-          const counts = { canonical: 0, finite: 0, excluded: 0 };
-          const reasonCounts = {};
-          const prompts = new Map();
-          const targets = new Map();
-          const errors = [];
-          const normalize = (value) => String(value ?? '').normalize('NFC').trim().replace(/\s+/g, ' ');
-          for (const [id, entry] of Object.entries(rows)) {
-            const row = bank.get(id);
-            if (!row) errors.push(`${id}: absent from bank`);
-            if (entry.canonicalTargetKey !== normalize(row && row.korean)) errors.push(`${id}: canonical mismatch`);
-            if (entry.examPromptEn.includes(entry.canonicalTargetKey)) errors.push(`${id}: full target leaks in prompt`);
-            if ((row.patternTags || []).includes('future-geoyeyo') && entry.typedClass !== 'excluded') errors.push(`${id}: future row typed-eligible`);
-            if (entry.typedClass === 'canonical' && entry.acceptedAnswers.length !== 1) errors.push(`${id}: canonical answer count`);
-            if (entry.typedClass === 'finite' && (entry.acceptedAnswers.length < 2 || entry.acceptedAnswers.length > 5)) errors.push(`${id}: finite answer count`);
-            if (entry.typedClass === 'excluded' && (!entry.exclusionReasons.length || entry.eligibleModes.includes('translate-type'))) errors.push(`${id}: excluded contract`);
-            if (entry.typedClass !== 'excluded' && entry.exclusionReasons.length) errors.push(`${id}: eligible row has exclusion reasons`);
-            counts[entry.typedClass] += 1;
-            for (const reason of entry.exclusionReasons) reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
-            prompts.set(entry.examPromptEn, [...(prompts.get(entry.examPromptEn) || []), id]);
-            targets.set(entry.canonicalTargetKey, [...(targets.get(entry.canonicalTargetKey) || []), id]);
-          }
-          if (Object.keys(rows).length !== 1050) errors.push(`row count ${Object.keys(rows).length}`);
-          if (counts.canonical !== 41 || counts.finite !== 8 || counts.excluded !== 1001) errors.push(`unexpected counts ${JSON.stringify(counts)}`);
-          const expectedReasonCounts = {
-            'connective-clause-continuation': 343,
-            'lexical-or-information-structure-ambiguity': 375,
-            'particle-or-word-order-ambiguity': 29,
-            'productive-word-order-family': 290,
-            'topic-subject-information-structure-ambiguity': 85,
-            'future-authoring-locked': 8,
-            'productive-pragmatic-variants': 58,
-            'unsafe-existing-alternative-family': 7,
-          };
-          if (JSON.stringify(reasonCounts) !== JSON.stringify(expectedReasonCounts)) errors.push(`unexpected reason counts ${JSON.stringify(reasonCounts)}`);
-          for (const [prompt, ids] of prompts) if (ids.length > 1) errors.push(`duplicate prompt ${ids.join(', ')}`);
-          for (const [target, ids] of targets) if (ids.length > 1) errors.push(`duplicate target ${ids.join(', ')}`);
-          if (errors.length) throw new Error(errors.join('\n'));
-          console.log(JSON.stringify({ rowCount: 1050, counts, reasonCounts, promptLeaks: 0, duplicatePrompts: 0, duplicateTargets: 0, futureEligible: 0 }, null, 2));
-          NODE
-
-      - name: Validate corrected shard
-        run: |
-          node --check sentence_exam_eligibility_shard_b.js
-          node scripts/audit-sentence-eligibility.mjs --allow-incomplete
-          node scripts/test-sentence-eligibility-shards.mjs
-          node scripts/audit-core-release.mjs --write-status
-          node scripts/audit-core-release.mjs --full
-          git diff --check
-
-      - name: Restore permanent workflow and remove temporary machinery
-        run: |
-          git show "${{ github.event.pull_request.base.sha }}:.github/workflows/ci.yml" > .github/workflows/ci.yml
-          rm -f scripts/e1b-final-review.mjs .github/workflows/e1b-final-review.yml
-
-      - name: Publish independently reviewed final tree
-        run: |
-          git config user.name "CameronNel"
-          git config user.email "100732464+CameronNel@users.noreply.github.com"
-          git add -A
-          git commit -m "E1B: apply independent reviewer corrections"
-          git push origin HEAD:core/e1b-review-s1051-s2100
-
   validate:
-    needs: materialize-e1b-review
     name: Validate static app
     runs-on: ubuntu-latest
     steps:
@@ -188,7 +73,6 @@ jobs:
         run: node scripts/audit-app-shell.mjs
 
   core-gate:
-    needs: materialize-e1b-review
     name: Core-release gate
     runs-on: ubuntu-latest
     steps:
