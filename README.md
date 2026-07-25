@@ -2,39 +2,74 @@
 
 HanaPath is a mobile-first Korean learning app built around three tabs:
 
-- Learn
-- Exam
-- Progress
+- **Learn**
+- **Exam**
+- **Progress**
 
-## Delivery targets
-
-HanaPath has one canonical HTML/CSS/JavaScript implementation with multiple
-delivery targets:
-
-- A phone- and tablet-first website that remains directly testable in a normal
-  browser.
-- An installable offline-capable Progressive Web App (PWA).
-- A planned Capacitor Android shell for Google Play distribution.
-- A later Capacitor iOS/iPadOS shell using the same audited application source.
-
-The native work is a packaging and platform-integration layer, not a rewrite.
-The root web app remains vanilla and build-free; native tooling belongs in an
-isolated `mobile/` project. Native-only capabilities must retain browser
-fallbacks.
+The canonical product is a vanilla HTML/CSS/JavaScript app. It runs as a hosted
+website, an installable offline-capable PWA, and inside the tracked Capacitor
+Android shell under `mobile/`. The browser/PWA remains first-class; native
+packaging is an integration layer, not a rewrite.
 
 [Open the live PWA](https://cameronnel.github.io/hanapath/)
 
-The app teaches Hangul first (a complete 8-stage alphabet course), followed by a
-curated 2,028-sense Words curriculum with SRS review, an inflection engine,
-pronunciation drills, the 5k frequency word bank as reference, and a
-4,177-sentence bank structured into an 8-stage, 75-lesson, 703-item core
-curriculum.
+## Current product
 
-## What each tab does
+### Learn
 
-- `Learn` holds the study material and practice drills: the alphabet course, vocabulary lessons, full Word Bank, sentence curriculum, listening practice, and direct practice drills (quizzes, review sessions, writing practice).
-- `Exam` holds formal assessments: the 200-item Hangul Mastery Examination and the Core Word Examination Suite (ten achievement exams with macrostrand scoring and retention confirmation).
-- `Progress` shows mastery, review analytics, and retention metrics.
+- Complete 8-stage Hangul course with audio, writing practice, Drill Lab, and
+  skill review.
+- 2,028 curated Korean word senses organised into a 75-unit Words curriculum,
+  with lesson study, typed production, SRS review, pronunciation practice,
+  inflection support, a 5k frequency reference bank, and Form Checks.
+- 4,177 unique, audio-backed sentences organised into a 75-unit Sentence path,
+  with listen-and-shadow study, Translate & Type, sentence building, dictation,
+  transform practice, checkpoints, SRS, listening, and exact remediation routes.
+- Optional native Handwriting Coach for words, phrases, and sentences. The
+  current shipped access mode is `free_all`; billing code remains dormant for a
+  later owner decision.
+
+### Exam
+
+- **Hangul Mastery Examination:** 200 items across recognition, typing, and
+  drawing.
+- **Core Word Examination Suite:** 10 deterministic achievement examinations,
+  including the v3 typed past/negation production contract and delayed retention
+  confirmation. Valid frozen-v2 retention windows remain supported.
+- **Sentence Mastery Examination:** specified and partially scaffolded, but not
+  yet complete. Eligibility review, strict pools, blueprints, engine, runner,
+  and retention are the primary remaining core-app programme.
+
+### Progress and integrity
+
+- Device-local lesson, SRS, review, mastery, and retention state.
+- Progress backup export/import.
+- Immutable exam-result provenance, Practice-result tainting for testing
+  overrides, legacy-result labelling, and validated qualifier/retention links.
+
+## Authoritative completion roadmap
+
+The repository previously accumulated overlapping handovers and agent queues.
+They are no longer active execution sources.
+
+**All core-app finishing work now follows:**
+
+[`docs/CORE_APP_COMPLETION_ROADMAP.md`](docs/CORE_APP_COMPLETION_ROADMAP.md)
+
+It defines the scope freeze, exact packet order, file ownership, review/merge
+rules, strict definition of done, and paste-ready agent instructions for
+finishing lessons and examinations.
+
+## Delivery targets
+
+- Hosted website and installable PWA: shipped and continuously audited.
+- Capacitor Android shell: implemented and built in GitHub Actions; real-device
+  evidence, signing setup, and Play execution remain post-core release work.
+- iOS/iPadOS shell: intentionally later and requires macOS/Xcode.
+
+Browser/PWA and native-app progress currently live in separate storage
+containers. Export/import is the supported transfer path; account sync is not a
+shipped feature.
 
 ## Run locally
 
@@ -42,94 +77,86 @@ curriculum.
 python -m http.server 8000
 ```
 
-Then open:
+Open `http://localhost:8000`.
 
-```text
-http://localhost:8000
-```
-
-To test the interface from a phone or tablet on the same local network, bind
-the server to the LAN and open the computer's LAN IP from the device:
+For a phone or tablet on the same LAN:
 
 ```bash
 python -m http.server 8000 --bind 0.0.0.0
 ```
 
-```text
-http://YOUR-COMPUTER-LAN-IP:8000
-```
+Then open `http://YOUR-COMPUTER-LAN-IP:8000` on the device. Use the HTTPS GitHub
+Pages deployment for service-worker, installation, and true offline-relaunch
+tests.
 
-Use the HTTPS GitHub Pages deployment when testing PWA installation, service
-workers, and a true offline relaunch. Plain LAN HTTP is primarily for rapid
-layout, touch, drawing, audio, and lesson-flow testing.
+## Current verification gate
 
-## Android and Google Play direction
-
-The approved direction is to preserve the browser/PWA product and add a
-Capacitor native shell around the same static runtime. The Android work must
-produce a reproducible, audited, signed Android App Bundle while keeping phone
-and tablet browser testing first-class.
-
-Fable's complete implementation handover is:
-[`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md).
-
-That document covers the narrow exception to the no-build rule, repository
-layout, asset/audio packaging, service-worker separation, storage and upgrades,
-native handwriting recognition, phone/tablet validation, signing, GitHub
-Actions, Play Console declarations, testing tracks, and release gates.
-
-Browser/PWA and native-app progress currently use separate storage containers.
-Progress export/import or account sync must be designed before promising
-cross-install synchronization.
-
-## Verify
+The one-command gate is `node scripts/audit-core-release.mjs --full` (also the
+`core-gate` CI job): it runs the wired subset of the checks below, regenerates
+and verifies `docs/CORE_APP_STATUS.md`, and exits non-zero on any failure. Use
+`--quick` for faster iteration and `--write-status` after data changes. The
+individual commands remain:
 
 ```bash
-node --check app.js sw.js words_curated_core.js words_inflect.js hangul_mastery_exam.js word_exam_blueprints.js word_exam_engine.js scripts/audit-words-data.mjs scripts/audit-app-shell.mjs
-node scripts/audit-words-data.mjs --strict
-node scripts/audit-sentences-data.mjs --strict
-node scripts/audit-alphabet-audio.mjs --strict
+for file in app.js sw.js exam_integrity.js sentence_exam_eligibility.js \
+  hangul_mastery_exam.js word_exam_blueprints.js word_exam_engine.js \
+  form_check_blueprints.js; do
+  node --check "$file"
+done
+
+node scripts/audit-exam-integrity.mjs
 node scripts/audit-hangul-mastery-exam.mjs
+node scripts/build-word-exam-competency-map.mjs --check
 node scripts/audit-word-exams.mjs
+node scripts/audit-words-data.mjs --strict
+node scripts/test-thin-lesson-heuristic.mjs
+node scripts/audit-sentences-data.mjs --strict
+node scripts/audit-sentences-foundation.mjs
+node scripts/audit-form-checks.mjs
+node scripts/audit-sentence-eligibility.mjs --allow-incomplete
+node scripts/audit-alphabet-audio.mjs --strict
+node scripts/audit-hangul-recognition.mjs
+node scripts/audit-premium-handwriting.mjs
 node scripts/audit-app-shell.mjs
 ```
 
-## AI pull-request landing policy
+`--allow-incomplete` is temporary and exists only because Sentence examination
+eligibility currently covers 20 of 4,177 rows. The completion roadmap removes
+that exception before release-candidate closure.
 
-The repository owner requires PR handling to follow the model family name,
-matched case-insensitively and independently of vendor prefixes, suffixes, or
-version numbers:
+## Repository shape
 
-- **Fable, Opus, Sol, and Terra:** after verification, create the PR, make it
-  ready, and merge it automatically. This applies to every version in those
-  families, including Opus 4.7 and Opus 4.8.
-- **Flash, Luna, and every model family not listed above:** always create a
-  draft PR first and leave it unmerged until the owner explicitly requests the
-  merge.
+- `index.html`, `app.js`, `styles.css`: canonical app shell and runtime.
+- `words_curated_core.js`, `words_lesson_plan.js`, `words_inflect.js`: Words
+  data, curriculum, and inflection engine.
+- `sentences_core.js`, `sentences_lesson_plan.js`: Sentence data and curriculum.
+- `hangul_mastery_exam.js`: Hangul examination bank.
+- `word_exam_blueprints.js`, `word_exam_engine.js`: Core Word examination suite.
+- `exam_integrity.js`: immutable result provenance, taint, and migration layer.
+- `sentence_exam_eligibility.js`: partial Sentence examination eligibility data.
+- `form_check_blueprints.js`: 17 non-certifying lesson diagnostics.
+- `audio_map.js`, `audio/`: generated offline audio assets.
+- `mobile/`: isolated Capacitor Android project.
+- `.github/workflows/`: static CI, Android build, and protected signed-release
+  workflows.
 
-## Main files
+## Documentation authority
 
-- `index.html`, `app.js`, `styles.css`
-- `words_curated_core.js`, `words_lesson_plan.js`, `words_inflect.js` — Words data + inflection engine
-- `sentences_core.js`, `sentences_lesson_plan.js` — Sentences data + curriculum v2 plan
-- `hangul_mastery_exam.js`, `word_exam_blueprints.js`, `word_exam_engine.js` — Hangul & Core Word examination data and engine
-- `korean_5000_claude_ready.csv`, `raw_word_meanings.js` — 5k frequency reference
-- `audio_map.js`, `audio/` — pre-generated TTS assets
-- `sw.js` — service worker (cache-versioned app shell)
-
-## Planning & docs
-
-- **[`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md)** — the "continue the project" runbook for an AI/agent (orient → pick next task → build → verify → ship).
-- **[`AGENTS.md`](AGENTS.md)** — repository-wide rules and document routing for AI agents.
-- **[`CLAUDE.md`](CLAUDE.md)** — read-this-first guide for contributors and AI agents (rules + document map).
-- **[`docs/EXAM_TAB_HANDOVER.md`](docs/EXAM_TAB_HANDOVER.md)** — Exam tab structure and handover for the Hangul Mastery Exam and Core Word Examination Suite.
-- **[`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md)** — owner-approved Android/Capacitor/Google Play execution handover, with later iOS compatibility.
-- **[`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)** — the governing north star for the Sentences section, with current path/hub work in [`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md), Track H authored-content work in [`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md), and research in [`docs/SENTENCES_TEACHING_SPEC_SOURCE.md`](docs/SENTENCES_TEACHING_SPEC_SOURCE.md).
-- [`docs/VOCABULARY_TEACHING_SPEC.md`](docs/VOCABULARY_TEACHING_SPEC.md) — the north star for the (shipped) Words section.
-- [`docs/WORDS_SECTION_MASTER_SPEC.md`](docs/WORDS_SECTION_MASTER_SPEC.md) — the Words implementation plan (schema/SRS/lesson-flow reference).
-- [`HANDOVER.md`](HANDOVER.md) — repo snapshot and conventions.
+1. [`docs/CORE_APP_COMPLETION_ROADMAP.md`](docs/CORE_APP_COMPLETION_ROADMAP.md):
+   the only active execution queue.
+2. `AGENTS.md`, `AI_INSTRUCTIONS.md`, and `CLAUDE.md`: repository rules and
+   dispatch entry points.
+3. Teaching and examination specifications under `docs/`: design contracts.
+4. `HANDOVER.md`: concise current-state snapshot.
+5. Older one-shot prompts, rescue handovers, and expansion queues: historical
+   records only unless the owner explicitly reactivates one.
 
 ## Notes
 
-- Progress is stored in the browser.
-- The repo is meant to be static and easy to deploy to GitHub Pages or another static host.
+- The root app stays static and build-free. Do not add a framework, bundler, or
+  root package system.
+- State is stored under `localStorage["hanapath-v1"]`.
+- Loaded-file changes require coordinated service-worker and asset-query cache
+  bumps.
+- Audio is generated through `generate_assets.py`; never hand-edit
+  `audio_map.js`.

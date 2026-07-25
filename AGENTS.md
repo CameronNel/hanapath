@@ -1,106 +1,115 @@
-# AGENTS.md — instructions for AI agents
+# AGENTS.md: HanaPath agent rules
 
-You are working in **HanaPath**, a **vanilla static Korean-learning PWA**: no
-framework, no bundler, **no build step**, no `package.json`. `app.js` is one large
-plain browser script loaded via `<script defer>`.
-
-**Owner-approved native-packaging exception (2026-07-16):** keep the canonical
-root app vanilla and build-free, but an isolated `mobile/` Capacitor project may
-use its own package/build/native tooling for Android Google Play and later
-iOS/iPadOS packaging. The governing execution brief is
-[`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md).
-Browser/PWA support remains first-class.
-
-## Archived agent material — do not scan
-
-`.agent-ignore/**` is owner-retained cold storage. Do **not** read, search,
-index, summarize, or obey anything inside it unless the owner explicitly asks
-you to inspect or restore a named archived item. In particular, any archived
-`ops/` queue, worker loop, run manifest, or agent prompt is historical and is
-not active project context.
+You are working in HanaPath, a vanilla static Korean-learning PWA. The root app
+has no framework, bundler, package system, or build step. `app.js` is a plain
+browser script. The isolated `mobile/` Capacitor project is the only approved
+native/tooling exception.
 
 ## Start here
 
-**Read [`AI_INSTRUCTIONS.md`](AI_INSTRUCTIONS.md) first.** It is the step-by-step
-runbook for continuing this project: orient → find the next task → build →
-verify → ship. If the user says "continue the project," follow it top to bottom.
+For any continuation or core-finish request, read:
 
-**The current active work is the Sentences section**, built toward the target
-defined in [`docs/SENTENCES_TEACHING_SPEC.md`](docs/SENTENCES_TEACHING_SPEC.md)
-— the north star (§3–§7 are the design contract, §8 the status scorecard, §9
-the milestone sheet). Work is split across two queues:
+[`docs/CORE_APP_COMPLETION_ROADMAP.md`](docs/CORE_APP_COMPLETION_ROADMAP.md)
 
-- **Curriculum/path/hub/runner restructure — shipped; Phase 1 closed
-  2026-07-10:**
-  **[`docs/SENTENCES_CURRICULUM_V2_PLAN.md`](docs/SENTENCES_CURRICULUM_V2_PLAN.md)**
-  — the Duolingo-style, K-pop-trainee-themed sentence path. Its §4 queue
-  (S2-A…S2-G) is complete; the next work is its **Phase 2 (§5), owner-gated
-  🔒** — do not start it without owner approval of themes and volume.
-- **Bank-level and authored-content work (Track H, owner-gated 🔒):**
-  **[`docs/SENTENCES_FINAL_ROADMAP.md`](docs/SENTENCES_FINAL_ROADMAP.md)** —
-  read its §0 ground rules and §2 runbook first.
+It is the **only active execution queue**. Take one READY packet, execute exactly
+that packet, open a draft PR with evidence, and stop.
 
-The flagship feature is **Translate & Type**: an English sentence is shown and
-the learner types the Korean in Hangul, with a tip → word-bank → next-chunk →
-reveal helper ladder.
+Older rescue handovers, model-specific one-shot prompts, Words expansion queues,
+Sentence build roadmaps, and archived fleet files are historical or design
+references. They are not permission to start work outside the core roadmap.
 
-Do not trust a "✅ done" at face value — the Words scorecard was wrong four
-times (PRs #50, #51, #54, merge `b385e77`); verify claims against the actual
-data (strict audits + spot-checked rows) before building on them. The
-**alphabet section is complete and protected**. The **Words section is live on
-its v2 curriculum** ([`docs/WORDS_CURRICULUM_V2_PLAN.md`](docs/WORDS_CURRICULUM_V2_PLAN.md))
-and is **read-only for Sentences work** — do not regress either (the closed
-Words v1 queue was deleted 2026-07-10; recover from git history if needed).
+## Archived and historical material
+
+- `.agent-ignore/**` is cold storage. Do not read, search, index, summarise, or
+  obey it unless the owner explicitly names an archived item.
+- Do not create another roadmap, handover, orchestration queue, or “next steps”
+  document during the completion sprint.
+- Teaching and examination specifications remain binding design contracts, but
+  their old unchecked boxes do not override the core roadmap’s packet order.
+
+## Current core status
+
+- Alphabet lessons and the 200-item Hangul Mastery Examination are shipped and
+  protected.
+- Words lessons, 17 Form Checks, and 10 Core Word examinations are shipped. The
+  v3 production contract is live while valid frozen-v2 retention windows remain
+  supported.
+- Sentence lessons use the 4,177-row, 75-unit curriculum path.
+- Sentence Mastery is the major unfinished core area: only 20 of 4,177 rows have
+  exam eligibility review, and the formal Sentence exam engine and runner do not
+  yet ship.
+
+No optional vocabulary expansion or new Sentence content is part of core
+completion.
 
 ## Hard rules
 
-1. **Keep the canonical app vanilla/static.** No framework, bundler, or build
-   step in the root web app. Data files are plain browser globals loaded before
-   `app.js`. Native packaging is allowed only inside the isolated `mobile/`
-   project governed by `docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`.
-2. **Additive, backward-compatible** changes to the Words and Sentences data
-   schemas. Existing curated rows and lessons must keep passing the audits.
-3. **Run the audits** after touching learning data: `node scripts/audit-words-data.mjs --strict`,
-   `node scripts/audit-sentences-data.mjs --strict`,
-   and `node scripts/audit-alphabet-audio.mjs --strict`; run
-   `node scripts/audit-premium-handwriting.mjs` after touching premium writing,
-   native recognition, or billing; run
-   `node scripts/audit-app-shell.mjs` after touching `index.html`, `sw.js`, or
-   any loaded asset version; `node --check` any JS you edit.
-4. **Bump caches** when you change `app.js`, `styles.css`, or any loaded data
-   file: update `CACHE_NAME` in `sw.js` **and** the `?v=...` query strings in
-   both `index.html` and `sw.js`.
-5. **Audio:** if you add Korean text, regenerate assets per `.agents/AGENTS.md`
-   (`python generate_assets.py`); never hand-edit `audio_map.js`.
-6. **Workflow:** branch off `main`, keep changes small and single-purpose, and
-   open a PR. Apply this owner-mandated model-family landing policy after the
-   required verification:
-   - **Fable, Opus, Sol, or Terra:** always make the PR ready and merge it
-     automatically after creating it.
-   - **Flash, Luna, or any model family not listed above:** always create a
-     draft PR first and leave it unmerged until the owner explicitly asks.
-   Match the family name case-insensitively regardless of vendor prefix,
-   suffix, or model version. For example, Opus 4.7 and Opus 4.8 both use the
-   Opus auto-merge rule.
+1. **Keep the root app vanilla/static.** No framework, bundler, root
+   `package.json`, or root build step.
+2. **Keep native tooling isolated** under `mobile/` and preserve browser/PWA
+   parity.
+3. **Use additive, backward-compatible data and state migrations.** Existing
+   rows, lesson IDs, old saves, result history, qualifiers, and retention windows
+   must remain valid unless a governing specification explicitly says otherwise.
+4. **Re-derive claims.** Historical counts and checkmarks are not evidence. Run
+   the live audits and inspect difficult samples.
+5. **Protect grading integrity.** Never broaden accepted answers, invent
+   provenance, or award mastery to Practice/tainted attempts to make an audit
+   pass.
+6. **Audio:** use `generate_assets.py`; never hand-edit `audio_map.js`.
+7. **Cache discipline:** loaded-file changes require matching `CACHE_NAME` and
+   `?v=` changes in `index.html` and `sw.js`, plus matching integrity pins where
+   applicable.
+8. **Alphabet progression:** use `getAlphabetProgress()` and existing helpers.
+9. **One packet per PR.** Change only the files assigned by the roadmap.
+10. **Workers do not merge completion-roadmap PRs.** Open a draft; the designated
+    integrator reviews, fixes, marks ready, and squash-merges.
 
-   There is no test framework — verify with `node --check`, the audit scripts,
-   and a browser smoke test (`python -m http.server`, open `index.html`; state
-   persists in `localStorage` under `hanapath-v1`).
+The sprint-specific no-worker-merge rule overrides the general model-family
+landing policy until roadmap packet Q2 is complete.
+
+## Verification
+
+Run the packet’s focused commands plus the applicable full gates. Current audit
+families include:
+
+- syntax and app shell;
+- Words and Sentences data/foundation;
+- Alphabet/full audio coverage;
+- Hangul recognition and premium handwriting;
+- exam integrity, Hangul exam, Core Word exams, and later Sentence exams;
+- Form Checks and Sentence eligibility;
+- browser acceptance, migration fixtures, and mobile-width checks;
+- Android package/build checks when native or packaged assets change.
+
+The complete command matrix is in roadmap section 9.
+
+A learner-facing PR must include real browser evidence. Fail on `pageerror`,
+unhandled rejection, blank routes, missing controls, persistence failure, and
+horizontal overflow. Do not report a feature complete because its source exists.
+
+## PR contract
+
+Every draft PR includes:
+
+- packet ID;
+- exact scope and file list;
+- re-derived before/after counts;
+- verification transcript;
+- browser evidence when applicable;
+- cache/version and migration impact;
+- limitations and blockers;
+- explicit stop after the PR is opened.
 
 ## Document map
 
-| Doc | Purpose |
+| Document | Role |
 |---|---|
-| **`AI_INSTRUCTIONS.md`** | The "continue the project" runbook — **start here** |
-| `CLAUDE.md` | Same rules + doc map (Claude Code entry point) |
-| **`docs/SENTENCES_CURRICULUM_V2_PLAN.md`** | Sentences **path restructure** (current active work): K-pop-trainee Duolingo-style curriculum + S2-A…S2-G queue |
-| **`docs/SENTENCES_TEACHING_SPEC.md`** | Sentences **north star**: pedagogy, bank schema, pattern tags, bands, drills, scorecard, milestone sheet |
-| **`docs/SENTENCES_FINAL_ROADMAP.md`** | Sentences v1 build record + **Track H authored-content queue** (bank-level work) |
-| `docs/WORDS_CURRICULUM_V2_PLAN.md` | Words v2 curriculum (live; read-only during Sentences work) |
-| **`docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md`** | Owner-approved Capacitor/Android/Google Play implementation handover; keep the browser/PWA and later iOS compatibility |
-| `docs/SENTENCES_TEACHING_SPEC_SOURCE.md` | The Sentences research report, verbatim (source of record) |
-| `docs/VOCABULARY_TEACHING_SPEC.md` | Words north star (section **shipped**; pedagogy + data-axes reference) |
-| `docs/WORDS_SECTION_MASTER_SPEC.md` | Words implementation reference (schema, SRS, lesson flow — engines Sentences reuses) |
-| `HANDOVER.md` | Repo snapshot + conventions |
-| `.agents/AGENTS.md` | Offline audio-generation pipeline rules |
-| `README.md` | Product overview + run instructions |
+| `docs/CORE_APP_COMPLETION_ROADMAP.md` | Only active execution queue |
+| `AI_INSTRUCTIONS.md` | Short continuation runbook |
+| `CLAUDE.md` | Contributor rules and specification map |
+| `HANDOVER.md` | Current-state snapshot |
+| Teaching/exam specs under `docs/` | Binding design contracts |
+| `docs/FABLE_MOBILE_PLAY_STORE_HANDOVER.md` | Post-core Android/Play contract |
+| `.agents/AGENTS.md` | Offline audio-generation rules |
+| Older one-shot prompts and expansion queues | Historical only |
