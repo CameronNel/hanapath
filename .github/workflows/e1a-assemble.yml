@@ -1,10 +1,11 @@
 name: E1A one-shot assembler
 
 on:
-  push:
-    branches:
-      - core/e1a-review-s0001-s1050
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
     paths:
+      - .e1a-payload/**
       - .github/workflows/e1a-assemble.yml
 
 permissions:
@@ -12,11 +13,13 @@ permissions:
 
 jobs:
   assemble-validate-commit:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'core/e1a-review-s0001-s1050'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout E1A branch
         uses: actions/checkout@v4
         with:
+          ref: core/e1a-review-s0001-s1050
           fetch-depth: 0
 
       - name: Reconstruct reviewed shard
