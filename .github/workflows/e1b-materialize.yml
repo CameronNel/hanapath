@@ -1,0 +1,43 @@
+name: E1B materialize and validate
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: core/e1b-review-s1051-s2100
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate, audit, and commit E1B
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d .e1b-payload/generator.gz.b64 | gzip -d > /tmp/generate-e1b.mjs
+          node /tmp/generate-e1b.mjs
+          node --check sentence_exam_eligibility_shard_b.js
+          node scripts/audit-sentence-eligibility.mjs --allow-incomplete
+          node scripts/test-sentence-eligibility-shards.mjs
+          node scripts/audit-core-release.mjs --write-status
+          node scripts/audit-core-release.mjs --full
+          git diff --check
+          rm -rf .e1b-payload .github/workflows/e1b-materialize.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sentence_exam_eligibility_shard_b.js docs/CORE_APP_STATUS.md
+          git add -u .e1b-payload .github/workflows/e1b-materialize.yml
+          git commit -m "E1B: classify Sentence eligibility rows s1051-s2100"
+          git push origin HEAD:core/e1b-review-s1051-s2100
