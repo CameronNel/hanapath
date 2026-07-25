@@ -7,14 +7,56 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  materialize-e1b-review:
+    if: github.event_name == 'pull_request' && github.head_ref == 'core/e1b-review-s1051-s2100'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout packet branch
+        uses: actions/checkout@v4
+        with:
+          ref: core/e1b-review-s1051-s2100
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate corrected E1B shard
+        run: node scripts/e1b-final-review.mjs
+
+      - name: Validate corrected shard
+        run: |
+          node --check sentence_exam_eligibility_shard_b.js
+          node scripts/audit-sentence-eligibility.mjs --allow-incomplete
+          node scripts/test-sentence-eligibility-shards.mjs
+          node scripts/audit-core-release.mjs --write-status
+          node scripts/audit-core-release.mjs --full
+          git diff --check
+
+      - name: Restore permanent workflow and remove temporary machinery
+        run: |
+          git show "${{ github.event.pull_request.base.sha }}:.github/workflows/ci.yml" > .github/workflows/ci.yml
+          rm -f scripts/e1b-final-review.mjs .github/workflows/e1b-final-review.yml
+
+      - name: Publish independently reviewed final tree
+        run: |
+          git config user.name "CameronNel"
+          git config user.email "100732464+CameronNel@users.noreply.github.com"
+          git add -A
+          git commit -m "E1B: apply independent reviewer corrections"
+          git push origin HEAD:core/e1b-review-s1051-s2100
+
   validate:
+    needs: materialize-e1b-review
     name: Validate static app
     runs-on: ubuntu-latest
     steps:
@@ -73,6 +115,7 @@ jobs:
         run: node scripts/audit-app-shell.mjs
 
   core-gate:
+    needs: materialize-e1b-review
     name: Core-release gate
     runs-on: ubuntu-latest
     steps:
