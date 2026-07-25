@@ -41,8 +41,8 @@ owns *what to do next*; this file owns *what currently exists*.
 | Curriculum sections | 8 |
 | Lessons | 703 |
 | Eligibility revision | sentence-eligibility-v1 |
-| Eligibility rows reviewed | 1050 / 4177 (25.14%) |
-| Eligibility rows approved | 1050 / 4177 (25.14%) |
+| Eligibility rows reviewed | 2100 / 4177 (50.28%) |
+| Eligibility rows approved | 2100 / 4177 (50.28%) |
 
 ### Audio
 
@@ -68,7 +68,7 @@ packet lands, with no edit to this report or the generator.
 
 | Milestone | Present |
 |---|---|
-| Reviewed eligibility corpus (E2) | no — 1050/4177 rows approved |
+| Reviewed eligibility corpus (E2) | no — 2100/4177 rows approved |
 | Exam blueprints (X1) | no |
 | Generator/grader engine (X1) | no |
 | Seed audit (X1) | no |
@@ -107,7 +107,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 
 ## Open core gates
 
-- **Sentence eligibility** is at 1050 / 4177 approved rows (25.14%). CI and this gate run `audit-sentence-eligibility.mjs --allow-incomplete`; the strict gate lands with packet **E2**.
+- **Sentence eligibility** is at 2100 / 4177 approved rows (50.28%). CI and this gate run `audit-sentence-eligibility.mjs --allow-incomplete`; the strict gate lands with packet **E2**.
 - **Sentence Mastery examination** engine/runner: not yet shipped (packets **X1** and **X2**); the seed audit step SKIPs.
 - **Mobile package validation** is conditional on a prepared `mobile/www`; the Android workflow performs it after `npm run prepare:web`.
 
