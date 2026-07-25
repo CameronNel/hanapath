@@ -50,6 +50,31 @@ owns *what to do next*; this file owns *what currently exists*.
 |---|---|
 | Mapped audio keys | 37867 |
 
+### App shell
+
+| Metric | Value |
+|---|---|
+| Service-worker cache name | hanapath-shell-v448 |
+| Versioned local assets loaded by index.html | 20 |
+| Precached service-worker shell assets | 193 |
+
+### Sentence Mastery examination readiness
+
+Delivered across packets E2/X1/X2. Each row is derived live — E2 from the
+eligibility corpus (approved rows === bank rows), X1/X2 from the locked readiness
+contract in `scripts/audit-core-release.mjs` (the named artifact files plus the
+`HANAPATH_SENTENCE_EXAM_META` runtime marker) — so each flips automatically as its
+packet lands, with no edit to this report or the generator.
+
+| Milestone | Present |
+|---|---|
+| Reviewed eligibility corpus (E2) | no — 20/4177 rows approved |
+| Exam blueprints (X1) | no |
+| Generator/grader engine (X1) | no |
+| Seed audit (X1) | no |
+| Browser runner + provenance (X2) | no |
+| Delayed retention confirmation (X2) | no |
+
 ## Core gate steps
 
 Run by `node scripts/audit-core-release.mjs` (full). `blocking` steps fail the
@@ -58,6 +83,8 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Step | Command | Kind |
 |---|---|---|
 | Syntax check (node --check, all root scripts) | `node --check` (all root scripts) | blocking |
+| Syntax-gate regression (every file checked) | `node scripts/test-core-release-syntax-gate.mjs` | blocking |
+| Sentence-exam readiness derivation regression | `node scripts/test-sentence-exam-readiness.mjs` | blocking |
 | Exam integrity | `node scripts/audit-exam-integrity.mjs` | blocking |
 | Hangul Mastery examination | `node scripts/audit-hangul-mastery-exam.mjs` | blocking |
 | Word-exam competency map | `node scripts/build-word-exam-competency-map.mjs --check` | blocking |
@@ -83,7 +110,10 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 - **Sentence Mastery examination** engine/runner: not yet shipped (packets **X1** and **X2**); the seed audit step SKIPs.
 - **Mobile package validation** is conditional on a prepared `mobile/www`; the Android workflow performs it after `npm run prepare:web`.
 
-## Excluded from the gate
+## Coverage gaps (this gate is not yet the complete lesson/exam matrix)
 
-- `scripts/audit-learning-questions.mjs` — throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect); not wired into CI. Repair is out of scope for C1.
+The roadmap §9 universal verification matrix is broader than the checks wired in
+here. The following are deliberately excluded, each with a named owning packet:
+
+- `scripts/audit-learning-questions.mjs` — throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect) and is not wired into CI, so learner-question coverage and answer-leak safety are not yet protected by this one-command gate. **Owner: packet L1 (lesson reachability / question coverage).**
 

@@ -4,9 +4,10 @@
 // Governing contract: docs/CORE_APP_COMPLETION_ROADMAP.md packet C1.
 //
 // Responsibilities:
-//   1. Run the complete required core audit matrix as child processes and exit
-//      non-zero if any blocking child fails. This is a *superset* of the CI
-//      gate; it never weakens an existing audit.
+//   1. Run the wired core audit matrix as child processes and exit non-zero if
+//      any blocking child fails. This is a *superset* of the CI validate job and
+//      weakens no existing audit, but it is not yet the full roadmap §9 matrix —
+//      the generated report's coverage-gaps section names what is still excluded.
 //   2. Derive every headline curriculum / examination / audio / eligibility /
 //      shell count directly from the live browser-global data files (no
 //      hand-entered numbers) and render docs/CORE_APP_STATUS.md from them.
@@ -25,9 +26,9 @@
 // reads data files and shells out to the existing audits.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -58,12 +59,46 @@ const DATA_FILES = [
   "raw_word_meanings.js",
 ];
 
+// Locked Sentence Mastery examination readiness contract.
+//
+// The report's readiness rows are derived, not hand-maintained: they flip
+// automatically as each packet lands its artifacts, with NO edit to this file.
+// The X1/X2 packets satisfy the contract by shipping these exact files and
+// publishing the runtime meta marker:
+//
+//   - E2  : every bank row has an approved eligibility record
+//           (derived from HANAPATH_SENTENCE_EXAM_ELIGIBILITY — approved === rows).
+//   - X1  : `sentence_exam_blueprints.js` publishes HANAPATH_SENTENCE_EXAM_BLUEPRINTS;
+//           `sentence_exam_engine.js` publishes HANAPATH_SENTENCE_EXAM_META with a
+//           numeric `engineVersion`; `scripts/audit-sentence-exams.mjs` exists
+//           (the roadmap §9 / X1 seed audit).
+//   - X2  : HANAPATH_SENTENCE_EXAM_META gains a non-null `runnerVersion` and, once
+//           the delayed retention flow ships, `retention === true`.
+const SENTENCE_EXAM_CONTRACT = {
+  blueprintsFile: "sentence_exam_blueprints.js",
+  engineFile: "sentence_exam_engine.js",
+  seedAuditFile: "scripts/audit-sentence-exams.mjs",
+  blueprintsGlobal: "HANAPATH_SENTENCE_EXAM_BLUEPRINTS",
+  metaGlobal: "HANAPATH_SENTENCE_EXAM_META",
+};
+
+// Browser-global files loaded only when they exist, so the meta marker becomes
+// readable the moment X1/X2 add them (loaded after DATA_FILES for dependencies).
+const OPTIONAL_DATA_FILES = [
+  SENTENCE_EXAM_CONTRACT.blueprintsFile,
+  SENTENCE_EXAM_CONTRACT.engineFile,
+];
+
 function loadDataGlobals() {
   const sandbox = { window: {} };
   sandbox.self = sandbox.window;
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
-  for (const file of DATA_FILES) {
+  const files = [
+    ...DATA_FILES,
+    ...OPTIONAL_DATA_FILES.filter((file) => existsSync(join(ROOT, file))),
+  ];
+  for (const file of files) {
     const code = readFileSync(join(ROOT, file), "utf8");
     vm.runInContext(code, sandbox, { filename: file });
   }
@@ -74,6 +109,85 @@ function len(value) {
   if (Array.isArray(value)) return value.length;
   if (value && typeof value === "object") return Object.keys(value).length;
   return 0;
+}
+
+// App-shell metrics, derived from the static wiring the same way
+// audit-app-shell.mjs reads them (index.html loads + sw.js APP_SHELL / cache).
+function deriveShell() {
+  const indexHtml = readFileSync(join(ROOT, "index.html"), "utf8");
+  const swJs = readFileSync(join(ROOT, "sw.js"), "utf8");
+
+  const indexAssets = [];
+  for (const m of indexHtml.matchAll(
+    /<link\b[^>]*\brel=["']stylesheet["'][^>]*\bhref=["']([^"']+)["'][^>]*>/gi
+  )) {
+    indexAssets.push(m[1]);
+  }
+  for (const m of indexHtml.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)) {
+    indexAssets.push(m[1]);
+  }
+  const localIndexAssets = indexAssets.filter((a) => a.startsWith("./"));
+
+  const shellMatch = swJs.match(/const\s+APP_SHELL\s*=\s*\[([\s\S]*?)\];/);
+  const shellAssets = shellMatch
+    ? [...shellMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1])
+    : [];
+
+  const cacheMatch = swJs.match(/const\s+CACHE_NAME\s*=\s*"([^"]+)";/);
+
+  return {
+    cacheName: cacheMatch ? cacheMatch[1] : null,
+    indexLocalAssets: localIndexAssets.length,
+    precachedShellAssets: shellAssets.length,
+  };
+}
+
+// Sentence Mastery examination is delivered across E2/X1/X2. Every milestone
+// below is derived live from the eligibility corpus and the locked readiness
+// contract, so each row flips on its own as the packet lands — nothing here is
+// hand-entered.
+function deriveSentenceExamReadiness(W, sentenceRows, approvedRows) {
+  const has = (rel) => existsSync(join(ROOT, rel));
+  const meta = W[SENTENCE_EXAM_CONTRACT.metaGlobal] || null;
+  const blueprints = W[SENTENCE_EXAM_CONTRACT.blueprintsGlobal] || null;
+  const engineVersion = meta && meta.engineVersion != null ? meta.engineVersion : null;
+  const runnerVersion = meta && meta.runnerVersion != null ? meta.runnerVersion : null;
+
+  return [
+    {
+      id: "eligibility-corpus",
+      label: "Reviewed eligibility corpus (E2)",
+      present: sentenceRows > 0 && approvedRows === sentenceRows,
+      note: `${approvedRows}/${sentenceRows} rows approved`,
+    },
+    {
+      id: "blueprints",
+      label: "Exam blueprints (X1)",
+      present: Boolean(blueprints) && has(SENTENCE_EXAM_CONTRACT.blueprintsFile),
+    },
+    {
+      id: "engine",
+      label: "Generator/grader engine (X1)",
+      present: engineVersion != null,
+      note: engineVersion != null ? `engine v${engineVersion}` : undefined,
+    },
+    {
+      id: "seed-audit",
+      label: "Seed audit (X1)",
+      present: has(SENTENCE_EXAM_CONTRACT.seedAuditFile),
+    },
+    {
+      id: "runner",
+      label: "Browser runner + provenance (X2)",
+      present: runnerVersion != null,
+      note: runnerVersion != null ? `runner v${runnerVersion}` : undefined,
+    },
+    {
+      id: "retention",
+      label: "Delayed retention confirmation (X2)",
+      present: Boolean(meta && meta.retention === true),
+    },
+  ];
 }
 
 function deriveStatus() {
@@ -98,6 +212,8 @@ function deriveStatus() {
   const wordExamMeta = W.HANAPATH_WORD_EXAM_META || {};
 
   return {
+    shell: deriveShell(),
+    sentenceExam: deriveSentenceExamReadiness(W, sentenceCount, approvedCount),
     alphabet: {
       strokeGuides: Number(W.HANGUL_STROKE_GUIDE_COUNT) || len(W.HANGUL_STROKES),
       hangulExamItems: hangulItems,
@@ -138,35 +254,23 @@ function pct(part, whole) {
 // Gate definition
 // ---------------------------------------------------------------------------
 
-// Every root browser script is syntax-checked. Discovered deterministically so
-// a newly added data file cannot silently escape the check.
-const SYNTAX_FILES = [
-  "app.js",
-  "sw.js",
-  "app_intro.js",
-  "app_intro_timeline.js",
-  "exam_integrity.js",
-  "sentence_exam_eligibility.js",
-  "hangul_mastery_exam.js",
-  "word_exam_blueprints.js",
-  "word_exam_engine.js",
-  "form_check_blueprints.js",
-  "words_lesson_plan.js",
-  "words_curated_core.js",
-  "words_inflect.js",
-  "sentences_lesson_plan.js",
-  "sentences_core.js",
-  "audio_map.js",
-  "hangul_strokes.js",
-  "alphabet_skill_srs.js",
-  "raw_word_meanings.js",
-];
+// Every root-level browser script is syntax-checked. Discovered
+// deterministically (sorted) from the repository root so a newly added root
+// script cannot silently escape the check and no hand-maintained list drifts.
+function discoverRootScripts() {
+  return readdirSync(ROOT)
+    .filter((name) => name.endsWith(".js"))
+    .sort();
+}
+const SYNTAX_FILES = discoverRootScripts();
 
 // Each step is a blocking audit unless marked optional. `quickArgs` replaces
 // `fullArgs` in --quick mode. `requiresPath` steps SKIP (do not fail) when the
 // path is absent — used for validations the local environment cannot perform.
 const GATE_STEPS = [
   { id: "syntax", label: "Syntax check (node --check, all root scripts)", internal: "syntax" },
+  { id: "syntax-gate-regression", label: "Syntax-gate regression (every file checked)", script: "scripts/test-core-release-syntax-gate.mjs" },
+  { id: "readiness-derivation", label: "Sentence-exam readiness derivation regression", script: "scripts/test-sentence-exam-readiness.mjs" },
   { id: "exam-integrity", label: "Exam integrity", script: "scripts/audit-exam-integrity.mjs" },
   { id: "hangul-mastery", label: "Hangul Mastery examination", script: "scripts/audit-hangul-mastery-exam.mjs" },
   { id: "word-competency-map", label: "Word-exam competency map", script: "scripts/build-word-exam-competency-map.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
@@ -210,12 +314,14 @@ const GATE_STEPS = [
   { id: "status-freshness", label: "CORE_APP_STATUS.md freshness", internal: "status-check" },
 ];
 
-// Documented but intentionally excluded from the gate, with the reason.
+// Documented but intentionally excluded from the gate, each with the reason and
+// a named owning packet so no coverage gap floats indefinitely.
 const EXCLUDED = [
   {
     script: "scripts/audit-learning-questions.mjs",
+    owner: "packet L1 (lesson reachability / question coverage)",
     reason:
-      "throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect); not wired into CI. Repair is out of scope for C1.",
+      "throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect) and is not wired into CI, so learner-question coverage and answer-leak safety are not yet protected by this one-command gate.",
   },
 ];
 
@@ -298,6 +404,30 @@ function renderStatusMarkdown(status) {
   lines.push("|---|---|");
   lines.push(`| Mapped audio keys | ${status.audio.mappedKeys} |`);
   lines.push("");
+  lines.push("### App shell");
+  lines.push("");
+  lines.push("| Metric | Value |");
+  lines.push("|---|---|");
+  lines.push(`| Service-worker cache name | ${status.shell.cacheName} |`);
+  lines.push(`| Versioned local assets loaded by index.html | ${status.shell.indexLocalAssets} |`);
+  lines.push(`| Precached service-worker shell assets | ${status.shell.precachedShellAssets} |`);
+  lines.push("");
+  lines.push("### Sentence Mastery examination readiness");
+  lines.push("");
+  lines.push("Delivered across packets E2/X1/X2. Each row is derived live — E2 from the");
+  lines.push("eligibility corpus (approved rows === bank rows), X1/X2 from the locked readiness");
+  lines.push("contract in `scripts/audit-core-release.mjs` (the named artifact files plus the");
+  lines.push("`HANAPATH_SENTENCE_EXAM_META` runtime marker) — so each flips automatically as its");
+  lines.push("packet lands, with no edit to this report or the generator.");
+  lines.push("");
+  lines.push("| Milestone | Present |");
+  lines.push("|---|---|");
+  for (const item of status.sentenceExam) {
+    const mark = item.present ? "yes" : "no";
+    const note = item.note ? ` — ${item.note}` : "";
+    lines.push(`| ${item.label} | ${mark}${note} |`);
+  }
+  lines.push("");
 
   lines.push("## Core gate steps");
   lines.push("");
@@ -334,10 +464,15 @@ function renderStatusMarkdown(status) {
   );
   lines.push("");
 
-  lines.push("## Excluded from the gate");
+  lines.push("## Coverage gaps (this gate is not yet the complete lesson/exam matrix)");
+  lines.push("");
+  lines.push(
+    "The roadmap §9 universal verification matrix is broader than the checks wired in"
+  );
+  lines.push("here. The following are deliberately excluded, each with a named owning packet:");
   lines.push("");
   for (const item of EXCLUDED) {
-    lines.push(`- \`${item.script}\` — ${item.reason}`);
+    lines.push(`- \`${item.script}\` — ${item.reason} **Owner: ${item.owner}.**`);
   }
   lines.push("");
 
@@ -348,12 +483,24 @@ function renderStatusMarkdown(status) {
 // Runners
 // ---------------------------------------------------------------------------
 
+// `node --check` only checks its FIRST filename argument; any further filenames
+// are ignored. So every file must be passed in its own invocation, otherwise the
+// gate silently skips all but the first script. Returns true only if every file
+// passes; reports each failing file.
+export function checkSyntax(files, cwd = ROOT) {
+  let ok = true;
+  for (const file of files) {
+    const result = spawnSync("node", ["--check", file], { cwd, stdio: "inherit" });
+    if (result.status !== 0) {
+      console.error(`  syntax check failed: ${file}`);
+      ok = false;
+    }
+  }
+  return ok;
+}
+
 function runSyntaxStep() {
-  const result = spawnSync("node", ["--check", ...SYNTAX_FILES], {
-    cwd: ROOT,
-    stdio: "inherit",
-  });
-  return result.status === 0;
+  return checkSyntax(SYNTAX_FILES);
 }
 
 function runStatusCheckStep() {
@@ -425,28 +572,40 @@ function runGate() {
 // Entry point
 // ---------------------------------------------------------------------------
 
-if (args.includes("--list")) {
-  for (const step of GATE_STEPS) {
-    let command;
-    if (step.internal === "syntax") command = "node --check " + SYNTAX_FILES.join(" ");
-    else if (step.internal === "status-check") command = "(internal status freshness check)";
-    else command = "node " + [step.script, ...stepArgs(step)].join(" ");
-    const tag = step.requiresPath ? " [conditional]" : "";
-    console.log(`${step.id}${tag}: ${command}`);
+// Exported so the regression tests can import these without triggering the gate
+// below (the entry point only runs when invoked as the main module).
+export { deriveStatus, renderStatusMarkdown, deriveSentenceExamReadiness };
+
+function main() {
+  if (args.includes("--list")) {
+    for (const step of GATE_STEPS) {
+      let command;
+      if (step.internal === "syntax")
+        command = `node --check <each of ${SYNTAX_FILES.length} root scripts, separately>`;
+      else if (step.internal === "status-check") command = "(internal status freshness check)";
+      else command = "node " + [step.script, ...stepArgs(step)].join(" ");
+      const tag = step.requiresPath ? " [conditional]" : "";
+      console.log(`${step.id}${tag}: ${command}`);
+    }
+    process.exit(0);
   }
-  process.exit(0);
+
+  if (args.includes("--write-status")) {
+    const markdown = renderStatusMarkdown(deriveStatus());
+    writeFileSync(STATUS_FILE, markdown);
+    console.log(`Wrote ${STATUS_FILE}`);
+    process.exit(0);
+  }
+
+  if (args.includes("--check-status")) {
+    const ok = runStatusCheckStep();
+    process.exit(ok ? 0 : 1);
+  }
+
+  runGate();
 }
 
-if (args.includes("--write-status")) {
-  const markdown = renderStatusMarkdown(deriveStatus());
-  writeFileSync(STATUS_FILE, markdown);
-  console.log(`Wrote ${STATUS_FILE}`);
-  process.exit(0);
+// Only run when invoked directly, not when imported by the regression test.
+if (pathToFileURL(process.argv[1] || "").href === import.meta.url) {
+  main();
 }
-
-if (args.includes("--check-status")) {
-  const ok = runStatusCheckStep();
-  process.exit(ok ? 0 : 1);
-}
-
-runGate();
