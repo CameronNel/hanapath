@@ -84,6 +84,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 |---|---|---|
 | Syntax check (node --check, all root scripts) | `node --check` (all root scripts) | blocking |
 | Syntax-gate regression (every file checked) | `node scripts/test-core-release-syntax-gate.mjs` | blocking |
+| Sentence-exam readiness derivation regression | `node scripts/test-sentence-exam-readiness.mjs` | blocking |
 | Exam integrity | `node scripts/audit-exam-integrity.mjs` | blocking |
 | Hangul Mastery examination | `node scripts/audit-hangul-mastery-exam.mjs` | blocking |
 | Word-exam competency map | `node scripts/build-word-exam-competency-map.mjs --check` | blocking |

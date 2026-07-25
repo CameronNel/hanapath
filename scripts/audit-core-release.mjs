@@ -270,6 +270,7 @@ const SYNTAX_FILES = discoverRootScripts();
 const GATE_STEPS = [
   { id: "syntax", label: "Syntax check (node --check, all root scripts)", internal: "syntax" },
   { id: "syntax-gate-regression", label: "Syntax-gate regression (every file checked)", script: "scripts/test-core-release-syntax-gate.mjs" },
+  { id: "readiness-derivation", label: "Sentence-exam readiness derivation regression", script: "scripts/test-sentence-exam-readiness.mjs" },
   { id: "exam-integrity", label: "Exam integrity", script: "scripts/audit-exam-integrity.mjs" },
   { id: "hangul-mastery", label: "Hangul Mastery examination", script: "scripts/audit-hangul-mastery-exam.mjs" },
   { id: "word-competency-map", label: "Word-exam competency map", script: "scripts/build-word-exam-competency-map.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
@@ -571,9 +572,9 @@ function runGate() {
 // Entry point
 // ---------------------------------------------------------------------------
 
-// Exported so scripts/test-core-release-syntax-gate.mjs can import checkSyntax /
-// deriveStatus / renderStatusMarkdown without triggering the gate below.
-export { deriveStatus, renderStatusMarkdown };
+// Exported so the regression tests can import these without triggering the gate
+// below (the entry point only runs when invoked as the main module).
+export { deriveStatus, renderStatusMarkdown, deriveSentenceExamReadiness };
 
 function main() {
   if (args.includes("--list")) {
