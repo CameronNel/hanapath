@@ -30,16 +30,20 @@ jobs:
         with:
           node-version: 22
 
-      - name: Patch reviewed prompt and generate corrected E1B shard
+      - name: Patch reviewed metadata and generate corrected E1B shard
         run: |
           node <<'NODE'
           const fs = require('node:fs');
           const path = 'scripts/e1b-final-review.mjs';
-          const source = fs.readFileSync(path, 'utf8');
-          const before = "s2049: 'Formally acknowledge an instruction with the lesson expression meaning “Understood”. Use 알겠습니다.',";
-          const after = "s2049: 'Formally acknowledge an instruction with the formal lesson expression built from 알다, meaning that you understand.',";
-          if (!source.includes(before)) throw new Error('Expected s2049 prompt was not found');
-          fs.writeFileSync(path, source.replace(before, after));
+          let source = fs.readFileSync(path, 'utf8');
+          const promptBefore = "s2049: 'Formally acknowledge an instruction with the lesson expression meaning “Understood”. Use 알겠습니다.',";
+          const promptAfter = "s2049: 'Formally acknowledge an instruction with the formal lesson expression built from 알다, meaning that you understand.',";
+          const reasonBefore = "  if (particleCount >= 3 || (row.tokens || []).length >= 6) {\n    reasons.push('productive-word-order-family');\n  }";
+          const reasonAfter = "  if (particleCount >= 3) {\n    reasons.push('productive-word-order-family');\n  }";
+          if (!source.includes(promptBefore)) throw new Error('Expected s2049 prompt was not found');
+          if (!source.includes(reasonBefore)) throw new Error('Expected length-based reason proxy was not found');
+          source = source.replace(promptBefore, promptAfter).replace(reasonBefore, reasonAfter);
+          fs.writeFileSync(path, source);
           NODE
           node scripts/e1b-final-review.mjs
 
@@ -57,6 +61,7 @@ jobs:
           const bank = new Map(window.HANAPATH_SENTENCES.map((row) => [row.id, row]));
           const rows = window.HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS.B.reviewedRows;
           const counts = { canonical: 0, finite: 0, excluded: 0 };
+          const reasonCounts = {};
           const prompts = new Map();
           const targets = new Map();
           const errors = [];
@@ -72,15 +77,27 @@ jobs:
             if (entry.typedClass === 'excluded' && (!entry.exclusionReasons.length || entry.eligibleModes.includes('translate-type'))) errors.push(`${id}: excluded contract`);
             if (entry.typedClass !== 'excluded' && entry.exclusionReasons.length) errors.push(`${id}: eligible row has exclusion reasons`);
             counts[entry.typedClass] += 1;
+            for (const reason of entry.exclusionReasons) reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
             prompts.set(entry.examPromptEn, [...(prompts.get(entry.examPromptEn) || []), id]);
             targets.set(entry.canonicalTargetKey, [...(targets.get(entry.canonicalTargetKey) || []), id]);
           }
           if (Object.keys(rows).length !== 1050) errors.push(`row count ${Object.keys(rows).length}`);
           if (counts.canonical !== 41 || counts.finite !== 8 || counts.excluded !== 1001) errors.push(`unexpected counts ${JSON.stringify(counts)}`);
+          const expectedReasonCounts = {
+            'connective-clause-continuation': 343,
+            'lexical-or-information-structure-ambiguity': 375,
+            'particle-or-word-order-ambiguity': 29,
+            'productive-word-order-family': 290,
+            'topic-subject-information-structure-ambiguity': 85,
+            'future-authoring-locked': 8,
+            'productive-pragmatic-variants': 58,
+            'unsafe-existing-alternative-family': 7,
+          };
+          if (JSON.stringify(reasonCounts) !== JSON.stringify(expectedReasonCounts)) errors.push(`unexpected reason counts ${JSON.stringify(reasonCounts)}`);
           for (const [prompt, ids] of prompts) if (ids.length > 1) errors.push(`duplicate prompt ${ids.join(', ')}`);
           for (const [target, ids] of targets) if (ids.length > 1) errors.push(`duplicate target ${ids.join(', ')}`);
           if (errors.length) throw new Error(errors.join('\n'));
-          console.log(JSON.stringify({ rowCount: 1050, counts, promptLeaks: 0, duplicatePrompts: 0, duplicateTargets: 0, futureEligible: 0 }, null, 2));
+          console.log(JSON.stringify({ rowCount: 1050, counts, reasonCounts, promptLeaks: 0, duplicatePrompts: 0, duplicateTargets: 0, futureEligible: 0 }, null, 2));
           NODE
 
       - name: Validate corrected shard
