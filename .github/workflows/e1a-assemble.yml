@@ -26,12 +26,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .e1a-payload/chunk_*.b64 \
-            | tr -d '\n\r' \
-            | base64 --decode \
-            | gzip --decompress \
-            > sentence_exam_eligibility_shard_a.js
-          test "$(wc -c < sentence_exam_eligibility_shard_a.js)" -eq 824173
+          python3 - <<'PY'
+          import base64
+          import gzip
+          from pathlib import Path
+
+          chunk_paths = sorted(Path('.e1a-payload').glob('chunk_*.b64'))
+          if len(chunk_paths) != 10:
+              raise SystemExit(f'expected 10 payload chunks, found {len(chunk_paths)}')
+          encoded = ''.join(path.read_text(encoding='ascii').strip() for path in chunk_paths)
+          if len(encoded) != 96188:
+              raise SystemExit(f'expected 96188 base64 characters, found {len(encoded)}')
+          compressed = base64.b64decode(encoded, validate=True)
+          output = gzip.decompress(compressed)
+          if len(output) != 824173:
+              raise SystemExit(f'expected 824173 reconstructed bytes, found {len(output)}')
+          Path('sentence_exam_eligibility_shard_a.js').write_bytes(output)
+          print(f'reconstructed {len(output)} bytes from {len(chunk_paths)} chunks')
+          PY
 
       - name: Validate E1A output
         shell: bash
