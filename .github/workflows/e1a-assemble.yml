@@ -22,33 +22,66 @@ jobs:
           ref: core/e1a-review-s0001-s1050
           fetch-depth: 0
 
-      - name: Reconstruct reviewed shard
+      - name: Diagnose and reconstruct reviewed shard
+        id: reconstruct
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
           python3 - <<'PY'
           import base64
           import gzip
+          import hashlib
+          import traceback
           from pathlib import Path
 
-          chunk_paths = sorted(Path('.e1a-payload').glob('chunk_*.b64'))
-          if len(chunk_paths) != 10:
-              raise SystemExit(f'expected 10 payload chunks, found {len(chunk_paths)}')
-          encoded = ''.join(path.read_text(encoding='ascii').strip() for path in chunk_paths)
-          if len(encoded) != 96188:
-              raise SystemExit(f'expected 96188 base64 characters, found {len(encoded)}')
-          compressed = base64.b64decode(encoded, validate=True)
-          output = gzip.decompress(compressed)
-          if len(output) != 824173:
-              raise SystemExit(f'expected 824173 reconstructed bytes, found {len(output)}')
-          Path('sentence_exam_eligibility_shard_a.js').write_bytes(output)
-          print(f'reconstructed {len(output)} bytes from {len(chunk_paths)} chunks')
+          lines = []
+          ok = False
+          try:
+              chunk_paths = sorted(Path('.e1a-payload').glob('chunk_*.b64'))
+              lines.append(f'chunk_count={len(chunk_paths)}')
+              for path in chunk_paths:
+                  raw = path.read_bytes()
+                  lines.append(f'{path.name} bytes={len(raw)} sha256={hashlib.sha256(raw).hexdigest()}')
+              encoded = ''.join(path.read_text(encoding='ascii').strip() for path in chunk_paths)
+              lines.append(f'encoded_chars={len(encoded)}')
+              lines.append(f'encoded_sha256={hashlib.sha256(encoded.encode()).hexdigest()}')
+              compressed = base64.b64decode(encoded, validate=True)
+              lines.append(f'compressed_bytes={len(compressed)}')
+              lines.append(f'compressed_sha256={hashlib.sha256(compressed).hexdigest()}')
+              output = gzip.decompress(compressed)
+              lines.append(f'output_bytes={len(output)}')
+              lines.append(f'output_sha256={hashlib.sha256(output).hexdigest()}')
+              Path('sentence_exam_eligibility_shard_a.js').write_bytes(output)
+              ok = len(chunk_paths) == 10 and len(encoded) == 96188 and len(output) == 824173
+              lines.append(f'ok={str(ok).lower()}')
+          except Exception:
+              lines.append('exception:')
+              lines.append(traceback.format_exc())
+          Path('e1a-payload-diagnostics.txt').write_text('\n'.join(lines) + '\n')
+          print('\n'.join(lines))
+          if not ok:
+              raise SystemExit(1)
           PY
+
+      - name: Upload reconstruction diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e1a-payload-diagnostics
+          path: e1a-payload-diagnostics.txt
+          if-no-files-found: error
+
+      - name: Stop after reconstruction failure
+        if: steps.reconstruct.outcome != 'success'
+        shell: bash
+        run: exit 1
 
       - name: Validate E1A output
         shell: bash
         run: |
           set -euo pipefail
+          rm -f e1a-payload-diagnostics.txt
           node --check sentence_exam_eligibility_shard_a.js
           node scripts/audit-sentence-eligibility.mjs --allow-incomplete
           node scripts/audit-core-release.mjs --quick
