@@ -4,9 +4,10 @@
 // Governing contract: docs/CORE_APP_COMPLETION_ROADMAP.md packet C1.
 //
 // Responsibilities:
-//   1. Run the complete required core audit matrix as child processes and exit
-//      non-zero if any blocking child fails. This is a *superset* of the CI
-//      gate; it never weakens an existing audit.
+//   1. Run the wired core audit matrix as child processes and exit non-zero if
+//      any blocking child fails. This is a *superset* of the CI validate job and
+//      weakens no existing audit, but it is not yet the full roadmap §9 matrix —
+//      the generated report's coverage-gaps section names what is still excluded.
 //   2. Derive every headline curriculum / examination / audio / eligibility /
 //      shell count directly from the live browser-global data files (no
 //      hand-entered numbers) and render docs/CORE_APP_STATUS.md from them.
@@ -58,12 +59,46 @@ const DATA_FILES = [
   "raw_word_meanings.js",
 ];
 
+// Locked Sentence Mastery examination readiness contract.
+//
+// The report's readiness rows are derived, not hand-maintained: they flip
+// automatically as each packet lands its artifacts, with NO edit to this file.
+// The X1/X2 packets satisfy the contract by shipping these exact files and
+// publishing the runtime meta marker:
+//
+//   - E2  : every bank row has an approved eligibility record
+//           (derived from HANAPATH_SENTENCE_EXAM_ELIGIBILITY — approved === rows).
+//   - X1  : `sentence_exam_blueprints.js` publishes HANAPATH_SENTENCE_EXAM_BLUEPRINTS;
+//           `sentence_exam_engine.js` publishes HANAPATH_SENTENCE_EXAM_META with a
+//           numeric `engineVersion`; `scripts/audit-sentence-exams.mjs` exists
+//           (the roadmap §9 / X1 seed audit).
+//   - X2  : HANAPATH_SENTENCE_EXAM_META gains a non-null `runnerVersion` and, once
+//           the delayed retention flow ships, `retention === true`.
+const SENTENCE_EXAM_CONTRACT = {
+  blueprintsFile: "sentence_exam_blueprints.js",
+  engineFile: "sentence_exam_engine.js",
+  seedAuditFile: "scripts/audit-sentence-exams.mjs",
+  blueprintsGlobal: "HANAPATH_SENTENCE_EXAM_BLUEPRINTS",
+  metaGlobal: "HANAPATH_SENTENCE_EXAM_META",
+};
+
+// Browser-global files loaded only when they exist, so the meta marker becomes
+// readable the moment X1/X2 add them (loaded after DATA_FILES for dependencies).
+const OPTIONAL_DATA_FILES = [
+  SENTENCE_EXAM_CONTRACT.blueprintsFile,
+  SENTENCE_EXAM_CONTRACT.engineFile,
+];
+
 function loadDataGlobals() {
   const sandbox = { window: {} };
   sandbox.self = sandbox.window;
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
-  for (const file of DATA_FILES) {
+  const files = [
+    ...DATA_FILES,
+    ...OPTIONAL_DATA_FILES.filter((file) => existsSync(join(ROOT, file))),
+  ];
+  for (const file of files) {
     const code = readFileSync(join(ROOT, file), "utf8");
     vm.runInContext(code, sandbox, { filename: file });
   }
@@ -107,17 +142,51 @@ function deriveShell() {
   };
 }
 
-// Sentence Mastery examination is delivered across several packets (E2, X1,
-// X2). Report each milestone artifact separately by presence so the status
-// never flips to "done" just because one file (e.g. the X1 seed audit) lands.
-function deriveSentenceExamReadiness() {
+// Sentence Mastery examination is delivered across E2/X1/X2. Every milestone
+// below is derived live from the eligibility corpus and the locked readiness
+// contract, so each row flips on its own as the packet lands — nothing here is
+// hand-entered.
+function deriveSentenceExamReadiness(W, sentenceRows, approvedRows) {
   const has = (rel) => existsSync(join(ROOT, rel));
+  const meta = W[SENTENCE_EXAM_CONTRACT.metaGlobal] || null;
+  const blueprints = W[SENTENCE_EXAM_CONTRACT.blueprintsGlobal] || null;
+  const engineVersion = meta && meta.engineVersion != null ? meta.engineVersion : null;
+  const runnerVersion = meta && meta.runnerVersion != null ? meta.runnerVersion : null;
+
   return [
-    { id: "eligibility-corpus", label: "Reviewed eligibility corpus (E2)", present: false, note: "20/4177 reviewed; strict freeze pending" },
-    { id: "blueprints", label: "Exam blueprints (X1)", present: has("sentence_exam_blueprints.js") },
-    { id: "engine", label: "Pure generator/grader engine (X1)", present: has("sentence_exam_engine.js") },
-    { id: "seed-audit", label: "Seed audit (X1)", present: has("scripts/audit-sentence-exams.mjs") },
-    { id: "runner", label: "Browser runner + provenance + retention (X2)", present: false, note: "lives in app.js; not file-detectable here" },
+    {
+      id: "eligibility-corpus",
+      label: "Reviewed eligibility corpus (E2)",
+      present: sentenceRows > 0 && approvedRows === sentenceRows,
+      note: `${approvedRows}/${sentenceRows} rows approved`,
+    },
+    {
+      id: "blueprints",
+      label: "Exam blueprints (X1)",
+      present: Boolean(blueprints) && has(SENTENCE_EXAM_CONTRACT.blueprintsFile),
+    },
+    {
+      id: "engine",
+      label: "Generator/grader engine (X1)",
+      present: engineVersion != null,
+      note: engineVersion != null ? `engine v${engineVersion}` : undefined,
+    },
+    {
+      id: "seed-audit",
+      label: "Seed audit (X1)",
+      present: has(SENTENCE_EXAM_CONTRACT.seedAuditFile),
+    },
+    {
+      id: "runner",
+      label: "Browser runner + provenance (X2)",
+      present: runnerVersion != null,
+      note: runnerVersion != null ? `runner v${runnerVersion}` : undefined,
+    },
+    {
+      id: "retention",
+      label: "Delayed retention confirmation (X2)",
+      present: Boolean(meta && meta.retention === true),
+    },
   ];
 }
 
@@ -144,7 +213,7 @@ function deriveStatus() {
 
   return {
     shell: deriveShell(),
-    sentenceExam: deriveSentenceExamReadiness(),
+    sentenceExam: deriveSentenceExamReadiness(W, sentenceCount, approvedCount),
     alphabet: {
       strokeGuides: Number(W.HANGUL_STROKE_GUIDE_COUNT) || len(W.HANGUL_STROKES),
       hangulExamItems: hangulItems,
@@ -344,8 +413,11 @@ function renderStatusMarkdown(status) {
   lines.push("");
   lines.push("### Sentence Mastery examination readiness");
   lines.push("");
-  lines.push("Delivered across packets E2/X1/X2. Each milestone is tracked separately so");
-  lines.push("the report never reads \"done\" because a single file landed.");
+  lines.push("Delivered across packets E2/X1/X2. Each row is derived live — E2 from the");
+  lines.push("eligibility corpus (approved rows === bank rows), X1/X2 from the locked readiness");
+  lines.push("contract in `scripts/audit-core-release.mjs` (the named artifact files plus the");
+  lines.push("`HANAPATH_SENTENCE_EXAM_META` runtime marker) — so each flips automatically as its");
+  lines.push("packet lands, with no edit to this report or the generator.");
   lines.push("");
   lines.push("| Milestone | Present |");
   lines.push("|---|---|");

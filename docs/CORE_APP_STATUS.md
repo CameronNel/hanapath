@@ -60,16 +60,20 @@ owns *what to do next*; this file owns *what currently exists*.
 
 ### Sentence Mastery examination readiness
 
-Delivered across packets E2/X1/X2. Each milestone is tracked separately so
-the report never reads "done" because a single file landed.
+Delivered across packets E2/X1/X2. Each row is derived live — E2 from the
+eligibility corpus (approved rows === bank rows), X1/X2 from the locked readiness
+contract in `scripts/audit-core-release.mjs` (the named artifact files plus the
+`HANAPATH_SENTENCE_EXAM_META` runtime marker) — so each flips automatically as its
+packet lands, with no edit to this report or the generator.
 
 | Milestone | Present |
 |---|---|
-| Reviewed eligibility corpus (E2) | no — 20/4177 reviewed; strict freeze pending |
+| Reviewed eligibility corpus (E2) | no — 20/4177 rows approved |
 | Exam blueprints (X1) | no |
-| Pure generator/grader engine (X1) | no |
+| Generator/grader engine (X1) | no |
 | Seed audit (X1) | no |
-| Browser runner + provenance + retention (X2) | no — lives in app.js; not file-detectable here |
+| Browser runner + provenance (X2) | no |
+| Delayed retention confirmation (X2) | no |
 
 ## Core gate steps
 
