@@ -9,9 +9,11 @@
 //   - file-gated rows (blueprints also needs its file; seed audit is file-only)
 //     stay false while the artifact is absent.
 //
-// The corresponding file-present flips (blueprints/engine/seed-audit) are also
-// exercised end-to-end by staging real artifacts; this test locks the pure,
-// FS-independent logic so "machine-derived" is verified, not merely asserted.
+// This committed test covers the pure, FS-independent transitions: the E2
+// corpus flip and the X1/X2 META-marker flips, plus the negative (absent) cases
+// including file-gated rows. The file-*present* flips for blueprints / engine /
+// seed-audit were verified separately by manually staging real artifacts; that
+// staging is evidence only and is not asserted here.
 
 import { deriveSentenceExamReadiness } from "./audit-core-release.mjs";
 
