@@ -62,7 +62,11 @@ cleanup are outside the sprint.
 ## Verification
 
 Run every focused check named by the packet and every unaffected mandatory gate
-for the files you touched. The full release matrix is in roadmap section 9.
+for the files you touched. The full release matrix is in roadmap section 9, and
+`node scripts/audit-core-release.mjs --full` runs the wired subset as one gate
+(the `core-gate` CI job). Note: `node --check` only checks its first filename
+argument, so check each edited file in its own invocation — never
+`node --check a.js b.js`.
 
 At minimum:
 

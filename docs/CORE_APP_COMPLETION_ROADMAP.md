@@ -187,21 +187,27 @@ The integrator updates this table after merge. Parallel workers do not edit it.
 
 | ID | Packet | State | Depends on | Primary lane |
 |---|---|---|---|---|
-| D0 | Documentation consolidation and single roadmap | IN PROGRESS | none | high |
-| C1 | Re-derived baseline census and one-command core gate | READY after D0 | D0 | high |
-| E0 | Shard Sentence eligibility for conflict-free parallel review | READY after C1 | C1 | high |
+| D0 | Documentation consolidation and single roadmap | COMPLETE (this PR) | none | high |
+| C1 | Re-derived baseline census and one-command core gate | COMPLETE (#351, #352) | D0 | high |
+| E0 | Shard Sentence eligibility for conflict-free parallel review | READY | C1 | high |
 | E1A | Review Sentence rows s0001-s1050 | BLOCKED | E0 | author + reviewer |
 | E1B | Review Sentence rows s1051-s2100 | BLOCKED | E0 | author + reviewer |
 | E1C | Review Sentence rows s2101-s3150 | BLOCKED | E0 | author + reviewer |
 | E1D | Review Sentence rows s3151-s4177 | BLOCKED | E0 | author + reviewer |
 | E2 | Independent adjudication, census, freeze, strict eligibility gate | BLOCKED | E1A-D | high |
-| L1 | Automated lesson reachability, resume, migration, and mobile smoke | READY after C1 | C1 | high |
+| L1 | Automated lesson reachability, resume, migration, and mobile smoke | READY | C1 | high |
 | L2 | Final Sentence positional and near-miss feedback | READY after L1 | L1 | high |
-| L3 | Authored-item audio discovery and missing audio closure | READY after C1 | C1 | mechanical + review |
+| L3 | Authored-item audio discovery and missing audio closure | READY | C1 | mechanical + review |
 | X1 | Sentence exam blueprints, pure engine, grader, and seed audit | BLOCKED | E2 | high |
 | X2 | Sentence exam UI, provenance, results, and retention | BLOCKED | X1 + L2 | high |
 | Q1 | Full core learner-journey acceptance and defect closure | BLOCKED | L1-L3 + X2 | integrator |
 | Q2 | Strict CI, final docs/status, release-candidate evidence | BLOCKED | Q1 | integrator |
+
+**C1 delivered (merged to `main`):** `scripts/audit-core-release.mjs` (the one-command
+core gate: full/quick modes, per-file `node --check`, `--write-status` / `--check-status`),
+the generated `docs/CORE_APP_STATUS.md`, its regression tests
+(`scripts/test-core-release-syntax-gate.mjs`, `scripts/test-sentence-exam-readiness.mjs`),
+and an additive `core-gate` CI job. The next READY packets are **E0**, **L1**, and **L3**.
 
 ## 8. Agent packets
 
@@ -393,6 +399,17 @@ missing required control.
 **Required files:** declarative browser-global blueprint data, pure engine, generated coverage
 report, and `scripts/audit-sentence-exams.mjs`.
 
+**Locked readiness contract (keep in sync with `scripts/audit-core-release.mjs`).** So the
+generated `docs/CORE_APP_STATUS.md` readiness table flips on its own as X1/X2 land, ship exactly:
+
+- `sentence_exam_blueprints.js` publishing the browser global `HANAPATH_SENTENCE_EXAM_BLUEPRINTS`.
+- `sentence_exam_engine.js` publishing `HANAPATH_SENTENCE_EXAM_META`, with a numeric `engineVersion`
+  (X1). X2 later sets `runnerVersion` (non-null) and `retention: true` on the same meta object.
+- `scripts/audit-sentence-exams.mjs` (the seed audit; also the roadmap §9 entry).
+
+E2 readiness is derived separately from the eligibility corpus (approved rows === bank rows); no
+artifact is needed for it.
+
 **Non-negotiable contracts:**
 
 - Four cumulative stage exams after Sentences sections 2, 4, 6, and 8.
@@ -423,6 +440,8 @@ report, and `scripts/audit-sentence-exams.mjs`.
 - Leaving an active attempt requires confirmation and discards only the in-memory attempt.
 - Result records include actual seed, engine version, eligibility revision, blueprint version,
   scope, timing, score, bands, status, and qualifier/retention relation.
+- Set `runnerVersion` (non-null) and, once the delayed retention flow ships, `retention: true` on
+  `HANAPATH_SENTENCE_EXAM_META` (the readiness contract in X1) so the status report's X2 rows flip.
 - Active taint or testing hooks force `practice`; Practice cannot award progression or retention.
 - Retention opens and expires on the locked schedule, avoids the qualifying attempt, and preserves
   sticky mastery after a valid pair.
@@ -475,10 +494,18 @@ No new feature or content expansion is allowed in Q1.
 Packets run the focused checks plus every unaffected gate required by their touched files. Q1 and
 Q2 run the full matrix.
 
+The single command `node scripts/audit-core-release.mjs --full` runs the wired subset of
+this matrix as one deterministic gate (and is the `core-gate` CI job). The individual
+commands below remain the reference list.
+
 ```bash
-node --check app.js sw.js exam_integrity.js \
-  sentence_exam_eligibility.js hangul_mastery_exam.js \
-  word_exam_blueprints.js word_exam_engine.js form_check_blueprints.js
+# `node --check` only checks its FIRST filename argument, so check each file in
+# its own invocation (never `node --check a.js b.js`).
+for f in app.js sw.js exam_integrity.js \
+         sentence_exam_eligibility.js hangul_mastery_exam.js \
+         word_exam_blueprints.js word_exam_engine.js form_check_blueprints.js; do
+  node --check "$f"
+done
 
 node scripts/audit-exam-integrity.mjs
 node scripts/audit-hangul-mastery-exam.mjs
@@ -493,12 +520,12 @@ node scripts/audit-form-checks.mjs
 node scripts/audit-sentence-eligibility.mjs          # strict after E2
 node scripts/audit-alphabet-audio.mjs --strict
 node scripts/audit-audio-coverage.mjs                 # exact existing CLI options
-node scripts/audit-learning-questions.mjs
+node scripts/audit-learning-questions.mjs             # excluded from core-gate (throws on main; L1-owned)
 node scripts/audit-hangul-recognition.mjs
 node scripts/audit-premium-handwriting.mjs
 node scripts/audit-app-shell.mjs
 node scripts/audit-mobile-package.mjs
-node scripts/audit-core-release.mjs --full            # after C1
+node scripts/audit-core-release.mjs --full            # C1 core gate (live); --quick for iteration
 ```
 
 Also required when applicable:

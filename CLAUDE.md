@@ -85,6 +85,7 @@ backup validation. Never bypass or weaken this layer.
 | Document | Authority |
 |---|---|
 | `docs/CORE_APP_COMPLETION_ROADMAP.md` | Only active packet queue, merge order, definition of done |
+| `docs/CORE_APP_STATUS.md` | Generated (do not hand-edit) live count/gate snapshot from `scripts/audit-core-release.mjs` |
 | `docs/SENTENCES_TEACHING_SPEC.md` | Sentence lesson pedagogy, schema, tags, bands, drills, SRS |
 | `docs/SENTENCES_CURRICULUM_V2_PLAN.md` | Shipped Sentence path design and historical implementation record |
 | `docs/SENTENCES_FINAL_ROADMAP.md` | Historical Sentence build/content record, not an active queue |
@@ -107,7 +108,11 @@ roadmap names it. It is not an active queue unless the core roadmap says so.
 ## Verification
 
 Run the packet-specific commands and the applicable full matrix from roadmap
-section 9. Core audit families include:
+section 9. `node scripts/audit-core-release.mjs --full` (the `core-gate` CI job)
+runs the wired subset as one deterministic gate and regenerates/verifies the
+machine-derived `docs/CORE_APP_STATUS.md`; use `--write-status` after data
+changes. `node --check` only checks its first argument — check each edited file
+separately. Core audit families include:
 
 - syntax, shell, cache wiring;
 - Words/Sentences data and curriculum foundation;

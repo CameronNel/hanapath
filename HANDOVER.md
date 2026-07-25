@@ -49,8 +49,10 @@ release candidate.
 - Testing overrides create durable taint before progression mutation.
 - Backup import validates exam-integrity collections before replacing state.
 - Static CI and Android build are green.
+- The C1 one-command core gate shipped (`scripts/audit-core-release.mjs`, the
+  `core-gate` CI job) with a generated `docs/CORE_APP_STATUS.md` (#351, #352).
 - Core CI still permits incomplete Sentence eligibility and lacks one canonical
-  full-journey browser gate. Both are explicit roadmap items.
+  full-journey *browser* gate. Both are explicit roadmap items (E2, L1).
 
 ## Hard rules
 
@@ -71,7 +73,9 @@ release candidate.
 ## Required audit families
 
 Use the focused commands for the packet plus the complete matrix in the core
-roadmap. The current families are:
+roadmap; `node scripts/audit-core-release.mjs --full` runs the wired subset as
+one gate. (`node --check` only checks its first argument — check each file
+separately.) The current families are:
 
 - syntax and app shell;
 - Words and Sentences data/foundation;

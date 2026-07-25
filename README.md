@@ -91,6 +91,12 @@ tests.
 
 ## Current verification gate
 
+The one-command gate is `node scripts/audit-core-release.mjs --full` (also the
+`core-gate` CI job): it runs the wired subset of the checks below, regenerates
+and verifies `docs/CORE_APP_STATUS.md`, and exits non-zero on any failure. Use
+`--quick` for faster iteration and `--write-status` after data changes. The
+individual commands remain:
+
 ```bash
 for file in app.js sw.js exam_integrity.js sentence_exam_eligibility.js \
   hangul_mastery_exam.js word_exam_blueprints.js word_exam_engine.js \
