@@ -34,27 +34,22 @@ jobs:
         run: |
           python <<'PY'
           from pathlib import Path
-          import re
           path = Path('scripts/e1b-final-review.mjs')
-          source = path.read_text(encoding='utf-8')
-          source, prompt_count = re.subn(
-              r"^  s2049: .*,$",
-              "  s2049: 'Formally acknowledge an instruction with the formal lesson expression built from 알다, meaning that you understand.',",
-              source,
-              count=1,
-              flags=re.MULTILINE,
-          )
-          source, reason_count = re.subn(
-              r"  if \(particleCount >= 3 \|\| \(row\.tokens \|\| \[\]\)\.length >= 6\) \{\n    reasons\.push\('productive-word-order-family'\);\n  \}",
-              "  if (particleCount >= 3) {\n    reasons.push('productive-word-order-family');\n  }",
-              source,
-              count=1,
-          )
+          lines = path.read_text(encoding='utf-8').splitlines()
+          prompt_count = 0
+          reason_count = 0
+          for index, line in enumerate(lines):
+              if line.startswith('  s2049:'):
+                  lines[index] = "  s2049: 'Formally acknowledge an instruction with the formal lesson expression built from 알다, meaning that you understand.',"
+                  prompt_count += 1
+              if 'if (particleCount >= 3 ||' in line:
+                  lines[index] = '  if (particleCount >= 3) {'
+                  reason_count += 1
           if prompt_count != 1:
-              raise SystemExit(f'Expected one s2049 prompt replacement, got {prompt_count}')
+              raise SystemExit(f'Expected one s2049 prompt line, got {prompt_count}')
           if reason_count != 1:
-              raise SystemExit(f'Expected one length-proxy replacement, got {reason_count}')
-          path.write_text(source, encoding='utf-8')
+              raise SystemExit(f'Expected one length-proxy condition, got {reason_count}')
+          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
           node scripts/e1b-final-review.mjs
 
