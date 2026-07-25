@@ -32,19 +32,30 @@ jobs:
 
       - name: Patch reviewed metadata and generate corrected E1B shard
         run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-          const path = 'scripts/e1b-final-review.mjs';
-          let source = fs.readFileSync(path, 'utf8');
-          const promptBefore = "s2049: 'Formally acknowledge an instruction with the lesson expression meaning “Understood”. Use 알겠습니다.',";
-          const promptAfter = "s2049: 'Formally acknowledge an instruction with the formal lesson expression built from 알다, meaning that you understand.',";
-          const reasonBefore = "  if (particleCount >= 3 || (row.tokens || []).length >= 6) {\n    reasons.push('productive-word-order-family');\n  }";
-          const reasonAfter = "  if (particleCount >= 3) {\n    reasons.push('productive-word-order-family');\n  }";
-          if (!source.includes(promptBefore)) throw new Error('Expected s2049 prompt was not found');
-          if (!source.includes(reasonBefore)) throw new Error('Expected length-based reason proxy was not found');
-          source = source.replace(promptBefore, promptAfter).replace(reasonBefore, reasonAfter);
-          fs.writeFileSync(path, source);
-          NODE
+          python <<'PY'
+          from pathlib import Path
+          import re
+          path = Path('scripts/e1b-final-review.mjs')
+          source = path.read_text(encoding='utf-8')
+          source, prompt_count = re.subn(
+              r"^  s2049: .*,$",
+              "  s2049: 'Formally acknowledge an instruction with the formal lesson expression built from 알다, meaning that you understand.',",
+              source,
+              count=1,
+              flags=re.MULTILINE,
+          )
+          source, reason_count = re.subn(
+              r"  if \(particleCount >= 3 \|\| \(row\.tokens \|\| \[\]\)\.length >= 6\) \{\n    reasons\.push\('productive-word-order-family'\);\n  \}",
+              "  if (particleCount >= 3) {\n    reasons.push('productive-word-order-family');\n  }",
+              source,
+              count=1,
+          )
+          if prompt_count != 1:
+              raise SystemExit(f'Expected one s2049 prompt replacement, got {prompt_count}')
+          if reason_count != 1:
+              raise SystemExit(f'Expected one length-proxy replacement, got {reason_count}')
+          path.write_text(source, encoding='utf-8')
+          PY
           node scripts/e1b-final-review.mjs
 
       - name: Run independent reviewer invariants
