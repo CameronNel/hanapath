@@ -1,4 +1,10 @@
 // [2026-07-23] Cache bumped for Words B5 past & negation form-check upgrade + Drill Lab End session styling.
+// [2026-07-25] E0 added four Sentence eligibility shards (_a…_d) + the aggregate
+// merger, each with a fresh ?v; CACHE_NAME is intentionally NOT bumped here
+// because it is pinned to EXAM_INTEGRITY_APP_VERSION in app.js (exam-integrity
+// audit), which E0 may not touch. The changed sw.js re-runs install/addAll, so
+// the new shard URLs are still precached. Pair the CACHE_NAME + integrity-pin
+// bump with the next app.js-touching packet.
 const CACHE_NAME = "hanapath-shell-v448";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
@@ -16,7 +22,11 @@ const APP_SHELL = [
   "./raw_word_meanings.js?v=20260703b",
   "./sentences_core.js?v=20260717u",
   "./sentences_lesson_plan.js?v=20260717u",
-  "./sentence_exam_eligibility.js?v=20260721a",
+  "./sentence_exam_eligibility_a.js?v=20260725a",
+  "./sentence_exam_eligibility_b.js?v=20260725a",
+  "./sentence_exam_eligibility_c.js?v=20260725a",
+  "./sentence_exam_eligibility_d.js?v=20260725a",
+  "./sentence_exam_eligibility.js?v=20260725a",
   "./hangul_strokes.js?v=20260715b",
   "./hangul_mastery_exam.js?v=20260720a",
   "./word_exam_blueprints.js?v=20260723a",

@@ -53,6 +53,12 @@ const DATA_FILES = [
   "form_check_blueprints.js",
   "sentences_core.js",
   "sentences_lesson_plan.js",
+  // Eligibility shards load before the aggregate merger that publishes
+  // HANAPATH_SENTENCE_EXAM_ELIGIBILITY (E0).
+  "sentence_exam_eligibility_a.js",
+  "sentence_exam_eligibility_b.js",
+  "sentence_exam_eligibility_c.js",
+  "sentence_exam_eligibility_d.js",
   "sentence_exam_eligibility.js",
   "hangul_mastery_exam.js",
   "hangul_strokes.js",

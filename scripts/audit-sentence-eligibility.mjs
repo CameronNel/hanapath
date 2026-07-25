@@ -13,6 +13,15 @@ export function normalizeSentenceExamAnswer(value) {
 
 const ELIGIBILITY_FILE = join(ROOT, "sentence_exam_eligibility.js");
 
+// E0: reviewed records live in four non-overlapping shards that load before the
+// aggregate merger. These are the deterministic, locked ranges.
+const EXPECTED_SHARDS = [
+  { id: "A", file: "sentence_exam_eligibility_a.js", firstOrder: 1, lastOrder: 1050 },
+  { id: "B", file: "sentence_exam_eligibility_b.js", firstOrder: 1051, lastOrder: 2100 },
+  { id: "C", file: "sentence_exam_eligibility_c.js", firstOrder: 2101, lastOrder: 3150 },
+  { id: "D", file: "sentence_exam_eligibility_d.js", firstOrder: 3151, lastOrder: 4177 },
+];
+
 function loadBrowserGlobal(filePath, globalName) {
   const window = {};
   const sandbox = { window, self: window, globalThis: window };
@@ -20,6 +29,24 @@ function loadBrowserGlobal(filePath, globalName) {
   const code = readFileSync(filePath, "utf8");
   vm.runInContext(code, sandbox, { filename: filePath });
   return sandbox.window[globalName];
+}
+
+// Load the shards then the merger into one sandbox, matching browser load order,
+// and return the whole window so we can inspect both the aggregate and the shards.
+function loadEligibilityWindow() {
+  const window = {};
+  const sandbox = { window, self: window, globalThis: window };
+  vm.createContext(sandbox);
+  for (const shard of EXPECTED_SHARDS) {
+    vm.runInContext(readFileSync(join(ROOT, shard.file), "utf8"), sandbox, { filename: shard.file });
+  }
+  vm.runInContext(readFileSync(ELIGIBILITY_FILE, "utf8"), sandbox, { filename: ELIGIBILITY_FILE });
+  return sandbox.window;
+}
+
+function orderOfSentenceId(id) {
+  const m = /^s(\d+)$/.exec(String(id));
+  return m ? parseInt(m[1], 10) : NaN;
 }
 
 const allowIncomplete = process.argv.includes("--allow-incomplete");
@@ -70,11 +97,59 @@ const LOCKED_TAG_FLOORS = [
 function main() {
   const errors = [];
   const sentences = loadBrowserGlobal(SENTENCES_FILE, "HANAPATH_SENTENCES") || [];
-  const eligibility = loadBrowserGlobal(ELIGIBILITY_FILE, "HANAPATH_SENTENCE_EXAM_ELIGIBILITY");
+  const eligWindow = loadEligibilityWindow();
+  const eligibility = eligWindow.HANAPATH_SENTENCE_EXAM_ELIGIBILITY;
+  const shardRegistry = eligWindow.HANAPATH_SENTENCE_EXAM_ELIGIBILITY_SHARDS || {};
 
   if (!eligibility) {
-    console.error("ERROR: HANAPATH_SENTENCE_EXAM_ELIGIBILITY global not found in sentence_exam_eligibility.js");
+    console.error("ERROR: HANAPATH_SENTENCE_EXAM_ELIGIBILITY global not found (shards + merger)");
     process.exit(1);
+  }
+
+  // ── Shard integrity guards (E0) ──────────────────────────────────────────
+  // Fail on missing/overlapping shards, non-contiguous ranges, IDs outside a
+  // shard's range, duplicate IDs across shards, malformed IDs, and any drift
+  // between the shard union and the merged aggregate.
+  const bankSize = sentences.length;
+  const idToShard = new Map();
+  let expectedNextOrder = 1;
+  for (const def of EXPECTED_SHARDS) {
+    const shard = shardRegistry[def.id];
+    if (!shard) {
+      errors.push(`Missing eligibility shard ${def.id} (${def.file})`);
+      continue;
+    }
+    if (shard.firstOrder !== def.firstOrder || shard.lastOrder !== def.lastOrder) {
+      errors.push(
+        `Shard ${def.id} range mismatch: expected ${def.firstOrder}-${def.lastOrder}, got ${shard.firstOrder}-${shard.lastOrder}`
+      );
+    }
+    if (shard.firstOrder !== expectedNextOrder) {
+      errors.push(`Shard ${def.id} not contiguous: expected firstOrder ${expectedNextOrder}, got ${shard.firstOrder}`);
+    }
+    expectedNextOrder = def.lastOrder + 1;
+    for (const id of Object.keys(shard.reviewedRows || {})) {
+      const ord = orderOfSentenceId(id);
+      if (!Number.isInteger(ord)) {
+        errors.push(`Shard ${def.id}: malformed row id '${id}'`);
+        continue;
+      }
+      if (ord < def.firstOrder || ord > def.lastOrder) {
+        errors.push(`Shard ${def.id}: row ${id} (order ${ord}) is out of range ${def.firstOrder}-${def.lastOrder}`);
+      }
+      if (idToShard.has(id)) {
+        errors.push(`Row ${id} duplicated across shards ${idToShard.get(id)} and ${def.id}`);
+      } else {
+        idToShard.set(id, def.id);
+      }
+    }
+  }
+  if (expectedNextOrder - 1 !== bankSize) {
+    errors.push(`Shard cover ends at order ${expectedNextOrder - 1}, but the sentence bank has ${bankSize} rows`);
+  }
+  const mergedRowCount = Object.keys(eligibility.reviewedRows || {}).length;
+  if (mergedRowCount !== idToShard.size) {
+    errors.push(`Merger published ${mergedRowCount} rows but shards contain ${idToShard.size} unique rows`);
   }
 
   if (eligibility.schemaVersion !== 1) {
