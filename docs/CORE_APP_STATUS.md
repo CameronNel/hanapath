@@ -117,3 +117,4 @@ The roadmap §9 universal verification matrix is broader than the checks wired i
 here. The following are deliberately excluded, each with a named owning packet:
 
 - `scripts/audit-learning-questions.mjs` — throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect) and is not wired into CI, so learner-question coverage and answer-leak safety are not yet protected by this one-command gate. **Owner: packet L1 (lesson reachability / question coverage).**
+
