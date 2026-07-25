@@ -41,8 +41,8 @@ owns *what to do next*; this file owns *what currently exists*.
 | Curriculum sections | 8 |
 | Lessons | 703 |
 | Eligibility revision | sentence-eligibility-v1 |
-| Eligibility rows reviewed | 1050 / 4177 (25.14%) |
-| Eligibility rows approved | 1050 / 4177 (25.14%) |
+| Eligibility rows reviewed | 20 / 4177 (0.48%) |
+| Eligibility rows approved | 20 / 4177 (0.48%) |
 
 ### Audio
 
@@ -68,7 +68,7 @@ packet lands, with no edit to this report or the generator.
 
 | Milestone | Present |
 |---|---|
-| Reviewed eligibility corpus (E2) | no — 1050/4177 rows approved |
+| Reviewed eligibility corpus (E2) | no — 20/4177 rows approved |
 | Exam blueprints (X1) | no |
 | Generator/grader engine (X1) | no |
 | Seed audit (X1) | no |
@@ -107,7 +107,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 
 ## Open core gates
 
-- **Sentence eligibility** is at 1050 / 4177 approved rows (25.14%). CI and this gate run `audit-sentence-eligibility.mjs --allow-incomplete`; the strict gate lands with packet **E2**.
+- **Sentence eligibility** is at 20 / 4177 approved rows (0.48%). CI and this gate run `audit-sentence-eligibility.mjs --allow-incomplete`; the strict gate lands with packet **E2**.
 - **Sentence Mastery examination** engine/runner: not yet shipped (packets **X1** and **X2**); the seed audit step SKIPs.
 - **Mobile package validation** is conditional on a prepared `mobile/www`; the Android workflow performs it after `npm run prepare:web`.
 
@@ -117,4 +117,3 @@ The roadmap §9 universal verification matrix is broader than the checks wired i
 here. The following are deliberately excluded, each with a named owning packet:
 
 - `scripts/audit-learning-questions.mjs` — throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect) and is not wired into CI, so learner-question coverage and answer-leak safety are not yet protected by this one-command gate. **Owner: packet L1 (lesson reachability / question coverage).**
-
