@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// CB4 separates deterministic authoring flags from reviewer-approved ambiguity resolution.
 import assert from "node:assert/strict";
 import {
   buildCb4AuthoringPackage,
