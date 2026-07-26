@@ -68,7 +68,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
-            .github/workflows/ci.yml \
             app.js index.html sw.js \
             sentence_lesson_contrasts_sections_1_4.js \
             docs/generated/sentence_lesson_contrasts_sections_1_4.json \
