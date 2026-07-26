@@ -11,6 +11,15 @@ const REPORT_FILE = join(ROOT, "docs", "generated", "sentence_lesson_contrasts_s
 const SHORTLIST_FILE = join(ROOT, "docs", "generated", "sentence_exam_shortlist.json");
 const SECTION_ORDERS = Object.freeze([1, 2, 3, 4]);
 const REVISION = "sentence-lesson-contrasts-cb2-v2";
+const MANUAL_CONTRAST_OVERRIDES = Object.freeze({
+  s0043: "s2047", // "It's there." vs "It's over there."
+  s0391: "s3025", // direct instruction vs polite request to open
+  s0411: "s0412", // scarf vs necktie around the neck
+  s0757: "s3117", // decision question vs statement about that decision
+  s0990: "s3173", // two ways to express being proud
+  s2032: "s2703", // first meeting vs past meeting closure
+  s2998: "s2043", // "my point" idiom vs asking what something means
+});
 
 function loadGlobals(files) {
   const sandbox = { window: {} };
@@ -75,12 +84,16 @@ function buildPayload() {
       for (const rowId of rowIds) nearbyRowIds.add(rowId);
     }
     const sectionRows = [...nearbyRowIds].map((id) => rowById.get(id)).filter(Boolean);
-    const contrastSelection = selectContrastRow(target, sectionRows, {
+    const overrideId = MANUAL_CONTRAST_OVERRIDES[target.id] || null;
+    const overrideRow = overrideId ? rowById.get(overrideId) : null;
+    if (overrideId && !overrideRow) throw new Error(`${target.id}: missing manual contrast override ${overrideId}.`);
+    const contrastSelection = selectContrastRow(target, overrideRow ? [overrideRow] : sectionRows, {
       targetLessonId: lesson.id,
       targetSectionOrder: sectionOrder,
       lessonIdsByRow,
       sectionOrdersByRow,
     });
+    contrastSelection.selectionMethod = overrideRow ? "manual-semantic-override" : "ranked";
     return buildLessonContrastEntry({ candidate, target, contrastSelection, lesson, sectionOrder });
   });
 
@@ -102,9 +115,11 @@ function buildPayload() {
     strongContrastCount: entries.filter((entry) => entry.contrastSelection.qualityTier === "strong").length,
     usableContrastCount: entries.filter((entry) => entry.contrastSelection.qualityTier === "usable").length,
     weakContrastCount: entries.filter((entry) => entry.contrastSelection.qualityTier === "weak").length,
+    rankedWeakContrastCount: entries.filter((entry) => entry.contrastSelection.selectionMethod === "ranked" && entry.contrastSelection.qualityTier === "weak").length,
     sameLessonContrastCount: entries.filter((entry) => entry.contrastSelection.sourceScope === "same-lesson").length,
     sameSectionContrastCount: entries.filter((entry) => entry.contrastSelection.sourceScope === "same-section").length,
     nearbySectionContrastCount: entries.filter((entry) => entry.contrastSelection.sourceScope === "nearby-section").length,
+    manualOverrideCount: entries.filter((entry) => entry.contrastSelection.selectionMethod === "manual-semantic-override").length,
     countsBySection,
     decisionRule: "CB2 teaches and constrains candidates but never approves curated-bank content.",
     entries,
@@ -161,9 +176,11 @@ if (process.argv.includes("--write")) {
     strongContrastCount: report.strongContrastCount,
     usableContrastCount: report.usableContrastCount,
     weakContrastCount: report.weakContrastCount,
+    rankedWeakContrastCount: report.rankedWeakContrastCount,
     sameLessonContrastCount: report.sameLessonContrastCount,
     sameSectionContrastCount: report.sameSectionContrastCount,
     nearbySectionContrastCount: report.nearbySectionContrastCount,
+    manualOverrideCount: report.manualOverrideCount,
     countsBySection: report.countsBySection,
   }, null, 2));
 }

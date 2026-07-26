@@ -328,6 +328,7 @@ function buildLessonContrastEntry({ candidate, target, contrastSelection, lesson
     promptReviewRequired: !candidate.existingExamPromptEn,
     contrastReviewRequired: true,
     contrastSelection: {
+      selectionMethod: contrastSelection.selectionMethod || "ranked",
       sourceScope: contrastSelection.sourceScope,
       sourceLessonIds: contrastSelection.sourceLessonIds,
       sourceSectionOrders: contrastSelection.sourceSectionOrders,

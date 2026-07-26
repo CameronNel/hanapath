@@ -9,6 +9,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SECTION_ORDERS = Object.freeze([1, 2, 3, 4]);
 const EXPECTED_COUNTS = Object.freeze({ 1: 34, 2: 55, 3: 55, 4: 54 });
 const EXPECTED_TOTAL = 198;
+const EXPECTED_MANUAL_OVERRIDES = 7;
 const REVISION = "sentence-lesson-contrasts-cb2-v2";
 const RUNTIME_ASSET = "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a";
 const UI_ASSET = "./sentence_lesson_contrast_ui.js?v=20260726a";
@@ -72,7 +73,8 @@ if (report.bankApprovedCount !== 0) fail("CB2 may not approve curated-bank entri
 if (report.strongContrastCount + report.usableContrastCount + report.weakContrastCount !== EXPECTED_TOTAL) {
   fail("contrast quality counts do not sum to the entry total");
 }
-if (report.weakContrastCount !== 0) fail(`weak contrast count must remain 0; got ${report.weakContrastCount}`);
+if (report.rankedWeakContrastCount !== 0) fail(`ranked weak contrast count must remain 0; got ${report.rankedWeakContrastCount}`);
+if (report.manualOverrideCount !== EXPECTED_MANUAL_OVERRIDES) fail(`manual override count must be ${EXPECTED_MANUAL_OVERRIDES}; got ${report.manualOverrideCount}`);
 if (report.sameLessonContrastCount + report.sameSectionContrastCount + report.nearbySectionContrastCount !== EXPECTED_TOTAL) {
   fail("contrast source-scope counts do not sum to the entry total");
 }
@@ -128,8 +130,11 @@ for (const entry of entries) {
   if (entry.examReadiness !== "typed-candidate") fail(`${label}: invalid exam-readiness decision`);
   if (entry.bankApproved !== false) fail(`${label}: bankApproved must remain false`);
   if (entry.contrastReviewRequired !== true) fail(`${label}: heuristic contrast must require independent review`);
-  if (!entry.contrastSelection || !["strong", "usable"].includes(entry.contrastSelection.qualityTier)) {
-    fail(`${label}: contrast quality must be strong or usable`);
+  if (!entry.contrastSelection || !["ranked", "manual-semantic-override"].includes(entry.contrastSelection.selectionMethod)) {
+    fail(`${label}: invalid contrast selection method`);
+  }
+  if (entry.contrastSelection?.selectionMethod === "ranked" && !["strong", "usable"].includes(entry.contrastSelection.qualityTier)) {
+    fail(`${label}: ranked contrast quality must be strong or usable`);
   }
   const recomputed = contrastCandidateAssessment(target, contrast, { sameLesson, sectionDistance });
   for (const metric of ["englishOverlap", "koreanOverlap", "semanticIdOverlap", "sharedTagCount", "meaningfulDimensionCount", "sectionDistance", "qualityTier"]) {
@@ -203,8 +208,9 @@ warn(`All ${EXPECTED_TOTAL} heuristic contrast selections require independent li
 console.log(`CB2 contrast entries: ${entries.length}`);
 console.log(`Section counts: ${SECTION_ORDERS.map((section) => `${section}:${entries.filter((entry) => entry.sectionOrder === section).length}`).join(", ")}`);
 console.log(`Generated teaching prompts awaiting later bank review: ${report.generatedPromptCount}`);
-console.log(`Contrast quality: strong=${report.strongContrastCount}, usable=${report.usableContrastCount}, weak=${report.weakContrastCount}`);
+console.log(`Contrast quality: strong=${report.strongContrastCount}, usable=${report.usableContrastCount}, weak=${report.weakContrastCount}, ranked weak=${report.rankedWeakContrastCount}`);
 console.log(`Contrast sources: same lesson=${report.sameLessonContrastCount}, same section=${report.sameSectionContrastCount}, nearby section=${report.nearbySectionContrastCount}`);
+console.log(`Manual semantic overrides: ${report.manualOverrideCount}`);
 for (const message of warnings) console.warn(`WARN: ${message}`);
 if (errors.length) {
   for (const message of errors) console.error(`ERROR: ${message}`);

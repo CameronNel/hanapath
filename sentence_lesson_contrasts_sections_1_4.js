@@ -13,20 +13,22 @@
   "entryCount": 198,
   "bankApprovedCount": 0,
   "generatedPromptCount": 75,
-  "strongContrastCount": 192,
-  "usableContrastCount": 6,
-  "weakContrastCount": 0,
-  "sameLessonContrastCount": 17,
-  "sameSectionContrastCount": 128,
-  "nearbySectionContrastCount": 53,
+  "strongContrastCount": 191,
+  "usableContrastCount": 5,
+  "weakContrastCount": 2,
+  "rankedWeakContrastCount": 0,
+  "sameLessonContrastCount": 18,
+  "sameSectionContrastCount": 124,
+  "nearbySectionContrastCount": 56,
+  "manualOverrideCount": 7,
   "countsBySection": [
     {
       "sectionOrder": 1,
       "count": 34,
       "generatedPromptCount": 13,
-      "strongContrastCount": 33,
+      "strongContrastCount": 32,
       "usableContrastCount": 1,
-      "weakContrastCount": 0
+      "weakContrastCount": 1
     },
     {
       "sectionOrder": 2,
@@ -41,8 +43,8 @@
       "count": 55,
       "generatedPromptCount": 26,
       "strongContrastCount": 52,
-      "usableContrastCount": 3,
-      "weakContrastCount": 0
+      "usableContrastCount": 2,
+      "weakContrastCount": 1
     },
     {
       "sectionOrder": 4,
@@ -67,6 +69,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l16"
@@ -217,6 +220,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l15"
@@ -367,6 +371,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l15"
@@ -517,6 +522,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l6"
@@ -667,6 +673,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-study-u2-l5"
@@ -808,7 +815,7 @@
     {
       "schemaVersion": 1,
       "targetSentenceId": "s2998",
-      "contrastSentenceId": "s2230",
+      "contrastSentenceId": "s2043",
       "lessonId": "sn1-firstwords-u1-l14",
       "sectionOrder": 1,
       "examReadiness": "typed-candidate",
@@ -817,22 +824,23 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "manual-semantic-override",
         "sourceScope": "same-section",
         "sourceLessonIds": [
-          "sn1-firstwords-u1-l8"
+          "sn1-firstwords-u2-l3"
         ],
         "sourceSectionOrders": [
           1
         ],
-        "score": 158.75,
+        "score": -88.75,
         "englishOverlap": 0,
         "koreanOverlap": 0,
-        "semanticIdOverlap": 1,
-        "sharedTagCount": 0,
+        "semanticIdOverlap": 0,
+        "sharedTagCount": 1,
         "meaningfulDimensionCount": 1,
         "sectionDistance": 0,
-        "qualityTier": "strong",
-        "selectionReason": "shared lexical or curriculum concept with a meaningful grammar or discourse contrast"
+        "qualityTier": "weak",
+        "selectionReason": "best same-section fallback; independent linguistic review required"
       },
       "meaningInContext": {
         "heading": "Meaning in context",
@@ -844,9 +852,9 @@
         "heading": "Nearby valid contrast",
         "targetKorean": "제 말이 바로 그 말이에요.",
         "targetMeaning": "That's exactly my point.",
-        "contrastKorean": "조금 천천히 말해 주세요.",
-        "contrastMeaning": "Please speak a little slowly.",
-        "explanation": "The target identifies or describes something with the polite copula. The contrast makes a polite request or instruction. Both are natural, but they answer different cues."
+        "contrastKorean": "무슨 뜻이에요?",
+        "contrastMeaning": "What does it mean?",
+        "explanation": "The target identifies or describes something with the polite copula. The contrast asks a polite question, identifies or describes something with the polite copula. Both are natural, but they answer different cues."
       },
       "controlledProduction": {
         "heading": "Controlled production",
@@ -864,7 +872,7 @@
       },
       "variationAwareness": {
         "heading": "Variation awareness",
-        "note": "조금 천천히 말해 주세요. is also natural Korean, but here it means “Please speak a little slowly”. It is not a substitute for the controlled target. The target identifies or describes something with the polite copula. The contrast makes a polite request or instruction. Both are natural, but they answer different cues."
+        "note": "무슨 뜻이에요? is also natural Korean, but here it means “What does it mean”. It is not a substitute for the controlled target. The target identifies or describes something with the polite copula. The contrast asks a polite question, identifies or describes something with the polite copula. Both are natural, but they answer different cues."
       },
       "freePractice": {
         "heading": "Free practice",
@@ -883,18 +891,18 @@
           "phase": "Meaning in context",
           "note": "Target meaning: “That's exactly my point.” using everyday polite speech; keep the lesson's present or general-time meaning; keep the same information focus as the target line."
         },
-        "s2230": {
+        "s2043": {
           "phase": "Nearby valid contrast",
-          "note": "The target identifies or describes something with the polite copula. The contrast makes a polite request or instruction. Both are natural, but they answer different cues. Contrast meaning: “Please speak a little slowly.”"
+          "note": "The target identifies or describes something with the polite copula. The contrast asks a polite question, identifies or describes something with the polite copula. Both are natural, but they answer different cues. Contrast meaning: “What does it mean?”"
         }
       },
       "lessonMutation": {
         "goal": "Choose the intended meaning, compare it with a nearby natural sentence, then produce the target from precise cues.",
         "subtitle": "8 sentences · context, contrast, build, type",
-        "concept": "Target: “That's exactly my point.” Contrast: “Please speak a little slowly.” The target identifies or describes something with the polite copula. The contrast makes a polite request or instruction. Both are natural, but they answer different cues.",
+        "concept": "Target: “That's exactly my point.” Contrast: “What does it mean?” The target identifies or describes something with the polite copula. The contrast asks a polite question, identifies or describes something with the polite copula. Both are natural, but they answer different cues.",
         "sentenceIds": [
           "s2998",
-          "s2230",
+          "s2043",
           "s2914",
           "s2916",
           "s2926",
@@ -911,8 +919,8 @@
             "promptEn": "In the “Reading the signs” situation, using everyday polite speech, make one complete statement that means exactly: “That's exactly my point.” Keep the intended time meaning and information focus: keep the lesson's present or general-time meaning; keep the same information focus as the target line. Use the vocabulary taught in the target line."
           },
           {
-            "sentenceId": "s2230",
-            "mode": "build",
+            "sentenceId": "s2043",
+            "mode": "listen",
             "teachingPhase": "contrast-closure",
             "cueLabel": "Nearby valid contrast"
           },
@@ -967,6 +975,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l11"
@@ -1117,6 +1126,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u2-l10"
@@ -1267,6 +1277,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-feelings-u1-l7"
@@ -1417,6 +1428,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l6"
@@ -1567,6 +1579,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l8"
@@ -1717,6 +1730,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l2"
@@ -1867,6 +1881,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l12"
@@ -2017,6 +2032,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l7"
@@ -2167,6 +2183,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l3"
@@ -2317,6 +2334,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l8"
@@ -2467,6 +2485,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u2-l2"
@@ -2617,6 +2636,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-daily-u1-l10"
@@ -2759,6 +2779,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l1"
@@ -2909,6 +2930,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn1-firstwords-u2-l3"
@@ -3051,6 +3073,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u3-l2"
@@ -3201,6 +3224,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-food-u1-l4"
@@ -3351,6 +3375,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn1-firstwords-u2-l6"
@@ -3485,6 +3510,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l11"
@@ -3627,6 +3653,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u2-l4"
@@ -3769,6 +3796,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l5"
@@ -3911,6 +3939,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u3-l5"
@@ -4061,6 +4090,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u3-l8"
@@ -4211,6 +4241,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u2-l1"
@@ -4361,6 +4392,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-actions-u1-l11"
@@ -4503,6 +4535,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn1-firstwords-u3-l1"
@@ -4645,6 +4678,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-study-u2-l5"
@@ -4787,6 +4821,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l2"
@@ -4929,6 +4964,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn1-firstwords-u3-l8"
@@ -5063,6 +5099,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-nature-u1-l8"
@@ -5213,6 +5250,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-actions-u1-l6"
@@ -5346,7 +5384,7 @@
     {
       "schemaVersion": 1,
       "targetSentenceId": "s0757",
-      "contrastSentenceId": "s1942",
+      "contrastSentenceId": "s3117",
       "lessonId": "sn2-actions-u1-l2",
       "sectionOrder": 2,
       "examReadiness": "typed-candidate",
@@ -5355,19 +5393,20 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "manual-semantic-override",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
-          "sn3-actions-u2-l3"
+          "sn3-daily-u2-l6"
         ],
         "sourceSectionOrders": [
           3
         ],
-        "score": 173.75,
+        "score": 167.5,
         "englishOverlap": 1,
         "koreanOverlap": 1,
         "semanticIdOverlap": 0,
-        "sharedTagCount": 1,
-        "meaningfulDimensionCount": 3,
+        "sharedTagCount": 0,
+        "meaningfulDimensionCount": 4,
         "sectionDistance": 1,
         "qualityTier": "strong",
         "selectionReason": "shared lexical or curriculum concept with a meaningful grammar or discourse contrast"
@@ -5382,8 +5421,8 @@
         "heading": "Nearby valid contrast",
         "targetKorean": "그의 최종 결정은 무엇인가요?",
         "targetMeaning": "What is his final decision?",
-        "contrastKorean": "위원회에서 이번 프로젝트의 최종 후보지를 선정했어요.",
-        "contrastMeaning": "The committee selected the final candidate site for this project.",
+        "contrastKorean": "그때 그 결정을 후회하지 않아요.",
+        "contrastMeaning": "I don't regret that decision.",
         "explanation": "The target asks a polite question. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
       },
       "controlledProduction": {
@@ -5402,7 +5441,7 @@
       },
       "variationAwareness": {
         "heading": "Variation awareness",
-        "note": "위원회에서 이번 프로젝트의 최종 후보지를 선정했어요. is also natural Korean, but here it means “The committee selected the final candidate site for this project”. It is not a substitute for the controlled target. The target asks a polite question. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
+        "note": "그때 그 결정을 후회하지 않아요. is also natural Korean, but here it means “I don't regret that decision”. It is not a substitute for the controlled target. The target asks a polite question. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
       },
       "freePractice": {
         "heading": "Free practice",
@@ -5421,18 +5460,18 @@
           "phase": "Meaning in context",
           "note": "Target meaning: “What is his final decision?” using everyday polite speech; keep the lesson's present or general-time meaning; keep the lesson's topic or contrast framing."
         },
-        "s1942": {
+        "s3117": {
           "phase": "Nearby valid contrast",
-          "note": "The target asks a polite question. The contrast serves a different communicative purpose. Both are natural, but they answer different cues. Contrast meaning: “The committee selected the final candidate site for this project.”"
+          "note": "The target asks a polite question. The contrast serves a different communicative purpose. Both are natural, but they answer different cues. Contrast meaning: “I don't regret that decision.”"
         }
       },
       "lessonMutation": {
         "goal": "Choose the intended meaning, compare it with a nearby natural sentence, then produce the target from precise cues.",
         "subtitle": "8 sentences · context, contrast, build, type",
-        "concept": "Target: “What is his final decision?” Contrast: “The committee selected the final candidate site for this project.” The target asks a polite question. The contrast serves a different communicative purpose. Both are natural, but they answer different cues.",
+        "concept": "Target: “What is his final decision?” Contrast: “I don't regret that decision.” The target asks a polite question. The contrast serves a different communicative purpose. Both are natural, but they answer different cues.",
         "sentenceIds": [
           "s0757",
-          "s1942",
+          "s3117",
           "s0758",
           "s0759",
           "s0760",
@@ -5449,7 +5488,7 @@
             "promptEn": "As for the topic already under discussion, speaking politely to a classmate, ask this complete lesson question: “What is his final decision?” Use the lesson expression meaning “decision”."
           },
           {
-            "sentenceId": "s1942",
+            "sentenceId": "s3117",
             "mode": "build",
             "teachingPhase": "contrast-closure",
             "cueLabel": "Nearby valid contrast"
@@ -5505,6 +5544,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-daily-u3-l8"
@@ -5655,6 +5695,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-actions-u1-l7"
@@ -5805,6 +5846,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-actions-u1-l9"
@@ -5947,6 +5989,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-actions-u1-l8"
@@ -6089,6 +6132,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn1-firstwords-u2-l8"
@@ -6239,6 +6283,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-feelings-u1-l9"
@@ -6389,6 +6434,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-food-u2-l3"
@@ -6539,6 +6585,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-daily-u3-l8"
@@ -6689,6 +6736,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn1-firstwords-u2-l9"
@@ -6830,7 +6878,7 @@
     {
       "schemaVersion": 1,
       "targetSentenceId": "s2032",
-      "contrastSentenceId": "s3170",
+      "contrastSentenceId": "s2703",
       "lessonId": "sn2-feelings-u1-l1",
       "sectionOrder": 2,
       "examReadiness": "typed-candidate",
@@ -6839,20 +6887,21 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
-        "sourceScope": "same-section",
+        "selectionMethod": "manual-semantic-override",
+        "sourceScope": "nearby-section",
         "sourceLessonIds": [
-          "sn2-feelings-u1-l8"
+          "sn4-actions-u3-l6"
         ],
         "sourceSectionOrders": [
-          2
+          4
         ],
-        "score": 216,
-        "englishOverlap": 0,
-        "koreanOverlap": 1,
-        "semanticIdOverlap": 1,
+        "score": 198.25,
+        "englishOverlap": 2,
+        "koreanOverlap": 0,
+        "semanticIdOverlap": 0,
         "sharedTagCount": 0,
-        "meaningfulDimensionCount": 2,
-        "sectionDistance": 0,
+        "meaningfulDimensionCount": 3,
+        "sectionDistance": 2,
         "qualityTier": "strong",
         "selectionReason": "shared lexical or curriculum concept with a meaningful grammar or discourse contrast"
       },
@@ -6866,9 +6915,9 @@
         "heading": "Nearby valid contrast",
         "targetKorean": "처음 뵙겠습니다.",
         "targetMeaning": "Nice to meet you.",
-        "contrastKorean": "그래요? 처음 들었어요.",
-        "contrastMeaning": "Is that so? I'm hearing it for the first time.",
-        "explanation": "The target uses formal polite speech. The contrast asks a polite question. Both are natural, but they answer different cues."
+        "contrastKorean": "오늘 만나서 정말 반가웠어요.",
+        "contrastMeaning": "It was really nice to meet you today.",
+        "explanation": "The target uses formal polite speech. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
       },
       "controlledProduction": {
         "heading": "Controlled production",
@@ -6886,7 +6935,7 @@
       },
       "variationAwareness": {
         "heading": "Variation awareness",
-        "note": "그래요? 처음 들었어요. is also natural Korean, but here it means “Is that so? I'm hearing it for the first time”. It is not a substitute for the controlled target. The target uses formal polite speech. The contrast asks a polite question. Both are natural, but they answer different cues."
+        "note": "오늘 만나서 정말 반가웠어요. is also natural Korean, but here it means “It was really nice to meet you today”. It is not a substitute for the controlled target. The target uses formal polite speech. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
       },
       "freePractice": {
         "heading": "Free practice",
@@ -6905,18 +6954,18 @@
           "phase": "Meaning in context",
           "note": "Target meaning: “Nice to meet you.” using formal polite speech; keep the lesson's present or general-time meaning; keep the same information focus as the target line."
         },
-        "s3170": {
+        "s2703": {
           "phase": "Nearby valid contrast",
-          "note": "The target uses formal polite speech. The contrast asks a polite question. Both are natural, but they answer different cues. Contrast meaning: “Is that so? I'm hearing it for the first time.”"
+          "note": "The target uses formal polite speech. The contrast serves a different communicative purpose. Both are natural, but they answer different cues. Contrast meaning: “It was really nice to meet you today.”"
         }
       },
       "lessonMutation": {
         "goal": "Choose the intended meaning, compare it with a nearby natural sentence, then produce the target from precise cues.",
         "subtitle": "8 sentences · context, contrast, build, type",
-        "concept": "Target: “Nice to meet you.” Contrast: “Is that so? I'm hearing it for the first time.” The target uses formal polite speech. The contrast asks a polite question. Both are natural, but they answer different cues.",
+        "concept": "Target: “Nice to meet you.” Contrast: “It was really nice to meet you today.” The target uses formal polite speech. The contrast serves a different communicative purpose. Both are natural, but they answer different cues.",
         "sentenceIds": [
           "s2032",
-          "s3170",
+          "s2703",
           "s0769",
           "s0770",
           "s0881",
@@ -6933,7 +6982,7 @@
             "promptEn": "At a formal first meeting, use the respectful lesson expression meaning “Nice to meet you”. Use 뵙다."
           },
           {
-            "sentenceId": "s3170",
+            "sentenceId": "s2703",
             "mode": "build",
             "teachingPhase": "contrast-closure",
             "cueLabel": "Nearby valid contrast"
@@ -6989,6 +7038,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-food-u2-l2"
@@ -7139,6 +7189,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l8"
@@ -7289,6 +7340,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-feelings-u1-l3"
@@ -7439,6 +7491,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-feelings-u1-l11"
@@ -7589,6 +7642,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-food-u1-l6"
@@ -7739,6 +7793,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-food-u1-l2"
@@ -7889,6 +7944,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-food-u1-l10"
@@ -8039,6 +8095,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-daily-u1-l2"
@@ -8189,6 +8246,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-feelings-u1-l5"
@@ -8339,6 +8397,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-food-u1-l6"
@@ -8489,6 +8548,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l16"
@@ -8631,6 +8691,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn1-firstwords-u1-l13"
@@ -8773,6 +8834,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-nature-u1-l8"
@@ -8923,6 +8985,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-nature-u1-l6"
@@ -9073,6 +9136,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-nature-u1-l9"
@@ -9223,6 +9287,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-feelings-u2-l5"
@@ -9373,6 +9438,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn2-nature-u1-l5"
@@ -9515,6 +9581,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-nature-u1-l12"
@@ -9665,6 +9732,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-people-u1-l4"
@@ -9815,6 +9883,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-people-u1-l8"
@@ -9965,6 +10034,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-people-u1-l4"
@@ -10115,6 +10185,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-people-u1-l6"
@@ -10265,6 +10336,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-people-u1-l4"
@@ -10415,6 +10487,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-people-u1-l10"
@@ -10565,6 +10638,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-people-u1-l6"
@@ -10715,6 +10789,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-people-u1-l1"
@@ -10865,6 +10940,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-shopping-u1-l12"
@@ -11015,6 +11091,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-shopping-u2-l2"
@@ -11165,6 +11242,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-shopping-u1-l6"
@@ -11315,6 +11393,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-actions-u2-l1"
@@ -11465,6 +11544,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-study-u1-l2"
@@ -11615,6 +11695,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-study-u2-l5"
@@ -11756,7 +11837,7 @@
     {
       "schemaVersion": 1,
       "targetSentenceId": "s0990",
-      "contrastSentenceId": "s0667",
+      "contrastSentenceId": "s3173",
       "lessonId": "sn2-study-u1-l4",
       "sectionOrder": 2,
       "examReadiness": "typed-candidate",
@@ -11765,18 +11846,19 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "manual-semantic-override",
         "sourceScope": "same-section",
         "sourceLessonIds": [
-          "sn2-travel-u1-l3"
+          "sn2-feelings-u1-l8"
         ],
         "sourceSectionOrders": [
           2
         ],
-        "score": 228.5,
+        "score": 219.5,
         "englishOverlap": 1,
         "koreanOverlap": 1,
         "semanticIdOverlap": 0,
-        "sharedTagCount": 2,
+        "sharedTagCount": 1,
         "meaningfulDimensionCount": 1,
         "sectionDistance": 0,
         "qualityTier": "strong",
@@ -11792,9 +11874,9 @@
         "heading": "Nearby valid contrast",
         "targetKorean": "세계 신기록을 세운 선수가 자랑스러워요.",
         "targetMeaning": "I am proud of the player who set a new world record.",
-        "contrastKorean": "한국 문화가 세계에 알려져요.",
-        "contrastMeaning": "Korean culture is known to the world.",
-        "explanation": "The target presents the subject or the information in focus, marks what the action affects. The contrast presents the subject or the information in focus, marks a destination, time, or static location. Both are natural, but they answer different cues."
+        "contrastKorean": "대단해요, 정말 자랑스러워요.",
+        "contrastMeaning": "Amazing, I'm really proud.",
+        "explanation": "The target presents the subject or the information in focus, marks what the action affects. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
       },
       "controlledProduction": {
         "heading": "Controlled production",
@@ -11812,7 +11894,7 @@
       },
       "variationAwareness": {
         "heading": "Variation awareness",
-        "note": "한국 문화가 세계에 알려져요. is also natural Korean, but here it means “Korean culture is known to the world”. It is not a substitute for the controlled target. The target presents the subject or the information in focus, marks what the action affects. The contrast presents the subject or the information in focus, marks a destination, time, or static location. Both are natural, but they answer different cues."
+        "note": "대단해요, 정말 자랑스러워요. is also natural Korean, but here it means “Amazing, I'm really proud”. It is not a substitute for the controlled target. The target presents the subject or the information in focus, marks what the action affects. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
       },
       "freePractice": {
         "heading": "Free practice",
@@ -11831,18 +11913,18 @@
           "phase": "Meaning in context",
           "note": "Target meaning: “I am proud of the player who set a new world record.” using everyday polite speech; keep the lesson's present or general-time meaning; keep the subject or focus framing."
         },
-        "s0667": {
+        "s3173": {
           "phase": "Nearby valid contrast",
-          "note": "The target presents the subject or the information in focus, marks what the action affects. The contrast presents the subject or the information in focus, marks a destination, time, or static location. Both are natural, but they answer different cues. Contrast meaning: “Korean culture is known to the world.”"
+          "note": "The target presents the subject or the information in focus, marks what the action affects. The contrast serves a different communicative purpose. Both are natural, but they answer different cues. Contrast meaning: “Amazing, I'm really proud.”"
         }
       },
       "lessonMutation": {
         "goal": "Choose the intended meaning, compare it with a nearby natural sentence, then produce the target from precise cues.",
         "subtitle": "8 sentences · context, contrast, build, type",
-        "concept": "Target: “I am proud of the player who set a new world record.” Contrast: “Korean culture is known to the world.” The target presents the subject or the information in focus, marks what the action affects. The contrast presents the subject or the information in focus, marks a destination, time, or static location. Both are natural, but they answer different cues.",
+        "concept": "Target: “I am proud of the player who set a new world record.” Contrast: “Amazing, I'm really proud.” The target presents the subject or the information in focus, marks what the action affects. The contrast serves a different communicative purpose. Both are natural, but they answer different cues.",
         "sentenceIds": [
           "s0990",
-          "s0667",
+          "s3173",
           "s0749",
           "s0750",
           "s0954",
@@ -11859,7 +11941,7 @@
             "promptEn": "Answering what or who is at issue, speaking politely to a classmate, express this complete lesson sentence: “I am proud of the player who set a new world record.” Use the lesson expression meaning “record / document”."
           },
           {
-            "sentenceId": "s0667",
+            "sentenceId": "s3173",
             "mode": "build",
             "teachingPhase": "contrast-closure",
             "cueLabel": "Nearby valid contrast"
@@ -11915,6 +11997,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-actions-u2-l1"
@@ -12065,6 +12148,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-tech-u1-l5"
@@ -12215,6 +12299,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l2"
@@ -12365,6 +12450,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-actions-u1-l9"
@@ -12515,6 +12601,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-study-u2-l5"
@@ -12657,6 +12744,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l4"
@@ -12807,6 +12895,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l8"
@@ -12957,6 +13046,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-study-u3-l4"
@@ -13107,6 +13197,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn2-travel-u1-l5"
@@ -13249,6 +13340,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-study-u1-l5"
@@ -13399,6 +13491,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-nature-u2-l12"
@@ -13549,6 +13642,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-daily-u2-l4"
@@ -13699,6 +13793,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-nature-u2-l4"
@@ -13849,6 +13944,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-work-u2-l6"
@@ -13999,6 +14095,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-daily-u2-l2"
@@ -14149,6 +14246,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-grammar-u2-l1"
@@ -14299,6 +14397,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-feelings-u2-l7"
@@ -14449,6 +14548,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn5-health-u2-l7"
@@ -14599,6 +14699,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn3-grammar-u2-l1"
@@ -14741,6 +14842,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-tech-u1-l9"
@@ -14891,6 +14993,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-actions-u3-l7"
@@ -15033,6 +15136,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-health-u1-l6"
@@ -15174,7 +15278,7 @@
     {
       "schemaVersion": 1,
       "targetSentenceId": "s0391",
-      "contrastSentenceId": "s3422",
+      "contrastSentenceId": "s3025",
       "lessonId": "sn3-health-u1-l2",
       "sectionOrder": 3,
       "examReadiness": "typed-candidate",
@@ -15183,20 +15287,21 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
-        "sourceScope": "same-section",
+        "selectionMethod": "manual-semantic-override",
+        "sourceScope": "nearby-section",
         "sourceLessonIds": [
-          "sn3-nature-u2-l7"
+          "sn5-daily-u4-l9"
         ],
         "sourceSectionOrders": [
-          3
+          5
         ],
-        "score": 127.75,
+        "score": 121.25,
         "englishOverlap": 1,
         "koreanOverlap": 0,
         "semanticIdOverlap": 0,
-        "sharedTagCount": 1,
-        "meaningfulDimensionCount": 4,
-        "sectionDistance": 0,
+        "sharedTagCount": 2,
+        "meaningfulDimensionCount": 1,
+        "sectionDistance": 2,
         "qualityTier": "usable",
         "selectionReason": "closest same-section meaning and grammar frame available"
       },
@@ -15210,9 +15315,9 @@
         "heading": "Nearby valid contrast",
         "targetKorean": "입을 크게 벌리세요.",
         "targetMeaning": "Open your mouth wide.",
-        "contrastKorean": "고양이가 창문을 자꾸 열어요.",
-        "contrastMeaning": "The cat keeps opening the window.",
-        "explanation": "The target makes a polite request or instruction. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
+        "contrastKorean": "창문 좀 열어 주시겠어요?",
+        "contrastMeaning": "Would you open the window?",
+        "explanation": "The target makes a polite request or instruction. The contrast asks a polite question. Both are natural, but they answer different cues."
       },
       "controlledProduction": {
         "heading": "Controlled production",
@@ -15230,7 +15335,7 @@
       },
       "variationAwareness": {
         "heading": "Variation awareness",
-        "note": "고양이가 창문을 자꾸 열어요. is also natural Korean, but here it means “The cat keeps opening the window”. It is not a substitute for the controlled target. The target makes a polite request or instruction. The contrast serves a different communicative purpose. Both are natural, but they answer different cues."
+        "note": "창문 좀 열어 주시겠어요? is also natural Korean, but here it means “Would you open the window”. It is not a substitute for the controlled target. The target makes a polite request or instruction. The contrast asks a polite question. Both are natural, but they answer different cues."
       },
       "freePractice": {
         "heading": "Free practice",
@@ -15249,18 +15354,18 @@
           "phase": "Meaning in context",
           "note": "Target meaning: “Open your mouth wide.” using everyday polite speech; keep the lesson's present or general-time meaning; keep the affected object explicit."
         },
-        "s3422": {
+        "s3025": {
           "phase": "Nearby valid contrast",
-          "note": "The target makes a polite request or instruction. The contrast serves a different communicative purpose. Both are natural, but they answer different cues. Contrast meaning: “The cat keeps opening the window.”"
+          "note": "The target makes a polite request or instruction. The contrast asks a polite question. Both are natural, but they answer different cues. Contrast meaning: “Would you open the window?”"
         }
       },
       "lessonMutation": {
         "goal": "Choose the intended meaning, compare it with a nearby natural sentence, then produce the target from precise cues.",
         "subtitle": "8 sentences · context, contrast, build, type",
-        "concept": "Target: “Open your mouth wide.” Contrast: “The cat keeps opening the window.” The target makes a polite request or instruction. The contrast serves a different communicative purpose. Both are natural, but they answer different cues.",
+        "concept": "Target: “Open your mouth wide.” Contrast: “Would you open the window?” The target makes a polite request or instruction. The contrast asks a polite question. Both are natural, but they answer different cues.",
         "sentenceIds": [
           "s0391",
-          "s3422",
+          "s3025",
           "s0244",
           "s0248",
           "s0251",
@@ -15277,7 +15382,7 @@
             "promptEn": "Speaking respectfully in a senior social context, make this complete lesson request: “Open your mouth wide.” Use the lesson expression meaning “mouth”."
           },
           {
-            "sentenceId": "s3422",
+            "sentenceId": "s3025",
             "mode": "build",
             "teachingPhase": "contrast-closure",
             "cueLabel": "Nearby valid contrast"
@@ -15333,6 +15438,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-health-u1-l10"
@@ -15483,6 +15589,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-health-u1-l6"
@@ -15633,6 +15740,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-health-u1-l7"
@@ -15783,6 +15891,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l3"
@@ -15933,6 +16042,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l5"
@@ -16083,6 +16193,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l9"
@@ -16233,6 +16344,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l5"
@@ -16383,6 +16495,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-food-u1-l10"
@@ -16533,6 +16646,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l8"
@@ -16683,6 +16797,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-health-u1-l7"
@@ -16833,6 +16948,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l1"
@@ -16983,6 +17099,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l3"
@@ -17133,6 +17250,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l7"
@@ -17275,6 +17393,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l13"
@@ -17425,6 +17544,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-nature-u2-l11"
@@ -17575,6 +17695,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-daily-u2-l6"
@@ -17725,6 +17846,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-daily-u1-l6"
@@ -17867,6 +17989,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn3-nature-u2-l13"
@@ -18001,6 +18124,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l17"
@@ -18143,6 +18267,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-nature-u2-l7"
@@ -18293,6 +18418,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-nature-u2-l13"
@@ -18443,6 +18569,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-nature-u3-l3"
@@ -18593,6 +18720,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-people-u1-l7"
@@ -18743,6 +18871,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-nature-u2-l14"
@@ -18893,6 +19022,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-nature-u2-l3"
@@ -19043,6 +19173,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-study-u2-l2"
@@ -19193,6 +19324,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-daily-u2-l3"
@@ -19335,6 +19467,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-feelings-u3-l6"
@@ -19468,7 +19601,7 @@
     {
       "schemaVersion": 1,
       "targetSentenceId": "s0043",
-      "contrastSentenceId": "s0251",
+      "contrastSentenceId": "s2047",
       "lessonId": "sn3-travel-u2-l1",
       "sectionOrder": 3,
       "examReadiness": "typed-candidate",
@@ -19477,22 +19610,23 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
-        "sourceScope": "same-section",
+        "selectionMethod": "manual-semantic-override",
+        "sourceScope": "nearby-section",
         "sourceLessonIds": [
-          "sn3-health-u1-l2"
+          "sn1-firstwords-u2-l3"
         ],
         "sourceSectionOrders": [
-          3
+          1
         ],
-        "score": 109.75,
+        "score": -160.5,
         "englishOverlap": 0,
-        "koreanOverlap": 1,
+        "koreanOverlap": 0,
         "semanticIdOverlap": 0,
-        "sharedTagCount": 2,
-        "meaningfulDimensionCount": 1,
-        "sectionDistance": 0,
-        "qualityTier": "usable",
-        "selectionReason": "closest same-section meaning and grammar frame available"
+        "sharedTagCount": 0,
+        "meaningfulDimensionCount": 4,
+        "sectionDistance": 2,
+        "qualityTier": "weak",
+        "selectionReason": "best same-section fallback; independent linguistic review required"
       },
       "meaningInContext": {
         "heading": "Meaning in context",
@@ -19504,9 +19638,9 @@
         "heading": "Nearby valid contrast",
         "targetKorean": "거기에 있어요.",
         "targetMeaning": "It's there.",
-        "contrastKorean": "열이 있어요.",
-        "contrastMeaning": "I have a fever.",
-        "explanation": "The target marks a destination, time, or static location. The contrast presents the subject or the information in focus. Both are natural, but they answer different cues."
+        "contrastKorean": "저쪽이에요.",
+        "contrastMeaning": "It's over there.",
+        "explanation": "The target serves a different communicative purpose. The contrast identifies or describes something with the polite copula. Both are natural, but they answer different cues."
       },
       "controlledProduction": {
         "heading": "Controlled production",
@@ -19524,7 +19658,7 @@
       },
       "variationAwareness": {
         "heading": "Variation awareness",
-        "note": "열이 있어요. is also natural Korean, but here it means “I have a fever”. It is not a substitute for the controlled target. The target marks a destination, time, or static location. The contrast presents the subject or the information in focus. Both are natural, but they answer different cues."
+        "note": "저쪽이에요. is also natural Korean, but here it means “It's over there”. It is not a substitute for the controlled target. The target serves a different communicative purpose. The contrast identifies or describes something with the polite copula. Both are natural, but they answer different cues."
       },
       "freePractice": {
         "heading": "Free practice",
@@ -19543,18 +19677,18 @@
           "phase": "Meaning in context",
           "note": "Target meaning: “It's there.” using everyday polite speech; keep the lesson's present or general-time meaning; keep the destination, time, or static location explicit."
         },
-        "s0251": {
+        "s2047": {
           "phase": "Nearby valid contrast",
-          "note": "The target marks a destination, time, or static location. The contrast presents the subject or the information in focus. Both are natural, but they answer different cues. Contrast meaning: “I have a fever.”"
+          "note": "The target serves a different communicative purpose. The contrast identifies or describes something with the polite copula. Both are natural, but they answer different cues. Contrast meaning: “It's over there.”"
         }
       },
       "lessonMutation": {
         "goal": "Choose the intended meaning, compare it with a nearby natural sentence, then produce the target from precise cues.",
         "subtitle": "8 sentences · context, contrast, build, type",
-        "concept": "Target: “It's there.” Contrast: “I have a fever.” The target marks a destination, time, or static location. The contrast presents the subject or the information in focus. Both are natural, but they answer different cues.",
+        "concept": "Target: “It's there.” Contrast: “It's over there.” The target serves a different communicative purpose. The contrast identifies or describes something with the polite copula. Both are natural, but they answer different cues.",
         "sentenceIds": [
           "s0043",
-          "s0251",
+          "s2047",
           "s0191",
           "s0207",
           "s0212",
@@ -19571,7 +19705,7 @@
             "promptEn": "Speaking politely to a classmate, express this complete lesson sentence: “It's there.” Use the lesson expression meaning “there”."
           },
           {
-            "sentenceId": "s0251",
+            "sentenceId": "s2047",
             "mode": "listen",
             "teachingPhase": "contrast-closure",
             "cueLabel": "Nearby valid contrast"
@@ -19627,6 +19761,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l5"
@@ -19777,6 +19912,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-travel-u3-l9"
@@ -19927,6 +20063,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn3-travel-u2-l4"
@@ -20069,6 +20206,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn3-travel-u2-l6"
@@ -20211,6 +20349,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-study-u3-l7"
@@ -20361,6 +20500,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l3"
@@ -20511,6 +20651,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-work-u1-l2"
@@ -20661,6 +20802,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-travel-u2-l3"
@@ -20811,6 +20953,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-work-u2-l2"
@@ -20961,6 +21104,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-work-u2-l8"
@@ -21111,6 +21255,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn4-study-u3-l1"
@@ -21261,6 +21406,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn3-study-u2-l7"
@@ -21403,6 +21549,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-daily-u2-l1"
@@ -21553,6 +21700,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-feelings-u3-l2"
@@ -21703,6 +21851,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-actions-u3-l8"
@@ -21853,6 +22002,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-hobbies-u1-l4"
@@ -22003,6 +22153,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-actions-u3-l2"
@@ -22153,6 +22304,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-actions-u3-l3"
@@ -22295,6 +22447,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-daily-u3-l2"
@@ -22445,6 +22598,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-daily-u3-l6"
@@ -22587,6 +22741,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-actions-u3-l3"
@@ -22729,6 +22884,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-daily-u3-l9"
@@ -22879,6 +23035,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-daily-u3-l2"
@@ -23029,6 +23186,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn4-daily-u3-l4"
@@ -23171,6 +23329,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-daily-u3-l1"
@@ -23321,6 +23480,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l9"
@@ -23471,6 +23631,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn3-nature-u2-l15"
@@ -23621,6 +23782,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-travel-u1-l3"
@@ -23771,6 +23933,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn5-food-u3-l4"
@@ -23921,6 +24084,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-food-u2-l5"
@@ -24071,6 +24235,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-daily-u1-l4"
@@ -24221,6 +24386,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn6-tech-u2-l7"
@@ -24371,6 +24537,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-nature-u3-l3"
@@ -24521,6 +24688,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn5-feelings-u4-l1"
@@ -24671,6 +24839,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-nature-u3-l7"
@@ -24821,6 +24990,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-nature-u3-l3"
@@ -24971,6 +25141,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-nature-u3-l4"
@@ -25121,6 +25292,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-feelings-u3-l1"
@@ -25271,6 +25443,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-shopping-u2-l5"
@@ -25421,6 +25594,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn4-shopping-u2-l2"
@@ -25563,6 +25737,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-shopping-u2-l5"
@@ -25713,6 +25888,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn4-shopping-u2-l4"
@@ -25855,6 +26031,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-shopping-u2-l1"
@@ -26005,6 +26182,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-shopping-u1-l3"
@@ -26146,7 +26324,7 @@
     {
       "schemaVersion": 1,
       "targetSentenceId": "s0411",
-      "contrastSentenceId": "s3915",
+      "contrastSentenceId": "s0412",
       "lessonId": "sn4-shopping-u3-l2",
       "sectionOrder": 4,
       "examReadiness": "typed-candidate",
@@ -26155,19 +26333,20 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
-        "sourceScope": "same-section",
+        "selectionMethod": "manual-semantic-override",
+        "sourceScope": "same-lesson",
         "sourceLessonIds": [
-          "sn4-travel-u3-l4"
+          "sn4-shopping-u3-l2"
         ],
         "sourceSectionOrders": [
           4
         ],
-        "score": 160.75,
+        "score": 156.75,
         "englishOverlap": 1,
         "koreanOverlap": 0,
         "semanticIdOverlap": 0,
-        "sharedTagCount": 2,
-        "meaningfulDimensionCount": 1,
+        "sharedTagCount": 3,
+        "meaningfulDimensionCount": 0,
         "sectionDistance": 0,
         "qualityTier": "usable",
         "selectionReason": "closest same-section meaning and grammar frame available"
@@ -26182,9 +26361,9 @@
         "heading": "Nearby valid contrast",
         "targetKorean": "목도리를 목에 둘러요.",
         "targetMeaning": "I wrap a scarf around my neck.",
-        "contrastKorean": "오늘부터 물병을 가지고 다녀요.",
-        "contrastMeaning": "From today, I carry a water bottle around.",
-        "explanation": "The target marks what the action affects, marks a destination, time, or static location. The contrast marks what the action affects, marks the starting point. Both are natural, but they answer different cues."
+        "contrastKorean": "넥타이를 목에 매요.",
+        "contrastMeaning": "I tie a necktie on my neck.",
+        "explanation": "Both sentences are natural in this lesson, but the target means “I wrap a scarf around my neck.” while the contrast means “I tie a necktie on my neck.”. Use each only for its own communicative goal."
       },
       "controlledProduction": {
         "heading": "Controlled production",
@@ -26202,12 +26381,11 @@
       },
       "variationAwareness": {
         "heading": "Variation awareness",
-        "note": "오늘부터 물병을 가지고 다녀요. is also natural Korean, but here it means “From today, I carry a water bottle around”. It is not a substitute for the controlled target. The target marks what the action affects, marks a destination, time, or static location. The contrast marks what the action affects, marks the starting point. Both are natural, but they answer different cues."
+        "note": "넥타이를 목에 매요. is also natural Korean, but here it means “I tie a necktie on my neck”. It is not a substitute for the controlled target. Both sentences are natural in this lesson, but the target means “I wrap a scarf around my neck.” while the contrast means “I tie a necktie on my neck.”. Use each only for its own communicative goal."
       },
       "freePractice": {
         "heading": "Free practice",
         "sentenceIds": [
-          "s0412",
           "s0720",
           "s0721",
           "s0806",
@@ -26221,18 +26399,17 @@
           "phase": "Meaning in context",
           "note": "Target meaning: “I wrap a scarf around my neck.” using everyday polite speech; keep the lesson's present or general-time meaning; keep the affected object explicit."
         },
-        "s3915": {
+        "s0412": {
           "phase": "Nearby valid contrast",
-          "note": "The target marks what the action affects, marks a destination, time, or static location. The contrast marks what the action affects, marks the starting point. Both are natural, but they answer different cues. Contrast meaning: “From today, I carry a water bottle around.”"
+          "note": "Both sentences are natural in this lesson, but the target means “I wrap a scarf around my neck.” while the contrast means “I tie a necktie on my neck.”. Use each only for its own communicative goal. Contrast meaning: “I tie a necktie on my neck.”"
         }
       },
       "lessonMutation": {
         "goal": "Choose the intended meaning, compare it with a nearby natural sentence, then produce the target from precise cues.",
-        "subtitle": "8 sentences · context, contrast, build, type",
-        "concept": "Target: “I wrap a scarf around my neck.” Contrast: “From today, I carry a water bottle around.” The target marks what the action affects, marks a destination, time, or static location. The contrast marks what the action affects, marks the starting point. Both are natural, but they answer different cues.",
+        "subtitle": "7 sentences · context, contrast, build, type",
+        "concept": "Target: “I wrap a scarf around my neck.” Contrast: “I tie a necktie on my neck.” Both sentences are natural in this lesson, but the target means “I wrap a scarf around my neck.” while the contrast means “I tie a necktie on my neck.”. Use each only for its own communicative goal.",
         "sentenceIds": [
           "s0411",
-          "s3915",
           "s0412",
           "s0720",
           "s0721",
@@ -26249,16 +26426,10 @@
             "promptEn": "Speaking politely to a classmate, express this complete lesson sentence: “I wrap a scarf around my neck.” Use the lesson expression meaning “scarf / muffler”."
           },
           {
-            "sentenceId": "s3915",
+            "sentenceId": "s0412",
             "mode": "build",
             "teachingPhase": "contrast-closure",
             "cueLabel": "Nearby valid contrast"
-          },
-          {
-            "sentenceId": "s0412",
-            "mode": "translate",
-            "teachingPhase": "free-practice",
-            "cueLabel": "Free practice"
           },
           {
             "sentenceId": "s0720",
@@ -26305,6 +26476,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn4-shopping-u3-l3"
@@ -26447,6 +26619,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-shopping-u3-l7"
@@ -26597,6 +26770,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-shopping-u3-l3"
@@ -26747,6 +26921,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-study-u3-l8"
@@ -26897,6 +27072,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-shopping-u3-l5"
@@ -27047,6 +27223,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-study-u3-l6"
@@ -27197,6 +27374,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-work-u3-l5"
@@ -27347,6 +27525,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-study-u3-l9"
@@ -27497,6 +27676,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-study-u3-l5"
@@ -27647,6 +27827,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-study-u3-l3"
@@ -27797,6 +27978,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn4-study-u3-l7"
@@ -27939,6 +28121,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-travel-u3-l4"
@@ -28089,6 +28272,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-travel-u3-l1"
@@ -28239,6 +28423,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn5-health-u2-l7"
@@ -28389,6 +28574,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn4-travel-u3-l4"
@@ -28531,6 +28717,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn6-actions-u5-l4"
@@ -28673,6 +28860,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-travel-u3-l1"
@@ -28815,6 +29003,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-work-u3-l2"
@@ -28965,6 +29154,7 @@
       "promptReviewRequired": false,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "nearby-section",
         "sourceLessonIds": [
           "sn2-food-u1-l13"
@@ -29107,6 +29297,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-section",
         "sourceLessonIds": [
           "sn4-work-u3-l2"
@@ -29249,6 +29440,7 @@
       "promptReviewRequired": true,
       "contrastReviewRequired": true,
       "contrastSelection": {
+        "selectionMethod": "ranked",
         "sourceScope": "same-lesson",
         "sourceLessonIds": [
           "sn4-work-u3-l4"
