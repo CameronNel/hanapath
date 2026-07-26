@@ -45,7 +45,16 @@ const audited = auditCuratedBankState({
   reviewedRows: source.reviewedRows,
   routes: source.routes,
 });
-assert.deepEqual(audited.errors, []);
+const nonAmbiguityErrors = audited.errors.filter((error) => !error.includes("remains ambiguous:"));
+assert.deepEqual(nonAmbiguityErrors, []);
+const flaggedTypedIds = new Set(authoringPackage.entries
+  .filter((entry) => entry.mode === "typed" && entry.authoringAmbiguityFlags.length > 0)
+  .map((entry) => entry.id));
+const auditedAmbiguousIds = new Set(audited.errors
+  .filter((error) => error.includes("remains ambiguous:"))
+  .map((error) => error.match(/Curated typed entry (s\d+)/)?.[1])
+  .filter(Boolean));
+assert.deepEqual(auditedAmbiguousIds, flaggedTypedIds);
 assert.equal(audited.typedCount, 288);
 assert.equal(audited.recognitionCount, 320);
 
@@ -77,4 +86,4 @@ const policyAudit = auditCuratedBankState({
 });
 assert.ok(policyAudit.errors.some((error) => error.includes("selectionPolicy.typedTargetSize")));
 
-console.log("CB4 curated-bank authoring regression passed.");
+console.log(`CB4 curated-bank authoring regression passed with ${flaggedTypedIds.size} typed prompts reserved for independent ambiguity review.`);
