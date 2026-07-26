@@ -48,12 +48,33 @@ jobs:
             exit "$status"
           fi
 
-      - name: Commit generated authoring evidence
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/generated/sentence_exam_curated_bank_cb4_authoring.json \
-            docs/reviews/sentence_exam_curated_bank_cb4_reviews.json \
+      - name: Upload generated package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cb4-authoring-package
+          path: |
+            docs/generated/sentence_exam_curated_bank_cb4_authoring.json
+            docs/reviews/sentence_exam_curated_bank_cb4_reviews.json
             docs/CORE_APP_STATUS.md
-          git commit -m "CB4: generate curated bank authoring package"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
+      - name: Commit generated authoring evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          {
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/generated/sentence_exam_curated_bank_cb4_authoring.json \
+              docs/reviews/sentence_exam_curated_bank_cb4_reviews.json \
+              docs/CORE_APP_STATUS.md
+            git status --short
+            git commit -m "CB4: generate curated bank authoring package"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          } > .cb4-push.log 2>&1
+          status=$?
+          cat .cb4-push.log
+          if [ "$status" -ne 0 ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --body-file .cb4-push.log
+            exit "$status"
+          fi
