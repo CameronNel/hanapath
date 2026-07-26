@@ -67,16 +67,8 @@ jobs:
         run: node scripts/test-sentence-exam-grader.mjs
       - name: Sentence exam candidate-ranking regression
         run: node scripts/test-sentence-exam-candidate-ranking.mjs
-      - name: Generate CB1 inventory and shortlist
-        run: node scripts/build-sentence-exam-inventory.mjs --write
-      - name: Upload CB1 generated files
-        uses: actions/upload-artifact@v4
-        with:
-          name: cb1-sentence-exam-inventory
-          path: |
-            docs/generated/sentence_exam_inventory.json
-            docs/generated/sentence_exam_shortlist.json
-          if-no-files-found: error
+      - name: Check CB1 inventory and shortlist freshness
+        run: node scripts/build-sentence-exam-inventory.mjs --check
 
       # Alphabet / recognition / handwriting / shell gate.
       - name: Audit alphabet audio coverage
