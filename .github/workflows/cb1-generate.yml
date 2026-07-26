@@ -14,15 +14,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate:
     name: Generate CB1 inventory
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -44,3 +47,17 @@ jobs:
             docs/generated/sentence_exam_inventory.json
             docs/generated/sentence_exam_shortlist.json
           if-no-files-found: error
+      - name: Commit generated files to PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/generated/sentence_exam_inventory.json docs/generated/sentence_exam_shortlist.json
+          if git diff --cached --quiet; then
+            echo "Generated files already current."
+            exit 0
+          fi
+          git commit -m "CB1: check in generated inventory and shortlist"
+          git push origin "HEAD:${HEAD_BRANCH}"
