@@ -34,12 +34,28 @@ def extract_commands(path: str):
     return commands
 
 
+def normalize_authoring_command(command: str) -> str:
+    start = command.find('ci = replace_once(')
+    end_marker = 'write(".github/workflows/ci.yml", ci)'
+    end = command.find(end_marker, start)
+    if start < 0 or end < 0:
+        raise RuntimeError('Could not locate CI replacement block in packet authoring command')
+    robust = '''marker = "      - name: Sentence lesson contrast browser fixtures\\n        run: node scripts/test-sentence-lesson-contrasts-browser.mjs"
+replacement = marker + "\\n      - name: Check CB3 lesson contrast freshness\\n        run: node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --check\\n      - name: Audit CB3 lesson contrast coverage and safety\\n        run: node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs\\n      - name: Sentence lesson contrast browser fixtures sections 5-8\\n        run: node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs"
+if replacement not in ci:
+    if marker not in ci:
+        raise SystemExit("Missing CI CB2 browser marker")
+    ci = ci.replace(marker, replacement, 1)
+'''
+    return command[:start] + robust + command[end:]
+
+
 def main() -> None:
     multiline = extract_commands('.github/workflows/cb3-build-packet.yml')
     if len(multiline) != 3:
         raise RuntimeError(f'Expected 3 multiline packet commands, found {len(multiline)}')
     commands = [
-        multiline[0],
+        ('python', normalize_authoring_command(multiline[0][1])),
         ('bash', 'node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --write'),
         multiline[1],
         multiline[2],
