@@ -1,0 +1,53 @@
+name: CB1 Roadmap Sync
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/cb1-roadmap-sync.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Synchronize roadmap after CB1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Update sole roadmap
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path("docs/CORE_APP_COMPLETION_ROADMAP.md")
+          text = path.read_text(encoding="utf-8")
+          replacements = {
+              "- CB0 is merged. It provides a disabled curated-bank contract, strict grader, prompt templates,\n  deterministic inventory tooling, ambiguity screening, audits, tests, and the implementation plan.\n": "- CB0 is merged. It provides a disabled curated-bank contract, strict grader, prompt templates,\n  deterministic inventory tooling, ambiguity screening, audits, tests, and the implementation plan.\n- CB1 is merged. It provides a deterministic 4,177-row inventory plus 400 typed candidates from\n  400 distinct lessons and 456 disjoint recognition candidates.\n",
+              "| CB1 | Inventory and candidate shortlist | READY | CB0 | Ranked candidates and generated inventory |": "| CB1 | Inventory and candidate shortlist | COMPLETE (#360) | CB0 | Ranked candidates and generated inventory |",
+              "| CB2 | Lesson contrast restructuring, sections 1-4 | BLOCKED | CB1 | Taught contrasts and controlled prompts |": "| CB2 | Lesson contrast restructuring, sections 1-4 | READY | CB1 | Taught contrasts and controlled prompts |",
+              "The next READY packets are **CB1**, **L1**, and **L3**.": "The next READY packets are **CB2**, **L1**, and **L3**.",
+              "D0, C1, E0, E1A, E1B, and CB0 are complete. Do not recreate or rerun them as new packets.": "D0, C1, E0, E1A, E1B, CB0, and CB1 are complete. Do not recreate or rerun them as new packets.",
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f"Missing expected roadmap text: {old!r}")
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding="utf-8")
+      - name: Commit synchronized roadmap
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/CORE_APP_COMPLETION_ROADMAP.md
+          if git diff --cached --quiet; then
+            echo "Roadmap already synchronized."
+            exit 0
+          fi
+          git commit -m "docs: mark CB1 complete and unlock CB2"
+          git push origin "HEAD:${HEAD_BRANCH}"
