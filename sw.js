@@ -1,5 +1,5 @@
-// [2026-07-26] Cache bumped for CB2 Sentence lesson contrast teaching (shared UI + sections 1-4 data + app prompt support).
-const CACHE_NAME = "hanapath-shell-v450";
+// [2026-07-26] Cache bumped for CB3 Sentence lesson contrast teaching (sections 5-8 data; CB2 behavior retained).
+const CACHE_NAME = "hanapath-shell-v451";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -18,6 +18,7 @@ const APP_SHELL = [
   "./sentences_lesson_plan.js?v=20260717u",
   "./sentence_lesson_contrast_ui.js?v=20260726a",
   "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a",
+    "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b",
   "./sentence_exam_eligibility_shard_a.js?v=20260725a",
   "./sentence_exam_eligibility_shard_b.js?v=20260725a",
   "./sentence_exam_eligibility_shard_c.js?v=20260725a",
@@ -29,7 +30,7 @@ const APP_SHELL = [
   "./word_exam_engine.js?v=20260723a",
   "./exam_integrity.js?v=20260721b",
   "./form_check_blueprints.js?v=20260723a",
-  "./app.js?v=20260726a",
+  "./app.js?v=20260726b",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

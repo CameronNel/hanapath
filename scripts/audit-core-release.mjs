@@ -305,6 +305,9 @@ const GATE_STEPS = [
   { id: "sentence-lesson-contrast-freshness", label: "Sentence lesson contrast data freshness (CB2)", script: "scripts/build-sentence-lesson-contrasts.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
   { id: "sentence-lesson-contrasts", label: "Sentence lesson contrast coverage and safety (CB2)", script: "scripts/audit-sentence-lesson-contrasts.mjs" },
   { id: "sentence-lesson-contrast-browser", label: "Sentence lesson contrast browser fixtures (CB2)", script: "scripts/test-sentence-lesson-contrasts-browser.mjs" },
+    { id: "sentence-lesson-contrast-freshness-cb3", label: "Sentence lesson contrast data freshness (CB3)", script: "scripts/build-sentence-lesson-contrasts-sections-5-8.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
+    { id: "sentence-lesson-contrasts-cb3", label: "Sentence lesson contrast coverage and safety (CB3)", script: "scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs" },
+    { id: "sentence-lesson-contrast-browser-cb3", label: "Sentence lesson contrast browser fixtures sections 5-8 (CB3)", script: "scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs" },
   {
     id: "sentence-exams",
     label: "Sentence Mastery examination seed audit",
