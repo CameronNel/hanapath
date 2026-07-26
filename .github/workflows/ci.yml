@@ -31,7 +31,7 @@ jobs:
       # file must be checked in its own invocation.
       - name: Check syntax
         run: |
-          for f in app.js sw.js exam_integrity.js sentence_exam_eligibility.js sentence_exam_prompt_templates.js sentence_exam_curated_bank.js sentence_exam_grader.js sentence_lesson_contrast_ui.js sentence_lesson_contrasts_sections_1_4.js words_lesson_plan.js; do
+          for f in app.js sw.js exam_integrity.js sentence_exam_eligibility.js sentence_exam_prompt_templates.js sentence_exam_curated_bank.js sentence_exam_grader.js sentence_lesson_contrast_ui.js sentence_lesson_contrasts_sections_1_4.js sentence_lesson_contrasts_sections_5_8.js words_lesson_plan.js; do
             echo "node --check $f"
             node --check "$f"
           done
@@ -79,6 +79,12 @@ jobs:
         run: node scripts/audit-sentence-lesson-contrasts.mjs
       - name: Sentence lesson contrast browser fixtures
         run: node scripts/test-sentence-lesson-contrasts-browser.mjs
+      - name: Check CB3 lesson contrast freshness
+        run: node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --check
+      - name: Audit CB3 lesson contrast coverage and safety
+        run: node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
+      - name: Sentence lesson contrast browser fixtures sections 5-8
+        run: node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs
 
       # Alphabet / recognition / handwriting / shell gate.
       - name: Audit alphabet audio coverage

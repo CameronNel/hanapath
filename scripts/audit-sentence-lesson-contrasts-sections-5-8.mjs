@@ -6,13 +6,21 @@ import vm from "node:vm";
 import { contrastCandidateAssessment } from "./lib/sentence-lesson-contrast-authoring.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SECTION_ORDERS = Object.freeze([1, 2, 3, 4]);
-const EXPECTED_COUNTS = Object.freeze({ 1: 34, 2: 55, 3: 55, 4: 54 });
-const EXPECTED_TOTAL = 198;
-const EXPECTED_MANUAL_OVERRIDES = 7;
-const REVISION = "sentence-lesson-contrasts-cb2-v2";
-const RUNTIME_ASSET = "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a";
+const SECTION_ORDERS = Object.freeze([5, 6, 7, 8]);
+const EXPECTED_COUNTS = Object.freeze({ 5: 52, 6: 54, 7: 43, 8: 53 });
+const EXPECTED_TOTAL = 202;
+const EXPECTED_MANUAL_OVERRIDES = 0;
+const REVISION = "sentence-lesson-contrasts-cb3-v1";
+const RUNTIME_ASSET = "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b";
 const UI_ASSET = "./sentence_lesson_contrast_ui.js?v=20260726a";
+const CB2_RUNTIME_ASSET = "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a";
+const ADVANCED_SCRUTINY_TAGS = Object.freeze([
+  "and-go", "but-jiman", "because-aseo", "if-myeon", "when-ttae",
+  "formal-nida", "honorific-si", "future-geoyeyo",
+  "neg-an", "neg-mot", "neg-ji-anta",
+  "imperative-seyo", "propositive-eyo", "counter-phrase",
+  "topic-neun", "subject-i-ga",
+]);
 
 const errors = [];
 const warnings = [];
@@ -42,9 +50,10 @@ const applied = loadGlobals([
   "sentences_core.js",
   "sentences_lesson_plan.js",
   "sentence_lesson_contrasts_sections_1_4.js",
+  "sentence_lesson_contrasts_sections_5_8.js",
 ]);
 const shortlist = JSON.parse(read("docs/generated/sentence_exam_shortlist.json"));
-const report = JSON.parse(read("docs/generated/sentence_lesson_contrasts_sections_1_4.json"));
+const report = JSON.parse(read("docs/generated/sentence_lesson_contrasts_sections_5_8.json"));
 const baseRows = new Map((base.HANAPATH_SENTENCES || []).map((row) => [row.id, row]));
 const baseLessons = new Map((base.HANAPATH_SENTENCE_LESSONS || []).map((lesson) => [lesson.id, lesson]));
 const appliedLessons = new Map((applied.HANAPATH_SENTENCE_LESSONS || []).map((lesson) => [lesson.id, lesson]));
@@ -69,16 +78,22 @@ if (report.revision !== REVISION) fail(`report revision must be ${REVISION}`);
 if (report.entryCount !== EXPECTED_TOTAL || entries.length !== EXPECTED_TOTAL) {
   fail(`entry count must be ${EXPECTED_TOTAL}; report=${report.entryCount}, entries=${entries.length}`);
 }
-if (report.bankApprovedCount !== 0) fail("CB2 may not approve curated-bank entries");
+if (report.bankApprovedCount !== 0) fail("CB3 may not approve curated-bank entries");
 if (report.strongContrastCount + report.usableContrastCount + report.weakContrastCount !== EXPECTED_TOTAL) {
   fail("contrast quality counts do not sum to the entry total");
 }
 if (report.rankedWeakContrastCount !== 0) fail(`ranked weak contrast count must remain 0; got ${report.rankedWeakContrastCount}`);
 if (report.manualOverrideCount !== EXPECTED_MANUAL_OVERRIDES) fail(`manual override count must be ${EXPECTED_MANUAL_OVERRIDES}; got ${report.manualOverrideCount}`);
+const derivedAdvancedReviewCount = entries.filter((entry) => entry.advancedReviewRequired).length;
+if (report.advancedReviewCount !== derivedAdvancedReviewCount) fail(`advanced review count is stale: ${report.advancedReviewCount} != ${derivedAdvancedReviewCount}`);
+for (const tag of ADVANCED_SCRUTINY_TAGS) {
+  const expectedTagCount = entries.filter((entry) => (entry.advancedScrutinyTags || []).includes(tag)).length;
+  if (report.advancedTagCounts?.[tag] !== expectedTagCount) fail(`advanced tag count is stale for ${tag}`);
+}
 if (report.sameLessonContrastCount + report.sameSectionContrastCount + report.nearbySectionContrastCount !== EXPECTED_TOTAL) {
   fail("contrast source-scope counts do not sum to the entry total");
 }
-if (expectedCandidates.length !== EXPECTED_TOTAL) fail(`shortlist sections 1-4 must contain ${EXPECTED_TOTAL} typed candidates`);
+if (expectedCandidates.length !== EXPECTED_TOTAL) fail(`shortlist sections 5-8 must contain ${EXPECTED_TOTAL} typed candidates`);
 exactSet("target coverage", entries.map((entry) => entry.targetSentenceId), expectedCandidates.map((candidate) => candidate.id));
 exactSet("lesson coverage", entries.map((entry) => entry.lessonId), expectedCandidates.map((candidate) => candidate.lessonIds[0]));
 
@@ -130,6 +145,9 @@ for (const entry of entries) {
   if (entry.examReadiness !== "typed-candidate") fail(`${label}: invalid exam-readiness decision`);
   if (entry.bankApproved !== false) fail(`${label}: bankApproved must remain false`);
   if (entry.contrastReviewRequired !== true) fail(`${label}: heuristic contrast must require independent review`);
+  const expectedAdvancedTags = ADVANCED_SCRUTINY_TAGS.filter((tag) => (target?.patternTags || []).includes(tag));
+  exactSet(`${label}: advanced scrutiny tags`, entry.advancedScrutinyTags || [], expectedAdvancedTags);
+  if (entry.advancedReviewRequired !== (expectedAdvancedTags.length > 0)) fail(`${label}: advanced-review flag is stale`);
   if (!entry.contrastSelection || !["ranked", "manual-semantic-override"].includes(entry.contrastSelection.selectionMethod)) {
     fail(`${label}: invalid contrast selection method`);
   }
@@ -142,7 +160,7 @@ for (const entry of entries) {
   }
   if (Math.abs(Number(entry.contrastSelection?.score) - Number(recomputed.score)) > 1e-9) fail(`${label}: stale contrast score`);
   if (Object.prototype.hasOwnProperty.call(entry, "reviewedBy") || entry.reviewStatus === "approved") {
-    fail(`${label}: CB2 must not invent independent bank approval`);
+    fail(`${label}: CB3 must not invent independent bank approval`);
   }
   const prompt = String(entry.controlledProduction?.promptEn || "").trim();
   if (prompt.length < 20) fail(`${label}: controlled prompt is too short`);
@@ -168,7 +186,7 @@ for (const entry of entries) {
   }
 }
 
-const runtimeContract = applied.HANAPATH_SENTENCE_LESSON_CONTRASTS_1_4;
+const runtimeContract = applied.HANAPATH_SENTENCE_LESSON_CONTRASTS_5_8;
 if (!runtimeContract || runtimeContract.revision !== REVISION || runtimeContract.entries?.length !== EXPECTED_TOTAL) {
   fail("browser runtime contract is missing or incomplete");
 }
@@ -189,28 +207,32 @@ for (const marker of [
 const indexHtml = read("index.html");
 const lessonPlanIndex = indexHtml.indexOf("./sentences_lesson_plan.js");
 const uiIndex = indexHtml.indexOf(UI_ASSET);
+const cb2Index = indexHtml.indexOf(CB2_RUNTIME_ASSET);
 const dataIndex = indexHtml.indexOf(RUNTIME_ASSET);
 const appIndex = indexHtml.indexOf("./app.js");
-if (!(lessonPlanIndex >= 0 && uiIndex > lessonPlanIndex && dataIndex > uiIndex && appIndex > dataIndex)) {
-  fail("index.html must load lesson plan, contrast UI, CB2 data, then app.js in that order");
+if (!(lessonPlanIndex >= 0 && uiIndex > lessonPlanIndex && cb2Index > uiIndex && dataIndex > cb2Index && appIndex > dataIndex)) {
+  fail("index.html must load lesson plan, contrast UI, CB2 data, CB3 data, then app.js in that order");
 }
 
 const swJs = read("sw.js");
 if (!swJs.includes(UI_ASSET)) fail(`sw.js APP_SHELL missing ${UI_ASSET}`);
+if (!swJs.includes(CB2_RUNTIME_ASSET)) fail(`sw.js APP_SHELL missing ${CB2_RUNTIME_ASSET}`);
 if (!swJs.includes(RUNTIME_ASSET)) fail(`sw.js APP_SHELL missing ${RUNTIME_ASSET}`);
 if (!/const CACHE_NAME = "hanapath-shell-v451";/.test(swJs)) fail("sw.js cache must be bumped to hanapath-shell-v451");
 
 if (report.generatedPromptCount > 0) {
   warn(`${report.generatedPromptCount} controlled lesson prompts remain explicitly marked for CB4 review; they are teaching prompts, not approved exam items.`);
 }
-warn(`All ${EXPECTED_TOTAL} heuristic contrast selections require independent linguistic review before CB2 integration.`);
+warn(`All ${EXPECTED_TOTAL} heuristic contrast selections require independent linguistic review before CB3 integration.`);
 
-console.log(`CB2 contrast entries: ${entries.length}`);
+console.log(`CB3 contrast entries: ${entries.length}`);
 console.log(`Section counts: ${SECTION_ORDERS.map((section) => `${section}:${entries.filter((entry) => entry.sectionOrder === section).length}`).join(", ")}`);
 console.log(`Generated teaching prompts awaiting later bank review: ${report.generatedPromptCount}`);
 console.log(`Contrast quality: strong=${report.strongContrastCount}, usable=${report.usableContrastCount}, weak=${report.weakContrastCount}, ranked weak=${report.rankedWeakContrastCount}`);
 console.log(`Contrast sources: same lesson=${report.sameLessonContrastCount}, same section=${report.sameSectionContrastCount}, nearby section=${report.nearbySectionContrastCount}`);
 console.log(`Manual semantic overrides: ${report.manualOverrideCount}`);
+console.log(`Advanced-feature targets requiring extra review: ${report.advancedReviewCount}`);
+console.log(`Advanced tag counts: ${JSON.stringify(report.advancedTagCounts)}`);
 for (const message of warnings) console.warn(`WARN: ${message}`);
 if (errors.length) {
   for (const message of errors) console.error(`ERROR: ${message}`);
