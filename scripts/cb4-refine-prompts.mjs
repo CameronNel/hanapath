@@ -14,16 +14,19 @@ const UNRESOLVABLE = new Set(["productive-clause-family", "particle-or-order-fam
 
 function patchBuilder() {
   let text = readFileSync(BUILDER, "utf8");
+  const oldQuota = "const TYPED_TARGETS_BY_SECTION = Object.freeze({ 1: 34, 2: 36, 3: 36, 4: 36, 5: 36, 6: 36, 7: 36, 8: 38 });";
+  const newQuota = "const TYPED_TARGETS_BY_SECTION = Object.freeze({ 1: 33, 2: 36, 3: 36, 4: 36, 5: 36, 6: 36, 7: 36, 8: 39 });";
+  if (text.includes(oldQuota)) text = text.replace(oldQuota, newQuota);
+  else if (!text.includes(newQuota)) throw new Error("Could not locate CB4 typed section quotas.");
+
   const marker = "  const analysis = detectAmbiguityFlags(row, prompt, { requiresLexicalAnchor });\n";
   const insertion = `${marker}  const unresolvableFlags = analysis.flags.filter((flag) => ["productive-clause-family", "particle-or-order-family", "duplicate-canonical-target"].includes(flag));\n  if (unresolvableFlags.length > 0) return { rejected: \`unresolved-family:${"${unresolvableFlags.join(\",\")}"}\` };\n`;
   if (!text.includes(insertion)) {
     if (!text.includes(marker)) throw new Error("Could not locate ambiguity analysis in CB4 builder.");
     text = text.replace(marker, insertion);
-    writeFileSync(BUILDER, text);
-    console.log("Patched CB4 selector to reject irreducibly ambiguous typed candidates.");
-  } else {
-    console.log("CB4 irreducible-ambiguity rejection already installed.");
   }
+  writeFileSync(BUILDER, text);
+  console.log("Rebalanced the typed pool and rejected irreducibly ambiguous candidates.");
 }
 
 function loadSentences() {
