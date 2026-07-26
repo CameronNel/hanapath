@@ -143,7 +143,6 @@ function typedEntryFromCandidate(candidate, source) {
   const templateId = chooseTypedTemplate(candidate, prompt);
   const requiresLexicalAnchor = templateId === "lexically-anchored-production" || /use the lesson expression|using the word/i.test(prompt);
   const analysis = detectAmbiguityFlags(row, prompt, { requiresLexicalAnchor });
-  if (analysis.flags.length > 0) return { rejected: `ambiguity:${analysis.flags.join(",")}` };
   const routes = source.routes.get(candidate.id) || [];
   if (routes.length === 0) return { rejected: "missing-live-route" };
   return {
@@ -163,6 +162,7 @@ function typedEntryFromCandidate(candidate, source) {
       sourceCandidateClass: contrast.sourceCandidateClass || candidate.existingTypedClass || "canonical",
       lessonContrastRevision: contrast.provenance?.revision || contrast.revision || null,
       promptOrigin: contrast.promptReviewRequired ? "cb2-cb3-generated" : "reviewed-source-reuse",
+      authoringAmbiguityFlags: [...analysis.flags].sort(),
       authoredBy: AUTHORED_BY,
       authoredRevision: REVISION,
       reviewStatus: "pending",
