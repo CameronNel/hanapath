@@ -33,58 +33,13 @@ jobs:
             echo "value=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Execute run blocks from packet recipe
+      - name: Check packet runner syntax
         if: steps.needed.outputs.value == 'true'
-        shell: python
-        run: |
-          from pathlib import Path
-          import subprocess
-          import traceback
+        run: python -m py_compile scripts/cb3-run-packet.py
 
-          def write_failure(message):
-              Path('.cb3-run-error.log').write_text(message, encoding='utf-8')
-
-          try:
-              lines = Path('.github/workflows/cb3-build-packet.yml').read_text(encoding='utf-8').splitlines()
-              commands = []
-              current_shell = 'bash'
-              i = 0
-              while i < len(lines):
-                  stripped = lines[i].strip()
-                  if stripped.startswith('shell:'):
-                      current_shell = stripped.split(':', 1)[1].strip()
-                  if stripped == 'run: |':
-                      indent = len(lines[i]) - len(lines[i].lstrip())
-                      block = []
-                      i += 1
-                      while i < len(lines):
-                          raw = lines[i]
-                          raw_indent = len(raw) - len(raw.lstrip())
-                          if raw.strip() and raw_indent <= indent:
-                              i -= 1
-                              break
-                          block.append(raw[indent + 2:] if len(raw) >= indent + 2 else '')
-                          i += 1
-                      commands.append((current_shell, '\n'.join(block)))
-                      current_shell = 'bash'
-                  i += 1
-
-              if len(commands) != 4:
-                  raise RuntimeError(f'Expected 4 packet run blocks, found {len(commands)}')
-
-              for index, (shell, command) in enumerate(commands, 1):
-                  print(f'Executing packet block {index}/4 via {shell}', flush=True)
-                  argv = ['python', '-c', command] if shell == 'python' else ['bash', '-lc', command]
-                  result = subprocess.run(argv, text=True, capture_output=True)
-                  print(result.stdout, end='')
-                  print(result.stderr, end='')
-                  if result.returncode:
-                      raise RuntimeError(f'Block {index} via {shell} failed with {result.returncode}\n\nSTDOUT\n{result.stdout}\n\nSTDERR\n{result.stderr}')
-          except Exception:
-              detail = traceback.format_exc()
-              print(detail)
-              write_failure(detail)
-              raise
+      - name: Execute packet recipe
+        if: steps.needed.outputs.value == 'true'
+        run: python scripts/cb3-run-packet.py
 
       - name: Upload packet failure details
         if: failure()
