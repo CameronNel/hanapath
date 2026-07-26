@@ -59,17 +59,58 @@ function unique(values) {
   return [...new Set((values || []).filter(Boolean))];
 }
 
+const ENGLISH_STOPWORDS = new Set([
+  "the", "and", "that", "this", "with", "from", "your", "you", "are", "was", "were",
+  "have", "has", "for", "what", "who", "where", "when", "which", "how", "is", "it",
+  "a", "an", "i", "my", "his", "her", "we", "our", "they", "their", "do", "did",
+  "does", "can", "could", "would", "should", "please", "one", "there", "here", "very",
+  "really", "just", "of", "to", "in", "on", "at", "as", "be", "been", "being",
+]);
+
+function englishStem(value) {
+  return String(value || "").replace(/('s|ies|ing|ed|es|s)$/i, (suffix) => suffix === "ies" ? "y" : "");
+}
+
 function words(value) {
   return String(value || "")
     .toLowerCase()
     .replace(/[^a-z0-9'\s-]/g, " ")
     .split(/\s+/)
-    .filter((item) => item.length > 2 && !["the", "and", "that", "this", "with", "from", "your", "you", "are", "was", "were", "have", "has", "for"].includes(item));
+    .map(englishStem)
+    .filter((item) => item.length > 2 && !ENGLISH_STOPWORDS.has(item));
 }
 
-function overlapScore(left, right) {
+function englishOverlapScore(left, right) {
   const a = new Set(words(left));
   const b = new Set(words(right));
+  let score = 0;
+  for (const item of a) if (b.has(item)) score += 1;
+  return score;
+}
+
+function koreanTokens(value) {
+  return String(value || "")
+    .replace(/[.!?,]/g, " ")
+    .split(/\s+/)
+    .map((item) => item.trim().replace(/(은|는|이|가|을|를|에|에서|으로|로|도|만|와|과|하고|의|께서|에게|한테)$/u, ""))
+    .filter((item) => item.length > 1);
+}
+
+function koreanOverlapScore(left, right) {
+  const a = new Set(koreanTokens(left));
+  const b = new Set(koreanTokens(right));
+  let score = 0;
+  for (const item of a) if (b.has(item)) score += 1;
+  return score;
+}
+
+function semanticIds(row) {
+  return new Set([...(row?.focusWordIds || []), ...(row?.sourceWordIds || [])]);
+}
+
+function semanticIdOverlapScore(left, right) {
+  const a = semanticIds(left);
+  const b = semanticIds(right);
   let score = 0;
   for (const item of a) if (b.has(item)) score += 1;
   return score;
@@ -90,32 +131,82 @@ function differenceProfile(targetTags, contrastTags) {
   return profile;
 }
 
-function compareContrastCandidates(target, left, right) {
-  const score = (candidate) => {
-    const targetTags = new Set(target.patternTags || []);
-    const candidateTags = new Set(candidate.patternTags || []);
-    let shared = 0;
-    for (const tag of targetTags) if (candidateTags.has(tag)) shared += 1;
-    const profile = differenceProfile(target.patternTags, candidate.patternTags);
-    const meaningfulDimensions = profile.filter((item) => item.target.length || item.contrast.length).length;
-    let value = shared * 18;
-    if (meaningfulDimensions === 1) value += 30;
-    else if (meaningfulDimensions === 2) value += 18;
-    else if (meaningfulDimensions > 4) value -= (meaningfulDimensions - 4) * 5;
-    value += overlapScore(target.english, candidate.english) * 25;
-    const lengthGap = Math.abs(String(target.korean || "").length - String(candidate.korean || "").length);
-    value -= Math.min(lengthGap, 20) / 4;
-    if (String(target.english || "").trim() === String(candidate.english || "").trim()) value -= 100;
-    if (String(target.korean || "").trim() === String(candidate.korean || "").trim()) value -= 1000;
-    return value;
+function contrastCandidateAssessment(target, candidate, options = {}) {
+  const targetTags = new Set(target.patternTags || []);
+  const candidateTags = new Set(candidate.patternTags || []);
+  let sharedTagCount = 0;
+  for (const tag of targetTags) if (candidateTags.has(tag)) sharedTagCount += 1;
+  const profile = differenceProfile(target.patternTags, candidate.patternTags);
+  const meaningfulDimensions = profile.filter((item) => item.target.length || item.contrast.length).length;
+  const englishOverlap = englishOverlapScore(target.english, candidate.english);
+  const koreanOverlap = koreanOverlapScore(target.korean, candidate.korean);
+  const semanticIdOverlap = semanticIdOverlapScore(target, candidate);
+  const sectionDistance = Math.max(0, Number(options.sectionDistance) || 0);
+  let score = sharedTagCount * 9;
+  if (meaningfulDimensions === 1) score += 24;
+  else if (meaningfulDimensions === 2) score += 14;
+  else if (meaningfulDimensions > 4) score -= (meaningfulDimensions - 4) * 5;
+  score += englishOverlap * 120;
+  score += koreanOverlap * 68;
+  score += semanticIdOverlap * 135;
+  score -= sectionDistance * 20;
+  if (options.sameLesson === true && (englishOverlap > 0 || koreanOverlap > 0 || semanticIdOverlap > 0)) score += 10;
+  const lengthGap = Math.abs(String(target.korean || "").length - String(candidate.korean || "").length);
+  score -= Math.min(lengthGap, 24) / 4;
+  if (englishOverlap === 0 && koreanOverlap === 0 && semanticIdOverlap === 0) score -= 120;
+  if (String(target.english || "").trim() === String(candidate.english || "").trim()) score -= 180;
+  if (String(target.korean || "").trim() === String(candidate.korean || "").trim()) score -= 1000;
+
+  let qualityTier = "weak";
+  if (englishOverlap >= 2 || semanticIdOverlap >= 1 || (englishOverlap >= 1 && koreanOverlap >= 1)) qualityTier = "strong";
+  else if (englishOverlap >= 1 || koreanOverlap >= 1) qualityTier = "usable";
+  return {
+    score,
+    englishOverlap,
+    koreanOverlap,
+    semanticIdOverlap,
+    sharedTagCount,
+    meaningfulDimensionCount: meaningfulDimensions,
+    sectionDistance,
+    qualityTier,
+    reviewRequired: true,
   };
-  return score(right) - score(left) || String(left.id).localeCompare(String(right.id), "en");
 }
 
-function selectContrastRow(target, lessonRows) {
-  const options = (lessonRows || []).filter((row) => row && row.id !== target.id && row.korean !== target.korean);
-  if (!options.length) throw new Error(`No contrast row available for ${target.id}`);
-  return options.sort((a, b) => compareContrastCandidates(target, a, b))[0];
+function selectContrastRow(target, rows, options = {}) {
+  const lessonIdsByRow = options.lessonIdsByRow instanceof Map ? options.lessonIdsByRow : new Map();
+  const targetLessonId = String(options.targetLessonId || "");
+  const sectionOrdersByRow = options.sectionOrdersByRow instanceof Map ? options.sectionOrdersByRow : new Map();
+  const targetSectionOrder = Number(options.targetSectionOrder);
+  const candidates = (rows || [])
+    .filter((row) => row && row.id !== target.id && row.korean !== target.korean)
+    .map((row) => {
+      const sourceLessonIds = [...(lessonIdsByRow.get(row.id) || [])].sort((a, b) => String(a).localeCompare(String(b), "en"));
+      const sameLesson = targetLessonId && sourceLessonIds.includes(targetLessonId);
+      const sourceSectionOrders = [...(sectionOrdersByRow.get(row.id) || [])].filter(Number.isInteger).sort((a, b) => a - b);
+      const sectionDistance = Number.isInteger(targetSectionOrder) && sourceSectionOrders.length
+        ? Math.min(...sourceSectionOrders.map((sectionOrder) => Math.abs(sectionOrder - targetSectionOrder)))
+        : 99;
+      return {
+        row,
+        sourceLessonIds,
+        sourceSectionOrders,
+        sourceScope: sameLesson ? "same-lesson" : sectionDistance === 0 ? "same-section" : "nearby-section",
+        assessment: contrastCandidateAssessment(target, row, { sameLesson, sectionDistance }),
+      };
+    })
+    .sort((left, right) => right.assessment.score - left.assessment.score
+      || String(left.row.id).localeCompare(String(right.row.id), "en"));
+  if (!candidates.length) throw new Error(`No contrast row available for ${target.id}`);
+  const selected = candidates[0];
+  return {
+    ...selected,
+    selectionReason: selected.assessment.qualityTier === "strong"
+      ? "shared lexical or curriculum concept with a meaningful grammar or discourse contrast"
+      : selected.assessment.qualityTier === "usable"
+        ? "closest same-section meaning and grammar frame available"
+        : "best same-section fallback; independent linguistic review required",
+  };
 }
 
 function communicativeAct(tags) {
@@ -191,13 +282,14 @@ function normalizeExistingDrillPlan(lesson) {
     .map((entry) => [entry.sentenceId, { ...entry }]));
 }
 
-function buildLessonContrastEntry({ candidate, target, contrast, lesson, sectionOrder }) {
+function buildLessonContrastEntry({ candidate, target, contrastSelection, lesson, sectionOrder }) {
+  const contrast = contrastSelection.row;
   const promptEn = String(candidate.existingExamPromptEn || "").trim() || generatedPrompt(candidate, lesson.title || lesson.id);
   const explanation = buildContrastExplanation(target, contrast);
   const originalIds = unique(lesson.sentenceIds || []);
   const freePracticeIds = originalIds.filter((id) => id !== target.id && id !== contrast.id);
   const existingPlan = normalizeExistingDrillPlan(lesson);
-  const reorderedIds = [target.id, contrast.id, ...freePracticeIds];
+  const reorderedIds = unique([target.id, contrast.id, ...freePracticeIds]);
   const drillPlan = reorderedIds.map((sentenceId) => {
     if (sentenceId === target.id) {
       return {
@@ -234,6 +326,21 @@ function buildLessonContrastEntry({ candidate, target, contrast, lesson, section
     bankApproved: false,
     sourceCandidateClass: candidate.existingTypedClass || "unreviewed",
     promptReviewRequired: !candidate.existingExamPromptEn,
+    contrastReviewRequired: true,
+    contrastSelection: {
+      sourceScope: contrastSelection.sourceScope,
+      sourceLessonIds: contrastSelection.sourceLessonIds,
+      sourceSectionOrders: contrastSelection.sourceSectionOrders,
+      score: contrastSelection.assessment.score,
+      englishOverlap: contrastSelection.assessment.englishOverlap,
+      koreanOverlap: contrastSelection.assessment.koreanOverlap,
+      semanticIdOverlap: contrastSelection.assessment.semanticIdOverlap,
+      sharedTagCount: contrastSelection.assessment.sharedTagCount,
+      meaningfulDimensionCount: contrastSelection.assessment.meaningfulDimensionCount,
+      sectionDistance: contrastSelection.assessment.sectionDistance,
+      qualityTier: contrastSelection.assessment.qualityTier,
+      selectionReason: contrastSelection.selectionReason,
+    },
     meaningInContext: {
       heading: "Meaning in context",
       context: `Use this line in the “${displayLessonTitle(lesson.title || lesson.id)}” situation.`,
@@ -269,7 +376,7 @@ function buildLessonContrastEntry({ candidate, target, contrast, lesson, section
     freePractice: {
       heading: "Free practice",
       sentenceIds: freePracticeIds,
-      note: "Use the remaining lesson lines for broader supported practice. Their success does not make them exact-answer exam items.",
+      note: "Use the remaining original lesson lines for broader supported practice. Their success does not make them exact-answer exam items.",
     },
     studyNotes: {
       [target.id]: {
@@ -310,12 +417,16 @@ export {
   buildContrastExplanation,
   buildLessonContrastEntry,
   communicativeAct,
+  contrastCandidateAssessment,
   cueSummary,
   differenceProfile,
   displayLessonTitle,
   discourseCue,
+  englishOverlapScore,
   generatedPrompt,
+  koreanOverlapScore,
   registerCue,
   selectContrastRow,
+  semanticIdOverlapScore,
   timeCue,
 };
