@@ -54,11 +54,16 @@ def main() -> None:
     multiline = extract_commands('.github/workflows/cb3-build-packet.yml')
     if len(multiline) != 3:
         raise RuntimeError(f'Expected 3 multiline packet commands, found {len(multiline)}')
+
+    commit_command = '\n'.join(
+        line for line in multiline[2][1].splitlines()
+        if '.github/workflows/ci.yml' not in line
+    )
     commands = [
         ('python', normalize_authoring_command(multiline[0][1])),
         ('bash', 'node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --write'),
         multiline[1],
-        multiline[2],
+        ('bash', commit_command),
     ]
 
     for index, (shell, command) in enumerate(commands, 1):
