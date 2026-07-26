@@ -99,6 +99,8 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Curated Sentence exam bank (CB0) | `node scripts/audit-sentence-exam-curated-bank.mjs` | blocking |
 | Sentence-exam ambiguity screening regression (CB0) | `node scripts/test-sentence-exam-ambiguity.mjs` | blocking |
 | Sentence-exam strict grader regression (CB0) | `node scripts/test-sentence-exam-grader.mjs` | blocking |
+| Sentence-exam candidate ranking regression (CB1) | `node scripts/test-sentence-exam-candidate-ranking.mjs` | blocking |
+| Sentence-exam inventory and shortlist freshness (CB1) | `node scripts/build-sentence-exam-inventory.mjs --check` | blocking |
 | Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | conditional |
 | Audio coverage | `node scripts/audit-audio-coverage.mjs` | blocking |
 | Alphabet audio coverage | `node scripts/audit-alphabet-audio.mjs --strict` | blocking |
