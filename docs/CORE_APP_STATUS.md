@@ -101,6 +101,9 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentence-exam strict grader regression (CB0) | `node scripts/test-sentence-exam-grader.mjs` | blocking |
 | Sentence-exam candidate ranking regression (CB1) | `node scripts/test-sentence-exam-candidate-ranking.mjs` | blocking |
 | Sentence-exam inventory and shortlist freshness (CB1) | `node scripts/build-sentence-exam-inventory.mjs --check` | blocking |
+| Sentence-exam curated bank authoring freshness (CB4) | `node scripts/build-sentence-exam-curated-bank.mjs --check` | blocking |
+| Sentence-exam curated bank authoring audit (CB4) | `node scripts/audit-sentence-exam-curated-bank-cb4.mjs` | blocking |
+| Sentence-exam curated bank authoring regression (CB4) | `node scripts/test-sentence-exam-curated-bank-cb4.mjs` | blocking |
 | Sentence lesson contrast authoring regression (CB2) | `node scripts/test-sentence-lesson-contrast-authoring.mjs` | blocking |
 | Sentence lesson contrast UI regression (CB2) | `node scripts/test-sentence-lesson-contrast-ui.mjs` | blocking |
 | Sentence lesson contrast data freshness (CB2) | `node scripts/build-sentence-lesson-contrasts.mjs --check` | blocking |

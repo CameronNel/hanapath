@@ -69,6 +69,17 @@ jobs:
         run: node scripts/test-sentence-exam-candidate-ranking.mjs
       - name: Check CB1 inventory and shortlist freshness
         run: node scripts/build-sentence-exam-inventory.mjs --check
+      - name: Check CB4 curated-bank authoring syntax
+        run: |
+          node --check scripts/build-sentence-exam-curated-bank.mjs
+          node --check scripts/audit-sentence-exam-curated-bank-cb4.mjs
+          node --check scripts/test-sentence-exam-curated-bank-cb4.mjs
+      - name: Check CB4 curated-bank authoring freshness
+        run: node scripts/build-sentence-exam-curated-bank.mjs --check
+      - name: Audit CB4 curated-bank authoring package
+        run: node scripts/audit-sentence-exam-curated-bank-cb4.mjs
+      - name: CB4 curated-bank authoring regression
+        run: node scripts/test-sentence-exam-curated-bank-cb4.mjs
       - name: Sentence lesson contrast authoring regression
         run: node scripts/test-sentence-lesson-contrast-authoring.mjs
       - name: Sentence lesson contrast UI regression
