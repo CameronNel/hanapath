@@ -41,14 +41,8 @@ jobs:
           import subprocess
           import traceback
 
-          def publish_failure(message):
-              subprocess.run(['git', 'reset', '--hard', 'HEAD'], check=True)
+          def write_failure(message):
               Path('.cb3-run-error.log').write_text(message, encoding='utf-8')
-              subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
-              subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
-              subprocess.run(['git', 'add', '.cb3-run-error.log'], check=True)
-              subprocess.run(['git', 'commit', '-m', 'CB3: capture packet build failure'], check=True)
-              subprocess.run(['git', 'push', 'origin', 'HEAD:core/cb3-lesson-contrasts-sections-5-8'], check=True)
 
           try:
               lines = Path('.github/workflows/cb3-build-packet.yml').read_text(encoding='utf-8').splitlines()
@@ -89,5 +83,13 @@ jobs:
           except Exception:
               detail = traceback.format_exc()
               print(detail)
-              publish_failure(detail)
+              write_failure(detail)
               raise
+
+      - name: Upload packet failure details
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cb3-run-error
+          path: .cb3-run-error.log
+          if-no-files-found: warn
