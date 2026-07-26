@@ -44,18 +44,20 @@ const inventory = [
 
 const policy = {
   sectionOrders: [1, 2],
-  typedPerSection: 2,
-  recognitionPerSection: 2,
+  typedTargetSize: 4,
+  minTypedPerSection: 2,
+  recognitionTargetSize: 4,
+  minRecognitionPerSection: 2,
   maxTypedPerLesson: 1,
   maxRecognitionPerLesson: 2,
 };
 const first = selectBalancedShortlist(inventory, policy);
 const second = selectBalancedShortlist([...inventory].reverse(), policy);
 
-check("selects exact typed quota", first.typed.length === 4);
-check("selects exact recognition quota", first.recognition.length === 4);
+check("selects exact typed target", first.typed.length === 4);
+check("selects exact recognition target", first.recognition.length === 4);
 check("keeps modes disjoint", first.summary.overlapCount === 0);
-check("balances both sections", first.summary.bySection.every((section) => section.typed === 2 && section.recognition === 2));
+check("meets both section floors", first.summary.bySection.every((section) => section.typed >= 2 && section.recognition >= 2));
 check("prefers reviewed canonical evidence", first.typed.some((item) => item.id === "s0001"));
 check("does not consume two typed rows from one lesson", !(first.typed.some((item) => item.id === "s0001") && first.typed.some((item) => item.id === "s0002")));
 check("enforces the typed lesson cap", first.summary.typedMaxPerLesson === 1 && first.summary.typedUniqueLessons >= first.typed.length);
@@ -65,22 +67,48 @@ check("can use reviewed exclusion for recognition", first.recognition.some((item
 check("never marks a shortlist item approved", [...first.typed, ...first.recognition].every((item) => item.approved === false && item.reviewRequired === true));
 check("selection is deterministic regardless of input order", JSON.stringify(first) === JSON.stringify(second));
 
-let shortageFailed = false;
+let floorFailed = false;
 try {
   selectBalancedShortlist([
     row("s9001", 1, { lessonIds: ["only-lesson"] }),
     row("s9002", 1, { lessonIds: ["only-lesson"] }),
+    row("s9101", 2),
+    row("s9102", 2),
+    row("s9103", 2),
   ], {
-    sectionOrders: [1],
-    typedPerSection: 2,
-    recognitionPerSection: 1,
+    sectionOrders: [1, 2],
+    typedTargetSize: 4,
+    minTypedPerSection: 2,
+    recognitionTargetSize: 2,
+    minRecognitionPerSection: 1,
     maxTypedPerLesson: 1,
     maxRecognitionPerLesson: 2,
   });
 } catch (error) {
-  shortageFailed = /after lesson caps/.test(String(error));
+  floorFailed = /section floors/.test(String(error));
 }
-check("fails rather than weakening lesson-diversity quotas", shortageFailed);
+check("fails rather than weakening a section floor", floorFailed);
+
+let targetFailed = false;
+try {
+  selectBalancedShortlist([
+    row("s9201", 1),
+    row("s9202", 1),
+    row("s9301", 2),
+    row("s9302", 2),
+  ], {
+    sectionOrders: [1, 2],
+    typedTargetSize: 3,
+    minTypedPerSection: 1,
+    recognitionTargetSize: 3,
+    minRecognitionPerSection: 1,
+    maxTypedPerLesson: 1,
+    maxRecognitionPerLesson: 1,
+  });
+} catch (error) {
+  targetFailed = /shortlist target/.test(String(error));
+}
+check("fails rather than weakening a global target", targetFailed);
 
 if (failures > 0) {
   console.error(`\nSentence-exam candidate-ranking regression failed with ${failures} failure(s).`);
