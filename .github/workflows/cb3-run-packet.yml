@@ -1,0 +1,77 @@
+name: CB3 Run Packet
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  run-packet:
+    name: Execute CB3 packet recipe once
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check whether packet is already built
+        id: needed
+        shell: bash
+        run: |
+          if [[ -f scripts/build-sentence-lesson-contrasts-sections-5-8.mjs ]]; then
+            echo "value=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Execute run blocks from packet recipe
+        if: steps.needed.outputs.value == 'true'
+        shell: python
+        run: |
+          from pathlib import Path
+          import subprocess
+
+          lines = Path('.github/workflows/cb3-build-packet.yml').read_text(encoding='utf-8').splitlines()
+          commands = []
+          current_shell = 'bash'
+          i = 0
+          while i < len(lines):
+              stripped = lines[i].strip()
+              if stripped.startswith('shell:'):
+                  current_shell = stripped.split(':', 1)[1].strip()
+              if stripped == 'run: |':
+                  indent = len(lines[i]) - len(lines[i].lstrip())
+                  block = []
+                  i += 1
+                  while i < len(lines):
+                      raw = lines[i]
+                      raw_indent = len(raw) - len(raw.lstrip())
+                      if raw.strip() and raw_indent <= indent:
+                          i -= 1
+                          break
+                      block.append(raw[indent + 2:] if len(raw) >= indent + 2 else '')
+                      i += 1
+                  commands.append((current_shell, '\n'.join(block)))
+                  current_shell = 'bash'
+              i += 1
+
+          if len(commands) != 4:
+              raise SystemExit(f'Expected 4 packet run blocks, found {len(commands)}')
+
+          for index, (shell, command) in enumerate(commands, 1):
+              print(f'Executing packet block {index}/4 via {shell}', flush=True)
+              if shell == 'python':
+                  result = subprocess.run(['python', '-c', command], text=True)
+              else:
+                  result = subprocess.run(['bash', '-lc', command], text=True)
+              if result.returncode:
+                  raise SystemExit(result.returncode)
