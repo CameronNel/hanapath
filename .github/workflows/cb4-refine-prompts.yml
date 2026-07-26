@@ -25,10 +25,22 @@ jobs:
           node-version: 22
 
       - name: Refine selection and proposed prompts
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          node scripts/cb4-refine-prompts.mjs --patch-builder
-          node scripts/build-sentence-exam-curated-bank.mjs --write
-          node scripts/cb4-refine-prompts.mjs --prefill-reviews
+          set +e
+          (
+            set -e
+            node scripts/cb4-refine-prompts.mjs --patch-builder
+            node scripts/build-sentence-exam-curated-bank.mjs --write
+            node scripts/cb4-refine-prompts.mjs --prefill-reviews
+          ) > .cb4-refine.log 2>&1
+          status=$?
+          cat .cb4-refine.log
+          if [ "$status" -ne 0 ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --body-file .cb4-refine.log
+            exit "$status"
+          fi
 
       - name: Validate refined package
         run: |
