@@ -111,8 +111,12 @@ function buildPayloads() {
   return { inventory, shortlist };
 }
 
-function stringify(value) {
+function stringifyPretty(value) {
   return JSON.stringify(value, null, 2) + "\n";
+}
+
+function stringifyCompact(value) {
+  return JSON.stringify(value) + "\n";
 }
 
 function checkFile(path, expected) {
@@ -132,8 +136,8 @@ function checkFile(path, expected) {
 }
 
 const payloads = buildPayloads();
-const inventoryText = stringify(payloads.inventory);
-const shortlistText = stringify(payloads.shortlist);
+const inventoryText = stringifyCompact(payloads.inventory);
+const shortlistText = stringifyPretty(payloads.shortlist);
 
 if (process.argv.includes("--write")) {
   mkdirSync(dirname(INVENTORY_FILE), { recursive: true });
