@@ -1,0 +1,46 @@
+name: CB1 Generate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/cb1-generate.yml"
+      - "scripts/build-sentence-exam-inventory.mjs"
+      - "scripts/lib/sentence-exam-ambiguity.mjs"
+      - "scripts/lib/sentence-exam-candidate-ranking.mjs"
+      - "scripts/test-sentence-exam-candidate-ranking.mjs"
+      - "sentences_core.js"
+      - "sentences_lesson_plan.js"
+      - "sentence_exam_eligibility*.js"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    name: Generate CB1 inventory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check generator syntax
+        run: |
+          node --check scripts/build-sentence-exam-inventory.mjs
+          node --check scripts/lib/sentence-exam-candidate-ranking.mjs
+          node --check scripts/test-sentence-exam-candidate-ranking.mjs
+      - name: Run candidate-ranking regression
+        run: node scripts/test-sentence-exam-candidate-ranking.mjs
+      - name: Generate live inventory and shortlist
+        run: node scripts/build-sentence-exam-inventory.mjs --write
+      - name: Upload generated files
+        uses: actions/upload-artifact@v4
+        with:
+          name: cb1-sentence-exam-inventory
+          path: |
+            docs/generated/sentence_exam_inventory.json
+            docs/generated/sentence_exam_shortlist.json
+          if-no-files-found: error
