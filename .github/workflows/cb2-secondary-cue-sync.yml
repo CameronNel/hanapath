@@ -1,5 +1,6 @@
 name: CB2 Secondary Cue Sync
 
+# Temporary focused workflow; removed after the app/audit commit lands.
 on:
   pull_request:
     paths:
@@ -26,16 +27,16 @@ jobs:
           app = Path("app.js")
           text = app.read_text(encoding="utf-8")
           old = '''  const secondary = studyRows.map((row, index) => ({
-    sentenceId: row.id,
-    mode: secondMode(row, primary[index].mode),
-  }));'''
+            sentenceId: row.id,
+            mode: secondMode(row, primary[index].mode),
+          }));'''
           new = '''  const secondary = studyRows.map((row, index) => ({
-    sentenceId: row.id,
-    mode: secondMode(row, primary[index].mode),
-    promptEn: primary[index].promptEn,
-    cueLabel: primary[index].promptEn ? "Controlled target review" : primary[index].cueLabel,
-    teachingPhase: primary[index].teachingPhase,
-  }));'''
+            sentenceId: row.id,
+            mode: secondMode(row, primary[index].mode),
+            promptEn: primary[index].promptEn,
+            cueLabel: primary[index].promptEn ? "Controlled target review" : primary[index].cueLabel,
+            teachingPhase: primary[index].teachingPhase,
+          }));'''
           if new not in text:
               if old not in text:
                   raise SystemExit("Expected secondary lesson-plan block not found")
@@ -44,11 +45,11 @@ jobs:
           audit = Path("scripts/audit-sentence-lesson-contrasts.mjs")
           text = audit.read_text(encoding="utf-8")
           old = '''  "configuredEntry.promptEn",
-]) {'''
+          ]) {'''
           new = '''  "configuredEntry.promptEn",
-  "promptEn: primary[index].promptEn",
-  "Controlled target review",
-]) {'''
+            "promptEn: primary[index].promptEn",
+            "Controlled target review",
+          ]) {'''
           if new not in text:
               if old not in text:
                   raise SystemExit("Expected app integration marker list not found")
