@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   build:
@@ -24,17 +25,28 @@ jobs:
           node-version: 22
 
       - name: Generate and validate CB4 package
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          node --check scripts/build-sentence-exam-curated-bank.mjs
-          node --check scripts/audit-sentence-exam-curated-bank-cb4.mjs
-          node --check scripts/test-sentence-exam-curated-bank-cb4.mjs
-          node scripts/build-sentence-exam-curated-bank.mjs --write
-          node scripts/build-sentence-exam-curated-bank.mjs --check
-          node scripts/audit-sentence-exam-curated-bank-cb4.mjs
-          node scripts/test-sentence-exam-curated-bank-cb4.mjs
-          node scripts/audit-sentence-exam-curated-bank.mjs
-          node scripts/audit-core-release.mjs --write-status
-          git diff --check
+          set +e
+          {
+            node --check scripts/build-sentence-exam-curated-bank.mjs
+            node --check scripts/audit-sentence-exam-curated-bank-cb4.mjs
+            node --check scripts/test-sentence-exam-curated-bank-cb4.mjs
+            node scripts/build-sentence-exam-curated-bank.mjs --write
+            node scripts/build-sentence-exam-curated-bank.mjs --check
+            node scripts/audit-sentence-exam-curated-bank-cb4.mjs
+            node scripts/test-sentence-exam-curated-bank-cb4.mjs
+            node scripts/audit-sentence-exam-curated-bank.mjs
+            node scripts/audit-core-release.mjs --write-status
+            git diff --check
+          } > .cb4-build.log 2>&1
+          status=$?
+          cat .cb4-build.log
+          if [ "$status" -ne 0 ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --body-file .cb4-build.log
+            exit "$status"
+          fi
 
       - name: Commit generated authoring evidence
         run: |
