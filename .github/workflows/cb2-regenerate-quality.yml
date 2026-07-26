@@ -1,0 +1,56 @@
+name: CB2 Regenerate Quality
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/cb2-regenerate-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    name: Regenerate and validate semantic contrasts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate authoring logic
+        run: |
+          node --check scripts/lib/sentence-lesson-contrast-authoring.mjs
+          node --check scripts/build-sentence-lesson-contrasts.mjs
+          node --check scripts/audit-sentence-lesson-contrasts.mjs
+          node --check scripts/test-sentence-lesson-contrast-authoring.mjs
+          node scripts/test-sentence-lesson-contrast-authoring.mjs
+      - name: Regenerate deterministic contracts
+        run: node scripts/build-sentence-lesson-contrasts.mjs --write
+      - name: Validate generated implementation
+        run: |
+          node --check sentence_lesson_contrasts_sections_1_4.js
+          node scripts/build-sentence-lesson-contrasts.mjs --check
+          node scripts/audit-sentence-lesson-contrasts.mjs
+          node scripts/test-sentence-lesson-contrast-ui.mjs
+          node scripts/test-sentence-lesson-contrasts-browser.mjs
+          node scripts/audit-exam-integrity.mjs
+          node scripts/audit-app-shell.mjs
+      - name: Commit regenerated contracts
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sentence_lesson_contrasts_sections_1_4.js docs/generated/sentence_lesson_contrasts_sections_1_4.json
+          if git diff --cached --quiet; then
+            echo "CB2 contrast contracts already current."
+            exit 0
+          fi
+          git commit -m "CB2: regenerate semantic contrast contracts"
+          git push origin "HEAD:${HEAD_BRANCH}"
