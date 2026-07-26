@@ -35,9 +35,15 @@ def extract_commands(path: str):
 
 
 def main() -> None:
-    commands = extract_commands('.github/workflows/cb3-build-packet.yml')
-    if len(commands) != 4:
-        raise RuntimeError(f'Expected 4 packet run blocks, found {len(commands)}')
+    multiline = extract_commands('.github/workflows/cb3-build-packet.yml')
+    if len(multiline) != 3:
+        raise RuntimeError(f'Expected 3 multiline packet commands, found {len(multiline)}')
+    commands = [
+        multiline[0],
+        ('bash', 'node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --write'),
+        multiline[1],
+        multiline[2],
+    ]
 
     for index, (shell, command) in enumerate(commands, 1):
         print(f'Executing packet block {index}/4 via {shell}', flush=True)
