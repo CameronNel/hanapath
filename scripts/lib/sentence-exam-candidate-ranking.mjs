@@ -2,6 +2,8 @@ const DEFAULT_SHORTLIST_POLICY = Object.freeze({
   sectionOrders: Object.freeze([1, 2, 3, 4, 5, 6, 7, 8]),
   typedPerSection: 50,
   recognitionPerSection: 57,
+  maxTypedPerLesson: 1,
+  maxRecognitionPerLesson: 2,
 });
 
 const SEVERE_TYPED_FLAGS = new Set([
@@ -175,21 +177,48 @@ function compareByScoreThenId(a, b, assessmentKey) {
   return String(a.id).localeCompare(String(b.id), "en");
 }
 
-function takePerSection(items, assessmentKey, perSection, sectionOrders, excludedIds = new Set()) {
+function takePerSection(items, assessmentKey, perSection, sectionOrders, options = {}) {
+  const excludedIds = options.excludedIds instanceof Set ? options.excludedIds : new Set();
+  const maxPerLesson = Number(options.maxPerLesson);
+  if (!Number.isInteger(maxPerLesson) || maxPerLesson < 1) {
+    throw new Error("maxPerLesson must be a positive integer.");
+  }
+
   const selected = [];
   const shortages = [];
+  const contributionCounts = new Map();
+
   for (const section of sectionOrders) {
     const pool = items
       .filter((item) => item.primarySection === section)
       .filter((item) => item[assessmentKey].eligible)
       .filter((item) => !excludedIds.has(item.id))
       .sort((a, b) => compareByScoreThenId(a, b, assessmentKey));
-    if (pool.length < perSection) {
-      shortages.push({ section, required: perSection, available: pool.length });
+
+    const sectionSelected = [];
+    for (const item of pool) {
+      if (sectionSelected.length >= perSection) break;
+      const lessonIds = item[assessmentKey].route.lessonIds;
+      const exceedsCap = lessonIds.some((lessonId) => (contributionCounts.get(lessonId) || 0) >= maxPerLesson);
+      if (exceedsCap) continue;
+      sectionSelected.push(item);
+      for (const lessonId of lessonIds) {
+        contributionCounts.set(lessonId, (contributionCounts.get(lessonId) || 0) + 1);
+      }
     }
-    selected.push(...pool.slice(0, perSection));
+
+    if (sectionSelected.length < perSection) {
+      shortages.push({
+        section,
+        required: perSection,
+        available: sectionSelected.length,
+        uncappedAvailable: pool.length,
+      });
+    }
+    selected.push(...sectionSelected);
   }
-  return { selected, shortages };
+
+  return { selected, shortages, contributionCounts };
 }
 
 function compactCandidate(item, mode, rankWithinSection) {
@@ -215,12 +244,20 @@ function compactCandidate(item, mode, rankWithinSection) {
   };
 }
 
+function maxContribution(contributionCounts) {
+  return contributionCounts.size ? Math.max(...contributionCounts.values()) : 0;
+}
+
 function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY) {
   const sectionOrders = uniqueSorted(policy.sectionOrders || DEFAULT_SHORTLIST_POLICY.sectionOrders);
   const typedPerSection = Number(policy.typedPerSection);
   const recognitionPerSection = Number(policy.recognitionPerSection);
+  const maxTypedPerLesson = Number(policy.maxTypedPerLesson ?? DEFAULT_SHORTLIST_POLICY.maxTypedPerLesson);
+  const maxRecognitionPerLesson = Number(policy.maxRecognitionPerLesson ?? DEFAULT_SHORTLIST_POLICY.maxRecognitionPerLesson);
   if (!Number.isInteger(typedPerSection) || typedPerSection < 1) throw new Error("typedPerSection must be a positive integer.");
   if (!Number.isInteger(recognitionPerSection) || recognitionPerSection < 1) throw new Error("recognitionPerSection must be a positive integer.");
+  if (!Number.isInteger(maxTypedPerLesson) || maxTypedPerLesson < 1) throw new Error("maxTypedPerLesson must be a positive integer.");
+  if (!Number.isInteger(maxRecognitionPerLesson) || maxRecognitionPerLesson < 1) throw new Error("maxRecognitionPerLesson must be a positive integer.");
 
   const assessed = rawInventory.map((item) => ({
     ...item,
@@ -229,14 +266,19 @@ function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY
     recognitionAssessment: recognitionAssessment(item),
   }));
 
-  const typedResult = takePerSection(assessed, "typedAssessment", typedPerSection, sectionOrders);
+  const typedResult = takePerSection(assessed, "typedAssessment", typedPerSection, sectionOrders, {
+    maxPerLesson: maxTypedPerLesson,
+  });
   const typedIds = new Set(typedResult.selected.map((item) => item.id));
   const recognitionResult = takePerSection(
     assessed,
     "recognitionAssessment",
     recognitionPerSection,
     sectionOrders,
-    typedIds
+    {
+      excludedIds: typedIds,
+      maxPerLesson: maxRecognitionPerLesson,
+    }
   );
 
   const shortages = [
@@ -244,7 +286,9 @@ function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY
     ...recognitionResult.shortages.map((item) => ({ mode: "recognition", ...item })),
   ];
   if (shortages.length > 0) {
-    const detail = shortages.map((item) => `${item.mode} section ${item.section}: ${item.available}/${item.required}`).join(", ");
+    const detail = shortages
+      .map((item) => `${item.mode} section ${item.section}: ${item.available}/${item.required} after lesson caps (${item.uncappedAvailable} uncapped)`)
+      .join(", ");
     throw new Error(`Cannot satisfy deterministic shortlist policy: ${detail}`);
   }
 
@@ -307,7 +351,13 @@ function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY
   }));
 
   return {
-    policy: { sectionOrders, typedPerSection, recognitionPerSection },
+    policy: {
+      sectionOrders,
+      typedPerSection,
+      recognitionPerSection,
+      maxTypedPerLesson,
+      maxRecognitionPerLesson,
+    },
     typed,
     recognition,
     inventory,
@@ -315,6 +365,10 @@ function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY
       typedCount: typed.length,
       recognitionCount: recognition.length,
       overlapCount: typed.filter((item) => recognitionSet.has(item.id)).length,
+      typedUniqueLessons: typedResult.contributionCounts.size,
+      recognitionUniqueLessons: recognitionResult.contributionCounts.size,
+      typedMaxPerLesson: maxContribution(typedResult.contributionCounts),
+      recognitionMaxPerLesson: maxContribution(recognitionResult.contributionCounts),
       bySection,
     },
   };
