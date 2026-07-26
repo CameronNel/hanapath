@@ -1,0 +1,171 @@
+name: CB2 Manual Contrast Overrides
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/cb2-manual-contrast-overrides.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    name: Apply and validate semantic overrides
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply explicit semantic overrides
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              if new in text:
+                  return
+              if old not in text:
+                  raise SystemExit(f"Missing expected source in {path}: {old[:100]!r}")
+              p.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "scripts/lib/sentence-lesson-contrast-authoring.mjs",
+              """    contrastSelection: {
+                sourceScope: contrastSelection.sourceScope,""",
+              """    contrastSelection: {
+                selectionMethod: contrastSelection.selectionMethod || "ranked",
+                sourceScope: contrastSelection.sourceScope,""",
+          )
+
+          replace_once(
+              "scripts/build-sentence-lesson-contrasts.mjs",
+              'const REVISION = "sentence-lesson-contrasts-cb2-v2";',
+              '''const REVISION = "sentence-lesson-contrasts-cb2-v2";
+          const MANUAL_CONTRAST_OVERRIDES = Object.freeze({
+            s0043: "s2047", // "It's there." vs "It's over there."
+            s0391: "s3025", // direct instruction vs polite request to open
+            s0411: "s0412", // scarf vs necktie around the neck
+            s0757: "s3117", // decision question vs statement about that decision
+            s0990: "s3173", // two ways to express being proud
+            s2032: "s2703", // first meeting vs past meeting closure
+            s2998: "s2043", // "my point" idiom vs asking what something means
+          });''',
+          )
+          replace_once(
+              "scripts/build-sentence-lesson-contrasts.mjs",
+              '''    const contrastSelection = selectContrastRow(target, sectionRows, {
+                targetLessonId: lesson.id,''',
+              '''    const overrideId = MANUAL_CONTRAST_OVERRIDES[target.id] || null;
+              const overrideRow = overrideId ? rowById.get(overrideId) : null;
+              if (overrideId && !overrideRow) throw new Error(`${target.id}: missing manual contrast override ${overrideId}.`);
+              const contrastSelection = selectContrastRow(target, overrideRow ? [overrideRow] : sectionRows, {
+                targetLessonId: lesson.id,''',
+          )
+          replace_once(
+              "scripts/build-sentence-lesson-contrasts.mjs",
+              '''      sectionOrdersByRow,
+              });
+              return buildLessonContrastEntry''',
+              '''      sectionOrdersByRow,
+              });
+              contrastSelection.selectionMethod = overrideRow ? "manual-semantic-override" : "ranked";
+              return buildLessonContrastEntry''',
+          )
+          replace_once(
+              "scripts/build-sentence-lesson-contrasts.mjs",
+              '''    weakContrastCount: entries.filter((entry) => entry.contrastSelection.qualityTier === "weak").length,
+                sameLessonContrastCount:''',
+              '''    weakContrastCount: entries.filter((entry) => entry.contrastSelection.qualityTier === "weak").length,
+                rankedWeakContrastCount: entries.filter((entry) => entry.contrastSelection.selectionMethod === "ranked" && entry.contrastSelection.qualityTier === "weak").length,
+                sameLessonContrastCount:''',
+          )
+          replace_once(
+              "scripts/build-sentence-lesson-contrasts.mjs",
+              '''    nearbySectionContrastCount: entries.filter((entry) => entry.contrastSelection.sourceScope === "nearby-section").length,
+                countsBySection,''',
+              '''    nearbySectionContrastCount: entries.filter((entry) => entry.contrastSelection.sourceScope === "nearby-section").length,
+                manualOverrideCount: entries.filter((entry) => entry.contrastSelection.selectionMethod === "manual-semantic-override").length,
+                countsBySection,''',
+          )
+          replace_once(
+              "scripts/build-sentence-lesson-contrasts.mjs",
+              '''    weakContrastCount: report.weakContrastCount,
+                sameLessonContrastCount:''',
+              '''    weakContrastCount: report.weakContrastCount,
+                rankedWeakContrastCount: report.rankedWeakContrastCount,
+                sameLessonContrastCount:''',
+          )
+          replace_once(
+              "scripts/build-sentence-lesson-contrasts.mjs",
+              '''    nearbySectionContrastCount: report.nearbySectionContrastCount,
+                countsBySection:''',
+              '''    nearbySectionContrastCount: report.nearbySectionContrastCount,
+                manualOverrideCount: report.manualOverrideCount,
+                countsBySection:''',
+          )
+
+          replace_once(
+              "scripts/audit-sentence-lesson-contrasts.mjs",
+              "const EXPECTED_TOTAL = 198;",
+              "const EXPECTED_TOTAL = 198;\nconst EXPECTED_MANUAL_OVERRIDES = 7;",
+          )
+          replace_once(
+              "scripts/audit-sentence-lesson-contrasts.mjs",
+              'if (report.weakContrastCount !== 0) fail(`weak contrast count must remain 0; got ${report.weakContrastCount}`);',
+              'if (report.rankedWeakContrastCount !== 0) fail(`ranked weak contrast count must remain 0; got ${report.rankedWeakContrastCount}`);\nif (report.manualOverrideCount !== EXPECTED_MANUAL_OVERRIDES) fail(`manual override count must be ${EXPECTED_MANUAL_OVERRIDES}; got ${report.manualOverrideCount}`);',
+          )
+          replace_once(
+              "scripts/audit-sentence-lesson-contrasts.mjs",
+              '''  if (!entry.contrastSelection || !["strong", "usable"].includes(entry.contrastSelection.qualityTier)) {
+                fail(`${label}: contrast quality must be strong or usable`);
+              }''',
+              '''  if (!entry.contrastSelection || !["ranked", "manual-semantic-override"].includes(entry.contrastSelection.selectionMethod)) fail(`${label}: invalid contrast selection method`);
+              if (entry.contrastSelection?.selectionMethod === "ranked" && !["strong", "usable"].includes(entry.contrastSelection.qualityTier)) {
+                fail(`${label}: ranked contrast quality must be strong or usable`);
+              }''',
+          )
+          replace_once(
+              "scripts/audit-sentence-lesson-contrasts.mjs",
+              'console.log(`Contrast quality: strong=${report.strongContrastCount}, usable=${report.usableContrastCount}, weak=${report.weakContrastCount}`);',
+              'console.log(`Contrast quality: strong=${report.strongContrastCount}, usable=${report.usableContrastCount}, weak=${report.weakContrastCount}, ranked weak=${report.rankedWeakContrastCount}`);',
+          )
+          replace_once(
+              "scripts/audit-sentence-lesson-contrasts.mjs",
+              'console.log(`Contrast sources: same lesson=${report.sameLessonContrastCount}, same section=${report.sameSectionContrastCount}, nearby section=${report.nearbySectionContrastCount}`);',
+              'console.log(`Contrast sources: same lesson=${report.sameLessonContrastCount}, same section=${report.sameSectionContrastCount}, nearby section=${report.nearbySectionContrastCount}`);\nconsole.log(`Manual semantic overrides: ${report.manualOverrideCount}`);',
+          )
+      - name: Regenerate and validate
+        run: |
+          node --check scripts/lib/sentence-lesson-contrast-authoring.mjs
+          node --check scripts/build-sentence-lesson-contrasts.mjs
+          node --check scripts/audit-sentence-lesson-contrasts.mjs
+          node scripts/test-sentence-lesson-contrast-authoring.mjs
+          node scripts/build-sentence-lesson-contrasts.mjs --write
+          node scripts/build-sentence-lesson-contrasts.mjs --check
+          node scripts/audit-sentence-lesson-contrasts.mjs
+          node scripts/test-sentence-lesson-contrast-ui.mjs
+          node scripts/test-sentence-lesson-contrasts-browser.mjs
+          node scripts/audit-exam-integrity.mjs
+          node scripts/audit-app-shell.mjs
+      - name: Commit semantic overrides
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/lib/sentence-lesson-contrast-authoring.mjs scripts/build-sentence-lesson-contrasts.mjs scripts/audit-sentence-lesson-contrasts.mjs sentence_lesson_contrasts_sections_1_4.js docs/generated/sentence_lesson_contrasts_sections_1_4.json
+          if git diff --cached --quiet; then
+            echo "Semantic overrides already current."
+            exit 0
+          fi
+          git commit -m "CB2: apply reviewed semantic contrast overrides"
+          git push origin "HEAD:${HEAD_BRANCH}"
