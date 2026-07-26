@@ -1,0 +1,32 @@
+name: CB2 Source Bundle
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/cb2-source-bundle.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bundle:
+    name: Bundle CB2 source context
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Collect source context
+        run: |
+          mkdir -p cb2-source/.github/workflows cb2-source/docs/generated cb2-source/scripts/lib
+          cp app.js index.html sw.js exam_integrity.js sentences_core.js sentences_lesson_plan.js cb2-source/
+          cp docs/generated/sentence_exam_shortlist.json cb2-source/docs/generated/
+          cp scripts/build-sentence-exam-inventory.mjs scripts/audit-core-release.mjs scripts/audit-app-shell.mjs cb2-source/scripts/
+          cp scripts/lib/sentence-exam-ambiguity.mjs scripts/lib/sentence-exam-candidate-ranking.mjs cb2-source/scripts/lib/
+          cp .github/workflows/ci.yml cb2-source/.github/workflows/
+      - name: Upload source context
+        uses: actions/upload-artifact@v4
+        with:
+          name: cb2-source-context
+          path: cb2-source
+          if-no-files-found: error
