@@ -65,6 +65,10 @@ jobs:
         run: node scripts/test-sentence-exam-ambiguity.mjs
       - name: Sentence exam grader regression
         run: node scripts/test-sentence-exam-grader.mjs
+      - name: Sentence exam candidate-ranking regression
+        run: node scripts/test-sentence-exam-candidate-ranking.mjs
+      - name: Check CB1 inventory and shortlist freshness
+        run: node scripts/build-sentence-exam-inventory.mjs --check
 
       # Alphabet / recognition / handwriting / shell gate.
       - name: Audit alphabet audio coverage

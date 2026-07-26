@@ -4,9 +4,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import { detectAmbiguityFlags, normalizeSentenceExamAnswer } from "./lib/sentence-exam-ambiguity.mjs";
+import { DEFAULT_SHORTLIST_POLICY, selectBalancedShortlist } from "./lib/sentence-exam-candidate-ranking.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const OUTPUT_FILE = join(ROOT, "docs", "generated", "sentence_exam_inventory.json");
+const INVENTORY_FILE = join(ROOT, "docs", "generated", "sentence_exam_inventory.json");
+const SHORTLIST_FILE = join(ROOT, "docs", "generated", "sentence_exam_shortlist.json");
 
 function loadGlobals(files) {
   const sandbox = { window: {} };
@@ -39,7 +41,7 @@ function buildRoutes(W) {
   return routes;
 }
 
-function buildPayload() {
+function buildPayloads() {
   const W = loadGlobals([
     "sentences_core.js",
     "sentences_lesson_plan.js",
@@ -60,7 +62,7 @@ function buildPayload() {
   }
   const duplicateCanonicalKeys = new Set([...counts].filter(([, count]) => count > 1).map(([key]) => key));
 
-  const inventory = sentences.map((row) => {
+  const rawInventory = sentences.map((row) => {
     const review = reviewedRows[row.id] || null;
     const analysis = detectAmbiguityFlags(row, review?.examPromptEn || row.english, {
       duplicateCanonicalKeys,
@@ -71,56 +73,93 @@ function buildPayload() {
       id: row.id,
       korean: row.korean,
       english: row.english,
-      lessonIds: [...new Set(rowRoutes.map((route) => route.lessonId))],
-      sectionOrders: [...new Set(rowRoutes.map((route) => route.sectionOrder).filter(Number.isInteger))],
-      patternTags: Array.isArray(row.patternTags) ? row.patternTags : [],
+      lessonIds: [...new Set(rowRoutes.map((route) => route.lessonId))].sort(),
+      sectionOrders: [...new Set(rowRoutes.map((route) => route.sectionOrder).filter(Number.isInteger))].sort((a, b) => a - b),
+      patternTags: Array.isArray(row.patternTags) ? [...row.patternTags].sort() : [],
       existingTypedClass: review?.typedClass || null,
       existingExamPromptEn: review?.examPromptEn || null,
-      ambiguityFlags: analysis.flags,
-      contractionFamilies: analysis.contractionFamilies,
+      ambiguityFlags: [...analysis.flags].sort(),
+      contractionFamilies: [...analysis.contractionFamilies].sort(),
       plausibleVariantCount: analysis.plausibleVariantCount,
       typedSafeHeuristic: analysis.typedSafeHeuristic,
     };
   });
 
-  return {
-    schemaVersion: 1,
+  const selection = selectBalancedShortlist(rawInventory, DEFAULT_SHORTLIST_POLICY);
+  const inventory = {
+    schemaVersion: 2,
+    generatorVersion: 1,
     eligibilityRevision: W.HANAPATH_SENTENCE_EXAM_ELIGIBILITY?.revision || null,
-    sentenceCount: inventory.length,
+    sentenceCount: selection.inventory.length,
     reviewedCount: Object.keys(reviewedRows).length,
-    typedSafeHeuristicCount: inventory.filter((item) => item.typedSafeHeuristic).length,
-    flaggedCount: inventory.filter((item) => item.ambiguityFlags.length > 0).length,
-    inventory,
+    typedSafeHeuristicCount: selection.inventory.filter((item) => item.typedSafeHeuristic).length,
+    flaggedCount: selection.inventory.filter((item) => item.ambiguityFlags.length > 0).length,
+    shortlistPolicy: selection.policy,
+    shortlistSummary: selection.summary,
+    inventory: selection.inventory,
   };
+  const shortlist = {
+    schemaVersion: 1,
+    generatorVersion: 1,
+    eligibilityRevision: inventory.eligibilityRevision,
+    policy: selection.policy,
+    summary: selection.summary,
+    decisionRule: "Heuristics rank and flag only. Every item remains unapproved until CB4 independent review.",
+    typedCandidates: selection.typed,
+    recognitionCandidates: selection.recognition,
+  };
+  return { inventory, shortlist };
 }
 
-const payload = buildPayload();
-const text = JSON.stringify(payload, null, 2) + "\n";
+function stringifyPretty(value) {
+  return JSON.stringify(value, null, 2) + "\n";
+}
 
-if (process.argv.includes("--write")) {
-  mkdirSync(dirname(OUTPUT_FILE), { recursive: true });
-  writeFileSync(OUTPUT_FILE, text);
-  console.log(`Wrote ${OUTPUT_FILE}`);
-} else if (process.argv.includes("--check")) {
+function stringifyCompact(value) {
+  return JSON.stringify(value) + "\n";
+}
+
+function checkFile(path, expected) {
   let current = "";
   try {
-    current = readFileSync(OUTPUT_FILE, "utf8");
+    current = readFileSync(path, "utf8");
   } catch {
-    console.error(`Missing inventory: ${OUTPUT_FILE}`);
+    console.error(`Missing generated file: ${path}`);
+    return false;
+  }
+  if (current !== expected) {
+    console.error(`Stale generated file: ${path}`);
+    return false;
+  }
+  console.log(`Generated file is current: ${path}`);
+  return true;
+}
+
+const payloads = buildPayloads();
+const inventoryText = stringifyCompact(payloads.inventory);
+const shortlistText = stringifyPretty(payloads.shortlist);
+
+if (process.argv.includes("--write")) {
+  mkdirSync(dirname(INVENTORY_FILE), { recursive: true });
+  writeFileSync(INVENTORY_FILE, inventoryText);
+  writeFileSync(SHORTLIST_FILE, shortlistText);
+  console.log(`Wrote ${INVENTORY_FILE}`);
+  console.log(`Wrote ${SHORTLIST_FILE}`);
+} else if (process.argv.includes("--check")) {
+  const okay = checkFile(INVENTORY_FILE, inventoryText) && checkFile(SHORTLIST_FILE, shortlistText);
+  if (!okay) {
     console.error("Run: node scripts/build-sentence-exam-inventory.mjs --write");
     process.exit(1);
   }
-  if (current !== text) {
-    console.error(`Stale inventory: ${OUTPUT_FILE}`);
-    console.error("Run: node scripts/build-sentence-exam-inventory.mjs --write");
-    process.exit(1);
-  }
-  console.log(`Inventory is current: ${OUTPUT_FILE}`);
 } else {
   console.log(JSON.stringify({
-    sentenceCount: payload.sentenceCount,
-    reviewedCount: payload.reviewedCount,
-    typedSafeHeuristicCount: payload.typedSafeHeuristicCount,
-    flaggedCount: payload.flaggedCount,
+    sentenceCount: payloads.inventory.sentenceCount,
+    reviewedCount: payloads.inventory.reviewedCount,
+    typedSafeHeuristicCount: payloads.inventory.typedSafeHeuristicCount,
+    flaggedCount: payloads.inventory.flaggedCount,
+    typedShortlistCount: payloads.shortlist.summary.typedCount,
+    recognitionShortlistCount: payloads.shortlist.summary.recognitionCount,
+    overlapCount: payloads.shortlist.summary.overlapCount,
+    bySection: payloads.shortlist.summary.bySection,
   }, null, 2));
 }
