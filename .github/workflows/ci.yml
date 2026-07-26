@@ -31,7 +31,7 @@ jobs:
       # file must be checked in its own invocation.
       - name: Check syntax
         run: |
-          for f in app.js sw.js exam_integrity.js sentence_exam_eligibility.js words_lesson_plan.js; do
+          for f in app.js sw.js exam_integrity.js sentence_exam_eligibility.js sentence_exam_prompt_templates.js sentence_exam_curated_bank.js sentence_exam_grader.js words_lesson_plan.js; do
             echo "node --check $f"
             node --check "$f"
           done
@@ -55,12 +55,16 @@ jobs:
         run: node scripts/audit-sentences-data.mjs --strict
       - name: Audit form checks
         run: node scripts/audit-form-checks.mjs
-      # NOTE: sentence-exam eligibility classification is still in progress
-      # (see PR body). CI enforces the schema/tooling and progress via
-      # --allow-incomplete; strict mode is the pre-merge gate and is added once
-      # rows s0001–s4177 are fully reviewed.
+      # The historical full-corpus eligibility audit remains active during the
+      # curated-bank migration so the 2,100 completed reviews stay protected.
       - name: Audit sentence eligibility (schema + progress)
         run: node scripts/audit-sentence-eligibility.mjs --allow-incomplete
+      - name: Audit curated sentence exam bank
+        run: node scripts/audit-sentence-exam-curated-bank.mjs
+      - name: Sentence exam ambiguity regression
+        run: node scripts/test-sentence-exam-ambiguity.mjs
+      - name: Sentence exam grader regression
+        run: node scripts/test-sentence-exam-grader.mjs
 
       # Alphabet / recognition / handwriting / shell gate.
       - name: Audit alphabet audio coverage
