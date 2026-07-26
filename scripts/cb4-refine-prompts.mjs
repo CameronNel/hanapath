@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// One-use authoring helper. It proposes cue changes but records no approval.
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
