@@ -1,0 +1,41 @@
+name: CB1 Diagnose Core Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/cb1-diagnose-core-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: Diagnose CB1 core gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run quick gate and preserve tail
+        id: gate
+        shell: bash
+        run: |
+          set +e
+          node scripts/audit-core-release.mjs --quick > core-gate.log 2>&1
+          status=$?
+          tail -n 160 core-gate.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload diagnostic log
+        uses: actions/upload-artifact@v4
+        with:
+          name: cb1-core-gate-diagnostic
+          path: core-gate.log
+          if-no-files-found: error
+      - name: Preserve gate result
+        if: steps.gate.outputs.status != '0'
+        run: exit 1
