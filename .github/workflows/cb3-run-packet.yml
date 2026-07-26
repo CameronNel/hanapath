@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   run-packet:
@@ -41,10 +42,14 @@ jobs:
         if: steps.needed.outputs.value == 'true'
         run: python scripts/cb3-run-packet.py
 
-      - name: Upload packet failure details
+      - name: Report packet failure
         if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cb3-run-error
-          path: .cb3-run-error.log
-          if-no-files-found: warn
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if [[ -f .cb3-run-error.log ]]; then
+            gh pr comment 363 --body-file .cb3-run-error.log
+          else
+            gh pr comment 363 --body "CB3 packet runner failed before producing .cb3-run-error.log."
+          fi
