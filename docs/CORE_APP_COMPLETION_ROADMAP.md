@@ -13,6 +13,15 @@
 > consistent, reviewable, and protected by strict automated gates. No new curriculum expansion
 > is allowed during this completion sprint.
 
+> **Active amendment — Sentence exam eligibility path (CB0+):** the Sentence-exam source bank
+> is now the curated `HANAPATH_SENTENCE_EXAM_CURATED_BANK`, not all 4,177 lesson rows. Packets
+> **E1C and E1D are paused** and **E2 is replaced by CB1–CB5**; do **not** review shard C or D
+> under the old full-corpus requirement in the section 7 table below. Follow
+> [`CORE_APP_COMPLETION_ROADMAP_CURATED_BANK_ADDENDUM.md`](CORE_APP_COMPLETION_ROADMAP_CURATED_BANK_ADDENDUM.md)
+> for the active Sentence-exam packet board and
+> [`SENTENCE_MASTERY_EXAM_CURATED_BANK_AMENDMENT.md`](SENTENCE_MASTERY_EXAM_CURATED_BANK_AMENDMENT.md)
+> for the amended readiness contract. All other scope, ownership, and release rules here stay active.
+
 ## 1. What “core app complete” means
 
 The core app is complete only when all of the following are true on `main`:

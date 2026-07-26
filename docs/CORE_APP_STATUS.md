@@ -96,6 +96,9 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Form Checks | `node scripts/audit-form-checks.mjs` | blocking |
 | Sentence eligibility (schema + progress) | `node scripts/audit-sentence-eligibility.mjs --allow-incomplete` | blocking |
 | Eligibility shard-integrity fixtures (E0) | `node scripts/test-sentence-eligibility-shards.mjs` | blocking |
+| Curated Sentence exam bank (CB0) | `node scripts/audit-sentence-exam-curated-bank.mjs` | blocking |
+| Sentence-exam ambiguity screening regression (CB0) | `node scripts/test-sentence-exam-ambiguity.mjs` | blocking |
+| Sentence-exam strict grader regression (CB0) | `node scripts/test-sentence-exam-grader.mjs` | blocking |
 | Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | conditional |
 | Audio coverage | `node scripts/audit-audio-coverage.mjs` | blocking |
 | Alphabet audio coverage | `node scripts/audit-alphabet-audio.mjs --strict` | blocking |
