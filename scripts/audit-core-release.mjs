@@ -300,6 +300,11 @@ const GATE_STEPS = [
   { id: "sentence-exam-grader", label: "Sentence-exam strict grader regression (CB0)", script: "scripts/test-sentence-exam-grader.mjs" },
   { id: "sentence-exam-candidate-ranking", label: "Sentence-exam candidate ranking regression (CB1)", script: "scripts/test-sentence-exam-candidate-ranking.mjs" },
   { id: "sentence-exam-inventory", label: "Sentence-exam inventory and shortlist freshness (CB1)", script: "scripts/build-sentence-exam-inventory.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
+  { id: "sentence-lesson-contrast-authoring", label: "Sentence lesson contrast authoring regression (CB2)", script: "scripts/test-sentence-lesson-contrast-authoring.mjs" },
+  { id: "sentence-lesson-contrast-ui", label: "Sentence lesson contrast UI regression (CB2)", script: "scripts/test-sentence-lesson-contrast-ui.mjs" },
+  { id: "sentence-lesson-contrast-freshness", label: "Sentence lesson contrast data freshness (CB2)", script: "scripts/build-sentence-lesson-contrasts.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
+  { id: "sentence-lesson-contrasts", label: "Sentence lesson contrast coverage and safety (CB2)", script: "scripts/audit-sentence-lesson-contrasts.mjs" },
+  { id: "sentence-lesson-contrast-browser", label: "Sentence lesson contrast browser fixtures (CB2)", script: "scripts/test-sentence-lesson-contrasts-browser.mjs" },
   {
     id: "sentence-exams",
     label: "Sentence Mastery examination seed audit",

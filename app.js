@@ -22686,11 +22686,18 @@ function normalizeSentenceLessonMode(row, mode) {
 // The study pass remains unique; only the question deck is doubled and spaced.
 function buildSentenceLessonQuestionPlan(lesson, studyRows) {
   const configured = new Map((Array.isArray(lesson.drillPlan) ? lesson.drillPlan : [])
-    .map((entry) => [entry.sentenceId, entry.mode]));
-  const primary = studyRows.map((row) => ({
-    sentenceId: row.id,
-    mode: normalizeSentenceLessonMode(row, configured.get(row.id)),
-  }));
+    .filter((entry) => entry && typeof entry.sentenceId === "string")
+    .map((entry) => [entry.sentenceId, entry]));
+  const primary = studyRows.map((row) => {
+    const configuredEntry = configured.get(row.id) || {};
+    return {
+      sentenceId: row.id,
+      mode: normalizeSentenceLessonMode(row, configuredEntry.mode),
+      promptEn: typeof configuredEntry.promptEn === "string" ? configuredEntry.promptEn : "",
+      cueLabel: typeof configuredEntry.cueLabel === "string" ? configuredEntry.cueLabel : "",
+      teachingPhase: typeof configuredEntry.teachingPhase === "string" ? configuredEntry.teachingPhase : "",
+    };
+  });
   const secondMode = (row, first) => {
     if (first === "translate") return tokenizeSentence(row.korean).length >= 3 ? "build" : "listen";
     if (first === "build" || first === "transform") return "listen";
@@ -23353,6 +23360,10 @@ function sentenceLessonIntroHtml(lesson) {
     .slice(0, 4)
     .map((tip) => `<li>${escapeHtml(tip)}</li>`)
     .join("");
+  const contrastUi = window.HANAPATH_SENTENCE_CONTRAST_UI;
+  const contrastGuide = contrastUi && typeof contrastUi.renderIntroGuide === "function"
+    ? contrastUi.renderIntroGuide(lesson.contrastTeaching, escapeHtml)
+    : "";
   return `
     <div class="card sentence-lesson-intro">
       <div class="word-card-progress-row">
@@ -23362,6 +23373,7 @@ function sentenceLessonIntroHtml(lesson) {
       <div class="eyebrow sentence-lesson-kind">Pattern lesson</div>
       <h2 class="screen-title" style="margin-bottom:8px;">${escapeHtml(getSentenceLessonDisplayTitle(lesson))}</h2>
       <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(lesson.concept || "")}</div>
+      ${contrastGuide}
       ${tagTips ? `<ul class="ss-tip-list">${tagTips}</ul>` : ""}
       <div class="word-card-actions word-card-nav-actions" style="margin-top:12px;">
         <button class="button secondary compact" type="button" data-ss-lesson-close>Back</button>
@@ -23379,6 +23391,11 @@ function sentenceStudyHtml(session) {
   const studyRows = session.studyRows || session.rows;
   const row = studyRows[session.studyIndex];
   const total = studyRows.length;
+  const lesson = session.lessonId ? getSentenceLessonById(session.lessonId) : null;
+  const contrastUi = window.HANAPATH_SENTENCE_CONTRAST_UI;
+  const contrastStudyNote = contrastUi && typeof contrastUi.renderStudyNote === "function"
+    ? contrastUi.renderStudyNote(lesson?.contrastTeaching, row.id, escapeHtml)
+    : "";
   return `
     <div class="card word-card sent-session" id="sentenceSessionRoot" data-lesson-motion-root>
       ${sentenceSessionProgressHtml(session.studyIndex + 1, total, "Listen and shadow")}
@@ -23391,6 +23408,7 @@ function sentenceStudyHtml(session) {
         <button class="word-card-ko-play" type="button" lang="ko" data-sentence-play aria-label="Play ${escapeHtml(row.korean)}">▶</button>
       </div>
       <div class="screen-sub" style="margin:14px 0;">${escapeHtml(row.english)}</div>
+      ${contrastStudyNote}
       <div class="word-card-actions word-card-nav-actions">
         <button class="button secondary compact" type="button" data-sentence-exit>Exit</button>
         <button class="button primary compact" type="button" data-sentence-study-next>${session.studyIndex + 1 >= total ? "Start practice" : "Next line"}</button>
@@ -23539,9 +23557,32 @@ function sentenceHelperLadderHtml(session, row) {
   `;
 }
 
+function getSentenceLessonDrillEntry(session) {
+  if (!session || session.modeId !== "lesson") return null;
+  const entry = session.drillPlan?.[session.index];
+  return entry && typeof entry === "object" ? entry : null;
+}
+
+function sentenceLessonPromptText(session, row) {
+  const contrastUi = window.HANAPATH_SENTENCE_CONTRAST_UI;
+  if (contrastUi && typeof contrastUi.promptForDrill === "function") {
+    return contrastUi.promptForDrill(getSentenceLessonDrillEntry(session), row?.english || "");
+  }
+  return row?.english || "";
+}
+
+function sentenceLessonCueLabel(session, fallback) {
+  const contrastUi = window.HANAPATH_SENTENCE_CONTRAST_UI;
+  if (contrastUi && typeof contrastUi.labelForDrill === "function") {
+    return contrastUi.labelForDrill(getSentenceLessonDrillEntry(session), fallback);
+  }
+  return fallback;
+}
+
 function sentenceQuestionHtml(session) {
   const row = session.rows[session.index];
   const mode = sentenceQuestionMode(session);
+  const lessonPrompt = sentenceLessonPromptText(session, row);
 
   let innerContent = "";
 
@@ -23632,8 +23673,8 @@ function sentenceQuestionHtml(session) {
   } else if (mode === "translate") {
     innerContent = `
       ${sentenceSessionProgressHtml(session.index + 1, session.rows.length)}
-      ${sentencePromptTileHtml(`<div class="sentence-prompt-text">${escapeHtml(row.english)}</div>`, "is-english")}
-      ${sentenceModeMetaHtml(row, "Translate & Type")}
+      ${sentencePromptTileHtml(`<div class="sentence-prompt-text">${escapeHtml(lessonPrompt)}</div>`, "is-english")}
+      ${sentenceModeMetaHtml(row, sentenceLessonCueLabel(session, "Translate & Type"))}
       ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요", sentenceHelperLadderHtml(session, row), false)}
     `;
   } else if (mode === "build") {
@@ -23649,8 +23690,8 @@ function sentenceQuestionHtml(session) {
       .join("");
     innerContent = `
       ${sentenceSessionProgressHtml(session.index + 1, session.rows.length)}
-      ${sentencePromptTileHtml(`<div class="sentence-prompt-text">${escapeHtml(row.english)}</div>`, "is-english")}
-      ${sentenceModeMetaHtml(row, "Word Builder")}
+      ${sentencePromptTileHtml(`<div class="sentence-prompt-text">${escapeHtml(lessonPrompt)}</div>`, "is-english")}
+      ${sentenceModeMetaHtml(row, sentenceLessonCueLabel(session, "Word Builder"))}
       <div class="ss-build-answer" style="margin: 16px 0; min-height: 48px; padding: 10px; border-radius: 12px; border: 1px dashed var(--line); display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center;">
         ${built || `<span class="fs-xs text-muted-2">Your sentence appears here</span>`}
       </div>
