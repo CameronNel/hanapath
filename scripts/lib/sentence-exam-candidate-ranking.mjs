@@ -1,7 +1,9 @@
 const DEFAULT_SHORTLIST_POLICY = Object.freeze({
   sectionOrders: Object.freeze([1, 2, 3, 4, 5, 6, 7, 8]),
-  typedPerSection: 50,
-  recognitionPerSection: 57,
+  typedTargetSize: 400,
+  minTypedPerSection: 32,
+  recognitionTargetSize: 456,
+  minRecognitionPerSection: 57,
   maxTypedPerLesson: 1,
   maxRecognitionPerLesson: 2,
 });
@@ -177,48 +179,90 @@ function compareByScoreThenId(a, b, assessmentKey) {
   return String(a.id).localeCompare(String(b.id), "en");
 }
 
-function takePerSection(items, assessmentKey, perSection, sectionOrders, options = {}) {
+function selectBalancedTarget(items, assessmentKey, targetSize, minimumPerSection, sectionOrders, options = {}) {
   const excludedIds = options.excludedIds instanceof Set ? options.excludedIds : new Set();
   const maxPerLesson = Number(options.maxPerLesson);
   if (!Number.isInteger(maxPerLesson) || maxPerLesson < 1) {
     throw new Error("maxPerLesson must be a positive integer.");
   }
 
-  const selected = [];
-  const shortages = [];
+  const pools = new Map();
+  const cursors = new Map();
+  const selectedBySection = new Map();
   const contributionCounts = new Map();
 
   for (const section of sectionOrders) {
-    const pool = items
+    pools.set(section, items
       .filter((item) => item.primarySection === section)
       .filter((item) => item[assessmentKey].eligible)
       .filter((item) => !excludedIds.has(item.id))
-      .sort((a, b) => compareByScoreThenId(a, b, assessmentKey));
+      .sort((a, b) => compareByScoreThenId(a, b, assessmentKey)));
+    cursors.set(section, 0);
+    selectedBySection.set(section, []);
+  }
 
-    const sectionSelected = [];
-    for (const item of pool) {
-      if (sectionSelected.length >= perSection) break;
+  function takeNext(section) {
+    const pool = pools.get(section) || [];
+    let cursor = cursors.get(section) || 0;
+    while (cursor < pool.length) {
+      const item = pool[cursor];
+      cursor += 1;
+      cursors.set(section, cursor);
       const lessonIds = item[assessmentKey].route.lessonIds;
       const exceedsCap = lessonIds.some((lessonId) => (contributionCounts.get(lessonId) || 0) >= maxPerLesson);
       if (exceedsCap) continue;
-      sectionSelected.push(item);
+      selectedBySection.get(section).push(item);
       for (const lessonId of lessonIds) {
         contributionCounts.set(lessonId, (contributionCounts.get(lessonId) || 0) + 1);
       }
+      return true;
     }
-
-    if (sectionSelected.length < perSection) {
-      shortages.push({
-        section,
-        required: perSection,
-        available: sectionSelected.length,
-        uncappedAvailable: pool.length,
-      });
-    }
-    selected.push(...sectionSelected);
+    return false;
   }
 
-  return { selected, shortages, contributionCounts };
+  const floorShortages = [];
+  for (const section of sectionOrders) {
+    while (selectedBySection.get(section).length < minimumPerSection) {
+      if (!takeNext(section)) break;
+    }
+    if (selectedBySection.get(section).length < minimumPerSection) {
+      floorShortages.push({
+        section,
+        required: minimumPerSection,
+        available: selectedBySection.get(section).length,
+        uncappedAvailable: (pools.get(section) || []).length,
+      });
+    }
+  }
+
+  if (floorShortages.length > 0) {
+    const detail = floorShortages
+      .map((item) => `section ${item.section}: ${item.available}/${item.required} after lesson caps (${item.uncappedAvailable} uncapped)`)
+      .join(", ");
+    throw new Error(`Cannot satisfy deterministic shortlist section floors: ${detail}`);
+  }
+
+  let selectedCount = [...selectedBySection.values()].reduce((sum, rows) => sum + rows.length, 0);
+  while (selectedCount < targetSize) {
+    let progressed = false;
+    for (const section of sectionOrders) {
+      if (selectedCount >= targetSize) break;
+      if (takeNext(section)) {
+        selectedCount += 1;
+        progressed = true;
+      }
+    }
+    if (!progressed) break;
+  }
+
+  if (selectedCount < targetSize) {
+    throw new Error(`Cannot satisfy deterministic shortlist target: ${selectedCount}/${targetSize} after lesson caps.`);
+  }
+
+  return {
+    selected: sectionOrders.flatMap((section) => selectedBySection.get(section)),
+    contributionCounts,
+  };
 }
 
 function compactCandidate(item, mode, rankWithinSection) {
@@ -250,14 +294,29 @@ function maxContribution(contributionCounts) {
 
 function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY) {
   const sectionOrders = uniqueSorted(policy.sectionOrders || DEFAULT_SHORTLIST_POLICY.sectionOrders);
-  const typedPerSection = Number(policy.typedPerSection);
-  const recognitionPerSection = Number(policy.recognitionPerSection);
+  const typedTargetSize = Number(policy.typedTargetSize ?? DEFAULT_SHORTLIST_POLICY.typedTargetSize);
+  const minTypedPerSection = Number(policy.minTypedPerSection ?? DEFAULT_SHORTLIST_POLICY.minTypedPerSection);
+  const recognitionTargetSize = Number(policy.recognitionTargetSize ?? DEFAULT_SHORTLIST_POLICY.recognitionTargetSize);
+  const minRecognitionPerSection = Number(policy.minRecognitionPerSection ?? DEFAULT_SHORTLIST_POLICY.minRecognitionPerSection);
   const maxTypedPerLesson = Number(policy.maxTypedPerLesson ?? DEFAULT_SHORTLIST_POLICY.maxTypedPerLesson);
   const maxRecognitionPerLesson = Number(policy.maxRecognitionPerLesson ?? DEFAULT_SHORTLIST_POLICY.maxRecognitionPerLesson);
-  if (!Number.isInteger(typedPerSection) || typedPerSection < 1) throw new Error("typedPerSection must be a positive integer.");
-  if (!Number.isInteger(recognitionPerSection) || recognitionPerSection < 1) throw new Error("recognitionPerSection must be a positive integer.");
-  if (!Number.isInteger(maxTypedPerLesson) || maxTypedPerLesson < 1) throw new Error("maxTypedPerLesson must be a positive integer.");
-  if (!Number.isInteger(maxRecognitionPerLesson) || maxRecognitionPerLesson < 1) throw new Error("maxRecognitionPerLesson must be a positive integer.");
+
+  for (const [name, value] of Object.entries({
+    typedTargetSize,
+    minTypedPerSection,
+    recognitionTargetSize,
+    minRecognitionPerSection,
+    maxTypedPerLesson,
+    maxRecognitionPerLesson,
+  })) {
+    if (!Number.isInteger(value) || value < 1) throw new Error(`${name} must be a positive integer.`);
+  }
+  if (typedTargetSize < minTypedPerSection * sectionOrders.length) {
+    throw new Error("typedTargetSize cannot be lower than the combined typed section floors.");
+  }
+  if (recognitionTargetSize < minRecognitionPerSection * sectionOrders.length) {
+    throw new Error("recognitionTargetSize cannot be lower than the combined recognition section floors.");
+  }
 
   const assessed = rawInventory.map((item) => ({
     ...item,
@@ -266,31 +325,23 @@ function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY
     recognitionAssessment: recognitionAssessment(item),
   }));
 
-  const typedResult = takePerSection(assessed, "typedAssessment", typedPerSection, sectionOrders, {
-    maxPerLesson: maxTypedPerLesson,
-  });
+  const typedResult = selectBalancedTarget(
+    assessed,
+    "typedAssessment",
+    typedTargetSize,
+    minTypedPerSection,
+    sectionOrders,
+    { maxPerLesson: maxTypedPerLesson }
+  );
   const typedIds = new Set(typedResult.selected.map((item) => item.id));
-  const recognitionResult = takePerSection(
+  const recognitionResult = selectBalancedTarget(
     assessed,
     "recognitionAssessment",
-    recognitionPerSection,
+    recognitionTargetSize,
+    minRecognitionPerSection,
     sectionOrders,
-    {
-      excludedIds: typedIds,
-      maxPerLesson: maxRecognitionPerLesson,
-    }
+    { excludedIds: typedIds, maxPerLesson: maxRecognitionPerLesson }
   );
-
-  const shortages = [
-    ...typedResult.shortages.map((item) => ({ mode: "typed", ...item })),
-    ...recognitionResult.shortages.map((item) => ({ mode: "recognition", ...item })),
-  ];
-  if (shortages.length > 0) {
-    const detail = shortages
-      .map((item) => `${item.mode} section ${item.section}: ${item.available}/${item.required} after lesson caps (${item.uncappedAvailable} uncapped)`)
-      .join(", ");
-    throw new Error(`Cannot satisfy deterministic shortlist policy: ${detail}`);
-  }
 
   const rankMaps = { typed: new Map(), recognition: new Map() };
   for (const mode of ["typed", "recognition"]) {
@@ -353,8 +404,10 @@ function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY
   return {
     policy: {
       sectionOrders,
-      typedPerSection,
-      recognitionPerSection,
+      typedTargetSize,
+      minTypedPerSection,
+      recognitionTargetSize,
+      minRecognitionPerSection,
       maxTypedPerLesson,
       maxRecognitionPerLesson,
     },
