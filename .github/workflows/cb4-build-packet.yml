@@ -1,4 +1,4 @@
-name: CB4 Build Packet
+name: CB4 Finalize Authoring
 
 on:
   pull_request:
@@ -9,8 +9,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  build:
-    name: Build CB4 authoring package
+  finalize:
+    name: Finalize CB4 authoring gates
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
@@ -24,245 +24,29 @@ jobs:
         with:
           node-version: 22
 
-      - name: Prepare CB4 authoring and review contracts
-        shell: python
+      - name: Install permanent CB4 core gate
+        run: node scripts/cb4-finalize-authoring.mjs
+
+      - name: Validate final authoring head
         run: |
-          from pathlib import Path
+          node --check scripts/build-sentence-exam-curated-bank.mjs
+          node --check scripts/audit-sentence-exam-curated-bank-cb4.mjs
+          node --check scripts/test-sentence-exam-curated-bank-cb4.mjs
+          node scripts/build-sentence-exam-curated-bank.mjs --check
+          node scripts/audit-sentence-exam-curated-bank-cb4.mjs
+          node scripts/test-sentence-exam-curated-bank-cb4.mjs
+          node scripts/audit-sentence-exam-curated-bank.mjs
+          node scripts/audit-core-release.mjs --write-status
+          git diff --check
 
-          def replace_once(text, old, new, label):
-              if new in text:
-                  return text
-              if old not in text:
-                  raise SystemExit(f"Missing expected source for {label}")
-              return text.replace(old, new, 1)
-
-          builder_path = Path("scripts/build-sentence-exam-curated-bank.mjs")
-          builder = builder_path.read_text(encoding="utf-8")
-
-          old_prompt = '''  const prompt = contrast.controlledProduction?.promptEn || candidate.existingExamPromptEn;
-            if (typeof prompt !== "string" || !prompt.trim()) return { rejected: "missing-controlled-prompt" };
-            const review = source.reviewedRows[candidate.id] || null;
-            const acceptedAnswers = uniqueNormalized(review?.acceptedAnswers || [row.korean]);
-            const canonicalKey = normalizeSentenceExamAnswer(row.korean);
-            const manualAlternatives = acceptedAnswers.filter((value) => normalizeSentenceExamAnswer(value) !== canonicalKey).slice(0, 4);
-            const templateId = chooseTypedTemplate(candidate, prompt);
-            const requiresLexicalAnchor = templateId === "lexically-anchored-production" || /use the lesson expression|using the word/i.test(prompt);
-            const analysis = detectAmbiguityFlags(row, prompt, { requiresLexicalAnchor });'''
-          new_prompt = '''  const originalPrompt = contrast.controlledProduction?.promptEn || candidate.existingExamPromptEn;
-            if (typeof originalPrompt !== "string" || !originalPrompt.trim()) return { rejected: "missing-controlled-prompt" };
-            const review = source.reviewedRows[candidate.id] || null;
-            const acceptedAnswers = uniqueNormalized(review?.acceptedAnswers || [row.korean]);
-            const canonicalKey = normalizeSentenceExamAnswer(row.korean);
-            const manualAlternatives = acceptedAnswers.filter((value) => normalizeSentenceExamAnswer(value) !== canonicalKey).slice(0, 4);
-            const templateId = chooseTypedTemplate(candidate, originalPrompt);
-            const requiresLexicalAnchor = templateId === "lexically-anchored-production" || /use the lesson expression|using the word/i.test(originalPrompt);
-            let prompt = originalPrompt.trim();
-            const promptStrengthening = [];
-            const firstPass = detectAmbiguityFlags(row, prompt, { requiresLexicalAnchor });
-            const tags = new Set(row.patternTags || []);
-            if (firstPass.flags.includes("topic-or-focus-not-forced")) {
-              if (tags.has("topic-neun")) prompt = `As for the stated topic, ${prompt}`;
-              else prompt = `Answer what or who is at issue. ${prompt}`;
-              promptStrengthening.push("information-structure-cue");
-            }
-            if (firstPass.flags.includes("time-or-tense-not-forced")) {
-              prompt += tags.has("past-polite") ? " The event happened yesterday." : " The event will happen tomorrow.";
-              promptStrengthening.push("time-cue");
-            }
-            if (firstPass.flags.includes("register-not-forced")) {
-              prompt += " Speak politely to a teacher.";
-              promptStrengthening.push("register-cue");
-            }
-            if (firstPass.flags.includes("communicative-act-not-forced")) {
-              prompt = `Say the complete sentence that performs the stated task. ${prompt}`;
-              promptStrengthening.push("communicative-act-cue");
-            }
-            if (firstPass.flags.includes("lexical-choice-not-forced")) {
-              prompt += " Use the expression taught in this lesson.";
-              promptStrengthening.push("lexical-anchor-cue");
-            }
-            const analysis = detectAmbiguityFlags(row, prompt, { requiresLexicalAnchor });'''
-          builder = replace_once(builder, old_prompt, new_prompt, "prompt strengthening")
-
-          builder = replace_once(
-              builder,
-              '''      examPromptEn: prompt.trim(),
-                    canonicalAnswer: row.korean,''',
-              '''      examPromptEn: prompt.trim(),
-                    originalExamPromptEn: originalPrompt.trim(),
-                    promptStrengthening,
-                    canonicalAnswer: row.korean,''',
-              "prompt provenance",
-          )
-
-          builder = replace_once(
-              builder,
-              '      manualAlternativesOverride: previous.manualAlternativesOverride ?? null,\n',
-              '      manualAlternativesOverride: previous.manualAlternativesOverride ?? null,\n      resolvedAmbiguityFlags: previous.resolvedAmbiguityFlags ?? [],\n',
-              "preserved ambiguity resolutions",
-          )
-          builder = replace_once(
-              builder,
-              '    manualAlternativesOverride: null,\n  };',
-              '    manualAlternativesOverride: null,\n    resolvedAmbiguityFlags: [],\n  };',
-              "initial ambiguity resolutions",
-          )
-          builder = replace_once(
-              builder,
-              '    if ((review.manualAlternativesOverride || []).length > 4) errors.push(`${review.id}: no more than four manual alternatives are allowed.`);\n',
-              '''    if ((review.manualAlternativesOverride || []).length > 4) errors.push(`${review.id}: no more than four manual alternatives are allowed.`);
-                if (!Array.isArray(review.resolvedAmbiguityFlags)) errors.push(`${review.id}: resolvedAmbiguityFlags must be an array.`);
-                else {
-                  const authoredFlags = new Set(authored.authoringAmbiguityFlags || []);
-                  for (const flag of review.resolvedAmbiguityFlags) {
-                    if (!authoredFlags.has(flag)) errors.push(`${review.id}: cannot resolve unreported ambiguity flag '${flag}'.`);
-                  }
-                }
-''',
-              "reviewed ambiguity validation",
-          )
-          builder = replace_once(
-              builder,
-              '      reviewerNote: review.reviewerNote,\n    };',
-              '      reviewerNote: review.reviewerNote,\n      resolvedAmbiguityFlags: [...review.resolvedAmbiguityFlags],\n    };',
-              "bank ambiguity evidence",
-          )
-          builder_path.write_text(builder, encoding="utf-8")
-
-          audit_path = Path("scripts/audit-sentence-exam-curated-bank.mjs")
-          audit = audit_path.read_text(encoding="utf-8")
-          audit = replace_once(
-              audit,
-              '''      const analysis = detectAmbiguityFlags(row, entry.examPromptEn, {
-                    duplicateCanonicalKeys,
-                    requiresLexicalAnchor: entry.requiresLexicalAnchor === true,
-                  });
-                  if (analysis.flags.length > 0) errors.push(`Curated typed entry ${entry.id} remains ambiguous: ${analysis.flags.join(", ")}.`);''',
-              '''      const analysis = detectAmbiguityFlags(row, entry.examPromptEn, {
-                    duplicateCanonicalKeys,
-                    requiresLexicalAnchor: entry.requiresLexicalAnchor === true,
-                  });
-                  const resolvedFlags = Array.isArray(entry.resolvedAmbiguityFlags) ? entry.resolvedAmbiguityFlags : [];
-                  const staleResolvedFlags = resolvedFlags.filter((flag) => !analysis.flags.includes(flag));
-                  if (staleResolvedFlags.length > 0) errors.push(`Curated typed entry ${entry.id} has stale ambiguity resolutions: ${staleResolvedFlags.join(", ")}.`);
-                  const unresolvedFlags = analysis.flags.filter((flag) => !resolvedFlags.includes(flag));
-                  if (unresolvedFlags.length > 0) errors.push(`Curated typed entry ${entry.id} remains ambiguous: ${unresolvedFlags.join(", ")}.`);
-                  if (resolvedFlags.length > 0 && entry.reviewStatus !== "approved") errors.push(`Curated typed entry ${entry.id} resolves ambiguity without approved review evidence.`);''',
-              "audit ambiguity resolution",
-          )
-          audit_path.write_text(audit, encoding="utf-8")
-
-          test_path = Path("scripts/test-sentence-exam-curated-bank-cb4.mjs")
-          test = test_path.read_text(encoding="utf-8")
-          test = replace_once(
-              test,
-              '''  review.reviewerNote = `Independently checked ${review.id}: prompt forces the live target, canonical Korean matches, and any finite alternatives are bounded and collision-free.`;
-            }''',
-              '''  review.reviewerNote = `Independently checked ${review.id}: prompt forces the live target, canonical Korean matches, and any finite alternatives are bounded and collision-free.`;
-              const authored = authoringPackage.entries.find((entry) => entry.id === review.id);
-              review.resolvedAmbiguityFlags = [...(authored.authoringAmbiguityFlags || [])];
-            }''',
-              "test ambiguity approvals",
-          )
-          old_assertions = '''const nonAmbiguityErrors = audited.errors.filter((error) => !error.includes("remains ambiguous:"));
-            assert.deepEqual(nonAmbiguityErrors, []);
-            const flaggedTypedIds = new Set(authoringPackage.entries
-              .filter((entry) => entry.mode === "typed" && entry.authoringAmbiguityFlags.length > 0)
-              .map((entry) => entry.id));
-            const auditedAmbiguousIds = new Set(audited.errors
-              .filter((error) => error.includes("remains ambiguous:"))
-              .map((error) => error.match(/Curated typed entry (s\\d+)/)?.[1])
-              .filter(Boolean));
-            assert.deepEqual(auditedAmbiguousIds, flaggedTypedIds);'''
-          new_assertions = '''assert.deepEqual(audited.errors, []);
-            const flaggedTypedIds = new Set(authoringPackage.entries
-              .filter((entry) => entry.mode === "typed" && entry.authoringAmbiguityFlags.length > 0)
-              .map((entry) => entry.id));'''
-          test = replace_once(test, old_assertions, new_assertions, "reviewed bank audit assertion")
-          test = replace_once(
-              test,
-              '''assert.equal(audited.recognitionCount, 320);
-
-            const sameAuthor''',
-              '''assert.equal(audited.recognitionCount, 320);
-
-            const unresolvedBank = structuredClone(bank);
-            const unresolvedEntry = unresolvedBank.entries.find((entry) => entry.mode === "typed" && entry.resolvedAmbiguityFlags.length > 0);
-            unresolvedEntry.resolvedAmbiguityFlags = [];
-            const unresolvedAudit = auditCuratedBankState({
-              bank: unresolvedBank,
-              templates: source.templates,
-              sentences: source.sentences,
-              reviewedRows: source.reviewedRows,
-              routes: source.routes,
-            });
-            assert.ok(unresolvedAudit.errors.some((error) => error.includes(`${unresolvedEntry.id} remains ambiguous`)));
-
-            const sameAuthor''',
-              "unresolved ambiguity regression",
-          )
-          test_path.write_text(test, encoding="utf-8")
-
-      - name: Generate and validate CB4 package
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Commit permanent gate and status
         run: |
-          set +e
-          (
-            set -e
-            node --check scripts/build-sentence-exam-curated-bank.mjs
-            node --check scripts/audit-sentence-exam-curated-bank-cb4.mjs
-            node --check scripts/test-sentence-exam-curated-bank-cb4.mjs
-            node --check scripts/audit-sentence-exam-curated-bank.mjs
-            node scripts/build-sentence-exam-curated-bank.mjs --write
-            node scripts/build-sentence-exam-curated-bank.mjs --check
-            node scripts/audit-sentence-exam-curated-bank-cb4.mjs
-            node scripts/test-sentence-exam-curated-bank-cb4.mjs
-            node scripts/audit-sentence-exam-curated-bank.mjs
-            node scripts/audit-core-release.mjs --write-status
-            git diff --check
-          ) > .cb4-build.log 2>&1
-          status=$?
-          cat .cb4-build.log
-          if [ "$status" -ne 0 ]; then
-            gh pr comment "${{ github.event.pull_request.number }}" --body-file .cb4-build.log
-            exit "$status"
-          fi
-
-      - name: Upload generated package
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cb4-authoring-package
-          path: |
-            .cb4-build.log
-            docs/generated/sentence_exam_curated_bank_cb4_authoring.json
-            docs/reviews/sentence_exam_curated_bank_cb4_reviews.json
-            docs/CORE_APP_STATUS.md
-          if-no-files-found: warn
-
-      - name: Commit generated authoring evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          (
-            set -e
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add scripts/build-sentence-exam-curated-bank.mjs \
-              scripts/audit-sentence-exam-curated-bank.mjs \
-              scripts/test-sentence-exam-curated-bank-cb4.mjs \
-              docs/generated/sentence_exam_curated_bank_cb4_authoring.json \
-              docs/reviews/sentence_exam_curated_bank_cb4_reviews.json \
-              docs/CORE_APP_STATUS.md
-            git status --short
-            git commit -m "CB4: strengthen and generate bank authoring package"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/audit-core-release.mjs docs/CORE_APP_STATUS.md
+          if git diff --cached --quiet; then
+            echo "Permanent gate already current."
+          else
+            git commit -m "CB4: wire curated bank authoring into core gate"
             git push origin HEAD:${{ github.event.pull_request.head.ref }}
-          ) > .cb4-push.log 2>&1
-          status=$?
-          cat .cb4-push.log
-          if [ "$status" -ne 0 ]; then
-            gh pr comment "${{ github.event.pull_request.number }}" --body-file .cb4-push.log
-            exit "$status"
           fi
