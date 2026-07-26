@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 import { detectAmbiguityFlags, normalizeSentenceExamAnswer } from "./lib/sentence-exam-ambiguity.mjs";
+import { SENTENCE_EXAM_FREEZE_SOURCE_FILES, auditFreezeManifest } from "./lib/sentence-exam-freeze.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -192,8 +193,8 @@ export function auditCuratedBankState({ bank, templates, sentences, reviewedRows
 
   if (bank?.enabled === true) {
     const policy = LOCKED_SELECTION_POLICY;
-    if (typedEntries.length < policy.typedTargetSize) errors.push(`Enabled typed pool has ${typedEntries.length} entries; locked target is ${policy.typedTargetSize}.`);
-    if (recognitionEntries.length < policy.recognitionTargetSize) errors.push(`Enabled recognition pool has ${recognitionEntries.length} entries; locked target is ${policy.recognitionTargetSize}.`);
+    if (typedEntries.length !== policy.typedTargetSize) errors.push(`Enabled typed pool has ${typedEntries.length} entries; locked target is ${policy.typedTargetSize} exactly.`);
+    if (recognitionEntries.length !== policy.recognitionTargetSize) errors.push(`Enabled recognition pool has ${recognitionEntries.length} entries; locked target is ${policy.recognitionTargetSize} exactly.`);
 
     const typedBySection = new Map();
     const recognitionBySection = new Map();
@@ -237,17 +238,43 @@ function main() {
     "sentence_exam_eligibility.js",
     "sentence_exam_prompt_templates.js",
     "sentence_exam_curated_bank.js",
+    "sentence_exam_curated_bank_freeze.js",
   ]);
+  const bank = W.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
   const result = auditCuratedBankState({
-    bank: W.HANAPATH_SENTENCE_EXAM_CURATED_BANK,
+    bank,
     templates: W.HANAPATH_SENTENCE_EXAM_PROMPT_TEMPLATES,
     sentences: Array.isArray(W.HANAPATH_SENTENCES) ? W.HANAPATH_SENTENCES : [],
     reviewedRows: W.HANAPATH_SENTENCE_EXAM_ELIGIBILITY?.reviewedRows || {},
     routes: buildRoutes(W),
   });
+
+  let manifest = null;
+  try {
+    manifest = JSON.parse(readFileSync(join(ROOT, "docs", "generated", "sentence_exam_curated_bank_cb5_freeze.json"), "utf8"));
+  } catch {
+    result.errors.push("CB5 curated-bank freeze manifest is missing or invalid JSON.");
+  }
+  const sourceFileContents = Object.fromEntries(
+    SENTENCE_EXAM_FREEZE_SOURCE_FILES.map((path) => [path, readFileSync(join(ROOT, path))])
+  );
+  if (manifest) {
+    result.errors.push(...auditFreezeManifest({ bank, manifest, sourceFileContents }).errors);
+    if (JSON.stringify(W.HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE) !== JSON.stringify(manifest)) {
+      result.errors.push("Runtime CB5 freeze contract does not match the committed manifest.");
+    }
+  }
+  if (bank?.enabled !== true) result.errors.push("CB5 requires the curated Sentence exam bank to be enabled.");
+  if (bank?.freezeState !== "frozen") result.errors.push("CB5 requires freezeState 'frozen'.");
+  if (!Object.isFrozen(bank)) result.errors.push("CB5 curated Sentence exam bank object is not runtime-frozen.");
+  if (!Object.isFrozen(bank?.entries)) result.errors.push("CB5 curated Sentence exam entry array is not runtime-frozen.");
+
   console.log("Curated sentence exam bank audit");
   console.log("================================");
-  console.log(`Enabled             : ${W.HANAPATH_SENTENCE_EXAM_CURATED_BANK?.enabled === true ? "yes" : "no"}`);
+  console.log(`Enabled             : ${bank?.enabled === true ? "yes" : "no"}`);
+  console.log(`Frozen revision     : ${bank?.freeze?.revision || "missing"}`);
+  console.log(`Prompt hash         : ${bank?.freeze?.hashes?.promptsSha256 || "missing"}`);
+  console.log(`Answer hash         : ${bank?.freeze?.hashes?.answersSha256 || "missing"}`);
   console.log(`Typed entries       : ${result.typedCount}`);
   console.log(`Recognition entries : ${result.recognitionCount}`);
   if (result.errors.length > 0) {

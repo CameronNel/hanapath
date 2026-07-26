@@ -59,6 +59,9 @@ const DATA_FILES = [
   "sentence_exam_eligibility_shard_c.js",
   "sentence_exam_eligibility_shard_d.js",
   "sentence_exam_eligibility.js",
+  "sentence_exam_prompt_templates.js",
+  "sentence_exam_curated_bank.js",
+  "sentence_exam_curated_bank_freeze.js",
   "hangul_mastery_exam.js",
   "hangul_strokes.js",
   "raw_word_meanings.js",
@@ -68,15 +71,13 @@ const DATA_FILES = [
 //
 // The report's readiness rows are derived, not hand-maintained: they flip
 // automatically as each packet lands its artifacts, with NO edit to this file.
-// The X1/X2 packets satisfy the contract by shipping these exact files and
-// publishing the runtime meta marker:
 //
-//   - E2  : every bank row has an approved eligibility record
-//           (derived from HANAPATH_SENTENCE_EXAM_ELIGIBILITY — approved === rows).
+//   - CB5 : the independently reviewed curated bank is enabled, hash-frozen, and
+//           exactly 288 typed / 320 recognition entries. Historical eligibility
+//           shards C and D remain protected evidence, not release prerequisites.
 //   - X1  : `sentence_exam_blueprints.js` publishes HANAPATH_SENTENCE_EXAM_BLUEPRINTS;
 //           `sentence_exam_engine.js` publishes HANAPATH_SENTENCE_EXAM_META with a
-//           numeric `engineVersion`; `scripts/audit-sentence-exams.mjs` exists
-//           (the roadmap §9 / X1 seed audit).
+//           numeric `engineVersion`; `scripts/audit-sentence-exams.mjs` exists.
 //   - X2  : HANAPATH_SENTENCE_EXAM_META gains a non-null `runnerVersion` and, once
 //           the delayed retention flow ships, `retention === true`.
 const SENTENCE_EXAM_CONTRACT = {
@@ -147,23 +148,46 @@ function deriveShell() {
   };
 }
 
-// Sentence Mastery examination is delivered across E2/X1/X2. Every milestone
-// below is derived live from the eligibility corpus and the locked readiness
-// contract, so each row flips on its own as the packet lands — nothing here is
-// hand-entered.
-function deriveSentenceExamReadiness(W, sentenceRows, approvedRows) {
+// Sentence Mastery examination readiness is delivered across CB5/X1/X2.
+// CB5 derives from the activated immutable bank and committed freeze manifest;
+// X1/X2 derive from their runtime globals and named artifact files.
+function deriveSentenceExamReadiness(W, _sentenceRows, _approvedRows) {
   const has = (rel) => existsSync(join(ROOT, rel));
   const meta = W[SENTENCE_EXAM_CONTRACT.metaGlobal] || null;
   const blueprints = W[SENTENCE_EXAM_CONTRACT.blueprintsGlobal] || null;
+  const bank = W.HANAPATH_SENTENCE_EXAM_CURATED_BANK || null;
+  const freeze = W.HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE || bank?.freeze || null;
+  const entries = Array.isArray(bank?.entries) ? bank.entries : [];
+  const typedCount = entries.filter((entry) => entry?.mode === "typed").length;
+  const recognitionCount = entries.filter((entry) => entry?.mode === "recognition").length;
+  const validHashes = ["promptsSha256", "answersSha256", "typedReviewsSha256", "entriesSha256"]
+    .every((key) => /^[0-9a-f]{64}$/.test(freeze?.hashes?.[key] || ""));
+  const curatedReady = Boolean(
+    bank
+      && bank.enabled === true
+      && bank.freezeState === "frozen"
+      && Object.isFrozen(bank)
+      && Object.isFrozen(bank.entries)
+      && freeze
+      && freeze.revision === bank.revision
+      && freeze.entryCount === entries.length
+      && freeze.typedCount === 288
+      && freeze.recognitionCount === 320
+      && typedCount === 288
+      && recognitionCount === 320
+      && validHashes
+  );
   const engineVersion = meta && meta.engineVersion != null ? meta.engineVersion : null;
   const runnerVersion = meta && meta.runnerVersion != null ? meta.runnerVersion : null;
 
   return [
     {
-      id: "eligibility-corpus",
-      label: "Reviewed eligibility corpus (E2)",
-      present: sentenceRows > 0 && approvedRows === sentenceRows,
-      note: `${approvedRows}/${sentenceRows} rows approved`,
+      id: "curated-bank",
+      label: "Enabled frozen curated bank (CB5)",
+      present: curatedReady,
+      note: bank
+        ? `${typedCount} typed / ${recognitionCount} recognition — ${bank.revision || "missing revision"}`
+        : "curated bank missing",
     },
     {
       id: "blueprints",
@@ -288,21 +312,23 @@ const GATE_STEPS = [
   {
     id: "sentence-eligibility",
     label: "Sentence eligibility (schema + progress)",
-    // Mirrors CI exactly: strict mode is deferred to packet E2. Using
-    // --allow-incomplete here does not weaken the schema/progress checks.
+    // Historical E1A/E1B evidence remains protected. Shards C/D are not release
+    // prerequisites after CB5, so this gate intentionally checks schema/progress.
     script: "scripts/audit-sentence-eligibility.mjs",
     fullArgs: ["--allow-incomplete"],
     quickArgs: ["--allow-incomplete"],
   },
   { id: "eligibility-shards-regression", label: "Eligibility shard-integrity fixtures (E0)", script: "scripts/test-sentence-eligibility-shards.mjs" },
-  { id: "curated-sentence-exam-bank", label: "Curated Sentence exam bank (CB0)", script: "scripts/audit-sentence-exam-curated-bank.mjs" },
+  { id: "curated-sentence-exam-bank", label: "Enabled frozen curated Sentence exam bank (CB5)", script: "scripts/audit-sentence-exam-curated-bank.mjs" },
   { id: "sentence-exam-ambiguity", label: "Sentence-exam ambiguity screening regression (CB0)", script: "scripts/test-sentence-exam-ambiguity.mjs" },
   { id: "sentence-exam-grader", label: "Sentence-exam strict grader regression (CB0)", script: "scripts/test-sentence-exam-grader.mjs" },
   { id: "sentence-exam-candidate-ranking", label: "Sentence-exam candidate ranking regression (CB1)", script: "scripts/test-sentence-exam-candidate-ranking.mjs" },
   { id: "sentence-exam-inventory", label: "Sentence-exam inventory and shortlist freshness (CB1)", script: "scripts/build-sentence-exam-inventory.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
   { id: "sentence-exam-curated-authoring-freshness", label: "Sentence-exam curated bank authoring freshness (CB4)", script: "scripts/build-sentence-exam-curated-bank.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
-  { id: "sentence-exam-curated-authoring-audit", label: "Sentence-exam curated bank authoring audit (CB4)", script: "scripts/audit-sentence-exam-curated-bank-cb4.mjs" },
+  { id: "sentence-exam-curated-authoring-audit", label: "Sentence-exam curated bank approved-review audit (CB4)", script: "scripts/audit-sentence-exam-curated-bank-cb4.mjs", fullArgs: ["--require-approved"], quickArgs: ["--require-approved"] },
   { id: "sentence-exam-curated-authoring-regression", label: "Sentence-exam curated bank authoring regression (CB4)", script: "scripts/test-sentence-exam-curated-bank-cb4.mjs" },
+  { id: "sentence-exam-curated-freeze-freshness", label: "Sentence-exam curated bank freeze freshness (CB5)", script: "scripts/build-sentence-exam-curated-bank-freeze.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
+  { id: "sentence-exam-curated-freeze-regression", label: "Sentence-exam curated bank freeze regression (CB5)", script: "scripts/test-sentence-exam-curated-bank-freeze.mjs" },
   { id: "sentence-lesson-contrast-authoring", label: "Sentence lesson contrast authoring regression (CB2)", script: "scripts/test-sentence-lesson-contrast-authoring.mjs" },
   { id: "sentence-lesson-contrast-ui", label: "Sentence lesson contrast UI regression (CB2)", script: "scripts/test-sentence-lesson-contrast-ui.mjs" },
   { id: "sentence-lesson-contrast-freshness", label: "Sentence lesson contrast data freshness (CB2)", script: "scripts/build-sentence-lesson-contrasts.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
@@ -436,11 +462,11 @@ function renderStatusMarkdown(status) {
   lines.push("");
   lines.push("### Sentence Mastery examination readiness");
   lines.push("");
-  lines.push("Delivered across packets E2/X1/X2. Each row is derived live — E2 from the");
-  lines.push("eligibility corpus (approved rows === bank rows), X1/X2 from the locked readiness");
-  lines.push("contract in `scripts/audit-core-release.mjs` (the named artifact files plus the");
-  lines.push("`HANAPATH_SENTENCE_EXAM_META` runtime marker) — so each flips automatically as its");
-  lines.push("packet lands, with no edit to this report or the generator.");
+  lines.push("Delivered across packets CB5/X1/X2. CB5 is derived from the enabled, immutable");
+  lines.push("curated bank and its committed prompt, answer, review, entry, and inventory hashes.");
+  lines.push("X1/X2 derive from the locked artifact files plus the");
+  lines.push("`HANAPATH_SENTENCE_EXAM_META` runtime marker, so each row flips automatically as");
+  lines.push("its packet lands, with no hand-edit to this report.");
   lines.push("");
   lines.push("| Milestone | Present |");
   lines.push("|---|---|");
@@ -471,9 +497,9 @@ function renderStatusMarkdown(status) {
   lines.push("## Open core gates");
   lines.push("");
   lines.push(
-    `- **Sentence eligibility** is at ${s.eligibilityApproved} / ${s.rows} approved rows ` +
-      `(${pct(s.eligibilityApproved, s.rows)}%). CI and this gate run ` +
-      "`audit-sentence-eligibility.mjs --allow-incomplete`; the strict gate lands with packet **E2**."
+    `- **Historical Sentence eligibility evidence** remains at ${s.eligibilityApproved} / ${s.rows} approved rows ` +
+      `(${pct(s.eligibilityApproved, s.rows)}%). E1A/E1B stay protected; unfinished shards C/D are ` +
+      "not release prerequisites. The strict source-bank gate is the enabled frozen curated bank."
   );
   lines.push(
     `- **Sentence Mastery examination** engine/runner: ${

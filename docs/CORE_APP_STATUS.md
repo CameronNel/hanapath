@@ -60,15 +60,15 @@ owns *what to do next*; this file owns *what currently exists*.
 
 ### Sentence Mastery examination readiness
 
-Delivered across packets E2/X1/X2. Each row is derived live — E2 from the
-eligibility corpus (approved rows === bank rows), X1/X2 from the locked readiness
-contract in `scripts/audit-core-release.mjs` (the named artifact files plus the
-`HANAPATH_SENTENCE_EXAM_META` runtime marker) — so each flips automatically as its
-packet lands, with no edit to this report or the generator.
+Delivered across packets CB5/X1/X2. CB5 is derived from the enabled, immutable
+curated bank and its committed prompt, answer, review, entry, and inventory hashes.
+X1/X2 derive from the locked artifact files plus the
+`HANAPATH_SENTENCE_EXAM_META` runtime marker, so each row flips automatically as
+its packet lands, with no hand-edit to this report.
 
 | Milestone | Present |
 |---|---|
-| Reviewed eligibility corpus (E2) | no — 2100/4177 rows approved |
+| Enabled frozen curated bank (CB5) | yes — 288 typed / 320 recognition — curated-sentence-exam-v1-cb4 |
 | Exam blueprints (X1) | no |
 | Generator/grader engine (X1) | no |
 | Seed audit (X1) | no |
@@ -96,14 +96,16 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Form Checks | `node scripts/audit-form-checks.mjs` | blocking |
 | Sentence eligibility (schema + progress) | `node scripts/audit-sentence-eligibility.mjs --allow-incomplete` | blocking |
 | Eligibility shard-integrity fixtures (E0) | `node scripts/test-sentence-eligibility-shards.mjs` | blocking |
-| Curated Sentence exam bank (CB0) | `node scripts/audit-sentence-exam-curated-bank.mjs` | blocking |
+| Enabled frozen curated Sentence exam bank (CB5) | `node scripts/audit-sentence-exam-curated-bank.mjs` | blocking |
 | Sentence-exam ambiguity screening regression (CB0) | `node scripts/test-sentence-exam-ambiguity.mjs` | blocking |
 | Sentence-exam strict grader regression (CB0) | `node scripts/test-sentence-exam-grader.mjs` | blocking |
 | Sentence-exam candidate ranking regression (CB1) | `node scripts/test-sentence-exam-candidate-ranking.mjs` | blocking |
 | Sentence-exam inventory and shortlist freshness (CB1) | `node scripts/build-sentence-exam-inventory.mjs --check` | blocking |
 | Sentence-exam curated bank authoring freshness (CB4) | `node scripts/build-sentence-exam-curated-bank.mjs --check` | blocking |
-| Sentence-exam curated bank authoring audit (CB4) | `node scripts/audit-sentence-exam-curated-bank-cb4.mjs` | blocking |
+| Sentence-exam curated bank approved-review audit (CB4) | `node scripts/audit-sentence-exam-curated-bank-cb4.mjs --require-approved` | blocking |
 | Sentence-exam curated bank authoring regression (CB4) | `node scripts/test-sentence-exam-curated-bank-cb4.mjs` | blocking |
+| Sentence-exam curated bank freeze freshness (CB5) | `node scripts/build-sentence-exam-curated-bank-freeze.mjs --check` | blocking |
+| Sentence-exam curated bank freeze regression (CB5) | `node scripts/test-sentence-exam-curated-bank-freeze.mjs` | blocking |
 | Sentence lesson contrast authoring regression (CB2) | `node scripts/test-sentence-lesson-contrast-authoring.mjs` | blocking |
 | Sentence lesson contrast UI regression (CB2) | `node scripts/test-sentence-lesson-contrast-ui.mjs` | blocking |
 | Sentence lesson contrast data freshness (CB2) | `node scripts/build-sentence-lesson-contrasts.mjs --check` | blocking |
@@ -123,7 +125,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 
 ## Open core gates
 
-- **Sentence eligibility** is at 2100 / 4177 approved rows (50.28%). CI and this gate run `audit-sentence-eligibility.mjs --allow-incomplete`; the strict gate lands with packet **E2**.
+- **Historical Sentence eligibility evidence** remains at 2100 / 4177 approved rows (50.28%). E1A/E1B stay protected; unfinished shards C/D are not release prerequisites. The strict source-bank gate is the enabled frozen curated bank.
 - **Sentence Mastery examination** engine/runner: not yet shipped (packets **X1** and **X2**); the seed audit step SKIPs.
 - **Mobile package validation** is conditional on a prepared `mobile/www`; the Android workflow performs it after `npm run prepare:web`.
 

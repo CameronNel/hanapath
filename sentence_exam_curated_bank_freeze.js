@@ -1,0 +1,45 @@
+(function () {
+  "use strict";
+
+  const bank = window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+  const freeze = {
+    "schemaVersion": 1,
+    "revision": "curated-sentence-exam-v1-cb4",
+    "bankSchemaVersion": 1,
+    "entryCount": 608,
+    "typedCount": 288,
+    "recognitionCount": 320,
+    "hashes": {
+      "promptsSha256": "7b7f4458f2a4e9c2748fdbc54f28c5f4209f5f9c181eac3fcb3deaa83faf9686",
+      "answersSha256": "411ca572213d11cc53e0fdd24e02a4b24dd56efec33ac1d44ba0c333cf877785",
+      "typedReviewsSha256": "404f8ce455c8e69da933f276ef4dd3796f3b7c05a697c12f688003ed68fdc720",
+      "entriesSha256": "2b0ee56d1837d836125a347af687f417c30285c5937fdbb5894a5307601fd677"
+    },
+    "sourceFiles": {
+      "sentence_exam_curated_bank.js": "3c7af99a3f1712f95197c5af056f8f1835b41a941fa925e1d8b120d11acac435",
+      "docs/generated/sentence_exam_inventory.json": "c847260ef3a7a3c852dfad15745287ec28634642d1987a3af8b919643f6c394b",
+      "docs/generated/sentence_exam_shortlist.json": "f3ace23ebfe57d632f6621f0702eaa4c84b93a3fd9e807a5ed8e4d818bc1caff",
+      "docs/generated/sentence_exam_curated_bank_cb4_authoring.json": "0dc8b2ca0a04b6b6b02cd7caf72d551d034cc9bdb0f4571f1e838234a7ed50ee",
+      "docs/reviews/sentence_exam_curated_bank_cb4_reviews.json": "ee45b83b6c607a009bf4cbd37c0f8aba781a9bb501a093706f1b546ed3ecdc9d"
+    }
+  };
+
+  if (!bank || typeof bank !== "object") {
+    throw new Error("Curated Sentence exam bank must load before its CB5 freeze contract.");
+  }
+  if (bank.revision !== freeze.revision) {
+    throw new Error("Curated Sentence exam bank revision does not match the CB5 freeze contract.");
+  }
+
+  function deepFreeze(value) {
+    if (!value || typeof value !== "object" || Object.isFrozen(value)) return value;
+    for (const child of Object.values(value)) deepFreeze(child);
+    return Object.freeze(value);
+  }
+
+  bank.enabled = true;
+  bank.freezeState = "frozen";
+  bank.freeze = freeze;
+  window.HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE = deepFreeze(freeze);
+  deepFreeze(bank);
+})();

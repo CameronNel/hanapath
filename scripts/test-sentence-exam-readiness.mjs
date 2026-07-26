@@ -1,19 +1,11 @@
 #!/usr/bin/env node
 // Regression test for the Sentence Mastery examination readiness derivation.
 //
-// Proves the readiness rows are genuinely derived — not hard-coded — by feeding
-// deriveSentenceExamReadiness() controlled inputs and asserting each row flips:
-//   - E2 flips on the eligibility corpus (approved === bank rows);
-//   - X1 engine and X2 runner/retention flip on the HANAPATH_SENTENCE_EXAM_META
-//     runtime marker;
-//   - file-gated rows (blueprints also needs its file; seed audit is file-only)
-//     stay false while the artifact is absent.
-//
-// This committed test covers the pure, FS-independent transitions: the E2
-// corpus flip and the X1/X2 META-marker flips, plus the negative (absent) cases
-// including file-gated rows. The file-*present* flips for blueprints / engine /
-// seed-audit were verified separately by manually staging real artifacts; that
-// staging is evidence only and is not asserted here.
+// Proves the rows are derived rather than hand-maintained:
+//   - CB5 flips only for an enabled, immutable 288/320 curated bank with a
+//     matching frozen revision and all four committed SHA-256 hashes;
+//   - X1 engine and X2 runner/retention flip on the runtime meta marker;
+//   - file-gated rows remain false while their artifacts are absent.
 
 import { deriveSentenceExamReadiness } from "./audit-core-release.mjs";
 
@@ -24,52 +16,95 @@ function check(name, cond) {
     failures++;
   }
 }
-const byId = (rows, id) => rows.find((r) => r.id === id);
+const byId = (rows, id) => rows.find((row) => row.id === id);
 
-// --- E2: derived purely from corpus counts ---------------------------------
-const e2Done = byId(deriveSentenceExamReadiness({}, 4177, 4177), "eligibility-corpus");
-check("E2 present when approved === rows", e2Done.present === true);
-check("E2 note is live-computed (4177/4177)", e2Done.note === "4177/4177 rows approved");
+function frozenBank({ enabled = true, typed = 288, recognition = 320, revision = "curated-v1" } = {}) {
+  const entries = [
+    ...Array.from({ length: typed }, (_, index) => ({ id: `t${index}`, mode: "typed" })),
+    ...Array.from({ length: recognition }, (_, index) => ({ id: `r${index}`, mode: "recognition" })),
+  ];
+  const freeze = {
+    revision,
+    entryCount: entries.length,
+    typedCount: typed,
+    recognitionCount: recognition,
+    hashes: {
+      promptsSha256: "a".repeat(64),
+      answersSha256: "b".repeat(64),
+      typedReviewsSha256: "c".repeat(64),
+      entriesSha256: "d".repeat(64),
+    },
+  };
+  const bank = { revision, enabled, freezeState: "frozen", freeze, entries };
+  for (const entry of entries) Object.freeze(entry);
+  Object.freeze(entries);
+  Object.freeze(freeze.hashes);
+  Object.freeze(freeze);
+  Object.freeze(bank);
+  return { bank, freeze };
+}
 
-const e2Partial = byId(deriveSentenceExamReadiness({}, 4177, 20), "eligibility-corpus");
-check("E2 absent when approved < rows", e2Partial.present === false);
-check("E2 partial note is live-computed (20/4177)", e2Partial.note === "20/4177 rows approved");
-
+const readyFixture = frozenBank();
+const cb5Ready = deriveSentenceExamReadiness({
+  HANAPATH_SENTENCE_EXAM_CURATED_BANK: readyFixture.bank,
+  HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: readyFixture.freeze,
+});
+check("CB5 present for exact enabled frozen bank", byId(cb5Ready, "curated-bank").present === true);
 check(
-  "E2 absent when bank empty",
-  byId(deriveSentenceExamReadiness({}, 0, 0), "eligibility-corpus").present === false
+  "CB5 note reports exact pool and revision",
+  byId(cb5Ready, "curated-bank").note === "288 typed / 320 recognition — curated-v1"
 );
 
-// --- X1 engine + X2 runner/retention: derived from the META marker ----------
-const landed = deriveSentenceExamReadiness(
-  { HANAPATH_SENTENCE_EXAM_META: { engineVersion: 4, runnerVersion: 2, retention: true } },
-  4177,
-  20
+const disabledFixture = frozenBank({ enabled: false });
+check(
+  "CB5 absent when bank disabled",
+  byId(deriveSentenceExamReadiness({
+    HANAPATH_SENTENCE_EXAM_CURATED_BANK: disabledFixture.bank,
+    HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: disabledFixture.freeze,
+  }), "curated-bank").present === false
 );
+const shortFixture = frozenBank({ typed: 287 });
+check(
+  "CB5 absent when exact pool target drifts",
+  byId(deriveSentenceExamReadiness({
+    HANAPATH_SENTENCE_EXAM_CURATED_BANK: shortFixture.bank,
+    HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: shortFixture.freeze,
+  }), "curated-bank").present === false
+);
+check(
+  "CB5 absent without bank",
+  byId(deriveSentenceExamReadiness({}), "curated-bank").present === false
+);
+
+const landed = deriveSentenceExamReadiness({
+  HANAPATH_SENTENCE_EXAM_CURATED_BANK: readyFixture.bank,
+  HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: readyFixture.freeze,
+  HANAPATH_SENTENCE_EXAM_META: { engineVersion: 4, runnerVersion: 2, retention: true },
+});
 check("engine present when META.engineVersion set", byId(landed, "engine").present === true);
 check("engine note reflects version", byId(landed, "engine").note === "engine v4");
 check("runner present when META.runnerVersion set", byId(landed, "runner").present === true);
 check("runner note reflects version", byId(landed, "runner").note === "runner v2");
 check("retention present when META.retention true", byId(landed, "retention").present === true);
 
-const empty = deriveSentenceExamReadiness({}, 4177, 20);
+const empty = deriveSentenceExamReadiness({
+  HANAPATH_SENTENCE_EXAM_CURATED_BANK: readyFixture.bank,
+  HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: readyFixture.freeze,
+});
 check("engine absent without META", byId(empty, "engine").present === false);
 check("runner absent without META", byId(empty, "runner").present === false);
 check("retention absent without META", byId(empty, "retention").present === false);
 
-// --- File-gated rows stay false while the artifact is absent -----------------
-// blueprints needs BOTH the global AND its file; the file is absent in-repo, so
-// even with the global present the row must remain false.
-const bpGlobalOnly = deriveSentenceExamReadiness(
-  { HANAPATH_SENTENCE_EXAM_BLUEPRINTS: [{ id: "x" }] },
-  4177,
-  20
-);
-check("blueprints absent when file missing (global alone insufficient)", byId(bpGlobalOnly, "blueprints").present === false);
-check("seed-audit absent when file missing", byId(empty, "seed-audit").present === false);
+const bpGlobalOnly = deriveSentenceExamReadiness({
+  HANAPATH_SENTENCE_EXAM_CURATED_BANK: readyFixture.bank,
+  HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: readyFixture.freeze,
+  HANAPATH_SENTENCE_EXAM_BLUEPRINTS: [{ id: "x" }],
+});
+check("blueprints absent when file missing", byId(bpGlobalOnly, "blueprints").present === false);
+check("seed audit absent when file missing", byId(empty, "seed-audit").present === false);
 
 if (failures > 0) {
   console.error(`\nSentence-exam readiness regression FAILED (${failures}).`);
   process.exit(1);
 }
-console.log("PASS: Sentence Mastery readiness is derived (E2 corpus, X1/X2 META marker, file gating).");
+console.log("PASS: Sentence Mastery readiness is derived from CB5 frozen bank and X1/X2 artifacts.");
