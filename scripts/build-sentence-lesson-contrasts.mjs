@@ -10,7 +10,7 @@ const RUNTIME_FILE = join(ROOT, "sentence_lesson_contrasts_sections_1_4.js");
 const REPORT_FILE = join(ROOT, "docs", "generated", "sentence_lesson_contrasts_sections_1_4.json");
 const SHORTLIST_FILE = join(ROOT, "docs", "generated", "sentence_exam_shortlist.json");
 const SECTION_ORDERS = Object.freeze([1, 2, 3, 4]);
-const REVISION = "sentence-lesson-contrasts-cb2-v1";
+const REVISION = "sentence-lesson-contrasts-cb2-v2";
 
 function loadGlobals(files) {
   const sandbox = { window: {} };
@@ -23,12 +23,27 @@ function loadGlobals(files) {
   return sandbox.window;
 }
 
-function buildSectionMaps(W) {
+function buildSectionMaps(W, lessons) {
   const sections = Array.isArray(W.HANAPATH_SENTENCE_SECTIONS) ? W.HANAPATH_SENTENCE_SECTIONS : [];
   const units = Array.isArray(W.HANAPATH_SENTENCE_UNITS) ? W.HANAPATH_SENTENCE_UNITS : [];
   const sectionOrderById = new Map(sections.map((section) => [section.id, section.order]));
   const sectionOrderByUnit = new Map(units.map((unit) => [unit.id, sectionOrderById.get(unit.sectionId) || null]));
-  return { sectionOrderByUnit };
+  const lessonIdsByRow = new Map();
+  const sectionOrdersByRow = new Map();
+  const rowIdsBySection = new Map();
+  for (const lesson of lessons) {
+    const sectionOrder = sectionOrderByUnit.get(lesson.unitId);
+    if (!Number.isInteger(sectionOrder)) continue;
+    if (!rowIdsBySection.has(sectionOrder)) rowIdsBySection.set(sectionOrder, new Set());
+    for (const rowId of lesson.sentenceIds || []) {
+      rowIdsBySection.get(sectionOrder).add(rowId);
+      if (!lessonIdsByRow.has(rowId)) lessonIdsByRow.set(rowId, new Set());
+      lessonIdsByRow.get(rowId).add(lesson.id);
+      if (!sectionOrdersByRow.has(rowId)) sectionOrdersByRow.set(rowId, new Set());
+      sectionOrdersByRow.get(rowId).add(sectionOrder);
+    }
+  }
+  return { sectionOrderByUnit, lessonIdsByRow, sectionOrdersByRow, rowIdsBySection };
 }
 
 function buildPayload() {
@@ -36,7 +51,7 @@ function buildPayload() {
   const rows = Array.isArray(W.HANAPATH_SENTENCES) ? W.HANAPATH_SENTENCES : [];
   const lessons = Array.isArray(W.HANAPATH_SENTENCE_LESSONS) ? W.HANAPATH_SENTENCE_LESSONS : [];
   const shortlist = JSON.parse(readFileSync(SHORTLIST_FILE, "utf8"));
-  const { sectionOrderByUnit } = buildSectionMaps(W);
+  const { sectionOrderByUnit, lessonIdsByRow, sectionOrdersByRow, rowIdsBySection } = buildSectionMaps(W, lessons);
   const rowById = new Map(rows.map((row) => [row.id, row]));
   const lessonById = new Map(lessons.map((lesson) => [lesson.id, lesson]));
   const candidates = (shortlist.typedCandidates || [])
@@ -54,32 +69,52 @@ function buildPayload() {
     if (sectionOrder !== candidate.sectionOrder) {
       throw new Error(`${candidate.id}: shortlist section ${candidate.sectionOrder} does not match live route ${sectionOrder}.`);
     }
-    const lessonRows = (lesson.sentenceIds || []).map((id) => rowById.get(id)).filter(Boolean);
-    const contrast = selectContrastRow(target, lessonRows);
-    return buildLessonContrastEntry({ candidate, target, contrast, lesson, sectionOrder });
+    const nearbyRowIds = new Set();
+    for (const [candidateSection, rowIds] of rowIdsBySection) {
+      if (Math.abs(candidateSection - sectionOrder) > 2) continue;
+      for (const rowId of rowIds) nearbyRowIds.add(rowId);
+    }
+    const sectionRows = [...nearbyRowIds].map((id) => rowById.get(id)).filter(Boolean);
+    const contrastSelection = selectContrastRow(target, sectionRows, {
+      targetLessonId: lesson.id,
+      targetSectionOrder: sectionOrder,
+      lessonIdsByRow,
+      sectionOrdersByRow,
+    });
+    return buildLessonContrastEntry({ candidate, target, contrastSelection, lesson, sectionOrder });
   });
 
   const countsBySection = SECTION_ORDERS.map((sectionOrder) => ({
     sectionOrder,
     count: entries.filter((entry) => entry.sectionOrder === sectionOrder).length,
     generatedPromptCount: entries.filter((entry) => entry.sectionOrder === sectionOrder && entry.promptReviewRequired).length,
+    strongContrastCount: entries.filter((entry) => entry.sectionOrder === sectionOrder && entry.contrastSelection.qualityTier === "strong").length,
+    usableContrastCount: entries.filter((entry) => entry.sectionOrder === sectionOrder && entry.contrastSelection.qualityTier === "usable").length,
+    weakContrastCount: entries.filter((entry) => entry.sectionOrder === sectionOrder && entry.contrastSelection.qualityTier === "weak").length,
   }));
-  return {
+  const report = {
     schemaVersion: 1,
     revision: REVISION,
     sectionOrders: [...SECTION_ORDERS],
     entryCount: entries.length,
     bankApprovedCount: entries.filter((entry) => entry.bankApproved).length,
     generatedPromptCount: entries.filter((entry) => entry.promptReviewRequired).length,
+    strongContrastCount: entries.filter((entry) => entry.contrastSelection.qualityTier === "strong").length,
+    usableContrastCount: entries.filter((entry) => entry.contrastSelection.qualityTier === "usable").length,
+    weakContrastCount: entries.filter((entry) => entry.contrastSelection.qualityTier === "weak").length,
+    sameLessonContrastCount: entries.filter((entry) => entry.contrastSelection.sourceScope === "same-lesson").length,
+    sameSectionContrastCount: entries.filter((entry) => entry.contrastSelection.sourceScope === "same-section").length,
+    nearbySectionContrastCount: entries.filter((entry) => entry.contrastSelection.sourceScope === "nearby-section").length,
     countsBySection,
     decisionRule: "CB2 teaches and constrains candidates but never approves curated-bank content.",
     entries,
   };
+  return report;
 }
 
 function runtimeText(report) {
   const data = JSON.stringify(report, null, 2);
-  return `// Generated by scripts/build-sentence-lesson-contrasts.mjs. Do not hand-edit.\n(function installSentenceLessonContrastsSections1To4() {\n  \"use strict\";\n  const contract = ${data};\n  const lessons = Array.isArray(window.HANAPATH_SENTENCE_LESSONS) ? window.HANAPATH_SENTENCE_LESSONS : [];\n  const lessonById = new Map(lessons.map((lesson) => [lesson.id, lesson]));\n  for (const entry of contract.entries) {\n    const lesson = lessonById.get(entry.lessonId);\n    if (!lesson) throw new Error(\`CB2 contrast lesson missing: \${entry.lessonId}\`);\n    const mutation = entry.lessonMutation;\n    lesson.goal = mutation.goal;\n    lesson.subtitle = mutation.subtitle;\n    lesson.concept = mutation.concept;\n    lesson.sentenceIds = mutation.sentenceIds.slice();\n    lesson.drillPlan = mutation.drillPlan.map((item) => ({ ...item }));\n    lesson.contrastTeaching = entry;\n  }\n  window.HANAPATH_SENTENCE_LESSON_CONTRASTS_1_4 = contract;\n})();\n`;
+  return `// Generated by scripts/build-sentence-lesson-contrasts.mjs. Do not hand-edit.\n(function installSentenceLessonContrastsSections1To4() {\n  "use strict";\n  const contract = ${data};\n  const lessons = Array.isArray(window.HANAPATH_SENTENCE_LESSONS) ? window.HANAPATH_SENTENCE_LESSONS : [];\n  const lessonById = new Map(lessons.map((lesson) => [lesson.id, lesson]));\n  for (const entry of contract.entries) {\n    const lesson = lessonById.get(entry.lessonId);\n    if (!lesson) throw new Error(\`CB2 contrast lesson missing: \${entry.lessonId}\`);\n    const mutation = entry.lessonMutation;\n    lesson.goal = mutation.goal;\n    lesson.subtitle = mutation.subtitle;\n    lesson.concept = mutation.concept;\n    lesson.sentenceIds = mutation.sentenceIds.slice();\n    lesson.drillPlan = mutation.drillPlan.map((item) => ({ ...item }));\n    lesson.contrastTeaching = entry;\n  }\n  window.HANAPATH_SENTENCE_LESSON_CONTRASTS_1_4 = contract;\n})();\n`;
 }
 
 function pretty(value) {
@@ -123,6 +158,12 @@ if (process.argv.includes("--write")) {
     revision: report.revision,
     entryCount: report.entryCount,
     generatedPromptCount: report.generatedPromptCount,
+    strongContrastCount: report.strongContrastCount,
+    usableContrastCount: report.usableContrastCount,
+    weakContrastCount: report.weakContrastCount,
+    sameLessonContrastCount: report.sameLessonContrastCount,
+    sameSectionContrastCount: report.sameSectionContrastCount,
+    nearbySectionContrastCount: report.nearbySectionContrastCount,
     countsBySection: report.countsBySection,
   }, null, 2));
 }
