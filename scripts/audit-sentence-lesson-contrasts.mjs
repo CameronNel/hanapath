@@ -3,12 +3,13 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
+import { contrastCandidateAssessment } from "./lib/sentence-lesson-contrast-authoring.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SECTION_ORDERS = Object.freeze([1, 2, 3, 4]);
 const EXPECTED_COUNTS = Object.freeze({ 1: 34, 2: 55, 3: 55, 4: 54 });
 const EXPECTED_TOTAL = 198;
-const REVISION = "sentence-lesson-contrasts-cb2-v1";
+const REVISION = "sentence-lesson-contrasts-cb2-v2";
 const RUNTIME_ASSET = "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a";
 const UI_ASSET = "./sentence_lesson_contrast_ui.js?v=20260726a";
 
@@ -46,6 +47,19 @@ const report = JSON.parse(read("docs/generated/sentence_lesson_contrasts_section
 const baseRows = new Map((base.HANAPATH_SENTENCES || []).map((row) => [row.id, row]));
 const baseLessons = new Map((base.HANAPATH_SENTENCE_LESSONS || []).map((lesson) => [lesson.id, lesson]));
 const appliedLessons = new Map((applied.HANAPATH_SENTENCE_LESSONS || []).map((lesson) => [lesson.id, lesson]));
+const sectionOrderById = new Map((base.HANAPATH_SENTENCE_SECTIONS || []).map((section) => [section.id, section.order]));
+const sectionOrderByUnit = new Map((base.HANAPATH_SENTENCE_UNITS || []).map((unit) => [unit.id, sectionOrderById.get(unit.sectionId)]));
+const lessonIdsByRow = new Map();
+const sectionOrdersByRow = new Map();
+for (const lesson of baseLessons.values()) {
+  const sectionOrder = sectionOrderByUnit.get(lesson.unitId);
+  for (const rowId of lesson.sentenceIds || []) {
+    if (!lessonIdsByRow.has(rowId)) lessonIdsByRow.set(rowId, new Set());
+    lessonIdsByRow.get(rowId).add(lesson.id);
+    if (!sectionOrdersByRow.has(rowId)) sectionOrdersByRow.set(rowId, new Set());
+    sectionOrdersByRow.get(rowId).add(sectionOrder);
+  }
+}
 const expectedCandidates = (shortlist.typedCandidates || [])
   .filter((candidate) => SECTION_ORDERS.includes(candidate.sectionOrder));
 const entries = Array.isArray(report.entries) ? report.entries : [];
@@ -55,6 +69,13 @@ if (report.entryCount !== EXPECTED_TOTAL || entries.length !== EXPECTED_TOTAL) {
   fail(`entry count must be ${EXPECTED_TOTAL}; report=${report.entryCount}, entries=${entries.length}`);
 }
 if (report.bankApprovedCount !== 0) fail("CB2 may not approve curated-bank entries");
+if (report.strongContrastCount + report.usableContrastCount + report.weakContrastCount !== EXPECTED_TOTAL) {
+  fail("contrast quality counts do not sum to the entry total");
+}
+if (report.weakContrastCount !== 0) fail(`weak contrast count must remain 0; got ${report.weakContrastCount}`);
+if (report.sameLessonContrastCount + report.sameSectionContrastCount + report.nearbySectionContrastCount !== EXPECTED_TOTAL) {
+  fail("contrast source-scope counts do not sum to the entry total");
+}
 if (expectedCandidates.length !== EXPECTED_TOTAL) fail(`shortlist sections 1-4 must contain ${EXPECTED_TOTAL} typed candidates`);
 exactSet("target coverage", entries.map((entry) => entry.targetSentenceId), expectedCandidates.map((candidate) => candidate.id));
 exactSet("lesson coverage", entries.map((entry) => entry.lessonId), expectedCandidates.map((candidate) => candidate.lessonIds[0]));
@@ -78,19 +99,43 @@ for (const entry of entries) {
   if (!contrast) fail(`${label}: missing contrast row ${entry.contrastSentenceId}`);
   if (entry.targetSentenceId === entry.contrastSentenceId) fail(`${label}: target and contrast are identical`);
   if (!originalLesson.sentenceIds.includes(entry.targetSentenceId)) fail(`${label}: target did not route through the original lesson`);
-  if (!originalLesson.sentenceIds.includes(entry.contrastSentenceId)) fail(`${label}: contrast did not route through the original lesson`);
-  exactSet(`${label}: preserved lesson rows`, appliedLesson.sentenceIds || [], originalLesson.sentenceIds || []);
+  const sourceLessonIds = [...(lessonIdsByRow.get(entry.contrastSentenceId) || [])].sort((a, b) => a.localeCompare(b, "en"));
+  const sourceSectionOrders = [...(sectionOrdersByRow.get(entry.contrastSentenceId) || [])].filter(Number.isInteger).sort((a, b) => a - b);
+  exactSet(`${label}: contrast source lessons`, entry.contrastSelection?.sourceLessonIds || [], sourceLessonIds);
+  exactSet(`${label}: contrast source sections`, entry.contrastSelection?.sourceSectionOrders || [], sourceSectionOrders);
+  const sectionDistance = sourceSectionOrders.length
+    ? Math.min(...sourceSectionOrders.map((sectionOrder) => Math.abs(sectionOrder - entry.sectionOrder)))
+    : 99;
+  if (sectionDistance > 2) fail(`${label}: contrast is more than two curriculum sections away`);
+  const sameLesson = sourceLessonIds.includes(entry.lessonId);
+  const expectedScope = sameLesson ? "same-lesson" : sectionDistance === 0 ? "same-section" : "nearby-section";
+  if (entry.contrastSelection?.sourceScope !== expectedScope) fail(`${label}: contrast source scope is stale`);
+  const expectedLessonRows = [...new Set([...(originalLesson.sentenceIds || []), entry.contrastSentenceId])];
+  exactSet(`${label}: preserved lesson rows plus contrast`, appliedLesson.sentenceIds || [], expectedLessonRows);
+  const expectedFreePractice = (originalLesson.sentenceIds || []).filter((id) => id !== entry.targetSentenceId && id !== entry.contrastSentenceId);
+  exactSet(`${label}: free-practice rows`, entry.freePractice?.sentenceIds || [], expectedFreePractice);
   if (appliedLesson.sentenceIds?.[0] !== entry.targetSentenceId) fail(`${label}: target must be the first study line`);
   if (appliedLesson.sentenceIds?.[1] !== entry.contrastSentenceId) fail(`${label}: contrast must be the second study line`);
   if (appliedLesson.contrastTeaching?.targetSentenceId !== entry.targetSentenceId) fail(`${label}: runtime metadata was not applied`);
   if (!String(appliedLesson.goal || "").includes("intended meaning")) fail(`${label}: learner-facing goal is missing`);
   if (!String(appliedLesson.concept || "").includes("Target:")) fail(`${label}: learner-facing contrast concept is missing`);
 
-  for (const field of ["meaningInContext", "contrastClosure", "controlledProduction", "variationAwareness", "freePractice", "examReadiness"]) {
-    if (!entry[field]) fail(`${label}: missing ${field}`);
-  }
+  const responsibilities = [
+    "meaningInContext", "contrastClosure", "controlledProduction",
+    "variationAwareness", "freePractice", "examReadiness",
+  ];
+  for (const field of responsibilities) if (!entry[field]) fail(`${label}: missing ${field}`);
   if (entry.examReadiness !== "typed-candidate") fail(`${label}: invalid exam-readiness decision`);
   if (entry.bankApproved !== false) fail(`${label}: bankApproved must remain false`);
+  if (entry.contrastReviewRequired !== true) fail(`${label}: heuristic contrast must require independent review`);
+  if (!entry.contrastSelection || !["strong", "usable"].includes(entry.contrastSelection.qualityTier)) {
+    fail(`${label}: contrast quality must be strong or usable`);
+  }
+  const recomputed = contrastCandidateAssessment(target, contrast, { sameLesson, sectionDistance });
+  for (const metric of ["englishOverlap", "koreanOverlap", "semanticIdOverlap", "sharedTagCount", "meaningfulDimensionCount", "sectionDistance", "qualityTier"]) {
+    if (entry.contrastSelection?.[metric] !== recomputed[metric]) fail(`${label}: stale contrast metric ${metric}`);
+  }
+  if (Math.abs(Number(entry.contrastSelection?.score) - Number(recomputed.score)) > 1e-9) fail(`${label}: stale contrast score`);
   if (Object.prototype.hasOwnProperty.call(entry, "reviewedBy") || entry.reviewStatus === "approved") {
     fail(`${label}: CB2 must not invent independent bank approval`);
   }
@@ -153,10 +198,13 @@ if (!/const CACHE_NAME = "hanapath-shell-v450";/.test(swJs)) fail("sw.js cache m
 if (report.generatedPromptCount > 0) {
   warn(`${report.generatedPromptCount} controlled lesson prompts remain explicitly marked for CB4 review; they are teaching prompts, not approved exam items.`);
 }
+warn(`All ${EXPECTED_TOTAL} heuristic contrast selections require independent linguistic review before CB2 integration.`);
 
 console.log(`CB2 contrast entries: ${entries.length}`);
 console.log(`Section counts: ${SECTION_ORDERS.map((section) => `${section}:${entries.filter((entry) => entry.sectionOrder === section).length}`).join(", ")}`);
 console.log(`Generated teaching prompts awaiting later bank review: ${report.generatedPromptCount}`);
+console.log(`Contrast quality: strong=${report.strongContrastCount}, usable=${report.usableContrastCount}, weak=${report.weakContrastCount}`);
+console.log(`Contrast sources: same lesson=${report.sameLessonContrastCount}, same section=${report.sameSectionContrastCount}, nearby section=${report.nearbySectionContrastCount}`);
 for (const message of warnings) console.warn(`WARN: ${message}`);
 if (errors.length) {
   for (const message of errors) console.error(`ERROR: ${message}`);
