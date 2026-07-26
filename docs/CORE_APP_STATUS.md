@@ -54,9 +54,9 @@ owns *what to do next*; this file owns *what currently exists*.
 
 | Metric | Value |
 |---|---|
-| Service-worker cache name | hanapath-shell-v449 |
-| Versioned local assets loaded by index.html | 24 |
-| Precached service-worker shell assets | 197 |
+| Service-worker cache name | hanapath-shell-v450 |
+| Versioned local assets loaded by index.html | 26 |
+| Precached service-worker shell assets | 199 |
 
 ### Sentence Mastery examination readiness
 
@@ -101,6 +101,11 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentence-exam strict grader regression (CB0) | `node scripts/test-sentence-exam-grader.mjs` | blocking |
 | Sentence-exam candidate ranking regression (CB1) | `node scripts/test-sentence-exam-candidate-ranking.mjs` | blocking |
 | Sentence-exam inventory and shortlist freshness (CB1) | `node scripts/build-sentence-exam-inventory.mjs --check` | blocking |
+| Sentence lesson contrast authoring regression (CB2) | `node scripts/test-sentence-lesson-contrast-authoring.mjs` | blocking |
+| Sentence lesson contrast UI regression (CB2) | `node scripts/test-sentence-lesson-contrast-ui.mjs` | blocking |
+| Sentence lesson contrast data freshness (CB2) | `node scripts/build-sentence-lesson-contrasts.mjs --check` | blocking |
+| Sentence lesson contrast coverage and safety (CB2) | `node scripts/audit-sentence-lesson-contrasts.mjs` | blocking |
+| Sentence lesson contrast browser fixtures (CB2) | `node scripts/test-sentence-lesson-contrasts-browser.mjs` | blocking |
 | Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | conditional |
 | Audio coverage | `node scripts/audit-audio-coverage.mjs` | blocking |
 | Alphabet audio coverage | `node scripts/audit-alphabet-audio.mjs --strict` | blocking |

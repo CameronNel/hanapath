@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sentence lesson contrast fixture</title>
+  <link rel="stylesheet" href="../../styles.css?v=20260723a" />
+  <style>
+    body { margin: 0; padding: 16px; overflow-wrap: anywhere; }
+    main { width: min(100%, 920px); margin: 0 auto; }
+    .fixture-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+    .fixture-card { min-width: 0; }
+  </style>
+  <script defer src="../../sentences_core.js?v=20260717u"></script>
+  <script defer src="../../sentences_lesson_plan.js?v=20260717u"></script>
+  <script defer src="../../sentence_lesson_contrast_ui.js?v=20260726a"></script>
+  <script defer src="../../sentence_lesson_contrasts_sections_1_4.js?v=20260726a"></script>
+</head>
+<body data-test-status="pending">
+  <main>
+    <h1>Sentence lesson contrast fixture</h1>
+    <div id="fixtureGrid" class="fixture-grid"></div>
+    <pre id="fixtureResult" role="status" aria-live="polite"></pre>
+  </main>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const errors = [];
+      const contract = window.HANAPATH_SENTENCE_LESSON_CONTRASTS_1_4;
+      const ui = window.HANAPATH_SENTENCE_CONTRAST_UI;
+      const lessons = new Map((window.HANAPATH_SENTENCE_LESSONS || []).map((lesson) => [lesson.id, lesson]));
+      if (!contract || contract.entries.length !== 198) errors.push("contract-count");
+      if (!ui || typeof ui.renderIntroGuide !== "function") errors.push("ui-api");
+      const representatives = [1, 2, 3, 4].map((section) => contract.entries.find((entry) => entry.sectionOrder === section));
+      const grid = document.getElementById("fixtureGrid");
+      for (const entry of representatives) {
+        const lesson = lessons.get(entry.lessonId);
+        const wrapper = document.createElement("article");
+        wrapper.className = "card fixture-card";
+        wrapper.dataset.section = String(entry.sectionOrder);
+        wrapper.innerHTML = `<div class="eyebrow">Section ${entry.sectionOrder}</div><h2>${lesson.title}</h2>${ui.renderIntroGuide(entry)}`;
+        grid.appendChild(wrapper);
+        if (!lesson || lesson.sentenceIds[0] !== entry.targetSentenceId || lesson.sentenceIds[1] !== entry.contrastSentenceId) errors.push(`lesson-order-${entry.sectionOrder}`);
+      }
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (document.querySelectorAll("[data-sentence-contrast-guide]").length !== 4) errors.push("guide-count");
+        if (document.querySelectorAll('[data-sentence-contrast-role="target"] [lang="ko"]').length !== 4) errors.push("target-lang");
+        if (document.querySelectorAll('[data-sentence-contrast-role="contrast"] [lang="ko"]').length !== 4) errors.push("contrast-lang");
+        if (document.querySelectorAll("section[aria-labelledby]").length !== 4) errors.push("aria-labelledby");
+        if (document.documentElement.scrollWidth > window.innerWidth + 1) errors.push(`horizontal-overflow-${document.documentElement.scrollWidth}-${window.innerWidth}`);
+        document.body.dataset.testStatus = errors.length ? "fail" : "pass";
+        document.getElementById("fixtureResult").textContent = errors.length ? errors.join("\n") : `PASS ${window.innerWidth}x${window.innerHeight}`;
+      }));
+    });
+  </script>
+</body>
+</html>
