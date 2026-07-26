@@ -98,7 +98,7 @@ try {
     row("s9302", 2),
   ], {
     sectionOrders: [1, 2],
-    typedTargetSize: 3,
+    typedTargetSize: 2,
     minTypedPerSection: 1,
     recognitionTargetSize: 3,
     minRecognitionPerSection: 1,
