@@ -75,7 +75,7 @@ Re-derive these claims before editing affected product code:
   deterministic inventory tooling, ambiguity screening, audits, tests, and the implementation plan.
 - CB1 is merged. It provides a deterministic 4,177-row inventory plus 400 typed candidates from
   400 distinct lessons and 456 disjoint recognition candidates.
-- The curated bank is intentionally disabled and empty until CB4/CB5.
+- The curated bank is populated with independently reviewed entries but stays disabled until CB5.
 - Sentence exam blueprints, engine, browser runner, and retention do not yet ship.
 - The full learner-journey browser gate does not yet ship.
 
@@ -199,8 +199,8 @@ The integrator updates this table after each merge. Workers do not edit it.
 | CB1 | Inventory and candidate shortlist | COMPLETE (#360) | CB0 | Ranked candidates and generated inventory |
 | CB2 | Lesson contrast restructuring, sections 1-4 | COMPLETE (#362) | CB1 | Taught contrasts and controlled prompts |
 | CB3 | Lesson contrast restructuring, sections 5-8 | COMPLETE (#363) | CB2 | Taught contrasts and controlled prompts |
-| CB4 | Curate and independently review bank | READY | CB2 + CB3 | 288 typed and 320 recognition entries |
-| CB5 | Freeze, enable, and lock readiness | BLOCKED | CB4 | Enabled frozen bank |
+| CB4 | Curate and independently review bank | COMPLETE (#364) | CB2 + CB3 | 288 typed and 320 recognition entries |
+| CB5 | Freeze, enable, and lock readiness | READY | CB4 | Enabled frozen bank |
 | L1 | Lesson reachability, resume, migration, and mobile smoke | READY | C1 | Browser gate |
 | L2 | Final Sentence positional and near-miss feedback | BLOCKED | L1 | Clear lesson feedback |
 | L3 | Authored-item audio closure | READY | C1 | Complete mapped audio |
@@ -209,13 +209,13 @@ The integrator updates this table after each merge. Workers do not edit it.
 | Q1 | Full learner-journey acceptance | BLOCKED | L1-L3 + X2 | Defect closure and evidence |
 | Q2 | Strict release-candidate closure | BLOCKED | Q1 | Final evidence and documentation |
 
-The next READY packets are **CB4**, **L1**, and **L3**.
+The next READY packets are **CB5**, **L1**, and **L3**.
 
 ## 8. Packet instructions
 
 ### Completed historical packets
 
-D0, C1, E0, E1A, E1B, CB0, CB1, CB2, and CB3 are complete. Do not recreate or rerun them as new packets.
+D0, C1, E0, E1A, E1B, CB0, CB1, CB2, CB3, and CB4 are complete. Do not recreate or rerun them as new packets.
 The 2,100 E1A/E1B records remain protected candidate evidence. E1C, E1D, and E2 are superseded
 for exam readiness and must not be started.
 
