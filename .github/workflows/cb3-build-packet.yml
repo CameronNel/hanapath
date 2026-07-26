@@ -1,0 +1,345 @@
+name: CB3 Build Packet
+
+on:
+  push:
+    branches:
+      - core/cb3-lesson-contrasts-sections-5-8
+    paths:
+      - ".github/workflows/cb3-build-packet.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and validate CB3 packet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: core/cb3-lesson-contrasts-sections-5-8
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Author CB3 source and wiring
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          def read(path):
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path, text):
+              Path(path).parent.mkdir(parents=True, exist_ok=True)
+              Path(path).write_text(text, encoding="utf-8")
+
+          def replace_once(text, old, new, label):
+              if new in text:
+                  return text
+              if old not in text:
+                  raise SystemExit(f"Missing expected source for {label}: {old[:120]!r}")
+              return text.replace(old, new, 1)
+
+          # Build script: reuse the independently reviewed CB2 selector and contract shape.
+          builder = read("scripts/build-sentence-lesson-contrasts.mjs")
+          builder = builder.replace("sentence_lesson_contrasts_sections_1_4", "sentence_lesson_contrasts_sections_5_8")
+          builder = builder.replace("Object.freeze([1, 2, 3, 4])", "Object.freeze([5, 6, 7, 8])")
+          builder = builder.replace('sentence-lesson-contrasts-cb2-v2', 'sentence-lesson-contrasts-cb3-v1')
+          builder = re.sub(
+              r'const MANUAL_CONTRAST_OVERRIDES = Object\.freeze\(\{[\s\S]*?\}\);',
+              '''const MANUAL_CONTRAST_OVERRIDES = Object.freeze({});
+          const ADVANCED_SCRUTINY_TAGS = Object.freeze([
+            "and-go", "but-jiman", "because-aseo", "if-myeon", "when-ttae",
+            "formal-nida", "honorific-si", "future-geoyeyo",
+            "neg-an", "neg-mot", "neg-ji-anta",
+            "imperative-seyo", "propositive-eyo", "counter-phrase",
+            "topic-neun", "subject-i-ga",
+          ]);''',
+              builder,
+              count=1,
+          )
+          builder = builder.replace("CB2", "CB3")
+          builder = builder.replace("Sections1To4", "Sections5To8")
+          builder = builder.replace("CONTRASTS_1_4", "CONTRASTS_5_8")
+          builder = replace_once(
+              builder,
+              '    return buildLessonContrastEntry({ candidate, target, contrastSelection, lesson, sectionOrder });',
+              '''    const entry = buildLessonContrastEntry({ candidate, target, contrastSelection, lesson, sectionOrder });
+              entry.advancedScrutinyTags = ADVANCED_SCRUTINY_TAGS.filter((tag) => (target.patternTags || []).includes(tag));
+              entry.advancedReviewRequired = entry.advancedScrutinyTags.length > 0;
+              return entry;''',
+              "CB3 advanced scrutiny entry metadata",
+          )
+          builder = replace_once(
+              builder,
+              '    manualOverrideCount: entries.filter((entry) => entry.contrastSelection.selectionMethod === "manual-semantic-override").length,\n    countsBySection,',
+              '''    manualOverrideCount: entries.filter((entry) => entry.contrastSelection.selectionMethod === "manual-semantic-override").length,
+              advancedReviewCount: entries.filter((entry) => entry.advancedReviewRequired).length,
+              advancedTagCounts: Object.fromEntries(ADVANCED_SCRUTINY_TAGS.map((tag) => [tag, entries.filter((entry) => entry.advancedScrutinyTags.includes(tag)).length])),
+              countsBySection,''',
+              "CB3 report scrutiny counts",
+          )
+          builder = replace_once(
+              builder,
+              '    manualOverrideCount: report.manualOverrideCount,\n    countsBySection: report.countsBySection,',
+              '''    manualOverrideCount: report.manualOverrideCount,
+              advancedReviewCount: report.advancedReviewCount,
+              advancedTagCounts: report.advancedTagCounts,
+              countsBySection: report.countsBySection,''',
+              "CB3 console scrutiny counts",
+          )
+          write("scripts/build-sentence-lesson-contrasts-sections-5-8.mjs", builder)
+
+          # Audit script: mirror CB2 safety rails with sections 5-8 counts and extra advanced-feature scrutiny.
+          audit = read("scripts/audit-sentence-lesson-contrasts.mjs")
+          audit = audit.replace("Object.freeze([1, 2, 3, 4])", "Object.freeze([5, 6, 7, 8])")
+          audit = audit.replace("Object.freeze({ 1: 34, 2: 55, 3: 55, 4: 54 })", "Object.freeze({ 5: 52, 6: 54, 7: 43, 8: 53 })")
+          audit = audit.replace("const EXPECTED_TOTAL = 198;", "const EXPECTED_TOTAL = 202;")
+          audit = audit.replace("const EXPECTED_MANUAL_OVERRIDES = 7;", "const EXPECTED_MANUAL_OVERRIDES = 0;")
+          audit = audit.replace('sentence-lesson-contrasts-cb2-v2', 'sentence-lesson-contrasts-cb3-v1')
+          audit = audit.replace("sentence_lesson_contrasts_sections_1_4", "sentence_lesson_contrasts_sections_5_8")
+          audit = audit.replace("20260726a", "20260726b")
+          audit = audit.replace("hanapath-shell-v450", "hanapath-shell-v451")
+          audit = audit.replace("CB2", "CB3")
+          audit = audit.replace("CONTRASTS_1_4", "CONTRASTS_5_8")
+          audit = replace_once(
+              audit,
+              'const UI_ASSET = "./sentence_lesson_contrast_ui.js?v=20260726b";',
+              '''const UI_ASSET = "./sentence_lesson_contrast_ui.js?v=20260726a";
+          const CB2_RUNTIME_ASSET = "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a";
+          const ADVANCED_SCRUTINY_TAGS = Object.freeze([
+            "and-go", "but-jiman", "because-aseo", "if-myeon", "when-ttae",
+            "formal-nida", "honorific-si", "future-geoyeyo",
+            "neg-an", "neg-mot", "neg-ji-anta",
+            "imperative-seyo", "propositive-eyo", "counter-phrase",
+            "topic-neun", "subject-i-ga",
+          ]);''',
+              "CB3 audit constants",
+          )
+          audit = replace_once(
+              audit,
+              '  "sentence_lesson_contrasts_sections_5_8.js",\n]);',
+              '  "sentence_lesson_contrasts_sections_1_4.js",\n  "sentence_lesson_contrasts_sections_5_8.js",\n]);',
+              "combined CB2 and CB3 runtime load",
+          )
+          audit = replace_once(
+              audit,
+              'if (report.manualOverrideCount !== EXPECTED_MANUAL_OVERRIDES) fail(`manual override count must be ${EXPECTED_MANUAL_OVERRIDES}; got ${report.manualOverrideCount}`);',
+              '''if (report.manualOverrideCount !== EXPECTED_MANUAL_OVERRIDES) fail(`manual override count must be ${EXPECTED_MANUAL_OVERRIDES}; got ${report.manualOverrideCount}`);
+          const derivedAdvancedReviewCount = entries.filter((entry) => entry.advancedReviewRequired).length;
+          if (report.advancedReviewCount !== derivedAdvancedReviewCount) fail(`advanced review count is stale: ${report.advancedReviewCount} != ${derivedAdvancedReviewCount}`);
+          for (const tag of ADVANCED_SCRUTINY_TAGS) {
+            const expectedTagCount = entries.filter((entry) => (entry.advancedScrutinyTags || []).includes(tag)).length;
+            if (report.advancedTagCounts?.[tag] !== expectedTagCount) fail(`advanced tag count is stale for ${tag}`);
+          }''',
+              "CB3 advanced report validation",
+          )
+          audit = replace_once(
+              audit,
+              '  if (entry.contrastReviewRequired !== true) fail(`${label}: heuristic contrast must require independent review`);',
+              '''  if (entry.contrastReviewRequired !== true) fail(`${label}: heuristic contrast must require independent review`);
+            const expectedAdvancedTags = ADVANCED_SCRUTINY_TAGS.filter((tag) => (target?.patternTags || []).includes(tag));
+            exactSet(`${label}: advanced scrutiny tags`, entry.advancedScrutinyTags || [], expectedAdvancedTags);
+            if (entry.advancedReviewRequired !== (expectedAdvancedTags.length > 0)) fail(`${label}: advanced-review flag is stale`);''',
+              "CB3 per-entry scrutiny validation",
+          )
+          audit = re.sub(
+              r'const lessonPlanIndex = indexHtml\.indexOf\("\./sentences_lesson_plan\.js"\);[\s\S]*?fail\("index\.html must load lesson plan, contrast UI, CB3 data, then app\.js in that order"\);\n\}',
+              '''const lessonPlanIndex = indexHtml.indexOf("./sentences_lesson_plan.js");
+          const uiIndex = indexHtml.indexOf(UI_ASSET);
+          const cb2Index = indexHtml.indexOf(CB2_RUNTIME_ASSET);
+          const dataIndex = indexHtml.indexOf(RUNTIME_ASSET);
+          const appIndex = indexHtml.indexOf("./app.js");
+          if (!(lessonPlanIndex >= 0 && uiIndex > lessonPlanIndex && cb2Index > uiIndex && dataIndex > cb2Index && appIndex > dataIndex)) {
+            fail("index.html must load lesson plan, contrast UI, CB2 data, CB3 data, then app.js in that order");
+          }''',
+              audit,
+              count=1,
+          )
+          audit = replace_once(
+              audit,
+              'if (!swJs.includes(UI_ASSET)) fail(`sw.js APP_SHELL missing ${UI_ASSET}`);',
+              '''if (!swJs.includes(UI_ASSET)) fail(`sw.js APP_SHELL missing ${UI_ASSET}`);
+          if (!swJs.includes(CB2_RUNTIME_ASSET)) fail(`sw.js APP_SHELL missing ${CB2_RUNTIME_ASSET}`);''',
+              "CB3 shell retains CB2 asset",
+          )
+          audit = replace_once(
+              audit,
+              'console.log(`Manual semantic overrides: ${report.manualOverrideCount}`);',
+              '''console.log(`Manual semantic overrides: ${report.manualOverrideCount}`);
+          console.log(`Advanced-feature targets requiring extra review: ${report.advancedReviewCount}`);
+          console.log(`Advanced tag counts: ${JSON.stringify(report.advancedTagCounts)}`);''',
+              "CB3 audit summary",
+          )
+          write("scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs", audit)
+
+          browser = read("scripts/test-sentence-lesson-contrasts-browser.mjs")
+          browser = browser.replace("CB2", "CB3")
+          browser = browser.replace("sentence_lesson_contrasts.html", "sentence_lesson_contrasts_sections_5_8.html")
+          browser = browser.replace("hanapath-cb2-chrome-", "hanapath-cb3-chrome-")
+          write("scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs", browser)
+
+          fixture = read("tests/fixtures/sentence_lesson_contrasts.html")
+          fixture = fixture.replace("Sentence lesson contrast fixture", "Sentence lesson contrast fixture sections 5-8")
+          fixture = replace_once(
+              fixture,
+              '  <script defer src="../../sentence_lesson_contrasts_sections_1_4.js?v=20260726a"></script>',
+              '''  <script defer src="../../sentence_lesson_contrasts_sections_1_4.js?v=20260726a"></script>
+          <script defer src="../../sentence_lesson_contrasts_sections_5_8.js?v=20260726b"></script>''',
+              "CB3 fixture data asset",
+          )
+          fixture = fixture.replace("HANAPATH_SENTENCE_LESSON_CONTRASTS_1_4", "HANAPATH_SENTENCE_LESSON_CONTRASTS_5_8")
+          fixture = fixture.replace("contract.entries.length !== 198", "contract.entries.length !== 202")
+          fixture = fixture.replace("[1, 2, 3, 4]", "[5, 6, 7, 8]")
+          fixture = replace_once(
+              fixture,
+              '      if (!contract || contract.entries.length !== 202) errors.push("contract-count");',
+              '''      if (!contract || contract.entries.length !== 202) errors.push("contract-count");
+                const cb2 = window.HANAPATH_SENTENCE_LESSON_CONTRASTS_1_4;
+                if (!cb2 || cb2.entries.length !== 198) errors.push("cb2-contract-count");''',
+              "CB3 fixture preserves CB2 contract",
+          )
+          write("tests/fixtures/sentence_lesson_contrasts_sections_5_8.html", fixture)
+
+          # Runtime wiring and cache/integrity pins.
+          index = read("index.html")
+          index = replace_once(
+              index,
+              '    <script defer src="./sentence_lesson_contrasts_sections_1_4.js?v=20260726a"></script>',
+              '''    <script defer src="./sentence_lesson_contrasts_sections_1_4.js?v=20260726a"></script>
+              <script defer src="./sentence_lesson_contrasts_sections_5_8.js?v=20260726b"></script>''',
+              "index CB3 data load",
+          )
+          index = index.replace('./app.js?v=20260726a', './app.js?v=20260726b')
+          write("index.html", index)
+
+          sw = read("sw.js")
+          sw = sw.replace('// [2026-07-26] Cache bumped for CB2 Sentence lesson contrast teaching (shared UI + sections 1-4 data + app prompt support).', '// [2026-07-26] Cache bumped for CB3 Sentence lesson contrast teaching (sections 5-8 data; CB2 behavior retained).')
+          sw = sw.replace('const CACHE_NAME = "hanapath-shell-v450";', 'const CACHE_NAME = "hanapath-shell-v451";')
+          sw = replace_once(
+              sw,
+              '  "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a",',
+              '''  "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a",
+              "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b",''',
+              "service worker CB3 asset",
+          )
+          sw = sw.replace('./app.js?v=20260726a', './app.js?v=20260726b')
+          write("sw.js", sw)
+
+          app = read("app.js")
+          app = app.replace('const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v450";', 'const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v451";')
+          app = app.replace('const EXAM_INTEGRITY_ASSET_REVISION = "20260726a";', 'const EXAM_INTEGRITY_ASSET_REVISION = "20260726b";')
+          write("app.js", app)
+
+          integrity = read("scripts/audit-exam-integrity.mjs")
+          integrity = integrity.replace('./app.js?v=20260726a', './app.js?v=20260726b')
+          integrity = integrity.replace('hanapath-shell-v450', 'hanapath-shell-v451')
+          integrity = integrity.replace('const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v450"', 'const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v451"')
+          integrity = integrity.replace('const EXAM_INTEGRITY_ASSET_REVISION = "20260726a"', 'const EXAM_INTEGRITY_ASSET_REVISION = "20260726b"')
+          write("scripts/audit-exam-integrity.mjs", integrity)
+
+          shell_audit = read("scripts/audit-app-shell.mjs")
+          shell_audit = replace_once(
+              shell_audit,
+              '  "./sentence_lesson_contrasts_sections_1_4.js",',
+              '''  "./sentence_lesson_contrasts_sections_1_4.js",
+              "./sentence_lesson_contrasts_sections_5_8.js",''',
+              "app-shell required CB3 asset",
+          )
+          write("scripts/audit-app-shell.mjs", shell_audit)
+
+          cb2_audit = read("scripts/audit-sentence-lesson-contrasts.mjs")
+          cb2_audit = cb2_audit.replace('hanapath-shell-v450', 'hanapath-shell-v451')
+          write("scripts/audit-sentence-lesson-contrasts.mjs", cb2_audit)
+
+          ci = read(".github/workflows/ci.yml")
+          ci = ci.replace('sentence_lesson_contrasts_sections_1_4.js words_lesson_plan.js', 'sentence_lesson_contrasts_sections_1_4.js sentence_lesson_contrasts_sections_5_8.js words_lesson_plan.js')
+          ci = replace_once(
+              ci,
+              '''      - name: Sentence lesson contrast browser fixtures
+                run: node scripts/test-sentence-lesson-contrasts-browser.mjs''',
+              '''      - name: Sentence lesson contrast browser fixtures
+                run: node scripts/test-sentence-lesson-contrasts-browser.mjs
+              - name: Check CB3 lesson contrast freshness
+                run: node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --check
+              - name: Audit CB3 lesson contrast coverage and safety
+                run: node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
+              - name: Sentence lesson contrast browser fixtures sections 5-8
+                run: node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs''',
+              "CI CB3 checks",
+          )
+          write(".github/workflows/ci.yml", ci)
+
+          core = read("scripts/audit-core-release.mjs")
+          core = replace_once(
+              core,
+              '  { id: "sentence-lesson-contrast-browser", label: "Sentence lesson contrast browser fixtures (CB2)", script: "scripts/test-sentence-lesson-contrasts-browser.mjs" },',
+              '''  { id: "sentence-lesson-contrast-browser", label: "Sentence lesson contrast browser fixtures (CB2)", script: "scripts/test-sentence-lesson-contrasts-browser.mjs" },
+              { id: "sentence-lesson-contrast-freshness-cb3", label: "Sentence lesson contrast data freshness (CB3)", script: "scripts/build-sentence-lesson-contrasts-sections-5-8.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
+              { id: "sentence-lesson-contrasts-cb3", label: "Sentence lesson contrast coverage and safety (CB3)", script: "scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs" },
+              { id: "sentence-lesson-contrast-browser-cb3", label: "Sentence lesson contrast browser fixtures sections 5-8 (CB3)", script: "scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs" },''',
+              "core release CB3 steps",
+          )
+          write("scripts/audit-core-release.mjs", core)
+
+          roadmap = read("docs/CORE_APP_COMPLETION_ROADMAP.md")
+          roadmap = roadmap.replace('| CB2 | Lesson contrast restructuring, sections 1-4 | READY | CB1 |', '| CB2 | Lesson contrast restructuring, sections 1-4 | COMPLETE (#362) | CB1 |')
+          roadmap = roadmap.replace('| CB3 | Lesson contrast restructuring, sections 5-8 | BLOCKED | CB2 or proven safe parallel split |', '| CB3 | Lesson contrast restructuring, sections 5-8 | READY | CB2 |')
+          roadmap = roadmap.replace('The next READY packets are **CB2**, **L1**, and **L3**.', 'The next READY packets are **CB3**, **L1**, and **L3**.')
+          roadmap = roadmap.replace('D0, C1, E0, E1A, E1B, CB0, and CB1 are complete.', 'D0, C1, E0, E1A, E1B, CB0, CB1, and CB2 are complete.')
+          write("docs/CORE_APP_COMPLETION_ROADMAP.md", roadmap)
+
+      - name: Generate deterministic CB3 contracts
+        run: node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --write
+
+      - name: Run focused CB3 validation
+        run: |
+          node --check app.js
+          node --check sw.js
+          node --check sentence_lesson_contrasts_sections_5_8.js
+          node --check scripts/build-sentence-lesson-contrasts-sections-5-8.mjs
+          node --check scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
+          node --check scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs
+          node scripts/test-sentence-lesson-contrast-authoring.mjs
+          node scripts/test-sentence-lesson-contrast-ui.mjs
+          node scripts/build-sentence-lesson-contrasts.mjs --check
+          node scripts/audit-sentence-lesson-contrasts.mjs
+          node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --check
+          node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
+          node scripts/test-sentence-lesson-contrasts-browser.mjs
+          node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs
+          node scripts/audit-exam-integrity.mjs
+          node scripts/audit-app-shell.mjs
+          node scripts/audit-core-release.mjs --write-status
+          git diff --check
+
+      - name: Commit completed CB3 packet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            .github/workflows/ci.yml \
+            app.js \
+            docs/CORE_APP_COMPLETION_ROADMAP.md \
+            docs/CORE_APP_STATUS.md \
+            docs/generated/sentence_lesson_contrasts_sections_5_8.json \
+            index.html \
+            scripts/audit-app-shell.mjs \
+            scripts/audit-core-release.mjs \
+            scripts/audit-exam-integrity.mjs \
+            scripts/audit-sentence-lesson-contrasts.mjs \
+            scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs \
+            scripts/build-sentence-lesson-contrasts-sections-5-8.mjs \
+            scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs \
+            sentence_lesson_contrasts_sections_5_8.js \
+            sw.js \
+            tests/fixtures/sentence_lesson_contrasts_sections_5_8.html
+          git commit -m "CB3: restructure Sentence lesson contrasts for sections 5-8"
+          git push origin HEAD:core/cb3-lesson-contrasts-sections-5-8
