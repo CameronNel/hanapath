@@ -39,47 +39,55 @@ jobs:
         run: |
           from pathlib import Path
           import subprocess
+          import traceback
 
-          lines = Path('.github/workflows/cb3-build-packet.yml').read_text(encoding='utf-8').splitlines()
-          commands = []
-          current_shell = 'bash'
-          i = 0
-          while i < len(lines):
-              stripped = lines[i].strip()
-              if stripped.startswith('shell:'):
-                  current_shell = stripped.split(':', 1)[1].strip()
-              if stripped == 'run: |':
-                  indent = len(lines[i]) - len(lines[i].lstrip())
-                  block = []
-                  i += 1
-                  while i < len(lines):
-                      raw = lines[i]
-                      raw_indent = len(raw) - len(raw.lstrip())
-                      if raw.strip() and raw_indent <= indent:
-                          i -= 1
-                          break
-                      block.append(raw[indent + 2:] if len(raw) >= indent + 2 else '')
+          def publish_failure(message):
+              subprocess.run(['git', 'reset', '--hard', 'HEAD'], check=True)
+              Path('.cb3-run-error.log').write_text(message, encoding='utf-8')
+              subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
+              subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
+              subprocess.run(['git', 'add', '.cb3-run-error.log'], check=True)
+              subprocess.run(['git', 'commit', '-m', 'CB3: capture packet build failure'], check=True)
+              subprocess.run(['git', 'push', 'origin', 'HEAD:core/cb3-lesson-contrasts-sections-5-8'], check=True)
+
+          try:
+              lines = Path('.github/workflows/cb3-build-packet.yml').read_text(encoding='utf-8').splitlines()
+              commands = []
+              current_shell = 'bash'
+              i = 0
+              while i < len(lines):
+                  stripped = lines[i].strip()
+                  if stripped.startswith('shell:'):
+                      current_shell = stripped.split(':', 1)[1].strip()
+                  if stripped == 'run: |':
+                      indent = len(lines[i]) - len(lines[i].lstrip())
+                      block = []
                       i += 1
-                  commands.append((current_shell, '\n'.join(block)))
-                  current_shell = 'bash'
-              i += 1
+                      while i < len(lines):
+                          raw = lines[i]
+                          raw_indent = len(raw) - len(raw.lstrip())
+                          if raw.strip() and raw_indent <= indent:
+                              i -= 1
+                              break
+                          block.append(raw[indent + 2:] if len(raw) >= indent + 2 else '')
+                          i += 1
+                      commands.append((current_shell, '\n'.join(block)))
+                      current_shell = 'bash'
+                  i += 1
 
-          if len(commands) != 4:
-              raise SystemExit(f'Expected 4 packet run blocks, found {len(commands)}')
+              if len(commands) != 4:
+                  raise RuntimeError(f'Expected 4 packet run blocks, found {len(commands)}')
 
-          for index, (shell, command) in enumerate(commands, 1):
-              print(f'Executing packet block {index}/4 via {shell}', flush=True)
-              argv = ['python', '-c', command] if shell == 'python' else ['bash', '-lc', command]
-              result = subprocess.run(argv, text=True, capture_output=True)
-              print(result.stdout, end='')
-              print(result.stderr, end='')
-              if result.returncode:
-                  log = f'Block {index} via {shell} failed with {result.returncode}\n\nSTDOUT\n{result.stdout}\n\nSTDERR\n{result.stderr}\n'
-                  subprocess.run(['git', 'reset', '--hard', 'HEAD'], check=True)
-                  Path('.cb3-run-error.log').write_text(log, encoding='utf-8')
-                  subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
-                  subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
-                  subprocess.run(['git', 'add', '.cb3-run-error.log'], check=True)
-                  subprocess.run(['git', 'commit', '-m', 'CB3: capture packet build failure'], check=True)
-                  subprocess.run(['git', 'push', 'origin', 'HEAD:core/cb3-lesson-contrasts-sections-5-8'], check=True)
-                  raise SystemExit(result.returncode)
+              for index, (shell, command) in enumerate(commands, 1):
+                  print(f'Executing packet block {index}/4 via {shell}', flush=True)
+                  argv = ['python', '-c', command] if shell == 'python' else ['bash', '-lc', command]
+                  result = subprocess.run(argv, text=True, capture_output=True)
+                  print(result.stdout, end='')
+                  print(result.stderr, end='')
+                  if result.returncode:
+                      raise RuntimeError(f'Block {index} via {shell} failed with {result.returncode}\n\nSTDOUT\n{result.stdout}\n\nSTDERR\n{result.stderr}')
+          except Exception:
+              detail = traceback.format_exc()
+              print(detail)
+              publish_failure(detail)
+              raise
