@@ -57,7 +57,7 @@ function auditBrowserWiring() {
   assert.match(app, /HANAPATH_EXAM_INTEGRITY\.migrateExamIntegrityState\(state/);
   assert.match(sw, /hanapath-shell-v451/);
   assert.match(sw, /\.\/exam_integrity\.js\?v=20260721b/);
-  assert.match(sw, /\.\/app\.js\?v=20260726a/);
+  assert.match(sw, /\.\/app\.js\?v=20260726b/);
   assert.match(app, /function submitHangulExam/);
   assert.match(app, /const initialTaintContext = getHangulExamTaintContext\(initialOverrideFlags\)/);
   assert.match(app, /\.\.\.\(attempt\.overrideEventIds \|\| \[\]\)/);

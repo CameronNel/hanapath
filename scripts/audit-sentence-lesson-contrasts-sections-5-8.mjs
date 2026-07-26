@@ -93,7 +93,7 @@ for (const tag of ADVANCED_SCRUTINY_TAGS) {
 if (report.sameLessonContrastCount + report.sameSectionContrastCount + report.nearbySectionContrastCount !== EXPECTED_TOTAL) {
   fail("contrast source-scope counts do not sum to the entry total");
 }
-if (expectedCandidates.length !== EXPECTED_TOTAL) fail(`shortlist sections 1-4 must contain ${EXPECTED_TOTAL} typed candidates`);
+if (expectedCandidates.length !== EXPECTED_TOTAL) fail(`shortlist sections 5-8 must contain ${EXPECTED_TOTAL} typed candidates`);
 exactSet("target coverage", entries.map((entry) => entry.targetSentenceId), expectedCandidates.map((candidate) => candidate.id));
 exactSet("lesson coverage", entries.map((entry) => entry.lessonId), expectedCandidates.map((candidate) => candidate.lessonIds[0]));
 
