@@ -13,7 +13,7 @@ const AUTHORING_FILE = join(ROOT, "docs", "generated", "sentence_exam_curated_ba
 const REVIEW_FILE = join(ROOT, "docs", "reviews", "sentence_exam_curated_bank_cb4_reviews.json");
 const BANK_FILE = join(ROOT, "sentence_exam_curated_bank.js");
 const SHORTLIST_FILE = join(ROOT, "docs", "generated", "sentence_exam_shortlist.json");
-const TYPED_TARGETS_BY_SECTION = Object.freeze({ 1: 34, 2: 36, 3: 36, 4: 36, 5: 36, 6: 36, 7: 36, 8: 38 });
+const TYPED_TARGETS_BY_SECTION = Object.freeze({ 1: 33, 2: 36, 3: 36, 4: 36, 5: 36, 6: 36, 7: 36, 8: 39 });
 const RECOGNITION_TARGETS_BY_SECTION = Object.freeze({ 1: 40, 2: 40, 3: 40, 4: 40, 5: 40, 6: 40, 7: 40, 8: 40 });
 
 function loadGlobals(files) {
@@ -143,6 +143,8 @@ function typedEntryFromCandidate(candidate, source) {
   const templateId = chooseTypedTemplate(candidate, prompt);
   const requiresLexicalAnchor = templateId === "lexically-anchored-production" || /use the lesson expression|using the word/i.test(prompt);
   const analysis = detectAmbiguityFlags(row, prompt, { requiresLexicalAnchor });
+  const unresolvableFlags = analysis.flags.filter((flag) => ["productive-clause-family", "particle-or-order-family", "duplicate-canonical-target"].includes(flag));
+  if (unresolvableFlags.length > 0) return { rejected: `unresolved-family:${unresolvableFlags.join(",")}` };
   const routes = source.routes.get(candidate.id) || [];
   if (routes.length === 0) return { rejected: "missing-live-route" };
   return {

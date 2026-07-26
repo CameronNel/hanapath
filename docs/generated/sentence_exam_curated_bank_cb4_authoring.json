@@ -36,14 +36,14 @@
     "finiteTypedCount": 1,
     "finiteTypedShare": 0.003472,
     "typedBySection": {
-      "1": 34,
+      "1": 33,
       "2": 36,
       "3": 36,
       "4": 36,
       "5": 36,
       "6": 36,
       "7": 36,
-      "8": 38
+      "8": 39
     },
     "recognitionBySection": {
       "1": 40,
@@ -65,9 +65,15 @@
     "recognitionByTemplate": {
       "recognition-meaning": 320
     },
-    "rejectedCandidateCount": 0
+    "rejectedCandidateCount": 1
   },
-  "rejectionLog": [],
+  "rejectionLog": [
+    {
+      "id": "s0016",
+      "mode": "typed",
+      "reason": "unresolved-family:productive-clause-family"
+    }
+  ],
   "entries": [
     {
       "id": "s0026",
@@ -686,39 +692,6 @@
       "promptOrigin": "reviewed-source-reuse",
       "authoringAmbiguityFlags": [
         "communicative-act-not-forced"
-      ],
-      "authoredBy": "GPT-5.6 Thinking / CB4 author",
-      "authoredRevision": "curated-sentence-exam-v1-cb4",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null
-    },
-    {
-      "id": "s0016",
-      "mode": "typed",
-      "templateId": "register-forced-utterance",
-      "examPromptEn": "Say sorry for being late in polite formal style.",
-      "canonicalAnswer": "늦어서 죄송합니다.",
-      "manualAlternatives": [],
-      "requiresLexicalAnchor": false,
-      "sourceLessonIds": [
-        "sn1-firstwords-u1-l12",
-        "sn1-firstwords-u1-l6"
-      ],
-      "sourceSectionOrder": 1,
-      "patternTags": [
-        "because-aseo",
-        "formal-nida"
-      ],
-      "shortlistRank": 21,
-      "shortlistScore": 105,
-      "sourceCandidateClass": "canonical",
-      "lessonContrastRevision": null,
-      "promptOrigin": "reviewed-source-reuse",
-      "authoringAmbiguityFlags": [
-        "productive-clause-family"
       ],
       "authoredBy": "GPT-5.6 Thinking / CB4 author",
       "authoredRevision": "curated-sentence-exam-v1-cb4",
@@ -9777,6 +9750,40 @@
         "communicative-act-not-forced",
         "lexical-choice-not-forced",
         "time-or-tense-not-forced"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB4 author",
+      "authoredRevision": "curated-sentence-exam-v1-cb4",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null
+    },
+    {
+      "id": "s3191",
+      "mode": "typed",
+      "templateId": "register-forced-utterance",
+      "examPromptEn": "In the “Talking about friends” situation, using formal polite speech, make one complete statement that means exactly: “Would you like to go on a business trip with your company colleagues?” Keep the intended time meaning and information focus: keep the lesson's present or general-time meaning; keep the affected object explicit. Use the vocabulary taught in the target line.",
+      "canonicalAnswer": "회사 동료들과 함께 출장을 떠나시겠습니까?",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": false,
+      "sourceLessonIds": [
+        "sn8-people-u2-l8"
+      ],
+      "sourceSectionOrder": 8,
+      "patternTags": [
+        "formal-nida",
+        "honorific-si",
+        "object-eul-reul",
+        "with-hago-wa"
+      ],
+      "shortlistRank": 39,
+      "shortlistScore": 33,
+      "sourceCandidateClass": "unreviewed",
+      "lessonContrastRevision": null,
+      "promptOrigin": "cb2-cb3-generated",
+      "authoringAmbiguityFlags": [
+        "communicative-act-not-forced"
       ],
       "authoredBy": "GPT-5.6 Thinking / CB4 author",
       "authoredRevision": "curated-sentence-exam-v1-cb4",
