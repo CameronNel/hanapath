@@ -298,6 +298,8 @@ const GATE_STEPS = [
   { id: "curated-sentence-exam-bank", label: "Curated Sentence exam bank (CB0)", script: "scripts/audit-sentence-exam-curated-bank.mjs" },
   { id: "sentence-exam-ambiguity", label: "Sentence-exam ambiguity screening regression (CB0)", script: "scripts/test-sentence-exam-ambiguity.mjs" },
   { id: "sentence-exam-grader", label: "Sentence-exam strict grader regression (CB0)", script: "scripts/test-sentence-exam-grader.mjs" },
+  { id: "sentence-exam-candidate-ranking", label: "Sentence-exam candidate ranking regression (CB1)", script: "scripts/test-sentence-exam-candidate-ranking.mjs" },
+  { id: "sentence-exam-inventory", label: "Sentence-exam inventory and shortlist freshness (CB1)", script: "scripts/build-sentence-exam-inventory.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
   {
     id: "sentence-exams",
     label: "Sentence Mastery examination seed audit",
