@@ -130,6 +130,8 @@ for (const marker of [
   "contrastUi.renderStudyNote",
   "sentenceLessonPromptText",
   "configuredEntry.promptEn",
+  "promptEn: primary[index].promptEn",
+  "Controlled target review",
 ]) {
   if (!appJs.includes(marker)) fail(`app.js missing contrast integration marker: ${marker}`);
 }

@@ -22707,6 +22707,9 @@ function buildSentenceLessonQuestionPlan(lesson, studyRows) {
   const secondary = studyRows.map((row, index) => ({
     sentenceId: row.id,
     mode: secondMode(row, primary[index].mode),
+    promptEn: primary[index].promptEn,
+    cueLabel: primary[index].promptEn ? "Controlled target review" : primary[index].cueLabel,
+    teachingPhase: primary[index].teachingPhase,
   }));
   return {
     studyRows: [...studyRows],
