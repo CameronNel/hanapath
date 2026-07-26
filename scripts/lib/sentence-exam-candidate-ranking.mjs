@@ -275,8 +275,9 @@ function selectBalancedShortlist(rawInventory, policy = DEFAULT_SHORTLIST_POLICY
       else if (typedSet.has(item.id)) disposition = "shortlist-typed";
       else if (recognitionSet.has(item.id)) disposition = "shortlist-recognition";
       else if (item.typedAssessment.risks.length > 0 || item.recognitionAssessment.risks.length > 0) disposition = "flagged-not-shortlisted";
+      const { typedAssessment: _typedInternal, recognitionAssessment: _recognitionInternal, primarySection: _primaryInternal, ...sourceItem } = item;
       return {
-        ...item,
+        ...sourceItem,
         candidateAssessment: {
           disposition,
           primarySection: item.primarySection,
