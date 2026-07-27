@@ -58,19 +58,31 @@ jobs:
               path.write_text(text)
           PY
 
-      - name: Validate integrity and L2 contracts
-        shell: bash
+      - name: Check updated syntax
         run: |
-          set -euo pipefail
           node --check app.js
           node --check scripts/audit-exam-integrity.mjs
-          node scripts/audit-exam-integrity.mjs
-          node scripts/audit-sentence-lesson-contrasts.mjs
-          node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
-          node scripts/test-sentence-feedback-engine.mjs
-          node scripts/audit-app-shell.mjs
-          node scripts/test-sentence-exam-grader.mjs
-          git diff --check
+
+      - name: Audit exam integrity
+        run: node scripts/audit-exam-integrity.mjs
+
+      - name: Audit contrast sections 1-4
+        run: node scripts/audit-sentence-lesson-contrasts.mjs
+
+      - name: Audit contrast sections 5-8
+        run: node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
+
+      - name: Test L2 feedback engine
+        run: node scripts/test-sentence-feedback-engine.mjs
+
+      - name: Audit app shell
+        run: node scripts/audit-app-shell.mjs
+
+      - name: Test Sentence exam grader
+        run: node scripts/test-sentence-exam-grader.mjs
+
+      - name: Diff hygiene
+        run: git diff --check
 
       - name: Commit integrity bindings
         shell: bash
