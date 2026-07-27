@@ -2,6 +2,7 @@
 import {
   CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
   CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
+  controlledClauseReplacementInstruction,
   detectAmbiguityFlags,
   validateControlledClauseContract,
 } from "./lib/sentence-exam-ambiguity.mjs";
@@ -64,6 +65,7 @@ const controlledClausePrompt = [
   "Source 1: 저는 아침을 안 먹어요.",
   "Source 2: 커피는 마셔요.",
   "Use -지만 for the required contrast.",
+  controlledClauseReplacementInstruction("어요", "지만"),
   CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
   CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
 ].join(" ");
@@ -73,8 +75,8 @@ const controlledClauseContract = {
   requiredPatternTag: "but-jiman",
   requiredConstructionCue: "-지만",
   sourceFragments: ["저는 아침을 안 먹어요.", "커피는 마셔요."],
-  sourceEnding: "먹어요",
-  targetEnding: "먹지만",
+  sourceEnding: "어요",
+  targetEnding: "지만",
   preserveSourceOrder: true,
   preserveLexicalMaterial: true,
   preserveParticles: true,
@@ -90,6 +92,138 @@ check("controlled clause contract removes productive-family flag", !controlledCl
 check("controlled preservation contract removes particle/order flag", !controlledClause.flags.includes("particle-or-order-family"));
 check("controlled prompt explicitly forces all remaining ambiguity axes", controlledClause.flags.length === 0);
 
+function makeControlledFixture({ tag, operation, cue, sourceFragments, sourceEnding, targetEnding, canonical }) {
+  const prompt = [
+    operation === "combine-clauses"
+      ? "Combine the supplied Korean clauses into one sentence."
+      : "Transform the supplied Korean sentence using the required construction.",
+    ...sourceFragments.map((fragment, index) => `Source ${index + 1}: ${fragment}`),
+    `Use ${cue} as the required construction.`,
+    controlledClauseReplacementInstruction(sourceEnding, targetEnding),
+    CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
+    CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
+  ].join(" ");
+  const row = { id: `fixture-${tag}`, korean: canonical, patternTags: [tag] };
+  const contract = {
+    schemaVersion: 1,
+    operation,
+    requiredPatternTag: tag,
+    requiredConstructionCue: cue,
+    sourceFragments,
+    sourceEnding,
+    targetEnding,
+    preserveSourceOrder: true,
+    preserveLexicalMaterial: true,
+    preserveParticles: true,
+    acceptedAnswerPolicy: "reviewed-finite-only",
+  };
+  return { row, prompt, contract };
+}
+
+const controlledFamilyFixtures = [
+  makeControlledFixture({
+    tag: "and-go",
+    operation: "combine-clauses",
+    cue: "-고",
+    sourceFragments: ["저는 밥을 먹어요.", "물을 마셔요."],
+    sourceEnding: "어요",
+    targetEnding: "고",
+    canonical: "저는 밥을 먹고 물을 마셔요.",
+  }),
+  makeControlledFixture({
+    tag: "because-aseo",
+    operation: "combine-clauses",
+    cue: "-해서",
+    sourceFragments: ["이 방은 아늑해요.", "오래 있어요."],
+    sourceEnding: "해요",
+    targetEnding: "해서",
+    canonical: "이 방은 아늑해서 오래 있어요.",
+  }),
+  makeControlledFixture({
+    tag: "if-myeon",
+    operation: "combine-clauses",
+    cue: "-으면",
+    sourceFragments: ["시간이 있어요.", "커피를 마셔요."],
+    sourceEnding: "어요",
+    targetEnding: "으면",
+    canonical: "시간이 있으면 커피를 마셔요.",
+  }),
+  makeControlledFixture({
+    tag: "when-ttae",
+    operation: "combine-clauses",
+    cue: "-을 때",
+    sourceFragments: ["시간이 있어요.", "커피를 마셔요."],
+    sourceEnding: "어요",
+    targetEnding: "을 때",
+    canonical: "시간이 있을 때 커피를 마셔요.",
+  }),
+  makeControlledFixture({
+    tag: "but-jiman",
+    operation: "combine-clauses",
+    cue: "-지만",
+    sourceFragments: ["저는 아침을 안 먹어요.", "커피는 마셔요."],
+    sourceEnding: "어요",
+    targetEnding: "지만",
+    canonical: "저는 아침을 안 먹지만 커피는 마셔요.",
+  }),
+  makeControlledFixture({
+    tag: "want-go-sipda",
+    operation: "recast-predicate",
+    cue: "-고 싶어요",
+    sourceFragments: ["저는 한국에 가요."],
+    sourceEnding: "요",
+    targetEnding: "고 싶어요",
+    canonical: "저는 한국에 가고 싶어요.",
+  }),
+  makeControlledFixture({
+    tag: "propositive-eyo",
+    operation: "change-speech-act-ending",
+    cue: "-ㅂ시다",
+    sourceFragments: ["우리 같이 가요."],
+    sourceEnding: "가요",
+    targetEnding: "갑시다",
+    canonical: "우리 같이 갑시다.",
+  }),
+];
+for (const fixture of controlledFamilyFixtures) {
+  const result = validateControlledClauseContract(fixture.row, fixture.prompt, fixture.contract);
+  check(`controlled reconstruction validates for ${fixture.contract.requiredPatternTag}`, result.valid);
+}
+
+const hiddenReplacementPrompt = controlledClausePrompt.replace(
+  controlledClauseReplacementInstruction("어요", "지만"),
+  "Apply the required ending change.",
+);
+check(
+  "the exact source-to-target replacement must be visible to the learner",
+  !validateControlledClauseContract(clauseRow, hiddenReplacementPrompt, controlledClauseContract).valid,
+);
+const wholeFragmentReplacement = {
+  ...controlledClauseContract,
+  sourceEnding: "저는 아침을 안 먹어요",
+  targetEnding: "저는 아침을 안 먹지만",
+};
+const wholeFragmentPrompt = controlledClausePrompt.replace(
+  controlledClauseReplacementInstruction("어요", "지만"),
+  controlledClauseReplacementInstruction("저는 아침을 안 먹어요", "저는 아침을 안 먹지만"),
+);
+check(
+  "a controlled item may not replace the whole transformed fragment",
+  !validateControlledClauseContract(clauseRow, wholeFragmentPrompt, wholeFragmentReplacement).valid,
+);
+const oversizedEndingContract = {
+  ...controlledClauseContract,
+  targetEnding: "아침을 안 먹지만",
+};
+const oversizedEndingPrompt = controlledClausePrompt.replace(
+  controlledClauseReplacementInstruction("어요", "지만"),
+  controlledClauseReplacementInstruction("어요", "아침을 안 먹지만"),
+);
+check(
+  "a replacement ending may not smuggle a multi-eojeol clause",
+  !validateControlledClauseContract(clauseRow, oversizedEndingPrompt, oversizedEndingContract).valid,
+);
+
 const malformedContract = { ...controlledClauseContract, sourceFragments: ["저는 아침을 안 먹어요.", "차를 마셔요."] };
 const malformedValidation = validateControlledClauseContract(clauseRow, controlledClausePrompt, malformedContract);
 check("hidden or mismatched source fragment invalidates the contract", !malformedValidation.valid);
@@ -103,8 +237,12 @@ const wrongCueContract = { ...controlledClauseContract, requiredConstructionCue:
 const wrongCuePrompt = controlledClausePrompt.replace("-지만", "-으면");
 check("construction cue must match the declared pattern tag", !validateControlledClauseContract(clauseRow, wrongCuePrompt, wrongCueContract).valid);
 
-const wrongTransformationContract = { ...controlledClauseContract, targetEnding: "먹으면" };
-check("declared transformation must reconstruct the canonical target exactly", !validateControlledClauseContract(clauseRow, controlledClausePrompt, wrongTransformationContract).valid);
+const wrongTransformationContract = { ...controlledClauseContract, targetEnding: "으면" };
+const wrongTransformationPrompt = controlledClausePrompt.replace(
+  controlledClauseReplacementInstruction("어요", "지만"),
+  controlledClauseReplacementInstruction("어요", "으면"),
+);
+check("declared transformation must reconstruct the canonical target exactly", !validateControlledClauseContract(clauseRow, wrongTransformationPrompt, wrongTransformationContract).valid);
 
 function clonePolicy() {
   return JSON.parse(JSON.stringify(LOCKED_SELECTION_POLICY));
@@ -194,6 +332,7 @@ const multiClausePrompt = [
   "Source 1: 이 방은 아늑해요.",
   "Source 2: 오래 있고 싶어요.",
   "Use -해서 for the required reason connection.",
+  controlledClauseReplacementInstruction("해요", "해서"),
   CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
   CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
 ].join(" ");
@@ -202,8 +341,8 @@ const multiClauseContract = {
   requiredPatternTag: "because-aseo",
   requiredConstructionCue: "-해서",
   sourceFragments: ["이 방은 아늑해요.", "오래 있고 싶어요."],
-  sourceEnding: "아늑해요",
-  targetEnding: "아늑해서",
+  sourceEnding: "해요",
+  targetEnding: "해서",
 };
 const multiClauseValidation = validateControlledClauseContract(multiClauseRow, multiClausePrompt, multiClauseContract);
 check("one operation may preserve another productive form already fixed in a source fragment", multiClauseValidation.valid);

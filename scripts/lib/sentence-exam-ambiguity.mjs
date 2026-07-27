@@ -43,11 +43,15 @@ const CONTROLLED_CLAUSE_TARGET_ENDING_RE_BY_TAG = Object.freeze({
   "when-ttae": /때(?:는)?$/u,
   "but-jiman": /지만$/u,
   "want-go-sipda": /고 싶(?:어요|습니다|다)$/u,
-  "propositive-eyo": /(?:ㅂ시다|읍시다|아요|어요|여요|봐요)$/u,
+  "propositive-eyo": /(?:시다|아요|어요|여요|봐요)$/u,
 });
 
 const CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION = "Preserve the supplied Korean wording, particles, and order except for the required grammar change.";
 const CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION = "Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.";
+
+function controlledClauseReplacementInstruction(sourceEnding, targetEnding) {
+  return `Replace the exact Korean ending "${sourceEnding}" with "${targetEnding}".`;
+}
 
 const WHOLE_TOKEN_CONTRACTIONS = [
   { from: "저는", to: "전", id: "jeoneun-jeon" },
@@ -181,9 +185,17 @@ function validateControlledClauseContract(row, examPromptEn, contract) {
   if (!sourceEnding || !containsHangul(sourceEnding)) errors.push("controlledClause.sourceEnding must contain the exact Korean source ending.");
   if (!targetEnding || !containsHangul(targetEnding)) errors.push("controlledClause.targetEnding must contain the exact Korean target ending.");
   if (sourceEnding && targetEnding && sourceEnding === targetEnding) errors.push("controlledClause.sourceEnding and targetEnding must differ.");
+  if (tokenize(sourceEnding).length > 2) errors.push("controlledClause.sourceEnding may contain at most two Korean eojeol.");
+  if (tokenize(targetEnding).length > 2) errors.push("controlledClause.targetEnding may contain at most two Korean eojeol.");
   const endingPattern = CONTROLLED_CLAUSE_TARGET_ENDING_RE_BY_TAG[tag];
   if (targetEnding && endingPattern && !endingPattern.test(targetEnding)) {
     errors.push(`controlledClause.targetEnding '${targetEnding}' does not realise '${tag}'.`);
+  }
+  const replacementInstruction = sourceEnding && targetEnding
+    ? controlledClauseReplacementInstruction(sourceEnding, targetEnding)
+    : "";
+  if (replacementInstruction && !prompt.includes(replacementInstruction)) {
+    errors.push("The learner prompt does not expose the exact source-to-target ending replacement.");
   }
 
   const transformationSourceIndex = 0;
@@ -192,7 +204,11 @@ function validateControlledClauseContract(row, examPromptEn, contract) {
   if (sourceEnding && transformationSource && !transformationSource.endsWith(sourceEnding)) {
     errors.push("controlledClause.sourceEnding is not the exact suffix of the transformed source fragment.");
   } else if (sourceEnding && targetEnding && transformationSource) {
-    transformedSource = `${transformationSource.slice(0, -sourceEnding.length)}${targetEnding}`;
+    const preservedPrefix = transformationSource.slice(0, -sourceEnding.length);
+    if (!containsHangul(preservedPrefix)) {
+      errors.push("The exact replacement may not replace the whole transformed source fragment.");
+    }
+    transformedSource = `${preservedPrefix}${targetEnding}`;
   }
   const unchangedFragments = normalizedFragments.slice(1).map(stripTerminalSentencePunctuation);
   const reconstructedTarget = [transformedSource, ...unchangedFragments].filter(Boolean).join(" ");
@@ -301,6 +317,7 @@ export {
   CONTROLLED_CLAUSE_OPERATION_BY_TAG,
   CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
   CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
+  controlledClauseReplacementInstruction,
   normalizeSentenceExamAnswer,
   tokenize,
   countWholeTokenContractions,
