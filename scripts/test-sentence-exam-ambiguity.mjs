@@ -267,6 +267,7 @@ const approvedEntry = {
   canonicalAnswer: "문이 열려 있어요.",
   manualAlternatives: [],
   requiresLexicalAnchor: false,
+  patternTags: [],
   authoredBy: "author-a",
   reviewStatus: "approved",
   reviewedBy: "reviewer-b",
@@ -289,6 +290,17 @@ const cleanAudit = auditCuratedBankState({
   routes,
 });
 check("fully reviewed typed entry passes the structural audit", cleanAudit.errors.length === 0);
+const mismatchedTagsAudit = auditCuratedBankState({
+  bank: { ...cleanBank, entries: [{ ...approvedEntry, patternTags: ["but-jiman"] }] },
+  templates,
+  sentences,
+  reviewedRows: { "s-test": { typedClass: "canonical" } },
+  routes,
+});
+check(
+  "curated entry tags must exactly match the live source row",
+  mismatchedTagsAudit.errors.some((error) => error.includes("patternTags do not exactly match")),
+);
 
 const controlledEntry = {
   ...approvedEntry,
@@ -298,6 +310,7 @@ const controlledEntry = {
   canonicalAnswer: clauseRow.korean,
   requiresLexicalAnchor: true,
   controlledClause: controlledClauseContract,
+  patternTags: [...clauseRow.patternTags],
   reviewedRevision: "curated-sentence-exam-controlled-v1",
 };
 const controlledBank = {

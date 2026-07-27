@@ -176,6 +176,15 @@ export function auditCuratedBankState({ bank, templates, sentences, reviewedRows
       errors.push(`Curated entry ${entry.id} does not exist in sentences_core.js.`);
       continue;
     }
+    const rowPatternTags = [...new Set(Array.isArray(row.patternTags) ? row.patternTags : [])].sort();
+    if (!Array.isArray(entry.patternTags)) {
+      errors.push(`Curated entry ${entry.id} patternTags must be an array matching the live source row.`);
+    } else {
+      const entryPatternTags = [...new Set(entry.patternTags)].sort();
+      if (JSON.stringify(entryPatternTags) !== JSON.stringify(rowPatternTags)) {
+        errors.push(`Curated entry ${entry.id} patternTags do not exactly match the live source row.`);
+      }
+    }
     if (!routes.has(entry.id) || routes.get(entry.id).length === 0) errors.push(`Curated entry ${entry.id} has no live lesson route.`);
     if (!templateMap.has(entry.templateId)) errors.push(`Curated entry ${entry.id} uses unknown template '${entry.templateId}'.`);
     if (!nonEmptyString(entry.examPromptEn)) errors.push(`Curated entry ${entry.id} has no examPromptEn.`);
