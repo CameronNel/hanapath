@@ -16,9 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: current
+      - uses: actions/checkout@v4
+        with:
+          ref: core/cb6-sentence-bank-capacity-refreeze
+          path: cb6
       - name: Collect text sources
         run: |
-          mkdir -p export
+          mkdir -p export/current export/cb6
           rsync -a --prune-empty-dirs \
             --exclude='.git/' \
             --exclude='node_modules/' \
@@ -34,7 +40,14 @@ jobs:
             --include='*.csv' \
             --include='*.txt' \
             --exclude='*' \
-            ./ export/
+            current/ export/current/
+          cp cb6/scripts/build-sentence-exam-capacity-remediation.mjs export/cb6/
+          cp cb6/scripts/audit-sentence-exam-capacity-remediation.mjs export/cb6/
+          cp cb6/scripts/test-sentence-exam-capacity-remediation.mjs export/cb6/
+          cp cb6/docs/generated/sentence_exam_cb6_capacity_authoring.json export/cb6/
+          cp cb6/docs/generated/sentence_exam_cb6_capacity_witness.json export/cb6/
+          cp cb6/docs/reviews/sentence_exam_cb6_capacity_reviews.json export/cb6/
+          cp cb6/docs/reviews/sentence_exam_cb6_capacity_review_guide.md export/cb6/
       - uses: actions/upload-artifact@v4
         with:
           name: hanapath-source-export
