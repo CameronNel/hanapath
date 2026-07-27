@@ -9,7 +9,7 @@ const APP_SHELL = [
   "./styles.css?v=20260727a",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
-  "./audio_map.js?v=20260717u",
+  "./audio_map.js?v=20260727b",
   "./words_curated_core.js?v=20260705e",
   "./words_inflect.js?v=20260703c",
   "./words_lesson_plan.js?v=20260722f",
