@@ -46,7 +46,7 @@
           "preservationInstruction",
           "grammarInstruction",
         ],
-        example: "Combine the supplied Korean clauses using -지만. Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
+        example: "Combine the supplied Korean clauses using -지만. Replace the exact Korean ending \"어요\" with \"지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       },
       {
         id: "recognition-meaning",
