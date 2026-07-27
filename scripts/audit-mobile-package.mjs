@@ -36,6 +36,7 @@ const REQUIRED_ASSETS = [
   "raw_word_meanings.js",
   "sentences_core.js",
   "sentences_lesson_plan.js",
+  "sentence_feedback.js",
   "sentence_exam_eligibility.js",
   "hangul_strokes.js",
   "alphabet_skill_srs.js",

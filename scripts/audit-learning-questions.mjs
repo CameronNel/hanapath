@@ -1287,6 +1287,7 @@ const sentenceRendererCorpusSandbox = {
   sentencePromptTileHtml: (content) => content,
   sentenceModeMetaHtml: () => "",
   sentenceAnswerBoxHtml: () => '<input aria-label="answer">',
+  sentenceAttemptFeedbackHtml: () => "",
   sentenceHelperLadderHtml: () => "",
   escapeHtml: (value) => String(value ?? ""),
 };

@@ -22468,56 +22468,33 @@ function checkSentenceAnswer(row, typed) {
   return targets.some((t) => normalizeKoreanAnswer(t, { ignoreSpaces: true }) === guess);
 }
 
-// Cheap per-token feedback for a wrong attempt: mark which target tokens the
-// learner's attempt already contains. EXTENSION (roadmap B3): real alignment.
+// L2 keeps correctness unchanged and delegates wrong-answer explanation to a
+// small pure helper that is shared by the browser fixture and the lesson UI.
+function alignSentenceTokens(targetValue, typedValue) {
+  const feedback = window.HANAPATH_SENTENCE_FEEDBACK;
+  if (!feedback || typeof feedback.alignTokens !== "function") {
+    throw new Error("Sentence feedback helper is unavailable.");
+  }
+  return feedback.alignTokens(targetValue, typedValue);
+}
+
 function sentenceTokenDiffHtml(row, typed) {
-  const targetTokens = row.tokens || [];
-  const typedTokens = String(typed || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .map(t => t.replace(/[.,!?;:"'`~(){}\[\]<>\/·-]+$/g, "").trim())
-    .filter(Boolean);
-
-  const m = targetTokens.length;
-  const n = typedTokens.length;
-
-  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
-
-  for (let i = 1; i <= m; i++) {
-    const tClean = normalizeKoreanAnswer(targetTokens[i - 1], { ignoreSpaces: true });
-    for (let j = 1; j <= n; j++) {
-      const gClean = normalizeKoreanAnswer(typedTokens[j - 1], { ignoreSpaces: true });
-      if (tClean === gClean) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
-      } else {
-        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-      }
-    }
+  const feedback = window.HANAPATH_SENTENCE_FEEDBACK;
+  if (!feedback || typeof feedback.render !== "function") {
+    throw new Error("Sentence feedback helper is unavailable.");
   }
+  const targetTokens = Array.isArray(row?.tokens) && row.tokens.length ? row.tokens : tokenizeSentence(row?.korean);
+  return feedback.render(targetTokens, typed);
+}
 
-  const matchedTargetIndices = new Set();
-  let i = m, j = n;
-  while (i > 0 && j > 0) {
-    const tClean = normalizeKoreanAnswer(targetTokens[i - 1], { ignoreSpaces: true });
-    const gClean = normalizeKoreanAnswer(typedTokens[j - 1], { ignoreSpaces: true });
-    if (tClean === gClean) {
-      matchedTargetIndices.add(i - 1);
-      i--;
-      j--;
-    } else if (dp[i - 1][j] >= dp[i][j - 1]) {
-      i--;
-    } else {
-      j--;
-    }
-  }
-
-  return targetTokens
-    .map((tok, idx) => {
-      const ok = matchedTargetIndices.has(idx);
-      return `<span class="ss-tok ${ok ? "ss-tok-ok" : "ss-tok-miss"}" lang="ko">${escapeHtml(tok)}</span>`;
-    })
-    .join(" ");
+function sentenceAttemptFeedbackHtml(session, targetRow) {
+  if (!session?.attempts || !session.lastWrongAttempt) return "";
+  return `
+    <div class="sent-live-feedback ss-attempt-feedback-lead">
+      <strong>Not yet.</strong> Compare your last check with the target, then try again.
+      <span class="fs-xs">Spacing and punctuation still do not count against you.</span>
+    </div>
+    ${sentenceTokenDiffHtml(targetRow, session.lastWrongAttempt)}`;
 }
 
 // Build-mode tile pool: the answer tokens plus two same-band distractors,
@@ -22812,6 +22789,7 @@ function prepareSentenceQuestion() {
   session.phase = "question";
   session.typed = "";
   session.attempts = 0;
+  session.lastWrongAttempt = "";
   session.helperLevel = 0;
   session.helperUsed = [];
   session.helperTilePool = [];
@@ -23467,7 +23445,7 @@ function sentenceSessionDotsHtml(session) {
     .join("")}</div>`;
 }
 
-function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "", includeReveal = true) {
+function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "", includeReveal = true, attemptFeedbackHtml = "") {
   const prefix = session.lockedPrefix
     ? `<div class="ss-locked-prefix" lang="ko"><span>Hinted start</span>${escapeHtml(session.lockedPrefix)}</div>`
     : "";
@@ -23483,10 +23461,11 @@ function sentenceAnswerBoxHtml(session, placeholder, helperHtml = "", includeRev
         <button class="word-input-erase" type="button" data-sentence-helper-erase aria-label="Delete last block">⌫</button>
       </div>
       <div class="sent-input-hint">No Korean keyboard? Use the Word bank below.</div>
-      <div class="word-type-feedback sent-live-feedback" role="status" aria-live="polite">${session.attempts
+      <div class="word-type-feedback sent-live-feedback" role="status" aria-live="polite">${session.attempts && !attemptFeedbackHtml
         ? `<strong>Not yet.</strong> Try again, or reveal it. <span class="fs-xs">(Spacing and punctuation don't count against you.)</span>`
         : ""}</div>
     </div>
+    ${attemptFeedbackHtml}
     ${helperHtml}
     <div class="word-card-actions word-card-nav-actions">
       <button class="button secondary compact" type="button" data-sentence-exit>Exit</button>
@@ -23618,7 +23597,7 @@ function sentenceQuestionHtml(session) {
         </div>
         ${sentenceModeMetaHtml(row, "Transform")}
         <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(transform.prompt)} for <strong lang="ko">${escapeHtml(transform.sourceSurface)}</strong>.</div>
-        ${sentenceAnswerBoxHtml(session, "Type the transformed Korean sentence", transformHelper)}
+        ${sentenceAnswerBoxHtml(session, "Type the transformed Korean sentence", transformHelper, true, sentenceAttemptFeedbackHtml(session, transformRow))}
       `;
     }
   } else if (mode === "shadow") {
@@ -23678,7 +23657,7 @@ function sentenceQuestionHtml(session) {
       ${sentenceSessionProgressHtml(session.index + 1, session.rows.length)}
       ${sentencePromptTileHtml(`<div class="sentence-prompt-text">${escapeHtml(lessonPrompt)}</div>`, "is-english")}
       ${sentenceModeMetaHtml(row, sentenceLessonCueLabel(session, "Translate & Type"))}
-      ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요", sentenceHelperLadderHtml(session, row), false)}
+      ${sentenceAnswerBoxHtml(session, "한국어로 써 보세요", sentenceHelperLadderHtml(session, row), false, sentenceAttemptFeedbackHtml(session, row))}
     `;
   } else if (mode === "build") {
     const built = session.builtTiles
@@ -23719,7 +23698,7 @@ function sentenceQuestionHtml(session) {
       <div class="word-card-actions word-card-audio-actions">
         <button class="button secondary compact" type="button" data-sentence-play>▶ Play sentence</button>
       </div>
-      ${sentenceAnswerBoxHtml(session, "들리는 대로 써 보세요")}
+      ${sentenceAnswerBoxHtml(session, "들리는 대로 써 보세요", "", true, sentenceAttemptFeedbackHtml(session, row))}
     `;
   }
 
@@ -23740,8 +23719,7 @@ function sentenceFeedbackHtml(session) {
   const answerText = transform ? transform.expected : row.korean;
 
   const diff = !result.correct && attempt && mode !== "build" && mode !== "shadow"
-    ? `<div class="fs-xs text-muted-2" style="margin:10px 0 4px;">You typed: <span lang="ko">${escapeHtml(attempt)}</span></div>
-       <div class="ss-diff">${sentenceTokenDiffHtml(targetRow, attempt)}</div>`
+    ? sentenceTokenDiffHtml(targetRow, attempt)
     : "";
 
   let feedbackActions = "";
@@ -23967,6 +23945,7 @@ function submitSentenceAnswer() {
     if (correct) {
       finishSentenceQuestion(true, false, { transformId: transform.id });
     } else {
+      session.lastWrongAttempt = attempt;
       session.attempts += 1;
       renderPracticeView();
     }
@@ -23976,6 +23955,7 @@ function submitSentenceAnswer() {
   if (checkSentenceAnswer(row, attempt)) {
     finishSentenceQuestion(true);
   } else {
+    if (mode !== "build") session.lastWrongAttempt = attempt;
     session.attempts += 1;
     renderPracticeView();
   }

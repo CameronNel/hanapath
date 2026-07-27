@@ -312,6 +312,51 @@
           check(Boolean(sentenceState.sentenceLessonSession), "sentence-session-created");
           assertUsableScreen("sentence-lesson");
 
+          step("Sentence positional and near-miss feedback");
+          const sentenceFeedback = w.HANAPATH_SENTENCE_FEEDBACK;
+          check(Boolean(sentenceFeedback && Object.isFrozen(sentenceFeedback)), "sentence-feedback-api");
+          if (sentenceFeedback) {
+            const substitution = sentenceFeedback.alignTokens(["저는", "학교에", "가요"], "저는 집에 가요");
+            check(substitution.counts.substituted === 1, "sentence-feedback-substitution");
+            const missing = sentenceFeedback.alignTokens(["저는", "학교에", "가요"], "학교에 가요");
+            check(missing.counts.missing === 1, "sentence-feedback-missing");
+            const extra = sentenceFeedback.alignTokens(["저는", "학교에", "가요"], "저는 정말 학교에 가요");
+            check(extra.counts.extra === 1, "sentence-feedback-extra");
+            const moved = sentenceFeedback.alignTokens(["저는", "매일", "책을", "읽어요"], "저는 책을 매일 읽어요");
+            check(moved.counts.moved === 1, "sentence-feedback-moved");
+            const repeated = sentenceFeedback.alignTokens(["정말", "정말", "좋아요"], "정말 좋아요 정말");
+            check(repeated.counts.moved === 1 && repeated.counts.missing === 0 && repeated.counts.extra === 0, "sentence-feedback-repeated-token");
+          }
+          if (typeof w.startSentenceStudioSession === "function") {
+            w.startSentenceStudioSession("translate");
+            const typedInput = await waitFor(() => appDocument().querySelector("#ssTypedInput"), "Translate & Type input")
+              .catch((error) => { fail("sentence-feedback-input", error.message); return null; });
+            const feedbackRoot = appDocument().querySelector("#sentenceSessionRoot");
+            const feedbackRowId = feedbackRoot?.dataset.ssId || "";
+            const feedbackRow = (w.HANAPATH_SENTENCES || []).find((row) => row.id === feedbackRowId) || null;
+            check(Boolean(feedbackRow && typedInput), "sentence-feedback-row");
+            if (feedbackRow && typedInput) {
+              const wrongTokens = [...(feedbackRow.tokens || w.tokenizeSentence(feedbackRow.korean))];
+              const replaceIndex = Math.min(1, Math.max(0, wrongTokens.length - 1));
+              wrongTokens[replaceIndex] = "엉뚱한말";
+              const wrongAttempt = wrongTokens.join(" ");
+              check(!w.checkSentenceAnswer(feedbackRow, wrongAttempt), "sentence-feedback-wrong-attempt-control");
+              typedInput.value = wrongAttempt;
+              typedInput.dispatchEvent(new Event("input", { bubbles: true }));
+              click(appDocument().querySelector("[data-sentence-check]"), "sentence-feedback-check");
+              const diff = await waitFor(() => appDocument().querySelector("[data-sentence-token-diff]"), "positional token feedback")
+                .catch((error) => { fail("sentence-feedback-render", error.message); return null; });
+              check(Boolean(appDocument().querySelector("#ssTypedInput")), "sentence-feedback-remains-retryable");
+              check(diff?.getAttribute("role") === "status" && diff?.getAttribute("aria-live") === "polite", "sentence-feedback-live-region");
+              check(Boolean(diff?.querySelector("[data-sentence-diff-summary].sr-only")), "sentence-feedback-screen-reader-summary");
+              check(/substitution/i.test(diff?.querySelector("[data-sentence-diff-summary]")?.textContent || ""), "sentence-feedback-summary-detail");
+              check(diff?.querySelectorAll('[data-sentence-token-status="substituted"]').length === 2, "sentence-feedback-substitution-pair");
+              check(diff?.querySelectorAll('[aria-hidden="true"] .ss-diff-tokens').length === 2, "sentence-feedback-visual-at-separation");
+            }
+          } else {
+            fail("sentence-feedback-session-starter");
+          }
+
           step("sentence checkpoint and Form Check return routes");
           const firstSentenceUnit = (w.HANAPATH_SENTENCE_UNITS || []).find((unit) =>
             (unit.lessonIds || []).includes(firstSentenceLessonId));
