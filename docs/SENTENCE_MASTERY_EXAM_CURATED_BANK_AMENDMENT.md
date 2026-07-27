@@ -22,10 +22,13 @@ exception exists only for the fail-closed `controlled-clause-transformation` ite
 [`SENTENCE_EXAM_CONTROLLED_CLAUSE_CONTRACT.md`](SENTENCE_EXAM_CONTROLLED_CLAUSE_CONTRACT.md).
 
 The learner must receive the exact Korean source fragment or fragments, the required Korean
-construction, and explicit instructions to preserve supplied wording, particles, order, tense,
-speech level, and information structure except for the named grammar operation. The exception does
-not relax exact grading and does not permit generated alternatives. A row that cannot satisfy the
-controlled contract remains recognition-only.
+construction, the exact source-ending-to-target-ending replacement, and explicit instructions to
+preserve supplied wording, particles, order, tense, speech level, and information structure except
+for that replacement. The replacement must reconstruct the canonical target mechanically. Every
+additional productive clause tag must already be visible in an unchanged source fragment and carry
+explicit evidence in the item contract. Controlled-clause items are canonical-only: they may not
+store manual alternatives. The exception does not relax exact grading and does not permit generated
+alternatives. A row that cannot satisfy the controlled contract remains recognition-only.
 
 Historical full-corpus exclusion evidence assessed the former open-translation item shape. A current,
 independently reviewed controlled transformation may supersede that historical exclusion without
