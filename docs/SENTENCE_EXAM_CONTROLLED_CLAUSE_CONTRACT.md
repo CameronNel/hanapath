@@ -37,8 +37,9 @@ The learner prompt must expose:
 5. the locked tense, speech-level, and information-structure instruction.
 
 The learner must preserve the supplied wording, particles, and order except for the named grammar
-change. The grader remains strict NFC and whitespace-normalized exact matching against the canonical
-answer plus at most four independently reviewed alternatives.
+change. The grader remains strict NFC and whitespace-normalized exact matching. Because the learner
+sees the exact replacement, a controlled-clause item is canonical-only and may not store manual
+alternatives.
 
 ## 3. Operations
 
@@ -71,6 +72,7 @@ No additional operation may be inferred or generated at runtime.
     ],
     sourceEnding: "어요",
     targetEnding: "지만",
+    preservedClauseEvidence: [],
     preserveSourceOrder: true,
     preserveLexicalMaterial: true,
     preserveParticles: true,
@@ -90,8 +92,10 @@ Replace the exact Korean ending "어요" with "지만".
 
 The source and target ending may each contain at most two Korean eojeol, and the replacement may not
 consume the whole transformed source fragment. This exact reconstruction check permits another
-productive form only when it is already supplied and locked inside an unchanged source fragment. It
-must also contain these exact instructions:
+productive form only when it is already supplied and locked inside an unchanged source fragment.
+Every additional clause-sensitive tag on the row must be represented exactly once in
+`preservedClauseEvidence`, with an unchanged fragment index and a visible Korean surface. It must
+also contain these exact instructions:
 
 ```text
 Preserve the supplied Korean wording, particles, and order except for the required grammar change.
@@ -111,6 +115,8 @@ The audit rejects the item when any of the following is true:
 - the declared source ending is not the exact suffix of the transformed fragment;
 - the replacement consumes the whole transformed source fragment;
 - the declared target ending does not realise the required tag;
+- `preservedClauseEvidence` is missing, duplicated, names a tag not carried by the row, points to the transformed fragment, or fails to expose every additional clause-sensitive tag exactly once;
+- a controlled item stores any manual alternative;
 - replacing the source ending and joining the unchanged fragments does not reconstruct the canonical target exactly;
 - a fragment or construction cue is hidden from the learner prompt;
 - source order, lexical material, or particles are not locked for preservation;
