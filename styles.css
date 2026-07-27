@@ -4721,14 +4721,81 @@ li { margin-bottom: 4px; }
   font-size: 1.4rem; font-weight: 800; line-height: 1.4;
   color: var(--text); margin-bottom: 6px;
 }
-.ss-diff { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
-.ss-tok {
-  padding: 3px 9px; border-radius: var(--radius-xs);
-  font-size: .95rem; font-weight: 700;
-  border: 1.5px solid var(--line-strong);
+.ss-diff {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.025);
 }
+.ss-diff-row {
+  display: grid;
+  grid-template-columns: minmax(76px, auto) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  min-width: 0;
+}
+.ss-diff-label {
+  padding-top: 4px;
+  color: var(--muted-2);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.ss-diff-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+.ss-tok {
+  padding: 3px 9px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-xs);
+  font-size: .95rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.ss-tok-correct,
 .ss-tok-ok { border-color: var(--good); color: var(--good); background: rgba(var(--accent-2-rgb),.12); }
+.ss-tok-moved { border-color: var(--warn); color: var(--warn); background: rgba(251,191,36,.10); }
+.ss-tok-substituted { border-color: var(--accent-3); color: var(--accent-3); background: rgba(var(--accent-3-rgb),.12); }
+.ss-tok-missing,
+.ss-tok-extra,
 .ss-tok-miss { border-color: var(--bad); color: var(--bad); background: rgba(248,113,113,.10); }
+.ss-empty-answer { color: var(--muted-2); font-size: .85rem; font-style: italic; }
+.ss-attempt-feedback-lead {
+  margin: 10px 0 0;
+  color: var(--text);
+  font-size: .85rem;
+  line-height: 1.45;
+}
+.ss-attempt-feedback-lead .fs-xs { display: block; margin-top: 2px; color: var(--muted-2); }
+.ss-diff-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding-top: 2px;
+  border-top: 1px solid var(--line);
+  color: var(--muted-2);
+  font-size: .72rem;
+}
+.ss-diff-legend span { display: inline-flex; gap: 5px; align-items: center; }
+.ss-legend-swatch {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 3px;
+}
+@media (max-width: 430px) {
+  .ss-diff-row { grid-template-columns: 1fr; gap: 5px; }
+  .ss-diff-label { padding-top: 0; }
+}
 
 /* ── SOUND OPTION TESTER ────────────────────────────────────────── */
 .sound-option-row {

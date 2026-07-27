@@ -1,12 +1,12 @@
-// [2026-07-26] Cache bumped for CB3 Sentence lesson contrast teaching (sections 5-8 data; CB2 behavior retained).
-const CACHE_NAME = "hanapath-shell-v451";
+// [2026-07-27] Cache bumped for L2 deterministic Sentence positional and near-miss feedback.
+const CACHE_NAME = "hanapath-shell-v452";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260723a",
+  "./styles.css?v=20260727a",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260717u",
@@ -30,7 +30,8 @@ const APP_SHELL = [
   "./word_exam_engine.js?v=20260723a",
   "./exam_integrity.js?v=20260721b",
   "./form_check_blueprints.js?v=20260723a",
-  "./app.js?v=20260726b",
+  "./sentence_feedback.js?v=20260727a",
+  "./app.js?v=20260727a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",
