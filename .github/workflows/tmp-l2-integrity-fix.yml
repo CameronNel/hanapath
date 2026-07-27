@@ -1,4 +1,4 @@
-name: Apply L2 integrity bindings
+name: Diagnose L2 integrity binding
 
 on:
   pull_request:
@@ -9,10 +9,10 @@ permissions:
   contents: write
 
 jobs:
-  apply:
+  diagnose:
     if: github.head_ref == 'core/l2-sentence-positional-near-miss-feedback'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - name: Checkout L2 branch
         uses: actions/checkout@v4
@@ -21,10 +21,13 @@ jobs:
           fetch-depth: 0
           show-progress: false
 
-      - name: Update exact integrity bindings
+      - name: Capture exact audit failure
         shell: bash
         run: |
           set -euo pipefail
+          if test -f .github/l2-integrity-diagnostic.txt; then
+            exit 0
+          fi
           python - <<'PY'
           from pathlib import Path
 
@@ -39,14 +42,9 @@ jobs:
                   ('const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v451"', 'const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v452"'),
                   ('const EXAM_INTEGRITY_ASSET_REVISION = "20260726b"', 'const EXAM_INTEGRITY_ASSET_REVISION = "20260727a"'),
               ],
-              'scripts/audit-sentence-lesson-contrasts.mjs': [
-                  ('hanapath-shell-v451', 'hanapath-shell-v452'),
-              ],
-              'scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs': [
-                  ('hanapath-shell-v451', 'hanapath-shell-v452'),
-              ],
+              'scripts/audit-sentence-lesson-contrasts.mjs': [('hanapath-shell-v451', 'hanapath-shell-v452')],
+              'scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs': [('hanapath-shell-v451', 'hanapath-shell-v452')],
           }
-
           for name, pairs in replacements.items():
               path = Path(name)
               text = path.read_text()
@@ -57,41 +55,12 @@ jobs:
                       raise SystemExit(f'{name}: neither old nor new binding found: {old}')
               path.write_text(text)
           PY
-
-      - name: Check updated syntax
-        run: |
-          node --check app.js
-          node --check scripts/audit-exam-integrity.mjs
-
-      - name: Audit exam integrity
-        run: node scripts/audit-exam-integrity.mjs
-
-      - name: Audit contrast sections 1-4
-        run: node scripts/audit-sentence-lesson-contrasts.mjs
-
-      - name: Audit contrast sections 5-8
-        run: node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
-
-      - name: Test L2 feedback engine
-        run: node scripts/test-sentence-feedback-engine.mjs
-
-      - name: Audit app shell
-        run: node scripts/audit-app-shell.mjs
-
-      - name: Test Sentence exam grader
-        run: node scripts/test-sentence-exam-grader.mjs
-
-      - name: Diff hygiene
-        run: git diff --check
-
-      - name: Commit integrity bindings
-        shell: bash
-        run: |
-          set -euo pipefail
+          node scripts/audit-exam-integrity.mjs > /tmp/l2-integrity-diagnostic.txt 2>&1 || true
+          git reset -- .
+          git checkout -- .
+          cp /tmp/l2-integrity-diagnostic.txt .github/l2-integrity-diagnostic.txt
           git config user.name 'HanaPath Coder'
           git config user.email 'noreply@openai.com'
-          git add app.js scripts/audit-exam-integrity.mjs \
-            scripts/audit-sentence-lesson-contrasts.mjs \
-            scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
-          git commit -m 'L2: refresh exam integrity bindings'
+          git add .github/l2-integrity-diagnostic.txt
+          git commit -m 'chore: capture L2 integrity diagnostic'
           git push origin HEAD:core/l2-sentence-positional-near-miss-feedback
