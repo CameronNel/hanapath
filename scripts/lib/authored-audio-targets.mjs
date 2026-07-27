@@ -218,7 +218,7 @@ function collectCanonicalAnswers(targets, value, source, seen = new Set()) {
 
 function collectExamTargets(targets, sandbox) {
   const window = sandbox.window;
-  collectAudioFields(targets, window.HANAPATH_HANGUL_MASTERY_EXAM, "hangul-mastery-exam");
+  collectAudioFields(targets, window.HANGUL_MASTERY_EXAM, "hangul-mastery-exam");
   collectCanonicalAnswers(targets, window.HANAPATH_SENTENCE_EXAM_CURATED_BANK, "sentence-curated-exam-bank");
 
   const engine = window.HANAPATH_WORD_EXAM_ENGINE;
@@ -228,7 +228,7 @@ function collectExamTargets(targets, sandbox) {
     const modes = exam.retention ? ["achievement", "confirmation"] : ["achievement"];
     for (const mode of modes) {
       for (const seed of [1, 2, 3, 7, 11, 31, 97, 313]) {
-        const avoidTargetWordIds = mode === "confirmation" ? [] : undefined;
+        const avoidTargetIds = mode === "confirmation" ? [] : undefined;
         let attempt;
         try {
           attempt = engine.generateAttempt(exam.id, String(seed), { mode, avoidTargetIds });

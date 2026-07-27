@@ -14,4 +14,11 @@ for (const sample of ["계시세요", "드시세요", "주무시세요", "안 �
 }
 assert.ok(first.some((entry) => entry.categories.some((category) => category.startsWith("sentence-curated-exam-bank:"))),
   "curated Sentence exam bank audio targets were not discovered");
+// Examination audio contracts must be traversed, not silently skipped. These
+// guards fail closed if the loaded exam globals or the word-exam attempt call
+// drift, so a broken exam-discovery path can never pass as "no gap".
+assert.ok(first.some((entry) => entry.categories.some((category) => category.startsWith("hangul-mastery-exam:"))),
+  "Hangul Mastery examination audio targets were not discovered");
+assert.ok(first.some((entry) => entry.categories.some((category) => category.startsWith("word-exam:"))),
+  "Core Word examination attempt audio targets were not discovered");
 console.log(`Authored audio discovery passed: ${first.length} deterministic targets.`);
