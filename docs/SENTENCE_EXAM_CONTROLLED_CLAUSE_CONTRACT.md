@@ -61,6 +61,7 @@ No additional operation may be inferred or generated at runtime.
   canonicalAnswer: "저는 아침을 안 먹지만 커피는 마셔요.",
   manualAlternatives: [],
   requiresLexicalAnchor: true,
+  patternTags: ["but-jiman", "neg-an", "object-eul-reul", "present-polite", "topic-neun"],
   controlledClause: {
     schemaVersion: 1,
     operation: "combine-clauses",
@@ -80,6 +81,10 @@ No additional operation may be inferred or generated at runtime.
   }
 }
 ```
+
+The curated entry's `patternTags` must exactly equal the live source row's tag set. Missing, added,
+omitted, duplicated, or stale tags fail the audit and therefore cannot be used to manufacture or
+hide an examination floor contribution.
 
 The prompt must contain each source fragment and `requiredConstructionCue` verbatim and in the
 contracted order. `sourceEnding` must be the exact suffix replaced in the first source fragment, and
@@ -106,6 +111,7 @@ Keep the tense shown in the Korean source fragments. Preserve the speech level s
 
 The audit rejects the item when any of the following is true:
 
+- the curated entry's `patternTags` do not exactly equal the live source row's tag set;
 - the row carries a clause-sensitive tag but uses another typed template;
 - the controlled template is used for a row without an approved clause-sensitive tag;
 - the operation or visible construction cue does not match the required tag;
