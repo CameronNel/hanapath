@@ -1,0 +1,13 @@
+Python 3.12.13
+edge-tts 7.2.8
+ERROR: ffmpeg was not found on PATH and imageio_ffmpeg is unavailable.
+
+Install ffmpeg/imageio-ffmpeg or set FFMPEG.
+ERROR: ffmpeg was not found on PATH and imageio_ffmpeg is unavailable.
+
+Install ffmpeg/imageio-ffmpeg or set FFMPEG.
+Building explicit learner-facing audio manifest...
+Starting generation with edge backend...
+Learner-facing manifest: 36070 unique audio keys.
+Playable existing assets: 34982
+Assets requiring generation: 1088
