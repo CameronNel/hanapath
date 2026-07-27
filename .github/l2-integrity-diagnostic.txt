@@ -1,0 +1,306 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /\.\/app\.js\?v=20260726b/. Input:
+
+'// [2026-07-27] Cache bumped for L2 deterministic Sentence positional and near-miss feedback.\n' +
+  'const CACHE_NAME = "hanapath-shell-v452";\n' +
+  'const AUDIO_RUNTIME_CACHE_LIMIT = 256;\n' +
+  "// Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.\n" +
+  'const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;\n' +
+  'const APP_SHELL = [\n' +
+  '  "./",\n' +
+  '  "./index.html",\n' +
+  '  "./styles.css?v=20260727a",\n' +
+  '  "./lib/hangul.js",\n' +
+  '  "./lib/hangul_q_recognizer.js?v=20260715b",\n' +
+  '  "./audio_map.js?v=20260717u",\n' +
+  '  "./words_curated_core.js?v=20260705e",\n' +
+  '  "./words_inflect.js?v=20260703c",\n' +
+  '  "./words_lesson_plan.js?v=20260722f",\n' +
+  '  "./raw_word_meanings.js?v=20260703b",\n' +
+  '  "./sentences_core.js?v=20260717u",\n' +
+  '  "./sentences_lesson_plan.js?v=20260717u",\n' +
+  '  "./sentence_lesson_contrast_ui.js?v=20260726a",\n' +
+  '  "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a",\n' +
+  '    "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b",\n' +
+  '  "./sentence_exam_eligibility_shard_a.js?v=20260725a",\n' +
+  '  "./sentence_exam_eligibility_shard_b.js?v=20260725a",\n' +
+  '  "./sentence_exam_eligibility_shard_c.js?v=20260725a",\n' +
+  '  "./sentence_exam_eligibility_shard_d.js?v=20260725a",\n' +
+  '  "./sentence_exam_eligibility.js?v=20260725a",\n' +
+  '  "./hangul_strokes.js?v=20260715b",\n' +
+  '  "./hangul_mastery_exam.js?v=20260720a",\n' +
+  '  "./word_exam_blueprints.js?v=20260723a",\n' +
+  '  "./word_exam_engine.js?v=20260723a",\n' +
+  '  "./exam_integrity.js?v=20260721b",\n' +
+  '  "./form_check_blueprints.js?v=20260723a",\n' +
+  '  "./sentence_feedback.js?v=20260727a",\n' +
+  '  "./app.js?v=20260727a",\n' +
+  '  "./alphabet_skill_srs.js?v=20260630b",\n' +
+  '  "./manifest.webmanifest",\n' +
+  '  "./korean_5000_claude_ready.csv",\n' +
+  '  "./korean_supplementary_15k.csv",\n' +
+  '  "./icons/icon-192.png",\n' +
+  '  "./icons/icon-512.png",\n' +
+  '  "./fonts/fonts.css?v=20260716a",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.0.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.1.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.10.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.100.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.101.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.102.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.103.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.104.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.105.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.106.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.107.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.108.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.109.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.11.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.110.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.111.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.112.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.113.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.114.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.115.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.116.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.117.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.118.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.119.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.12.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.13.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.14.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.15.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.16.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.17.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.18.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.19.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.2.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.20.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.21.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.22.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.23.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.24.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.25.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.26.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.27.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.28.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.29.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.3.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.30.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.31.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.32.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.33.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.34.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.35.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.36.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.37.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.38.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.39.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.4.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.40.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.41.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.42.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.43.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.44.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.45.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.46.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.47.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.48.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.49.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.5.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.50.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.51.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.52.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.53.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.54.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.55.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.56.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.57.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.58.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.59.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.6.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.60.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.61.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.62.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.63.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.64.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.65.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.66.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.67.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.68.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.69.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.7.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.70.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.71.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.72.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.73.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.74.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.75.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.76.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.77.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.78.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.79.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.8.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.80.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.81.woff2",\n' +
+  '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr'... 5854 more characters
+
+    at auditBrowserWiring (file:///home/runner/work/hanapath/hanapath/scripts/audit-exam-integrity.mjs:60:10)
+    at file:///home/runner/work/hanapath/hanapath/scripts/audit-exam-integrity.mjs:117:18
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '// [2026-07-27] Cache bumped for L2 deterministic Sentence positional and near-miss feedback.\n' +
+    'const CACHE_NAME = "hanapath-shell-v452";\n' +
+    'const AUDIO_RUNTIME_CACHE_LIMIT = 256;\n' +
+    "// Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.\n" +
+    'const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;\n' +
+    'const APP_SHELL = [\n' +
+    '  "./",\n' +
+    '  "./index.html",\n' +
+    '  "./styles.css?v=20260727a",\n' +
+    '  "./lib/hangul.js",\n' +
+    '  "./lib/hangul_q_recognizer.js?v=20260715b",\n' +
+    '  "./audio_map.js?v=20260717u",\n' +
+    '  "./words_curated_core.js?v=20260705e",\n' +
+    '  "./words_inflect.js?v=20260703c",\n' +
+    '  "./words_lesson_plan.js?v=20260722f",\n' +
+    '  "./raw_word_meanings.js?v=20260703b",\n' +
+    '  "./sentences_core.js?v=20260717u",\n' +
+    '  "./sentences_lesson_plan.js?v=20260717u",\n' +
+    '  "./sentence_lesson_contrast_ui.js?v=20260726a",\n' +
+    '  "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a",\n' +
+    '    "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b",\n' +
+    '  "./sentence_exam_eligibility_shard_a.js?v=20260725a",\n' +
+    '  "./sentence_exam_eligibility_shard_b.js?v=20260725a",\n' +
+    '  "./sentence_exam_eligibility_shard_c.js?v=20260725a",\n' +
+    '  "./sentence_exam_eligibility_shard_d.js?v=20260725a",\n' +
+    '  "./sentence_exam_eligibility.js?v=20260725a",\n' +
+    '  "./hangul_strokes.js?v=20260715b",\n' +
+    '  "./hangul_mastery_exam.js?v=20260720a",\n' +
+    '  "./word_exam_blueprints.js?v=20260723a",\n' +
+    '  "./word_exam_engine.js?v=20260723a",\n' +
+    '  "./exam_integrity.js?v=20260721b",\n' +
+    '  "./form_check_blueprints.js?v=20260723a",\n' +
+    '  "./sentence_feedback.js?v=20260727a",\n' +
+    '  "./app.js?v=20260727a",\n' +
+    '  "./alphabet_skill_srs.js?v=20260630b",\n' +
+    '  "./manifest.webmanifest",\n' +
+    '  "./korean_5000_claude_ready.csv",\n' +
+    '  "./korean_supplementary_15k.csv",\n' +
+    '  "./icons/icon-192.png",\n' +
+    '  "./icons/icon-512.png",\n' +
+    '  "./fonts/fonts.css?v=20260716a",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.0.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.1.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.10.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.100.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.101.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.102.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.103.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.104.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.105.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.106.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.107.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.108.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.109.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.11.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.110.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.111.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.112.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.113.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.114.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.115.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.116.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.117.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.118.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.119.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.12.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.13.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.14.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.15.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.16.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.17.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.18.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.19.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.2.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.20.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.21.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.22.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.23.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.24.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.25.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.26.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.27.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.28.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.29.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.3.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.30.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.31.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.32.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.33.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.34.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.35.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.36.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.37.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.38.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.39.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.4.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.40.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.41.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.42.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.43.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.44.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.45.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.46.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.47.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.48.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.49.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.5.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.50.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.51.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.52.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.53.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.54.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.55.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.56.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.57.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.58.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.59.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.6.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.60.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.61.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.62.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.63.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.64.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.65.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.66.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.67.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.68.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.69.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.7.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.70.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.71.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.72.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.73.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.74.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.75.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.76.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.77.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.78.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.79.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.8.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.80.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.81.woff2",\n' +
+    '  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr'... 5854 more characters,
+  expected: /\.\/app\.js\?v=20260726b/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v22.23.1
