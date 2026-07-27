@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - core/l2-sentence-positional-near-miss-feedback
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
