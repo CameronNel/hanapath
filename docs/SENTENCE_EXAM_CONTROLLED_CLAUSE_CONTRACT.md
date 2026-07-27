@@ -122,3 +122,6 @@ This contract does not allow:
 - English-only clause prompts;
 - lowering any paper allocation, tag floor, or freshness rule;
 - self-approval or approval inferred from mechanical validation.
+
+This packet defines and enforces an eligibility shape only. It approves no Sentence row and emits no
+runtime-bank or freeze revision.
