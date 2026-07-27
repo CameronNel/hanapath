@@ -79,7 +79,9 @@ Re-derive these claims before editing affected product code:
   exactly 288 typed entries and 320 recognition entries, locked to a checked-in freeze manifest with
   strict readiness gates.
 - Sentence exam blueprints, engine, browser runner, and retention do not yet ship.
-- The full learner-journey browser gate does not yet ship.
+- The full learner-journey browser gate ships (packet **L1**, #365): `scripts/test-lesson-journey-gate.mjs`
+  drives the real static app in headless Chrome at 375×812 and 768×1024 and is a blocking CI and
+  core-gate step.
 
 ## 4. Operating rules
 
@@ -203,21 +205,21 @@ The integrator updates this table after each merge. Workers do not edit it.
 | CB3 | Lesson contrast restructuring, sections 5-8 | COMPLETE (#363) | CB2 | Taught contrasts and controlled prompts |
 | CB4 | Curate and independently review bank | COMPLETE (#364) | CB2 + CB3 | 288 typed and 320 recognition entries |
 | CB5 | Freeze, enable, and lock readiness | COMPLETE (#366) | CB4 | Enabled frozen bank |
-| L1 | Lesson reachability, resume, migration, and mobile smoke | READY | C1 | Browser gate |
-| L2 | Final Sentence positional and near-miss feedback | BLOCKED | L1 | Clear lesson feedback |
+| L1 | Lesson reachability, resume, migration, and mobile smoke | COMPLETE (#365) | C1 | Browser gate |
+| L2 | Final Sentence positional and near-miss feedback | READY | L1 | Clear lesson feedback |
 | L3 | Authored-item audio closure | READY | C1 | Complete mapped audio |
 | X1 | Sentence exam blueprints and pure engine | READY | CB5 | Deterministic papers and seed audit |
 | X2 | Sentence exam UI, provenance, results, and retention | BLOCKED | X1 + L2 | Learner-facing exam suite |
 | Q1 | Full learner-journey acceptance | BLOCKED | L1-L3 + X2 | Defect closure and evidence |
 | Q2 | Strict release-candidate closure | BLOCKED | Q1 | Final evidence and documentation |
 
-The next READY packets are **L1**, **L3**, and **X1**.
+The next READY packets are **L2**, **L3**, and **X1**.
 
 ## 8. Packet instructions
 
 ### Completed historical packets
 
-D0, C1, E0, E1A, E1B, CB0, CB1, CB2, CB3, CB4, and CB5 are complete. Do not recreate or rerun them as new packets.
+D0, C1, E0, E1A, E1B, CB0, CB1, CB2, CB3, CB4, CB5, and L1 are complete. Do not recreate or rerun them as new packets.
 The 2,100 E1A/E1B records remain protected candidate evidence. E1C, E1D, and E2 are superseded
 for exam readiness and must not be started.
 
