@@ -55,6 +55,12 @@ jobs:
         run: node scripts/audit-sentences-data.mjs --strict
       - name: Audit form checks
         run: node scripts/audit-form-checks.mjs
+      - name: Audit learning questions
+        run: node scripts/audit-learning-questions.mjs
+      - name: Curriculum v2 migration regression
+        run: node scripts/test_curriculum_v2_migration.mjs
+      - name: L1 learner journey browser gate
+        run: node scripts/test-lesson-journey-gate.mjs
       # The historical full-corpus eligibility audit remains active during the
       # curated-bank migration so the 2,100 completed reviews stay protected.
       - name: Audit sentence eligibility (schema + progress)

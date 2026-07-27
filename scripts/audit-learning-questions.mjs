@@ -1018,7 +1018,7 @@ const wordBuilderSandbox = {
 };
 vm.createContext(wordBuilderSandbox);
 vm.runInContext(
-  `${readFunction("ensureEveryWordTested")}\n${readFunction("buildWordLessonQuestions")}`,
+  `${readFunction("ensureEveryWordTested")}\n${readFunction("appendAuthoredItemQuestions")}\n${readFunction("buildWordLessonQuestions")}`,
   wordBuilderSandbox,
 );
 const generatedWordQuestions = lessons.flatMap((lesson) => {
@@ -1106,7 +1106,7 @@ if (!recallPrompt || recallPrompt.includes("escapeHtml(target)")) {
 }
 
 const wordCheckpointRenderer = readFunction("wordLessonCheckHtml");
-const wordTileSource = readFunction("getWordSyllableTiles");
+const wordTileSource = `${readFunction("getWordSyllableTiles")}\n${readFunction("getSyllableTilesForTarget")}`;
 const wordLessonBinder = readFunction("bindWordLessonRoot");
 const wordLessonSerializer = readFunction("serializeWordLessonView");
 const wordLessonRehydrator = readFunction("rehydrateWordLessonView");
@@ -1280,6 +1280,8 @@ if (
 }
 
 const sentenceRendererCorpusSandbox = {
+  sentenceLessonPromptText: (_session, row) => row?.english || "",
+  sentenceLessonCueLabel: (_session, fallback) => fallback,
   sentenceQuestionMode: (session) => session.auditMode,
   sentenceSessionProgressHtml: () => "",
   sentencePromptTileHtml: (content) => content,
@@ -1513,6 +1515,8 @@ const shadowRowProbe = {
   tokens: [],
 };
 const shadowRendererSandbox = {
+  sentenceLessonPromptText: (_session, row) => row?.english || "",
+  sentenceLessonCueLabel: (_session, fallback) => fallback,
   window: { SpeechRecognition: function SpeechRecognitionProbe() {} },
   curatedWordsById: new Map([
     ["shadow-word-probe", { soundNote: shadowSoundNoteProbe }],

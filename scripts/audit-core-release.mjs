@@ -309,6 +309,9 @@ const GATE_STEPS = [
   { id: "sentences-data", label: "Sentences data", script: "scripts/audit-sentences-data.mjs", fullArgs: ["--strict"], quickArgs: ["--strict"] },
   { id: "sentences-foundation", label: "Sentences foundation coverage", script: "scripts/audit-sentences-foundation.mjs" },
   { id: "form-checks", label: "Form Checks", script: "scripts/audit-form-checks.mjs" },
+  { id: "learning-questions", label: "Learning question coverage and answer-leak safety (L1)", script: "scripts/audit-learning-questions.mjs" },
+  { id: "curriculum-v2-migration", label: "Curriculum v2 migration regression (L1)", script: "scripts/test_curriculum_v2_migration.mjs" },
+  { id: "lesson-journey-browser", label: "Lesson reachability and migration browser journey (L1)", script: "scripts/test-lesson-journey-gate.mjs" },
   {
     id: "sentence-eligibility",
     label: "Sentence eligibility (schema + progress)",
@@ -364,14 +367,7 @@ const GATE_STEPS = [
 
 // Documented but intentionally excluded from the gate, each with the reason and
 // a named owning packet so no coverage gap floats indefinitely.
-const EXCLUDED = [
-  {
-    script: "scripts/audit-learning-questions.mjs",
-    owner: "packet L1 (lesson reachability / question coverage)",
-    reason:
-      "throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect) and is not wired into CI, so learner-question coverage and answer-leak safety are not yet protected by this one-command gate.",
-  },
-];
+const EXCLUDED = [];
 
 function stepArgs(step) {
   if (QUICK && step.quickArgs) return step.quickArgs;
@@ -512,15 +508,16 @@ function renderStatusMarkdown(status) {
   );
   lines.push("");
 
-  lines.push("## Coverage gaps (this gate is not yet the complete lesson/exam matrix)");
+  lines.push("## Coverage gaps");
   lines.push("");
-  lines.push(
-    "The roadmap §9 universal verification matrix is broader than the checks wired in"
-  );
-  lines.push("here. The following are deliberately excluded, each with a named owning packet:");
-  lines.push("");
-  for (const item of EXCLUDED) {
-    lines.push(`- \`${item.script}\` — ${item.reason} **Owner: ${item.owner}.**`);
+  if (EXCLUDED.length) {
+    lines.push("The following verification scripts are deliberately excluded, each with a named owning packet:");
+    lines.push("");
+    for (const item of EXCLUDED) {
+      lines.push(`- \`${item.script}\` — ${item.reason} **Owner: ${item.owner}.**`);
+    }
+  } else {
+    lines.push("No roadmap §9 verification scripts are deliberately excluded from this gate.");
   }
   lines.push("");
 

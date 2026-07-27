@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HanaPath L1 learner journey gate</title>
+  <style>
+    html, body { margin: 0; width: 100%; min-height: 100%; background: #111; }
+    #appFrame { display: block; width: 100vw; height: 100vh; border: 0; background: #fff; }
+    #fixtureResult { position: fixed; inset: auto 0 0; z-index: 99999; margin: 0; padding: 4px 8px; max-height: 30vh; overflow: auto; background: #000; color: #fff; font: 12px/1.3 monospace; }
+  </style>
+</head>
+<body data-test-status="pending">
+  <iframe id="appFrame" title="HanaPath application under test"></iframe>
+  <pre id="fixtureResult" role="status" aria-live="polite">RUNNING</pre>
+  <script>
+    (() => {
+      const frame = document.getElementById("appFrame");
+      const resultNode = document.getElementById("fixtureResult");
+      const failures = [];
+      const steps = [];
+      const runtimeErrors = [];
+      const requestedWidth = Math.max(320, Number(new URLSearchParams(location.search).get("viewport")?.split(",")[0]) || window.innerWidth);
+      frame.style.width = `${requestedWidth}px`;
+      frame.style.maxWidth = `${requestedWidth}px`;
+      let storageKey = null;
+      let loadSerial = 0;
+
+      window.addEventListener("message", (event) => {
+        if (!event.data || event.data.source !== "hanapath-l1") return;
+        runtimeErrors.push(`${event.data.kind}: ${event.data.message || "unknown"}`);
+      });
+
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const clone = (value) => JSON.parse(JSON.stringify(value));
+      const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+      const fail = (code, detail = "") => failures.push(detail ? `${code}: ${detail}` : code);
+      const check = (condition, code, detail = "") => {
+        if (!condition) fail(code, detail);
+        return Boolean(condition);
+      };
+      const step = (label) => {
+        steps.push(label);
+        resultNode.textContent = `RUNNING\n${steps.join("\n")}`;
+      };
+
+      async function waitFor(test, label, timeout = 12000) {
+        const started = Date.now();
+        while (Date.now() - started < timeout) {
+          try {
+            const value = test();
+            if (value) return value;
+          } catch (_) {}
+          await sleep(40);
+        }
+        throw new Error(`Timed out waiting for ${label}`);
+      }
+
+      function appWindow() { return frame.contentWindow; }
+      function appDocument() { return frame.contentDocument; }
+      function getState() { return clone(appWindow().getBackupPayload().state); }
+      function visibleScreen() {
+        return [...appDocument().querySelectorAll(".screen")].find((node) => !node.hidden && !node.classList.contains("screen-motion-exit")) || null;
+      }
+      function assertUsableScreen(code) {
+        const screen = visibleScreen();
+        check(Boolean(screen), `${code}-visible-screen`);
+        if (!screen) return;
+        check(screen.textContent.trim().length > 20, `${code}-not-blank`);
+        const localControl = screen.querySelector("button:not([disabled]), a[href], input:not([type=hidden]), textarea");
+        const shellControl = appDocument().querySelector(".detail-bar .back-btn:not([disabled]), .bottom-nav button:not([disabled]), #app-settings-button:not([hidden])");
+        check(Boolean(localControl || shellControl), `${code}-primary-control`);
+      }
+      function click(node, code) {
+        if (!node) {
+          fail(code);
+          return false;
+        }
+        node.click();
+        return true;
+      }
+
+      async function loadApp({ onboarding = false } = {}) {
+        loadSerial += 1;
+        const serial = loadSerial;
+        frame.src = `/__l1_app__/index.html${onboarding ? "?onboarding=1" : ""}#l1-${serial}`;
+        await waitFor(() => frame.contentDocument && frame.contentDocument.readyState === "complete", "app document load", 18000);
+        await waitFor(() => {
+          const w = appWindow();
+          return w && typeof w.getBackupPayload === "function" && typeof w.saveState === "function";
+        }, "HanaPath globals", 18000);
+        await sleep(120);
+        return appWindow();
+      }
+
+      function discoverStorageKey(w) {
+        w.saveState();
+        for (let index = 0; index < w.localStorage.length; index += 1) {
+          const key = w.localStorage.key(index);
+          try {
+            const value = JSON.parse(w.localStorage.getItem(key));
+            if (value && typeof value === "object" && Object.prototype.hasOwnProperty.call(value, "onboarded") && Object.prototype.hasOwnProperty.call(value, "route")) {
+              return key;
+            }
+          } catch (_) {}
+        }
+        return null;
+      }
+
+      async function replaceState(nextState) {
+        // Unload the current app before changing storage. HanaPath may persist its
+        // in-memory state during navigation, which would otherwise overwrite the
+        // fixture's deterministic seed between journey phases.
+        const unloadMarker = `l1-unload-${Date.now()}-${loadSerial}`;
+        frame.src = `about:blank#${unloadMarker}`;
+        await waitFor(() => {
+          try {
+            return frame.contentWindow.location.href.includes(unloadMarker)
+              && frame.contentDocument
+              && frame.contentDocument.readyState === "complete";
+          } catch (_) {
+            return false;
+          }
+        }, "blank app unload");
+        await sleep(20);
+        localStorage.setItem(storageKey, JSON.stringify(nextState));
+        await loadApp();
+        return getState();
+      }
+
+      async function goLearn() {
+        const w = appWindow();
+        if (typeof w.goHub === "function") w.goHub("learn");
+        else click(appDocument().querySelector('[data-nav="learn"]'), "learn-nav-missing");
+        await waitFor(() => appDocument().querySelector('[data-hub-item="alphabet"]'), "Learn hub");
+      }
+
+      async function openHubItem(id) {
+        await goLearn();
+        const button = appDocument().querySelector(`[data-hub-item="${id}"]`);
+        if (!click(button, `hub-${id}-missing`)) return false;
+        await sleep(100);
+        assertUsableScreen(`hub-${id}`);
+        return true;
+      }
+
+      function validVocabRecord(overrides = {}) {
+        return {
+          box: 0, due: 0, seen: 1, correct: 1, missed: 0, lastSeen: 1,
+          lastResult: "correct", isKnown: false, isHard: false, leech: false,
+          directions: {}, ...overrides,
+        };
+      }
+
+      async function openCurriculumHub(id) {
+        if (!(await openHubItem(id))) return false;
+        await sleep(120);
+        return true;
+      }
+
+      async function run() {
+        try {
+          step("first-use onboarding");
+          localStorage.clear();
+          let w = await loadApp({ onboarding: true });
+          let d = appDocument();
+          const onboarding = d.getElementById("onboarding");
+          check(Boolean(onboarding && !onboarding.hidden && onboarding.childElementCount > 0), "onboarding-visible");
+          check(Boolean(onboarding && onboarding.querySelectorAll("button, input, select").length >= 2), "onboarding-controls");
+          check(Boolean(d.getElementById("app")?.hidden), "onboarding-app-hidden");
+          storageKey = discoverStorageKey(w);
+          check(Boolean(storageKey), "storage-key-discovered");
+          if (!storageKey) throw new Error("Could not discover HanaPath storage key");
+
+          step("cold start and main navigation");
+          const initial = getState();
+          initial.onboarded = true;
+          initial.reduceMotion = true;
+          initial.route = { hub: "learn", item: null, stage: null };
+          initial.navTab = "today";
+          initial.mainTab = "alphabet";
+          await replaceState(initial);
+          w = appWindow(); d = appDocument();
+          check(Boolean(d.getElementById("app") && !d.getElementById("app").hidden), "app-visible-after-cold-start");
+          check(d.querySelectorAll(".bottom-nav [data-nav]").length === 3, "main-navigation-count");
+          for (const hub of ["learn", "exam", "progress"]) {
+            const nav = d.querySelector(`[data-nav="${hub}"]`);
+            click(nav, `nav-${hub}-missing`);
+            await sleep(80);
+            assertUsableScreen(`nav-${hub}`);
+          }
+
+          step("Learn destination reachability");
+          await goLearn();
+          const requiredHubItems = ["alphabet", "vocabulary", "sentences", "listening", "alphabet-practice", "vocabulary-quiz", "listening-quiz", "writing", "form-checks"];
+          for (const id of requiredHubItems) check(Boolean(d.querySelector(`[data-hub-item="${id}"]`)), `learn-item-${id}`);
+          await openHubItem("alphabet-practice");
+          check(/practice|drill/i.test(visibleScreen()?.textContent || ""), "drill-lab-reachable");
+          await openHubItem("listening");
+          check(/listening|hear/i.test(visibleScreen()?.textContent || ""), "listening-reachable");
+          await openHubItem("writing");
+          check(d.querySelectorAll("[data-writing-source]").length >= 3, "writing-sources-reachable");
+          await openHubItem("form-checks");
+          check(/Form Checks/i.test(visibleScreen()?.textContent || ""), "form-checks-reachable");
+
+          step("Alphabet, Words, and Sentences lesson launches and unlocks");
+          check(typeof w.openLearnStage === "function", "stage-loader-exposed");
+          if (typeof w.openLearnStage === "function") w.openLearnStage("alphabet", 1);
+          await waitFor(() => appDocument().querySelector("#learnLessonArea, [data-lesson-motion-root]"), "Alphabet lesson player")
+            .catch((error) => fail("alphabet-surface", error.message));
+          assertUsableScreen("alphabet-lesson");
+
+          const alphabetPrerequisites = getState();
+          const alphabetProgress = w.getAlphabetProgress();
+          alphabetPrerequisites.onboarded = true;
+          alphabetPrerequisites.phaseOneCompleted = [...alphabetProgress.orderedLessonIds];
+          alphabetPrerequisites.phaseOneActive = Math.max(0, alphabetProgress.orderedLessonIds.length - 1);
+          alphabetPrerequisites.route = { hub: "learn", item: null, stage: null };
+          alphabetPrerequisites.learnInProgress = false;
+          await replaceState(alphabetPrerequisites);
+          w = appWindow(); d = appDocument();
+          const unlockedAlphabet = w.getAlphabetProgress();
+          check(unlockedAlphabet.complete, "alphabet-unlock-prerequisite", JSON.stringify({
+            onboarded: getState().onboarded,
+            stored: getState().phaseOneCompleted,
+            completed: unlockedAlphabet.completedIds,
+            total: unlockedAlphabet.total,
+          }));
+
+          if (typeof w.openLearnStage === "function") w.openLearnStage("vocabulary", 1);
+          const wordLessonButton = await waitFor(
+            () => appDocument().querySelector("[data-words-open-lesson]:not([data-words-locked])"),
+            "unlocked Word lesson",
+          ).catch((error) => { fail("word-lesson-button", `${error.message}; ${visibleScreen()?.textContent?.slice(0, 300) || "no screen"}`); return null; });
+          const firstWordLessonId = wordLessonButton?.dataset.wordsOpenLesson || "";
+          const firstWordLesson = (w.HANAPATH_WORD_LESSONS || []).find((lesson) => lesson.id === firstWordLessonId) || null;
+          const firstWordId = firstWordLesson?.newWordIds?.[0] || firstWordLesson?.reviewWordIds?.[0] || null;
+          check(Boolean(firstWordLesson && firstWordId), "word-lesson-source", firstWordLessonId);
+          if (wordLessonButton) wordLessonButton.click();
+          const wordStart = await waitFor(() => appDocument().querySelector("[data-word-lesson-start]"), "Word lesson start")
+            .catch((error) => { fail("word-start", error.message); return null; });
+          if (wordStart) { wordStart.click(); await sleep(120); }
+          const wordState = getState();
+          check(Boolean(wordState.vocabLessonSession), "word-session-created");
+          assertUsableScreen("word-lesson");
+
+          const sentencePrerequisites = getState();
+          const unlockSentenceUnit = (w.HANAPATH_SENTENCE_UNITS || [])[0] || null;
+          const sentenceRowsById = new Map((w.HANAPATH_SENTENCES || []).map((row) => [row.id, row]));
+          const unlockLessonIds = new Set(unlockSentenceUnit?.lessonIds || []);
+          const unlockWordIds = new Set();
+          for (const lesson of w.HANAPATH_SENTENCE_LESSONS || []) {
+            if (!unlockLessonIds.has(lesson.id) || lesson.type === "checkpoint") continue;
+            for (const sentenceId of lesson.sentenceIds || []) {
+              const row = sentenceRowsById.get(sentenceId);
+              for (const wordId of row?.focusWordIds || []) unlockWordIds.add(wordId);
+            }
+          }
+          check(Boolean(unlockSentenceUnit && unlockWordIds.size > 0), "sentence-unlock-prerequisite-source");
+          for (const wordId of unlockWordIds) {
+            if (!sentencePrerequisites.vocabSrs[wordId]) sentencePrerequisites.vocabSrs[wordId] = validVocabRecord();
+          }
+          sentencePrerequisites.vocabLessonCompleted = [...new Set([
+            ...(sentencePrerequisites.vocabLessonCompleted || []),
+            firstWordLesson.id,
+          ])];
+          // Exercise the real progression contract instead of assigning K2 directly.
+          // The app promotes K1 -> K2 after 20 correct answers; the met-word
+          // prerequisite above independently proves the first Sentence unit is usable.
+          sentencePrerequisites.asked = Math.max(Number(sentencePrerequisites.asked) || 0, 20);
+          sentencePrerequisites.correct = Math.max(Number(sentencePrerequisites.correct) || 0, 20);
+          sentencePrerequisites.route = { hub: "learn", item: null, stage: null };
+          sentencePrerequisites.vocabLessonSession = null;
+          await replaceState(sentencePrerequisites);
+          w = appWindow(); d = appDocument();
+          if (typeof w.refreshProgressionState === "function") w.refreshProgressionState();
+          check(getState().level === "K2", "sentence-level-transition", JSON.stringify({
+            asked: getState().asked,
+            correct: getState().correct,
+            level: getState().level,
+          }));
+          const metWordSet = typeof w.getMetWords === "function" ? w.getMetWords() : new Set(Object.keys(getState().vocabSrs || {}));
+          const missingUnlockWords = [...unlockWordIds].filter((wordId) => !metWordSet.has(wordId));
+          const sentenceStudioUnlocked = typeof w.isStudioUnlocked === "function" ? w.isStudioUnlocked("sentences") : null;
+          check(sentenceStudioUnlocked !== false && missingUnlockWords.length === 0, "sentence-studio-unlocked", JSON.stringify({
+            alphabetComplete: w.getAlphabetProgress?.().complete,
+            metWordCount: metWordSet.size,
+            unlockWordCount: unlockWordIds.size,
+            missingUnlockWords,
+            completedWordLessons: getState().vocabLessonCompleted,
+            vocabSrsCount: Object.keys(getState().vocabSrs || {}).length,
+            level: getState().level,
+            unlockedStudioIds: typeof w.getUnlockedStudioIds === "function" ? [...w.getUnlockedStudioIds(getState().level)] : [],
+            predicate: typeof w.isStudioUnlocked === "function" ? String(w.isStudioUnlocked).slice(0, 800) : "not exposed",
+            unlockBuilder: typeof w.getUnlockedStudioIds === "function" ? String(w.getUnlockedStudioIds).slice(0, 1400) : "not exposed",
+          }));
+
+          if (typeof w.openLearnStage === "function") w.openLearnStage("sentences", 1);
+          const sentenceLessonButton = await waitFor(
+            () => appDocument().querySelector("[data-ss-lesson]:not([data-ss-locked])"),
+            "unlocked Sentence lesson",
+          ).catch((error) => { fail("sentence-lesson-button", `${error.message}; ${visibleScreen()?.textContent?.slice(0, 300) || "no screen"}`); return null; });
+          const firstSentenceLessonId = sentenceLessonButton?.dataset.ssLesson || "";
+          const firstSentenceLesson = (w.HANAPATH_SENTENCE_LESSONS || []).find((lesson) => lesson.id === firstSentenceLessonId) || null;
+          const firstSentenceId = firstSentenceLesson?.sentenceIds?.[0] || null;
+          check(Boolean(firstSentenceLesson && firstSentenceId), "sentence-lesson-source", firstSentenceLessonId);
+          if (sentenceLessonButton) sentenceLessonButton.click();
+          const sentenceStart = await waitFor(() => appDocument().querySelector("[data-ss-lesson-start]"), "Sentence lesson start")
+            .catch((error) => { fail("sentence-start", error.message); return null; });
+          if (sentenceStart) { sentenceStart.click(); await sleep(120); }
+          const sentenceState = getState();
+          check(Boolean(sentenceState.sentenceLessonSession), "sentence-session-created");
+          assertUsableScreen("sentence-lesson");
+
+          step("sentence checkpoint and Form Check return routes");
+          const firstSentenceUnit = (w.HANAPATH_SENTENCE_UNITS || []).find((unit) =>
+            (unit.lessonIds || []).includes(firstSentenceLessonId));
+          const checkpointId = firstSentenceUnit?.checkpointId || "";
+          const checkpointSeed = getState();
+          checkpointSeed.sentencesProgress = {
+            ...(checkpointSeed.sentencesProgress || {}),
+            completedLessons: [...new Set([
+              ...((checkpointSeed.sentencesProgress && checkpointSeed.sentencesProgress.completedLessons) || []),
+              ...(firstSentenceUnit?.lessonIds || []),
+            ])],
+          };
+          checkpointSeed.sentenceLessonSession = null;
+          checkpointSeed.route = { hub: "learn", item: null, stage: null };
+          await replaceState(checkpointSeed);
+          w = appWindow(); d = appDocument();
+          if (typeof w.openLearnStage === "function") w.openLearnStage("sentences", 1);
+          await sleep(120);
+          const checkpointButton = checkpointId
+            ? appDocument().querySelector(`[data-ss-lesson="${checkpointId}"]:not([data-ss-locked])`)
+            : null;
+          check(Boolean(checkpointId && checkpointButton), "sentence-checkpoint-source");
+          if (checkpointButton) {
+            checkpointButton.click();
+            await sleep(100);
+            check(Boolean(appDocument().querySelector(`[data-ss-lesson-start="${checkpointId}"]`)), "sentence-checkpoint-route");
+          }
+
+          check(Boolean(firstWordLesson && firstSentenceLesson), "return-route-sources");
+          if (firstWordLesson && typeof w.openFormCheckRoute === "function") {
+            w.openFormCheckRoute({ supportingLessonId: firstWordLesson.id, routeSurface: "words" });
+            await sleep(100);
+            const routed = getState();
+            check(routed.vocabLessonActive === firstWordLesson.id || Boolean(appDocument().querySelector("#wordLessonRoot, [data-word-lesson-start]")), "form-check-word-return-route");
+          }
+          if (firstSentenceLesson && typeof w.openFormCheckRoute === "function") {
+            w.openFormCheckRoute({ supportingLessonId: firstSentenceLesson.id, routeSurface: "sentences" });
+            await sleep(100);
+            check(Boolean(appDocument().querySelector("[data-ss-lesson-start], #sentenceSessionRoot")), "form-check-sentence-return-route");
+          }
+
+          step("completion, review, SRS, resume, and reload persistence");
+          const seeded = getState();
+          const persistedAlphabetProgress = w.getAlphabetProgress();
+          const firstAlphabetId = persistedAlphabetProgress.orderedLessonIds[0];
+          seeded.phaseOneCompleted = [firstAlphabetId];
+          seeded.phaseOneActive = 1;
+          if (firstWordLesson) seeded.vocabLessonCompleted = [firstWordLesson.id];
+          seeded.letterSrs = { ...(seeded.letterSrs || {}), "ㄱ": { seen: 7, correct: 6, dueAt: 123456789 } };
+          seeded.vocabSrs = { ...(seeded.vocabSrs || {}), [firstWordId]: validVocabRecord({ seen: 5, correct: 4, due: 987654321 }) };
+          seeded.sentencesProgress = {
+            ...(seeded.sentencesProgress || {}),
+            sessionsDone: 3,
+            results: {
+              ...((seeded.sentencesProgress && seeded.sentencesProgress.results) || {}),
+              [firstSentenceId]: { seen: 4, correct: 3, dueAt: 555555555 },
+            },
+          };
+          seeded.recentQuestionKeys = {
+            ...(seeded.recentQuestionKeys || {}),
+            alphabet: ["l1-alphabet-review"],
+            vocabulary: ["l1-vocab-review"],
+            sentences: ["l1-sentence-review"],
+          };
+          seeded.vocabLessonSession = null;
+          seeded.sentenceLessonSession = null;
+          await replaceState(seeded);
+          w = appWindow(); d = appDocument();
+          const restored = getState();
+          check(w.getAlphabetProgress().completedCount >= 1, "alphabet-completion-restored");
+          if (firstWordLesson) check(w.isWordLessonCompleted(firstWordLesson.id), "word-completion-restored");
+          check(Boolean(restored.letterSrs?.["ㄱ"]), "letter-srs-restored");
+          check(Boolean(restored.vocabSrs?.[firstWordId]), "word-srs-restored");
+          check(Boolean(restored.sentencesProgress?.results?.[firstSentenceId]), "sentence-review-restored");
+          const resumeSeed = getState();
+          resumeSeed.vocabLessonCompleted = (resumeSeed.vocabLessonCompleted || []).filter((id) => id !== firstWordLesson.id);
+          resumeSeed.sentencesProgress.completedLessons = (resumeSeed.sentencesProgress.completedLessons || []).filter((id) => id !== firstSentenceLesson.id);
+          resumeSeed.vocabLessonSession = wordState.vocabLessonSession;
+          resumeSeed.sentenceLessonSession = sentenceState.sentenceLessonSession;
+          resumeSeed.route = { hub: "learn", item: null, stage: null };
+          await replaceState(resumeSeed);
+          w = appWindow(); d = appDocument();
+          const resumed = getState();
+          check(Boolean(resumed.vocabLessonSession), "word-resume-restored");
+          check(Boolean(resumed.sentenceLessonSession), "sentence-resume-restored");
+
+          step("legacy route migration");
+          const normalizedLegacyRoute = typeof w.normalizeRoute === "function"
+            ? w.normalizeRoute({ hub: "practice", item: "writing", stage: 4 })
+            : null;
+          check(same(normalizedLegacyRoute, { hub: "learn", item: "writing", stage: 4 }), "legacy-practice-route-migrated", JSON.stringify(normalizedLegacyRoute));
+          check(Boolean(normalizedLegacyRoute), "legacy-route-normalizer-exposed");
+
+          step("exact backup export and import");
+          const stableBackupSeed = getState();
+          stableBackupSeed.route = { hub: "learn", item: null, stage: null };
+          stableBackupSeed.navTab = "today";
+          stableBackupSeed.mainTab = "alphabet";
+          stableBackupSeed.vocabLessonActive = null;
+          stableBackupSeed.vocabLessonSession = null;
+          stableBackupSeed.sentenceLessonActive = null;
+          stableBackupSeed.sentenceLessonSession = null;
+          stableBackupSeed.learnInProgress = false;
+          await replaceState(stableBackupSeed);
+          w = appWindow(); d = appDocument();
+          const backupState = getState();
+          let exportedBlob = null;
+          const originalCreateObjectURL = w.URL.createObjectURL;
+          const originalRevokeObjectURL = w.URL.revokeObjectURL;
+          const originalAnchorClick = w.HTMLAnchorElement.prototype.click;
+          w.URL.createObjectURL = (blob) => { exportedBlob = blob; return "blob:l1-backup"; };
+          w.URL.revokeObjectURL = () => {};
+          w.HTMLAnchorElement.prototype.click = function () { this.dataset.l1Clicked = "true"; };
+          w.downloadBackupFile();
+          await waitFor(() => exportedBlob, "exported backup blob");
+          const exported = JSON.parse(await exportedBlob.text());
+          check(exported.version === 1, "backup-version");
+          check(same(exported.state, backupState), "backup-export-exact");
+          w.URL.createObjectURL = originalCreateObjectURL;
+          w.URL.revokeObjectURL = originalRevokeObjectURL;
+          w.HTMLAnchorElement.prototype.click = originalAnchorClick;
+
+          const mutated = clone(backupState);
+          mutated.theme = backupState.theme === "ocean" ? "sunset" : "ocean";
+          mutated.totalMinutes = Number(backupState.totalMinutes || 0) + 777;
+          await replaceState(mutated);
+          w = appWindow(); d = appDocument();
+          w.confirm = () => true;
+          w.renderSettingsScreen("learn");
+          await waitFor(() => d.getElementById("importProgressFile"), "backup import input");
+          const input = d.getElementById("importProgressFile");
+          let exactImportedWrite = null;
+          const originalStorageSetItem = w.Storage.prototype.setItem;
+          w.Storage.prototype.setItem = function (key, value) {
+            if (key === storageKey) {
+              try {
+                const candidate = JSON.parse(String(value));
+                if (candidate && candidate.totalMinutes === backupState.totalMinutes && candidate.theme === backupState.theme) exactImportedWrite = candidate;
+              } catch (_) {}
+            }
+            return originalStorageSetItem.call(this, key, value);
+          };
+          const transfer = new w.DataTransfer();
+          transfer.items.add(new w.File([JSON.stringify({ version: 1, state: backupState })], "hanapath-l1-backup.json", { type: "application/json" }));
+          Object.defineProperty(input, "files", { value: transfer.files, configurable: true });
+          const previousDocument = d;
+          input.dispatchEvent(new w.Event("change", { bubbles: true }));
+          await waitFor(() => frame.contentDocument !== previousDocument && typeof appWindow().getBackupPayload === "function", "backup import reload", 18000);
+          await sleep(150);
+          w = appWindow(); d = appDocument();
+          const imported = getState();
+          check(same(exactImportedWrite, backupState), "backup-import-exact-write");
+          const restoredProgressKeys = [
+            "phaseOneCompleted", "vocabLessonCompleted", "letterSrs", "vocabSrs",
+            "sentencesProgress", "recentQuestionKeys", "totalMinutes", "studyDays", "theme",
+          ];
+          for (const key of restoredProgressKeys) {
+            check(same(imported[key], backupState[key]), `backup-progress-${key}`);
+          }
+          check(Boolean(w.localStorage.getItem(`${storageKey}-import-rollback`)), "backup-rollback-created");
+
+          step("Progress route and responsive layout");
+          click(d.querySelector('[data-nav="progress"]'), "progress-nav-missing");
+          await sleep(80);
+          assertUsableScreen("progress-route");
+          const width = d.documentElement.clientWidth || frame.clientWidth;
+          check(d.documentElement.scrollWidth <= width + 1, "horizontal-overflow", `${d.documentElement.scrollWidth}/${width}`);
+          check(frame.getBoundingClientRect().width <= window.innerWidth + 1, "frame-overflow");
+
+          await sleep(250);
+          for (const error of runtimeErrors) fail("runtime-error", error);
+        } catch (error) {
+          fail("fixture-exception", error && error.stack ? error.stack : String(error));
+        }
+
+        const viewport = `${Math.round(frame.getBoundingClientRect().width)}x${Math.round(frame.getBoundingClientRect().height)}`;
+        document.body.dataset.testStatus = failures.length ? "fail" : "pass";
+        resultNode.textContent = failures.length
+          ? `FAIL ${viewport}\n${failures.join("\n")}`
+          : `PASS ${viewport}\n${steps.join("\n")}`;
+      }
+
+      run();
+    })();
+  </script>
+</body>
+</html>
