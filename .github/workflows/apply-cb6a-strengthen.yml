@@ -1,0 +1,42 @@
+name: apply-cb6a-strengthen
+
+on:
+  push:
+    branches:
+      - core/cb6a-controlled-clause-contract
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply stronger reconstruction checks
+        run: |
+          base64 --decode .github/cb6a-strengthen.patch.gz.b64 | gzip --decompress > /tmp/cb6a-strengthen.patch
+          git apply --check /tmp/cb6a-strengthen.patch
+          git apply /tmp/cb6a-strengthen.patch
+      - name: Validate packet
+        run: |
+          node --check scripts/lib/sentence-exam-ambiguity.mjs
+          node --check scripts/audit-sentence-exam-curated-bank.mjs
+          node --check scripts/test-sentence-exam-ambiguity.mjs
+          node --check sentence_exam_prompt_templates.js
+          node scripts/test-sentence-exam-ambiguity.mjs
+          node scripts/audit-sentence-exam-curated-bank.mjs
+          node scripts/test-sentence-exam-grader.mjs
+          node scripts/test-sentence-exam-curated-bank-cb4.mjs
+          node scripts/test-sentence-exam-curated-bank-freeze.mjs
+      - name: Commit permanent changes
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/cb6a-strengthen.patch.gz.b64 .github/workflows/apply-cb6a-strengthen.yml
+          git add docs scripts sentence_exam_prompt_templates.js
+          git diff --cached --check
+          git commit -m "CB6A: require exact source-to-target reconstruction"
+          git push origin HEAD:core/cb6a-controlled-clause-contract
