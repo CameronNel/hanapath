@@ -14,6 +14,23 @@
 - Typed rows require one canonical answer plus at most four manual alternatives.
 - Recognition rows are used when exact typed certification would be unfair.
 
+## Controlled clause transformation exception
+
+Open English-to-Korean production remains ineligible for typed scoring when the row belongs to a
+productive clause family or contains independently movable or omissible constituents. A narrow typed
+exception exists only for the fail-closed `controlled-clause-transformation` item defined in
+[`SENTENCE_EXAM_CONTROLLED_CLAUSE_CONTRACT.md`](SENTENCE_EXAM_CONTROLLED_CLAUSE_CONTRACT.md).
+
+The learner must receive the exact Korean source fragment or fragments, the required Korean
+construction, and explicit instructions to preserve supplied wording, particles, order, tense,
+speech level, and information structure except for the named grammar operation. The exception does
+not relax exact grading and does not permit generated alternatives. A row that cannot satisfy the
+controlled contract remains recognition-only.
+
+Historical full-corpus exclusion evidence assessed the former open-translation item shape. A current,
+independently reviewed controlled transformation may supersede that historical exclusion without
+rewriting or deleting the historical record.
+
 ## Locked policy
 
 The audit owns these constants independently of the bank data being audited:

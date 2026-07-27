@@ -1,5 +1,10 @@
 #!/usr/bin/env node
-import { detectAmbiguityFlags } from "./lib/sentence-exam-ambiguity.mjs";
+import {
+  CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
+  CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
+  detectAmbiguityFlags,
+  validateControlledClauseContract,
+} from "./lib/sentence-exam-ambiguity.mjs";
 import { auditCuratedBankState, LOCKED_SELECTION_POLICY } from "./audit-sentence-exam-curated-bank.mjs";
 
 let failures = 0;
@@ -43,11 +48,66 @@ const formalRow = {
 const formalPrompt = detectAmbiguityFlags(formalRow, "At a formal reception, thank the host respectfully.");
 check("formal prompt with social setting is not register-flagged", !formalPrompt.flags.includes("register-not-forced"));
 
+const clauseRow = {
+  id: "s-clause",
+  korean: "저는 아침을 안 먹지만 커피는 마셔요.",
+  english: "I do not eat breakfast, but I drink coffee.",
+  patternTags: ["but-jiman", "neg-an", "object-eul-reul", "present-polite", "topic-neun"],
+};
+const openClausePrompt = "Tell a classmate that you do not eat breakfast, but you drink coffee.";
+const openClause = detectAmbiguityFlags(clauseRow, openClausePrompt, { requiresLexicalAnchor: true });
+check("open clause translation remains excluded from typed scoring", openClause.flags.includes("productive-clause-family"));
+check("particle-dense open clause translation remains excluded", openClause.flags.includes("particle-or-order-family"));
+
+const controlledClausePrompt = [
+  "Combine these supplied Korean clauses into one ordinary polite sentence.",
+  "Source 1: 저는 아침을 안 먹어요.",
+  "Source 2: 커피는 마셔요.",
+  "Use -지만 for the required contrast.",
+  CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
+  CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
+].join(" ");
+const controlledClauseContract = {
+  schemaVersion: 1,
+  operation: "combine-clauses",
+  requiredPatternTag: "but-jiman",
+  requiredConstructionCue: "-지만",
+  sourceFragments: ["저는 아침을 안 먹어요.", "커피는 마셔요."],
+  preserveSourceOrder: true,
+  preserveLexicalMaterial: true,
+  preserveParticles: true,
+  acceptedAnswerPolicy: "reviewed-finite-only",
+};
+const controlledValidation = validateControlledClauseContract(clauseRow, controlledClausePrompt, controlledClauseContract);
+check("complete controlled-clause contract validates", controlledValidation.valid);
+const controlledClause = detectAmbiguityFlags(clauseRow, controlledClausePrompt, {
+  requiresLexicalAnchor: true,
+  controlledClauseContract,
+});
+check("controlled clause contract removes productive-family flag", !controlledClause.flags.includes("productive-clause-family"));
+check("controlled preservation contract removes particle/order flag", !controlledClause.flags.includes("particle-or-order-family"));
+check("controlled prompt explicitly forces all remaining ambiguity axes", controlledClause.flags.length === 0);
+
+const malformedContract = { ...controlledClauseContract, sourceFragments: ["저는 아침을 안 먹어요.", "차를 마셔요."] };
+const malformedValidation = validateControlledClauseContract(clauseRow, controlledClausePrompt, malformedContract);
+check("hidden or mismatched source fragment invalidates the contract", !malformedValidation.valid);
+const malformedClause = detectAmbiguityFlags(clauseRow, controlledClausePrompt, {
+  requiresLexicalAnchor: true,
+  controlledClauseContract: malformedContract,
+});
+check("malformed contract fails closed to productive-family flag", malformedClause.flags.includes("productive-clause-family"));
+
 function clonePolicy() {
   return JSON.parse(JSON.stringify(LOCKED_SELECTION_POLICY));
 }
 
-const templates = { schemaVersion: 1, templates: [{ id: "plain-statement" }] };
+const templates = {
+  schemaVersion: 1,
+  templates: [
+    { id: "plain-statement" },
+    { id: "controlled-clause-transformation" },
+  ],
+};
 const sentences = [{ id: "s-test", korean: "문이 열려 있어요.", patternTags: [] }];
 const routes = new Map([["s-test", [{ lessonId: "lesson-test", sectionOrder: 1 }]]]);
 const approvedEntry = {
@@ -80,6 +140,65 @@ const cleanAudit = auditCuratedBankState({
   routes,
 });
 check("fully reviewed typed entry passes the structural audit", cleanAudit.errors.length === 0);
+
+const controlledEntry = {
+  ...approvedEntry,
+  id: "s-clause",
+  templateId: "controlled-clause-transformation",
+  examPromptEn: controlledClausePrompt,
+  canonicalAnswer: clauseRow.korean,
+  requiresLexicalAnchor: true,
+  controlledClause: controlledClauseContract,
+  reviewedRevision: "curated-sentence-exam-controlled-v1",
+};
+const controlledBank = {
+  ...cleanBank,
+  revision: "curated-sentence-exam-controlled-v1",
+  entries: [controlledEntry],
+};
+const controlledAudit = auditCuratedBankState({
+  bank: controlledBank,
+  templates,
+  sentences: [clauseRow],
+  reviewedRows: { "s-clause": { typedClass: "excluded", exclusionReasons: ["connective-clause-continuation"] } },
+  routes: new Map([["s-clause", [{ lessonId: "lesson-clause", sectionOrder: 2 }]]]),
+});
+check("independently reviewed controlled transformation may supersede historical open-translation exclusion", controlledAudit.errors.length === 0);
+
+const lockedHistoricalAudit = auditCuratedBankState({
+  bank: controlledBank,
+  templates,
+  sentences: [clauseRow],
+  reviewedRows: { "s-clause": { typedClass: "excluded", exclusionReasons: ["future-authoring-locked"] } },
+  routes: new Map([["s-clause", [{ lessonId: "lesson-clause", sectionOrder: 2 }]]]),
+});
+check("controlled contract cannot override an unrelated historical exclusion", lockedHistoricalAudit.errors.some((error) => error.includes("not resolved by the controlled-clause contract")));
+
+const multiClauseRow = {
+  ...clauseRow,
+  id: "s-multi-clause",
+  patternTags: [...clauseRow.patternTags, "want-go-sipda"],
+};
+const multiClauseValidation = validateControlledClauseContract(multiClauseRow, controlledClausePrompt, controlledClauseContract);
+check("one controlled item cannot hide multiple productive clause families", !multiClauseValidation.valid);
+
+const leakedPrompt = `${controlledClausePrompt} ${clauseRow.korean}`;
+const leakedValidation = validateControlledClauseContract(clauseRow, leakedPrompt, controlledClauseContract);
+check("controlled prompt cannot leak the complete canonical answer", !leakedValidation.valid);
+
+const missingContractBank = {
+  ...controlledBank,
+  entries: [{ ...controlledEntry, controlledClause: undefined }],
+};
+const missingContractAudit = auditCuratedBankState({
+  bank: missingContractBank,
+  templates,
+  sentences: [clauseRow],
+  reviewedRows: {},
+  routes: new Map([["s-clause", [{ lessonId: "lesson-clause", sectionOrder: 2 }]]]),
+});
+check("clause-sensitive typed entry without a contract is rejected", missingContractAudit.errors.some((error) => error.includes("invalid controlled-clause contract")));
+check("missing contract also remains ambiguity-flagged", missingContractAudit.errors.some((error) => error.includes("productive-clause-family")));
 
 const loweredPolicyBank = {
   ...cleanBank,
