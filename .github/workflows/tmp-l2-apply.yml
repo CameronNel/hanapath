@@ -31,13 +31,20 @@ jobs:
           rm -f .github/workflows/tmp-l2-source.yml
           rm -f .github/workflows/tmp-l2-apply.yml
 
-      - name: Syntax checks
-        run: |
-          node --check sentence_feedback.js
-          node --check app.js
-          node --check sw.js
-          node --check scripts/test-sentence-feedback-engine.mjs
-          node --check scripts/audit-learning-questions.mjs
+      - name: Check feedback helper syntax
+        run: node --check sentence_feedback.js
+
+      - name: Check app syntax
+        run: node --check app.js
+
+      - name: Check service worker syntax
+        run: node --check sw.js
+
+      - name: Check feedback test syntax
+        run: node --check scripts/test-sentence-feedback-engine.mjs
+
+      - name: Check learning audit syntax
+        run: node --check scripts/audit-learning-questions.mjs
 
       - name: Sentence feedback engine
         run: node scripts/test-sentence-feedback-engine.mjs
