@@ -112,6 +112,14 @@ jobs:
       - name: Sentence lesson contrast browser fixtures sections 5-8
         run: node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs
 
+      # Authored-item audio closure (L3).
+      - name: Audit authored audio coverage
+        run: node scripts/audit-audio-coverage.mjs --strict
+      - name: Authored audio discovery regression
+        run: node scripts/test-authored-audio-targets.mjs
+      - name: Authored audio runtime regression
+        run: node scripts/test-authored-audio-runtime.mjs
+
       # Alphabet / recognition / handwriting / shell gate.
       - name: Audit alphabet audio coverage
         run: node scripts/audit-alphabet-audio.mjs --strict
