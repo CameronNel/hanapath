@@ -1,4 +1,4 @@
-name: Diagnose L2 syntax
+name: Apply L2 implementation
 
 on:
   pull_request:
@@ -9,35 +9,62 @@ permissions:
   contents: write
 
 jobs:
-  diagnose:
+  apply:
     if: github.head_ref == 'core/l2-sentence-positional-near-miss-feedback'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout L2 branch
         uses: actions/checkout@v4
         with:
           ref: core/l2-sentence-positional-near-miss-feedback
-          fetch-depth: 1
+          fetch-depth: 0
           show-progress: false
 
-      - name: Apply L2 patch and capture parser output
+      - name: Apply existing-file L2 patch
         shell: bash
         run: |
           set -euo pipefail
           base64 --decode .github/l2.patch.gz.b64 | gzip --decompress > /tmp/l2.patch
           git apply --check /tmp/l2.patch
           git apply /tmp/l2.patch
-          {
-            node --version
-            node --check sentence_feedback.js
-          } > /tmp/l2-syntax-diagnostic.txt 2>&1 || true
-          git reset -- .
-          git checkout -- .
-          git clean -fd
-          cp /tmp/l2-syntax-diagnostic.txt .github/l2-syntax-diagnostic.txt
+          rm -f .github/l2.patch.gz.b64
+          rm -f .github/l2-syntax-diagnostic.txt
+          rm -f .github/workflows/tmp-l2-source.yml
+          rm -f .github/workflows/tmp-l2-apply.yml
+
+      - name: Syntax checks
+        run: |
+          node --check sentence_feedback.js
+          node --check app.js
+          node --check sw.js
+          node --check scripts/test-sentence-feedback-engine.mjs
+          node --check scripts/audit-learning-questions.mjs
+
+      - name: Sentence feedback engine
+        run: node scripts/test-sentence-feedback-engine.mjs
+
+      - name: App shell audit
+        run: node scripts/audit-app-shell.mjs
+
+      - name: Learning question audit
+        run: node scripts/audit-learning-questions.mjs
+
+      - name: Curriculum migration regression
+        run: node scripts/test_curriculum_v2_migration.mjs
+
+      - name: Sentence exam grader regression
+        run: node scripts/test-sentence-exam-grader.mjs
+
+      - name: Diff hygiene
+        run: git diff --check
+
+      - name: Commit clean L2 packet
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name 'HanaPath Coder'
           git config user.email 'noreply@openai.com'
-          git add .github/l2-syntax-diagnostic.txt
-          git commit -m 'chore: capture L2 syntax diagnostic'
+          git add -A
+          git commit -m 'L2: add positional and near-miss Sentence feedback'
           git push origin HEAD:core/l2-sentence-positional-near-miss-feedback
