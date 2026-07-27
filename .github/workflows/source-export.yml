@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - core/cb6a-controlled-clause-contract
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
