@@ -1,56 +1,42 @@
-name: source-export
+name: apply-cb6a
 
 on:
   push:
     branches:
       - core/cb6a-controlled-clause-contract
-  pull_request:
-    branches:
-      - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  export:
+  apply:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          path: current
-      - uses: actions/checkout@v4
-        with:
-          ref: core/cb6-sentence-bank-capacity-refreeze
-          path: cb6
-      - name: Collect text sources
+          fetch-depth: 0
+      - name: Apply implementation patch
         run: |
-          mkdir -p export/current export/cb6
-          rsync -a --prune-empty-dirs \
-            --exclude='.git/' \
-            --exclude='node_modules/' \
-            --include='*/' \
-            --include='*.js' \
-            --include='*.mjs' \
-            --include='*.json' \
-            --include='*.md' \
-            --include='*.yml' \
-            --include='*.yaml' \
-            --include='*.html' \
-            --include='*.css' \
-            --include='*.csv' \
-            --include='*.txt' \
-            --exclude='*' \
-            current/ export/current/
-          cp cb6/scripts/build-sentence-exam-capacity-remediation.mjs export/cb6/
-          cp cb6/scripts/audit-sentence-exam-capacity-remediation.mjs export/cb6/
-          cp cb6/scripts/test-sentence-exam-capacity-remediation.mjs export/cb6/
-          cp cb6/docs/generated/sentence_exam_cb6_capacity_authoring.json export/cb6/
-          cp cb6/docs/generated/sentence_exam_cb6_capacity_witness.json export/cb6/
-          cp cb6/docs/reviews/sentence_exam_cb6_capacity_reviews.json export/cb6/
-          cp cb6/docs/reviews/sentence_exam_cb6_capacity_review_guide.md export/cb6/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hanapath-source-export
-          path: export
-          compression-level: 9
-          retention-days: 1
+          base64 --decode .github/cb6a.patch.gz.b64 | gzip --decompress > /tmp/cb6a.patch
+          git apply --check /tmp/cb6a.patch
+          git apply /tmp/cb6a.patch
+      - name: Validate controlled-clause contract
+        run: |
+          node --check scripts/lib/sentence-exam-ambiguity.mjs
+          node --check scripts/audit-sentence-exam-curated-bank.mjs
+          node --check scripts/test-sentence-exam-ambiguity.mjs
+          node --check sentence_exam_prompt_templates.js
+          node scripts/test-sentence-exam-ambiguity.mjs
+          node scripts/audit-sentence-exam-curated-bank.mjs
+          node scripts/test-sentence-exam-grader.mjs
+          node scripts/test-sentence-exam-curated-bank-cb4.mjs
+          node scripts/test-sentence-exam-curated-bank-freeze.mjs
+      - name: Commit permanent packet
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/cb6a.patch.gz.b64 .github/workflows/source-export.yml
+          git add docs scripts sentence_exam_prompt_templates.js
+          git diff --cached --check
+          git commit -m "CB6A: add fail-closed controlled clause contract"
+          git push origin HEAD:core/cb6a-controlled-clause-contract
