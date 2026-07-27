@@ -31,10 +31,11 @@ jobs:
           {
             node --version
             node --check sentence_feedback.js
-          } > .github/l2-syntax-diagnostic.txt 2>&1 || true
+          } > /tmp/l2-syntax-diagnostic.txt 2>&1 || true
           git reset -- .
           git checkout -- .
           git clean -fd
+          cp /tmp/l2-syntax-diagnostic.txt .github/l2-syntax-diagnostic.txt
           git config user.name 'HanaPath Coder'
           git config user.email 'noreply@openai.com'
           git add .github/l2-syntax-diagnostic.txt
