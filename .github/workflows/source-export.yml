@@ -1,0 +1,40 @@
+name: source-export
+
+on:
+  push:
+    branches:
+      - core/cb6a-controlled-clause-contract
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect text sources
+        run: |
+          mkdir -p export
+          rsync -a --prune-empty-dirs \
+            --exclude='.git/' \
+            --exclude='node_modules/' \
+            --include='*/' \
+            --include='*.js' \
+            --include='*.mjs' \
+            --include='*.json' \
+            --include='*.md' \
+            --include='*.yml' \
+            --include='*.yaml' \
+            --include='*.html' \
+            --include='*.css' \
+            --include='*.csv' \
+            --include='*.txt' \
+            --exclude='*' \
+            ./ export/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hanapath-source-export
+          path: export
+          compression-level: 9
+          retention-days: 1
