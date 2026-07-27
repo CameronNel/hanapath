@@ -94,6 +94,9 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentences data | `node scripts/audit-sentences-data.mjs --strict` | blocking |
 | Sentences foundation coverage | `node scripts/audit-sentences-foundation.mjs` | blocking |
 | Form Checks | `node scripts/audit-form-checks.mjs` | blocking |
+| Learning question coverage and answer-leak safety (L1) | `node scripts/audit-learning-questions.mjs` | blocking |
+| Curriculum v2 migration regression (L1) | `node scripts/test_curriculum_v2_migration.mjs` | blocking |
+| Lesson reachability and migration browser journey (L1) | `node scripts/test-lesson-journey-gate.mjs` | blocking |
 | Sentence eligibility (schema + progress) | `node scripts/audit-sentence-eligibility.mjs --allow-incomplete` | blocking |
 | Eligibility shard-integrity fixtures (E0) | `node scripts/test-sentence-eligibility-shards.mjs` | blocking |
 | Enabled frozen curated Sentence exam bank (CB5) | `node scripts/audit-sentence-exam-curated-bank.mjs` | blocking |
@@ -129,10 +132,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 - **Sentence Mastery examination** engine/runner: not yet shipped (packets **X1** and **X2**); the seed audit step SKIPs.
 - **Mobile package validation** is conditional on a prepared `mobile/www`; the Android workflow performs it after `npm run prepare:web`.
 
-## Coverage gaps (this gate is not yet the complete lesson/exam matrix)
+## Coverage gaps
 
-The roadmap §9 universal verification matrix is broader than the checks wired in
-here. The following are deliberately excluded, each with a named owning packet:
-
-- `scripts/audit-learning-questions.mjs` — throws on main (`appendAuthoredItemQuestions is not defined` — an audit-harness extraction bug, not a product defect) and is not wired into CI, so learner-question coverage and answer-leak safety are not yet protected by this one-command gate. **Owner: packet L1 (lesson reachability / question coverage).**
+No roadmap §9 verification scripts are deliberately excluded from this gate.
 
