@@ -12,7 +12,7 @@ jobs:
   snapshot:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout fresh L2 branch
         uses: actions/checkout@v4
 
       - name: Package repository source
