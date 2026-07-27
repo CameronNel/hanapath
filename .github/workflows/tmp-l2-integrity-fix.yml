@@ -51,9 +51,10 @@ jobs:
               path = Path(name)
               text = path.read_text()
               for old, new in pairs:
-                  if old not in text:
-                      raise SystemExit(f'{name}: expected binding not found: {old}')
-                  text = text.replace(old, new)
+                  if old in text:
+                      text = text.replace(old, new)
+                  elif new not in text:
+                      raise SystemExit(f'{name}: neither old nor new binding found: {old}')
               path.write_text(text)
           PY
 
