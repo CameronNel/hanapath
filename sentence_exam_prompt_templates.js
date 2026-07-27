@@ -3,7 +3,7 @@
 
   window.HANAPATH_SENTENCE_EXAM_PROMPT_TEMPLATES = {
     schemaVersion: 1,
-    revision: "sentence-exam-prompt-templates-v2-controlled-clause",
+    revision: "sentence-exam-prompt-templates-v3-controlled-reconstruction",
     templates: [
       {
         id: "topic-statement",
