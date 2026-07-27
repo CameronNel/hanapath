@@ -48,7 +48,7 @@ owns *what to do next*; this file owns *what currently exists*.
 
 | Metric | Value |
 |---|---|
-| Mapped audio keys | 37867 |
+| Mapped audio keys | 38952 |
 
 ### App shell
 
@@ -119,6 +119,8 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentence lesson contrast browser fixtures sections 5-8 (CB3) | `node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs` | blocking |
 | Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | conditional |
 | Audio coverage | `node scripts/audit-audio-coverage.mjs` | blocking |
+| Authored audio target discovery regression (L3) | `node scripts/test-authored-audio-targets.mjs` | blocking |
+| Authored audio mapped-runtime regression (L3) | `node scripts/test-authored-audio-runtime.mjs` | blocking |
 | Alphabet audio coverage | `node scripts/audit-alphabet-audio.mjs --strict` | blocking |
 | Hangul recognition | `node scripts/audit-hangul-recognition.mjs` | blocking |
 | Premium handwriting | `node scripts/audit-premium-handwriting.mjs` | blocking |

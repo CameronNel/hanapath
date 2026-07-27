@@ -349,6 +349,8 @@ const GATE_STEPS = [
     pending: "packet X1 (Sentence exam engine) not yet shipped",
   },
   { id: "audio-coverage", label: "Audio coverage", script: "scripts/audit-audio-coverage.mjs" },
+  { id: "authored-audio-targets", label: "Authored audio target discovery regression (L3)", script: "scripts/test-authored-audio-targets.mjs" },
+  { id: "authored-audio-runtime", label: "Authored audio mapped-runtime regression (L3)", script: "scripts/test-authored-audio-runtime.mjs" },
   { id: "alphabet-audio", label: "Alphabet audio coverage", script: "scripts/audit-alphabet-audio.mjs", fullArgs: ["--strict"], quickArgs: ["--strict"] },
   { id: "hangul-recognition", label: "Hangul recognition", script: "scripts/audit-hangul-recognition.mjs" },
   { id: "premium-handwriting", label: "Premium handwriting", script: "scripts/audit-premium-handwriting.mjs" },

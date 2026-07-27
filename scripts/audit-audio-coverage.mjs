@@ -11,6 +11,7 @@
 //   - the two CSV vocabulary banks used by reference/practice views
 //   - Phase One, Drill Lab, minimal-pair, and legacy sentence audio data
 //   - the generated complex-final demo syllables
+//   - loaded authored lesson answers, Form Check generators, and exam strings
 //
 // Usage:
 //   node scripts/audit-audio-coverage.mjs
@@ -24,6 +25,7 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 import vm from "node:vm";
+import { collectAuthoredAudioTargets } from "./lib/authored-audio-targets.mjs";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 const APP_FILE = path.join(ROOT, "app.js");
@@ -490,6 +492,13 @@ export function buildLearnerAudioManifest() {
 
   collectPhaseOne(collector, appSource);
   collectAppStaticData(collector, appSource);
+
+  // L3 executes the real authored-item generators and traverses the loaded
+  // examination contracts. This closes the gap left by static voiceText-only
+  // discovery, especially the finite past/negation Form Check production pool.
+  for (const target of collectAuthoredAudioTargets(ROOT)) {
+    for (const category of target.categories) collector.add(target.key, category);
+  }
 
   // Explicitly retain all complex-final demo outputs even if Phase One copy is
   // edited; speakableForChunk() can produce any of these at runtime.
