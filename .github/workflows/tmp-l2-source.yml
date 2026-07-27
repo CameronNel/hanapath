@@ -1,0 +1,30 @@
+name: Temporary L2 source snapshot
+
+on:
+  push:
+    branches:
+      - core/l2-sentence-positional-near-miss-feedback
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Package repository source
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar --exclude=.git --exclude=hanapath-source.tgz -czf /tmp/hanapath-source.tgz .
+
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: hanapath-l2-source
+          path: /tmp/hanapath-source.tgz
+          retention-days: 1
+          if-no-files-found: error
