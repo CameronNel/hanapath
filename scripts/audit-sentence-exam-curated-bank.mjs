@@ -207,6 +207,9 @@ export function auditCuratedBankState({ bank, templates, sentences, reviewedRows
         errors.push(`Curated typed entry ${entry.id} uses controlled-clause-transformation without an approved clause-sensitive tag.`);
       }
       if (usesControlledClauseTemplate) {
+        if ((entry.manualAlternatives || []).length > 0) {
+          errors.push(`Curated typed entry ${entry.id} uses controlled-clause-transformation but carries manual alternatives; the exact visible replacement contract permits only the canonical output.`);
+        }
         controlledClauseValidation = validateControlledClauseContract(row, entry.examPromptEn, entry.controlledClause);
         for (const contractError of controlledClauseValidation.errors) {
           errors.push(`Curated typed entry ${entry.id} has an invalid controlled-clause contract: ${contractError}`);

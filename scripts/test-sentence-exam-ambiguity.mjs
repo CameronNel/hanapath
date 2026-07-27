@@ -77,6 +77,7 @@ const controlledClauseContract = {
   sourceFragments: ["저는 아침을 안 먹어요.", "커피는 마셔요."],
   sourceEnding: "어요",
   targetEnding: "지만",
+  preservedClauseEvidence: [],
   preserveSourceOrder: true,
   preserveLexicalMaterial: true,
   preserveParticles: true,
@@ -112,6 +113,7 @@ function makeControlledFixture({ tag, operation, cue, sourceFragments, sourceEnd
     sourceFragments,
     sourceEnding,
     targetEnding,
+    preservedClauseEvidence: [],
     preserveSourceOrder: true,
     preserveLexicalMaterial: true,
     preserveParticles: true,
@@ -311,6 +313,17 @@ const controlledAudit = auditCuratedBankState({
   routes: new Map([["s-clause", [{ lessonId: "lesson-clause", sectionOrder: 2 }]]]),
 });
 check("independently reviewed controlled transformation may supersede historical open-translation exclusion", controlledAudit.errors.length === 0);
+const controlledAlternativeAudit = auditCuratedBankState({
+  bank: { ...controlledBank, entries: [{ ...controlledEntry, manualAlternatives: ["저는 아침을 먹지 않지만 커피는 마셔요."] }] },
+  templates,
+  sentences: [clauseRow],
+  reviewedRows: { "s-clause": { typedClass: "excluded", exclusionReasons: ["connective-clause-continuation"] } },
+  routes: new Map([["s-clause", [{ lessonId: "lesson-clause", sectionOrder: 2 }]]]),
+});
+check(
+  "controlled transformations reject manual alternatives because the visible replacement yields one output",
+  controlledAlternativeAudit.errors.some((error) => error.includes("permits only the canonical output")),
+);
 
 const lockedHistoricalAudit = auditCuratedBankState({
   bank: controlledBank,
@@ -343,9 +356,17 @@ const multiClauseContract = {
   sourceFragments: ["이 방은 아늑해요.", "오래 있고 싶어요."],
   sourceEnding: "해요",
   targetEnding: "해서",
+  preservedClauseEvidence: [
+    { patternTag: "want-go-sipda", sourceFragmentIndex: 1, visibleSurface: "고 싶어요" },
+  ],
 };
 const multiClauseValidation = validateControlledClauseContract(multiClauseRow, multiClausePrompt, multiClauseContract);
 check("one operation may preserve another productive form already fixed in a source fragment", multiClauseValidation.valid);
+const missingPreservedEvidence = { ...multiClauseContract, preservedClauseEvidence: [] };
+check(
+  "every additional productive tag requires explicit evidence in an unchanged source fragment",
+  !validateControlledClauseContract(multiClauseRow, multiClausePrompt, missingPreservedEvidence).valid,
+);
 const uncontrolledSecondOperation = {
   ...multiClauseContract,
   sourceFragments: ["이 방은 아늑해요.", "오래 있어요."],
