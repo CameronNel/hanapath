@@ -73,6 +73,8 @@ const controlledClauseContract = {
   requiredPatternTag: "but-jiman",
   requiredConstructionCue: "-지만",
   sourceFragments: ["저는 아침을 안 먹어요.", "커피는 마셔요."],
+  sourceEnding: "먹어요",
+  targetEnding: "먹지만",
   preserveSourceOrder: true,
   preserveLexicalMaterial: true,
   preserveParticles: true,
@@ -96,6 +98,13 @@ const malformedClause = detectAmbiguityFlags(clauseRow, controlledClausePrompt, 
   controlledClauseContract: malformedContract,
 });
 check("malformed contract fails closed to productive-family flag", malformedClause.flags.includes("productive-clause-family"));
+
+const wrongCueContract = { ...controlledClauseContract, requiredConstructionCue: "-으면" };
+const wrongCuePrompt = controlledClausePrompt.replace("-지만", "-으면");
+check("construction cue must match the declared pattern tag", !validateControlledClauseContract(clauseRow, wrongCuePrompt, wrongCueContract).valid);
+
+const wrongTransformationContract = { ...controlledClauseContract, targetEnding: "먹으면" };
+check("declared transformation must reconstruct the canonical target exactly", !validateControlledClauseContract(clauseRow, controlledClausePrompt, wrongTransformationContract).valid);
 
 function clonePolicy() {
   return JSON.parse(JSON.stringify(LOCKED_SELECTION_POLICY));
@@ -175,12 +184,36 @@ const lockedHistoricalAudit = auditCuratedBankState({
 check("controlled contract cannot override an unrelated historical exclusion", lockedHistoricalAudit.errors.some((error) => error.includes("not resolved by the controlled-clause contract")));
 
 const multiClauseRow = {
-  ...clauseRow,
   id: "s-multi-clause",
-  patternTags: [...clauseRow.patternTags, "want-go-sipda"],
+  korean: "이 방은 아늑해서 오래 있고 싶어요.",
+  english: "This room is cosy, so I want to stay for a long time.",
+  patternTags: ["because-aseo", "want-go-sipda", "topic-neun", "present-polite"],
 };
-const multiClauseValidation = validateControlledClauseContract(multiClauseRow, controlledClausePrompt, controlledClauseContract);
-check("one controlled item cannot hide multiple productive clause families", !multiClauseValidation.valid);
+const multiClausePrompt = [
+  "Combine these supplied Korean clauses into one ordinary polite sentence.",
+  "Source 1: 이 방은 아늑해요.",
+  "Source 2: 오래 있고 싶어요.",
+  "Use -해서 for the required reason connection.",
+  CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
+  CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
+].join(" ");
+const multiClauseContract = {
+  ...controlledClauseContract,
+  requiredPatternTag: "because-aseo",
+  requiredConstructionCue: "-해서",
+  sourceFragments: ["이 방은 아늑해요.", "오래 있고 싶어요."],
+  sourceEnding: "아늑해요",
+  targetEnding: "아늑해서",
+};
+const multiClauseValidation = validateControlledClauseContract(multiClauseRow, multiClausePrompt, multiClauseContract);
+check("one operation may preserve another productive form already fixed in a source fragment", multiClauseValidation.valid);
+const uncontrolledSecondOperation = {
+  ...multiClauseContract,
+  sourceFragments: ["이 방은 아늑해요.", "오래 있어요."],
+};
+const uncontrolledSecondPrompt = multiClausePrompt.replace("오래 있고 싶어요.", "오래 있어요.");
+const uncontrolledSecondValidation = validateControlledClauseContract(multiClauseRow, uncontrolledSecondPrompt, uncontrolledSecondOperation);
+check("a contract fails when the canonical target would require a second hidden grammar operation", !uncontrolledSecondValidation.valid);
 
 const leakedPrompt = `${controlledClausePrompt} ${clauseRow.korean}`;
 const leakedValidation = validateControlledClauseContract(clauseRow, leakedPrompt, controlledClauseContract);

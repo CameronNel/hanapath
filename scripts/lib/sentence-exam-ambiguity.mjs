@@ -25,6 +25,27 @@ const CONTROLLED_CLAUSE_OPERATION_BY_TAG = Object.freeze({
   "propositive-eyo": "change-speech-act-ending",
 });
 
+
+const CONTROLLED_CLAUSE_CUE_RE_BY_TAG = Object.freeze({
+  "and-go": /^-?고$/u,
+  "because-aseo": /^-?(?:아\/어서|아서|어서|해서|여서|라서|이라서|돼서)$/u,
+  "if-myeon": /^-?(?:\(으\)면|으면|면)$/u,
+  "when-ttae": /^-?(?:\(으\)ㄹ 때|을 때|ㄹ 때|때)$/u,
+  "but-jiman": /^-?지만$/u,
+  "want-go-sipda": /^-?고 싶(?:다|어요|습니다)?$/u,
+  "propositive-eyo": /^-?(?:\(으\)ㅂ시다|읍시다|ㅂ시다|아\/어요|아요|어요)$/u,
+});
+
+const CONTROLLED_CLAUSE_TARGET_ENDING_RE_BY_TAG = Object.freeze({
+  "and-go": /고$/u,
+  "because-aseo": /서$/u,
+  "if-myeon": /면$/u,
+  "when-ttae": /때(?:는)?$/u,
+  "but-jiman": /지만$/u,
+  "want-go-sipda": /고 싶(?:어요|습니다|다)$/u,
+  "propositive-eyo": /(?:ㅂ시다|읍시다|아요|어요|여요|봐요)$/u,
+});
+
 const CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION = "Preserve the supplied Korean wording, particles, and order except for the required grammar change.";
 const CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION = "Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.";
 
@@ -91,8 +112,8 @@ function validateControlledClauseContract(row, examPromptEn, contract) {
   if (contract.schemaVersion !== 1) errors.push(`controlledClause.schemaVersion must be 1, got ${contract.schemaVersion}.`);
 
   const clauseTagsOnRow = CONTROLLED_CLAUSE_PATTERN_TAGS.filter((candidate) => rowTags.has(candidate));
-  if (clauseTagsOnRow.length !== 1) {
-    errors.push(`The source row must carry exactly one approved controlled-clause tag, got ${clauseTagsOnRow.length}: ${clauseTagsOnRow.join(", ") || "none"}.`);
+  if (clauseTagsOnRow.length === 0) {
+    errors.push("The source row carries no approved controlled-clause tag.");
   }
 
   const tag = String(contract.requiredPatternTag || "").trim();
@@ -150,6 +171,34 @@ function validateControlledClauseContract(row, examPromptEn, contract) {
   if (!constructionCue) errors.push("controlledClause.requiredConstructionCue is missing.");
   else if (!containsHangul(constructionCue)) errors.push("controlledClause.requiredConstructionCue must contain the Korean construction surface.");
   else if (!prompt.includes(constructionCue)) errors.push("The learner prompt does not expose controlledClause.requiredConstructionCue verbatim.");
+  const cuePattern = CONTROLLED_CLAUSE_CUE_RE_BY_TAG[tag];
+  if (constructionCue && cuePattern && !cuePattern.test(constructionCue)) {
+    errors.push(`controlledClause.requiredConstructionCue '${constructionCue}' does not match '${tag}'.`);
+  }
+
+  const sourceEnding = stripTerminalSentencePunctuation(contract.sourceEnding);
+  const targetEnding = stripTerminalSentencePunctuation(contract.targetEnding);
+  if (!sourceEnding || !containsHangul(sourceEnding)) errors.push("controlledClause.sourceEnding must contain the exact Korean source ending.");
+  if (!targetEnding || !containsHangul(targetEnding)) errors.push("controlledClause.targetEnding must contain the exact Korean target ending.");
+  if (sourceEnding && targetEnding && sourceEnding === targetEnding) errors.push("controlledClause.sourceEnding and targetEnding must differ.");
+  const endingPattern = CONTROLLED_CLAUSE_TARGET_ENDING_RE_BY_TAG[tag];
+  if (targetEnding && endingPattern && !endingPattern.test(targetEnding)) {
+    errors.push(`controlledClause.targetEnding '${targetEnding}' does not realise '${tag}'.`);
+  }
+
+  const transformationSourceIndex = 0;
+  const transformationSource = stripTerminalSentencePunctuation(normalizedFragments[transformationSourceIndex] || "");
+  let transformedSource = "";
+  if (sourceEnding && transformationSource && !transformationSource.endsWith(sourceEnding)) {
+    errors.push("controlledClause.sourceEnding is not the exact suffix of the transformed source fragment.");
+  } else if (sourceEnding && targetEnding && transformationSource) {
+    transformedSource = `${transformationSource.slice(0, -sourceEnding.length)}${targetEnding}`;
+  }
+  const unchangedFragments = normalizedFragments.slice(1).map(stripTerminalSentencePunctuation);
+  const reconstructedTarget = [transformedSource, ...unchangedFragments].filter(Boolean).join(" ");
+  if (reconstructedTarget && canonicalLeakKey && reconstructedTarget !== canonicalLeakKey) {
+    errors.push("The declared one-step transformation does not reconstruct the canonical Korean target exactly.");
+  }
 
   if (contract.preserveSourceOrder !== true) errors.push("controlledClause.preserveSourceOrder must be true.");
   if (contract.preserveLexicalMaterial !== true) errors.push("controlledClause.preserveLexicalMaterial must be true.");
@@ -170,6 +219,7 @@ function validateControlledClauseContract(row, examPromptEn, contract) {
     errors,
     requiredPatternTag: tag || null,
     expectedOperation: expectedOperation || null,
+    reconstructedTarget: reconstructedTarget || null,
   };
 }
 

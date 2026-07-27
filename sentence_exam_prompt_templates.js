@@ -42,6 +42,7 @@
           "communicativeAct",
           "sourceKorean",
           "requiredConstruction",
+          "exactSourceToTargetReplacement",
           "preservationInstruction",
           "grammarInstruction",
         ],
