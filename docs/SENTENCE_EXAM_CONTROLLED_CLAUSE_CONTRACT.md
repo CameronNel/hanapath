@@ -69,8 +69,8 @@ No additional operation may be inferred or generated at runtime.
       "저는 아침을 안 먹어요.",
       "커피는 마셔요."
     ],
-    sourceEnding: "먹어요",
-    targetEnding: "먹지만",
+    sourceEnding: "어요",
+    targetEnding: "지만",
     preserveSourceOrder: true,
     preserveLexicalMaterial: true,
     preserveParticles: true,
@@ -82,8 +82,16 @@ No additional operation may be inferred or generated at runtime.
 The prompt must contain each source fragment and `requiredConstructionCue` verbatim and in the
 contracted order. `sourceEnding` must be the exact suffix replaced in the first source fragment, and
 `targetEnding` must produce the canonical target when the unchanged remaining fragments are joined.
-This exact reconstruction check permits another productive form only when it is already supplied and
-locked inside an unchanged source fragment. It must also contain these exact instructions:
+The prompt must expose the replacement verbatim using this exact form:
+
+```text
+Replace the exact Korean ending "어요" with "지만".
+```
+
+The source and target ending may each contain at most two Korean eojeol, and the replacement may not
+consume the whole transformed source fragment. This exact reconstruction check permits another
+productive form only when it is already supplied and locked inside an unchanged source fragment. It
+must also contain these exact instructions:
 
 ```text
 Preserve the supplied Korean wording, particles, and order except for the required grammar change.
@@ -98,7 +106,10 @@ The audit rejects the item when any of the following is true:
 - the controlled template is used for a row without an approved clause-sensitive tag;
 - the operation or visible construction cue does not match the required tag;
 - the fragment count is wrong;
+- the exact source-to-target ending replacement is not visible in the learner prompt;
+- either ending contains more than two eojeol;
 - the declared source ending is not the exact suffix of the transformed fragment;
+- the replacement consumes the whole transformed source fragment;
 - the declared target ending does not realise the required tag;
 - replacing the source ending and joining the unchanged fragments does not reconstruct the canonical target exactly;
 - a fragment or construction cue is hidden from the learner prompt;
