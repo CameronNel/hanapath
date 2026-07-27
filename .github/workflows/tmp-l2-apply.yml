@@ -28,10 +28,6 @@ jobs:
           base64 --decode .github/l2.patch.gz.b64 | gzip --decompress > /tmp/l2.patch
           git apply --check /tmp/l2.patch
           git apply /tmp/l2.patch
-          rm -f .github/l2.patch.gz.b64
-          rm -f .github/l2-syntax-diagnostic.txt
-          rm -f .github/workflows/tmp-l2-source.yml
-          rm -f .github/workflows/tmp-l2-apply.yml
 
       - name: Syntax checks
         run: |
@@ -59,12 +55,14 @@ jobs:
       - name: Diff hygiene
         run: git diff --check
 
-      - name: Commit clean L2 packet
+      - name: Commit L2 product changes
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'HanaPath Coder'
           git config user.email 'noreply@openai.com'
-          git add -A
-          git commit -m 'L2: add positional and near-miss Sentence feedback'
+          git add app.js index.html styles.css sw.js \
+            scripts/audit-app-shell.mjs scripts/audit-learning-questions.mjs \
+            scripts/audit-mobile-package.mjs tests/fixtures/lesson_journey_gate.html
+          git commit -m 'L2: wire positional and near-miss Sentence feedback'
           git push origin HEAD:core/l2-sentence-positional-near-miss-feedback
