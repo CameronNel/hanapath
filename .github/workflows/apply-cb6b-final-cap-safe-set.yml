@@ -1,0 +1,110 @@
+name: apply-cb6b-final-cap-safe-set
+
+on:
+  push:
+    branches:
+      - core/cb6b-controlled-clause-reauthor
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add final replacement contracts and regenerate
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = 'docs/authoring/sentence_exam_cb6b_controlled_items.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          Object.assign(data.entries, {
+            s2214: {
+              operation: 'combine-clauses',
+              requiredPatternTag: 'but-jiman',
+              requiredConstructionCue: '-지만',
+              sourceFragments: ['이 식당은 조금 비싸요.', '음식이 맛있어서 자주 가요.'],
+              sourceEnding: '싸요',
+              targetEnding: '싸지만',
+              preservedClauseEvidence: [
+                { patternTag: 'because-aseo', sourceFragmentIndex: 1, visibleSurface: '맛있어서' },
+              ],
+            },
+            s2297: {
+              operation: 'recast-predicate',
+              requiredPatternTag: 'want-go-sipda',
+              requiredConstructionCue: '-고 싶어요',
+              sourceFragments: ['따뜻한 국을 먹어요.'],
+              sourceEnding: '먹어요',
+              targetEnding: '먹고 싶어요',
+              preservedClauseEvidence: [],
+            },
+            s0850: {
+              operation: 'combine-clauses',
+              requiredPatternTag: 'when-ttae',
+              requiredConstructionCue: '-ㄹ 때',
+              sourceFragments: ['소풍 가요.', '김밥을 싸 가요.'],
+              sourceEnding: '가요',
+              targetEnding: '갈 때',
+              preservedClauseEvidence: [],
+            },
+          });
+          fs.writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`);
+          NODE
+          node scripts/build-sentence-exam-capacity-remediation.mjs --write
+      - name: Refresh validation reports
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+          import { detectAmbiguityFlags, validateControlledClauseContract } from './scripts/lib/sentence-exam-ambiguity.mjs';
+          import { auditCapacityRemediationState } from './scripts/audit-sentence-exam-capacity-remediation.mjs';
+          const read = (path) => JSON.parse(fs.readFileSync(path, 'utf8'));
+          const authoring = read('docs/generated/sentence_exam_cb6_capacity_authoring.json');
+          const inventory = read('docs/generated/sentence_exam_inventory.json');
+          const rows = new Map(inventory.inventory.map((row) => [row.id, row]));
+          const failures = [];
+          const summaries = [];
+          for (const entry of authoring.entries.filter((item) => item.mode === 'typed')) {
+            const row = rows.get(entry.id);
+            let contract = null;
+            if (entry.templateId === 'controlled-clause-transformation') {
+              const validation = validateControlledClauseContract(row, entry.examPromptEn, entry.controlledClause);
+              if (!validation.valid) failures.push(`${entry.id}: contract: ${validation.errors.join(' | ')}`);
+              contract = entry.controlledClause;
+            }
+            const analysis = detectAmbiguityFlags(row, entry.examPromptEn, {
+              requiresLexicalAnchor: entry.requiresLexicalAnchor === true,
+              controlledClauseContract: contract,
+            });
+            if (analysis.flags.length) failures.push(`${entry.id}: flags: ${analysis.flags.join(', ')}`);
+            summaries.push({ id: entry.id, templateId: entry.templateId, flags: analysis.flags, contractErrors: analysis.controlledClauseContractErrors });
+          }
+          fs.writeFileSync('docs/generated/sentence_exam_cb6b_runtime_validation.json', `${JSON.stringify({ schemaVersion: 1, revision: authoring.revision, failureCount: failures.length, failures, summaries }, null, 2)}\n`);
+          const sandbox = { window: {} };
+          sandbox.self = sandbox.window;
+          sandbox.globalThis = sandbox.window;
+          vm.createContext(sandbox);
+          for (const file of ['sentence_exam_curated_bank.js', 'sentence_exam_curated_bank_freeze.js']) vm.runInContext(fs.readFileSync(file, 'utf8'), sandbox, { filename: file });
+          const result = auditCapacityRemediationState({
+            authoring,
+            reviews: read('docs/reviews/sentence_exam_cb6_capacity_reviews.json'),
+            witness: read('docs/generated/sentence_exam_cb6_capacity_witness.json'),
+            inventory,
+            bank: sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK,
+            requireApproved: false,
+          });
+          fs.writeFileSync('docs/generated/sentence_exam_cb6b_capacity_audit.json', `${JSON.stringify({ schemaVersion: 1, ...result }, null, 2)}\n`);
+          if (failures.length) console.error(failures.join('\n'));
+          if (!result.ok) console.error(result.failures.join('\n'));
+          NODE
+      - name: Commit final replacement set and remove workflow
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/workflows/apply-cb6b-final-cap-safe-set.yml
+          git add docs
+          git diff --cached --check
+          git commit -m "CB6B: eliminate replacement lesson-cap conflicts"
+          git push origin HEAD:core/cb6b-controlled-clause-reauthor
