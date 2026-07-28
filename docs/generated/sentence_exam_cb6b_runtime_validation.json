@@ -1,11 +1,8 @@
 {
   "schemaVersion": 1,
   "revision": "curated-sentence-exam-v2-cb6b-authoring",
-  "failureCount": 2,
-  "failures": [
-    "s3364: contract: controlledClause.requiredConstructionCue '-져서' does not match 'because-aseo'.",
-    "s3364: flags: register-not-forced, communicative-act-not-forced, lexical-choice-not-forced, productive-clause-family"
-  ],
+  "failureCount": 0,
+  "failures": [],
   "summaries": [
     {
       "id": "s2269",
@@ -124,15 +121,8 @@
     {
       "id": "s3364",
       "templateId": "controlled-clause-transformation",
-      "flags": [
-        "register-not-forced",
-        "communicative-act-not-forced",
-        "lexical-choice-not-forced",
-        "productive-clause-family"
-      ],
-      "contractErrors": [
-        "controlledClause.requiredConstructionCue '-져서' does not match 'because-aseo'."
-      ]
+      "flags": [],
+      "contractErrors": []
     },
     {
       "id": "s3417",
@@ -399,7 +389,7 @@
       "contractErrors": []
     },
     {
-      "id": "s0772",
+      "id": "s2069",
       "templateId": "lexically-anchored-production",
       "flags": [],
       "contractErrors": []
@@ -411,32 +401,32 @@
       "contractErrors": []
     },
     {
-      "id": "s1938",
+      "id": "s2163",
       "templateId": "lexically-anchored-production",
       "flags": [],
       "contractErrors": []
     },
     {
-      "id": "s1865",
-      "templateId": "lexically-anchored-production",
+      "id": "s1313",
+      "templateId": "controlled-clause-transformation",
       "flags": [],
       "contractErrors": []
     },
     {
-      "id": "s0497",
-      "templateId": "lexically-anchored-production",
+      "id": "s2186",
+      "templateId": "controlled-clause-transformation",
       "flags": [],
       "contractErrors": []
     },
     {
-      "id": "s2566",
-      "templateId": "lexically-anchored-production",
+      "id": "s2675",
+      "templateId": "controlled-clause-transformation",
       "flags": [],
       "contractErrors": []
     },
     {
-      "id": "s1028",
-      "templateId": "lexically-anchored-production",
+      "id": "s2672",
+      "templateId": "controlled-clause-transformation",
       "flags": [],
       "contractErrors": []
     }
