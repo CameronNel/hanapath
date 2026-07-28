@@ -16,9 +16,9 @@ const WITNESS_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6_capacity
 const INVENTORY_FILE = join(ROOT, "docs", "generated", "sentence_exam_inventory.json");
 const EXPECTED_REVISION = "curated-sentence-exam-v2-cb6b-authoring";
 const EXPECTED_AUTHOR = "GPT-5.6 Thinking / CB6B controlled-clause author";
-const EXPECTED_ADDITIONS = 102;
+const EXPECTED_ADDITIONS = 94;
 const EXPECTED_TYPED = 71;
-const EXPECTED_RECOGNITION = 31;
+const EXPECTED_RECOGNITION = 23;
 const FORM_TAGS = new Set([
   "present-polite", "past-polite", "future-geoyeyo", "formal-nida", "honorific-si",
   "imperative-seyo", "propositive-eyo", "copula-ieyo", "copula-negative-anieyo",

@@ -3515,9 +3515,7 @@ const CONTROLLED_BY_ID = new Map(Object.entries(CONTROLLED_AUTHORING.entries || 
 const REPLACEMENT_BY_DEMOTED = new Map((REPLACEMENT_AUTHORING.mappings || []).map((item) => [item.demotedId, item.replacementId]));
 const DEMOTED_IDS = new Set(REPLACEMENT_BY_DEMOTED.keys());
 const EFFECTIVE_SELECTED = Object.freeze([
-  ...SELECTED.map((selection) => DEMOTED_IDS.has(selection.id)
-    ? Object.freeze({ id: selection.id, mode: "recognition" })
-    : selection),
+  ...SELECTED.filter((selection) => !DEMOTED_IDS.has(selection.id)),
   ...[...REPLACEMENT_BY_DEMOTED.values()].map((id) => Object.freeze({ id, mode: "typed" })),
 ]);
 const CB6B_WITNESS = Object.freeze(Object.fromEntries(Object.entries(WITNESS).map(([examId, attempts]) => [

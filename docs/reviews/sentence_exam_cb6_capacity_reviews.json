@@ -4,7 +4,7 @@
   "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
   "state": "awaiting-independent-review",
   "approvedCount": 0,
-  "pendingCount": 102,
+  "pendingCount": 94,
   "entries": [
     {
       "id": "s2160",
@@ -241,19 +241,6 @@
       "recognitionAnswerOverride": null
     },
     {
-      "id": "s1437",
-      "mode": "recognition",
-      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null,
-      "promptOverride": null,
-      "manualAlternativesOverride": null,
-      "recognitionAnswerOverride": null
-    },
-    {
       "id": "s2061",
       "mode": "typed",
       "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
@@ -308,19 +295,6 @@
     {
       "id": "s2228",
       "mode": "typed",
-      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null,
-      "promptOverride": null,
-      "manualAlternativesOverride": null,
-      "recognitionAnswerOverride": null
-    },
-    {
-      "id": "s2247",
-      "mode": "recognition",
       "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
@@ -412,32 +386,6 @@
     {
       "id": "s3417",
       "mode": "typed",
-      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null,
-      "promptOverride": null,
-      "manualAlternativesOverride": null,
-      "recognitionAnswerOverride": null
-    },
-    {
-      "id": "s3443",
-      "mode": "recognition",
-      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null,
-      "promptOverride": null,
-      "manualAlternativesOverride": null,
-      "recognitionAnswerOverride": null
-    },
-    {
-      "id": "s3508",
-      "mode": "recognition",
       "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
@@ -839,19 +787,6 @@
       "recognitionAnswerOverride": null
     },
     {
-      "id": "s2542",
-      "mode": "recognition",
-      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null,
-      "promptOverride": null,
-      "manualAlternativesOverride": null,
-      "recognitionAnswerOverride": null
-    },
-    {
       "id": "s3075",
       "mode": "typed",
       "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
@@ -995,32 +930,6 @@
       "recognitionAnswerOverride": null
     },
     {
-      "id": "s2605",
-      "mode": "recognition",
-      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null,
-      "promptOverride": null,
-      "manualAlternativesOverride": null,
-      "recognitionAnswerOverride": null
-    },
-    {
-      "id": "s3345",
-      "mode": "recognition",
-      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null,
-      "promptOverride": null,
-      "manualAlternativesOverride": null,
-      "recognitionAnswerOverride": null
-    },
-    {
       "id": "s3553",
       "mode": "typed",
       "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
@@ -1113,19 +1022,6 @@
     },
     {
       "id": "s3545",
-      "mode": "recognition",
-      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
-      "reviewStatus": "pending",
-      "reviewedBy": null,
-      "reviewedAt": null,
-      "reviewedRevision": null,
-      "reviewerNote": null,
-      "promptOverride": null,
-      "manualAlternativesOverride": null,
-      "recognitionAnswerOverride": null
-    },
-    {
-      "id": "s3327",
       "mode": "recognition",
       "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
