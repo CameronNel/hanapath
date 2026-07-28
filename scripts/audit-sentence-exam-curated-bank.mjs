@@ -3,10 +3,28 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
-import { detectAmbiguityFlags, normalizeSentenceExamAnswer } from "./lib/sentence-exam-ambiguity.mjs";
+import {
+  CONTROLLED_CLAUSE_PATTERN_TAGS,
+  detectAmbiguityFlags,
+  normalizeSentenceExamAnswer,
+  validateControlledClauseContract,
+} from "./lib/sentence-exam-ambiguity.mjs";
 import { SENTENCE_EXAM_FREEZE_SOURCE_FILES, auditFreezeManifest } from "./lib/sentence-exam-freeze.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+const CONTROLLED_CLAUSE_RESOLVABLE_EXCLUSIONS = new Set([
+  "complex-word-order-or-particle-variation",
+  "connective-clause-continuation",
+  "coordination-particle-or-order-ambiguity",
+  "lexical-or-information-structure-ambiguity",
+  "multiple-communicative-acts",
+  "particle-or-word-order-ambiguity",
+  "productive-clause-or-modality-variants",
+  "productive-pragmatic-variants",
+  "productive-word-order-family",
+  "topic-subject-information-structure-ambiguity",
+]);
 
 export const LOCKED_SELECTION_POLICY = Object.freeze({
   typedTargetSize: 288,
@@ -158,6 +176,15 @@ export function auditCuratedBankState({ bank, templates, sentences, reviewedRows
       errors.push(`Curated entry ${entry.id} does not exist in sentences_core.js.`);
       continue;
     }
+    const rowPatternTags = [...new Set(Array.isArray(row.patternTags) ? row.patternTags : [])].sort();
+    if (!Array.isArray(entry.patternTags)) {
+      errors.push(`Curated entry ${entry.id} patternTags must be an array matching the live source row.`);
+    } else {
+      const entryPatternTags = [...new Set(entry.patternTags)].sort();
+      if (JSON.stringify(entryPatternTags) !== JSON.stringify(rowPatternTags)) {
+        errors.push(`Curated entry ${entry.id} patternTags do not exactly match the live source row.`);
+      }
+    }
     if (!routes.has(entry.id) || routes.get(entry.id).length === 0) errors.push(`Curated entry ${entry.id} has no live lesson route.`);
     if (!templateMap.has(entry.templateId)) errors.push(`Curated entry ${entry.id} uses unknown template '${entry.templateId}'.`);
     if (!nonEmptyString(entry.examPromptEn)) errors.push(`Curated entry ${entry.id} has no examPromptEn.`);
@@ -178,10 +205,43 @@ export function auditCuratedBankState({ bank, templates, sentences, reviewedRows
       typedEntries.push(entry);
       validateTypedReviewEvidence(entry, bank?.revision, errors);
       const review = reviewedRows[entry.id];
-      if (review?.typedClass === "excluded") errors.push(`Curated typed entry ${entry.id} contradicts the existing reviewed exclusion.`);
+      const clauseTags = CONTROLLED_CLAUSE_PATTERN_TAGS.filter((tag) => (row.patternTags || []).includes(tag));
+      const usesControlledClauseTemplate = entry.templateId === "controlled-clause-transformation";
+      let controlledClauseValidation = { valid: false, errors: [] };
+
+      if (clauseTags.length > 0 && !usesControlledClauseTemplate) {
+        errors.push(`Curated typed entry ${entry.id} carries productive clause tag(s) ${clauseTags.join(", ")} but does not use the controlled-clause-transformation template.`);
+      }
+      if (usesControlledClauseTemplate && clauseTags.length === 0) {
+        errors.push(`Curated typed entry ${entry.id} uses controlled-clause-transformation without an approved clause-sensitive tag.`);
+      }
+      if (usesControlledClauseTemplate) {
+        if ((entry.manualAlternatives || []).length > 0) {
+          errors.push(`Curated typed entry ${entry.id} uses controlled-clause-transformation but carries manual alternatives; the exact visible replacement contract permits only the canonical output.`);
+        }
+        controlledClauseValidation = validateControlledClauseContract(row, entry.examPromptEn, entry.controlledClause);
+        for (const contractError of controlledClauseValidation.errors) {
+          errors.push(`Curated typed entry ${entry.id} has an invalid controlled-clause contract: ${contractError}`);
+        }
+      }
+
+      if (review?.typedClass === "excluded") {
+        const historicalReasons = Array.isArray(review.exclusionReasons) ? review.exclusionReasons : [];
+        const unresolvedHistoricalReasons = historicalReasons.filter(
+          (reason) => !CONTROLLED_CLAUSE_RESOLVABLE_EXCLUSIONS.has(reason),
+        );
+        if (!controlledClauseValidation.valid) {
+          errors.push(`Curated typed entry ${entry.id} contradicts the existing reviewed exclusion.`);
+        } else if (historicalReasons.length === 0) {
+          errors.push(`Curated typed entry ${entry.id} cannot supersede a historical exclusion with no recorded reason.`);
+        } else if (unresolvedHistoricalReasons.length > 0) {
+          errors.push(`Curated typed entry ${entry.id} has historical exclusion reason(s) not resolved by the controlled-clause contract: ${unresolvedHistoricalReasons.join(", ")}.`);
+        }
+      }
       const analysis = detectAmbiguityFlags(row, entry.examPromptEn, {
         duplicateCanonicalKeys,
         requiresLexicalAnchor: entry.requiresLexicalAnchor === true,
+        controlledClauseContract: usesControlledClauseTemplate ? entry.controlledClause : null,
       });
       if (analysis.flags.length > 0) errors.push(`Curated typed entry ${entry.id} remains ambiguous: ${analysis.flags.join(", ")}.`);
     } else if (entry.mode === "recognition") {

@@ -5,6 +5,64 @@ const FOCUS_CUE_RE = /\b(answer(?:ing)? (?:the question )?["“']?(?:who|what|wh
 const LEXICAL_CUE_RE = /\b(using|use) (?:the word|the expression|the verb|the noun|the adjective)\b/i;
 const COMMUNICATIVE_ACT_RE = /\b(tell|ask|request|invite|suggest|thank|apologise|apologize|warn|promise|answer|say)\b/i;
 
+const CONTROLLED_CLAUSE_PATTERN_TAGS = Object.freeze([
+  "and-go",
+  "because-aseo",
+  "if-myeon",
+  "when-ttae",
+  "but-jiman",
+  "want-go-sipda",
+  "propositive-eyo",
+]);
+
+const CONTROLLED_CLAUSE_OPERATION_BY_TAG = Object.freeze({
+  "and-go": "combine-clauses",
+  "because-aseo": "combine-clauses",
+  "if-myeon": "combine-clauses",
+  "when-ttae": "combine-clauses",
+  "but-jiman": "combine-clauses",
+  "want-go-sipda": "recast-predicate",
+  "propositive-eyo": "change-speech-act-ending",
+});
+
+
+const CONTROLLED_CLAUSE_CUE_RE_BY_TAG = Object.freeze({
+  "and-go": /^-?고$/u,
+  "because-aseo": /^-?(?:아\/어서|아서|어서|해서|여서|라서|이라서|돼서)$/u,
+  "if-myeon": /^-?(?:\(으\)면|으면|면)$/u,
+  "when-ttae": /^-?(?:\(으\)ㄹ 때|을 때|ㄹ 때|때)$/u,
+  "but-jiman": /^-?지만$/u,
+  "want-go-sipda": /^-?고 싶(?:다|어요|습니다)?$/u,
+  "propositive-eyo": /^-?(?:\(으\)ㅂ시다|읍시다|ㅂ시다|아\/어요|아요|어요)$/u,
+});
+
+const CONTROLLED_CLAUSE_TARGET_ENDING_RE_BY_TAG = Object.freeze({
+  "and-go": /고$/u,
+  "because-aseo": /서$/u,
+  "if-myeon": /면$/u,
+  "when-ttae": /때(?:는)?$/u,
+  "but-jiman": /지만$/u,
+  "want-go-sipda": /고 싶(?:어요|습니다|다)$/u,
+  "propositive-eyo": /(?:시다|아요|어요|여요|봐요)$/u,
+});
+
+const CONTROLLED_CLAUSE_EVIDENCE_RE_BY_TAG = Object.freeze({
+  "and-go": /고(?:\s|$)/u,
+  "because-aseo": /(?:아서|어서|해서|여서|라서|이라서|돼서)(?:\s|$)/u,
+  "if-myeon": /(?:으면|면)(?:\s|$)/u,
+  "when-ttae": /(?:을 때|ㄹ 때|때)(?:\s|$)/u,
+  "but-jiman": /지만(?:\s|$)/u,
+  "want-go-sipda": /고 싶(?:어요|습니다|다)?(?:\s|$)/u,
+  "propositive-eyo": /(?:시다|아요|어요|여요|봐요)[.!?。！？]?$/u,
+});
+
+const CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION = "Preserve the supplied Korean wording, particles, and order except for the required grammar change.";
+const CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION = "Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.";
+
+function controlledClauseReplacementInstruction(sourceEnding, targetEnding) {
+  return `Replace the exact Korean ending "${sourceEnding}" with "${targetEnding}".`;
+}
+
 const WHOLE_TOKEN_CONTRACTIONS = [
   { from: "저는", to: "전", id: "jeoneun-jeon" },
   { from: "나는", to: "난", id: "naneun-nan" },
@@ -22,6 +80,10 @@ function normalizeSentenceExamAnswer(value) {
 
 function stripTrailingPunctuation(token) {
   return String(token || "").replace(/[.,!?;:”“"'’]+$/g, "");
+}
+
+function stripTerminalSentencePunctuation(value) {
+  return normalizeSentenceExamAnswer(value).replace(/[.!?。！？]+$/u, "");
 }
 
 function tokenize(value) {
@@ -45,6 +107,197 @@ function hasAnyTag(row, tags) {
   return tags.some((tag) => set.has(tag));
 }
 
+function isRecord(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function containsHangul(value) {
+  return /[\u1100-\u11ff\u3130-\u318f\uac00-\ud7a3]/u.test(String(value || ""));
+}
+
+function validateControlledClauseContract(row, examPromptEn, contract) {
+  const errors = [];
+  const prompt = normalizeSentenceExamAnswer(examPromptEn);
+  const rowTags = new Set(Array.isArray(row?.patternTags) ? row.patternTags : []);
+
+  if (!isRecord(contract)) {
+    return { valid: false, errors: ["controlledClause contract is missing or malformed."] };
+  }
+  if (contract.schemaVersion !== 1) errors.push(`controlledClause.schemaVersion must be 1, got ${contract.schemaVersion}.`);
+
+  const clauseTagsOnRow = CONTROLLED_CLAUSE_PATTERN_TAGS.filter((candidate) => rowTags.has(candidate));
+  if (clauseTagsOnRow.length === 0) {
+    errors.push("The source row carries no approved controlled-clause tag.");
+  }
+
+  const tag = String(contract.requiredPatternTag || "").trim();
+  if (!CONTROLLED_CLAUSE_PATTERN_TAGS.includes(tag)) {
+    errors.push(`controlledClause.requiredPatternTag '${tag}' is not an approved controlled-clause tag.`);
+  } else if (!rowTags.has(tag)) {
+    errors.push(`controlledClause.requiredPatternTag '${tag}' is not carried by the source row.`);
+  }
+
+  const expectedOperation = CONTROLLED_CLAUSE_OPERATION_BY_TAG[tag];
+  if (contract.operation !== expectedOperation) {
+    errors.push(`controlledClause.operation must be '${expectedOperation || "unavailable"}' for '${tag}', got '${contract.operation}'.`);
+  }
+
+  const fragments = Array.isArray(contract.sourceFragments) ? contract.sourceFragments : [];
+  const requiredFragmentCount = expectedOperation === "combine-clauses" ? 2 : 1;
+  if (fragments.length !== requiredFragmentCount) {
+    errors.push(`controlledClause.sourceFragments must contain exactly ${requiredFragmentCount} Korean fragment(s) for '${expectedOperation || tag}'.`);
+  }
+
+  const normalizedFragments = [];
+  for (let index = 0; index < fragments.length; index += 1) {
+    const fragment = normalizeSentenceExamAnswer(fragments[index]);
+    normalizedFragments.push(fragment);
+    if (!fragment) errors.push(`controlledClause.sourceFragments[${index}] is empty.`);
+    else if (!containsHangul(fragment)) errors.push(`controlledClause.sourceFragments[${index}] contains no Hangul.`);
+    else if (!prompt.includes(fragment)) errors.push(`The learner prompt does not expose controlledClause.sourceFragments[${index}] verbatim.`);
+  }
+  if (new Set(normalizedFragments.filter(Boolean)).size !== normalizedFragments.filter(Boolean).length) {
+    errors.push("controlledClause.sourceFragments must be distinct.");
+  }
+
+  const fragmentIndices = normalizedFragments.map((fragment) => fragment ? prompt.indexOf(fragment) : -1);
+  for (let index = 1; index < fragmentIndices.length; index += 1) {
+    if (fragmentIndices[index - 1] >= 0 && fragmentIndices[index] >= 0
+        && fragmentIndices[index] <= fragmentIndices[index - 1]) {
+      errors.push("The learner prompt does not present source fragments in the contracted order.");
+      break;
+    }
+  }
+
+  const otherClauseTags = clauseTagsOnRow.filter((candidate) => candidate !== tag);
+  const preservedEvidence = Array.isArray(contract.preservedClauseEvidence)
+    ? contract.preservedClauseEvidence
+    : [];
+  if (!Array.isArray(contract.preservedClauseEvidence)) {
+    errors.push("controlledClause.preservedClauseEvidence must be an array, even when empty.");
+  }
+  const evidenceTags = [];
+  for (let index = 0; index < preservedEvidence.length; index += 1) {
+    const evidence = preservedEvidence[index];
+    if (!isRecord(evidence)) {
+      errors.push(`controlledClause.preservedClauseEvidence[${index}] is malformed.`);
+      continue;
+    }
+    const evidenceTag = String(evidence.patternTag || "").trim();
+    evidenceTags.push(evidenceTag);
+    if (!otherClauseTags.includes(evidenceTag)) {
+      errors.push(`controlledClause.preservedClauseEvidence[${index}] names '${evidenceTag}', which is not another clause tag on the row.`);
+    }
+    const fragmentIndex = evidence.sourceFragmentIndex;
+    if (!Number.isInteger(fragmentIndex) || fragmentIndex < 1 || fragmentIndex >= normalizedFragments.length) {
+      errors.push(`controlledClause.preservedClauseEvidence[${index}].sourceFragmentIndex must identify an unchanged source fragment.`);
+      continue;
+    }
+    const visibleSurface = normalizeSentenceExamAnswer(evidence.visibleSurface);
+    if (!visibleSurface || !containsHangul(visibleSurface)) {
+      errors.push(`controlledClause.preservedClauseEvidence[${index}].visibleSurface must contain Korean text.`);
+      continue;
+    }
+    if (!normalizedFragments[fragmentIndex].includes(visibleSurface)) {
+      errors.push(`controlledClause.preservedClauseEvidence[${index}].visibleSurface is not present in its unchanged source fragment.`);
+    }
+    if (!prompt.includes(visibleSurface)) {
+      errors.push(`The learner prompt does not expose controlledClause.preservedClauseEvidence[${index}].visibleSurface verbatim.`);
+    }
+    const evidencePattern = CONTROLLED_CLAUSE_EVIDENCE_RE_BY_TAG[evidenceTag];
+    if (evidencePattern && !evidencePattern.test(visibleSurface)) {
+      errors.push(`controlledClause.preservedClauseEvidence[${index}].visibleSurface does not realise '${evidenceTag}'.`);
+    }
+  }
+  const expectedEvidenceTags = [...otherClauseTags].sort();
+  const actualEvidenceTags = [...evidenceTags].sort();
+  if (actualEvidenceTags.length !== new Set(actualEvidenceTags).size) {
+    errors.push("controlledClause.preservedClauseEvidence contains duplicate patternTag records.");
+  }
+  if (JSON.stringify(actualEvidenceTags) !== JSON.stringify(expectedEvidenceTags)) {
+    errors.push(`controlledClause.preservedClauseEvidence must cover every other clause tag exactly once: expected ${expectedEvidenceTags.join(", ") || "none"}.`);
+  }
+
+  const canonicalTarget = normalizeSentenceExamAnswer(row?.korean);
+  const canonicalLeakKey = stripTerminalSentencePunctuation(canonicalTarget);
+  const promptLeakText = stripTerminalSentencePunctuation(prompt);
+  if (canonicalLeakKey && promptLeakText.includes(canonicalLeakKey)) {
+    errors.push("The learner prompt leaks the complete canonical answer.");
+  }
+  for (let index = 0; index < normalizedFragments.length; index += 1) {
+    if (canonicalLeakKey && stripTerminalSentencePunctuation(normalizedFragments[index]) === canonicalLeakKey) {
+      errors.push(`controlledClause.sourceFragments[${index}] must be a pre-transformation source, not the canonical answer.`);
+    }
+  }
+
+  const constructionCue = normalizeSentenceExamAnswer(contract.requiredConstructionCue);
+  if (!constructionCue) errors.push("controlledClause.requiredConstructionCue is missing.");
+  else if (!containsHangul(constructionCue)) errors.push("controlledClause.requiredConstructionCue must contain the Korean construction surface.");
+  else if (!prompt.includes(constructionCue)) errors.push("The learner prompt does not expose controlledClause.requiredConstructionCue verbatim.");
+  const cuePattern = CONTROLLED_CLAUSE_CUE_RE_BY_TAG[tag];
+  if (constructionCue && cuePattern && !cuePattern.test(constructionCue)) {
+    errors.push(`controlledClause.requiredConstructionCue '${constructionCue}' does not match '${tag}'.`);
+  }
+
+  const sourceEnding = stripTerminalSentencePunctuation(contract.sourceEnding);
+  const targetEnding = stripTerminalSentencePunctuation(contract.targetEnding);
+  if (!sourceEnding || !containsHangul(sourceEnding)) errors.push("controlledClause.sourceEnding must contain the exact Korean source ending.");
+  if (!targetEnding || !containsHangul(targetEnding)) errors.push("controlledClause.targetEnding must contain the exact Korean target ending.");
+  if (sourceEnding && targetEnding && sourceEnding === targetEnding) errors.push("controlledClause.sourceEnding and targetEnding must differ.");
+  if (tokenize(sourceEnding).length > 2) errors.push("controlledClause.sourceEnding may contain at most two Korean eojeol.");
+  if (tokenize(targetEnding).length > 2) errors.push("controlledClause.targetEnding may contain at most two Korean eojeol.");
+  const endingPattern = CONTROLLED_CLAUSE_TARGET_ENDING_RE_BY_TAG[tag];
+  if (targetEnding && endingPattern && !endingPattern.test(targetEnding)) {
+    errors.push(`controlledClause.targetEnding '${targetEnding}' does not realise '${tag}'.`);
+  }
+  const replacementInstruction = sourceEnding && targetEnding
+    ? controlledClauseReplacementInstruction(sourceEnding, targetEnding)
+    : "";
+  if (replacementInstruction && !prompt.includes(replacementInstruction)) {
+    errors.push("The learner prompt does not expose the exact source-to-target ending replacement.");
+  }
+
+  const transformationSourceIndex = 0;
+  const transformationSource = stripTerminalSentencePunctuation(normalizedFragments[transformationSourceIndex] || "");
+  let transformedSource = "";
+  if (sourceEnding && transformationSource && !transformationSource.endsWith(sourceEnding)) {
+    errors.push("controlledClause.sourceEnding is not the exact suffix of the transformed source fragment.");
+  } else if (sourceEnding && targetEnding && transformationSource) {
+    const preservedPrefix = transformationSource.slice(0, -sourceEnding.length);
+    if (!containsHangul(preservedPrefix)) {
+      errors.push("The exact replacement may not replace the whole transformed source fragment.");
+    }
+    transformedSource = `${preservedPrefix}${targetEnding}`;
+  }
+  const unchangedFragments = normalizedFragments.slice(1).map(stripTerminalSentencePunctuation);
+  const reconstructedTarget = [transformedSource, ...unchangedFragments].filter(Boolean).join(" ");
+  if (reconstructedTarget && canonicalLeakKey && reconstructedTarget !== canonicalLeakKey) {
+    errors.push("The declared one-step transformation does not reconstruct the canonical Korean target exactly.");
+  }
+
+  if (contract.preserveSourceOrder !== true) errors.push("controlledClause.preserveSourceOrder must be true.");
+  if (contract.preserveLexicalMaterial !== true) errors.push("controlledClause.preserveLexicalMaterial must be true.");
+  if (contract.preserveParticles !== true) errors.push("controlledClause.preserveParticles must be true.");
+  if (contract.acceptedAnswerPolicy !== "reviewed-finite-only") {
+    errors.push("controlledClause.acceptedAnswerPolicy must be 'reviewed-finite-only'.");
+  }
+
+  if (!prompt.includes(CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION)) {
+    errors.push("The learner prompt is missing the locked controlled-clause preservation instruction.");
+  }
+  if (!prompt.includes(CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION)) {
+    errors.push("The learner prompt is missing the locked controlled-clause grammar instruction.");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    requiredPatternTag: tag || null,
+    expectedOperation: expectedOperation || null,
+    reconstructedTarget: reconstructedTarget || null,
+  };
+}
+
 function detectAmbiguityFlags(row, examPromptEn, options = {}) {
   const prompt = String(examPromptEn || "").trim();
   const korean = normalizeSentenceExamAnswer(row?.korean);
@@ -55,42 +308,45 @@ function detectAmbiguityFlags(row, examPromptEn, options = {}) {
   const hasTopicOrSubject = hasAnyTag(row, ["topic-neun", "subject-i-ga"]);
   const tenseSensitive = hasAnyTag(row, ["past-polite", "future-geoyeyo"]);
   const registerSensitive = hasAnyTag(row, ["formal-nida", "honorific-si", "imperative-seyo"]);
-  const clauseSensitive = hasAnyTag(row, ["and-go", "because-aseo", "if-myeon", "when-ttae", "but-jiman", "want-go-sipda", "propositive-eyo"]);
+  const clauseSensitive = hasAnyTag(row, CONTROLLED_CLAUSE_PATTERN_TAGS);
   const particleDense = tokens.filter((token) => /(은|는|이|가|을|를|에|에서|에게|한테|으로|로|와|과|하고|도|만)$/.test(token)).length >= 3;
+  const controlledClause = options.controlledClauseContract == null
+    ? { valid: false, errors: [] }
+    : validateControlledClauseContract(row, prompt, options.controlledClauseContract);
 
-  if (hasTopicOrSubject && !TOPIC_CUE_RE.test(prompt) && !FOCUS_CUE_RE.test(prompt)) {
+  if (hasTopicOrSubject && !controlledClause.valid && !TOPIC_CUE_RE.test(prompt) && !FOCUS_CUE_RE.test(prompt)) {
     flags.push("topic-or-focus-not-forced");
     notes.push("The prompt does not make the intended information structure explicit.");
   }
 
-  if (tenseSensitive && !TIME_CUE_RE.test(prompt)) {
+  if (tenseSensitive && !controlledClause.valid && !TIME_CUE_RE.test(prompt)) {
     flags.push("time-or-tense-not-forced");
     notes.push("The prompt lacks a concrete time or aspect cue for a tense-sensitive target.");
   }
 
-  if (registerSensitive && !REGISTER_CUE_RE.test(prompt)) {
+  if (registerSensitive && !controlledClause.valid && !REGISTER_CUE_RE.test(prompt)) {
     flags.push("register-not-forced");
     notes.push("The prompt does not identify the addressee or social setting.");
   }
 
-  if (!COMMUNICATIVE_ACT_RE.test(prompt)) {
+  if (!controlledClause.valid && !COMMUNICATIVE_ACT_RE.test(prompt)) {
     flags.push("communicative-act-not-forced");
     notes.push("The prompt does not clearly state what the learner is doing with the sentence.");
   }
 
-  if (options.requiresLexicalAnchor === true && !LEXICAL_CUE_RE.test(prompt)) {
+  if (options.requiresLexicalAnchor === true && !controlledClause.valid && !LEXICAL_CUE_RE.test(prompt)) {
     flags.push("lexical-choice-not-forced");
     notes.push("The row requires a lexical anchor, but the prompt does not supply one.");
   }
 
-  if (clauseSensitive) {
+  if (clauseSensitive && !controlledClause.valid) {
     flags.push("productive-clause-family");
-    notes.push("The target belongs to a clause family that commonly permits several natural renderings.");
+    notes.push("The target belongs to a productive clause family and lacks a valid controlled-clause transformation contract.");
   }
 
-  if (particleDense) {
+  if (particleDense && !controlledClause.valid) {
     flags.push("particle-or-order-family");
-    notes.push("The target contains several independently movable or omissible constituents.");
+    notes.push("The target contains several independently movable or omissible constituents without a valid preservation contract.");
   }
 
   const duplicateCanonicalKeys = options.duplicateCanonicalKeys instanceof Set
@@ -110,12 +366,20 @@ function detectAmbiguityFlags(row, examPromptEn, options = {}) {
     contractionFamilies: contraction.families,
     plausibleVariantCount,
     typedSafeHeuristic: flags.length === 0 && plausibleVariantCount <= 4,
+    controlledClauseContractValid: controlledClause.valid,
+    controlledClauseContractErrors: [...controlledClause.errors],
   };
 }
 
 export {
+  CONTROLLED_CLAUSE_PATTERN_TAGS,
+  CONTROLLED_CLAUSE_OPERATION_BY_TAG,
+  CONTROLLED_CLAUSE_PRESERVATION_INSTRUCTION,
+  CONTROLLED_CLAUSE_GRAMMAR_INSTRUCTION,
+  controlledClauseReplacementInstruction,
   normalizeSentenceExamAnswer,
   tokenize,
   countWholeTokenContractions,
+  validateControlledClauseContract,
   detectAmbiguityFlags,
 };

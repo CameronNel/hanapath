@@ -149,6 +149,10 @@ Every packet PR must include:
   expansion, register conversion, spacing deletion, fuzzy matching, semantic matching, or LLM
   grading.
 - Recognition items are used where exact typed grading would reject ordinary valid Korean.
+- Productive clause families may be typed only through the fail-closed
+  `controlled-clause-transformation` contract: exact Korean source fragments, one named grammar
+  operation, preserved wording/particles/order, and finite independently reviewed answers. Open
+  clause translation remains recognition-only.
 
 ## 5. File ownership and safe execution
 
@@ -159,6 +163,8 @@ Every packet PR must include:
 | CB3 lesson restructure 5–8 | assigned Sentence lesson data, focused browser fixtures | CB2 when the same physical file is touched |
 | CB4 bank authoring | curated bank entries and review evidence | engine or app runner |
 | CB5 freeze | bank revision/hashes, readiness audit/status wiring | further bank authoring |
+| CB6A controlled-clause contract | ambiguity contract, prompt template, audit/tests, governing docs | bank emission, freeze, X1 engine changes |
+| CB6B capacity reauthor/refreeze | capacity authoring, independent review, bank/freeze revision | X1 or `app.js` |
 | L1 browser gate | smoke/audit scripts, CI, evidence-proven fixes | unrelated `app.js` work |
 | L2 feedback | Sentence checking/feedback region in `app.js`, focused CSS/tests | X2 or any other `app.js` packet |
 | L3 audio | audio discovery/generation tooling and generated assets | lesson/exam logic |
@@ -185,16 +191,22 @@ D0 -> C1 -> E0 -> E1A/E1B -> CB0
                                                               |
                                                               +--> CB5 freeze and activate
                                                                        |
-                                                                       +--> X1 engine
+                                                                       +--> CB6A controlled-clause contract
                                                                               |
-                                                                              +--> X2 runner
+                                                                              +--> CB6B capacity reauthor and refreeze
+                                                                                     |
+                                                                                     +--> X1 engine
+                                                                                            |
+                                                                                            +--> X2 runner
 
 C1 -> L1 -> L2 ---------------------------------------------------------------+
 C1 -> L3 ---------------------------------------------------------------------+--> Q1 -> Q2
 ```
 
 L1 and L3 may proceed in parallel with CB1-CB5. L2 must merge before X2. CB2/CB3
-parallelism is conditional on non-overlapping physical files as stated above.
+parallelism is conditional on non-overlapping physical files as stated above. The independent X1
+review exposed a post-CB5 contract contradiction, so CB6A and CB6B now gate X1 without reopening any
+completed historical packet.
 
 ## 7. Status board
 
@@ -216,15 +228,17 @@ The integrator updates this table after each merge. Workers do not edit it.
 | CB3 | Lesson contrast restructuring, sections 5-8 | COMPLETE (#363) | CB2 | Taught contrasts and controlled prompts |
 | CB4 | Curate and independently review bank | COMPLETE (#364) | CB2 + CB3 | 288 typed and 320 recognition entries |
 | CB5 | Freeze, enable, and lock readiness | COMPLETE (#366) | CB4 | Enabled frozen bank |
+| CB6A | Controlled-clause typed contract reconciliation | ACTIVE (#371) | CB5 + X1 feasibility finding | Fail-closed fair-grading contract |
+| CB6B | Capacity reauthor, independent review, and refreeze | BLOCKED (halted draft #370) | CB6A | Audit-clean expanded frozen bank |
 | L1 | Lesson reachability, resume, migration, and mobile smoke | COMPLETE (#365) | C1 | Browser gate |
 | L2 | Final Sentence positional and near-miss feedback | COMPLETE (#368) | L1 | Clear lesson feedback |
 | L3 | Authored-item audio closure | COMPLETE (#367) | C1 | Complete mapped audio |
-| X1 | Sentence exam blueprints and pure engine | READY | CB5 | Deterministic papers and seed audit |
+| X1 | Sentence exam blueprints and pure engine | BLOCKED (draft #369) | CB6B | Deterministic papers and seed audit |
 | X2 | Sentence exam UI, provenance, results, and retention | BLOCKED | X1 (L2 met) | Learner-facing exam suite |
 | Q1 | Full learner-journey acceptance | BLOCKED | X2 (L1-L3 met) | Defect closure and evidence |
 | Q2 | Strict release-candidate closure | BLOCKED | Q1 | Final evidence and documentation |
 
-The next READY packet is **X1**.
+The active recovery packet is **CB6A**. CB6B and X1 remain blocked until its contract is merged.
 
 ## 8. Packet instructions
 
@@ -319,6 +333,40 @@ primary controls.
 > audio string. Generate missing assets through the official pipeline, never by editing
 > `audio_map.js`. Prove the browser uses mapped assets rather than TTS fallback. Open a draft PR and
 > stop.
+
+### CB6A: Controlled-clause contract reconciliation
+
+> Reconcile the typed `X` strand with exact-answer fairness without changing paper allocation,
+> tag floors, freshness, or grading tolerance. Add a fail-closed controlled-clause transformation
+> template that exposes exact Korean source fragments and one named grammar operation. Open clause
+> translation remains recognition-only. Update ambiguity screening, runtime-bank audit, regression
+> tests, and governing documentation. Do not emit or freeze a new bank and do not edit X1.
+
+Acceptance:
+
+- The existing frozen CB5 bank remains audit-clean and byte-for-byte unchanged.
+- Clause-sensitive typed rows still fail unless they use the controlled template and a structurally
+  valid visible contract.
+- A valid contract can suppress only the productive-family and particle/order exclusions it directly
+  resolves; duplicate-target and all other prompt/review audits remain active.
+- Historical open-translation exclusion evidence is preserved, not rewritten.
+- No quota, floor, allocation, freshness, or strict-grader rule changes.
+
+### CB6B: Capacity reauthor, independent review, and refreeze
+
+> Re-author the halted CB6 capacity expansion against merged CB6A. Replace every grading-unfair
+> clause-sensitive typed item with either a valid controlled transformation or recognition item.
+> Re-run exact allocation and five-attempt freshness solves, obtain genuinely independent linguistic
+> approval, emit a new curated-bank revision and freeze manifest, then refresh X1 against that exact
+> frozen head. Do not lower any locked floor or fabricate approval evidence.
+
+Acceptance:
+
+- Every emitted typed item passes the runtime curated-bank audit with zero ambiguity flags.
+- Exam 4 and every other paper have exact feasible allocations under the locked strand counts.
+- Five disjoint attempts pass with `W=5`, `c=1` and no canonical-target reuse.
+- Pending authoring may be published for review, but no runtime bank or freeze is emitted before every
+  addition has current independent approval.
 
 ### X1: Sentence exam blueprints and pure engine
 
