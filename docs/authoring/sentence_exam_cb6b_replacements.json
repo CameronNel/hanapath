@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "revision": "curated-sentence-exam-v2-cb6b-authoring",
+  "mappings": [
+    {"demotedId": "s1437", "replacementId": "s0081"},
+    {"demotedId": "s2247", "replacementId": "s0772"},
+    {"demotedId": "s2542", "replacementId": "s3509"},
+    {"demotedId": "s3345", "replacementId": "s1938"},
+    {"demotedId": "s3327", "replacementId": "s1865"},
+    {"demotedId": "s3443", "replacementId": "s0497"},
+    {"demotedId": "s3508", "replacementId": "s2566"},
+    {"demotedId": "s2605", "replacementId": "s1028"}
+  ]
+}
