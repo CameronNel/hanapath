@@ -4,16 +4,23 @@ on:
   push:
     branches:
       - core/cb6b-controlled-clause-reauthor
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   integrate:
+    if: github.event_name == 'push' || github.head_ref == 'core/cb6b-controlled-clause-reauthor'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: core/cb6b-controlled-clause-reauthor
+          fetch-depth: 0
       - name: Patch builder for promotion, backfill, and exact repair
         run: |
           python - <<'PY'
