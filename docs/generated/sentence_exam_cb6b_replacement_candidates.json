@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "mappings": [
+    {
+      "demotedId": "s1437",
+      "replacementId": "s0081",
+      "section": 2,
+      "originalKorean": "이 호텔은 친절한 고객 서비스로 유명합니다.",
+      "originalTags": [
+        "direction-euro",
+        "formal-nida",
+        "topic-neun"
+      ],
+      "requiredStrands": [
+        "P"
+      ],
+      "replacementKorean": "독서는 창의적인 사고 능력을 길러 줍니다.",
+      "replacementEnglish": "Reading develops creative thinking ability.",
+      "replacementTags": [
+        "formal-nida",
+        "object-eul-reul",
+        "topic-neun"
+      ],
+      "replacementFlags": [
+        "communicative-act-not-forced"
+      ],
+      "replacementLessons": [
+        "sn2-study-u1-l7"
+      ]
+    },
+    {
+      "demotedId": "s2247",
+      "replacementId": "s0772",
+      "section": 2,
+      "originalKorean": "저는 이 회사 직원이 아니에요.",
+      "originalTags": [
+        "copula-negative-anieyo",
+        "topic-neun"
+      ],
+      "requiredStrands": [
+        "P"
+      ],
+      "replacementKorean": "저기 서 있는 여자는 제 친구예요.",
+      "replacementEnglish": "The woman standing over there is my friend.",
+      "replacementTags": [
+        "copula-ieyo",
+        "topic-neun"
+      ],
+      "replacementFlags": [
+        "communicative-act-not-forced"
+      ],
+      "replacementLessons": [
+        "sn2-people-u1-l11"
+      ]
+    },
+    {
+      "demotedId": "s2542",
+      "replacementId": "s3509",
+      "section": 4,
+      "originalKorean": "침대는 창문 옆에 놓을 거예요.",
+      "originalTags": [
+        "future-geoyeyo",
+        "location-e",
+        "topic-neun"
+      ],
+      "requiredStrands": [
+        "P",
+        "X"
+      ],
+      "replacementKorean": "비싼 물건은 다음 달에 살게요.",
+      "replacementEnglish": "I will buy the expensive item next month.",
+      "replacementTags": [
+        "future-geoyeyo",
+        "time-expression",
+        "topic-neun"
+      ],
+      "replacementFlags": [
+        "communicative-act-not-forced",
+        "time-or-tense-not-forced",
+        "topic-or-focus-not-forced"
+      ],
+      "replacementLessons": [
+        "sn4-shopping-u3-l8"
+      ]
+    },
+    {
+      "demotedId": "s3345",
+      "replacementId": "s1938",
+      "section": 5,
+      "originalKorean": "도로 소음 때문에 창문을 열 수 없습니다.",
+      "originalTags": [
+        "can-su-itda",
+        "formal-nida",
+        "neg-mot",
+        "object-eul-reul"
+      ],
+      "requiredStrands": [
+        "P"
+      ],
+      "replacementKorean": "저는 그 소문에 대해 전혀 알지 못합니다.",
+      "replacementEnglish": "I do not know about that rumor at all.",
+      "replacementTags": [
+        "formal-nida",
+        "neg-mot",
+        "topic-neun"
+      ],
+      "replacementFlags": [
+        "communicative-act-not-forced",
+        "register-not-forced",
+        "topic-or-focus-not-forced"
+      ],
+      "replacementLessons": [
+        "sn5-feelings-u4-l4"
+      ]
+    },
+    {
+      "demotedId": "s3327",
+      "replacementId": "s1865",
+      "section": 7,
+      "originalKorean": "냄비에 물을 넣고 뚜껑을 닫으십시오.",
+      "originalTags": [
+        "formal-nida",
+        "honorific-si",
+        "location-e",
+        "object-eul-reul"
+      ],
+      "requiredStrands": [
+        "P",
+        "X"
+      ],
+      "replacementKorean": "상대방의 질문 의도를 정확히 파악하여 답변하세요.",
+      "replacementEnglish": "Please answer grasping the other party's question intention accurately.",
+      "replacementTags": [
+        "honorific-si",
+        "imperative-seyo",
+        "object-eul-reul",
+        "possessive-ui"
+      ],
+      "replacementFlags": [
+        "register-not-forced"
+      ],
+      "replacementLessons": [
+        "sn7-feelings-u6-l5"
+      ]
+    },
+    {
+      "demotedId": "s3443",
+      "replacementId": "s0497",
+      "section": 2,
+      "originalKorean": "개가 산책을 좋아하지만 비가 와요.",
+      "originalTags": [
+        "but-jiman",
+        "object-eul-reul",
+        "present-polite",
+        "want-go-sipda"
+      ],
+      "requiredStrands": [
+        "F",
+        "P",
+        "X"
+      ],
+      "replacementKorean": "일 주일에 책 한 권을 읽어요.",
+      "replacementEnglish": "I read one book in a week.",
+      "replacementTags": [
+        "counter-phrase",
+        "object-eul-reul",
+        "present-polite",
+        "time-expression"
+      ],
+      "replacementFlags": [
+        "communicative-act-not-forced"
+      ],
+      "replacementLessons": [
+        "sn2-daily-u1-l9"
+      ]
+    },
+    {
+      "demotedId": "s3508",
+      "replacementId": "s2566",
+      "section": 2,
+      "originalKorean": "필요한 것만 사려고 해요.",
+      "originalTags": [
+        "only-man",
+        "present-polite",
+        "want-go-sipda"
+      ],
+      "requiredStrands": [
+        "F",
+        "P"
+      ],
+      "replacementKorean": "돈을 조금만 찾을게요.",
+      "replacementEnglish": "I'll just withdraw a little.",
+      "replacementTags": [
+        "object-eul-reul",
+        "only-man",
+        "present-polite"
+      ],
+      "replacementFlags": [
+        "communicative-act-not-forced"
+      ],
+      "replacementLessons": [
+        "sn2-shopping-u1-l6"
+      ]
+    },
+    {
+      "demotedId": "s2605",
+      "replacementId": "s1028",
+      "section": 5,
+      "originalKorean": "방학 때 아르바이트를 할 거예요.",
+      "originalTags": [
+        "future-geoyeyo",
+        "object-eul-reul",
+        "when-ttae"
+      ],
+      "requiredStrands": [
+        "P",
+        "X"
+      ],
+      "replacementKorean": "어려운 상황에서도 희망을 잃지 마세요.",
+      "replacementEnglish": "Please do not lose hope even in difficult situations.",
+      "replacementTags": [
+        "also-do",
+        "honorific-si",
+        "imperative-seyo",
+        "neg-ji-anta",
+        "object-eul-reul"
+      ],
+      "replacementFlags": [],
+      "replacementLessons": [
+        "sn5-feelings-u4-l1"
+      ]
+    }
+  ]
+}
