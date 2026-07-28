@@ -14,9 +14,5 @@
   "recognitionBackfills": [
     {"promotedId": "s2067", "backfillId": "s0772"}
   ],
-  "witnessOverrides": [
-    {"examId": "sentence-exam-1", "attempt": 5, "fromId": "s2247", "toId": "s2061"},
-    {"examId": "sentence-exam-5", "attempt": 1, "fromId": "s2247", "toId": "s2067"},
-    {"examId": "sentence-exam-5", "attempt": 1, "fromId": "s2067", "toId": "s2245"}
-  ]
+  "witnessOverrides": []
 }
