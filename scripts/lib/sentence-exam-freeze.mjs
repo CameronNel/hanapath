@@ -7,6 +7,13 @@ export const SENTENCE_EXAM_FREEZE_SOURCE_FILES = Object.freeze([
   "docs/generated/sentence_exam_shortlist.json",
   "docs/generated/sentence_exam_curated_bank_cb4_authoring.json",
   "docs/reviews/sentence_exam_curated_bank_cb4_reviews.json",
+  "docs/authoring/sentence_exam_cb6b_controlled_items.json",
+  "docs/authoring/sentence_exam_cb6b_replacements.json",
+  "docs/authoring/sentence_exam_cb6b_witness_assignment.json",
+  "docs/generated/sentence_exam_cb6_capacity_authoring.json",
+  "docs/generated/sentence_exam_cb6_capacity_witness.json",
+  "docs/generated/sentence_exam_cb6b_joint_solution.json",
+  "docs/reviews/sentence_exam_cb6_capacity_reviews.json",
 ]);
 
 export function sha256(value) {

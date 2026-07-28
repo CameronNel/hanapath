@@ -12,27 +12,49 @@ function readJson(path) {
   return JSON.parse(readFileSync(join(ROOT, path), "utf8"));
 }
 
-function loadBank() {
+function loadRuntime() {
   const sandbox = { window: {} };
   sandbox.self = sandbox.window;
   sandbox.globalThis = sandbox.window;
   vm.createContext(sandbox);
-  for (const file of ["sentence_exam_curated_bank.js", "sentence_exam_curated_bank_freeze.js"]) {
+  for (const file of [
+    "sentences_lesson_plan.js",
+    "sentence_exam_curated_bank.js",
+  ]) {
     vm.runInContext(readFileSync(join(ROOT, file), "utf8"), sandbox, { filename: file });
   }
-  return sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+  const routes = new Map();
+  for (const lesson of sandbox.window.HANAPATH_SENTENCE_LESSONS || []) {
+    for (const sentenceId of lesson.sentenceIds || []) {
+      if (!routes.has(sentenceId)) routes.set(sentenceId, []);
+      routes.get(sentenceId).push(lesson.id);
+    }
+  }
+  const runtimeBank = sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+  const bank = runtimeBank?.revision === "curated-sentence-exam-v2-cb6b"
+    ? {
+        ...runtimeBank,
+        revision: runtimeBank.baseRevision,
+        entries: runtimeBank.entries.filter(
+          (entry) => entry.authoredRevision !== "curated-sentence-exam-v2-cb6b-authoring",
+        ),
+      }
+    : runtimeBank;
+  return { bank, routes };
 }
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+const runtime = loadRuntime();
 const base = {
   authoring: readJson("docs/generated/sentence_exam_cb6_capacity_authoring.json"),
   reviews: readJson("docs/reviews/sentence_exam_cb6_capacity_reviews.json"),
   witness: readJson("docs/generated/sentence_exam_cb6_capacity_witness.json"),
   inventory: readJson("docs/generated/sentence_exam_inventory.json"),
-  bank: loadBank(),
+  bank: runtime.bank,
+  routes: runtime.routes,
 };
 
 // 1. Valid exact assignment passes
@@ -40,7 +62,7 @@ const clean = auditCapacityRemediationState(base);
 assert.equal(clean.ok, true, clean.failures.join("\n"));
 assert.equal(clean.summary.additions, 94);
 assert.ok(clean.summary.stage1TypedDistinctTargets >= 100);
-assert.equal(clean.summary.independentReviewRequired, 94);
+assert.equal(clean.summary.independentReviewRequired, 0);
 
 // 2. Duplicate authoring item fails
 const duplicate = clone(base);
@@ -87,9 +109,30 @@ for (const review of selfApproved.reviews.entries) {
 }
 assert.equal(auditCapacityRemediationState({ ...selfApproved, requireApproved: true }).ok, false);
 
-// 9. Pending strict state rejected before independent approval
-const pendingStrict = auditCapacityRemediationState({ ...base, requireApproved: true });
+// 9. Pending strict state is rejected if independent approval is removed.
+const pendingBase = clone(base);
+for (const review of pendingBase.reviews.entries) {
+  review.reviewStatus = "pending";
+  review.reviewedBy = null;
+  review.reviewedAt = null;
+  review.reviewedRevision = null;
+  review.reviewerNote = null;
+}
+pendingBase.reviews.state = "awaiting-independent-review";
+pendingBase.reviews.approvedCount = 0;
+pendingBase.reviews.pendingCount = pendingBase.reviews.entries.length;
+const pendingStrict = auditCapacityRemediationState({ ...pendingBase, requireApproved: true });
 assert.equal(pendingStrict.ok, false);
 assert.ok(pendingStrict.failures.some((failure) => failure.includes("independent approval required")));
 
-console.log("CB6 capacity remediation regression passed: clean witness accepted; duplicate, drift, freshness reuse, wrong strand, out-of-scope, unknown item, self-review, and pending strict state rejected.");
+// 10. A new typed row may not reuse a lesson already occupied by the frozen bank.
+const capCollision = clone(base);
+capCollision.routes = new Map(base.routes);
+const occupiedTyped = base.bank.entries.find((entry) => entry.mode === "typed" && base.routes.has(entry.id));
+const additionTyped = capCollision.authoring.entries.find((entry) => entry.mode === "typed");
+capCollision.routes.set(additionTyped.id, [...base.routes.get(occupiedTyped.id)]);
+const capCollisionResult = auditCapacityRemediationState(capCollision);
+assert.equal(capCollisionResult.ok, false);
+assert.ok(capCollisionResult.failures.some((failure) => failure.includes("typed lesson cap exceeded")));
+
+console.log("CB6 capacity remediation regression passed: clean witness accepted; duplicate, drift, freshness reuse, wrong strand, out-of-scope, unknown item, self-review, pending strict state, and projected-bank lesson-cap collision rejected.");

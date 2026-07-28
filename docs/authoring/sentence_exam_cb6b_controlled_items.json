@@ -457,10 +457,10 @@
       "requiredPatternTag": "if-myeon",
       "requiredConstructionCue": "-면",
       "sourceFragments": [
-        "도움이 필요해요.",
+        "도움이 필요하세요.",
         "언제든지 제게 말씀해 주십시오."
       ],
-      "sourceEnding": "해요",
+      "sourceEnding": "하세요",
       "targetEnding": "하시면",
       "preservedClauseEvidence": []
     },
@@ -538,6 +538,18 @@
       ],
       "sourceEnding": "가요",
       "targetEnding": "갈 때",
+      "preservedClauseEvidence": []
+    },
+    "s4020": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "when-ttae",
+      "requiredConstructionCue": "-ㄹ 때",
+      "sourceFragments": [
+        "공부해요.",
+        "모르는 것을 메모해요."
+      ],
+      "sourceEnding": "해요",
+      "targetEnding": "할 때",
       "preservedClauseEvidence": []
     }
   }

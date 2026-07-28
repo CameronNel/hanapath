@@ -41,6 +41,13 @@ const sources = {
   "docs/generated/sentence_exam_shortlist.json": "shortlist",
   "docs/generated/sentence_exam_curated_bank_cb4_authoring.json": "authoring",
   "docs/reviews/sentence_exam_curated_bank_cb4_reviews.json": "reviews",
+  "docs/authoring/sentence_exam_cb6b_controlled_items.json": "controlled",
+  "docs/authoring/sentence_exam_cb6b_replacements.json": "replacements",
+  "docs/authoring/sentence_exam_cb6b_witness_assignment.json": "assignment",
+  "docs/generated/sentence_exam_cb6_capacity_authoring.json": "capacity-authoring",
+  "docs/generated/sentence_exam_cb6_capacity_witness.json": "witness",
+  "docs/generated/sentence_exam_cb6b_joint_solution.json": "joint-solution",
+  "docs/reviews/sentence_exam_cb6_capacity_reviews.json": "capacity-reviews",
 };
 const manifest = buildFreezeManifest({ bank, sourceFileContents: sources });
 let failures = 0;

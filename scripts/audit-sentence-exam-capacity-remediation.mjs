@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
@@ -14,6 +15,7 @@ const AUTHORING_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6_capaci
 const REVIEW_FILE = join(ROOT, "docs", "reviews", "sentence_exam_cb6_capacity_reviews.json");
 const WITNESS_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6_capacity_witness.json");
 const INVENTORY_FILE = join(ROOT, "docs", "generated", "sentence_exam_inventory.json");
+const REPORT_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6b_capacity_audit.json");
 const EXPECTED_REVISION = "curated-sentence-exam-v2-cb6b-authoring";
 const EXPECTED_AUTHOR = "GPT-5.6 Thinking / CB6B controlled-clause author";
 const EXPECTED_ADDITIONS = 94;
@@ -95,15 +97,58 @@ function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
 }
 
-function loadBank() {
+function reviewContentHash(entry) {
+  const reviewedContent = {
+    id: entry.id,
+    mode: entry.mode,
+    templateId: entry.templateId,
+    examPromptEn: entry.examPromptEn,
+    canonicalAnswer: entry.canonicalAnswer,
+    englishMeaning: entry.englishMeaning,
+    recognitionAnswerEn: entry.recognitionAnswerEn || null,
+    manualAlternatives: entry.manualAlternatives || [],
+    sourceSectionOrder: entry.sourceSectionOrder,
+    sourceLessonIds: entry.sourceLessonIds,
+    patternTags: entry.patternTags,
+    controlledClause: entry.controlledClause || null,
+    eligibilityReauthorization: entry.eligibilityReauthorization || null,
+  };
+  return createHash("sha256").update(JSON.stringify(reviewedContent)).digest("hex");
+}
+
+function validUtcTimestamp(value) {
+  return typeof value === "string"
+    && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)
+    && Number.isFinite(Date.parse(value));
+}
+
+function loadRuntime() {
   const sandbox = { window: {} };
   sandbox.self = sandbox.window;
   sandbox.globalThis = sandbox.window;
   vm.createContext(sandbox);
-  for (const file of ["sentence_exam_curated_bank.js", "sentence_exam_curated_bank_freeze.js"]) {
+  for (const file of [
+    "sentences_lesson_plan.js",
+    "sentence_exam_curated_bank.js",
+  ]) {
     vm.runInContext(readFileSync(join(ROOT, file), "utf8"), sandbox, { filename: file });
   }
-  return sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+  const routes = new Map();
+  for (const lesson of sandbox.window.HANAPATH_SENTENCE_LESSONS || []) {
+    for (const sentenceId of lesson.sentenceIds || []) {
+      if (!routes.has(sentenceId)) routes.set(sentenceId, []);
+      routes.get(sentenceId).push(lesson.id);
+    }
+  }
+  const runtimeBank = sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+  const bank = runtimeBank?.revision === "curated-sentence-exam-v2-cb6b"
+    ? {
+        ...runtimeBank,
+        revision: runtimeBank.baseRevision,
+        entries: runtimeBank.entries.filter((entry) => entry.authoredRevision !== EXPECTED_REVISION),
+      }
+    : runtimeBank;
+  return { bank, routes };
 }
 
 function normalize(value) {
@@ -130,11 +175,11 @@ function candidateStrands(entry) {
   return strands;
 }
 
-function auditLessonCaps(entries, failures) {
+function auditLessonCaps(entries, routes, failures) {
   for (const [mode, cap] of [["typed", 1], ["recognition", 2]]) {
     const counts = new Map();
     for (const entry of entries.filter((item) => item.mode === mode)) {
-      for (const lessonId of entry.sourceLessonIds || []) {
+      for (const lessonId of routes.get(entry.id) || []) {
         counts.set(lessonId, (counts.get(lessonId) || 0) + 1);
       }
     }
@@ -208,7 +253,15 @@ function auditWitness(examId, attempts, entriesById, failures) {
   });
 }
 
-export function auditCapacityRemediationState({ authoring, reviews, witness, inventory, bank, requireApproved = false }) {
+export function auditCapacityRemediationState({
+  authoring,
+  reviews,
+  witness,
+  inventory,
+  bank,
+  routes,
+  requireApproved = false,
+}) {
   const failures = [];
   if (authoring.revision !== EXPECTED_REVISION) failures.push(`authoring revision mismatch: ${authoring.revision}`);
   if (reviews.revision !== EXPECTED_REVISION) failures.push(`review revision mismatch: ${reviews.revision}`);
@@ -247,6 +300,19 @@ export function auditCapacityRemediationState({ authoring, reviews, witness, inv
     if (!entry.examPromptEn || typeof entry.examPromptEn !== "string") failures.push(`${entry.id}: missing prompt`);
     if (entry.mode === "recognition" && entry.recognitionAnswerEn !== row.english) failures.push(`${entry.id}: recognition answer drift`);
     if (entry.mode === "typed") {
+      if (row.existingTypedClass === "excluded") {
+        const reauthorization = entry.eligibilityReauthorization;
+        if (
+          reauthorization?.schemaVersion !== 1
+          || reauthorization.previousTypedClass !== "excluded"
+          || !Array.isArray(reauthorization.priorAmbiguityFlags)
+          || JSON.stringify(reauthorization.priorAmbiguityFlags) !== JSON.stringify(row.ambiguityFlags || [])
+          || typeof reauthorization.resolution !== "string"
+          || reauthorization.resolution.trim().length < 80
+        ) {
+          failures.push(`${entry.id}: historically excluded typed row lacks explicit CB6B reauthorization evidence`);
+        }
+      }
       const clauseTags = CONTROLLED_CLAUSE_PATTERN_TAGS.filter((tag) => (row.patternTags || []).includes(tag));
       const usesControlledTemplate = entry.templateId === "controlled-clause-transformation";
       if (clauseTags.length > 0 && !usesControlledTemplate) {
@@ -277,15 +343,27 @@ export function auditCapacityRemediationState({ authoring, reviews, witness, inv
       continue;
     }
     if (review.mode !== entry.mode) failures.push(`${entry.id}: review mode drift`);
-    if (requireApproved) {
-      if (review.reviewStatus !== "approved") failures.push(`${entry.id}: independent approval required`);
+    if (review.authoredRevision !== EXPECTED_REVISION) failures.push(`${entry.id}: stale authored revision in review`);
+    if (review.authoredContentHash !== reviewContentHash(entry)) failures.push(`${entry.id}: review does not match authored content`);
+    if (review.reviewStatus === "approved") {
       if (!review.reviewedBy || review.reviewedBy === EXPECTED_AUTHOR) failures.push(`${entry.id}: invalid independent reviewer`);
+      if (!validUtcTimestamp(review.reviewedAt)) failures.push(`${entry.id}: invalid reviewedAt timestamp`);
       if (review.reviewedRevision !== EXPECTED_REVISION) failures.push(`${entry.id}: stale reviewed revision`);
       if (!review.reviewerNote || review.reviewerNote.trim().length < 40) failures.push(`${entry.id}: reviewer note is not substantive`);
-    } else if (review.reviewStatus !== "pending") {
-      failures.push(`${entry.id}: unexpected non-pending review status before integrator review`);
+    } else if (review.reviewStatus === "pending") {
+      if (requireApproved) failures.push(`${entry.id}: independent approval required`);
+      if (review.reviewedBy || review.reviewedAt || review.reviewedRevision || review.reviewerNote) {
+        failures.push(`${entry.id}: pending review contains approval evidence`);
+      }
+    } else {
+      failures.push(`${entry.id}: review status must be pending or approved`);
     }
   }
+  const approvedCount = (reviews.entries || []).filter((entry) => entry.reviewStatus === "approved").length;
+  if (reviews.approvedCount !== approvedCount) failures.push("review approvedCount is stale");
+  if (reviews.pendingCount !== EXPECTED_ADDITIONS - approvedCount) failures.push("review pendingCount is stale");
+  const expectedReviewState = approvedCount === EXPECTED_ADDITIONS ? "independently-approved" : "awaiting-independent-review";
+  if (reviews.state !== expectedReviewState) failures.push("review state is stale");
   const combined = [...bank.entries, ...authoring.entries].map((entry) => {
     const row = inventoryById.get(entry.id);
     return {
@@ -296,7 +374,8 @@ export function auditCapacityRemediationState({ authoring, reviews, witness, inv
       canonicalAnswer: row?.korean || entry.canonicalAnswer,
     };
   });
-  auditLessonCaps(authoring.entries, failures);
+  if (!(routes instanceof Map)) failures.push("live lesson routes are required for projected-bank cap auditing");
+  else auditLessonCaps(combined, routes, failures);
   const entriesById = new Map(combined.map((entry) => [entry.id, entry]));
   for (const examId of Object.keys(ALLOCATIONS)) {
     auditWitness(examId, witness.exams?.[examId], entriesById, failures);
@@ -335,14 +414,26 @@ export function auditCapacityRemediationState({ authoring, reviews, witness, inv
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const runtime = loadRuntime();
   const result = auditCapacityRemediationState({
     authoring: readJson(AUTHORING_FILE),
     reviews: readJson(REVIEW_FILE),
     witness: readJson(WITNESS_FILE),
     inventory: readJson(INVENTORY_FILE),
-    bank: loadBank(),
+    bank: runtime.bank,
+    routes: runtime.routes,
     requireApproved: process.argv.includes("--require-approved"),
   });
+  if (process.argv.includes("--write-report")) {
+    writeFileSync(REPORT_FILE, `${JSON.stringify({
+      schemaVersion: 1,
+      revision: EXPECTED_REVISION,
+      ok: result.ok,
+      failures: result.failures,
+      summary: result.summary,
+    }, null, 2)}\n`);
+    console.log(`Wrote ${REPORT_FILE}`);
+  }
   if (!result.ok) {
     for (const failure of result.failures) console.error(`FAIL: ${failure}`);
     process.exitCode = 1;

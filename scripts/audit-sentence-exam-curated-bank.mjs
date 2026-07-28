@@ -41,6 +41,18 @@ export const LOCKED_SELECTION_POLICY = Object.freeze({
   }),
 });
 
+export const CB6B_LOCKED_SELECTION_POLICY = Object.freeze({
+  ...LOCKED_SELECTION_POLICY,
+  typedTargetSize: 359,
+  recognitionTargetSize: 343,
+});
+
+function lockedPolicyForRevision(revision) {
+  return revision === "curated-sentence-exam-v2-cb6b"
+    ? CB6B_LOCKED_SELECTION_POLICY
+    : LOCKED_SELECTION_POLICY;
+}
+
 function loadGlobals(files) {
   const sandbox = { window: {} };
   sandbox.self = sandbox.window;
@@ -81,7 +93,7 @@ function validIsoTimestamp(value) {
     && Number.isFinite(Date.parse(value));
 }
 
-function validateLockedPolicy(policy, errors) {
+function validateLockedPolicy(policy, expectedPolicy, errors) {
   if (!policy || typeof policy !== "object" || Array.isArray(policy)) {
     errors.push("Curated bank selectionPolicy is missing or malformed.");
     return;
@@ -95,14 +107,14 @@ function validateLockedPolicy(policy, errors) {
     "maxRecognitionPerLesson",
     "maxFiniteTypedShare",
   ]) {
-    if (policy[key] !== LOCKED_SELECTION_POLICY[key]) {
-      errors.push(`selectionPolicy.${key} must equal locked value ${LOCKED_SELECTION_POLICY[key]}, got ${policy[key]}.`);
+    if (policy[key] !== expectedPolicy[key]) {
+      errors.push(`selectionPolicy.${key} must equal locked value ${expectedPolicy[key]}, got ${policy[key]}.`);
     }
   }
   for (const paper of ["stage", "final", "retention"]) {
     for (const key of ["total", "typed", "selected"]) {
       const actual = policy.examSizes?.[paper]?.[key];
-      const expected = LOCKED_SELECTION_POLICY.examSizes[paper][key];
+      const expected = expectedPolicy.examSizes[paper][key];
       if (actual !== expected) {
         errors.push(`selectionPolicy.examSizes.${paper}.${key} must equal locked value ${expected}, got ${actual}.`);
       }
@@ -110,7 +122,7 @@ function validateLockedPolicy(policy, errors) {
   }
 }
 
-function validateTypedReviewEvidence(entry, bankRevision, errors) {
+function validateTypedReviewEvidence(entry, errors) {
   const prefix = `Curated typed entry ${entry.id}`;
   if (entry.reviewStatus !== "approved") {
     errors.push(`${prefix} lacks approved independent-review status.`);
@@ -128,8 +140,11 @@ function validateTypedReviewEvidence(entry, bankRevision, errors) {
   if (!validIsoTimestamp(entry.reviewedAt)) {
     errors.push(`${prefix} has no valid UTC reviewedAt timestamp.`);
   }
-  if (!nonEmptyString(entry.reviewedRevision) || entry.reviewedRevision !== bankRevision) {
-    errors.push(`${prefix} review evidence does not match bank revision '${bankRevision}'.`);
+  if (!nonEmptyString(entry.authoredRevision)) {
+    errors.push(`${prefix} has no authoredRevision.`);
+  }
+  if (!nonEmptyString(entry.reviewedRevision) || entry.reviewedRevision !== entry.authoredRevision) {
+    errors.push(`${prefix} review evidence does not match authored revision '${entry.authoredRevision}'.`);
   }
   if (!nonEmptyString(entry.reviewerNote)) {
     errors.push(`${prefix} has no reviewerNote.`);
@@ -138,12 +153,13 @@ function validateTypedReviewEvidence(entry, bankRevision, errors) {
 
 export function auditCuratedBankState({ bank, templates, sentences, reviewedRows = {}, routes = new Map() }) {
   const errors = [];
+  const lockedPolicy = lockedPolicyForRevision(bank?.revision);
   if (!bank || typeof bank !== "object" || Array.isArray(bank)) errors.push("Curated bank global is missing.");
   if (bank?.schemaVersion !== 1) errors.push(`Expected curated-bank schemaVersion 1, got ${bank?.schemaVersion}.`);
   if (!nonEmptyString(bank?.revision)) errors.push("Curated bank revision is missing.");
   if (!Array.isArray(bank?.entries)) errors.push("Curated bank entries must be an array.");
   if (!templates || templates.schemaVersion !== 1) errors.push("Prompt-template contract is missing or has the wrong schema version.");
-  validateLockedPolicy(bank?.selectionPolicy, errors);
+  validateLockedPolicy(bank?.selectionPolicy, lockedPolicy, errors);
 
   const safeSentences = Array.isArray(sentences) ? sentences : [];
   const sentenceMap = new Map(safeSentences.map((row) => [row.id, row]));
@@ -203,7 +219,7 @@ export function auditCuratedBankState({ bank, templates, sentences, reviewedRows
 
     if (entry.mode === "typed") {
       typedEntries.push(entry);
-      validateTypedReviewEvidence(entry, bank?.revision, errors);
+      validateTypedReviewEvidence(entry, errors);
       const review = reviewedRows[entry.id];
       const clauseTags = CONTROLLED_CLAUSE_PATTERN_TAGS.filter((tag) => (row.patternTags || []).includes(tag));
       const usesControlledClauseTemplate = entry.templateId === "controlled-clause-transformation";
@@ -230,11 +246,21 @@ export function auditCuratedBankState({ bank, templates, sentences, reviewedRows
         const unresolvedHistoricalReasons = historicalReasons.filter(
           (reason) => !CONTROLLED_CLAUSE_RESOLVABLE_EXCLUSIONS.has(reason),
         );
-        if (!controlledClauseValidation.valid) {
+        const usesReviewedCb6bReauthorization = Boolean(
+          entry.authoredRevision === "curated-sentence-exam-v2-cb6b-authoring"
+          && entry.reviewStatus === "approved"
+          && entry.templateId === "lexically-anchored-production"
+          && entry.requiresLexicalAnchor === true
+          && entry.eligibilityReauthorization?.schemaVersion === 1
+          && entry.eligibilityReauthorization?.previousTypedClass === "excluded"
+          && Array.isArray(entry.eligibilityReauthorization?.priorAmbiguityFlags)
+          && nonEmptyString(entry.eligibilityReauthorization?.resolution)
+        );
+        if (!controlledClauseValidation.valid && !usesReviewedCb6bReauthorization) {
           errors.push(`Curated typed entry ${entry.id} contradicts the existing reviewed exclusion.`);
-        } else if (historicalReasons.length === 0) {
+        } else if (controlledClauseValidation.valid && historicalReasons.length === 0) {
           errors.push(`Curated typed entry ${entry.id} cannot supersede a historical exclusion with no recorded reason.`);
-        } else if (unresolvedHistoricalReasons.length > 0) {
+        } else if (controlledClauseValidation.valid && unresolvedHistoricalReasons.length > 0) {
           errors.push(`Curated typed entry ${entry.id} has historical exclusion reason(s) not resolved by the controlled-clause contract: ${unresolvedHistoricalReasons.join(", ")}.`);
         }
       }
@@ -252,7 +278,7 @@ export function auditCuratedBankState({ bank, templates, sentences, reviewedRows
   }
 
   if (bank?.enabled === true) {
-    const policy = LOCKED_SELECTION_POLICY;
+    const policy = lockedPolicy;
     if (typedEntries.length !== policy.typedTargetSize) errors.push(`Enabled typed pool has ${typedEntries.length} entries; locked target is ${policy.typedTargetSize} exactly.`);
     if (recognitionEntries.length !== policy.recognitionTargetSize) errors.push(`Enabled recognition pool has ${recognitionEntries.length} entries; locked target is ${policy.recognitionTargetSize} exactly.`);
 

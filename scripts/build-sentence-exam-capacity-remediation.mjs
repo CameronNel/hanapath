@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -3461,6 +3462,14 @@ function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
 }
 
+function readJsonIfPresent(path) {
+  try {
+    return readJson(path);
+  } catch {
+    return null;
+  }
+}
+
 function writeJson(path, value) {
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`);
@@ -3506,10 +3515,17 @@ function loadBank() {
   sandbox.self = sandbox.window;
   sandbox.globalThis = sandbox.window;
   vm.createContext(sandbox);
-  for (const file of ["sentence_exam_curated_bank.js", "sentence_exam_curated_bank_freeze.js"]) {
-    vm.runInContext(readFileSync(join(ROOT, file), "utf8"), sandbox, { filename: file });
+  const file = "sentence_exam_curated_bank.js";
+  vm.runInContext(readFileSync(join(ROOT, file), "utf8"), sandbox, { filename: file });
+  const bank = sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+  if (bank?.revision === "curated-sentence-exam-v2-cb6b") {
+    return {
+      ...bank,
+      revision: bank.baseRevision,
+      entries: bank.entries.filter((entry) => entry.authoredRevision !== REVISION),
+    };
   }
-  return sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+  return bank;
 }
 
 const CONTROLLED_AUTHORING = readJson(CONTROLLED_AUTHORING_FILE);
@@ -3538,10 +3554,14 @@ function ordinaryTypedPrompt(row) {
   const tags = new Set(row.patternTags || []);
   const parts = [];
   if (tags.has("topic-neun") || tags.has("subject-i-ga")) parts.push("As for the established lesson topic,");
-  if (tags.has("past-polite")) parts.push("yesterday,");
-  else if (tags.has("future-geoyeyo")) parts.push("tomorrow,");
-  if (tags.has("formal-nida") || tags.has("honorific-si") || tags.has("imperative-seyo")) {
+  if (tags.has("past-polite")) parts.push("earlier today,");
+  else if (tags.has("future-geoyeyo")) parts.push("later,");
+  if (tags.has("formal-nida")) {
     parts.push("in a formal situation,");
+  } else if (tags.has("imperative-seyo")) {
+    parts.push("politely,");
+  } else if (tags.has("honorific-si")) {
+    parts.push("respectfully,");
   } else {
     parts.push("to a classmate,");
   }
@@ -3604,6 +3624,14 @@ function buildEntry(row, selection) {
     reviewedAt: null,
     reviewedRevision: null,
     reviewerNote: null,
+    ...(selection.mode === "typed" && row.existingTypedClass === "excluded" ? {
+      eligibilityReauthorization: {
+        schemaVersion: 1,
+        previousTypedClass: "excluded",
+        priorAmbiguityFlags: [...(row.ambiguityFlags || [])],
+        resolution: "The replacement prompt explicitly fixes the complete live meaning, relevant time/register/information-structure cues, and a Korean lexical anchor; independent review must confirm whether the canonical-only answer set is defensible.",
+      },
+    } : {}),
   };
   if (selection.mode === "typed") {
     const controlled = CONTROLLED_BY_ID.get(row.id);
@@ -3651,6 +3679,25 @@ function buildEntry(row, selection) {
     requiresLexicalAnchor: false,
     promptOrigin: "live-source-meaning",
   };
+}
+
+function reviewContentHash(entry) {
+  const reviewedContent = {
+    id: entry.id,
+    mode: entry.mode,
+    templateId: entry.templateId,
+    examPromptEn: entry.examPromptEn,
+    canonicalAnswer: entry.canonicalAnswer,
+    englishMeaning: entry.englishMeaning,
+    recognitionAnswerEn: entry.recognitionAnswerEn || null,
+    manualAlternatives: entry.manualAlternatives || [],
+    sourceSectionOrder: entry.sourceSectionOrder,
+    sourceLessonIds: entry.sourceLessonIds,
+    patternTags: entry.patternTags,
+    controlledClause: entry.controlledClause || null,
+    eligibilityReauthorization: entry.eligibilityReauthorization || null,
+  };
+  return createHash("sha256").update(JSON.stringify(reviewedContent)).digest("hex");
 }
 
 function buildArtifacts() {
@@ -3713,17 +3760,29 @@ function buildArtifacts() {
     },
     entries,
   };
-  const reviews = {
-    schemaVersion: 1,
-    revision: REVISION,
-    authoredBy: AUTHORED_BY,
-    state: "awaiting-independent-review",
-    approvedCount: 0,
-    pendingCount: entries.length,
-    entries: entries.map((entry) => ({
+  const previousReviews = readJsonIfPresent(REVIEW_FILE);
+  const previousById = new Map((previousReviews?.entries || []).map((entry) => [entry.id, entry]));
+  const reviewEntries = entries.map((entry) => {
+    const authoredContentHash = reviewContentHash(entry);
+    const previous = previousById.get(entry.id);
+    if (
+      previous?.authoredRevision === REVISION
+      && previous?.mode === entry.mode
+      && previous?.authoredContentHash === authoredContentHash
+    ) {
+      return {
+        ...previous,
+        id: entry.id,
+        mode: entry.mode,
+        authoredRevision: REVISION,
+        authoredContentHash,
+      };
+    }
+    return {
       id: entry.id,
       mode: entry.mode,
       authoredRevision: REVISION,
+      authoredContentHash,
       reviewStatus: "pending",
       reviewedBy: null,
       reviewedAt: null,
@@ -3732,12 +3791,22 @@ function buildArtifacts() {
       promptOverride: null,
       manualAlternativesOverride: null,
       recognitionAnswerOverride: null,
-    })),
+    };
+  });
+  const approvedCount = reviewEntries.filter((entry) => entry.reviewStatus === "approved").length;
+  const reviews = {
+    schemaVersion: 1,
+    revision: REVISION,
+    authoredBy: AUTHORED_BY,
+    state: approvedCount === entries.length ? "independently-approved" : "awaiting-independent-review",
+    approvedCount,
+    pendingCount: entries.length - approvedCount,
+    entries: reviewEntries,
   };
   const witness = {
     schemaVersion: 1,
     revision: REVISION,
-    generatedBy: "CB6B exact CP-SAT five-attempt witness assignment; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
+    generatedBy: "CB6B exact SciPy/HiGHS MILP witness assignment; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
     freshnessWindow: 5,
     maxCanonicalTargetUses: 1,
     exams: witnessAssignment.exams,
@@ -3751,7 +3820,7 @@ if (args.has("--write")) {
   writeJson(AUTHORING_FILE, authoring);
   writeJson(REVIEW_FILE, reviews);
   writeJson(WITNESS_FILE, witness);
-  console.log(`Wrote CB6B authoring (${authoring.summary.additionCount} additions), pending review manifest, and five-attempt witness.`);
+  console.log(`Wrote CB6B authoring (${authoring.summary.additionCount} additions), review manifest (${reviews.approvedCount} approved), and five-attempt witness.`);
 } else if (args.has("--check")) {
   let ok = true;
   for (const [path, expected] of [[AUTHORING_FILE, authoring], [REVIEW_FILE, reviews], [WITNESS_FILE, witness]]) {

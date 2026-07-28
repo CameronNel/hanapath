@@ -228,23 +228,24 @@ The integrator updates this table after each merge. Workers do not edit it.
 | CB3 | Lesson contrast restructuring, sections 5-8 | COMPLETE (#363) | CB2 | Taught contrasts and controlled prompts |
 | CB4 | Curate and independently review bank | COMPLETE (#364) | CB2 + CB3 | 288 typed and 320 recognition entries |
 | CB5 | Freeze, enable, and lock readiness | COMPLETE (#366) | CB4 | Enabled frozen bank |
-| CB6A | Controlled-clause typed contract reconciliation | ACTIVE (#371) | CB5 + X1 feasibility finding | Fail-closed fair-grading contract |
-| CB6B | Capacity reauthor, independent review, and refreeze | BLOCKED (halted draft #370) | CB6A | Audit-clean expanded frozen bank |
+| CB6A | Controlled-clause typed contract reconciliation | COMPLETE (#371) | CB5 + X1 feasibility finding | Fail-closed fair-grading contract |
+| CB6B | Capacity reauthor, independent review, and refreeze | COMPLETE (#372) | CB6A | 359 typed / 343 recognition, exact five-attempt witness, frozen revision |
 | L1 | Lesson reachability, resume, migration, and mobile smoke | COMPLETE (#365) | C1 | Browser gate |
 | L2 | Final Sentence positional and near-miss feedback | COMPLETE (#368) | L1 | Clear lesson feedback |
 | L3 | Authored-item audio closure | COMPLETE (#367) | C1 | Complete mapped audio |
-| X1 | Sentence exam blueprints and pure engine | BLOCKED (draft #369) | CB6B | Deterministic papers and seed audit |
+| X1 | Sentence exam blueprints and pure engine | ACTIVE (draft #369; refresh required) | CB6B | Deterministic papers and seed audit |
 | X2 | Sentence exam UI, provenance, results, and retention | BLOCKED | X1 (L2 met) | Learner-facing exam suite |
 | Q1 | Full learner-journey acceptance | BLOCKED | X2 (L1-L3 met) | Defect closure and evidence |
 | Q2 | Strict release-candidate closure | BLOCKED | Q1 | Final evidence and documentation |
 
-The active recovery packet is **CB6A**. CB6B and X1 remain blocked until its contract is merged.
+The active packet is **X1**. Refresh draft #369 against the exact CB6B frozen head before its
+blueprints, generator, or seed evidence can be reviewed for landing.
 
 ## 8. Packet instructions
 
 ### Completed historical packets
 
-D0, C1, E0, E1A, E1B, CB0, CB1, CB2, CB3, CB4, CB5, L1, L2, and L3 are complete. Do not recreate or rerun them as new packets.
+D0, C1, E0, E1A, E1B, CB0, CB1, CB2, CB3, CB4, CB5, CB6A, CB6B, L1, L2, and L3 are complete. Do not recreate or rerun them as new packets.
 The 2,100 E1A/E1B records remain protected candidate evidence. E1C, E1D, and E2 are superseded
 for exam readiness and must not be started.
 
