@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "revision": "curated-sentence-exam-v2-cb6b-authoring",
+  "demotedClauseIds": [
+    "s2605",
+    "s3443",
+    "s3508"
+  ],
+  "entries": {
+    "s2190": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "but-jiman",
+      "requiredConstructionCue": "-지만",
+      "sourceFragments": ["저는 아침을 안 먹어요.", "커피는 마셔요."],
+      "sourceEnding": "어요",
+      "targetEnding": "지만",
+      "preservedClauseEvidence": []
+    },
+    "s2228": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "because-aseo",
+      "requiredConstructionCue": "-해서",
+      "sourceFragments": ["예약을 안 해요.", "자리에 못 앉았어요."],
+      "sourceEnding": "요",
+      "targetEnding": "서",
+      "preservedClauseEvidence": []
+    },
+    "s2621": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-으면",
+      "sourceFragments": ["월급을 받아요.", "부모님 선물을 살 거예요."],
+      "sourceEnding": "아요",
+      "targetEnding": "으면",
+      "preservedClauseEvidence": []
+    },
+    "s2697": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "when-ttae",
+      "requiredConstructionCue": "-ㄹ 때",
+      "sourceFragments": ["시간 나요.", "같이 영화 봐요."],
+      "sourceEnding": "나요",
+      "targetEnding": "날 때",
+      "preservedClauseEvidence": [
+        {"patternTag": "propositive-eyo", "sourceFragmentIndex": 1, "visibleSurface": "봐요"}
+      ]
+    },
+    "s3157": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "but-jiman",
+      "requiredConstructionCue": "-지만",
+      "sourceFragments": ["아쉬워요.", "어쩔 수 없죠."],
+      "sourceEnding": "쉬워요",
+      "targetEnding": "쉽지만",
+      "preservedClauseEvidence": []
+    },
+    "s3364": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "because-aseo",
+      "requiredConstructionCue": "-져서",
+      "sourceFragments": ["인터넷 연결이 느려져요.", "동영상을 볼 수 없습니다."],
+      "sourceEnding": "요",
+      "targetEnding": "서",
+      "preservedClauseEvidence": []
+    },
+    "s3525": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-면",
+      "sourceFragments": ["가격이 내려가요.", "바로 살게요."],
+      "sourceEnding": "요",
+      "targetEnding": "면",
+      "preservedClauseEvidence": []
+    },
+    "s4164": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-면",
+      "sourceFragments": ["불을 켜요.", "어두운 방도 밝아져요."],
+      "sourceEnding": "요",
+      "targetEnding": "면",
+      "preservedClauseEvidence": []
+    },
+    "s4171": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "because-aseo",
+      "requiredConstructionCue": "-해서",
+      "sourceFragments": ["이 방은 아늑해요.", "오래 있고 싶어요."],
+      "sourceEnding": "요",
+      "targetEnding": "서",
+      "preservedClauseEvidence": [
+        {"patternTag": "want-go-sipda", "sourceFragmentIndex": 1, "visibleSurface": "있고 싶어요"}
+      ]
+    },
+    "s2188": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "but-jiman",
+      "requiredConstructionCue": "-지만",
+      "sourceFragments": ["이 노래는 조금 어려워요.", "매일 연습하면 잘할 수 있어요."],
+      "sourceEnding": "려워요",
+      "targetEnding": "렵지만",
+      "preservedClauseEvidence": [
+        {"patternTag": "if-myeon", "sourceFragmentIndex": 1, "visibleSurface": "연습하면"}
+      ]
+    },
+    "s2252": {
+      "operation": "change-speech-act-ending",
+      "requiredPatternTag": "propositive-eyo",
+      "requiredConstructionCue": "-어요",
+      "sourceFragments": ["회의 시작하기 전에 잠깐 쉽니다."],
+      "sourceEnding": "쉽니다",
+      "targetEnding": "쉬어요",
+      "preservedClauseEvidence": []
+    },
+    "s2260": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "because-aseo",
+      "requiredConstructionCue": "-돼서",
+      "sourceFragments": ["표가 매진돼요.", "그 공연을 못 봤어요."],
+      "sourceEnding": "요",
+      "targetEnding": "서",
+      "preservedClauseEvidence": []
+    },
+    "s3082": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "when-ttae",
+      "requiredConstructionCue": "-을 때",
+      "sourceFragments": ["감기 걸렸어요.", "물을 많이 드세요."],
+      "sourceEnding": "어요",
+      "targetEnding": "을 때는",
+      "preservedClauseEvidence": []
+    },
+    "s3687": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "but-jiman",
+      "requiredConstructionCue": "-지만",
+      "sourceFragments": ["야구를 좋아해요.", "직접 하지는 않아요."],
+      "sourceEnding": "해요",
+      "targetEnding": "하지만",
+      "preservedClauseEvidence": []
+    },
+    "s3744": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-면",
+      "sourceFragments": ["비가 와요.", "식물에 물을 안 줘요."],
+      "sourceEnding": "와요",
+      "targetEnding": "오면",
+      "preservedClauseEvidence": []
+    },
+    "s3866": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "but-jiman",
+      "requiredConstructionCue": "-지만",
+      "sourceFragments": ["환경 문제가 심각해요.", "포기하지 않아요."],
+      "sourceEnding": "해요",
+      "targetEnding": "하지만",
+      "preservedClauseEvidence": []
+    },
+    "s3973": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "but-jiman",
+      "requiredConstructionCue": "-지만",
+      "sourceFragments": ["면접에서 긴장했어요.", "끝까지 말했어요."],
+      "sourceEnding": "어요",
+      "targetEnding": "지만",
+      "preservedClauseEvidence": []
+    },
+    "s2253": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-면",
+      "sourceFragments": ["다음에 시간 돼요.", "같이 밥 먹어요."],
+      "sourceEnding": "돼요",
+      "targetEnding": "되면",
+      "preservedClauseEvidence": [
+        {"patternTag": "propositive-eyo", "sourceFragmentIndex": 1, "visibleSurface": "먹어요"}
+      ]
+    },
+    "s2417": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-면",
+      "sourceFragments": ["푹 자요.", "금방 나을 거예요."],
+      "sourceEnding": "요",
+      "targetEnding": "면",
+      "preservedClauseEvidence": []
+    },
+    "s3208": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "because-aseo",
+      "requiredConstructionCue": "-어서",
+      "sourceFragments": ["회의실 대기 시간이 생각보다 길어요.", "걱정했습니다."],
+      "sourceEnding": "요",
+      "targetEnding": "서",
+      "preservedClauseEvidence": []
+    },
+    "s3214": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-면",
+      "sourceFragments": ["회의실 대기 시간이 길어져요.", "다른 장소로 이동합시다."],
+      "sourceEnding": "져요",
+      "targetEnding": "지면",
+      "preservedClauseEvidence": [
+        {"patternTag": "propositive-eyo", "sourceFragmentIndex": 1, "visibleSurface": "이동합시다"}
+      ]
+    },
+    "s3228": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-면",
+      "sourceFragments": ["기획서 작성이 완료돼요.", "즉시 과장님께 연락하십시오."],
+      "sourceEnding": "돼요",
+      "targetEnding": "되면",
+      "preservedClauseEvidence": []
+    },
+    "s3332": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "because-aseo",
+      "requiredConstructionCue": "-아서",
+      "sourceFragments": ["옷 사이즈가 안 맞아요.", "교환해야 합니다."],
+      "sourceEnding": "아요",
+      "targetEnding": "아서",
+      "preservedClauseEvidence": []
+    },
+    "s3372": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "because-aseo",
+      "requiredConstructionCue": "-어서",
+      "sourceFragments": ["주말에 다른 약속이 있어요.", "갈 수 없습니다."],
+      "sourceEnding": "어요",
+      "targetEnding": "어서",
+      "preservedClauseEvidence": []
+    },
+    "s3406": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "and-go",
+      "requiredConstructionCue": "-고",
+      "sourceFragments": ["우리는 주말 약속 일정을 미리 확인했습니다.", "만났습니다."],
+      "sourceEnding": "했습니다",
+      "targetEnding": "하고",
+      "preservedClauseEvidence": []
+    },
+    "s3323": {
+      "operation": "recast-predicate",
+      "requiredPatternTag": "want-go-sipda",
+      "requiredConstructionCue": "-고 싶어요",
+      "sourceFragments": ["주말 오후에 조용히 소파에서 쉬어요."],
+      "sourceEnding": "쉬어요",
+      "targetEnding": "쉬고 싶어요",
+      "preservedClauseEvidence": []
+    },
+    "s3564": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "because-aseo",
+      "requiredConstructionCue": "-아서",
+      "sourceFragments": ["이번 연휴는 짧아요.", "여행을 못 가요."],
+      "sourceEnding": "아요",
+      "targetEnding": "아서",
+      "preservedClauseEvidence": []
+    },
+    "s3362": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "when-ttae",
+      "requiredConstructionCue": "-ㄹ 때",
+      "sourceFragments": ["방안에 모기가 많아서 자요.", "아주 시끄러워요."],
+      "sourceEnding": "자요",
+      "targetEnding": "잘 때",
+      "preservedClauseEvidence": []
+    },
+    "s3387": {
+      "operation": "change-speech-act-ending",
+      "requiredPatternTag": "propositive-eyo",
+      "requiredConstructionCue": "-ㅂ시다",
+      "sourceFragments": ["우리 모임은 오늘 정오에 공원에서 모입니다."],
+      "sourceEnding": "모입니다",
+      "targetEnding": "모입시다",
+      "preservedClauseEvidence": []
+    },
+    "s3396": {
+      "operation": "recast-predicate",
+      "requiredPatternTag": "want-go-sipda",
+      "requiredConstructionCue": "-고 싶습니다",
+      "sourceFragments": ["그동안 잘 지냈는지 친구들의 안부를 묻습니다."],
+      "sourceEnding": "묻습니다",
+      "targetEnding": "묻고 싶습니다",
+      "preservedClauseEvidence": []
+    },
+    "s3667": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-으면",
+      "sourceFragments": ["예약이 없어요.", "오늘 못 잘라요."],
+      "sourceEnding": "어요",
+      "targetEnding": "으면",
+      "preservedClauseEvidence": []
+    }
+  }
+}
