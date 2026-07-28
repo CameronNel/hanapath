@@ -135,6 +135,8 @@ The audit rejects the item when any of the following is true:
 
 A valid contract suppresses only the productive-clause and particle/order family exclusions that the
 visible preservation task directly resolves. Duplicate targets and every other audit remain active.
+The controlled contract is evaluated through its explicit data object rather than by broadening the
+generic English cue heuristics, so the frozen CB1 inventory and shortlist remain byte-current.
 
 ## 6. Historical eligibility evidence
 
