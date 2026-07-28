@@ -1,0 +1,65 @@
+name: capture-cb6b-postsolver-state
+
+on:
+  push:
+    branches:
+      - core/cb6b-controlled-clause-reauthor
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    if: github.event_name == 'push' || github.head_ref == 'core/cb6b-controlled-clause-reauthor'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: core/cb6b-controlled-clause-reauthor
+          fetch-depth: 0
+      - name: Capture exact state
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+          import { auditCapacityRemediationState } from './scripts/audit-sentence-exam-capacity-remediation.mjs';
+          const read = (path) => JSON.parse(fs.readFileSync(path, 'utf8'));
+          const authoring = read('docs/generated/sentence_exam_cb6_capacity_authoring.json');
+          const inventory = read('docs/generated/sentence_exam_inventory.json');
+          const witness = read('docs/generated/sentence_exam_cb6_capacity_witness.json');
+          const reviews = read('docs/reviews/sentence_exam_cb6_capacity_reviews.json');
+          const sandbox = { window: {} };
+          sandbox.self = sandbox.window;
+          sandbox.globalThis = sandbox.window;
+          vm.createContext(sandbox);
+          for (const file of ['sentence_exam_curated_bank.js', 'sentence_exam_curated_bank_freeze.js']) vm.runInContext(fs.readFileSync(file, 'utf8'), sandbox, { filename: file });
+          const bank = sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+          const audit = auditCapacityRemediationState({ authoring, reviews, witness, inventory, bank, requireApproved: false });
+          const byId = new Map(authoring.entries.map((entry) => [entry.id, entry]));
+          const combined = [...bank.entries, ...authoring.entries];
+          const copulaTyped = combined.filter((entry) => entry.mode === 'typed' && (entry.patternTags || []).includes('copula-negative-anieyo')).map((entry) => entry.id).sort();
+          const state = {
+            schemaVersion: 1,
+            revision: authoring.revision,
+            counts: authoring.summary,
+            keyModes: Object.fromEntries(['s2067','s0772','s2247','s2061','s2064','s2070'].map((id) => [id, byId.get(id)?.mode || null])),
+            copulaNegativeTypedPool: copulaTyped,
+            copulaNegativeTypedPoolCount: copulaTyped.length,
+            audit,
+          };
+          fs.writeFileSync('docs/generated/sentence_exam_cb6b_postsolver_state.json', `${JSON.stringify(state, null, 2)}\n`);
+          console.log(JSON.stringify({ keyModes: state.keyModes, copulaCount: state.copulaNegativeTypedPoolCount, auditOk: audit.ok, failures: audit.failures.length }));
+          NODE
+      - name: Commit state and remove workflow
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/workflows/capture-cb6b-postsolver-state.yml
+          git add docs/generated/sentence_exam_cb6b_postsolver_state.json
+          git diff --cached --check
+          git commit -m "CB6B: capture post-solver capacity state"
+          git pull --rebase origin core/cb6b-controlled-clause-reauthor
+          git push origin HEAD:core/cb6b-controlled-clause-reauthor
