@@ -21,10 +21,10 @@
     "recognitionAdditionCount": 23,
     "typedBySection": {
       "1": 1,
-      "2": 34,
+      "2": 33,
       "3": 14,
       "4": 14,
-      "5": 1,
+      "5": 2,
       "6": 1,
       "7": 2,
       "8": 4
@@ -41,8 +41,8 @@
     },
     "witnessExamCount": 5,
     "attemptsPerExam": 5,
-    "typedExistingPromptCount": 15,
-    "typedGeneratedPromptCount": 56,
+    "typedExistingPromptCount": 14,
+    "typedGeneratedPromptCount": 57,
     "typedPromptReviewRequiredCount": 71,
     "controlledTypedCount": 35,
     "ordinaryTypedCount": 36,
@@ -399,9 +399,9 @@
       ]
     },
     "projected": {
-      "stage1TypedDistinctTargets": 104,
+      "stage1TypedDistinctTargets": 103,
       "stage1RequiredForFiveAttemptWindow": 100,
-      "stage1Margin": 4,
+      "stage1Margin": 3,
       "finalTagPools": {
         "object-eul-reul": {
           "distinctTargets": 383,
@@ -418,11 +418,11 @@
           "margin": 273
         },
         "subject-i-ga": {
-          "distinctTargets": 278,
+          "distinctTargets": 279,
           "finalFloor": 4,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 20,
-          "margin": 258
+          "margin": 259
         },
         "past-polite": {
           "distinctTargets": 207,
@@ -432,11 +432,11 @@
           "margin": 182
         },
         "topic-neun": {
-          "distinctTargets": 169,
+          "distinctTargets": 170,
           "finalFloor": 4,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 20,
-          "margin": 149
+          "margin": 150
         },
         "time-expression": {
           "distinctTargets": 138,
@@ -467,18 +467,18 @@
           "margin": 65
         },
         "because-aseo": {
-          "distinctTargets": 60,
+          "distinctTargets": 61,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 50
+          "margin": 51
         },
         "imperative-seyo": {
-          "distinctTargets": 32,
+          "distinctTargets": 31,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 22
+          "margin": 21
         },
         "copula-ieyo": {
           "distinctTargets": 48,
@@ -495,11 +495,11 @@
           "margin": 48
         },
         "honorific-si": {
-          "distinctTargets": 55,
+          "distinctTargets": 54,
           "finalFloor": 4,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 20,
-          "margin": 35
+          "margin": 34
         },
         "and-go": {
           "distinctTargets": 62,
@@ -572,11 +572,11 @@
           "margin": 5
         },
         "also-do": {
-          "distinctTargets": 13,
+          "distinctTargets": 12,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 3
+          "margin": 2
         },
         "comparison-boda": {
           "distinctTargets": 10,
@@ -4734,30 +4734,32 @@
       "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
-      "id": "s1120",
+      "id": "s2214",
       "mode": "typed",
       "sourceSectionOrder": 2,
       "sourceLessonIds": [
-        "sn2-daily-u1-l10"
+        "sn2-food-u1-l13"
       ],
-      "canonicalAnswer": "결과도 중요하지만 준비 과정도 가치 있어요.",
-      "englishMeaning": "The result is also important, but the preparation process is also valuable.",
+      "canonicalAnswer": "이 식당은 조금 비싸지만 음식이 맛있어서 자주 가요.",
+      "englishMeaning": "This restaurant is a bit pricey, but the food is tasty so I go often.",
       "patternTags": [
-        "also-do",
+        "because-aseo",
         "but-jiman",
-        "present-polite"
+        "present-polite",
+        "subject-i-ga",
+        "topic-neun"
       ],
-      "sourceCandidateClass": "excluded",
-      "existingExamPromptEn": "Recognize the lesson sentence that means “The result is also important, but the preparation process is also valuable”.",
+      "sourceCandidateClass": null,
+      "existingExamPromptEn": null,
       "ambiguityFlags": [
         "communicative-act-not-forced",
         "particle-or-order-family",
-        "productive-clause-family"
+        "productive-clause-family",
+        "topic-or-focus-not-forced"
       ],
-      "plausibleVariantCount": 3,
+      "plausibleVariantCount": 4,
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity",
-        "five-attempt-tag-capacity:also-do",
         "five-attempt-tag-capacity:but-jiman"
       ],
       "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
@@ -4768,7 +4770,7 @@
       "reviewedRevision": null,
       "reviewerNote": null,
       "templateId": "controlled-clause-transformation",
-      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 결과도 중요해요. Source 2: 준비 과정도 가치 있어요. Use -지만 as the required Korean construction. Replace the exact Korean ending \"해요\" with \"하지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 이 식당은 조금 비싸요. Source 2: 음식이 맛있어서 자주 가요. Use -지만 as the required Korean construction. Replace the exact Korean ending \"싸요\" with \"싸지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
       "controlledClause": {
@@ -4777,12 +4779,18 @@
         "requiredPatternTag": "but-jiman",
         "requiredConstructionCue": "-지만",
         "sourceFragments": [
-          "결과도 중요해요.",
-          "준비 과정도 가치 있어요."
+          "이 식당은 조금 비싸요.",
+          "음식이 맛있어서 자주 가요."
         ],
-        "sourceEnding": "해요",
-        "targetEnding": "하지만",
-        "preservedClauseEvidence": [],
+        "sourceEnding": "싸요",
+        "targetEnding": "싸지만",
+        "preservedClauseEvidence": [
+          {
+            "patternTag": "because-aseo",
+            "sourceFragmentIndex": 1,
+            "visibleSurface": "맛있어서"
+          }
+        ],
         "preserveSourceOrder": true,
         "preserveLexicalMaterial": true,
         "preserveParticles": true,
@@ -4791,14 +4799,14 @@
       "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
-      "id": "s2154",
+      "id": "s2297",
       "mode": "typed",
       "sourceSectionOrder": 2,
       "sourceLessonIds": [
-        "sn2-food-u1-l5"
+        "sn2-food-u1-l10"
       ],
-      "canonicalAnswer": "커피를 마시고 싶어요.",
-      "englishMeaning": "I want to drink coffee.",
+      "canonicalAnswer": "따뜻한 국을 먹고 싶어요.",
+      "englishMeaning": "I want some warm soup.",
       "patternTags": [
         "object-eul-reul",
         "present-polite",
@@ -4823,7 +4831,7 @@
       "reviewedRevision": null,
       "reviewerNote": null,
       "templateId": "controlled-clause-transformation",
-      "examPromptEn": "Recast the supplied Korean sentence with the required predicate construction. Source 1: 커피를 마셔요. Use -고 싶어요 as the required Korean construction. Replace the exact Korean ending \"마셔요\" with \"마시고 싶어요\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
+      "examPromptEn": "Recast the supplied Korean sentence with the required predicate construction. Source 1: 따뜻한 국을 먹어요. Use -고 싶어요 as the required Korean construction. Replace the exact Korean ending \"먹어요\" with \"먹고 싶어요\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
       "controlledClause": {
@@ -4832,10 +4840,10 @@
         "requiredPatternTag": "want-go-sipda",
         "requiredConstructionCue": "-고 싶어요",
         "sourceFragments": [
-          "커피를 마셔요."
+          "따뜻한 국을 먹어요."
         ],
-        "sourceEnding": "마셔요",
-        "targetEnding": "마시고 싶어요",
+        "sourceEnding": "먹어요",
+        "targetEnding": "먹고 싶어요",
         "preservedClauseEvidence": [],
         "preserveSourceOrder": true,
         "preserveLexicalMaterial": true,
@@ -4845,28 +4853,27 @@
       "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
-      "id": "s0946",
+      "id": "s0850",
       "mode": "typed",
-      "sourceSectionOrder": 2,
+      "sourceSectionOrder": 5,
       "sourceLessonIds": [
-        "sn2-daily-u1-l5"
+        "sn5-food-u3-l2"
       ],
-      "canonicalAnswer": "식사할 때 질문을 하지 마세요.",
-      "englishMeaning": "Do not ask questions when eating.",
+      "canonicalAnswer": "소풍 갈 때 김밥을 싸 가요.",
+      "englishMeaning": "We pack kimbap when going on a picnic.",
       "patternTags": [
-        "honorific-si",
-        "imperative-seyo",
         "object-eul-reul",
         "when-ttae"
       ],
       "sourceCandidateClass": "excluded",
-      "existingExamPromptEn": "Speaking respectfully in a senior social context, make this complete lesson request: “Do not ask questions when eating.” Use the lesson expression meaning “time / moment”.",
+      "existingExamPromptEn": "Speaking politely to a classmate, express this complete lesson sentence: “We pack kimbap when going on a picnic.” Use the lesson expression meaning “kimbap (rice rolled in seaweed)”.",
       "ambiguityFlags": [
+        "communicative-act-not-forced",
         "productive-clause-family"
       ],
-      "plausibleVariantCount": 1,
+      "plausibleVariantCount": 2,
       "capacityReasons": [
-        "stage-1-five-attempt-typed-capacity"
+        "joint-five-attempt-allocation-feasibility"
       ],
       "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
       "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
@@ -4876,7 +4883,7 @@
       "reviewedRevision": null,
       "reviewerNote": null,
       "templateId": "controlled-clause-transformation",
-      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 식사해요. Source 2: 질문을 하지 마세요. Use -ㄹ 때 as the required Korean construction. Replace the exact Korean ending \"해요\" with \"할 때\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 소풍 가요. Source 2: 김밥을 싸 가요. Use -ㄹ 때 as the required Korean construction. Replace the exact Korean ending \"가요\" with \"갈 때\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
       "controlledClause": {
@@ -4885,11 +4892,11 @@
         "requiredPatternTag": "when-ttae",
         "requiredConstructionCue": "-ㄹ 때",
         "sourceFragments": [
-          "식사해요.",
-          "질문을 하지 마세요."
+          "소풍 가요.",
+          "김밥을 싸 가요."
         ],
-        "sourceEnding": "해요",
-        "targetEnding": "할 때",
+        "sourceEnding": "가요",
+        "targetEnding": "갈 때",
         "preservedClauseEvidence": [],
         "preserveSourceOrder": true,
         "preserveLexicalMaterial": true,

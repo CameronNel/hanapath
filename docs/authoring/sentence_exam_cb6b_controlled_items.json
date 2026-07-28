@@ -498,6 +498,47 @@
       "sourceEnding": "해요",
       "targetEnding": "할 때",
       "preservedClauseEvidence": []
+    },
+    "s2214": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "but-jiman",
+      "requiredConstructionCue": "-지만",
+      "sourceFragments": [
+        "이 식당은 조금 비싸요.",
+        "음식이 맛있어서 자주 가요."
+      ],
+      "sourceEnding": "싸요",
+      "targetEnding": "싸지만",
+      "preservedClauseEvidence": [
+        {
+          "patternTag": "because-aseo",
+          "sourceFragmentIndex": 1,
+          "visibleSurface": "맛있어서"
+        }
+      ]
+    },
+    "s2297": {
+      "operation": "recast-predicate",
+      "requiredPatternTag": "want-go-sipda",
+      "requiredConstructionCue": "-고 싶어요",
+      "sourceFragments": [
+        "따뜻한 국을 먹어요."
+      ],
+      "sourceEnding": "먹어요",
+      "targetEnding": "먹고 싶어요",
+      "preservedClauseEvidence": []
+    },
+    "s0850": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "when-ttae",
+      "requiredConstructionCue": "-ㄹ 때",
+      "sourceFragments": [
+        "소풍 가요.",
+        "김밥을 싸 가요."
+      ],
+      "sourceEnding": "가요",
+      "targetEnding": "갈 때",
+      "preservedClauseEvidence": []
     }
   }
 }

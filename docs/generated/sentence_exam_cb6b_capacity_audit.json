@@ -2,12 +2,8 @@
   "schemaVersion": 1,
   "ok": false,
   "failures": [
-    "typed lesson cap exceeded at sn2-daily-u1-l5: 2/1",
-    "typed lesson cap exceeded at sn2-daily-u1-l10: 2/1",
-    "typed lesson cap exceeded at sn2-food-u1-l5: 2/1",
     "sentence-exam-2 attempt 5: tag want-go-sipda 1/2",
     "sentence-exam-3 attempt 2: tag future-geoyeyo 3/4",
-    "sentence-exam-3 attempt 2: coverage band-3 7/8",
     "sentence-exam-3 attempt 4: tag formal-nida 2/3",
     "sentence-exam-3 attempt 4: tag neg-mot 1/2",
     "sentence-exam-3 attempt 4: coverage band-3 7/8",
@@ -17,7 +13,6 @@
     "sentence-exam-4 attempt 1: coverage band-3 2/3",
     "sentence-exam-4 attempt 4: coverage band-4 7/8",
     "sentence-exam-4 attempt 5: tag future-geoyeyo 3/4",
-    "sentence-exam-4 attempt 5: coverage band-3 2/3",
     "sentence-exam-5 attempt 1: tag want-go-sipda 1/2",
     "sentence-exam-5 attempt 1: tag future-geoyeyo 4/5",
     "sentence-exam-5 attempt 1: tag copula-negative-anieyo 1/2",
@@ -33,7 +28,7 @@
     "projectedEntries": 702,
     "typedAdditions": 71,
     "recognitionAdditions": 23,
-    "stage1TypedDistinctTargets": 104,
+    "stage1TypedDistinctTargets": 103,
     "witnessExams": 5,
     "independentReviewRequired": 94
   }
