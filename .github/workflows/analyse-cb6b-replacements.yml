@@ -1,0 +1,99 @@
+name: analyse-cb6b-replacements
+
+on:
+  push:
+    branches:
+      - core/cb6b-controlled-clause-reauthor
+
+permissions:
+  contents: write
+
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select deterministic clean replacement candidates
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const inventory = JSON.parse(fs.readFileSync('docs/generated/sentence_exam_inventory.json', 'utf8')).inventory;
+          const authoring = JSON.parse(fs.readFileSync('docs/generated/sentence_exam_cb6_capacity_authoring.json', 'utf8'));
+          const witness = JSON.parse(fs.readFileSync('docs/generated/sentence_exam_cb6_capacity_witness.json', 'utf8'));
+          const classification = JSON.parse(fs.readFileSync('docs/generated/sentence_exam_cb6b_typed_classification.json', 'utf8'));
+          const sandbox = { window: {} };
+          sandbox.self = sandbox.window;
+          sandbox.globalThis = sandbox.window;
+          vm.createContext(sandbox);
+          for (const file of ['sentence_exam_curated_bank.js', 'sentence_exam_curated_bank_freeze.js']) {
+            vm.runInContext(fs.readFileSync(file, 'utf8'), sandbox, { filename: file });
+          }
+          const bank = sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
+          const clauseTags = new Set(['and-go','because-aseo','if-myeon','when-ttae','but-jiman','want-go-sipda','propositive-eyo']);
+          const formTags = new Set(['present-polite','past-polite','future-geoyeyo','formal-nida','honorific-si','imperative-seyo','propositive-eyo','copula-ieyo','copula-negative-anieyo','neg-an','neg-mot','neg-ji-anta','want-go-sipda','can-su-itda','must-ya-dwaeda']);
+          const contextTags = new Set(['topic-neun','subject-i-ga','object-eul-reul','time-expression','location-e','location-eseo','possessive-ui','because-aseo','direction-euro','and-go','with-hago-wa','if-myeon','existence-itda','counter-phrase','when-ttae','also-do','comparison-boda','until-kkaji','but-jiman','only-man','from-buteo','question-polite']);
+          const demotedIds = new Set(['s1437','s2247','s2542','s3345','s3327','s3443','s3508','s2605']);
+          const rowsById = new Map(inventory.map((row) => [row.id, row]));
+          const originalById = new Map(classification.typed.map((row) => [row.id, row]));
+          const excludedIds = new Set([...bank.entries.map((entry) => entry.id), ...authoring.entries.map((entry) => entry.id)]);
+          const usedTypedLessons = new Set();
+          for (const entry of bank.entries.filter((entry) => entry.mode === 'typed')) for (const lesson of entry.sourceLessonIds || []) usedTypedLessons.add(lesson);
+          for (const entry of authoring.entries.filter((entry) => entry.mode === 'typed' && !demotedIds.has(entry.id))) for (const lesson of entry.sourceLessonIds || []) usedTypedLessons.add(lesson);
+          function strands(row) {
+            const result = new Set(['P']);
+            if ((row.patternTags || []).some((tag) => formTags.has(tag))) result.add('F');
+            if ((row.patternTags || []).some((tag) => contextTags.has(tag))) result.add('X');
+            return result;
+          }
+          function clean(row) {
+            const flags = row.ambiguityFlags || [];
+            return !(row.patternTags || []).some((tag) => clauseTags.has(tag))
+              && !flags.includes('productive-clause-family')
+              && !flags.includes('particle-or-order-family')
+              && !(row.lessonIds || []).some((lesson) => usedTypedLessons.has(lesson));
+          }
+          const candidates = inventory.filter((row) => !excludedIds.has(row.id) && clean(row));
+          const chosen = new Set();
+          const mappings = [];
+          for (const id of demotedIds) {
+            const original = originalById.get(id);
+            const requiredStrands = new Set(original.originalWitnessUses.map((use) => use.strand));
+            const scored = candidates.filter((candidate) => !chosen.has(candidate.id)
+              && Number(candidate.candidateAssessment?.primarySection || candidate.sectionOrders?.[0]) === original.sourceSectionOrder
+              && [...requiredStrands].every((strand) => strands(candidate).has(strand)))
+              .map((candidate) => {
+                const overlap = candidate.patternTags.filter((tag) => original.patternTags.includes(tag)).length;
+                const rareOverlap = candidate.patternTags.filter((tag) => ['future-geoyeyo','formal-nida','honorific-si','direction-euro','copula-negative-anieyo','can-su-itda','neg-mot','when-ttae','want-go-sipda','but-jiman','only-man'].includes(tag) && original.patternTags.includes(tag)).length;
+                return { candidate, score: rareOverlap * 100 + overlap * 10 - Number(candidate.plausibleVariantCount || 0) };
+              }).sort((a, b) => b.score - a.score || a.candidate.id.localeCompare(b.candidate.id));
+            if (!scored.length) throw new Error(`No replacement candidate for ${id}`);
+            const best = scored[0].candidate;
+            chosen.add(best.id);
+            for (const lesson of best.lessonIds || []) usedTypedLessons.add(lesson);
+            mappings.push({
+              demotedId: id,
+              replacementId: best.id,
+              section: original.sourceSectionOrder,
+              originalKorean: original.canonicalAnswer,
+              originalTags: original.patternTags,
+              requiredStrands: [...requiredStrands].sort(),
+              replacementKorean: best.korean,
+              replacementEnglish: best.english,
+              replacementTags: best.patternTags,
+              replacementFlags: best.ambiguityFlags,
+              replacementLessons: best.lessonIds,
+            });
+          }
+          fs.writeFileSync('docs/generated/sentence_exam_cb6b_replacement_candidates.json', `${JSON.stringify({ schemaVersion: 1, mappings }, null, 2)}\n`);
+          console.log(JSON.stringify(mappings.map(({ demotedId, replacementId }) => ({ demotedId, replacementId }))));
+          NODE
+      - name: Commit analysis and remove workflow
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/workflows/analyse-cb6b-replacements.yml
+          git add docs/generated/sentence_exam_cb6b_replacement_candidates.json
+          git diff --cached --check
+          git commit -m "CB6B: identify clean typed replacements"
+          git push origin HEAD:core/cb6b-controlled-clause-reauthor
