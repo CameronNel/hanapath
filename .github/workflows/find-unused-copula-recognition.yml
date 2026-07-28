@@ -1,0 +1,33 @@
+name: find-unused-copula-recognition
+
+on:
+  push:
+    branches:
+      - core/cb6b-controlled-clause-reauthor
+
+permissions:
+  contents: write
+
+jobs:
+  find:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Filter unused recognition candidates
+        run: |
+          node <<'NODE'
+          const fs=require('node:fs');
+          const data=JSON.parse(fs.readFileSync('docs/generated/sentence_exam_cb6b_copula_swap_analysis.json','utf8'));
+          const candidates=data.candidates.filter(row=>(row.bankMode==='recognition'||row.authoringMode==='recognition')&&(row.candidateUses||[]).length===0)
+            .map(({id,korean,section,tags,bankMode,authoringMode,lessons})=>({id,korean,section,tags,bankMode,authoringMode,lessons}));
+          fs.writeFileSync('docs/generated/sentence_exam_cb6b_unused_copula_recognition.json',`${JSON.stringify({schemaVersion:1,candidates},null,2)}\n`);
+          NODE
+      - name: Commit and remove workflow
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/workflows/find-unused-copula-recognition.yml
+          git add docs/generated/sentence_exam_cb6b_unused_copula_recognition.json
+          git diff --cached --check
+          git commit -m "CB6B: identify unused copula recognition rows"
+          git push origin HEAD:core/cb6b-controlled-clause-reauthor
