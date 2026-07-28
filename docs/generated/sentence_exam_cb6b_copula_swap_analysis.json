@@ -42,7 +42,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2061",
@@ -95,7 +97,9 @@
           "attempt": 4,
           "strand": "F"
         }
-      ]
+      ],
+      "bankMode": null,
+      "authoringMode": "typed"
     },
     {
       "id": "s2062",
@@ -127,7 +131,9 @@
           "uses": []
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2063",
@@ -175,7 +181,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2064",
@@ -238,7 +246,9 @@
           "attempt": 3,
           "strand": "X"
         }
-      ]
+      ],
+      "bankMode": null,
+      "authoringMode": "typed"
     },
     {
       "id": "s2065",
@@ -276,7 +286,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2066",
@@ -307,7 +319,9 @@
           "uses": []
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2067",
@@ -333,7 +347,9 @@
           "attempt": 1,
           "strand": "R"
         }
-      ]
+      ],
+      "bankMode": null,
+      "authoringMode": "recognition"
     },
     {
       "id": "s2068",
@@ -363,7 +379,9 @@
           "uses": []
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2069",
@@ -406,7 +424,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2070",
@@ -449,7 +469,9 @@
           "attempt": 3,
           "strand": "X"
         }
-      ]
+      ],
+      "bankMode": null,
+      "authoringMode": "typed"
     },
     {
       "id": "s2208",
@@ -495,7 +517,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2209",
@@ -544,7 +568,9 @@
           "attempt": 2,
           "strand": "C"
         }
-      ]
+      ],
+      "bankMode": null,
+      "authoringMode": "recognition"
     },
     {
       "id": "s2210",
@@ -583,7 +609,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2211",
@@ -635,7 +663,9 @@
           "attempt": 2,
           "strand": "R"
         }
-      ]
+      ],
+      "bankMode": "recognition",
+      "authoringMode": null
     },
     {
       "id": "s2245",
@@ -687,7 +717,9 @@
           "attempt": 5,
           "strand": "C"
         }
-      ]
+      ],
+      "bankMode": null,
+      "authoringMode": "recognition"
     },
     {
       "id": "s2246",
@@ -719,7 +751,9 @@
           "uses": []
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2247",
@@ -739,7 +773,9 @@
         "sn2-travel-u1-l5"
       ],
       "occupants": [],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2248",
@@ -782,7 +818,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2249",
@@ -832,7 +870,9 @@
           "attempt": 4,
           "strand": "C"
         }
-      ]
+      ],
+      "bankMode": null,
+      "authoringMode": "recognition"
     },
     {
       "id": "s2250",
@@ -876,7 +916,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     },
     {
       "id": "s2857",
@@ -916,7 +958,9 @@
           "attempt": 5,
           "strand": "P"
         }
-      ]
+      ],
+      "bankMode": null,
+      "authoringMode": "typed"
     },
     {
       "id": "s3000",
@@ -959,7 +1003,9 @@
           ]
         }
       ],
-      "candidateUses": []
+      "candidateUses": [],
+      "bankMode": null,
+      "authoringMode": null
     }
   ]
 }
