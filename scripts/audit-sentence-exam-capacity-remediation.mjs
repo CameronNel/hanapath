@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 import {
   CONTROLLED_CLAUSE_PATTERN_TAGS,
@@ -296,7 +296,7 @@ export function auditCapacityRemediationState({ authoring, reviews, witness, inv
       canonicalAnswer: row?.korean || entry.canonicalAnswer,
     };
   });
-  auditLessonCaps(combined, failures);
+  auditLessonCaps(authoring.entries, failures);
   const entriesById = new Map(combined.map((entry) => [entry.id, entry]));
   for (const examId of Object.keys(ALLOCATIONS)) {
     auditWitness(examId, witness.exams?.[examId], entriesById, failures);
@@ -334,7 +334,7 @@ export function auditCapacityRemediationState({ authoring, reviews, witness, inv
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const result = auditCapacityRemediationState({
     authoring: readJson(AUTHORING_FILE),
     reviews: readJson(REVIEW_FILE),

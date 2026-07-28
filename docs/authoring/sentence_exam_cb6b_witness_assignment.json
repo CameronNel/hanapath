@@ -1,9 +1,6 @@
 {
   "schemaVersion": 1,
   "revision": "curated-sentence-exam-v2-cb6b-authoring",
-  "generatedBy": "CB6B exact CP-SAT five-attempt witness assignment; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
-  "freshnessWindow": 5,
-  "maxCanonicalTargetUses": 1,
   "exams": {
     "sentence-exam-1": [
       [

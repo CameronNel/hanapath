@@ -3,7 +3,6 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
-import { repairCb6bWitness } from "./lib/sentence-exam-cb6b-witness.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REVISION = "curated-sentence-exam-v2-cb6b-authoring";
@@ -14,62 +13,12 @@ const REVIEW_FILE = join(ROOT, "docs", "reviews", "sentence_exam_cb6_capacity_re
 const WITNESS_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6_capacity_witness.json");
 const CONTROLLED_AUTHORING_FILE = join(ROOT, "docs", "authoring", "sentence_exam_cb6b_controlled_items.json");
 const REPLACEMENTS_FILE = join(ROOT, "docs", "authoring", "sentence_exam_cb6b_replacements.json");
+const WITNESS_ASSIGNMENT_FILE = join(ROOT, "docs", "authoring", "sentence_exam_cb6b_witness_assignment.json");
 
-const SELECTED = Object.freeze([
+const SELECTED = Object.freeze(
+[
   {
-    "id": "s2160",
-    "mode": "recognition"
-  },
-  {
-    "id": "s2245",
-    "mode": "recognition"
-  },
-  {
-    "id": "s2269",
-    "mode": "typed"
-  },
-  {
-    "id": "s0495",
-    "mode": "recognition"
-  },
-  {
-    "id": "s0777",
-    "mode": "recognition"
-  },
-  {
-    "id": "s0989",
-    "mode": "recognition"
-  },
-  {
-    "id": "s2249",
-    "mode": "recognition"
-  },
-  {
-    "id": "s3976",
-    "mode": "recognition"
-  },
-  {
-    "id": "s3980",
-    "mode": "recognition"
-  },
-  {
-    "id": "s4114",
-    "mode": "recognition"
-  },
-  {
-    "id": "s0090",
-    "mode": "typed"
-  },
-  {
-    "id": "s0362",
-    "mode": "typed"
-  },
-  {
-    "id": "s0501",
-    "mode": "typed"
-  },
-  {
-    "id": "s0773",
+    "id": "s0670",
     "mode": "typed"
   },
   {
@@ -77,19 +26,35 @@ const SELECTED = Object.freeze([
     "mode": "typed"
   },
   {
-    "id": "s0907",
+    "id": "s0969",
     "mode": "typed"
   },
   {
-    "id": "s0975",
+    "id": "s1028",
     "mode": "typed"
   },
   {
-    "id": "s1072",
+    "id": "s1053",
     "mode": "typed"
   },
   {
-    "id": "s1437",
+    "id": "s1630",
+    "mode": "typed"
+  },
+  {
+    "id": "s1782",
+    "mode": "typed"
+  },
+  {
+    "id": "s1938",
+    "mode": "typed"
+  },
+  {
+    "id": "s2023",
+    "mode": "typed"
+  },
+  {
+    "id": "s2045",
     "mode": "typed"
   },
   {
@@ -97,103 +62,27 @@ const SELECTED = Object.freeze([
     "mode": "typed"
   },
   {
+    "id": "s2063",
+    "mode": "typed"
+  },
+  {
     "id": "s2064",
     "mode": "typed"
   },
   {
-    "id": "s2190",
+    "id": "s2069",
     "mode": "typed"
   },
   {
-    "id": "s2207",
+    "id": "s2089",
     "mode": "typed"
   },
   {
-    "id": "s2228",
+    "id": "s2154",
     "mode": "typed"
   },
   {
-    "id": "s2247",
-    "mode": "typed"
-  },
-  {
-    "id": "s2478",
-    "mode": "typed"
-  },
-  {
-    "id": "s2587",
-    "mode": "typed"
-  },
-  {
-    "id": "s2621",
-    "mode": "typed"
-  },
-  {
-    "id": "s2697",
-    "mode": "typed"
-  },
-  {
-    "id": "s3157",
-    "mode": "typed"
-  },
-  {
-    "id": "s3364",
-    "mode": "typed"
-  },
-  {
-    "id": "s3417",
-    "mode": "typed"
-  },
-  {
-    "id": "s3443",
-    "mode": "typed"
-  },
-  {
-    "id": "s3508",
-    "mode": "typed"
-  },
-  {
-    "id": "s3525",
-    "mode": "typed"
-  },
-  {
-    "id": "s3532",
-    "mode": "typed"
-  },
-  {
-    "id": "s3629",
-    "mode": "typed"
-  },
-  {
-    "id": "s3788",
-    "mode": "typed"
-  },
-  {
-    "id": "s4078",
-    "mode": "typed"
-  },
-  {
-    "id": "s4164",
-    "mode": "typed"
-  },
-  {
-    "id": "s4171",
-    "mode": "typed"
-  },
-  {
-    "id": "s2427",
-    "mode": "recognition"
-  },
-  {
-    "id": "s3461",
-    "mode": "recognition"
-  },
-  {
-    "id": "s3971",
-    "mode": "recognition"
-  },
-  {
-    "id": "s2070",
+    "id": "s2186",
     "mode": "typed"
   },
   {
@@ -201,15 +90,31 @@ const SELECTED = Object.freeze([
     "mode": "typed"
   },
   {
+    "id": "s2190",
+    "mode": "typed"
+  },
+  {
     "id": "s2206",
     "mode": "typed"
   },
   {
-    "id": "s2252",
+    "id": "s2214",
     "mode": "typed"
   },
   {
-    "id": "s2260",
+    "id": "s2228",
+    "mode": "typed"
+  },
+  {
+    "id": "s2248",
+    "mode": "typed"
+  },
+  {
+    "id": "s2253",
+    "mode": "typed"
+  },
+  {
+    "id": "s2259",
     "mode": "typed"
   },
   {
@@ -217,47 +122,15 @@ const SELECTED = Object.freeze([
     "mode": "typed"
   },
   {
-    "id": "s2857",
+    "id": "s2285",
     "mode": "typed"
   },
   {
-    "id": "s3082",
+    "id": "s2327",
     "mode": "typed"
   },
   {
-    "id": "s3687",
-    "mode": "typed"
-  },
-  {
-    "id": "s3714",
-    "mode": "typed"
-  },
-  {
-    "id": "s3744",
-    "mode": "typed"
-  },
-  {
-    "id": "s3866",
-    "mode": "typed"
-  },
-  {
-    "id": "s3951",
-    "mode": "typed"
-  },
-  {
-    "id": "s3973",
-    "mode": "typed"
-  },
-  {
-    "id": "s2067",
-    "mode": "recognition"
-  },
-  {
-    "id": "s3348",
-    "mode": "recognition"
-  },
-  {
-    "id": "s2253",
+    "id": "s2343",
     "mode": "typed"
   },
   {
@@ -269,19 +142,55 @@ const SELECTED = Object.freeze([
     "mode": "typed"
   },
   {
-    "id": "s2459",
+    "id": "s2621",
     "mode": "typed"
   },
   {
-    "id": "s2542",
+    "id": "s2631",
     "mode": "typed"
   },
   {
-    "id": "s3075",
+    "id": "s2672",
     "mode": "typed"
   },
   {
-    "id": "s3185",
+    "id": "s2675",
+    "mode": "typed"
+  },
+  {
+    "id": "s2697",
+    "mode": "typed"
+  },
+  {
+    "id": "s2857",
+    "mode": "typed"
+  },
+  {
+    "id": "s3006",
+    "mode": "typed"
+  },
+  {
+    "id": "s3027",
+    "mode": "typed"
+  },
+  {
+    "id": "s3082",
+    "mode": "typed"
+  },
+  {
+    "id": "s3145",
+    "mode": "typed"
+  },
+  {
+    "id": "s3157",
+    "mode": "typed"
+  },
+  {
+    "id": "s3184",
+    "mode": "typed"
+  },
+  {
+    "id": "s3188",
     "mode": "typed"
   },
   {
@@ -297,7 +206,15 @@ const SELECTED = Object.freeze([
     "mode": "typed"
   },
   {
-    "id": "s3243",
+    "id": "s3240",
+    "mode": "typed"
+  },
+  {
+    "id": "s3262",
+    "mode": "typed"
+  },
+  {
+    "id": "s3290",
     "mode": "typed"
   },
   {
@@ -305,7 +222,27 @@ const SELECTED = Object.freeze([
     "mode": "typed"
   },
   {
+    "id": "s3362",
+    "mode": "typed"
+  },
+  {
+    "id": "s3364",
+    "mode": "typed"
+  },
+  {
     "id": "s3372",
+    "mode": "typed"
+  },
+  {
+    "id": "s3379",
+    "mode": "typed"
+  },
+  {
+    "id": "s3384",
+    "mode": "typed"
+  },
+  {
+    "id": "s3396",
     "mode": "typed"
   },
   {
@@ -313,36 +250,68 @@ const SELECTED = Object.freeze([
     "mode": "typed"
   },
   {
-    "id": "s3334",
-    "mode": "recognition"
-  },
-  {
-    "id": "s4037",
-    "mode": "recognition"
-  },
-  {
-    "id": "s2605",
+    "id": "s3447",
     "mode": "typed"
   },
   {
-    "id": "s3345",
+    "id": "s3525",
     "mode": "typed"
   },
   {
-    "id": "s3553",
+    "id": "s3536",
     "mode": "typed"
   },
   {
-    "id": "s2180",
+    "id": "s3667",
+    "mode": "typed"
+  },
+  {
+    "id": "s3687",
+    "mode": "typed"
+  },
+  {
+    "id": "s3714",
+    "mode": "typed"
+  },
+  {
+    "id": "s3817",
+    "mode": "typed"
+  },
+  {
+    "id": "s3950",
+    "mode": "typed"
+  },
+  {
+    "id": "s3951",
+    "mode": "typed"
+  },
+  {
+    "id": "s3973",
+    "mode": "typed"
+  },
+  {
+    "id": "s4078",
+    "mode": "typed"
+  },
+  {
+    "id": "s4164",
+    "mode": "typed"
+  },
+  {
+    "id": "s4171",
+    "mode": "typed"
+  },
+  {
+    "id": "s0495",
     "mode": "recognition"
   },
   {
-    "id": "s4023",
+    "id": "s0772",
     "mode": "recognition"
   },
   {
-    "id": "s3323",
-    "mode": "typed"
+    "id": "s0777",
+    "mode": "recognition"
   },
   {
     "id": "s0862",
@@ -353,7 +322,47 @@ const SELECTED = Object.freeze([
     "mode": "recognition"
   },
   {
+    "id": "s0989",
+    "mode": "recognition"
+  },
+  {
+    "id": "s2160",
+    "mode": "recognition"
+  },
+  {
+    "id": "s2180",
+    "mode": "recognition"
+  },
+  {
     "id": "s2209",
+    "mode": "recognition"
+  },
+  {
+    "id": "s2245",
+    "mode": "recognition"
+  },
+  {
+    "id": "s2249",
+    "mode": "recognition"
+  },
+  {
+    "id": "s2427",
+    "mode": "recognition"
+  },
+  {
+    "id": "s3334",
+    "mode": "recognition"
+  },
+  {
+    "id": "s3344",
+    "mode": "recognition"
+  },
+  {
+    "id": "s3348",
+    "mode": "recognition"
+  },
+  {
+    "id": "s3461",
     "mode": "recognition"
   },
   {
@@ -361,38 +370,31 @@ const SELECTED = Object.freeze([
     "mode": "recognition"
   },
   {
-    "id": "s3327",
-    "mode": "typed"
-  },
-  {
-    "id": "s3398",
-    "mode": "typed"
-  },
-  {
-    "id": "s3564",
-    "mode": "typed"
-  },
-  {
-    "id": "s3344",
+    "id": "s3971",
     "mode": "recognition"
   },
   {
-    "id": "s3362",
-    "mode": "typed"
+    "id": "s3976",
+    "mode": "recognition"
   },
   {
-    "id": "s3387",
-    "mode": "typed"
+    "id": "s3980",
+    "mode": "recognition"
   },
   {
-    "id": "s3396",
-    "mode": "typed"
+    "id": "s4023",
+    "mode": "recognition"
   },
   {
-    "id": "s3667",
-    "mode": "typed"
+    "id": "s4037",
+    "mode": "recognition"
+  },
+  {
+    "id": "s4114",
+    "mode": "recognition"
   }
-]);
+]
+);
 const WITNESS = Object.freeze({
   "sentence-exam-1": [
     [
@@ -3665,11 +3667,7 @@ function buildArtifacts() {
   const typed = entries.filter((entry) => entry.mode === "typed");
   const recognition = entries.filter((entry) => entry.mode === "recognition");
   const combinedEntries = [...bank.entries, ...entries];
-  const repairedWitness = repairCb6bWitness({
-    baseWitness: WITNESS,
-    entries: combinedEntries,
-    replacementByDemoted: REPLACEMENT_BY_DEMOTED,
-  });
+  const witnessAssignment = readJson(WITNESS_ASSIGNMENT_FILE);
   const currentCapacity = capacitySummary(bank.entries);
   const projectedCapacity = capacitySummary(combinedEntries);
   const countBySection = (items) => Object.fromEntries(
@@ -3739,10 +3737,10 @@ function buildArtifacts() {
   const witness = {
     schemaVersion: 1,
     revision: REVISION,
-    generatedBy: "CB6B deterministic repair of the original exact allocation witness; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
+    generatedBy: "CB6B exact CP-SAT five-attempt witness assignment; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
     freshnessWindow: 5,
     maxCanonicalTargetUses: 1,
-    exams: repairedWitness.exams,
+    exams: witnessAssignment.exams,
   };
   return { authoring, reviews, witness };
 }
