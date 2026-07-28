@@ -1,0 +1,21 @@
+file:///home/runner/work/hanapath/hanapath/scripts/lib/sentence-exam-cb6b-witness.mjs:374
+    throw new Error(`CB6B witness repair failed:\n${failures.join("\n")}`);
+          ^
+
+Error: CB6B witness repair failed:
+sentence-exam-2 attempt 5: {"invalid":[],"tagDeficits":{"want-go-sipda":1},"coverageDeficits":{}}
+sentence-exam-3 attempt 4: {"invalid":[],"tagDeficits":{"neg-mot":1},"coverageDeficits":{}}
+sentence-exam-4 attempt 1: {"invalid":[],"tagDeficits":{"formal-nida":1,"neg-mot":1,"want-go-sipda":1},"coverageDeficits":{}}
+sentence-exam-4 attempt 4: {"invalid":[],"tagDeficits":{},"coverageDeficits":{"band-4":1}}
+sentence-exam-4 attempt 5: {"invalid":[],"tagDeficits":{"future-geoyeyo":1},"coverageDeficits":{}}
+sentence-exam-5 attempt 1: {"invalid":[],"tagDeficits":{"copula-negative-anieyo":1},"coverageDeficits":{}}
+    at repairCb6bWitness (file:///home/runner/work/hanapath/hanapath/scripts/lib/sentence-exam-cb6b-witness.mjs:374:11)
+    at buildArtifacts (file:///home/runner/work/hanapath/hanapath/scripts/build-sentence-exam-capacity-remediation.mjs:3668:27)
+    at file:///home/runner/work/hanapath/hanapath/scripts/build-sentence-exam-capacity-remediation.mjs:3750:41
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.23.1
+
+exitStatus=1
