@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
+import { repairCb6bWitness } from "./lib/sentence-exam-cb6b-witness.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REVISION = "curated-sentence-exam-v2-cb6b-authoring";
@@ -3514,17 +3515,15 @@ const REPLACEMENT_AUTHORING = readJson(REPLACEMENTS_FILE);
 const CONTROLLED_BY_ID = new Map(Object.entries(CONTROLLED_AUTHORING.entries || {}));
 const REPLACEMENT_BY_DEMOTED = new Map((REPLACEMENT_AUTHORING.mappings || []).map((item) => [item.demotedId, item.replacementId]));
 const DEMOTED_IDS = new Set(REPLACEMENT_BY_DEMOTED.keys());
+const RECOGNITION_BACKFILLS = Array.isArray(REPLACEMENT_AUTHORING.recognitionBackfills)
+  ? REPLACEMENT_AUTHORING.recognitionBackfills
+  : [];
+const PROMOTED_RECOGNITION_IDS = new Set(RECOGNITION_BACKFILLS.map((item) => item.promotedId));
 const EFFECTIVE_SELECTED = Object.freeze([
-  ...SELECTED.filter((selection) => !DEMOTED_IDS.has(selection.id)),
+  ...SELECTED.filter((selection) => !DEMOTED_IDS.has(selection.id) && !PROMOTED_RECOGNITION_IDS.has(selection.id)),
   ...[...REPLACEMENT_BY_DEMOTED.values()].map((id) => Object.freeze({ id, mode: "typed" })),
+  ...RECOGNITION_BACKFILLS.map((item) => Object.freeze({ id: item.backfillId, mode: "recognition" })),
 ]);
-const CB6B_WITNESS = Object.freeze(Object.fromEntries(Object.entries(WITNESS).map(([examId, attempts]) => [
-  examId,
-  attempts.map((attempt) => attempt.map((selected) => ({
-    ...selected,
-    id: REPLACEMENT_BY_DEMOTED.get(selected.id) || selected.id,
-  }))),
-])));
 const CONTROLLED_PRESERVATION_INSTRUCTION = "Preserve the supplied Korean wording, particles, and order except for the required grammar change.";
 const CONTROLLED_GRAMMAR_INSTRUCTION = "Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.";
 
@@ -3666,6 +3665,11 @@ function buildArtifacts() {
   const typed = entries.filter((entry) => entry.mode === "typed");
   const recognition = entries.filter((entry) => entry.mode === "recognition");
   const combinedEntries = [...bank.entries, ...entries];
+  const repairedWitness = repairCb6bWitness({
+    baseWitness: WITNESS,
+    entries: combinedEntries,
+    replacementByDemoted: REPLACEMENT_BY_DEMOTED,
+  });
   const currentCapacity = capacitySummary(bank.entries);
   const projectedCapacity = capacitySummary(combinedEntries);
   const countBySection = (items) => Object.fromEntries(
@@ -3738,7 +3742,7 @@ function buildArtifacts() {
     generatedBy: "CB6B deterministic repair of the original exact allocation witness; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
     freshnessWindow: 5,
     maxCanonicalTargetUses: 1,
-    exams: CB6B_WITNESS,
+    exams: repairedWitness.exams,
   };
   return { authoring, reviews, witness };
 }
@@ -3749,7 +3753,7 @@ if (args.has("--write")) {
   writeJson(AUTHORING_FILE, authoring);
   writeJson(REVIEW_FILE, reviews);
   writeJson(WITNESS_FILE, witness);
-  console.log(`Wrote CB6 authoring (${authoring.summary.additionCount} additions), pending review manifest, and five-attempt witness.`);
+  console.log(`Wrote CB6B authoring (${authoring.summary.additionCount} additions), pending review manifest, and five-attempt witness.`);
 } else if (args.has("--check")) {
   let ok = true;
   for (const [path, expected] of [[AUTHORING_FILE, authoring], [REVIEW_FILE, reviews], [WITNESS_FILE, witness]]) {

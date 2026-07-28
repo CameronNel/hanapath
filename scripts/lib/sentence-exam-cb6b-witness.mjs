@@ -211,7 +211,7 @@ function annealRepair(examId, initial, original, entries, entryMap, reservedCano
   let best = current;
   let bestDiagnostics = diagnostics;
   let bestChanged = changedCount(best, original);
-  const iterations = examId === "sentence-exam-5" ? 500000 : 250000;
+  const iterations = examId === "sentence-exam-5" ? 60000 : 30000;
   for (let iteration = 0; iteration < iterations && bestDiagnostics.score > 0; iteration += 1) {
     const slotIndex = Math.floor(random() * current.length);
     const candidates = lists[slotIndex];
@@ -268,7 +268,7 @@ function repairAttempt(examId, attemptIndex, attempts, originalAttempts, entries
   );
   if (greedy.diagnostics.score === 0) return greedy;
   let best = greedy;
-  for (let restart = 0; restart < 8 && best.diagnostics.score > 0; restart += 1) {
+  for (let restart = 0; restart < 3 && best.diagnostics.score > 0; restart += 1) {
     const seed = [...examId].reduce((value, character) => ((value * 33) ^ character.charCodeAt(0)) >>> 0, 5381)
       ^ ((attemptIndex + 1) * 0x9e3779b1)
       ^ ((restart + 1) * 0x85ebca6b);
@@ -322,7 +322,7 @@ function examDiagnostics(examId, attempts, entryMap) {
 function repairExam(examId, baseAttempts, entries, entryMap) {
   const originalAttempts = baseAttempts.map((attempt) => attempt.map((selected) => ({ ...selected })));
   const attempts = originalAttempts.map((attempt) => attempt.map((selected) => ({ ...selected })));
-  for (let pass = 0; pass < 6; pass += 1) {
+  for (let pass = 0; pass < 3; pass += 1) {
     let changed = false;
     const order = attempts.map((attempt, index) => ({
       index,
