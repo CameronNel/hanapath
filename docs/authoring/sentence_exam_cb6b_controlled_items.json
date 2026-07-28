@@ -451,6 +451,53 @@
       "sourceEnding": "어요",
       "targetEnding": "을 때",
       "preservedClauseEvidence": []
+    },
+    "s3188": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "if-myeon",
+      "requiredConstructionCue": "-면",
+      "sourceFragments": [
+        "도움이 필요해요.",
+        "언제든지 제게 말씀해 주십시오."
+      ],
+      "sourceEnding": "해요",
+      "targetEnding": "하시면",
+      "preservedClauseEvidence": []
+    },
+    "s1120": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "but-jiman",
+      "requiredConstructionCue": "-지만",
+      "sourceFragments": [
+        "결과도 중요해요.",
+        "준비 과정도 가치 있어요."
+      ],
+      "sourceEnding": "해요",
+      "targetEnding": "하지만",
+      "preservedClauseEvidence": []
+    },
+    "s2154": {
+      "operation": "recast-predicate",
+      "requiredPatternTag": "want-go-sipda",
+      "requiredConstructionCue": "-고 싶어요",
+      "sourceFragments": [
+        "커피를 마셔요."
+      ],
+      "sourceEnding": "마셔요",
+      "targetEnding": "마시고 싶어요",
+      "preservedClauseEvidence": []
+    },
+    "s0946": {
+      "operation": "combine-clauses",
+      "requiredPatternTag": "when-ttae",
+      "requiredConstructionCue": "-ㄹ 때",
+      "sourceFragments": [
+        "식사해요.",
+        "질문을 하지 마세요."
+      ],
+      "sourceEnding": "해요",
+      "targetEnding": "할 때",
+      "preservedClauseEvidence": []
     }
   }
 }

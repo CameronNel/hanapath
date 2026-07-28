@@ -389,7 +389,7 @@
       "contractErrors": []
     },
     {
-      "id": "s2069",
+      "id": "s0772",
       "templateId": "lexically-anchored-production",
       "flags": [],
       "contractErrors": []
@@ -407,25 +407,25 @@
       "contractErrors": []
     },
     {
-      "id": "s1313",
+      "id": "s3188",
       "templateId": "controlled-clause-transformation",
       "flags": [],
       "contractErrors": []
     },
     {
-      "id": "s2186",
+      "id": "s1120",
       "templateId": "controlled-clause-transformation",
       "flags": [],
       "contractErrors": []
     },
     {
-      "id": "s2675",
+      "id": "s2154",
       "templateId": "controlled-clause-transformation",
       "flags": [],
       "contractErrors": []
     },
     {
-      "id": "s2672",
+      "id": "s0946",
       "templateId": "controlled-clause-transformation",
       "flags": [],
       "contractErrors": []
