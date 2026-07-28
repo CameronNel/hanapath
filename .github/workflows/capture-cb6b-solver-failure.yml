@@ -1,0 +1,42 @@
+name: capture-cb6b-solver-failure
+
+on:
+  push:
+    branches:
+      - core/cb6b-controlled-clause-reauthor
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    if: github.event_name == 'push' || github.head_ref == 'core/cb6b-controlled-clause-reauthor'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: core/cb6b-controlled-clause-reauthor
+          fetch-depth: 0
+      - name: Run bounded solver and preserve output
+        run: |
+          set +e
+          set -o pipefail
+          node scripts/build-sentence-exam-capacity-remediation.mjs --write 2>&1 | tee docs/generated/sentence_exam_cb6b_solver_diagnostics.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          printf '\nexitStatus=%s\n' "$status" >> docs/generated/sentence_exam_cb6b_solver_diagnostics.txt
+          exit 0
+      - name: Commit diagnostics and remove workflow
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/workflows/capture-cb6b-solver-failure.yml
+          git add docs/generated scripts
+          git diff --cached --check
+          git commit -m "CB6B: capture exact bounded solver diagnostics"
+          git pull --rebase origin core/cb6b-controlled-clause-reauthor
+          git push origin HEAD:core/cb6b-controlled-clause-reauthor
