@@ -9,7 +9,7 @@ import {
   normalizeSentenceExamAnswer,
   validateControlledClauseContract,
 } from "./lib/sentence-exam-ambiguity.mjs";
-import { SENTENCE_EXAM_FREEZE_SOURCE_FILES, auditFreezeManifest } from "./lib/sentence-exam-freeze.mjs";
+import { SENTENCE_EXAM_FREEZE_SOURCE_FILES, auditFreezeManifest, sha256, stableValue } from "./lib/sentence-exam-freeze.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -91,6 +91,60 @@ function validIsoTimestamp(value) {
   return nonEmptyString(value)
     && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)
     && Number.isFinite(Date.parse(value));
+}
+
+export function auditBankApprovalManifest({ bank, approval }) {
+  const errors = [];
+  if (!approval || typeof approval !== "object" || Array.isArray(approval)) {
+    return { errors: ["CB6B complete-bank approval manifest is missing or malformed."] };
+  }
+  if (approval.schemaVersion !== 1) {
+    errors.push(`Expected bank-level approval schemaVersion 1, got ${approval.schemaVersion}.`);
+  }
+  if (approval.approvalScope !== "complete-reviewed-bank") {
+    errors.push("Bank-level approval must cover the complete reviewed bank.");
+  }
+  if (approval.bankRevision !== bank?.revision) {
+    errors.push(`Bank-level approval revision '${approval.bankRevision}' does not match bank revision '${bank?.revision}'.`);
+  }
+  if (approval.baseRevision !== bank?.baseRevision) {
+    errors.push(`Bank-level approval baseRevision '${approval.baseRevision}' does not match bank base revision '${bank?.baseRevision}'.`);
+  }
+  if (approval.capacityRevision !== bank?.capacityRevision) {
+    errors.push(`Bank-level approval capacityRevision '${approval.capacityRevision}' does not match bank capacity revision '${bank?.capacityRevision}'.`);
+  }
+  if (approval.entryCount !== bank?.entries?.length) {
+    errors.push(`Bank-level approval entryCount ${approval.entryCount} does not match bank size ${bank?.entries?.length}.`);
+  }
+  const computedEntriesSha256 = sha256(JSON.stringify(stableValue(bank?.entries || [])));
+  if (approval.entriesSha256 !== computedEntriesSha256) {
+    errors.push("Bank-level approval entriesSha256 is stale or mismatched.");
+  }
+  const computedEntryIdsSha256 = sha256(JSON.stringify((bank?.entries || []).map((entry) => entry.id)));
+  if (approval.entryIdsSha256 !== computedEntryIdsSha256) {
+    errors.push("Bank-level approval entryIdsSha256 is stale or mismatched.");
+  }
+  if (!nonEmptyString(approval.approvedBy)) {
+    errors.push("Bank-level approval approvedBy is missing or empty.");
+  } else {
+    const normalizedReviewer = approval.approvedBy.trim().toLowerCase();
+    const authorIdentities = new Set(
+      (bank?.entries || [])
+        .map((entry) => entry.authoredBy)
+        .filter(nonEmptyString)
+        .map((identity) => identity.trim().toLowerCase()),
+    );
+    if (authorIdentities.has(normalizedReviewer)) {
+      errors.push("Bank-level approval cannot be self-approved by an entry author.");
+    }
+  }
+  if (!validIsoTimestamp(approval.approvedAt)) {
+    errors.push(`Bank-level approval approvedAt timestamp is invalid: '${approval.approvedAt}'.`);
+  }
+  if (!nonEmptyString(approval.reviewerNote) || approval.reviewerNote.trim().length < 80) {
+    errors.push("Bank-level approval reviewerNote is missing or too short (must be >= 80 chars).");
+  }
+  return { errors };
 }
 
 function validateLockedPolicy(policy, expectedPolicy, errors) {
@@ -350,6 +404,16 @@ function main() {
       result.errors.push("Runtime CB5 freeze contract does not match the committed manifest.");
     }
   }
+
+  // Bank-level approval manifest check for CB6B
+  let approval = null;
+  const approvalPath = join(ROOT, "docs", "reviews", "sentence_exam_curated_bank_cb6b_approval.json");
+  try {
+    approval = JSON.parse(readFileSync(approvalPath, "utf8"));
+  } catch {
+    result.errors.push("Bank-level approval manifest 'docs/reviews/sentence_exam_curated_bank_cb6b_approval.json' is missing or invalid JSON.");
+  }
+  result.errors.push(...auditBankApprovalManifest({ bank, approval }).errors);
   if (bank?.enabled !== true) result.errors.push("CB5 requires the curated Sentence exam bank to be enabled.");
   if (bank?.freezeState !== "frozen") result.errors.push("CB5 requires freezeState 'frozen'.");
   if (!Object.isFrozen(bank)) result.errors.push("CB5 curated Sentence exam bank object is not runtime-frozen.");

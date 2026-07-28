@@ -48,6 +48,7 @@ const sources = {
   "docs/generated/sentence_exam_cb6_capacity_witness.json": "witness",
   "docs/generated/sentence_exam_cb6b_joint_solution.json": "joint-solution",
   "docs/reviews/sentence_exam_cb6_capacity_reviews.json": "capacity-reviews",
+  "docs/reviews/sentence_exam_curated_bank_cb6b_approval.json": "approval",
 };
 const manifest = buildFreezeManifest({ bank, sourceFileContents: sources });
 let failures = 0;

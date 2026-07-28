@@ -93,6 +93,7 @@ jobs:
           node --check scripts/audit-sentence-exam-capacity-remediation.mjs
           node --check scripts/test-sentence-exam-capacity-remediation.mjs
           node --check scripts/build-sentence-exam-curated-bank-cb6b.mjs
+          node --check scripts/test-sentence-exam-bank-approval.mjs
       - name: Check CB6B capacity package freshness
         run: node scripts/build-sentence-exam-capacity-remediation.mjs --check
       - name: Check CB6B independent-review freshness
@@ -103,6 +104,8 @@ jobs:
         run: node scripts/test-sentence-exam-capacity-remediation.mjs
       - name: Check CB6B expanded curated-bank freshness
         run: node scripts/build-sentence-exam-curated-bank-cb6b.mjs --check
+      - name: CB6B complete-bank approval regression
+        run: node scripts/test-sentence-exam-bank-approval.mjs
       - name: Check CB5 curated-bank freeze syntax
         run: |
           node --check scripts/lib/sentence-exam-freeze.mjs

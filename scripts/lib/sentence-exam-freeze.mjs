@@ -14,6 +14,7 @@ export const SENTENCE_EXAM_FREEZE_SOURCE_FILES = Object.freeze([
   "docs/generated/sentence_exam_cb6_capacity_witness.json",
   "docs/generated/sentence_exam_cb6b_joint_solution.json",
   "docs/reviews/sentence_exam_cb6_capacity_reviews.json",
+  "docs/reviews/sentence_exam_curated_bank_cb6b_approval.json",
 ]);
 
 export function sha256(value) {
