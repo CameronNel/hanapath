@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": "curated-sentence-exam-v2-cb6-authoring",
-  "generatedBy": "exact binary allocation solve; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
+  "revision": "curated-sentence-exam-v2-cb6b-authoring",
+  "generatedBy": "CB6B deterministic repair of the original exact allocation witness; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
   "freshnessWindow": 5,
   "maxCanonicalTargetUses": 1,
   "exams": {
@@ -292,7 +292,7 @@
           "strand": "X"
         },
         {
-          "id": "s1437",
+          "id": "s0081",
           "strand": "P"
         },
         {
@@ -464,7 +464,7 @@
           "strand": "P"
         },
         {
-          "id": "s2247",
+          "id": "s0772",
           "strand": "P"
         },
         {
@@ -472,11 +472,11 @@
           "strand": "P"
         },
         {
-          "id": "s3443",
+          "id": "s0497",
           "strand": "X"
         },
         {
-          "id": "s3508",
+          "id": "s2566",
           "strand": "P"
         },
         {
@@ -556,7 +556,7 @@
           "strand": "R"
         },
         {
-          "id": "s2542",
+          "id": "s3509",
           "strand": "X"
         },
         {
@@ -568,7 +568,7 @@
           "strand": "F"
         },
         {
-          "id": "s3508",
+          "id": "s2566",
           "strand": "F"
         },
         {
@@ -584,7 +584,7 @@
           "strand": "X"
         },
         {
-          "id": "s1437",
+          "id": "s0081",
           "strand": "P"
         },
         {
@@ -956,7 +956,7 @@
           "strand": "P"
         },
         {
-          "id": "s3443",
+          "id": "s0497",
           "strand": "X"
         },
         {
@@ -1158,7 +1158,7 @@
           "strand": "F"
         },
         {
-          "id": "s2605",
+          "id": "s1028",
           "strand": "P"
         },
         {
@@ -1272,7 +1272,7 @@
           "strand": "P"
         },
         {
-          "id": "s1437",
+          "id": "s0081",
           "strand": "P"
         },
         {
@@ -1358,7 +1358,7 @@
           "strand": "F"
         },
         {
-          "id": "s3345",
+          "id": "s1938",
           "strand": "P"
         },
         {
@@ -1452,7 +1452,7 @@
           "strand": "X"
         },
         {
-          "id": "s2542",
+          "id": "s3509",
           "strand": "X"
         },
         {
@@ -1460,7 +1460,7 @@
           "strand": "P"
         },
         {
-          "id": "s3443",
+          "id": "s0497",
           "strand": "P"
         },
         {
@@ -1548,15 +1548,15 @@
           "strand": "P"
         },
         {
-          "id": "s3345",
+          "id": "s1938",
           "strand": "P"
         },
         {
-          "id": "s3443",
+          "id": "s0497",
           "strand": "F"
         },
         {
-          "id": "s3508",
+          "id": "s2566",
           "strand": "P"
         },
         {
@@ -1646,7 +1646,7 @@
           "strand": "X"
         },
         {
-          "id": "s2542",
+          "id": "s3509",
           "strand": "P"
         },
         {
@@ -1666,7 +1666,7 @@
           "strand": "P"
         },
         {
-          "id": "s1437",
+          "id": "s0081",
           "strand": "P"
         },
         {
@@ -1870,7 +1870,7 @@
           "strand": "C"
         },
         {
-          "id": "s3327",
+          "id": "s1865",
           "strand": "X"
         }
       ],
@@ -1940,7 +1940,7 @@
           "strand": "X"
         },
         {
-          "id": "s2605",
+          "id": "s1028",
           "strand": "P"
         },
         {
@@ -2108,11 +2108,11 @@
           "strand": "R"
         },
         {
-          "id": "s2247",
+          "id": "s0772",
           "strand": "P"
         },
         {
-          "id": "s2605",
+          "id": "s1028",
           "strand": "X"
         },
         {
@@ -2128,7 +2128,7 @@
           "strand": "P"
         },
         {
-          "id": "s3443",
+          "id": "s0497",
           "strand": "P"
         },
         {
@@ -2168,7 +2168,7 @@
           "strand": "R"
         },
         {
-          "id": "s3327",
+          "id": "s1865",
           "strand": "P"
         },
         {
@@ -2350,7 +2350,7 @@
           "strand": "P"
         },
         {
-          "id": "s3508",
+          "id": "s2566",
           "strand": "P"
         },
         {
@@ -2540,7 +2540,7 @@
           "strand": "P"
         },
         {
-          "id": "s2542",
+          "id": "s3509",
           "strand": "P"
         },
         {
@@ -2552,7 +2552,7 @@
           "strand": "P"
         },
         {
-          "id": "s3345",
+          "id": "s1938",
           "strand": "P"
         },
         {

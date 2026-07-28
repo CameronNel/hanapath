@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "revision": "curated-sentence-exam-v2-cb6-authoring",
-  "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
+  "revision": "curated-sentence-exam-v2-cb6b-authoring",
+  "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
   "state": "awaiting-independent-review",
-  "decisionRule": "CB6 authors a mechanically sufficient expansion. A distinct integrator must individually review every added prompt, answer, route, tag assignment, and recognition meaning before any runtime bank or freeze is emitted.",
+  "decisionRule": "CB6B re-authors the halted capacity expansion against the approved controlled-clause contract. A distinct integrator must individually review every prompt, answer, controlled transformation, route, tag assignment, replacement, and recognition meaning before any runtime bank or freeze is emitted.",
   "baseBank": {
     "revision": "curated-sentence-exam-v1-cb4",
     "entryCount": 608,
@@ -11,14 +11,14 @@
     "recognitionCount": 320
   },
   "projectedBank": {
-    "entryCount": 702,
+    "entryCount": 710,
     "typedCount": 359,
-    "recognitionCount": 343
+    "recognitionCount": 351
   },
   "summary": {
-    "additionCount": 94,
+    "additionCount": 102,
     "typedAdditionCount": 71,
-    "recognitionAdditionCount": 23,
+    "recognitionAdditionCount": 31,
     "typedBySection": {
       "1": 1,
       "2": 31,
@@ -31,19 +31,23 @@
     },
     "recognitionBySection": {
       "1": 2,
-      "2": 7,
+      "2": 11,
       "3": 3,
-      "4": 2,
-      "5": 2,
+      "4": 3,
+      "5": 4,
       "6": 2,
-      "7": 4,
+      "7": 5,
       "8": 1
     },
     "witnessExamCount": 5,
     "attemptsPerExam": 5,
-    "typedExistingPromptCount": 12,
-    "typedGeneratedPromptCount": 59,
-    "typedPromptReviewRequiredCount": 71
+    "typedExistingPromptCount": 17,
+    "typedGeneratedPromptCount": 54,
+    "typedPromptReviewRequiredCount": 71,
+    "controlledTypedCount": 31,
+    "ordinaryTypedCount": 40,
+    "demotedRecognitionCount": 8,
+    "replacementTypedCount": 8
   },
   "capacity": {
     "before": {
@@ -400,18 +404,18 @@
       "stage1Margin": 1,
       "finalTagPools": {
         "object-eul-reul": {
-          "distinctTargets": 383,
+          "distinctTargets": 388,
           "finalFloor": 4,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 20,
-          "margin": 363
+          "margin": 368
         },
         "present-polite": {
-          "distinctTargets": 292,
+          "distinctTargets": 294,
           "finalFloor": 4,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 20,
-          "margin": 272
+          "margin": 274
         },
         "subject-i-ga": {
           "distinctTargets": 277,
@@ -428,18 +432,18 @@
           "margin": 182
         },
         "topic-neun": {
-          "distinctTargets": 169,
+          "distinctTargets": 173,
           "finalFloor": 4,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 20,
-          "margin": 149
+          "margin": 153
         },
         "time-expression": {
-          "distinctTargets": 137,
+          "distinctTargets": 139,
           "finalFloor": 3,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 15,
-          "margin": 122
+          "margin": 124
         },
         "location-e": {
           "distinctTargets": 122,
@@ -456,11 +460,11 @@
           "margin": 69
         },
         "possessive-ui": {
-          "distinctTargets": 75,
+          "distinctTargets": 76,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 65
+          "margin": 66
         },
         "because-aseo": {
           "distinctTargets": 60,
@@ -470,18 +474,18 @@
           "margin": 50
         },
         "imperative-seyo": {
-          "distinctTargets": 31,
+          "distinctTargets": 33,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 21
+          "margin": 23
         },
         "copula-ieyo": {
-          "distinctTargets": 47,
+          "distinctTargets": 48,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 37
+          "margin": 38
         },
         "direction-euro": {
           "distinctTargets": 59,
@@ -491,11 +495,11 @@
           "margin": 49
         },
         "honorific-si": {
-          "distinctTargets": 54,
+          "distinctTargets": 56,
           "finalFloor": 4,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 20,
-          "margin": 34
+          "margin": 36
         },
         "and-go": {
           "distinctTargets": 62,
@@ -519,11 +523,11 @@
           "margin": 30
         },
         "formal-nida": {
-          "distinctTargets": 50,
+          "distinctTargets": 52,
           "finalFloor": 4,
           "retentionFloor": 2,
           "requiredForFiveAttemptWindow": 20,
-          "margin": 30
+          "margin": 32
         },
         "if-myeon": {
           "distinctTargets": 32,
@@ -540,11 +544,11 @@
           "margin": 20
         },
         "counter-phrase": {
-          "distinctTargets": 26,
+          "distinctTargets": 27,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 16
+          "margin": 17
         },
         "when-ttae": {
           "distinctTargets": 25,
@@ -568,11 +572,11 @@
           "margin": 5
         },
         "also-do": {
-          "distinctTargets": 12,
+          "distinctTargets": 13,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 2
+          "margin": 3
         },
         "comparison-boda": {
           "distinctTargets": 10,
@@ -589,11 +593,11 @@
           "margin": 4
         },
         "neg-ji-anta": {
-          "distinctTargets": 16,
+          "distinctTargets": 17,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 6
+          "margin": 7
         },
         "neg-an": {
           "distinctTargets": 12,
@@ -603,18 +607,18 @@
           "margin": 2
         },
         "neg-mot": {
-          "distinctTargets": 14,
+          "distinctTargets": 15,
           "finalFloor": 2,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 10,
-          "margin": 4
+          "margin": 5
         },
         "future-geoyeyo": {
-          "distinctTargets": 26,
+          "distinctTargets": 27,
           "finalFloor": 5,
           "retentionFloor": 3,
           "requiredForFiveAttemptWindow": 25,
-          "margin": 1
+          "margin": 2
         },
         "until-kkaji": {
           "distinctTargets": 14,
@@ -638,11 +642,11 @@
           "margin": 6
         },
         "only-man": {
-          "distinctTargets": 8,
+          "distinctTargets": 9,
           "finalFloor": 1,
           "retentionFloor": 1,
           "requiredForFiveAttemptWindow": 5,
-          "margin": 3
+          "margin": 4
         },
         "from-buteo": {
           "distinctTargets": 6,
@@ -687,8 +691,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:want-go-sipda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -724,8 +728,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -763,18 +767,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I'm going to meet a friend this weekend.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "tomorrow, to a classmate, tell the complete lesson sentence meaning “I'm going to meet a friend this weekend.” using the word \"거예요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s0495",
@@ -799,8 +803,8 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -839,8 +843,8 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -878,8 +882,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -916,8 +920,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -953,8 +957,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:want-go-sipda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -991,8 +995,8 @@
         "five-attempt-tag-capacity:also-do",
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -1028,8 +1032,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -1064,18 +1068,18 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Answering what or who is at issue, speaking politely to a classmate, express this complete lesson sentence: “Korean food is delicious.” Use the lesson expression meaning “food”.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, to a classmate, tell the complete lesson sentence meaning “Korean food is delicious.” using the word \"맛있어요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s0362",
@@ -1099,18 +1103,18 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "As for the topic already under discussion, speaking politely to a classmate, express this complete lesson sentence: “My older brother is a university student.” Use the lesson expression meaning “older brother (of a male)”.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, to a classmate, tell the complete lesson sentence meaning “My older brother is a university student.” using the word \"대학생이에요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s0501",
@@ -1135,18 +1139,18 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Speaking politely to a classmate about an event that already happened, express this complete lesson sentence: “I rested well for one day.” Use the lesson expression meaning “one day”.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "yesterday, to a classmate, tell the complete lesson sentence meaning “I rested well for one day.” using the word \"쉬었어요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s0773",
@@ -1170,18 +1174,18 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "As for the topic already under discussion, speaking politely to a classmate, express this complete lesson sentence: “The man is a very kind doctor.” Use the lesson expression meaning “man / male”.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, to a classmate, tell the complete lesson sentence meaning “The man is a very kind doctor.” using the word \"의사예요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s0897",
@@ -1209,18 +1213,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:neg-an"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Speaking politely to a classmate about an event that already happened, express this complete lesson sentence: “I have not arrived at school yet.” Use the lesson expression meaning “still / not yet”.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "yesterday, to a classmate, tell the complete lesson sentence meaning “I have not arrived at school yet.” using the word \"도착하지\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s0907",
@@ -1246,18 +1250,18 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Speaking politely to a classmate about an event that already happened, express this complete lesson sentence: “I did grocery shopping at a large supermarket.” Use the lesson expression meaning “large size”.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "yesterday, to a classmate, tell the complete lesson sentence meaning “I did grocery shopping at a large supermarket.” using the word \"마트에서\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s0975",
@@ -1281,18 +1285,18 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Speaking politely to a classmate, express this complete lesson sentence: “I cook kimchi stew very well.” Use the lesson expression meaning “well”.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I cook kimchi stew very well.” using the word \"김치찌개를\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s1072",
@@ -1316,22 +1320,22 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Reporting a completed project to a classmate in ordinary polite Korean, say that you completed development of the new software. Use 소프트웨어 개발 and 완료하다.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "yesterday, to a classmate, tell the complete lesson sentence meaning “We completed the development of new software.” using the word \"소프트웨어\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s1437",
-      "mode": "typed",
+      "mode": "recognition",
       "sourceSectionOrder": 2,
       "sourceLessonIds": [
         "sn2-shopping-u1-l8"
@@ -1352,20 +1356,21 @@
       ],
       "plausibleVariantCount": 3,
       "capacityReasons": [
-        "stage-1-five-attempt-typed-capacity"
+        "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "In a formal presentation, with this hotel already established as the topic, state that it is famous for friendly customer service. Use 고객 서비스 and 유명하다.",
+      "templateId": "recognition-meaning",
+      "examPromptEn": "Choose the exact English meaning of “이 호텔은 친절한 고객 서비스로 유명합니다.”.",
+      "recognitionAnswerEn": "This hotel is famous for its friendly customer service.",
       "manualAlternatives": [],
-      "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "requiresLexicalAnchor": false,
+      "promptOrigin": "live-source-meaning"
     },
     {
       "id": "s2061",
@@ -1391,18 +1396,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Treating this nearby object as the topic, correct a classmate in ordinary polite Korean by saying that it is not a book.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, to a classmate, tell the complete lesson sentence meaning “This is not a book.” using the word \"아니에요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2064",
@@ -1428,18 +1433,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Treating this nearby object as the topic, correct a classmate in ordinary polite Korean by saying that it is not coffee.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, to a classmate, tell the complete lesson sentence meaning “This is not coffee.” using the word \"아니에요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2190",
@@ -1471,18 +1476,35 @@
         "five-attempt-tag-capacity:but-jiman",
         "five-attempt-tag-capacity:neg-an"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I don't eat breakfast, but I do drink coffee.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 저는 아침을 안 먹어요. Source 2: 커피는 마셔요. Use -지만 as the required Korean construction. Replace the exact Korean ending \"어요\" with \"지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "but-jiman",
+        "requiredConstructionCue": "-지만",
+        "sourceFragments": [
+          "저는 아침을 안 먹어요.",
+          "커피는 마셔요."
+        ],
+        "sourceEnding": "어요",
+        "targetEnding": "지만",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2207",
@@ -1509,18 +1531,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I'll move to a new place next month.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "tomorrow, to a classmate, tell the complete lesson sentence meaning “I'll move to a new place next month.” using the word \"새집으로\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2228",
@@ -1551,22 +1573,39 @@
         "five-attempt-tag-capacity:neg-an",
         "five-attempt-tag-capacity:neg-mot"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I didn't reserve, so I couldn't get a seat.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 예약을 안 해요. Source 2: 자리에 못 앉았어요. Use -해서 as the required Korean construction. Replace the exact Korean ending \"요\" with \"서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "because-aseo",
+        "requiredConstructionCue": "-해서",
+        "sourceFragments": [
+          "예약을 안 해요.",
+          "자리에 못 앉았어요."
+        ],
+        "sourceEnding": "요",
+        "targetEnding": "서",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2247",
-      "mode": "typed",
+      "mode": "recognition",
       "sourceSectionOrder": 2,
       "sourceLessonIds": [
         "sn2-travel-u1-l5"
@@ -1586,21 +1625,21 @@
       ],
       "plausibleVariantCount": 4,
       "capacityReasons": [
-        "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I'm not an employee of this company.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "recognition-meaning",
+      "examPromptEn": "Choose the exact English meaning of “저는 이 회사 직원이 아니에요.”.",
+      "recognitionAnswerEn": "I'm not an employee of this company.",
       "manualAlternatives": [],
-      "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "requiresLexicalAnchor": false,
+      "promptOrigin": "live-source-meaning"
     },
     {
       "id": "s2478",
@@ -1626,18 +1665,18 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “Can I change money here?” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “Can I change money here?” using the word \"여기에서\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2587",
@@ -1664,18 +1703,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:must-ya-dwaeda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I have to submit the report by tomorrow.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I have to submit the report by tomorrow.” using the word \"내일까지\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2621",
@@ -1703,18 +1742,35 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “When I get paid, I'll buy my parents a gift.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 월급을 받아요. Source 2: 부모님 선물을 살 거예요. Use -으면 as the required Korean construction. Replace the exact Korean ending \"아요\" with \"으면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-으면",
+        "sourceFragments": [
+          "월급을 받아요.",
+          "부모님 선물을 살 거예요."
+        ],
+        "sourceEnding": "아요",
+        "targetEnding": "으면",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2697",
@@ -1741,18 +1797,41 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:propositive-eyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “Let's watch a movie when we have time.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 시간 나요. Source 2: 같이 영화 봐요. Use -ㄹ 때 as the required Korean construction. Replace the exact Korean ending \"나요\" with \"날 때\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "when-ttae",
+        "requiredConstructionCue": "-ㄹ 때",
+        "sourceFragments": [
+          "시간 나요.",
+          "같이 영화 봐요."
+        ],
+        "sourceEnding": "나요",
+        "targetEnding": "날 때",
+        "preservedClauseEvidence": [
+          {
+            "patternTag": "propositive-eyo",
+            "sourceFragmentIndex": 1,
+            "visibleSurface": "봐요"
+          }
+        ],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3157",
@@ -1778,18 +1857,35 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:but-jiman"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “It's a shame, but it can't be helped.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 아쉬워요. Source 2: 어쩔 수 없죠. Use -지만 as the required Korean construction. Replace the exact Korean ending \"쉬워요\" with \"쉽지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "but-jiman",
+        "requiredConstructionCue": "-지만",
+        "sourceFragments": [
+          "아쉬워요.",
+          "어쩔 수 없죠."
+        ],
+        "sourceEnding": "쉬워요",
+        "targetEnding": "쉽지만",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3364",
@@ -1819,18 +1915,35 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:neg-mot"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “The internet connection got slow, so I cannot watch videos.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 인터넷 연결이 느려져요. Source 2: 동영상을 볼 수 없습니다. Use -져서 as the required Korean construction. Replace the exact Korean ending \"요\" with \"서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "because-aseo",
+        "requiredConstructionCue": "-져서",
+        "sourceFragments": [
+          "인터넷 연결이 느려져요.",
+          "동영상을 볼 수 없습니다."
+        ],
+        "sourceEnding": "요",
+        "targetEnding": "서",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3417",
@@ -1856,22 +1969,22 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I walk the dog twice a day.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I walk the dog twice a day.” using the word \"산책시켜요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3443",
-      "mode": "typed",
+      "mode": "recognition",
       "sourceSectionOrder": 2,
       "sourceLessonIds": [
         "sn2-nature-u1-l11"
@@ -1893,26 +2006,26 @@
       ],
       "plausibleVariantCount": 3,
       "capacityReasons": [
-        "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:but-jiman",
         "five-attempt-tag-capacity:want-go-sipda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “The dog likes walks, but it is raining.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "recognition-meaning",
+      "examPromptEn": "Choose the exact English meaning of “개가 산책을 좋아하지만 비가 와요.”.",
+      "recognitionAnswerEn": "The dog likes walks, but it is raining.",
       "manualAlternatives": [],
-      "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "requiresLexicalAnchor": false,
+      "promptOrigin": "live-source-meaning"
     },
     {
       "id": "s3508",
-      "mode": "typed",
+      "mode": "recognition",
       "sourceSectionOrder": 2,
       "sourceLessonIds": [
         "sn2-shopping-u1-l6"
@@ -1932,21 +2045,21 @@
       ],
       "plausibleVariantCount": 2,
       "capacityReasons": [
-        "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:want-go-sipda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I intend to buy only what I need.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "recognition-meaning",
+      "examPromptEn": "Choose the exact English meaning of “필요한 것만 사려고 해요.”.",
+      "recognitionAnswerEn": "I intend to buy only what I need.",
       "manualAlternatives": [],
-      "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "requiresLexicalAnchor": false,
+      "promptOrigin": "live-source-meaning"
     },
     {
       "id": "s3525",
@@ -1973,18 +2086,35 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “If the price goes down, I will buy it right away.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 가격이 내려가요. Source 2: 바로 살게요. Use -면 as the required Korean construction. Replace the exact Korean ending \"요\" with \"면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-면",
+        "sourceFragments": [
+          "가격이 내려가요.",
+          "바로 살게요."
+        ],
+        "sourceEnding": "요",
+        "targetEnding": "면",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3532",
@@ -2011,18 +2141,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:also-do"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I eat dinner together with my relatives.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I eat dinner together with my relatives.” using the word \"친척들과\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3629",
@@ -2048,18 +2178,18 @@
       "capacityReasons": [
         "stage-1-five-attempt-typed-capacity"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I prepare the child's clothes to suit the season.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I prepare the child's clothes to suit the season.” using the word \"준비해요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3788",
@@ -2086,18 +2216,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:also-do"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I like both music and art.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I like both music and art.” using the word \"좋아해요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s4078",
@@ -2124,18 +2254,18 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I will send you my home address by text.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "tomorrow, to a classmate, tell the complete lesson sentence meaning “I will send you my home address by text.” using the word \"드릴게요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s4164",
@@ -2161,18 +2291,35 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:also-do"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “When I turn on the light, even the dark room becomes bright.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 불을 켜요. Source 2: 어두운 방도 밝아져요. Use -면 as the required Korean construction. Replace the exact Korean ending \"요\" with \"면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-면",
+        "sourceFragments": [
+          "불을 켜요.",
+          "어두운 방도 밝아져요."
+        ],
+        "sourceEnding": "요",
+        "targetEnding": "면",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s4171",
@@ -2198,18 +2345,41 @@
         "stage-1-five-attempt-typed-capacity",
         "five-attempt-tag-capacity:want-go-sipda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “This room is cozy, so I want to stay for a long time.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 이 방은 아늑해요. Source 2: 오래 있고 싶어요. Use -해서 as the required Korean construction. Replace the exact Korean ending \"요\" with \"서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "because-aseo",
+        "requiredConstructionCue": "-해서",
+        "sourceFragments": [
+          "이 방은 아늑해요.",
+          "오래 있고 싶어요."
+        ],
+        "sourceEnding": "요",
+        "targetEnding": "서",
+        "preservedClauseEvidence": [
+          {
+            "patternTag": "want-go-sipda",
+            "sourceFragmentIndex": 1,
+            "visibleSurface": "있고 싶어요"
+          }
+        ],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2427",
@@ -2238,8 +2408,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -2282,8 +2452,8 @@
         "five-attempt-tag-capacity:but-jiman",
         "five-attempt-tag-capacity:neg-an"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -2320,8 +2490,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -2357,18 +2527,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "reviewed-source-reuse",
-      "examPromptEn": "Treating that object as the topic, correct a classmate in ordinary polite Korean by saying that it is not a dream.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, to a classmate, tell the complete lesson sentence meaning “That is not a dream.” using the word \"아니에요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "existing-reviewed-source"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2188",
@@ -2398,18 +2568,41 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:but-jiman"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “This song is a little hard, but if I practice every day I can do it.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 이 노래는 조금 어려워요. Source 2: 매일 연습하면 잘할 수 있어요. Use -지만 as the required Korean construction. Replace the exact Korean ending \"려워요\" with \"렵지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "but-jiman",
+        "requiredConstructionCue": "-지만",
+        "sourceFragments": [
+          "이 노래는 조금 어려워요.",
+          "매일 연습하면 잘할 수 있어요."
+        ],
+        "sourceEnding": "려워요",
+        "targetEnding": "렵지만",
+        "preservedClauseEvidence": [
+          {
+            "patternTag": "if-myeon",
+            "sourceFragmentIndex": 1,
+            "visibleSurface": "연습하면"
+          }
+        ],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2206",
@@ -2437,18 +2630,18 @@
         "five-attempt-tag-capacity:comparison-boda",
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I'll do better on this exam than last time.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, tomorrow, to a classmate, tell the complete lesson sentence meaning “I'll do better on this exam than last time.” using the word \"지난번보다\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2252",
@@ -2474,18 +2667,34 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:propositive-eyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “Let's take a short break before the meeting starts.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Change the supplied Korean sentence to the required speech-act ending. Source 1: 회의 시작하기 전에 잠깐 쉽니다. Use -어요 as the required Korean construction. Replace the exact Korean ending \"쉽니다\" with \"쉬어요\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "change-speech-act-ending",
+        "requiredPatternTag": "propositive-eyo",
+        "requiredConstructionCue": "-어요",
+        "sourceFragments": [
+          "회의 시작하기 전에 잠깐 쉽니다."
+        ],
+        "sourceEnding": "쉽니다",
+        "targetEnding": "쉬어요",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2260",
@@ -2515,18 +2724,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:neg-mot"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “The tickets sold out, so I couldn't see that show.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 표가 매진돼요. Source 2: 그 공연을 못 봤어요. Use -돼서 as the required Korean construction. Replace the exact Korean ending \"요\" with \"서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "because-aseo",
+        "requiredConstructionCue": "-돼서",
+        "sourceFragments": [
+          "표가 매진돼요.",
+          "그 공연을 못 봤어요."
+        ],
+        "sourceEnding": "요",
+        "targetEnding": "서",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2264",
@@ -2554,18 +2780,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:comparison-boda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “The exam wasn't as hard as I thought.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, yesterday, to a classmate, tell the complete lesson sentence meaning “The exam wasn't as hard as I thought.” using the word \"생각보다\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2857",
@@ -2588,18 +2814,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I didn't mean to upset you.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I didn't mean to upset you.” using the word \"아니에요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3082",
@@ -2628,18 +2854,35 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “When you have a cold, drink lots of water.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 감기 걸렸어요. Source 2: 물을 많이 드세요. Use -을 때 as the required Korean construction. Replace the exact Korean ending \"어요\" with \"을 때는\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "when-ttae",
+        "requiredConstructionCue": "-을 때",
+        "sourceFragments": [
+          "감기 걸렸어요.",
+          "물을 많이 드세요."
+        ],
+        "sourceEnding": "어요",
+        "targetEnding": "을 때는",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3687",
@@ -2666,18 +2909,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:but-jiman"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I like baseball, but I do not play it myself.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 야구를 좋아해요. Source 2: 직접 하지는 않아요. Use -지만 as the required Korean construction. Replace the exact Korean ending \"해요\" with \"하지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "but-jiman",
+        "requiredConstructionCue": "-지만",
+        "sourceFragments": [
+          "야구를 좋아해요.",
+          "직접 하지는 않아요."
+        ],
+        "sourceEnding": "해요",
+        "targetEnding": "하지만",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3714",
@@ -2703,18 +2963,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I will cheer for our team until the end.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "tomorrow, to a classmate, tell the complete lesson sentence meaning “I will cheer for our team until the end.” using the word \"응원할게요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3744",
@@ -2742,18 +3002,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:neg-an"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “If it rains, I do not water the plants.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 비가 와요. Source 2: 식물에 물을 안 줘요. Use -면 as the required Korean construction. Replace the exact Korean ending \"와요\" with \"오면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-면",
+        "sourceFragments": [
+          "비가 와요.",
+          "식물에 물을 안 줘요."
+        ],
+        "sourceEnding": "와요",
+        "targetEnding": "오면",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3866",
@@ -2778,18 +3055,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:but-jiman"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “The environmental problem is serious, but I do not give up.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 환경 문제가 심각해요. Source 2: 포기하지 않아요. Use -지만 as the required Korean construction. Replace the exact Korean ending \"해요\" with \"하지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "but-jiman",
+        "requiredConstructionCue": "-지만",
+        "sourceFragments": [
+          "환경 문제가 심각해요.",
+          "포기하지 않아요."
+        ],
+        "sourceEnding": "해요",
+        "targetEnding": "하지만",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3951",
@@ -2815,18 +3109,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I will not give up my exercise goal.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "tomorrow, to a classmate, tell the complete lesson sentence meaning “I will not give up my exercise goal.” using the word \"않을게요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3973",
@@ -2854,18 +3148,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:but-jiman"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I was nervous in the interview, but I spoke to the end.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 면접에서 긴장했어요. Source 2: 끝까지 말했어요. Use -지만 as the required Korean construction. Replace the exact Korean ending \"어요\" with \"지만\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "but-jiman",
+        "requiredConstructionCue": "-지만",
+        "sourceFragments": [
+          "면접에서 긴장했어요.",
+          "끝까지 말했어요."
+        ],
+        "sourceEnding": "어요",
+        "targetEnding": "지만",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2067",
@@ -2891,8 +3202,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -2935,8 +3246,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:want-go-sipda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -2974,18 +3285,41 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:propositive-eyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “Let's eat together next time you're free.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 다음에 시간 돼요. Source 2: 같이 밥 먹어요. Use -면 as the required Korean construction. Replace the exact Korean ending \"돼요\" with \"되면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-면",
+        "sourceFragments": [
+          "다음에 시간 돼요.",
+          "같이 밥 먹어요."
+        ],
+        "sourceEnding": "돼요",
+        "targetEnding": "되면",
+        "preservedClauseEvidence": [
+          {
+            "patternTag": "propositive-eyo",
+            "sourceFragmentIndex": 1,
+            "visibleSurface": "먹어요"
+          }
+        ],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2372",
@@ -3011,18 +3345,18 @@
         "five-attempt-tag-capacity:comparison-boda",
         "five-attempt-tag-capacity:neg-an"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “It's not as expensive as I thought.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “It's not as expensive as I thought.” using the word \"생각보다\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2417",
@@ -3047,18 +3381,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “If you sleep well, you'll recover soon.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 푹 자요. Source 2: 금방 나을 거예요. Use -면 as the required Korean construction. Replace the exact Korean ending \"요\" with \"면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-면",
+        "sourceFragments": [
+          "푹 자요.",
+          "금방 나을 거예요."
+        ],
+        "sourceEnding": "요",
+        "targetEnding": "면",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s2459",
@@ -3084,22 +3435,22 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:comparison-boda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I arrived a bit earlier than the appointed time.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "yesterday, to a classmate, tell the complete lesson sentence meaning “I arrived a bit earlier than the appointed time.” using the word \"도착했어요\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2542",
-      "mode": "typed",
+      "mode": "recognition",
       "sourceSectionOrder": 4,
       "sourceLessonIds": [
         "sn4-daily-u3-l6"
@@ -3123,18 +3474,19 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I'll put the bed next to the window.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "recognition-meaning",
+      "examPromptEn": "Choose the exact English meaning of “침대는 창문 옆에 놓을 거예요.”.",
+      "recognitionAnswerEn": "I'll put the bed next to the window.",
       "manualAlternatives": [],
-      "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "requiresLexicalAnchor": false,
+      "promptOrigin": "live-source-meaning"
     },
     {
       "id": "s3075",
@@ -3160,18 +3512,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “Don't worry too much, it'll be fine.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "tomorrow, in a formal situation, tell the complete lesson sentence meaning “Don't worry too much, it'll be fine.” using the word \"걱정하지\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3185",
@@ -3199,18 +3551,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:must-ya-dwaeda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “By when do you have to write the new project proposal?” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "in a formal situation, tell the complete lesson sentence meaning “By when do you have to write the new project proposal?” using the word \"작성하셔야\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3208",
@@ -3241,18 +3593,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:comparison-boda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I was worried because the waiting time in the meeting room was longer than expected.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 회의실 대기 시간이 생각보다 길어요. Source 2: 걱정했습니다. Use -어서 as the required Korean construction. Replace the exact Korean ending \"요\" with \"서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "because-aseo",
+        "requiredConstructionCue": "-어서",
+        "sourceFragments": [
+          "회의실 대기 시간이 생각보다 길어요.",
+          "걱정했습니다."
+        ],
+        "sourceEnding": "요",
+        "targetEnding": "서",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3214",
@@ -3280,18 +3649,41 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:propositive-eyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “If the waiting time in the meeting room gets long, let's move to another place.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 회의실 대기 시간이 길어져요. Source 2: 다른 장소로 이동합시다. Use -면 as the required Korean construction. Replace the exact Korean ending \"져요\" with \"지면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-면",
+        "sourceFragments": [
+          "회의실 대기 시간이 길어져요.",
+          "다른 장소로 이동합시다."
+        ],
+        "sourceEnding": "져요",
+        "targetEnding": "지면",
+        "preservedClauseEvidence": [
+          {
+            "patternTag": "propositive-eyo",
+            "sourceFragmentIndex": 1,
+            "visibleSurface": "이동합시다"
+          }
+        ],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3228",
@@ -3320,18 +3712,35 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “When the writing of the proposal is completed, contact the manager immediately.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 기획서 작성이 완료돼요. Source 2: 즉시 과장님께 연락하십시오. Use -면 as the required Korean construction. Replace the exact Korean ending \"돼요\" with \"되면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-면",
+        "sourceFragments": [
+          "기획서 작성이 완료돼요.",
+          "즉시 과장님께 연락하십시오."
+        ],
+        "sourceEnding": "돼요",
+        "targetEnding": "되면",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3243",
@@ -3359,18 +3768,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:must-ya-dwaeda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “We must write down the main agenda of the new project into a report.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "in a formal situation, tell the complete lesson sentence meaning “We must write down the main agenda of the new project into a report.” using the word \"프로젝트의\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3332",
@@ -3399,18 +3808,35 @@
         "five-attempt-tag-capacity:must-ya-dwaeda",
         "five-attempt-tag-capacity:neg-an"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “The clothes size doesn't fit, so I must exchange them.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 옷 사이즈가 안 맞아요. Source 2: 교환해야 합니다. Use -아서 as the required Korean construction. Replace the exact Korean ending \"아요\" with \"아서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "because-aseo",
+        "requiredConstructionCue": "-아서",
+        "sourceFragments": [
+          "옷 사이즈가 안 맞아요.",
+          "교환해야 합니다."
+        ],
+        "sourceEnding": "아요",
+        "targetEnding": "아서",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3372",
@@ -3441,18 +3867,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:neg-mot"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I have another appointment on the weekend, so I cannot go.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 주말에 다른 약속이 있어요. Source 2: 갈 수 없습니다. Use -어서 as the required Korean construction. Replace the exact Korean ending \"어요\" with \"어서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "because-aseo",
+        "requiredConstructionCue": "-어서",
+        "sourceFragments": [
+          "주말에 다른 약속이 있어요.",
+          "갈 수 없습니다."
+        ],
+        "sourceEnding": "어요",
+        "targetEnding": "어서",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3406",
@@ -3484,18 +3927,35 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “We checked the weekend appointment schedule in advance and met.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 우리는 주말 약속 일정을 미리 확인했습니다. Source 2: 만났습니다. Use -고 as the required Korean construction. Replace the exact Korean ending \"했습니다\" with \"하고\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "and-go",
+        "requiredConstructionCue": "-고",
+        "sourceFragments": [
+          "우리는 주말 약속 일정을 미리 확인했습니다.",
+          "만났습니다."
+        ],
+        "sourceEnding": "했습니다",
+        "targetEnding": "하고",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3334",
@@ -3524,8 +3984,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:neg-mot"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -3562,8 +4022,8 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -3578,7 +4038,7 @@
     },
     {
       "id": "s2605",
-      "mode": "typed",
+      "mode": "recognition",
       "sourceSectionOrder": 5,
       "sourceLessonIds": [
         "sn5-daily-u4-l9"
@@ -3601,22 +4061,23 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I'll get a part-time job during the break.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "recognition-meaning",
+      "examPromptEn": "Choose the exact English meaning of “방학 때 아르바이트를 할 거예요.”.",
+      "recognitionAnswerEn": "I'll get a part-time job during the break.",
       "manualAlternatives": [],
-      "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "requiresLexicalAnchor": false,
+      "promptOrigin": "live-source-meaning"
     },
     {
       "id": "s3345",
-      "mode": "typed",
+      "mode": "recognition",
       "sourceSectionOrder": 5,
       "sourceLessonIds": [
         "sn5-nature-u4-l3"
@@ -3640,18 +4101,19 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:neg-mot"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I cannot open the window because of the road noise.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "recognition-meaning",
+      "examPromptEn": "Choose the exact English meaning of “도로 소음 때문에 창문을 열 수 없습니다.”.",
+      "recognitionAnswerEn": "I cannot open the window because of the road noise.",
       "manualAlternatives": [],
-      "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "requiresLexicalAnchor": false,
+      "promptOrigin": "live-source-meaning"
     },
     {
       "id": "s3553",
@@ -3678,18 +4140,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “This Lunar New Year, I will make rice cakes myself.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, tomorrow, to a classmate, tell the complete lesson sentence meaning “This Lunar New Year, I will make rice cakes myself.” using the word \"설날에는\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s2180",
@@ -3716,8 +4178,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:propositive-eyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -3754,8 +4216,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -3793,18 +4255,34 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:want-go-sipda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I want to rest quietly on the sofa on weekend afternoons.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Recast the supplied Korean sentence with the required predicate construction. Source 1: 주말 오후에 조용히 소파에서 쉬어요. Use -고 싶어요 as the required Korean construction. Replace the exact Korean ending \"쉬어요\" with \"쉬고 싶어요\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "recast-predicate",
+        "requiredPatternTag": "want-go-sipda",
+        "requiredConstructionCue": "-고 싶어요",
+        "sourceFragments": [
+          "주말 오후에 조용히 소파에서 쉬어요."
+        ],
+        "sourceEnding": "쉬어요",
+        "targetEnding": "쉬고 싶어요",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s0862",
@@ -3830,8 +4308,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -3871,8 +4349,8 @@
         "five-attempt-tag-capacity:but-jiman",
         "five-attempt-tag-capacity:must-ya-dwaeda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -3908,8 +4386,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:copula-negative-anieyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -3947,8 +4425,8 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:future-geoyeyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -3963,7 +4441,7 @@
     },
     {
       "id": "s3327",
-      "mode": "typed",
+      "mode": "recognition",
       "sourceSectionOrder": 7,
       "sourceLessonIds": [
         "sn7-tech-u3-l3"
@@ -3987,18 +4465,19 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “Please put water in the pot and close the lid.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "recognition-meaning",
+      "examPromptEn": "Choose the exact English meaning of “냄비에 물을 넣고 뚜껑을 닫으십시오.”.",
+      "recognitionAnswerEn": "Please put water in the pot and close the lid.",
       "manualAlternatives": [],
-      "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "requiresLexicalAnchor": false,
+      "promptOrigin": "live-source-meaning"
     },
     {
       "id": "s3398",
@@ -4027,18 +4506,18 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:must-ya-dwaeda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “This weekend's appointment must be postponed to next week.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, in a formal situation, tell the complete lesson sentence meaning “This weekend's appointment must be postponed to next week.” using the word \"미뤄야\".",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     },
     {
       "id": "s3564",
@@ -4066,18 +4545,35 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:neg-mot"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “This long holiday is short, so I cannot travel.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 이번 연휴는 짧아요. Source 2: 여행을 못 가요. Use -아서 as the required Korean construction. Replace the exact Korean ending \"아요\" with \"아서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "because-aseo",
+        "requiredConstructionCue": "-아서",
+        "sourceFragments": [
+          "이번 연휴는 짧아요.",
+          "여행을 못 가요."
+        ],
+        "sourceEnding": "아요",
+        "targetEnding": "아서",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3344",
@@ -4108,8 +4604,8 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
@@ -4148,18 +4644,35 @@
       "capacityReasons": [
         "joint-five-attempt-allocation-feasibility"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “There are many mosquitoes in the room, so it is very noisy when sleeping.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 방안에 모기가 많아서 자요. Source 2: 아주 시끄러워요. Use -ㄹ 때 as the required Korean construction. Replace the exact Korean ending \"자요\" with \"잘 때\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "when-ttae",
+        "requiredConstructionCue": "-ㄹ 때",
+        "sourceFragments": [
+          "방안에 모기가 많아서 자요.",
+          "아주 시끄러워요."
+        ],
+        "sourceEnding": "자요",
+        "targetEnding": "잘 때",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3387",
@@ -4188,18 +4701,34 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:propositive-eyo"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “Let's gather in the park at noon today for our meeting.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Change the supplied Korean sentence to the required speech-act ending. Source 1: 우리 모임은 오늘 정오에 공원에서 모입니다. Use -ㅂ시다 as the required Korean construction. Replace the exact Korean ending \"모입니다\" with \"모입시다\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "change-speech-act-ending",
+        "requiredPatternTag": "propositive-eyo",
+        "requiredConstructionCue": "-ㅂ시다",
+        "sourceFragments": [
+          "우리 모임은 오늘 정오에 공원에서 모입니다."
+        ],
+        "sourceEnding": "모입니다",
+        "targetEnding": "모입시다",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3396",
@@ -4226,18 +4755,34 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:want-go-sipda"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “I want to ask how my friends are doing during this time.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Recast the supplied Korean sentence with the required predicate construction. Source 1: 그동안 잘 지냈는지 친구들의 안부를 묻습니다. Use -고 싶습니다 as the required Korean construction. Replace the exact Korean ending \"묻습니다\" with \"묻고 싶습니다\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "recast-predicate",
+        "requiredPatternTag": "want-go-sipda",
+        "requiredConstructionCue": "-고 싶습니다",
+        "sourceFragments": [
+          "그동안 잘 지냈는지 친구들의 안부를 묻습니다."
+        ],
+        "sourceEnding": "묻습니다",
+        "targetEnding": "묻고 싶습니다",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
     },
     {
       "id": "s3667",
@@ -4263,18 +4808,328 @@
       "capacityReasons": [
         "five-attempt-tag-capacity:neg-mot"
       ],
-      "authoredBy": "GPT-5.6 Thinking / CB6 capacity author",
-      "authoredRevision": "curated-sentence-exam-v2-cb6-authoring",
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
       "reviewStatus": "pending",
       "reviewedBy": null,
       "reviewedAt": null,
       "reviewedRevision": null,
       "reviewerNote": null,
-      "templateId": "capacity-lexically-anchored-production",
-      "examPromptEn": "Speaking politely in the situation described, produce the complete Korean sentence meaning: “If there is no appointment, I cannot get a cut today.” Use the exact lesson vocabulary, information structure, and grammar taught for this row.",
+      "templateId": "controlled-clause-transformation",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 예약이 없어요. Source 2: 오늘 못 잘라요. Use -으면 as the required Korean construction. Replace the exact Korean ending \"어요\" with \"으면\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
-      "promptOrigin": "cb6-capacity-authoring"
+      "controlledClause": {
+        "schemaVersion": 1,
+        "operation": "combine-clauses",
+        "requiredPatternTag": "if-myeon",
+        "requiredConstructionCue": "-으면",
+        "sourceFragments": [
+          "예약이 없어요.",
+          "오늘 못 잘라요."
+        ],
+        "sourceEnding": "어요",
+        "targetEnding": "으면",
+        "preservedClauseEvidence": [],
+        "preserveSourceOrder": true,
+        "preserveLexicalMaterial": true,
+        "preserveParticles": true,
+        "acceptedAnswerPolicy": "reviewed-finite-only"
+      },
+      "promptOrigin": "cb6b-controlled-clause-authoring"
+    },
+    {
+      "id": "s0081",
+      "mode": "typed",
+      "sourceSectionOrder": 2,
+      "sourceLessonIds": [
+        "sn2-study-u1-l7"
+      ],
+      "canonicalAnswer": "독서는 창의적인 사고 능력을 길러 줍니다.",
+      "englishMeaning": "Reading develops creative thinking ability.",
+      "patternTags": [
+        "formal-nida",
+        "object-eul-reul",
+        "topic-neun"
+      ],
+      "sourceCandidateClass": "excluded",
+      "existingExamPromptEn": "As for the topic already under discussion, in a formal situation, addressing an adult audience, express this complete lesson sentence: “Reading develops creative thinking ability.” Use the lesson expression meaning “thinking”.",
+      "ambiguityFlags": [
+        "communicative-act-not-forced"
+      ],
+      "plausibleVariantCount": 1,
+      "capacityReasons": [
+        "stage-1-five-attempt-typed-capacity"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null,
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, in a formal situation, tell the complete lesson sentence meaning “Reading develops creative thinking ability.” using the word \"창의적인\".",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": true,
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
+    },
+    {
+      "id": "s0772",
+      "mode": "typed",
+      "sourceSectionOrder": 2,
+      "sourceLessonIds": [
+        "sn2-people-u1-l11"
+      ],
+      "canonicalAnswer": "저기 서 있는 여자는 제 친구예요.",
+      "englishMeaning": "The woman standing over there is my friend.",
+      "patternTags": [
+        "copula-ieyo",
+        "topic-neun"
+      ],
+      "sourceCandidateClass": "excluded",
+      "existingExamPromptEn": "As for the topic already under discussion, speaking politely to a classmate, express this complete lesson sentence: “The woman standing over there is my friend.” Use the lesson expression meaning “woman / female”.",
+      "ambiguityFlags": [
+        "communicative-act-not-forced"
+      ],
+      "plausibleVariantCount": 1,
+      "capacityReasons": [
+        "stage-1-five-attempt-typed-capacity"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null,
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, to a classmate, tell the complete lesson sentence meaning “The woman standing over there is my friend.” using the word \"친구예요\".",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": true,
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
+    },
+    {
+      "id": "s3509",
+      "mode": "typed",
+      "sourceSectionOrder": 4,
+      "sourceLessonIds": [
+        "sn4-shopping-u3-l8"
+      ],
+      "canonicalAnswer": "비싼 물건은 다음 달에 살게요.",
+      "englishMeaning": "I will buy the expensive item next month.",
+      "patternTags": [
+        "future-geoyeyo",
+        "time-expression",
+        "topic-neun"
+      ],
+      "sourceCandidateClass": null,
+      "existingExamPromptEn": null,
+      "ambiguityFlags": [
+        "communicative-act-not-forced",
+        "time-or-tense-not-forced",
+        "topic-or-focus-not-forced"
+      ],
+      "plausibleVariantCount": 3,
+      "capacityReasons": [
+        "five-attempt-tag-capacity:future-geoyeyo"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null,
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, tomorrow, to a classmate, tell the complete lesson sentence meaning “I will buy the expensive item next month.” using the word \"물건은\".",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": true,
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
+    },
+    {
+      "id": "s1938",
+      "mode": "typed",
+      "sourceSectionOrder": 5,
+      "sourceLessonIds": [
+        "sn5-feelings-u4-l4"
+      ],
+      "canonicalAnswer": "저는 그 소문에 대해 전혀 알지 못합니다.",
+      "englishMeaning": "I do not know about that rumor at all.",
+      "patternTags": [
+        "formal-nida",
+        "neg-mot",
+        "topic-neun"
+      ],
+      "sourceCandidateClass": "excluded",
+      "existingExamPromptEn": "Recognize the lesson sentence that means “I do not know about that rumor at all”.",
+      "ambiguityFlags": [
+        "communicative-act-not-forced",
+        "register-not-forced",
+        "topic-or-focus-not-forced"
+      ],
+      "plausibleVariantCount": 4,
+      "capacityReasons": [
+        "five-attempt-tag-capacity:neg-mot"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null,
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "As for the established lesson topic, in a formal situation, tell the complete lesson sentence meaning “I do not know about that rumor at all.” using the word \"못합니다\".",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": true,
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
+    },
+    {
+      "id": "s1865",
+      "mode": "typed",
+      "sourceSectionOrder": 7,
+      "sourceLessonIds": [
+        "sn7-feelings-u6-l5"
+      ],
+      "canonicalAnswer": "상대방의 질문 의도를 정확히 파악하여 답변하세요.",
+      "englishMeaning": "Please answer grasping the other party's question intention accurately.",
+      "patternTags": [
+        "honorific-si",
+        "imperative-seyo",
+        "object-eul-reul",
+        "possessive-ui"
+      ],
+      "sourceCandidateClass": "excluded",
+      "existingExamPromptEn": "Recognize the lesson sentence that means “Please answer grasping the other party's question intention accurately”.",
+      "ambiguityFlags": [
+        "register-not-forced"
+      ],
+      "plausibleVariantCount": 1,
+      "capacityReasons": [
+        "joint-five-attempt-allocation-feasibility"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null,
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "in a formal situation, tell the complete lesson sentence meaning “Please answer grasping the other party's question intention accurately.” using the word \"답변하세요\".",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": true,
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
+    },
+    {
+      "id": "s0497",
+      "mode": "typed",
+      "sourceSectionOrder": 2,
+      "sourceLessonIds": [
+        "sn2-daily-u1-l9"
+      ],
+      "canonicalAnswer": "일 주일에 책 한 권을 읽어요.",
+      "englishMeaning": "I read one book in a week.",
+      "patternTags": [
+        "counter-phrase",
+        "object-eul-reul",
+        "present-polite",
+        "time-expression"
+      ],
+      "sourceCandidateClass": "excluded",
+      "existingExamPromptEn": "Speaking politely to a classmate, express this complete lesson sentence: “I read one book in a week.” Use the lesson expression meaning “week”.",
+      "ambiguityFlags": [
+        "communicative-act-not-forced"
+      ],
+      "plausibleVariantCount": 1,
+      "capacityReasons": [
+        "stage-1-five-attempt-typed-capacity"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null,
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I read one book in a week.” using the word \"읽어요\".",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": true,
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
+    },
+    {
+      "id": "s2566",
+      "mode": "typed",
+      "sourceSectionOrder": 2,
+      "sourceLessonIds": [
+        "sn2-shopping-u1-l6"
+      ],
+      "canonicalAnswer": "돈을 조금만 찾을게요.",
+      "englishMeaning": "I'll just withdraw a little.",
+      "patternTags": [
+        "object-eul-reul",
+        "only-man",
+        "present-polite"
+      ],
+      "sourceCandidateClass": null,
+      "existingExamPromptEn": null,
+      "ambiguityFlags": [
+        "communicative-act-not-forced"
+      ],
+      "plausibleVariantCount": 1,
+      "capacityReasons": [
+        "stage-1-five-attempt-typed-capacity"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null,
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "to a classmate, tell the complete lesson sentence meaning “I'll just withdraw a little.” using the word \"찾을게요\".",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": true,
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
+    },
+    {
+      "id": "s1028",
+      "mode": "typed",
+      "sourceSectionOrder": 5,
+      "sourceLessonIds": [
+        "sn5-feelings-u4-l1"
+      ],
+      "canonicalAnswer": "어려운 상황에서도 희망을 잃지 마세요.",
+      "englishMeaning": "Please do not lose hope even in difficult situations.",
+      "patternTags": [
+        "also-do",
+        "honorific-si",
+        "imperative-seyo",
+        "neg-ji-anta",
+        "object-eul-reul"
+      ],
+      "sourceCandidateClass": "excluded",
+      "existingExamPromptEn": "Speaking respectfully in a senior social context, make this complete lesson request: “Please do not lose hope even in difficult situations.” Use the lesson expression meaning “hope / aspiration”.",
+      "ambiguityFlags": [],
+      "plausibleVariantCount": 0,
+      "capacityReasons": [
+        "five-attempt-tag-capacity:also-do"
+      ],
+      "authoredBy": "GPT-5.6 Thinking / CB6B controlled-clause author",
+      "authoredRevision": "curated-sentence-exam-v2-cb6b-authoring",
+      "reviewStatus": "pending",
+      "reviewedBy": null,
+      "reviewedAt": null,
+      "reviewedRevision": null,
+      "reviewerNote": null,
+      "templateId": "lexically-anchored-production",
+      "examPromptEn": "in a formal situation, tell the complete lesson sentence meaning “Please do not lose hope even in difficult situations.” using the word \"상황에서도\".",
+      "manualAlternatives": [],
+      "requiresLexicalAnchor": true,
+      "promptOrigin": "cb6b-ordinary-typed-authoring"
     }
   ]
 }

@@ -5,12 +5,14 @@ import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const REVISION = "curated-sentence-exam-v2-cb6-authoring";
-const AUTHORED_BY = "GPT-5.6 Thinking / CB6 capacity author";
+const REVISION = "curated-sentence-exam-v2-cb6b-authoring";
+const AUTHORED_BY = "GPT-5.6 Thinking / CB6B controlled-clause author";
 const INVENTORY_FILE = join(ROOT, "docs", "generated", "sentence_exam_inventory.json");
 const AUTHORING_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6_capacity_authoring.json");
 const REVIEW_FILE = join(ROOT, "docs", "reviews", "sentence_exam_cb6_capacity_reviews.json");
 const WITNESS_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6_capacity_witness.json");
+const CONTROLLED_AUTHORING_FILE = join(ROOT, "docs", "authoring", "sentence_exam_cb6b_controlled_items.json");
+const REPLACEMENTS_FILE = join(ROOT, "docs", "authoring", "sentence_exam_cb6b_replacements.json");
 
 const SELECTED = Object.freeze([
   {
@@ -3507,11 +3509,63 @@ function loadBank() {
   return sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK;
 }
 
-function proposedPrompt(row) {
-  const existing = String(row.existingExamPromptEn || "").trim();
-  if (existing) return existing;
+const CONTROLLED_AUTHORING = readJson(CONTROLLED_AUTHORING_FILE);
+const REPLACEMENT_AUTHORING = readJson(REPLACEMENTS_FILE);
+const CONTROLLED_BY_ID = new Map(Object.entries(CONTROLLED_AUTHORING.entries || {}));
+const REPLACEMENT_BY_DEMOTED = new Map((REPLACEMENT_AUTHORING.mappings || []).map((item) => [item.demotedId, item.replacementId]));
+const DEMOTED_IDS = new Set(REPLACEMENT_BY_DEMOTED.keys());
+const EFFECTIVE_SELECTED = Object.freeze([
+  ...SELECTED.map((selection) => DEMOTED_IDS.has(selection.id)
+    ? Object.freeze({ id: selection.id, mode: "recognition" })
+    : selection),
+  ...[...REPLACEMENT_BY_DEMOTED.values()].map((id) => Object.freeze({ id, mode: "typed" })),
+]);
+const CB6B_WITNESS = Object.freeze(Object.fromEntries(Object.entries(WITNESS).map(([examId, attempts]) => [
+  examId,
+  attempts.map((attempt) => attempt.map((selected) => ({
+    ...selected,
+    id: REPLACEMENT_BY_DEMOTED.get(selected.id) || selected.id,
+  }))),
+])));
+const CONTROLLED_PRESERVATION_INSTRUCTION = "Preserve the supplied Korean wording, particles, and order except for the required grammar change.";
+const CONTROLLED_GRAMMAR_INSTRUCTION = "Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.";
+
+function lexicalAnchor(row) {
+  const tokens = normalize(row.korean).replace(/[.!?。！？]+$/u, "").split(" ").filter(Boolean);
+  return [...tokens].sort((a, b) => b.length - a.length || a.localeCompare(b))[0] || normalize(row.korean);
+}
+
+function ordinaryTypedPrompt(row) {
+  const tags = new Set(row.patternTags || []);
+  const parts = [];
+  if (tags.has("topic-neun") || tags.has("subject-i-ga")) parts.push("As for the established lesson topic,");
+  if (tags.has("past-polite")) parts.push("yesterday,");
+  else if (tags.has("future-geoyeyo")) parts.push("tomorrow,");
+  if (tags.has("formal-nida") || tags.has("honorific-si") || tags.has("imperative-seyo")) {
+    parts.push("in a formal situation,");
+  } else {
+    parts.push("to a classmate,");
+  }
   const meaning = String(row.english || "").trim().replace(/"/g, "”");
-  return `Speaking politely in the situation described, produce the complete Korean sentence meaning: “${meaning}” Use the exact lesson vocabulary, information structure, and grammar taught for this row.`;
+  parts.push(`tell the complete lesson sentence meaning “${meaning}” using the word "${lexicalAnchor(row)}".`);
+  return parts.join(" ");
+}
+
+function controlledPrompt(contract) {
+  const operation = contract.operation === "combine-clauses"
+    ? "Combine the supplied Korean clauses into one sentence."
+    : contract.operation === "recast-predicate"
+      ? "Recast the supplied Korean sentence with the required predicate construction."
+      : "Change the supplied Korean sentence to the required speech-act ending.";
+  const sources = contract.sourceFragments.map((fragment, index) => `Source ${index + 1}: ${fragment}`).join(" ");
+  return [
+    operation,
+    sources,
+    `Use ${contract.requiredConstructionCue} as the required Korean construction.`,
+    `Replace the exact Korean ending "${contract.sourceEnding}" with "${contract.targetEnding}".`,
+    CONTROLLED_PRESERVATION_INSTRUCTION,
+    CONTROLLED_GRAMMAR_INSTRUCTION,
+  ].join(" ");
 }
 
 function selectionReasons(row, mode) {
@@ -3553,13 +3607,40 @@ function buildEntry(row, selection) {
     reviewerNote: null,
   };
   if (selection.mode === "typed") {
+    const controlled = CONTROLLED_BY_ID.get(row.id);
+    if (controlled) {
+      return {
+        ...base,
+        templateId: "controlled-clause-transformation",
+        examPromptEn: controlledPrompt(controlled),
+        manualAlternatives: [],
+        requiresLexicalAnchor: true,
+        controlledClause: {
+          schemaVersion: 1,
+          operation: controlled.operation,
+          requiredPatternTag: controlled.requiredPatternTag,
+          requiredConstructionCue: controlled.requiredConstructionCue,
+          sourceFragments: [...controlled.sourceFragments],
+          sourceEnding: controlled.sourceEnding,
+          targetEnding: controlled.targetEnding,
+          preservedClauseEvidence: (controlled.preservedClauseEvidence || []).map((item) => ({ ...item })),
+          preserveSourceOrder: true,
+          preserveLexicalMaterial: true,
+          preserveParticles: true,
+          acceptedAnswerPolicy: "reviewed-finite-only",
+        },
+        promptOrigin: "cb6b-controlled-clause-authoring",
+      };
+    }
     return {
       ...base,
-      templateId: row.existingExamPromptEn ? "reviewed-source-reuse" : "capacity-lexically-anchored-production",
-      examPromptEn: proposedPrompt(row),
+      templateId: "lexically-anchored-production",
+      examPromptEn: ordinaryTypedPrompt(row),
       manualAlternatives: [],
       requiresLexicalAnchor: true,
-      promptOrigin: row.existingExamPromptEn ? "existing-reviewed-source" : "cb6-capacity-authoring",
+      promptOrigin: REPLACEMENT_BY_DEMOTED.has(row.id)
+        ? "cb6b-clean-replacement"
+        : "cb6b-ordinary-typed-authoring",
     };
   }
   return {
@@ -3578,7 +3659,7 @@ function buildArtifacts() {
   const rows = new Map(inventory.inventory.map((row) => [row.id, row]));
   const bank = loadBank();
   const existingIds = new Set(bank.entries.map((entry) => entry.id));
-  const entries = SELECTED.map((selection) => {
+  const entries = EFFECTIVE_SELECTED.map((selection) => {
     const row = rows.get(selection.id);
     if (!row) throw new Error(`Missing inventory row: ${selection.id}`);
     if (existingIds.has(selection.id)) throw new Error(`CB6 selection already exists in the frozen bank: ${selection.id}`);
@@ -3598,7 +3679,7 @@ function buildArtifacts() {
     revision: REVISION,
     authoredBy: AUTHORED_BY,
     state: "awaiting-independent-review",
-    decisionRule: "CB6 authors a mechanically sufficient expansion. A distinct integrator must individually review every added prompt, answer, route, tag assignment, and recognition meaning before any runtime bank or freeze is emitted.",
+    decisionRule: "CB6B re-authors the halted capacity expansion against the approved controlled-clause contract. A distinct integrator must individually review every prompt, answer, controlled transformation, route, tag assignment, replacement, and recognition meaning before any runtime bank or freeze is emitted.",
     baseBank: {
       revision: bank.revision,
       entryCount: bank.entries.length,
@@ -3620,7 +3701,11 @@ function buildArtifacts() {
       attemptsPerExam: 5,
       typedExistingPromptCount: typed.filter((entry) => entry.existingExamPromptEn).length,
       typedGeneratedPromptCount: typed.filter((entry) => !entry.existingExamPromptEn).length,
-      typedPromptReviewRequiredCount: typed.filter((entry) => entry.ambiguityFlags.length > 0).length,
+      typedPromptReviewRequiredCount: typed.length,
+      controlledTypedCount: typed.filter((entry) => entry.templateId === "controlled-clause-transformation").length,
+      ordinaryTypedCount: typed.filter((entry) => entry.templateId === "lexically-anchored-production").length,
+      demotedRecognitionCount: recognition.filter((entry) => DEMOTED_IDS.has(entry.id)).length,
+      replacementTypedCount: typed.filter((entry) => [...REPLACEMENT_BY_DEMOTED.values()].includes(entry.id)).length,
     },
     capacity: {
       before: currentCapacity,
@@ -3652,10 +3737,10 @@ function buildArtifacts() {
   const witness = {
     schemaVersion: 1,
     revision: REVISION,
-    generatedBy: "exact binary allocation solve; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
+    generatedBy: "CB6B deterministic repair of the original exact allocation witness; checked by scripts/audit-sentence-exam-capacity-remediation.mjs",
     freshnessWindow: 5,
     maxCanonicalTargetUses: 1,
-    exams: WITNESS,
+    exams: CB6B_WITNESS,
   };
   return { authoring, reviews, witness };
 }
