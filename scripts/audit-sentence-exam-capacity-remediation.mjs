@@ -3,17 +3,22 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
+import {
+  CONTROLLED_CLAUSE_PATTERN_TAGS,
+  detectAmbiguityFlags,
+  validateControlledClauseContract,
+} from "./lib/sentence-exam-ambiguity.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const AUTHORING_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6_capacity_authoring.json");
 const REVIEW_FILE = join(ROOT, "docs", "reviews", "sentence_exam_cb6_capacity_reviews.json");
 const WITNESS_FILE = join(ROOT, "docs", "generated", "sentence_exam_cb6_capacity_witness.json");
 const INVENTORY_FILE = join(ROOT, "docs", "generated", "sentence_exam_inventory.json");
-const EXPECTED_REVISION = "curated-sentence-exam-v2-cb6-authoring";
-const EXPECTED_AUTHOR = "GPT-5.6 Thinking / CB6 capacity author";
-const EXPECTED_ADDITIONS = 94;
+const EXPECTED_REVISION = "curated-sentence-exam-v2-cb6b-authoring";
+const EXPECTED_AUTHOR = "GPT-5.6 Thinking / CB6B controlled-clause author";
+const EXPECTED_ADDITIONS = 102;
 const EXPECTED_TYPED = 71;
-const EXPECTED_RECOGNITION = 23;
+const EXPECTED_RECOGNITION = 31;
 const FORM_TAGS = new Set([
   "present-polite", "past-polite", "future-geoyeyo", "formal-nida", "honorific-si",
   "imperative-seyo", "propositive-eyo", "copula-ieyo", "copula-negative-anieyo",
@@ -241,6 +246,26 @@ export function auditCapacityRemediationState({ authoring, reviews, witness, inv
     targetKeys.set(targetKey, entry.id);
     if (!entry.examPromptEn || typeof entry.examPromptEn !== "string") failures.push(`${entry.id}: missing prompt`);
     if (entry.mode === "recognition" && entry.recognitionAnswerEn !== row.english) failures.push(`${entry.id}: recognition answer drift`);
+    if (entry.mode === "typed") {
+      const clauseTags = CONTROLLED_CLAUSE_PATTERN_TAGS.filter((tag) => (row.patternTags || []).includes(tag));
+      const usesControlledTemplate = entry.templateId === "controlled-clause-transformation";
+      if (clauseTags.length > 0 && !usesControlledTemplate) {
+        failures.push(`${entry.id}: clause-sensitive typed row does not use the controlled template`);
+      }
+      if (usesControlledTemplate && clauseTags.length === 0) {
+        failures.push(`${entry.id}: controlled template used without a supported clause tag`);
+      }
+      if (usesControlledTemplate) {
+        if ((entry.manualAlternatives || []).length > 0) failures.push(`${entry.id}: controlled item has manual alternatives`);
+        const validation = validateControlledClauseContract(row, entry.examPromptEn, entry.controlledClause);
+        for (const error of validation.errors) failures.push(`${entry.id}: invalid controlled contract: ${error}`);
+      }
+      const analysis = detectAmbiguityFlags(row, entry.examPromptEn, {
+        requiresLexicalAnchor: entry.requiresLexicalAnchor === true,
+        controlledClauseContract: usesControlledTemplate ? entry.controlledClause : null,
+      });
+      if (analysis.flags.length > 0) failures.push(`${entry.id}: unresolved ambiguity flags: ${analysis.flags.join(", ")}`);
+    }
     if (entry.reviewStatus !== "pending") failures.push(`${entry.id}: authoring item must remain pending in worker packet`);
   }
   const reviewById = new Map((reviews.entries || []).map((entry) => [entry.id, entry]));
@@ -322,6 +347,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     for (const failure of result.failures) console.error(`FAIL: ${failure}`);
     process.exitCode = 1;
   } else {
-    console.log(`CB6 capacity remediation audit passed: ${JSON.stringify(result.summary)}`);
+    console.log(`CB6B capacity remediation audit passed: ${JSON.stringify(result.summary)}`);
   }
 }

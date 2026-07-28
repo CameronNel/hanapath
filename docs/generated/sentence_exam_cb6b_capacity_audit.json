@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "failures": [
+    "recognition lesson cap exceeded at sn2-shopping-u1-l8: 3/2",
+    "recognition lesson cap exceeded at sn5-nature-u4-l3: 3/2",
+    "sentence-exam-2 attempt 1: tag want-go-sipda 1/2",
+    "sentence-exam-2 attempt 5: tag want-go-sipda 1/2",
+    "sentence-exam-3 attempt 2: tag future-geoyeyo 3/4",
+    "sentence-exam-3 attempt 2: tag when-ttae 0/1",
+    "sentence-exam-3 attempt 5: tag but-jiman 1/2",
+    "sentence-exam-4 attempt 1: tag but-jiman 1/2",
+    "sentence-exam-4 attempt 1: tag want-go-sipda 0/2",
+    "sentence-exam-4 attempt 1: tag can-su-itda 1/2",
+    "sentence-exam-4 attempt 4: tag formal-nida 3/4",
+    "sentence-exam-4 attempt 5: tag future-geoyeyo 3/4",
+    "sentence-exam-4 attempt 5: tag when-ttae 1/2",
+    "sentence-exam-5 attempt 1: tag when-ttae 1/2",
+    "sentence-exam-5 attempt 1: tag want-go-sipda 1/2",
+    "sentence-exam-5 attempt 1: tag future-geoyeyo 4/5",
+    "sentence-exam-5 attempt 1: tag but-jiman 1/2",
+    "sentence-exam-5 attempt 1: tag copula-negative-anieyo 1/2",
+    "sentence-exam-5 attempt 2: tag want-go-sipda 1/2"
+  ],
+  "summary": {
+    "baseEntries": 608,
+    "additions": 102,
+    "projectedEntries": 710,
+    "typedAdditions": 71,
+    "recognitionAdditions": 31,
+    "stage1TypedDistinctTargets": 101,
+    "witnessExams": 5,
+    "independentReviewRequired": 102
+  }
+}
