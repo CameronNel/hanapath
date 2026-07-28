@@ -319,6 +319,82 @@ function examDiagnostics(examId, attempts, entryMap) {
   };
 }
 
+function totalChangedCount(attempts, originalAttempts) {
+  return attempts.reduce((sum, attempt, index) => sum + changedCount(attempt, originalAttempts[index]), 0);
+}
+
+function reportScore(report) {
+  return report.attemptReports.reduce((sum, attemptReport) => sum + attemptReport.score, 0)
+    + report.freshnessDuplicates.length * 1000;
+}
+
+function canSwapAcrossAttempts(examId, leftSelected, rightSelected, entryMap) {
+  const leftEntry = entryMap.get(leftSelected.id);
+  const rightEntry = entryMap.get(rightSelected.id);
+  if (!leftEntry || !rightEntry) return false;
+  if (Number(leftEntry.sourceSectionOrder) > scopeMax(examId)
+      || Number(rightEntry.sourceSectionOrder) > scopeMax(examId)) return false;
+  return candidateStrands(rightEntry).has(leftSelected.strand)
+    && candidateStrands(leftEntry).has(rightSelected.strand);
+}
+
+function greedyCrossAttemptRepair(examId, initialAttempts, originalAttempts, entryMap) {
+  let attempts = initialAttempts.map((attempt) => attempt.map((selected) => ({ ...selected })));
+  let report = examDiagnostics(examId, attempts, entryMap);
+  let score = reportScore(report);
+  for (let iteration = 0; iteration < 100 && score > 0; iteration += 1) {
+    let best = null;
+    for (let leftAttempt = 0; leftAttempt < attempts.length; leftAttempt += 1) {
+      for (let rightAttempt = leftAttempt + 1; rightAttempt < attempts.length; rightAttempt += 1) {
+        const oldPairScore = report.attemptReports[leftAttempt].score + report.attemptReports[rightAttempt].score;
+        for (let leftSlot = 0; leftSlot < attempts[leftAttempt].length; leftSlot += 1) {
+          for (let rightSlot = 0; rightSlot < attempts[rightAttempt].length; rightSlot += 1) {
+            const leftSelected = attempts[leftAttempt][leftSlot];
+            const rightSelected = attempts[rightAttempt][rightSlot];
+            if (leftSelected.id === rightSelected.id) continue;
+            if (!canSwapAcrossAttempts(examId, leftSelected, rightSelected, entryMap)) continue;
+            const nextLeft = attempts[leftAttempt].map((selected, index) => index === leftSlot
+              ? { ...selected, id: rightSelected.id }
+              : selected);
+            const nextRight = attempts[rightAttempt].map((selected, index) => index === rightSlot
+              ? { ...selected, id: leftSelected.id }
+              : selected);
+            const leftDiagnostics = attemptDiagnostics(examId, nextLeft, entryMap, new Set());
+            const rightDiagnostics = attemptDiagnostics(examId, nextRight, entryMap, new Set());
+            const nextScore = score - oldPairScore + leftDiagnostics.score + rightDiagnostics.score;
+            const nextAttempts = attempts.map((attempt, index) => index === leftAttempt
+              ? nextLeft
+              : index === rightAttempt ? nextRight : attempt);
+            const nextChanged = totalChangedCount(nextAttempts, originalAttempts);
+            if (!best
+                || nextScore < best.score
+                || (nextScore === best.score && nextChanged < best.changed)
+                || (nextScore === best.score && nextChanged === best.changed
+                  && stateKey(nextLeft).localeCompare(stateKey(best.nextLeft)) < 0)) {
+              best = {
+                score: nextScore,
+                changed: nextChanged,
+                leftAttempt,
+                rightAttempt,
+                nextLeft,
+                nextRight,
+                leftDiagnostics,
+                rightDiagnostics,
+              };
+            }
+          }
+        }
+      }
+    }
+    if (!best || best.score >= score) break;
+    attempts[best.leftAttempt] = best.nextLeft;
+    attempts[best.rightAttempt] = best.nextRight;
+    report = examDiagnostics(examId, attempts, entryMap);
+    score = reportScore(report);
+  }
+  return { attempts, report };
+}
+
 function repairExam(examId, baseAttempts, entries, entryMap) {
   const originalAttempts = baseAttempts.map((attempt) => attempt.map((selected) => ({ ...selected })));
   const attempts = originalAttempts.map((attempt) => attempt.map((selected) => ({ ...selected })));
@@ -337,7 +413,21 @@ function repairExam(examId, baseAttempts, entries, entryMap) {
     if (report.ok) return { attempts, report };
     if (!changed && pass >= 1) break;
   }
-  return { attempts, report: examDiagnostics(examId, attempts, entryMap) };
+  const crossRepaired = greedyCrossAttemptRepair(examId, attempts, originalAttempts, entryMap);
+  if (crossRepaired.report.ok) return crossRepaired;
+  for (let pass = 0; pass < 2; pass += 1) {
+    let changed = false;
+    for (let index = 0; index < crossRepaired.attempts.length; index += 1) {
+      const repaired = repairAttempt(examId, index, crossRepaired.attempts, originalAttempts, entries, entryMap);
+      if (stateKey(repaired.attempt) !== stateKey(crossRepaired.attempts[index])) changed = true;
+      crossRepaired.attempts[index] = repaired.attempt;
+    }
+    const crossedAgain = greedyCrossAttemptRepair(examId, crossRepaired.attempts, originalAttempts, entryMap);
+    crossRepaired.attempts = crossedAgain.attempts;
+    crossRepaired.report = crossedAgain.report;
+    if (crossRepaired.report.ok || !changed) break;
+  }
+  return crossRepaired;
 }
 
 function repairCb6bWitness({ baseWitness, entries, replacementByDemoted }) {

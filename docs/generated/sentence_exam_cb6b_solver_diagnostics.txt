@@ -1,4 +1,4 @@
-file:///home/runner/work/hanapath/hanapath/scripts/lib/sentence-exam-cb6b-witness.mjs:374
+file:///home/runner/work/hanapath/hanapath/scripts/lib/sentence-exam-cb6b-witness.mjs:464
     throw new Error(`CB6B witness repair failed:\n${failures.join("\n")}`);
           ^
 
@@ -9,7 +9,7 @@ sentence-exam-4 attempt 1: {"invalid":[],"tagDeficits":{"formal-nida":1,"neg-mot
 sentence-exam-4 attempt 4: {"invalid":[],"tagDeficits":{},"coverageDeficits":{"band-4":1}}
 sentence-exam-4 attempt 5: {"invalid":[],"tagDeficits":{"future-geoyeyo":1},"coverageDeficits":{}}
 sentence-exam-5 attempt 1: {"invalid":[],"tagDeficits":{"copula-negative-anieyo":1},"coverageDeficits":{}}
-    at repairCb6bWitness (file:///home/runner/work/hanapath/hanapath/scripts/lib/sentence-exam-cb6b-witness.mjs:374:11)
+    at repairCb6bWitness (file:///home/runner/work/hanapath/hanapath/scripts/lib/sentence-exam-cb6b-witness.mjs:464:11)
     at buildArtifacts (file:///home/runner/work/hanapath/hanapath/scripts/build-sentence-exam-capacity-remediation.mjs:3668:27)
     at file:///home/runner/work/hanapath/hanapath/scripts/build-sentence-exam-capacity-remediation.mjs:3750:41
     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
