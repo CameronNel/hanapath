@@ -1923,14 +1923,14 @@
       "reviewedRevision": null,
       "reviewerNote": null,
       "templateId": "controlled-clause-transformation",
-      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 인터넷 연결이 느려져요. Source 2: 동영상을 볼 수 없습니다. Use -져서 as the required Korean construction. Replace the exact Korean ending \"요\" with \"서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
+      "examPromptEn": "Combine the supplied Korean clauses into one sentence. Source 1: 인터넷 연결이 느려져요. Source 2: 동영상을 볼 수 없습니다. Use -어서 as the required Korean construction. Replace the exact Korean ending \"요\" with \"서\". Preserve the supplied Korean wording, particles, and order except for the required grammar change. Keep the tense shown in the Korean source fragments. Preserve the speech level shown in the Korean source fragments. Preserve the information structure shown in the Korean source fragments.",
       "manualAlternatives": [],
       "requiresLexicalAnchor": true,
       "controlledClause": {
         "schemaVersion": 1,
         "operation": "combine-clauses",
         "requiredPatternTag": "because-aseo",
-        "requiredConstructionCue": "-져서",
+        "requiredConstructionCue": "-어서",
         "sourceFragments": [
           "인터넷 연결이 느려져요.",
           "동영상을 볼 수 없습니다."

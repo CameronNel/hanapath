@@ -57,7 +57,7 @@
     "s3364": {
       "operation": "combine-clauses",
       "requiredPatternTag": "because-aseo",
-      "requiredConstructionCue": "-져서",
+      "requiredConstructionCue": "-어서",
       "sourceFragments": ["인터넷 연결이 느려져요.", "동영상을 볼 수 없습니다."],
       "sourceEnding": "요",
       "targetEnding": "서",
