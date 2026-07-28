@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "approvalScope": "complete-reviewed-bank",
+  "bankRevision": "curated-sentence-exam-v2-cb6b",
+  "baseRevision": "curated-sentence-exam-v1-cb4",
+  "capacityRevision": "curated-sentence-exam-v2-cb6b-authoring",
+  "entryCount": 702,
+  "entriesSha256": "426392c1148f5dcb05ed6bc7cfa73dabc4ef25d35bcaa23e69e6924a9a5772fc",
+  "entryIdsSha256": "74a5d2ca4138276bdd7d6f3e03482364a2cd2bc00470dc6a469b032ac744a411",
+  "approvedBy": "OpenAI Codex (GPT-5) / CB6B corrective independent reviewer",
+  "approvedAt": "2026-07-28T18:22:18.258Z",
+  "reviewerNote": "Approved the exact 702-entry active CB6B bank set: the 608 inherited entries retain their CB4 provenance and review evidence, and all 94 CB6B additions were re-inspected item by item under the corrective fairness contracts. This approval binds the active, base, and capacity revisions plus the ordered entry IDs and complete reviewed content hash."
+}

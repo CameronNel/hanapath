@@ -335,6 +335,7 @@ const GATE_STEPS = [
   { id: "sentence-exam-capacity-audit", label: "Sentence-exam CB6B five-attempt capacity audit", script: "scripts/audit-sentence-exam-capacity-remediation.mjs", fullArgs: ["--require-approved"], quickArgs: ["--require-approved"] },
   { id: "sentence-exam-capacity-regression", label: "Sentence-exam CB6B capacity regression", script: "scripts/test-sentence-exam-capacity-remediation.mjs" },
   { id: "sentence-exam-cb6b-bank-freshness", label: "Sentence-exam CB6B expanded-bank freshness", script: "scripts/build-sentence-exam-curated-bank-cb6b.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
+  { id: "sentence-exam-bank-approval-regression", label: "Sentence-exam CB6B complete-bank approval regression", script: "scripts/test-sentence-exam-bank-approval.mjs" },
   { id: "sentence-exam-curated-freeze-freshness", label: "Sentence-exam curated bank freeze freshness (CB5)", script: "scripts/build-sentence-exam-curated-bank-freeze.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
   { id: "sentence-exam-curated-freeze-regression", label: "Sentence-exam curated bank freeze regression (CB5)", script: "scripts/test-sentence-exam-curated-bank-freeze.mjs" },
   { id: "sentence-lesson-contrast-authoring", label: "Sentence lesson contrast authoring regression (CB2)", script: "scripts/test-sentence-lesson-contrast-authoring.mjs" },

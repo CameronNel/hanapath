@@ -112,6 +112,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentence-exam CB6B five-attempt capacity audit | `node scripts/audit-sentence-exam-capacity-remediation.mjs --require-approved` | blocking |
 | Sentence-exam CB6B capacity regression | `node scripts/test-sentence-exam-capacity-remediation.mjs` | blocking |
 | Sentence-exam CB6B expanded-bank freshness | `node scripts/build-sentence-exam-curated-bank-cb6b.mjs --check` | blocking |
+| Sentence-exam CB6B complete-bank approval regression | `node scripts/test-sentence-exam-bank-approval.mjs` | blocking |
 | Sentence-exam curated bank freeze freshness (CB5) | `node scripts/build-sentence-exam-curated-bank-freeze.mjs --check` | blocking |
 | Sentence-exam curated bank freeze regression (CB5) | `node scripts/test-sentence-exam-curated-bank-freeze.mjs` | blocking |
 | Sentence lesson contrast authoring regression (CB2) | `node scripts/test-sentence-lesson-contrast-authoring.mjs` | blocking |

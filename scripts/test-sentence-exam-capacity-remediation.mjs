@@ -19,6 +19,7 @@ function loadRuntime() {
   vm.createContext(sandbox);
   for (const file of [
     "sentences_lesson_plan.js",
+    "sentence_exam_grader.js",
     "sentence_exam_curated_bank.js",
   ]) {
     vm.runInContext(readFileSync(join(ROOT, file), "utf8"), sandbox, { filename: file });
@@ -40,7 +41,12 @@ function loadRuntime() {
         ),
       }
     : runtimeBank;
-  return { bank, routes };
+  return {
+    bank,
+    routes,
+    fullBank: runtimeBank,
+    grader: sandbox.window.HANAPATH_SENTENCE_EXAM_GRADER,
+  };
 }
 
 function clone(value) {
@@ -135,4 +141,42 @@ const capCollisionResult = auditCapacityRemediationState(capCollision);
 assert.equal(capCollisionResult.ok, false);
 assert.ok(capCollisionResult.failures.some((failure) => failure.includes("typed lesson cap exceeded")));
 
-console.log("CB6 capacity remediation regression passed: clean witness accepted; duplicate, drift, freshness reuse, wrong strand, out-of-scope, unknown item, self-review, pending strict state, and projected-bank lesson-cap collision rejected.");
+// 11. Exact-cloze repairs accept the one visible-prompt answer and reject ordinary
+// variants that the former English-plus-anchor prompts left unresolved.
+const correctedById = new Map(runtime.fullBank.entries.map((entry) => [entry.id, entry]));
+const fairnessCases = [
+  {
+    axis: "pronoun",
+    id: "s2067",
+    rejected: "오늘은 내 생일이 아니에요.",
+  },
+  {
+    axis: "demonstrative",
+    id: "s2061",
+    rejected: "이거는 책이 아니에요.",
+  },
+  {
+    axis: "particle",
+    id: "s1028",
+    rejected: "어려운 상황에서도 희망 잃지 마세요.",
+  },
+  {
+    axis: "register",
+    id: "s2061",
+    rejected: "이것은 책이 아닙니다.",
+  },
+  {
+    axis: "information structure",
+    id: "s0897",
+    rejected: "학교에 아직 도착하지 않았어요.",
+  },
+];
+for (const { axis, id, rejected } of fairnessCases) {
+  const item = correctedById.get(id);
+  assert.ok(item.examPromptEn.includes("Complete this exact Korean lesson frame"), `${id}: repaired cloze prompt is missing.`);
+  assert.equal(item.manualAlternatives.length, 0, `${id}: variants outside the visible frame must not be accepted.`);
+  assert.equal(runtime.grader.scoreSentenceExamResponse(item, item.canonicalAnswer).correct, true, `${id}: canonical ${axis} answer must pass.`);
+  assert.equal(runtime.grader.scoreSentenceExamResponse(item, rejected).correct, false, `${id}: unintended ${axis} variant must fail.`);
+}
+
+console.log("CB6 capacity remediation regression passed: clean witness accepted; duplicate, drift, freshness reuse, wrong strand, out-of-scope, unknown item, self-review, pending strict state, projected-bank lesson-cap collision, and repaired pronoun/demonstrative/particle/register/information-structure grading contracts verified.");

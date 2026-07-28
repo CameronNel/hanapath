@@ -10,13 +10,13 @@
     "typedCount": 359,
     "recognitionCount": 343,
     "hashes": {
-      "promptsSha256": "1e6d383386f576fa529b4fa48842ac0461751ab903246c3bc6ad99d6c7d81be5",
-      "answersSha256": "f1ce5fdc37e486f79de85393f7eac20eb98052467c8f487802434771c5aa8375",
-      "typedReviewsSha256": "df423215efe262685cf001617cc890d8885b4d318bfa398e69c2f08e0cc088a7",
-      "entriesSha256": "3b86a439b6d15a8f9f832e1102b7dec60c77743a42293af8a4c31eb6a0ea0898"
+      "promptsSha256": "f3838996df29d15b5d7b16dab632659ded5ce45d8313675d66b803bf87a45b23",
+      "answersSha256": "807bd776f93b6900bd83d59bf9c13c5db1cb856d895494b23c0ee52c5e82d381",
+      "typedReviewsSha256": "7406728a8b91c6b1c0bb6ae41715d878aed45edfa1076da639f1414485dea85c",
+      "entriesSha256": "426392c1148f5dcb05ed6bc7cfa73dabc4ef25d35bcaa23e69e6924a9a5772fc"
     },
     "sourceFiles": {
-      "sentence_exam_curated_bank.js": "dd390ed06c91c0f095d3efb048e330afea16634b6dbe39182e8e9cb180146ecc",
+      "sentence_exam_curated_bank.js": "9fc5a408af23661840977a4d778643597ceb0327f75789b877b59df07c53ad2d",
       "docs/generated/sentence_exam_inventory.json": "c847260ef3a7a3c852dfad15745287ec28634642d1987a3af8b919643f6c394b",
       "docs/generated/sentence_exam_shortlist.json": "f3ace23ebfe57d632f6621f0702eaa4c84b93a3fd9e807a5ed8e4d818bc1caff",
       "docs/generated/sentence_exam_curated_bank_cb4_authoring.json": "0dc8b2ca0a04b6b6b02cd7caf72d551d034cc9bdb0f4571f1e838234a7ed50ee",
@@ -27,7 +27,8 @@
       "docs/generated/sentence_exam_cb6_capacity_authoring.json": "a3689135e00491abc94d194fb38eda5795f31566ed4d6c52e1daf9f31732d098",
       "docs/generated/sentence_exam_cb6_capacity_witness.json": "5421954abd5c34ba00b69627c2f13cb2b0f0a439d0962a79ebb04e893f2f0477",
       "docs/generated/sentence_exam_cb6b_joint_solution.json": "41fa835e3c82c9084dc1713a338af0f08b71f2de05489f8a8caf5550abf99cc9",
-      "docs/reviews/sentence_exam_cb6_capacity_reviews.json": "6c5078bae88f7396aacf674bf27aa4ff7f1858a25575a8534198442a1ce6143b"
+      "docs/reviews/sentence_exam_cb6_capacity_reviews.json": "ba86a74b7924c867cb3c451c1ae40ad31225138a63f5098d0e10f1f4d4b72c4a",
+      "docs/reviews/sentence_exam_curated_bank_cb6b_approval.json": "655a4b6ae1bbf799eedd2bebedc686b033bc0ffa361d0a3bff41ff4021e992d8"
     }
   };
 
