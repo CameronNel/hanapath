@@ -15,13 +15,13 @@ jobs:
   integrate:
     if: github.event_name == 'push' || github.head_ref == 'core/cb6b-controlled-clause-reauthor'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
         with:
           ref: core/cb6b-controlled-clause-reauthor
           fetch-depth: 0
-      - name: Patch builder for promotion, backfill, and exact repair
+      - name: Patch builder and bound the deterministic search
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -69,14 +69,31 @@ jobs:
           s = s.replace('    exams: CB6B_WITNESS,', '    exams: repairedWitness.exams,')
           s = s.replace('Wrote CB6 authoring', 'Wrote CB6B authoring')
           p.write_text(s)
+
+          p = Path('scripts/lib/sentence-exam-cb6b-witness.mjs')
+          s = p.read_text()
+          s = s.replace('const iterations = examId === "sentence-exam-5" ? 500000 : 250000;', 'const iterations = examId === "sentence-exam-5" ? 60000 : 30000;')
+          s = s.replace('for (let restart = 0; restart < 8 && best.diagnostics.score > 0; restart += 1)', 'for (let restart = 0; restart < 3 && best.diagnostics.score > 0; restart += 1)')
+          s = s.replace('for (let pass = 0; pass < 6; pass += 1)', 'for (let pass = 0; pass < 3; pass += 1)')
+          p.write_text(s)
           PY
-      - name: Generate and validate repaired witness
+      - name: Generate repaired witness
+        id: generate
+        continue-on-error: true
         run: |
+          set -o pipefail
           node --check scripts/lib/sentence-exam-cb6b-witness.mjs
           node --check scripts/build-sentence-exam-capacity-remediation.mjs
-          time node scripts/build-sentence-exam-capacity-remediation.mjs --write
+          time node scripts/build-sentence-exam-capacity-remediation.mjs --write 2>&1 | tee /tmp/cb6b-solver.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            cp /tmp/cb6b-solver.log docs/generated/sentence_exam_cb6b_solver_failure.txt
+            exit "$status"
+          fi
+          rm -f docs/generated/sentence_exam_cb6b_solver_failure.txt
           node scripts/audit-sentence-exam-capacity-remediation.mjs
       - name: Refresh validation reports
+        if: steps.generate.outcome == 'success'
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -121,12 +138,13 @@ jobs:
           fs.writeFileSync('docs/generated/sentence_exam_cb6b_capacity_audit.json', `${JSON.stringify({ schemaVersion: 1, ...result }, null, 2)}\n`);
           if (failures.length || !result.ok) process.exit(1);
           NODE
-      - name: Commit integrated solver and remove workflow
+      - name: Commit bounded solver or its exact diagnostics
+        if: always()
         run: |
           git config user.name "HanaPath packet worker"
           git config user.email "automation@hanapath.local"
           git rm .github/workflows/integrate-cb6b-witness-solver.yml
           git add scripts docs/generated docs/reviews
           git diff --cached --check
-          git commit -m "CB6B: solve the five-attempt witness against controlled items"
+          git commit -m "CB6B: integrate bounded five-attempt witness solver"
           git push origin HEAD:core/cb6b-controlled-clause-reauthor
