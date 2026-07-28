@@ -1,0 +1,91 @@
+name: harden-cb6b-capacity-audit
+
+on:
+  push:
+    branches:
+      - core/cb6b-controlled-clause-reauthor
+
+permissions:
+  contents: write
+
+jobs:
+  harden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update audit for CB6B controlled entries
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/audit-sentence-exam-capacity-remediation.mjs')
+          s = p.read_text()
+          s = s.replace('import vm from "node:vm";\n', 'import vm from "node:vm";\nimport {\n  CONTROLLED_CLAUSE_PATTERN_TAGS,\n  detectAmbiguityFlags,\n  validateControlledClauseContract,\n} from "./lib/sentence-exam-ambiguity.mjs";\n')
+          s = s.replace('const EXPECTED_REVISION = "curated-sentence-exam-v2-cb6-authoring";', 'const EXPECTED_REVISION = "curated-sentence-exam-v2-cb6b-authoring";')
+          s = s.replace('const EXPECTED_AUTHOR = "GPT-5.6 Thinking / CB6 capacity author";', 'const EXPECTED_AUTHOR = "GPT-5.6 Thinking / CB6B controlled-clause author";')
+          s = s.replace('const EXPECTED_ADDITIONS = 94;', 'const EXPECTED_ADDITIONS = 102;')
+          s = s.replace('const EXPECTED_RECOGNITION = 23;', 'const EXPECTED_RECOGNITION = 31;')
+          marker = '    if (entry.mode === "recognition" && entry.recognitionAnswerEn !== row.english) failures.push(`${entry.id}: recognition answer drift`);\n'
+          insertion = '''    if (entry.mode === "recognition" && entry.recognitionAnswerEn !== row.english) failures.push(`${entry.id}: recognition answer drift`);
+              if (entry.mode === "typed") {
+                const clauseTags = CONTROLLED_CLAUSE_PATTERN_TAGS.filter((tag) => (row.patternTags || []).includes(tag));
+                const usesControlledTemplate = entry.templateId === "controlled-clause-transformation";
+                if (clauseTags.length > 0 && !usesControlledTemplate) {
+                  failures.push(`${entry.id}: clause-sensitive typed row does not use the controlled template`);
+                }
+                if (usesControlledTemplate && clauseTags.length === 0) {
+                  failures.push(`${entry.id}: controlled template used without a supported clause tag`);
+                }
+                if (usesControlledTemplate) {
+                  if ((entry.manualAlternatives || []).length > 0) failures.push(`${entry.id}: controlled item has manual alternatives`);
+                  const validation = validateControlledClauseContract(row, entry.examPromptEn, entry.controlledClause);
+                  for (const error of validation.errors) failures.push(`${entry.id}: invalid controlled contract: ${error}`);
+                }
+                const analysis = detectAmbiguityFlags(row, entry.examPromptEn, {
+                  requiresLexicalAnchor: entry.requiresLexicalAnchor === true,
+                  controlledClauseContract: usesControlledTemplate ? entry.controlledClause : null,
+                });
+                if (analysis.flags.length > 0) failures.push(`${entry.id}: unresolved ambiguity flags: ${analysis.flags.join(", ")}`);
+              }
+          '''
+          if marker not in s:
+            raise SystemExit('entry validation insertion marker not found')
+          s = s.replace(marker, insertion)
+          s = s.replace('console.log(`CB6 capacity remediation audit passed:', 'console.log(`CB6B capacity remediation audit passed:')
+          p.write_text(s)
+          PY
+      - name: Run audit and write exact report
+        run: |
+          node --check scripts/audit-sentence-exam-capacity-remediation.mjs
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+          import { auditCapacityRemediationState } from './scripts/audit-sentence-exam-capacity-remediation.mjs';
+          const read = (path) => JSON.parse(fs.readFileSync(path, 'utf8'));
+          const sandbox = { window: {} };
+          sandbox.self = sandbox.window;
+          sandbox.globalThis = sandbox.window;
+          vm.createContext(sandbox);
+          for (const file of ['sentence_exam_curated_bank.js', 'sentence_exam_curated_bank_freeze.js']) {
+            vm.runInContext(fs.readFileSync(file, 'utf8'), sandbox, { filename: file });
+          }
+          const result = auditCapacityRemediationState({
+            authoring: read('docs/generated/sentence_exam_cb6_capacity_authoring.json'),
+            reviews: read('docs/reviews/sentence_exam_cb6_capacity_reviews.json'),
+            witness: read('docs/generated/sentence_exam_cb6_capacity_witness.json'),
+            inventory: read('docs/generated/sentence_exam_inventory.json'),
+            bank: sandbox.window.HANAPATH_SENTENCE_EXAM_CURATED_BANK,
+            requireApproved: false,
+          });
+          fs.writeFileSync('docs/generated/sentence_exam_cb6b_capacity_audit.json', `${JSON.stringify({ schemaVersion: 1, ...result }, null, 2)}\n`);
+          console.log(JSON.stringify(result.summary));
+          if (!result.ok) console.error(result.failures.join('\n'));
+          NODE
+      - name: Commit hardened audit and remove workflow
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/workflows/harden-cb6b-audit.yml
+          git add scripts/audit-sentence-exam-capacity-remediation.mjs docs/generated/sentence_exam_cb6b_capacity_audit.json
+          git diff --cached --check
+          git commit -m "CB6B: audit controlled authoring and repaired witness"
+          git push origin HEAD:core/cb6b-controlled-clause-reauthor
