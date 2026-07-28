@@ -1,9 +1,9 @@
-const TIME_CUE_RE = /\b(yesterday|today|tomorrow|tonight|this morning|this afternoon|this evening|last night|last week|next week|right now|soon|later|every day|each week|on (?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)|at \d{1,2}(?::\d{2})?|(?:keep|preserve) the (?:supplied )?tense)\b/i;
-const REGISTER_CUE_RE = /\b(formal|informal|politely|respectfully|casually|to (?:a|your) (?:classmate|friend|teacher|boss|elder|judge|customer|child)|in polite formal style|in polite style|(?:keep|preserve) the (?:supplied )?(?:speech level|register))\b/i;
-const TOPIC_CUE_RE = /\b(as for|regarding|speaking of|in contrast to|(?:keep|preserve) the (?:supplied )?(?:information structure|topic\/subject marking))\b/i;
+const TIME_CUE_RE = /\b(yesterday|today|tomorrow|tonight|this morning|this afternoon|this evening|last night|last week|next week|right now|soon|later|every day|each week|on (?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)|at \d{1,2}(?::\d{2})?)\b/i;
+const REGISTER_CUE_RE = /\b(formal|informal|politely|respectfully|casually|to (?:a|your) (?:classmate|friend|teacher|boss|elder|judge|customer|child)|in polite formal style|in polite style)\b/i;
+const TOPIC_CUE_RE = /\b(as for|regarding|speaking of|in contrast to)\b/i;
 const FOCUS_CUE_RE = /\b(answer(?:ing)? (?:the question )?["“']?(?:who|what|which)|the one who|the thing that|it is .+ that)\b/i;
-const LEXICAL_CUE_RE = /\b((?:using|use) (?:the word|the expression|the verb|the noun|the adjective)|(?:keep|preserve) the supplied Korean (?:wording|lexical material))\b/i;
-const COMMUNICATIVE_ACT_RE = /\b(tell|ask|request|invite|suggest|thank|apologise|apologize|warn|promise|answer|say|combine|join|recast|transform|change)\b/i;
+const LEXICAL_CUE_RE = /\b(using|use) (?:the word|the expression|the verb|the noun|the adjective)\b/i;
+const COMMUNICATIVE_ACT_RE = /\b(tell|ask|request|invite|suggest|thank|apologise|apologize|warn|promise|answer|say)\b/i;
 
 const CONTROLLED_CLAUSE_PATTERN_TAGS = Object.freeze([
   "and-go",
@@ -314,27 +314,27 @@ function detectAmbiguityFlags(row, examPromptEn, options = {}) {
     ? { valid: false, errors: [] }
     : validateControlledClauseContract(row, prompt, options.controlledClauseContract);
 
-  if (hasTopicOrSubject && !TOPIC_CUE_RE.test(prompt) && !FOCUS_CUE_RE.test(prompt)) {
+  if (hasTopicOrSubject && !controlledClause.valid && !TOPIC_CUE_RE.test(prompt) && !FOCUS_CUE_RE.test(prompt)) {
     flags.push("topic-or-focus-not-forced");
     notes.push("The prompt does not make the intended information structure explicit.");
   }
 
-  if (tenseSensitive && !TIME_CUE_RE.test(prompt)) {
+  if (tenseSensitive && !controlledClause.valid && !TIME_CUE_RE.test(prompt)) {
     flags.push("time-or-tense-not-forced");
     notes.push("The prompt lacks a concrete time or aspect cue for a tense-sensitive target.");
   }
 
-  if (registerSensitive && !REGISTER_CUE_RE.test(prompt)) {
+  if (registerSensitive && !controlledClause.valid && !REGISTER_CUE_RE.test(prompt)) {
     flags.push("register-not-forced");
     notes.push("The prompt does not identify the addressee or social setting.");
   }
 
-  if (!COMMUNICATIVE_ACT_RE.test(prompt)) {
+  if (!controlledClause.valid && !COMMUNICATIVE_ACT_RE.test(prompt)) {
     flags.push("communicative-act-not-forced");
     notes.push("The prompt does not clearly state what the learner is doing with the sentence.");
   }
 
-  if (options.requiresLexicalAnchor === true && !LEXICAL_CUE_RE.test(prompt)) {
+  if (options.requiresLexicalAnchor === true && !controlledClause.valid && !LEXICAL_CUE_RE.test(prompt)) {
     flags.push("lexical-choice-not-forced");
     notes.push("The row requires a lexical anchor, but the prompt does not supply one.");
   }
