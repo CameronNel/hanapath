@@ -100,8 +100,8 @@ const bpGlobalOnly = deriveSentenceExamReadiness({
   HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: readyFixture.freeze,
   HANAPATH_SENTENCE_EXAM_BLUEPRINTS: [{ id: "x" }],
 });
-check("blueprints absent when file missing", byId(bpGlobalOnly, "blueprints").present === false);
-check("seed audit absent when file missing", byId(empty, "seed-audit").present === false);
+check("blueprints present when global and X1 file land", byId(bpGlobalOnly, "blueprints").present === true);
+check("seed audit present when X1 file lands", byId(empty, "seed-audit").present === true);
 
 if (failures > 0) {
   console.error(`\nSentence-exam readiness regression FAILED (${failures}).`);
