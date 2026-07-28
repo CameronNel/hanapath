@@ -1,0 +1,37 @@
+name: fix-cb6b-s3364-cue
+
+on:
+  push:
+    branches:
+      - core/cb6b-controlled-clause-reauthor
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Correct accepted construction cue and regenerate
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('docs/authoring/sentence_exam_cb6b_controlled_items.json')
+          s = p.read_text()
+          old = '"s3364": {\n      "operation": "combine-clauses",\n      "requiredPatternTag": "because-aseo",\n      "requiredConstructionCue": "-져서",'
+          new = '"s3364": {\n      "operation": "combine-clauses",\n      "requiredPatternTag": "because-aseo",\n      "requiredConstructionCue": "-어서",'
+          if old not in s:
+            raise SystemExit('s3364 cue block not found')
+          p.write_text(s.replace(old, new))
+          PY
+          node scripts/build-sentence-exam-capacity-remediation.mjs --write
+      - name: Commit fix and remove workflow
+        run: |
+          git config user.name "HanaPath packet worker"
+          git config user.email "automation@hanapath.local"
+          git rm .github/workflows/fix-cb6b-s3364-cue.yml
+          git add docs/authoring/sentence_exam_cb6b_controlled_items.json docs/generated/sentence_exam_cb6_capacity_authoring.json docs/reviews/sentence_exam_cb6_capacity_reviews.json
+          git diff --cached --check
+          git commit -m "CB6B: use accepted because construction cue"
+          git push origin HEAD:core/cb6b-controlled-clause-reauthor
