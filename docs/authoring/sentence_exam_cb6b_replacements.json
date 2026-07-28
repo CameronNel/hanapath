@@ -3,12 +3,20 @@
   "revision": "curated-sentence-exam-v2-cb6b-authoring",
   "mappings": [
     {"demotedId": "s1437", "replacementId": "s0081"},
-    {"demotedId": "s2247", "replacementId": "s0772"},
+    {"demotedId": "s2247", "replacementId": "s2067"},
     {"demotedId": "s2542", "replacementId": "s3509"},
     {"demotedId": "s3345", "replacementId": "s2163"},
     {"demotedId": "s3327", "replacementId": "s3188"},
     {"demotedId": "s3443", "replacementId": "s2214"},
     {"demotedId": "s3508", "replacementId": "s2297"},
     {"demotedId": "s2605", "replacementId": "s0850"}
+  ],
+  "recognitionBackfills": [
+    {"promotedId": "s2067", "backfillId": "s0772"}
+  ],
+  "witnessOverrides": [
+    {"examId": "sentence-exam-1", "attempt": 5, "fromId": "s2247", "toId": "s2061"},
+    {"examId": "sentence-exam-5", "attempt": 1, "fromId": "s2247", "toId": "s2067"},
+    {"examId": "sentence-exam-5", "attempt": 1, "fromId": "s2067", "toId": "s2245"}
   ]
 }
