@@ -2,7 +2,7 @@
 // Regression test for the Sentence Mastery examination readiness derivation.
 //
 // Proves the rows are derived rather than hand-maintained:
-//   - CB5 flips only for an enabled, immutable 288/320 curated bank with a
+//   - CB6B flips only for an enabled, immutable 359/343 curated bank with a
 //     matching frozen revision and all four committed SHA-256 hashes;
 //   - X1 engine and X2 runner/retention flip on the runtime meta marker;
 //   - file-gated rows remain false while their artifacts are absent.
@@ -18,7 +18,7 @@ function check(name, cond) {
 }
 const byId = (rows, id) => rows.find((row) => row.id === id);
 
-function frozenBank({ enabled = true, typed = 288, recognition = 320, revision = "curated-v1" } = {}) {
+function frozenBank({ enabled = true, typed = 359, recognition = 343, revision = "curated-v2-cb6b" } = {}) {
   const entries = [
     ...Array.from({ length: typed }, (_, index) => ({ id: `t${index}`, mode: "typed" })),
     ...Array.from({ length: recognition }, (_, index) => ({ id: `r${index}`, mode: "recognition" })),
@@ -49,30 +49,30 @@ const cb5Ready = deriveSentenceExamReadiness({
   HANAPATH_SENTENCE_EXAM_CURATED_BANK: readyFixture.bank,
   HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: readyFixture.freeze,
 });
-check("CB5 present for exact enabled frozen bank", byId(cb5Ready, "curated-bank").present === true);
+check("CB6B present for exact enabled frozen bank", byId(cb5Ready, "curated-bank").present === true);
 check(
-  "CB5 note reports exact pool and revision",
-  byId(cb5Ready, "curated-bank").note === "288 typed / 320 recognition — curated-v1"
+  "CB6B note reports exact pool and revision",
+  byId(cb5Ready, "curated-bank").note === "359 typed / 343 recognition — curated-v2-cb6b"
 );
 
 const disabledFixture = frozenBank({ enabled: false });
 check(
-  "CB5 absent when bank disabled",
+  "CB6B absent when bank disabled",
   byId(deriveSentenceExamReadiness({
     HANAPATH_SENTENCE_EXAM_CURATED_BANK: disabledFixture.bank,
     HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: disabledFixture.freeze,
   }), "curated-bank").present === false
 );
-const shortFixture = frozenBank({ typed: 287 });
+const shortFixture = frozenBank({ typed: 358 });
 check(
-  "CB5 absent when exact pool target drifts",
+  "CB6B absent when exact pool target drifts",
   byId(deriveSentenceExamReadiness({
     HANAPATH_SENTENCE_EXAM_CURATED_BANK: shortFixture.bank,
     HANAPATH_SENTENCE_EXAM_CURATED_BANK_FREEZE: shortFixture.freeze,
   }), "curated-bank").present === false
 );
 check(
-  "CB5 absent without bank",
+  "CB6B absent without bank",
   byId(deriveSentenceExamReadiness({}), "curated-bank").present === false
 );
 
@@ -107,4 +107,4 @@ if (failures > 0) {
   console.error(`\nSentence-exam readiness regression FAILED (${failures}).`);
   process.exit(1);
 }
-console.log("PASS: Sentence Mastery readiness is derived from CB5 frozen bank and X1/X2 artifacts.");
+console.log("PASS: Sentence Mastery readiness is derived from the CB6B frozen bank and X1/X2 artifacts.");

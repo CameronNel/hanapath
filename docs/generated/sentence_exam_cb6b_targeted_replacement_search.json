@@ -1,0 +1,687 @@
+{
+  "schemaVersion": 1,
+  "report": {
+    "s1437": [
+      {
+        "id": "s0783",
+        "korean": "이 지역은 바다가 가깝습니다.",
+        "english": "This region is close to the sea.",
+        "tags": [
+          "formal-nida",
+          "subject-i-ga",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family"
+        ],
+        "lessons": [
+          "sn2-travel-u1-l4"
+        ]
+      },
+      {
+        "id": "s1129",
+        "korean": "현대 정보기술의 발전 속도는 엄청납니다.",
+        "english": "The development speed of modern information technology is amazing.",
+        "tags": [
+          "formal-nida",
+          "possessive-ui",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "register-not-forced",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-tech-u1-l3"
+        ]
+      },
+      {
+        "id": "s1168",
+        "korean": "정보 사회에서는 개인 정보 보호가 아주 중요합니다.",
+        "english": "Personal information protection is very important in the information society.",
+        "tags": [
+          "formal-nida",
+          "subject-i-ga",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "register-not-forced",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-people-u1-l13"
+        ]
+      },
+      {
+        "id": "s3262",
+        "korean": "제 딸은 아침에 일찍 일어납니다.",
+        "english": "My daughter gets up early in the morning.",
+        "tags": [
+          "formal-nida",
+          "time-expression",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "register-not-forced",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-people-u1-l4"
+        ]
+      },
+      {
+        "id": "s3339",
+        "korean": "구매하신 제품의 교환은 일주일 이내에 가능합니다.",
+        "english": "Exchanges of purchased products are possible within one week.",
+        "tags": [
+          "formal-nida",
+          "possessive-ui",
+          "present-polite",
+          "time-expression",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "register-not-forced",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-shopping-u1-l6"
+        ]
+      },
+      {
+        "id": "s3182",
+        "korean": "질문이 있으신 고객님께서는 이쪽으로 오십시오.",
+        "english": "Customers who have questions, please come this way.",
+        "tags": [
+          "direction-euro",
+          "formal-nida",
+          "honorific-si",
+          "subject-i-ga"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "register-not-forced",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-shopping-u1-l10"
+        ]
+      }
+    ],
+    "s2247": [
+      {
+        "id": "s2012",
+        "korean": "저는 학생이 아니에요.",
+        "english": "I am not a student.",
+        "tags": [
+          "copula-negative-anieyo",
+          "subject-i-ga",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-grammar-u1-l3"
+        ]
+      },
+      {
+        "id": "s2063",
+        "korean": "이것은 물이 아니에요.",
+        "english": "This is not water.",
+        "tags": [
+          "copula-negative-anieyo",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-food-u1-l2"
+        ]
+      },
+      {
+        "id": "s3000",
+        "korean": "그건 별로 좋은 생각이 아니에요.",
+        "english": "That's not a very good idea.",
+        "tags": [
+          "copula-negative-anieyo",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-actions-u1-l8"
+        ]
+      }
+    ],
+    "s2542": [],
+    "s3345": [],
+    "s3327": [
+      {
+        "id": "s1313",
+        "korean": "도와주셔서 대단히 감사합니다.",
+        "english": "Thank you very much for helping me.",
+        "tags": [
+          "because-aseo",
+          "formal-nida",
+          "honorific-si"
+        ],
+        "flags": [
+          "productive-clause-family",
+          "register-not-forced"
+        ],
+        "lessons": [
+          "sn7-feelings-u10-l3"
+        ]
+      }
+    ],
+    "s3443": [
+      {
+        "id": "s1120",
+        "korean": "결과도 중요하지만 준비 과정도 가치 있어요.",
+        "english": "The result is also important, but the preparation process is also valuable.",
+        "tags": [
+          "also-do",
+          "but-jiman",
+          "present-polite"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-daily-u1-l10"
+        ]
+      },
+      {
+        "id": "s3050",
+        "korean": "미안하지만 부탁 하나만 들어줘요.",
+        "english": "Sorry, but please do me one favor.",
+        "tags": [
+          "but-jiman",
+          "imperative-seyo",
+          "only-man"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "register-not-forced"
+        ],
+        "lessons": [
+          "sn2-actions-u1-l9"
+        ]
+      },
+      {
+        "id": "s4153",
+        "korean": "복도는 길지만 좁지 않아요.",
+        "english": "The hallway is long but not narrow.",
+        "tags": [
+          "but-jiman",
+          "neg-ji-anta",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-feelings-u1-l4"
+        ]
+      },
+      {
+        "id": "s2214",
+        "korean": "이 식당은 조금 비싸지만 음식이 맛있어서 자주 가요.",
+        "english": "This restaurant is a bit pricey, but the food is tasty so I go often.",
+        "tags": [
+          "because-aseo",
+          "but-jiman",
+          "present-polite",
+          "subject-i-ga",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-food-u1-l13"
+        ]
+      },
+      {
+        "id": "s2216",
+        "korean": "가격은 조금 부담스럽지만 품질이 좋아서 살 만해요.",
+        "english": "The price is a bit much, but the quality is good so it's worth buying.",
+        "tags": [
+          "because-aseo",
+          "but-jiman",
+          "present-polite",
+          "subject-i-ga",
+          "topic-neun"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-shopping-u1-l12"
+        ]
+      },
+      {
+        "id": "s3388",
+        "korean": "주중에는 바쁘지만 주말에는 만날 시간이 있어요.",
+        "english": "I am busy during the weekdays, but I have time to meet on the weekends.",
+        "tags": [
+          "but-jiman",
+          "existence-itda",
+          "present-polite",
+          "subject-i-ga",
+          "time-expression"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-daily-u1-l9"
+        ]
+      }
+    ],
+    "s3508": [
+      {
+        "id": "s0779",
+        "korean": "한국으로 여행을 가고 싶어요.",
+        "english": "I want to go on a trip to Korea.",
+        "tags": [
+          "and-go",
+          "direction-euro",
+          "object-eul-reul",
+          "present-polite",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-travel-u1-l3"
+        ]
+      },
+      {
+        "id": "s0924",
+        "korean": "조용하고 깨끗한 곳에서 살고 싶어요.",
+        "english": "I want to live in a quiet and clean place.",
+        "tags": [
+          "and-go",
+          "location-eseo",
+          "present-polite",
+          "want-go-sipda",
+          "with-hago-wa"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-travel-u1-l14"
+        ]
+      },
+      {
+        "id": "s2154",
+        "korean": "커피를 마시고 싶어요.",
+        "english": "I want to drink coffee.",
+        "tags": [
+          "object-eul-reul",
+          "present-polite",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-food-u1-l5"
+        ]
+      },
+      {
+        "id": "s2297",
+        "korean": "따뜻한 국을 먹고 싶어요.",
+        "english": "I want some warm soup.",
+        "tags": [
+          "object-eul-reul",
+          "present-polite",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-food-u1-l10"
+        ]
+      },
+      {
+        "id": "s2481",
+        "korean": "방을 하나 예약하고 싶어요.",
+        "english": "I'd like to book a room.",
+        "tags": [
+          "object-eul-reul",
+          "present-polite",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-daily-u1-l2"
+        ]
+      },
+      {
+        "id": "s2530",
+        "korean": "방을 좀 더 밝게 하고 싶어요.",
+        "english": "I want to make the room a bit brighter.",
+        "tags": [
+          "object-eul-reul",
+          "present-polite",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-daily-u1-l7"
+        ]
+      },
+      {
+        "id": "s3881",
+        "korean": "전기를 아끼려고 불을 꺼요.",
+        "english": "I turn off the light to save electricity.",
+        "tags": [
+          "object-eul-reul",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-tech-u1-l3"
+        ]
+      },
+      {
+        "id": "s4168",
+        "korean": "집을 깨끗하게 유지하려고 해요.",
+        "english": "I try to keep the house clean.",
+        "tags": [
+          "object-eul-reul",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-travel-u1-l13"
+        ]
+      },
+      {
+        "id": "s2219",
+        "korean": "이번 발표는 실수 없이 잘 해내고 싶어요.",
+        "english": "I want to pull off this presentation without mistakes.",
+        "tags": [
+          "object-eul-reul",
+          "present-polite",
+          "topic-neun",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-study-u1-l9"
+        ]
+      },
+      {
+        "id": "s2378",
+        "korean": "사이즈가 안 맞아서 교환하고 싶어요.",
+        "english": "The size doesn't fit, so I'd like to exchange it.",
+        "tags": [
+          "because-aseo",
+          "present-polite",
+          "subject-i-ga",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-shopping-u1-l4"
+        ]
+      },
+      {
+        "id": "s2535",
+        "korean": "집이 너무 좁아서 큰 집으로 옮기고 싶어요.",
+        "english": "The house is too cramped, so I want to move to a bigger one.",
+        "tags": [
+          "because-aseo",
+          "direction-euro",
+          "subject-i-ga",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn2-travel-u1-l19"
+        ]
+      },
+      {
+        "id": "s2786",
+        "korean": "이 앱을 다운로드하고 싶어요.",
+        "english": "I want to download this app.",
+        "tags": [
+          "object-eul-reul",
+          "present-polite",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-tech-u1-l5"
+        ]
+      },
+      {
+        "id": "s2850",
+        "korean": "사랑하는 사람하고 결혼하고 싶어요.",
+        "english": "I want to marry the person I love.",
+        "tags": [
+          "want-go-sipda",
+          "with-hago-wa"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-actions-u1-l7"
+        ]
+      },
+      {
+        "id": "s3608",
+        "korean": "좋은 관계를 오래 유지하고 싶어요.",
+        "english": "I want to maintain a good relationship for a long time.",
+        "tags": [
+          "object-eul-reul",
+          "want-go-sipda"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "particle-or-order-family",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn2-travel-u1-l17"
+        ]
+      }
+    ],
+    "s2605": [
+      {
+        "id": "s0850",
+        "korean": "소풍 갈 때 김밥을 싸 가요.",
+        "english": "We pack kimbap when going on a picnic.",
+        "tags": [
+          "object-eul-reul",
+          "when-ttae"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn5-food-u3-l2"
+        ]
+      },
+      {
+        "id": "s4029",
+        "korean": "잠자기 전에 양치해요.",
+        "english": "I brush my teeth before going to sleep.",
+        "tags": [
+          "present-polite",
+          "when-ttae"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family"
+        ],
+        "lessons": [
+          "sn5-actions-u4-l5"
+        ]
+      },
+      {
+        "id": "s0738",
+        "korean": "스트레스 때문에 두통이 생겼어요.",
+        "english": "I got a headache because of stress.",
+        "tags": [
+          "past-polite",
+          "subject-i-ga",
+          "when-ttae"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "time-or-tense-not-forced"
+        ],
+        "lessons": [
+          "sn5-health-u2-l3"
+        ]
+      },
+      {
+        "id": "s1223",
+        "korean": "세 시간 산행 끝에 산 정상에 드디어 올랐어요.",
+        "english": "After a three-hour hike, I finally stood on the mountain summit.",
+        "tags": [
+          "counter-phrase",
+          "location-e",
+          "past-polite",
+          "when-ttae"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "time-or-tense-not-forced"
+        ],
+        "lessons": [
+          "sn5-travel-u4-l6"
+        ]
+      },
+      {
+        "id": "s1357",
+        "korean": "살다 보면 때로 슬프고 외로운 순간이 찾아와요.",
+        "english": "Living life, sometimes sad and lonely moments come.",
+        "tags": [
+          "and-go",
+          "direction-euro",
+          "if-myeon",
+          "present-polite",
+          "subject-i-ga",
+          "when-ttae"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn5-daily-u4-l11"
+        ]
+      },
+      {
+        "id": "s3093",
+        "korean": "일할 때는 집중하는 게 좋아요.",
+        "english": "It's good to focus when you work.",
+        "tags": [
+          "present-polite",
+          "subject-i-ga",
+          "when-ttae"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "topic-or-focus-not-forced"
+        ],
+        "lessons": [
+          "sn5-actions-u4-l7"
+        ]
+      },
+      {
+        "id": "s3114",
+        "korean": "어릴 때 태권도를 배웠어요.",
+        "english": "I learned taekwondo when I was young.",
+        "tags": [
+          "object-eul-reul",
+          "past-polite",
+          "when-ttae"
+        ],
+        "flags": [
+          "communicative-act-not-forced",
+          "productive-clause-family",
+          "time-or-tense-not-forced"
+        ],
+        "lessons": [
+          "sn5-actions-u4-l5"
+        ]
+      }
+    ]
+  }
+}

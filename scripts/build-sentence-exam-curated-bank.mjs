@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 import { detectAmbiguityFlags, normalizeSentenceExamAnswer } from "./lib/sentence-exam-ambiguity.mjs";
 import { LOCKED_SELECTION_POLICY, auditCuratedBankState } from "./audit-sentence-exam-curated-bank.mjs";
@@ -480,9 +480,23 @@ export function auditCb4Package({ requireApproved = false } = {}) {
     } catch {
       errors.push("Reviewed CB4 bank file is missing.");
     }
-    if (currentText && currentText !== bankText(expectedBank)) errors.push("Reviewed CB4 bank file is stale relative to the authoring package and review manifest.");
     if (currentText) {
       const currentBank = loadBankFromText(currentText);
+      const isCb4Runtime = currentBank?.revision === REVISION;
+      const isCb6bSuccessor = currentBank?.revision === "curated-sentence-exam-v2-cb6b"
+        && currentBank?.baseRevision === REVISION;
+      if (isCb4Runtime && currentText !== bankText(expectedBank)) {
+        errors.push("Reviewed CB4 bank file is stale relative to the authoring package and review manifest.");
+      } else if (isCb6bSuccessor) {
+        const successorById = new Map((currentBank.entries || []).map((entry) => [entry.id, entry]));
+        for (const entry of expectedBank.entries) {
+          if (JSON.stringify(successorById.get(entry.id)) !== JSON.stringify(entry)) {
+            errors.push(`CB6B successor does not preserve reviewed CB4 entry ${entry.id}.`);
+          }
+        }
+      } else if (!isCb4Runtime) {
+        errors.push("Runtime curated bank is neither the reviewed CB4 bank nor its recognized CB6B successor.");
+      }
       const result = auditCuratedBankState({
         bank: currentBank,
         templates: source.templates,
@@ -491,8 +505,8 @@ export function auditCb4Package({ requireApproved = false } = {}) {
         routes: source.routes,
       });
       errors.push(...result.errors);
-      if (result.typedCount !== LOCKED_SELECTION_POLICY.typedTargetSize) errors.push("Reviewed bank typed count drifted.");
-      if (result.recognitionCount !== LOCKED_SELECTION_POLICY.recognitionTargetSize) errors.push("Reviewed bank recognition count drifted.");
+      if (isCb4Runtime && result.typedCount !== LOCKED_SELECTION_POLICY.typedTargetSize) errors.push("Reviewed bank typed count drifted.");
+      if (isCb4Runtime && result.recognitionCount !== LOCKED_SELECTION_POLICY.recognitionTargetSize) errors.push("Reviewed bank recognition count drifted.");
     }
   } else if (requireApproved) {
     errors.push("CB4 package has not completed independent approval.");
@@ -530,26 +544,28 @@ function checkPackage({ requireApproved = false } = {}) {
   return okay;
 }
 
-if (process.argv.includes("--write")) {
-  writePackage();
-} else if (process.argv.includes("--apply-reviewed")) {
-  writePackage({ applyReviewed: true });
-} else if (process.argv.includes("--check")) {
-  if (!checkPackage()) process.exit(1);
-} else if (process.argv.includes("--require-approved")) {
-  if (!checkPackage({ requireApproved: true })) process.exit(1);
-} else {
-  const { package: authoringPackage } = buildCb4AuthoringPackage();
-  const manifest = buildReviewManifest(authoringPackage, readJsonIfPresent(REVIEW_FILE));
-  console.log(JSON.stringify({
-    revision: REVISION,
-    typedCount: authoringPackage.summary.typedCount,
-    recognitionCount: authoringPackage.summary.recognitionCount,
-    finiteTypedCount: authoringPackage.summary.finiteTypedCount,
-    finiteTypedShare: authoringPackage.summary.finiteTypedShare,
-    typedBySection: authoringPackage.summary.typedBySection,
-    recognitionBySection: authoringPackage.summary.recognitionBySection,
-    pendingReviews: manifest.pendingCount,
-    approvedReviews: manifest.approvedCount,
-  }, null, 2));
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  if (process.argv.includes("--write")) {
+    writePackage();
+  } else if (process.argv.includes("--apply-reviewed")) {
+    writePackage({ applyReviewed: true });
+  } else if (process.argv.includes("--check")) {
+    if (!checkPackage()) process.exit(1);
+  } else if (process.argv.includes("--require-approved")) {
+    if (!checkPackage({ requireApproved: true })) process.exit(1);
+  } else {
+    const { package: authoringPackage } = buildCb4AuthoringPackage();
+    const manifest = buildReviewManifest(authoringPackage, readJsonIfPresent(REVIEW_FILE));
+    console.log(JSON.stringify({
+      revision: REVISION,
+      typedCount: authoringPackage.summary.typedCount,
+      recognitionCount: authoringPackage.summary.recognitionCount,
+      finiteTypedCount: authoringPackage.summary.finiteTypedCount,
+      finiteTypedShare: authoringPackage.summary.finiteTypedShare,
+      typedBySection: authoringPackage.summary.typedBySection,
+      recognitionBySection: authoringPackage.summary.recognitionBySection,
+      pendingReviews: manifest.pendingCount,
+      approvedReviews: manifest.approvedCount,
+    }, null, 2));
+  }
 }

@@ -269,6 +269,7 @@ const approvedEntry = {
   requiresLexicalAnchor: false,
   patternTags: [],
   authoredBy: "author-a",
+  authoredRevision: "curated-sentence-exam-v1",
   reviewStatus: "approved",
   reviewedBy: "reviewer-b",
   reviewedAt: "2026-07-26T11:00:00Z",
@@ -311,6 +312,7 @@ const controlledEntry = {
   requiresLexicalAnchor: true,
   controlledClause: controlledClauseContract,
   patternTags: [...clauseRow.patternTags],
+  authoredRevision: "curated-sentence-exam-controlled-v1",
   reviewedRevision: "curated-sentence-exam-controlled-v1",
 };
 const controlledBank = {

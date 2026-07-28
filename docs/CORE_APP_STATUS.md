@@ -68,7 +68,7 @@ its packet lands, with no hand-edit to this report.
 
 | Milestone | Present |
 |---|---|
-| Enabled frozen curated bank (CB5) | yes — 288 typed / 320 recognition — curated-sentence-exam-v1-cb4 |
+| Enabled frozen expanded curated bank (CB6B) | yes — 359 typed / 343 recognition — curated-sentence-exam-v2-cb6b |
 | Exam blueprints (X1) | no |
 | Generator/grader engine (X1) | no |
 | Seed audit (X1) | no |
@@ -107,6 +107,11 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentence-exam curated bank authoring freshness (CB4) | `node scripts/build-sentence-exam-curated-bank.mjs --check` | blocking |
 | Sentence-exam curated bank approved-review audit (CB4) | `node scripts/audit-sentence-exam-curated-bank-cb4.mjs --require-approved` | blocking |
 | Sentence-exam curated bank authoring regression (CB4) | `node scripts/test-sentence-exam-curated-bank-cb4.mjs` | blocking |
+| Sentence-exam CB6B capacity package freshness | `node scripts/build-sentence-exam-capacity-remediation.mjs --check` | blocking |
+| Sentence-exam CB6B independent-review freshness | `node scripts/review-sentence-exam-capacity-remediation.mjs --check` | blocking |
+| Sentence-exam CB6B five-attempt capacity audit | `node scripts/audit-sentence-exam-capacity-remediation.mjs --require-approved` | blocking |
+| Sentence-exam CB6B capacity regression | `node scripts/test-sentence-exam-capacity-remediation.mjs` | blocking |
+| Sentence-exam CB6B expanded-bank freshness | `node scripts/build-sentence-exam-curated-bank-cb6b.mjs --check` | blocking |
 | Sentence-exam curated bank freeze freshness (CB5) | `node scripts/build-sentence-exam-curated-bank-freeze.mjs --check` | blocking |
 | Sentence-exam curated bank freeze regression (CB5) | `node scripts/test-sentence-exam-curated-bank-freeze.mjs` | blocking |
 | Sentence lesson contrast authoring regression (CB2) | `node scripts/test-sentence-lesson-contrast-authoring.mjs` | blocking |

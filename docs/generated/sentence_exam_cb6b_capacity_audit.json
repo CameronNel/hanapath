@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "revision": "curated-sentence-exam-v2-cb6b-authoring",
+  "ok": true,
+  "failures": [],
+  "summary": {
+    "baseEntries": 608,
+    "additions": 94,
+    "projectedEntries": 702,
+    "typedAdditions": 71,
+    "recognitionAdditions": 23,
+    "stage1TypedDistinctTargets": 100,
+    "witnessExams": 5,
+    "independentReviewRequired": 0
+  }
+}

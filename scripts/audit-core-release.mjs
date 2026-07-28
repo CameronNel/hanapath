@@ -72,8 +72,8 @@ const DATA_FILES = [
 // The report's readiness rows are derived, not hand-maintained: they flip
 // automatically as each packet lands its artifacts, with NO edit to this file.
 //
-//   - CB5 : the independently reviewed curated bank is enabled, hash-frozen, and
-//           exactly 288 typed / 320 recognition entries. Historical eligibility
+//   - CB6B: the independently reviewed expanded bank is enabled, hash-frozen, and
+//           exactly 359 typed / 343 recognition entries. Historical eligibility
 //           shards C and D remain protected evidence, not release prerequisites.
 //   - X1  : `sentence_exam_blueprints.js` publishes HANAPATH_SENTENCE_EXAM_BLUEPRINTS;
 //           `sentence_exam_engine.js` publishes HANAPATH_SENTENCE_EXAM_META with a
@@ -171,10 +171,10 @@ function deriveSentenceExamReadiness(W, _sentenceRows, _approvedRows) {
       && freeze
       && freeze.revision === bank.revision
       && freeze.entryCount === entries.length
-      && freeze.typedCount === 288
-      && freeze.recognitionCount === 320
-      && typedCount === 288
-      && recognitionCount === 320
+      && freeze.typedCount === 359
+      && freeze.recognitionCount === 343
+      && typedCount === 359
+      && recognitionCount === 343
       && validHashes
   );
   const engineVersion = meta && meta.engineVersion != null ? meta.engineVersion : null;
@@ -183,7 +183,7 @@ function deriveSentenceExamReadiness(W, _sentenceRows, _approvedRows) {
   return [
     {
       id: "curated-bank",
-      label: "Enabled frozen curated bank (CB5)",
+      label: "Enabled frozen expanded curated bank (CB6B)",
       present: curatedReady,
       note: bank
         ? `${typedCount} typed / ${recognitionCount} recognition — ${bank.revision || "missing revision"}`
@@ -330,6 +330,11 @@ const GATE_STEPS = [
   { id: "sentence-exam-curated-authoring-freshness", label: "Sentence-exam curated bank authoring freshness (CB4)", script: "scripts/build-sentence-exam-curated-bank.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
   { id: "sentence-exam-curated-authoring-audit", label: "Sentence-exam curated bank approved-review audit (CB4)", script: "scripts/audit-sentence-exam-curated-bank-cb4.mjs", fullArgs: ["--require-approved"], quickArgs: ["--require-approved"] },
   { id: "sentence-exam-curated-authoring-regression", label: "Sentence-exam curated bank authoring regression (CB4)", script: "scripts/test-sentence-exam-curated-bank-cb4.mjs" },
+  { id: "sentence-exam-capacity-freshness", label: "Sentence-exam CB6B capacity package freshness", script: "scripts/build-sentence-exam-capacity-remediation.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
+  { id: "sentence-exam-capacity-review", label: "Sentence-exam CB6B independent-review freshness", script: "scripts/review-sentence-exam-capacity-remediation.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
+  { id: "sentence-exam-capacity-audit", label: "Sentence-exam CB6B five-attempt capacity audit", script: "scripts/audit-sentence-exam-capacity-remediation.mjs", fullArgs: ["--require-approved"], quickArgs: ["--require-approved"] },
+  { id: "sentence-exam-capacity-regression", label: "Sentence-exam CB6B capacity regression", script: "scripts/test-sentence-exam-capacity-remediation.mjs" },
+  { id: "sentence-exam-cb6b-bank-freshness", label: "Sentence-exam CB6B expanded-bank freshness", script: "scripts/build-sentence-exam-curated-bank-cb6b.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
   { id: "sentence-exam-curated-freeze-freshness", label: "Sentence-exam curated bank freeze freshness (CB5)", script: "scripts/build-sentence-exam-curated-bank-freeze.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
   { id: "sentence-exam-curated-freeze-regression", label: "Sentence-exam curated bank freeze regression (CB5)", script: "scripts/test-sentence-exam-curated-bank-freeze.mjs" },
   { id: "sentence-lesson-contrast-authoring", label: "Sentence lesson contrast authoring regression (CB2)", script: "scripts/test-sentence-lesson-contrast-authoring.mjs" },

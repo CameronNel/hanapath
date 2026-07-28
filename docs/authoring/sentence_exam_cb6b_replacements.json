@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "revision": "curated-sentence-exam-v2-cb6b-authoring",
+  "mappings": [
+    {
+      "demotedId": "s2675",
+      "replacementId": "s4114"
+    },
+    {
+      "demotedId": "s2186",
+      "replacementId": "s2070"
+    },
+    {
+      "demotedId": "s2069",
+      "replacementId": "s2067"
+    },
+    {
+      "demotedId": "s2248",
+      "replacementId": "s2269"
+    },
+    {
+      "demotedId": "s2672",
+      "replacementId": "s2207"
+    },
+    {
+      "demotedId": "s0969",
+      "replacementId": "s3602"
+    },
+    {
+      "demotedId": "s2063",
+      "replacementId": "s1074"
+    },
+    {
+      "demotedId": "s2023",
+      "replacementId": "s2287"
+    },
+    {
+      "demotedId": "s2089",
+      "replacementId": "s2587"
+    },
+    {
+      "demotedId": "s0670",
+      "replacementId": "s2520"
+    },
+    {
+      "demotedId": "s3817",
+      "replacementId": "s3234"
+    },
+    {
+      "demotedId": "s1053",
+      "replacementId": "s3200"
+    },
+    {
+      "demotedId": "s3290",
+      "replacementId": "s1092"
+    },
+    {
+      "demotedId": "s3536",
+      "replacementId": "s3075"
+    },
+    {
+      "demotedId": "s3950",
+      "replacementId": "s3553"
+    },
+    {
+      "demotedId": "s3145",
+      "replacementId": "s1454"
+    },
+    {
+      "demotedId": "s3362",
+      "replacementId": "s4020"
+    },
+    {
+      "demotedId": "s1630",
+      "replacementId": "s1097"
+    },
+    {
+      "demotedId": "s1782",
+      "replacementId": "s1865"
+    }
+  ],
+  "recognitionBackfills": [
+    {
+      "promotedId": "s4114",
+      "backfillId": "s2219"
+    },
+    {
+      "promotedId": "s0772",
+      "backfillId": "s2065"
+    },
+    {
+      "promotedId": "s0777",
+      "backfillId": "s1891"
+    },
+    {
+      "promotedId": "s4037",
+      "backfillId": "s1557"
+    },
+    {
+      "promotedId": "s4023",
+      "backfillId": "s2693"
+    }
+  ],
+  "witnessOverrides": []
+}

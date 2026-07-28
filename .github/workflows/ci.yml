@@ -86,6 +86,23 @@ jobs:
         run: node scripts/audit-sentence-exam-curated-bank-cb4.mjs --require-approved
       - name: CB4 curated-bank authoring regression
         run: node scripts/test-sentence-exam-curated-bank-cb4.mjs
+      - name: Check CB6B capacity and expanded-bank syntax
+        run: |
+          node --check scripts/build-sentence-exam-capacity-remediation.mjs
+          node --check scripts/review-sentence-exam-capacity-remediation.mjs
+          node --check scripts/audit-sentence-exam-capacity-remediation.mjs
+          node --check scripts/test-sentence-exam-capacity-remediation.mjs
+          node --check scripts/build-sentence-exam-curated-bank-cb6b.mjs
+      - name: Check CB6B capacity package freshness
+        run: node scripts/build-sentence-exam-capacity-remediation.mjs --check
+      - name: Check CB6B independent-review freshness
+        run: node scripts/review-sentence-exam-capacity-remediation.mjs --check
+      - name: Audit CB6B exact five-attempt capacity
+        run: node scripts/audit-sentence-exam-capacity-remediation.mjs --require-approved
+      - name: CB6B capacity regression
+        run: node scripts/test-sentence-exam-capacity-remediation.mjs
+      - name: Check CB6B expanded curated-bank freshness
+        run: node scripts/build-sentence-exam-curated-bank-cb6b.mjs --check
       - name: Check CB5 curated-bank freeze syntax
         run: |
           node --check scripts/lib/sentence-exam-freeze.mjs
