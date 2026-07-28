@@ -3,12 +3,12 @@
   "revision": "curated-sentence-exam-v2-cb6b-authoring",
   "mappings": [
     {"demotedId": "s1437", "replacementId": "s0081"},
-    {"demotedId": "s2247", "replacementId": "s2069"},
+    {"demotedId": "s2247", "replacementId": "s0772"},
     {"demotedId": "s2542", "replacementId": "s3509"},
     {"demotedId": "s3345", "replacementId": "s2163"},
-    {"demotedId": "s3327", "replacementId": "s1313"},
-    {"demotedId": "s3443", "replacementId": "s2186"},
-    {"demotedId": "s3508", "replacementId": "s2675"},
-    {"demotedId": "s2605", "replacementId": "s2672"}
+    {"demotedId": "s3327", "replacementId": "s3188"},
+    {"demotedId": "s3443", "replacementId": "s1120"},
+    {"demotedId": "s3508", "replacementId": "s2154"},
+    {"demotedId": "s2605", "replacementId": "s0946"}
   ]
 }
