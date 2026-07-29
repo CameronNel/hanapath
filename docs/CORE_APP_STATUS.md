@@ -69,9 +69,9 @@ its packet lands, with no hand-edit to this report.
 | Milestone | Present |
 |---|---|
 | Enabled frozen expanded curated bank (CB6B) | yes — 359 typed / 343 recognition — curated-sentence-exam-v2-cb6b |
-| Exam blueprints (X1) | no |
-| Generator/grader engine (X1) | no |
-| Seed audit (X1) | no |
+| Exam blueprints (X1) | yes |
+| Generator/grader engine (X1) | yes — engine v1 |
+| Seed audit (X1) | yes |
 | Browser runner + provenance (X2) | no |
 | Delayed retention confirmation (X2) | no |
 
@@ -137,7 +137,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 ## Open core gates
 
 - **Historical Sentence eligibility evidence** remains at 2100 / 4177 approved rows (50.28%). E1A/E1B stay protected; unfinished shards C/D are not release prerequisites. The strict source-bank gate is the enabled frozen curated bank.
-- **Sentence Mastery examination** engine/runner: not yet shipped (packets **X1** and **X2**); the seed audit step SKIPs.
+- **Sentence Mastery examination** engine/runner: seed audit present.
 - **Mobile package validation** is conditional on a prepared `mobile/www`; the Android workflow performs it after `npm run prepare:web`.
 
 ## Coverage gaps

@@ -1,0 +1,4493 @@
+{
+  "schemaVersion": 2,
+  "generatedBy": "scripts/audit-sentence-exams.mjs",
+  "mode": "full",
+  "blueprintVersion": 1,
+  "engineVersion": 1,
+  "engineRevision": "sentence-exam-engine-v1-x1",
+  "contentBankRevision": "curated-sentence-exam-v2-cb6b",
+  "frozenBank": {
+    "enabled": true,
+    "freezeState": "frozen",
+    "revision": "curated-sentence-exam-v2-cb6b",
+    "entryCount": 702,
+    "typedEntries": 359,
+    "recognitionEntries": 343,
+    "typedBySection": {
+      "1": 34,
+      "2": 66,
+      "3": 49,
+      "4": 48,
+      "5": 39,
+      "6": 40,
+      "7": 41,
+      "8": 42
+    },
+    "recognitionBySection": {
+      "1": 42,
+      "2": 47,
+      "3": 44,
+      "4": 42,
+      "5": 41,
+      "6": 42,
+      "7": 44,
+      "8": 41
+    }
+  },
+  "blueprintContracts": {
+    "sentence-exam-1": {
+      "itemCount": 24,
+      "timeLimitMinutes": 40,
+      "allocations": {
+        "P": 14,
+        "F": 3,
+        "X": 3,
+        "R": 2,
+        "C": 2
+      }
+    },
+    "sentence-exam-2": {
+      "itemCount": 24,
+      "timeLimitMinutes": 40,
+      "allocations": {
+        "P": 14,
+        "F": 3,
+        "X": 3,
+        "R": 2,
+        "C": 2
+      }
+    },
+    "sentence-exam-3": {
+      "itemCount": 24,
+      "timeLimitMinutes": 40,
+      "allocations": {
+        "P": 14,
+        "F": 3,
+        "X": 3,
+        "R": 2,
+        "C": 2
+      }
+    },
+    "sentence-exam-4": {
+      "itemCount": 24,
+      "timeLimitMinutes": 40,
+      "allocations": {
+        "P": 14,
+        "F": 3,
+        "X": 3,
+        "R": 2,
+        "C": 2
+      }
+    },
+    "sentence-exam-5": {
+      "itemCount": 50,
+      "timeLimitMinutes": 75,
+      "allocations": {
+        "P": 30,
+        "F": 6,
+        "X": 4,
+        "R": 5,
+        "C": 5
+      }
+    },
+    "sentence-exam-5:retention": {
+      "itemCount": 25,
+      "timeLimitMinutes": 40,
+      "allocations": {
+        "P": 15,
+        "F": 3,
+        "X": 2,
+        "R": 3,
+        "C": 2
+      }
+    }
+  },
+  "capacityScaffold": {
+    "revision": "curated-sentence-exam-v2-cb6b-authoring",
+    "source": "docs/authoring/sentence_exam_cb6b_witness_assignment.json",
+    "authoritativeWitnessRevision": "curated-sentence-exam-v2-cb6b-authoring",
+    "exactWitnessMatch": true
+  },
+  "workload": {
+    "independentFormsRequested": 3000,
+    "independentFormsCompleted": 3000,
+    "independentDeterminismRepeats": 3000,
+    "freshnessSequencesRequested": 1500,
+    "freshnessSequencesCompleted": 1500,
+    "freshnessFormsRequested": 7500,
+    "freshnessFormsCompleted": 7500,
+    "freshnessDeterminismRepeats": 1500,
+    "retentionChecksRequested": 500,
+    "retentionChecksCompleted": 500
+  },
+  "independent": {
+    "sentence-exam-1": {
+      "requested": 500,
+      "completed": 500,
+      "deterministicRepeats": 500,
+      "failures": [],
+      "fallbackResolved": 0,
+      "capacity": {
+        "examId": "sentence-exam-1",
+        "typedDistinctTargets": 100,
+        "recognitionDistinctTargets": 89,
+        "typedPerPaper": 20,
+        "recognitionPerPaper": 4,
+        "freshnessWindow": 5,
+        "typedRequiredForWindow": 100,
+        "recognitionRequiredForWindow": 20,
+        "typedMargin": 0,
+        "recognitionMargin": 69,
+        "ready": true
+      },
+      "exposure": {
+        "totalSelections": 12000,
+        "sections": {
+          "distinct": 2,
+          "min": 4320,
+          "max": 7680,
+          "mean": 6000,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 7680
+            },
+            {
+              "key": "1",
+              "count": 4320
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "1",
+              "count": 4320
+            },
+            {
+              "key": "2",
+              "count": 7680
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 1000,
+          "max": 7000,
+          "mean": 2400,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 7000
+            },
+            {
+              "key": "F",
+              "count": 1500
+            },
+            {
+              "key": "X",
+              "count": 1500
+            },
+            {
+              "key": "C",
+              "count": 1000
+            },
+            {
+              "key": "R",
+              "count": 1000
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "R",
+              "count": 1000
+            },
+            {
+              "key": "C",
+              "count": 1000
+            },
+            {
+              "key": "X",
+              "count": 1500
+            },
+            {
+              "key": "F",
+              "count": 1500
+            },
+            {
+              "key": "P",
+              "count": 7000
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 37,
+          "min": 86,
+          "max": 4615,
+          "mean": 961.973,
+          "mostExposed": [
+            {
+              "key": "object-eul-reul",
+              "count": 4615
+            },
+            {
+              "key": "present-polite",
+              "count": 4528
+            },
+            {
+              "key": "time-expression",
+              "count": 2480
+            },
+            {
+              "key": "topic-neun",
+              "count": 2415
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 2317
+            },
+            {
+              "key": "question-polite",
+              "count": 1904
+            },
+            {
+              "key": "past-polite",
+              "count": 1623
+            },
+            {
+              "key": "copula-ieyo",
+              "count": 1349
+            },
+            {
+              "key": "location-e",
+              "count": 1262
+            },
+            {
+              "key": "honorific-si",
+              "count": 1235
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "with-hago-wa",
+              "count": 86
+            },
+            {
+              "key": "from-buteo",
+              "count": 105
+            },
+            {
+              "key": "propositive-eyo",
+              "count": 107
+            },
+            {
+              "key": "only-man",
+              "count": 115
+            },
+            {
+              "key": "comparison-boda",
+              "count": 116
+            },
+            {
+              "key": "also-do",
+              "count": 129
+            },
+            {
+              "key": "when-ttae",
+              "count": 145
+            },
+            {
+              "key": "and-go",
+              "count": 178
+            },
+            {
+              "key": "neg-ji-anta",
+              "count": 200
+            },
+            {
+              "key": "copula-negative-anieyo",
+              "count": 247
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 189,
+          "min": 4,
+          "max": 127,
+          "mean": 63.4921,
+          "mostExposed": [
+            {
+              "key": "공항까지 얼마나 걸려요?",
+              "count": 127
+            },
+            {
+              "key": "일본으로 여행을 가요.",
+              "count": 125
+            },
+            {
+              "key": "음료수 한 병 주세요.",
+              "count": 118
+            },
+            {
+              "key": "무슨 음식을 좋아해요?",
+              "count": 117
+            },
+            {
+              "key": "의자 위에 가방이 놓여 있어요.",
+              "count": 117
+            },
+            {
+              "key": "저는 커피보다 차를 더 좋아해요.",
+              "count": 116
+            },
+            {
+              "key": "그의 최종 결정은 무엇인가요?",
+              "count": 115
+            },
+            {
+              "key": "제 말이 바로 그 말이에요.",
+              "count": 114
+            },
+            {
+              "key": "여행 정보를 인터넷으로 찾아요.",
+              "count": 111
+            },
+            {
+              "key": "오늘 받은 선물은 정말 기뻤어요.",
+              "count": 111
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "이 자리는 예약석이 아니에요.",
+              "count": 4
+            },
+            {
+              "key": "친절한 이웃들이 제게 도움을 많이 주셨어요.",
+              "count": 5
+            },
+            {
+              "key": "회사 분위기를 직접 확인하고 싶어요.",
+              "count": 6
+            },
+            {
+              "key": "한글 말하기 실력에 자신감을 갖고 당당히 말해 보세요.",
+              "count": 6
+            },
+            {
+              "key": "어려운 수학 문제를 풀 때 친구의 도움을 받았어요.",
+              "count": 7
+            },
+            {
+              "key": "저희 부서는 내일부터 새로운 프로젝트 업무를 시작합니다.",
+              "count": 8
+            },
+            {
+              "key": "봄이 되어 비가 내리니 마른 땅이 촉촉해졌어요.",
+              "count": 8
+            },
+            {
+              "key": "그는 평생 모은 재산의 상당액을 장학 재단에 기부했어요.",
+              "count": 8
+            },
+            {
+              "key": "건강을 위해서 소식하는 습관을 기르는 것이 좋습니다.",
+              "count": 8
+            },
+            {
+              "key": "가게 영업 시간이 끝나서 문을 굳게 닫았어요.",
+              "count": 8
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 189,
+          "min": 4,
+          "max": 127,
+          "mean": 63.4921,
+          "mostExposed": [
+            {
+              "key": "s2326",
+              "count": 127
+            },
+            {
+              "key": "s0632",
+              "count": 125
+            },
+            {
+              "key": "s0351",
+              "count": 118
+            },
+            {
+              "key": "s0138",
+              "count": 117
+            },
+            {
+              "key": "s0906",
+              "count": 117
+            },
+            {
+              "key": "s2287",
+              "count": 116
+            },
+            {
+              "key": "s0757",
+              "count": 115
+            },
+            {
+              "key": "s2998",
+              "count": 114
+            },
+            {
+              "key": "s0620",
+              "count": 111
+            },
+            {
+              "key": "s0798",
+              "count": 111
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s2249",
+              "count": 4
+            },
+            {
+              "key": "s1375",
+              "count": 5
+            },
+            {
+              "key": "s3976",
+              "count": 6
+            },
+            {
+              "key": "s1891",
+              "count": 6
+            },
+            {
+              "key": "s1330",
+              "count": 7
+            },
+            {
+              "key": "s1896",
+              "count": 8
+            },
+            {
+              "key": "s1894",
+              "count": 8
+            },
+            {
+              "key": "s1356",
+              "count": 8
+            },
+            {
+              "key": "s1179",
+              "count": 8
+            },
+            {
+              "key": "s0085",
+              "count": 8
+            }
+          ]
+        }
+      }
+    },
+    "sentence-exam-2": {
+      "requested": 500,
+      "completed": 500,
+      "deterministicRepeats": 500,
+      "failures": [],
+      "fallbackResolved": 0,
+      "capacity": {
+        "examId": "sentence-exam-2",
+        "typedDistinctTargets": 197,
+        "recognitionDistinctTargets": 175,
+        "typedPerPaper": 20,
+        "recognitionPerPaper": 4,
+        "freshnessWindow": 5,
+        "typedRequiredForWindow": 100,
+        "recognitionRequiredForWindow": 20,
+        "typedMargin": 97,
+        "recognitionMargin": 155,
+        "ready": true
+      },
+      "exposure": {
+        "totalSelections": 12000,
+        "sections": {
+          "distinct": 4,
+          "min": 1837,
+          "max": 4341,
+          "mean": 3000,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 4341
+            },
+            {
+              "key": "3",
+              "count": 3096
+            },
+            {
+              "key": "4",
+              "count": 2726
+            },
+            {
+              "key": "1",
+              "count": 1837
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "1",
+              "count": 1837
+            },
+            {
+              "key": "4",
+              "count": 2726
+            },
+            {
+              "key": "3",
+              "count": 3096
+            },
+            {
+              "key": "2",
+              "count": 4341
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 1000,
+          "max": 7000,
+          "mean": 2400,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 7000
+            },
+            {
+              "key": "F",
+              "count": 1500
+            },
+            {
+              "key": "X",
+              "count": 1500
+            },
+            {
+              "key": "C",
+              "count": 1000
+            },
+            {
+              "key": "R",
+              "count": 1000
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "R",
+              "count": 1000
+            },
+            {
+              "key": "C",
+              "count": 1000
+            },
+            {
+              "key": "X",
+              "count": 1500
+            },
+            {
+              "key": "F",
+              "count": 1500
+            },
+            {
+              "key": "P",
+              "count": 7000
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 37,
+          "min": 73,
+          "max": 5088,
+          "mean": 1090,
+          "mostExposed": [
+            {
+              "key": "object-eul-reul",
+              "count": 5088
+            },
+            {
+              "key": "present-polite",
+              "count": 5015
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 3091
+            },
+            {
+              "key": "time-expression",
+              "count": 2856
+            },
+            {
+              "key": "past-polite",
+              "count": 2091
+            },
+            {
+              "key": "topic-neun",
+              "count": 1998
+            },
+            {
+              "key": "future-geoyeyo",
+              "count": 1544
+            },
+            {
+              "key": "location-e",
+              "count": 1523
+            },
+            {
+              "key": "question-polite",
+              "count": 1337
+            },
+            {
+              "key": "location-eseo",
+              "count": 1072
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "also-do",
+              "count": 73
+            },
+            {
+              "key": "with-hago-wa",
+              "count": 85
+            },
+            {
+              "key": "propositive-eyo",
+              "count": 102
+            },
+            {
+              "key": "when-ttae",
+              "count": 167
+            },
+            {
+              "key": "only-man",
+              "count": 186
+            },
+            {
+              "key": "copula-negative-anieyo",
+              "count": 197
+            },
+            {
+              "key": "from-buteo",
+              "count": 251
+            },
+            {
+              "key": "must-ya-dwaeda",
+              "count": 347
+            },
+            {
+              "key": "until-kkaji",
+              "count": 399
+            },
+            {
+              "key": "comparison-boda",
+              "count": 407
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 347,
+          "min": 1,
+          "max": 114,
+          "mean": 34.5821,
+          "mostExposed": [
+            {
+              "key": "한국어를 더 잘하고 싶어요.",
+              "count": 114
+            },
+            {
+              "key": "오늘 오후에 잠깐 통화할 수 있어요?",
+              "count": 112
+            },
+            {
+              "key": "사이즈가 작아서 큰 옷으로 교환하고 싶어요.",
+              "count": 110
+            },
+            {
+              "key": "저는 안 가요.",
+              "count": 110
+            },
+            {
+              "key": "안 매운 걸로 추천해 주세요.",
+              "count": 109
+            },
+            {
+              "key": "감기 때문에 학교에 못 갔어요.",
+              "count": 108
+            },
+            {
+              "key": "실수를 만회할 수 있는 좋은 기회가 주어졌어요.",
+              "count": 106
+            },
+            {
+              "key": "인터넷 연결이 느려져서 동영상을 볼 수 없습니다.",
+              "count": 105
+            },
+            {
+              "key": "작은 사고가 있었지만 다치지 않았어요.",
+              "count": 105
+            },
+            {
+              "key": "이 수학 문제를 푸는 방법을 알고 싶어요.",
+              "count": 104
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "혹시 가방 안에 여분의 연필이 있으면 빌려주세요.",
+              "count": 1
+            },
+            {
+              "key": "하늘에 떠 있는 구름 모양이 신기하고 귀여워요.",
+              "count": 1
+            },
+            {
+              "key": "피부 관리를 위해 매일 밤 팩을 하고 자요.",
+              "count": 1
+            },
+            {
+              "key": "친한 친구가 생겨서 기뻐요.",
+              "count": 1
+            },
+            {
+              "key": "친절한 이웃들이 제게 도움을 많이 주셨어요.",
+              "count": 1
+            },
+            {
+              "key": "책상과 침대 사이에 좁은 틈이 있어요.",
+              "count": 1
+            },
+            {
+              "key": "제가 말한 그대로 공책에 받아 적으세요.",
+              "count": 1
+            },
+            {
+              "key": "저희 부서는 내일부터 새로운 프로젝트 업무를 시작합니다.",
+              "count": 1
+            },
+            {
+              "key": "저는 친구를 도와요.",
+              "count": 1
+            },
+            {
+              "key": "저 배우는 정말 잘생겼어요.",
+              "count": 1
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 347,
+          "min": 1,
+          "max": 114,
+          "mean": 34.5821,
+          "mostExposed": [
+            {
+              "key": "s2160",
+              "count": 114
+            },
+            {
+              "key": "s2466",
+              "count": 112
+            },
+            {
+              "key": "s0280",
+              "count": 110
+            },
+            {
+              "key": "s0810",
+              "count": 110
+            },
+            {
+              "key": "s2285",
+              "count": 109
+            },
+            {
+              "key": "s2259",
+              "count": 108
+            },
+            {
+              "key": "s1270",
+              "count": 106
+            },
+            {
+              "key": "s3364",
+              "count": 105
+            },
+            {
+              "key": "s3461",
+              "count": 105
+            },
+            {
+              "key": "s0830",
+              "count": 104
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s4001",
+              "count": 1
+            },
+            {
+              "key": "s2957",
+              "count": 1
+            },
+            {
+              "key": "s2912",
+              "count": 1
+            },
+            {
+              "key": "s2855",
+              "count": 1
+            },
+            {
+              "key": "s2693",
+              "count": 1
+            },
+            {
+              "key": "s2607",
+              "count": 1
+            },
+            {
+              "key": "s2458",
+              "count": 1
+            },
+            {
+              "key": "s2046",
+              "count": 1
+            },
+            {
+              "key": "s2027",
+              "count": 1
+            },
+            {
+              "key": "s1940",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    "sentence-exam-3": {
+      "requested": 500,
+      "completed": 500,
+      "deterministicRepeats": 500,
+      "failures": [],
+      "fallbackResolved": 0,
+      "capacity": {
+        "examId": "sentence-exam-3",
+        "typedDistinctTargets": 276,
+        "recognitionDistinctTargets": 258,
+        "typedPerPaper": 20,
+        "recognitionPerPaper": 4,
+        "freshnessWindow": 5,
+        "typedRequiredForWindow": 100,
+        "recognitionRequiredForWindow": 20,
+        "typedMargin": 176,
+        "recognitionMargin": 238,
+        "ready": true
+      },
+      "exposure": {
+        "totalSelections": 12000,
+        "sections": {
+          "distinct": 6,
+          "min": 998,
+          "max": 2577,
+          "mean": 2000,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 2577
+            },
+            {
+              "key": "3",
+              "count": 2195
+            },
+            {
+              "key": "5",
+              "count": 2174
+            },
+            {
+              "key": "4",
+              "count": 2124
+            },
+            {
+              "key": "6",
+              "count": 1932
+            },
+            {
+              "key": "1",
+              "count": 998
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "1",
+              "count": 998
+            },
+            {
+              "key": "6",
+              "count": 1932
+            },
+            {
+              "key": "4",
+              "count": 2124
+            },
+            {
+              "key": "5",
+              "count": 2174
+            },
+            {
+              "key": "3",
+              "count": 2195
+            },
+            {
+              "key": "2",
+              "count": 2577
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 1000,
+          "max": 7000,
+          "mean": 2400,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 7000
+            },
+            {
+              "key": "F",
+              "count": 1500
+            },
+            {
+              "key": "X",
+              "count": 1500
+            },
+            {
+              "key": "C",
+              "count": 1000
+            },
+            {
+              "key": "R",
+              "count": 1000
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "R",
+              "count": 1000
+            },
+            {
+              "key": "C",
+              "count": 1000
+            },
+            {
+              "key": "X",
+              "count": 1500
+            },
+            {
+              "key": "F",
+              "count": 1500
+            },
+            {
+              "key": "P",
+              "count": 7000
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 37,
+          "min": 59,
+          "max": 5150,
+          "mean": 1132.2432,
+          "mostExposed": [
+            {
+              "key": "object-eul-reul",
+              "count": 5150
+            },
+            {
+              "key": "present-polite",
+              "count": 4599
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 3238
+            },
+            {
+              "key": "time-expression",
+              "count": 2732
+            },
+            {
+              "key": "past-polite",
+              "count": 2042
+            },
+            {
+              "key": "future-geoyeyo",
+              "count": 2010
+            },
+            {
+              "key": "topic-neun",
+              "count": 1903
+            },
+            {
+              "key": "honorific-si",
+              "count": 1587
+            },
+            {
+              "key": "formal-nida",
+              "count": 1543
+            },
+            {
+              "key": "location-e",
+              "count": 1421
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "copula-negative-anieyo",
+              "count": 59
+            },
+            {
+              "key": "only-man",
+              "count": 132
+            },
+            {
+              "key": "must-ya-dwaeda",
+              "count": 158
+            },
+            {
+              "key": "with-hago-wa",
+              "count": 207
+            },
+            {
+              "key": "from-buteo",
+              "count": 216
+            },
+            {
+              "key": "want-go-sipda",
+              "count": 229
+            },
+            {
+              "key": "also-do",
+              "count": 271
+            },
+            {
+              "key": "possessive-ui",
+              "count": 327
+            },
+            {
+              "key": "comparison-boda",
+              "count": 344
+            },
+            {
+              "key": "until-kkaji",
+              "count": 423
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 321,
+          "min": 1,
+          "max": 112,
+          "mean": 37.3832,
+          "mostExposed": [
+            {
+              "key": "너무 걱정하지 마세요, 잘될 거예요.",
+              "count": 112
+            },
+            {
+              "key": "야구를 좋아하지만 직접 하지는 않아요.",
+              "count": 111
+            },
+            {
+              "key": "옆방에서 나는 소음 때문에 잠을 못 잤습니다.",
+              "count": 111
+            },
+            {
+              "key": "이 노래는 조금 어렵지만 매일 연습하면 잘할 수 있어요.",
+              "count": 111
+            },
+            {
+              "key": "운동 목표를 포기하지 않을게요.",
+              "count": 110
+            },
+            {
+              "key": "면접에서 긴장했지만 끝까지 말했어요.",
+              "count": 107
+            },
+            {
+              "key": "아침에는 커피를 못 마셔요.",
+              "count": 107
+            },
+            {
+              "key": "화장실에 불이 안 켜져요.",
+              "count": 107
+            },
+            {
+              "key": "건강을 위해서 소식하는 습관을 기르는 것이 좋습니다.",
+              "count": 106
+            },
+            {
+              "key": "아직 학교에 도착하지 않았어요.",
+              "count": 106
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "회의 일정이 변경되면 즉시 제게 연락을 주세요.",
+              "count": 1
+            },
+            {
+              "key": "최근 물가가 너무 많이 올라서 시장보기가 무서워요.",
+              "count": 1
+            },
+            {
+              "key": "조용하고 한적한 시골 마을에서 휴가를 보냈어요.",
+              "count": 1
+            },
+            {
+              "key": "제 나이는 스물두 살이고 대학에서 역사 공부해요.",
+              "count": 1
+            },
+            {
+              "key": "의사는 환자의 상태를 보고 빠른 판단을 내렸어요.",
+              "count": 1
+            },
+            {
+              "key": "우리는 서로 돕고 배려하는 자세가 필요해요.",
+              "count": 1
+            },
+            {
+              "key": "연락이 없어서 걱정했어요.",
+              "count": 1
+            },
+            {
+              "key": "어두운 골목을 혼자 걷는 것은 위험이 따라요.",
+              "count": 1
+            },
+            {
+              "key": "약속 시간을 지키는 것은 절대 잊어버리면 안 돼요.",
+              "count": 1
+            },
+            {
+              "key": "매년 봄이 되면 벚꽃 축제가 개최돼요.",
+              "count": 1
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 321,
+          "min": 1,
+          "max": 112,
+          "mean": 37.3832,
+          "mostExposed": [
+            {
+              "key": "s3075",
+              "count": 112
+            },
+            {
+              "key": "s2188",
+              "count": 111
+            },
+            {
+              "key": "s3334",
+              "count": 111
+            },
+            {
+              "key": "s3687",
+              "count": 111
+            },
+            {
+              "key": "s3951",
+              "count": 110
+            },
+            {
+              "key": "s2098",
+              "count": 107
+            },
+            {
+              "key": "s2520",
+              "count": 107
+            },
+            {
+              "key": "s3973",
+              "count": 107
+            },
+            {
+              "key": "s0085",
+              "count": 106
+            },
+            {
+              "key": "s0897",
+              "count": 106
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s3598",
+              "count": 1
+            },
+            {
+              "key": "s3591",
+              "count": 1
+            },
+            {
+              "key": "s1811",
+              "count": 1
+            },
+            {
+              "key": "s1577",
+              "count": 1
+            },
+            {
+              "key": "s1529",
+              "count": 1
+            },
+            {
+              "key": "s1480",
+              "count": 1
+            },
+            {
+              "key": "s1443",
+              "count": 1
+            },
+            {
+              "key": "s1402",
+              "count": 1
+            },
+            {
+              "key": "s1279",
+              "count": 1
+            },
+            {
+              "key": "s1247",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    "sentence-exam-4": {
+      "requested": 500,
+      "completed": 500,
+      "deterministicRepeats": 500,
+      "failures": [],
+      "fallbackResolved": 0,
+      "capacity": {
+        "examId": "sentence-exam-4",
+        "typedDistinctTargets": 359,
+        "recognitionDistinctTargets": 343,
+        "typedPerPaper": 20,
+        "recognitionPerPaper": 4,
+        "freshnessWindow": 5,
+        "typedRequiredForWindow": 100,
+        "recognitionRequiredForWindow": 20,
+        "typedMargin": 259,
+        "recognitionMargin": 323,
+        "ready": true
+      },
+      "exposure": {
+        "totalSelections": 12000,
+        "sections": {
+          "distinct": 8,
+          "min": 575,
+          "max": 2465,
+          "mean": 1500,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 2465
+            },
+            {
+              "key": "7",
+              "count": 2045
+            },
+            {
+              "key": "3",
+              "count": 2017
+            },
+            {
+              "key": "8",
+              "count": 1955
+            },
+            {
+              "key": "4",
+              "count": 1392
+            },
+            {
+              "key": "5",
+              "count": 926
+            },
+            {
+              "key": "1",
+              "count": 625
+            },
+            {
+              "key": "6",
+              "count": 575
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "6",
+              "count": 575
+            },
+            {
+              "key": "1",
+              "count": 625
+            },
+            {
+              "key": "5",
+              "count": 926
+            },
+            {
+              "key": "4",
+              "count": 1392
+            },
+            {
+              "key": "8",
+              "count": 1955
+            },
+            {
+              "key": "3",
+              "count": 2017
+            },
+            {
+              "key": "7",
+              "count": 2045
+            },
+            {
+              "key": "2",
+              "count": 2465
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 1000,
+          "max": 7000,
+          "mean": 2400,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 7000
+            },
+            {
+              "key": "F",
+              "count": 1500
+            },
+            {
+              "key": "X",
+              "count": 1500
+            },
+            {
+              "key": "C",
+              "count": 1000
+            },
+            {
+              "key": "R",
+              "count": 1000
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "R",
+              "count": 1000
+            },
+            {
+              "key": "C",
+              "count": 1000
+            },
+            {
+              "key": "X",
+              "count": 1500
+            },
+            {
+              "key": "F",
+              "count": 1500
+            },
+            {
+              "key": "P",
+              "count": 7000
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 36,
+          "min": 8,
+          "max": 5031,
+          "mean": 1219.1944,
+          "mostExposed": [
+            {
+              "key": "object-eul-reul",
+              "count": 5031
+            },
+            {
+              "key": "present-polite",
+              "count": 3718
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 3283
+            },
+            {
+              "key": "time-expression",
+              "count": 2119
+            },
+            {
+              "key": "past-polite",
+              "count": 2016
+            },
+            {
+              "key": "topic-neun",
+              "count": 2001
+            },
+            {
+              "key": "formal-nida",
+              "count": 2000
+            },
+            {
+              "key": "future-geoyeyo",
+              "count": 2000
+            },
+            {
+              "key": "honorific-si",
+              "count": 2000
+            },
+            {
+              "key": "location-e",
+              "count": 1928
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "only-man",
+              "count": 8
+            },
+            {
+              "key": "from-buteo",
+              "count": 187
+            },
+            {
+              "key": "counter-phrase",
+              "count": 189
+            },
+            {
+              "key": "with-hago-wa",
+              "count": 207
+            },
+            {
+              "key": "also-do",
+              "count": 212
+            },
+            {
+              "key": "comparison-boda",
+              "count": 215
+            },
+            {
+              "key": "propositive-eyo",
+              "count": 292
+            },
+            {
+              "key": "existence-itda",
+              "count": 310
+            },
+            {
+              "key": "copula-ieyo",
+              "count": 420
+            },
+            {
+              "key": "direction-euro",
+              "count": 526
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 191,
+          "min": 1,
+          "max": 112,
+          "mean": 62.8272,
+          "mostExposed": [
+            {
+              "key": "연락처 좀 알려 주실 수 있어요?",
+              "count": 112
+            },
+            {
+              "key": "할아버지가 신문을 보세요.",
+              "count": 111
+            },
+            {
+              "key": "도움이 필요하시면 언제든지 제게 말씀해 주십시오.",
+              "count": 110
+            },
+            {
+              "key": "이 수학 문제를 푸는 방법을 알고 싶어요.",
+              "count": 110
+            },
+            {
+              "key": "저는 안 가요.",
+              "count": 110
+            },
+            {
+              "key": "그 장군은 용감하고 강직한 이상적인 군인상입니다.",
+              "count": 109
+            },
+            {
+              "key": "그때 도서관에 두고 온 우산을 드디어 찾았어요.",
+              "count": 109
+            },
+            {
+              "key": "선생님이 가르쳐주신 공부 팁을 꼭 기억할게요.",
+              "count": 109
+            },
+            {
+              "key": "시간 날 때 같이 영화 봐요.",
+              "count": 109
+            },
+            {
+              "key": "쓰레기가 많아도 포기하지 않아요.",
+              "count": 109
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "화요일에 친구를 만나요.",
+              "count": 1
+            },
+            {
+              "key": "트레이너에게 자세를 물어봐요.",
+              "count": 1
+            },
+            {
+              "key": "요즘 잠을 잘 못 자요.",
+              "count": 1
+            },
+            {
+              "key": "어린이에게 책을 읽어 줘요.",
+              "count": 1
+            },
+            {
+              "key": "상대방의 말을 끊지 않아요.",
+              "count": 1
+            },
+            {
+              "key": "냄비에 물을 반쯤 채워요.",
+              "count": 1
+            },
+            {
+              "key": "극장에서 영화를 봐요.",
+              "count": 1
+            },
+            {
+              "key": "그 이유가 이해가 안 돼요.",
+              "count": 1
+            },
+            {
+              "key": "은행 현금인출기에서 돈을 뽑을 때 수수료가 발생했어요.",
+              "count": 2
+            },
+            {
+              "key": "사소한 말실수 때문에 친구 사이에 오해가 생겼어요.",
+              "count": 2
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 191,
+          "min": 1,
+          "max": 112,
+          "mean": 62.8272,
+          "mostExposed": [
+            {
+              "key": "s2702",
+              "count": 112
+            },
+            {
+              "key": "s0371",
+              "count": 111
+            },
+            {
+              "key": "s0280",
+              "count": 110
+            },
+            {
+              "key": "s0830",
+              "count": 110
+            },
+            {
+              "key": "s3188",
+              "count": 110
+            },
+            {
+              "key": "s0982",
+              "count": 109
+            },
+            {
+              "key": "s1028",
+              "count": 109
+            },
+            {
+              "key": "s1092",
+              "count": 109
+            },
+            {
+              "key": "s1557",
+              "count": 109
+            },
+            {
+              "key": "s1727",
+              "count": 109
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s3921",
+              "count": 1
+            },
+            {
+              "key": "s3623",
+              "count": 1
+            },
+            {
+              "key": "s3599",
+              "count": 1
+            },
+            {
+              "key": "s3006",
+              "count": 1
+            },
+            {
+              "key": "s2714",
+              "count": 1
+            },
+            {
+              "key": "s2131",
+              "count": 1
+            },
+            {
+              "key": "s0675",
+              "count": 1
+            },
+            {
+              "key": "s0481",
+              "count": 1
+            },
+            {
+              "key": "s3030",
+              "count": 2
+            },
+            {
+              "key": "s2094",
+              "count": 2
+            }
+          ]
+        }
+      }
+    },
+    "sentence-exam-5": {
+      "requested": 1000,
+      "completed": 1000,
+      "deterministicRepeats": 1000,
+      "failures": [],
+      "fallbackResolved": 0,
+      "capacity": {
+        "examId": "sentence-exam-5",
+        "typedDistinctTargets": 359,
+        "recognitionDistinctTargets": 343,
+        "typedPerPaper": 40,
+        "recognitionPerPaper": 10,
+        "freshnessWindow": 5,
+        "typedRequiredForWindow": 200,
+        "recognitionRequiredForWindow": 50,
+        "typedMargin": 159,
+        "recognitionMargin": 293,
+        "ready": true
+      },
+      "exposure": {
+        "totalSelections": 50000,
+        "sections": {
+          "distinct": 8,
+          "min": 5359,
+          "max": 8680,
+          "mean": 6250,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 8680
+            },
+            {
+              "key": "3",
+              "count": 6985
+            },
+            {
+              "key": "4",
+              "count": 6600
+            },
+            {
+              "key": "7",
+              "count": 5876
+            },
+            {
+              "key": "6",
+              "count": 5715
+            },
+            {
+              "key": "8",
+              "count": 5424
+            },
+            {
+              "key": "5",
+              "count": 5361
+            },
+            {
+              "key": "1",
+              "count": 5359
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "1",
+              "count": 5359
+            },
+            {
+              "key": "5",
+              "count": 5361
+            },
+            {
+              "key": "8",
+              "count": 5424
+            },
+            {
+              "key": "6",
+              "count": 5715
+            },
+            {
+              "key": "7",
+              "count": 5876
+            },
+            {
+              "key": "4",
+              "count": 6600
+            },
+            {
+              "key": "3",
+              "count": 6985
+            },
+            {
+              "key": "2",
+              "count": 8680
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 4000,
+          "max": 30000,
+          "mean": 10000,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 30000
+            },
+            {
+              "key": "F",
+              "count": 6000
+            },
+            {
+              "key": "C",
+              "count": 5000
+            },
+            {
+              "key": "R",
+              "count": 5000
+            },
+            {
+              "key": "X",
+              "count": 4000
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "X",
+              "count": 4000
+            },
+            {
+              "key": "R",
+              "count": 5000
+            },
+            {
+              "key": "C",
+              "count": 5000
+            },
+            {
+              "key": "F",
+              "count": 6000
+            },
+            {
+              "key": "P",
+              "count": 30000
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 37,
+          "min": 1000,
+          "max": 22908,
+          "mean": 4601.027,
+          "mostExposed": [
+            {
+              "key": "present-polite",
+              "count": 22908
+            },
+            {
+              "key": "object-eul-reul",
+              "count": 21290
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 13387
+            },
+            {
+              "key": "time-expression",
+              "count": 11737
+            },
+            {
+              "key": "topic-neun",
+              "count": 10037
+            },
+            {
+              "key": "location-e",
+              "count": 6386
+            },
+            {
+              "key": "past-polite",
+              "count": 5901
+            },
+            {
+              "key": "future-geoyeyo",
+              "count": 5036
+            },
+            {
+              "key": "honorific-si",
+              "count": 4566
+            },
+            {
+              "key": "formal-nida",
+              "count": 4522
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "propositive-eyo",
+              "count": 1000
+            },
+            {
+              "key": "from-buteo",
+              "count": 1054
+            },
+            {
+              "key": "only-man",
+              "count": 1083
+            },
+            {
+              "key": "until-kkaji",
+              "count": 1887
+            },
+            {
+              "key": "want-go-sipda",
+              "count": 2000
+            },
+            {
+              "key": "copula-negative-anieyo",
+              "count": 2000
+            },
+            {
+              "key": "comparison-boda",
+              "count": 2000
+            },
+            {
+              "key": "also-do",
+              "count": 2002
+            },
+            {
+              "key": "neg-mot",
+              "count": 2034
+            },
+            {
+              "key": "but-jiman",
+              "count": 2063
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 661,
+          "min": 1,
+          "max": 226,
+          "mean": 75.643,
+          "mostExposed": [
+            {
+              "key": "커피를 마시고 싶어요.",
+              "count": 226
+            },
+            {
+              "key": "현금과 카드를 둘 다 가져가요.",
+              "count": 224
+            },
+            {
+              "key": "보행자는 반드시 횡단보도로 건너야 안전해요.",
+              "count": 223
+            },
+            {
+              "key": "오늘은 일찍 끝내고 같이 좀 쉬어요.",
+              "count": 223
+            },
+            {
+              "key": "여기는 출구가 아니에요.",
+              "count": 222
+            },
+            {
+              "key": "옷 사이즈가 안 맞아서 교환해야 합니다.",
+              "count": 222
+            },
+            {
+              "key": "이 노래는 조금 어렵지만 매일 연습하면 잘할 수 있어요.",
+              "count": 222
+            },
+            {
+              "key": "이번 시험은 지난번보다 더 잘 볼 거예요.",
+              "count": 222
+            },
+            {
+              "key": "그는 끊임없는 시도 끝에 꿈을 실현하게 되었습니다.",
+              "count": 221
+            },
+            {
+              "key": "사이즈가 작아서 큰 옷으로 교환하고 싶어요.",
+              "count": 221
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "회의실에 모인 부서원들이 모두 찬성표를 던졌어요.",
+              "count": 1
+            },
+            {
+              "key": "회원들의 일부가 새 규칙 제정에 불만을 나타냈어요.",
+              "count": 1
+            },
+            {
+              "key": "합격 여부가 너무 궁금해서 메일함을 자주 확인해요.",
+              "count": 1
+            },
+            {
+              "key": "할아버지께서 제게 교훈이 되는 말씀을 해주셨어요.",
+              "count": 1
+            },
+            {
+              "key": "한여름의 무더위를 식히려고 시원한 수박을 먹었어요.",
+              "count": 1
+            },
+            {
+              "key": "판사가 사건의 증거를 토대로 판결을 내렸어요.",
+              "count": 1
+            },
+            {
+              "key": "친절한 이웃들이 제게 도움을 많이 주셨어요.",
+              "count": 1
+            },
+            {
+              "key": "지진 발생으로 재난 지역에 대혼란이 찾아왔어요.",
+              "count": 1
+            },
+            {
+              "key": "지도에서 제 현재 위치를 빨간색 점으로 확인했어요.",
+              "count": 1
+            },
+            {
+              "key": "지갑에 적어둔 전화번호가 적힌 종이를 잃어버렸어요.",
+              "count": 1
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 661,
+          "min": 1,
+          "max": 226,
+          "mean": 75.643,
+          "mostExposed": [
+            {
+              "key": "s2154",
+              "count": 226
+            },
+            {
+              "key": "s3512",
+              "count": 224
+            },
+            {
+              "key": "s1011",
+              "count": 223
+            },
+            {
+              "key": "s2180",
+              "count": 223
+            },
+            {
+              "key": "s2188",
+              "count": 222
+            },
+            {
+              "key": "s2206",
+              "count": 222
+            },
+            {
+              "key": "s2209",
+              "count": 222
+            },
+            {
+              "key": "s3332",
+              "count": 222
+            },
+            {
+              "key": "s0810",
+              "count": 221
+            },
+            {
+              "key": "s1943",
+              "count": 221
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s4001",
+              "count": 1
+            },
+            {
+              "key": "s2912",
+              "count": 1
+            },
+            {
+              "key": "s2219",
+              "count": 1
+            },
+            {
+              "key": "s2027",
+              "count": 1
+            },
+            {
+              "key": "s2022",
+              "count": 1
+            },
+            {
+              "key": "s2015",
+              "count": 1
+            },
+            {
+              "key": "s1950",
+              "count": 1
+            },
+            {
+              "key": "s1926",
+              "count": 1
+            },
+            {
+              "key": "s1913",
+              "count": 1
+            },
+            {
+              "key": "s1853",
+              "count": 1
+            }
+          ]
+        }
+      }
+    }
+  },
+  "freshness": {
+    "sentence-exam-1": {
+      "requestedSequences": 250,
+      "completedSequences": 250,
+      "requestedForms": 1250,
+      "completedForms": 1250,
+      "deterministicRepeats": 250,
+      "historyImmutabilityChecks": 5,
+      "overlapCount": 0,
+      "fallbackResolved": 0,
+      "variationCount": {
+        "min": 338,
+        "max": 559
+      },
+      "failures": [],
+      "exposure": {
+        "totalSelections": 30000,
+        "sections": {
+          "distinct": 2,
+          "min": 10674,
+          "max": 19326,
+          "mean": 15000,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 19326
+            },
+            {
+              "key": "1",
+              "count": 10674
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "1",
+              "count": 10674
+            },
+            {
+              "key": "2",
+              "count": 19326
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 2500,
+          "max": 17500,
+          "mean": 6000,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 17500
+            },
+            {
+              "key": "F",
+              "count": 3750
+            },
+            {
+              "key": "X",
+              "count": 3750
+            },
+            {
+              "key": "C",
+              "count": 2500
+            },
+            {
+              "key": "R",
+              "count": 2500
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "R",
+              "count": 2500
+            },
+            {
+              "key": "C",
+              "count": 2500
+            },
+            {
+              "key": "X",
+              "count": 3750
+            },
+            {
+              "key": "F",
+              "count": 3750
+            },
+            {
+              "key": "P",
+              "count": 17500
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 37,
+          "min": 168,
+          "max": 11741,
+          "mean": 2410.2432,
+          "mostExposed": [
+            {
+              "key": "object-eul-reul",
+              "count": 11741
+            },
+            {
+              "key": "present-polite",
+              "count": 11389
+            },
+            {
+              "key": "time-expression",
+              "count": 6315
+            },
+            {
+              "key": "topic-neun",
+              "count": 5968
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 5787
+            },
+            {
+              "key": "question-polite",
+              "count": 4630
+            },
+            {
+              "key": "past-polite",
+              "count": 3982
+            },
+            {
+              "key": "copula-ieyo",
+              "count": 3331
+            },
+            {
+              "key": "location-e",
+              "count": 3173
+            },
+            {
+              "key": "honorific-si",
+              "count": 2978
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "with-hago-wa",
+              "count": 168
+            },
+            {
+              "key": "propositive-eyo",
+              "count": 250
+            },
+            {
+              "key": "comparison-boda",
+              "count": 250
+            },
+            {
+              "key": "from-buteo",
+              "count": 275
+            },
+            {
+              "key": "only-man",
+              "count": 284
+            },
+            {
+              "key": "when-ttae",
+              "count": 328
+            },
+            {
+              "key": "also-do",
+              "count": 330
+            },
+            {
+              "key": "and-go",
+              "count": 430
+            },
+            {
+              "key": "neg-ji-anta",
+              "count": 500
+            },
+            {
+              "key": "copula-negative-anieyo",
+              "count": 623
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 189,
+          "min": 16,
+          "max": 250,
+          "mean": 158.7302,
+          "mostExposed": [
+            {
+              "key": "가격이 내려가면 바로 살게요.",
+              "count": 250
+            },
+            {
+              "key": "가격이 얼마예요?",
+              "count": 250
+            },
+            {
+              "key": "감기 때문에 학교에 못 갔어요.",
+              "count": 250
+            },
+            {
+              "key": "개가 마당에서 뛰어요.",
+              "count": 250
+            },
+            {
+              "key": "공항까지 얼마나 걸려요?",
+              "count": 250
+            },
+            {
+              "key": "괜찮아요.",
+              "count": 250
+            },
+            {
+              "key": "구 층에 도서관이 있어요.",
+              "count": 250
+            },
+            {
+              "key": "그 이유가 이해가 안 돼요.",
+              "count": 250
+            },
+            {
+              "key": "그냥 이걸로 할게요.",
+              "count": 250
+            },
+            {
+              "key": "그의 최종 결정은 무엇인가요?",
+              "count": 250
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "한글 말하기 실력에 자신감을 갖고 당당히 말해 보세요.",
+              "count": 16
+            },
+            {
+              "key": "폭우와 강풍으로 인해 우리 동네 전기가 끊겼어요.",
+              "count": 16
+            },
+            {
+              "key": "어려운 수학 문제를 풀 때 친구의 도움을 받았어요.",
+              "count": 19
+            },
+            {
+              "key": "피부 관리를 위해 매일 밤 팩을 하고 자요.",
+              "count": 21
+            },
+            {
+              "key": "이 찌개는 너무 짜서 물을 넣었어요.",
+              "count": 21
+            },
+            {
+              "key": "이 자리는 예약석이 아니에요.",
+              "count": 21
+            },
+            {
+              "key": "노력하면 반드시 좋은 결과가 있을 거예요.",
+              "count": 21
+            },
+            {
+              "key": "다른 회사에도 지원해 볼게요.",
+              "count": 22
+            },
+            {
+              "key": "그녀는 차분하고 맑은 목소리로 오디오북을 녹음해요.",
+              "count": 22
+            },
+            {
+              "key": "회의 일정이 변경되면 즉시 제게 연락을 주세요.",
+              "count": 23
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 189,
+          "min": 16,
+          "max": 250,
+          "mean": 158.7302,
+          "mostExposed": [
+            {
+              "key": "s0001",
+              "count": 250
+            },
+            {
+              "key": "s0007",
+              "count": 250
+            },
+            {
+              "key": "s0012",
+              "count": 250
+            },
+            {
+              "key": "s0026",
+              "count": 250
+            },
+            {
+              "key": "s0030",
+              "count": 250
+            },
+            {
+              "key": "s0037",
+              "count": 250
+            },
+            {
+              "key": "s0042",
+              "count": 250
+            },
+            {
+              "key": "s0045",
+              "count": 250
+            },
+            {
+              "key": "s0088",
+              "count": 250
+            },
+            {
+              "key": "s0092",
+              "count": 250
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s1936",
+              "count": 16
+            },
+            {
+              "key": "s1891",
+              "count": 16
+            },
+            {
+              "key": "s1330",
+              "count": 19
+            },
+            {
+              "key": "s2249",
+              "count": 21
+            },
+            {
+              "key": "s1253",
+              "count": 21
+            },
+            {
+              "key": "s0989",
+              "count": 21
+            },
+            {
+              "key": "s0967",
+              "count": 21
+            },
+            {
+              "key": "s3980",
+              "count": 22
+            },
+            {
+              "key": "s1480",
+              "count": 22
+            },
+            {
+              "key": "s3976",
+              "count": 23
+            }
+          ]
+        }
+      }
+    },
+    "sentence-exam-2": {
+      "requestedSequences": 250,
+      "completedSequences": 250,
+      "requestedForms": 1250,
+      "completedForms": 1250,
+      "deterministicRepeats": 250,
+      "historyImmutabilityChecks": 5,
+      "overlapCount": 0,
+      "fallbackResolved": 0,
+      "variationCount": {
+        "min": 337,
+        "max": 491
+      },
+      "failures": [],
+      "exposure": {
+        "totalSelections": 30000,
+        "sections": {
+          "distinct": 4,
+          "min": 4542,
+          "max": 10966,
+          "mean": 7500,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 10966
+            },
+            {
+              "key": "3",
+              "count": 7730
+            },
+            {
+              "key": "4",
+              "count": 6762
+            },
+            {
+              "key": "1",
+              "count": 4542
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "1",
+              "count": 4542
+            },
+            {
+              "key": "4",
+              "count": 6762
+            },
+            {
+              "key": "3",
+              "count": 7730
+            },
+            {
+              "key": "2",
+              "count": 10966
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 2500,
+          "max": 17500,
+          "mean": 6000,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 17500
+            },
+            {
+              "key": "F",
+              "count": 3750
+            },
+            {
+              "key": "X",
+              "count": 3750
+            },
+            {
+              "key": "C",
+              "count": 2500
+            },
+            {
+              "key": "R",
+              "count": 2500
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "R",
+              "count": 2500
+            },
+            {
+              "key": "C",
+              "count": 2500
+            },
+            {
+              "key": "X",
+              "count": 3750
+            },
+            {
+              "key": "F",
+              "count": 3750
+            },
+            {
+              "key": "P",
+              "count": 17500
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 37,
+          "min": 159,
+          "max": 12841,
+          "mean": 2727.0811,
+          "mostExposed": [
+            {
+              "key": "object-eul-reul",
+              "count": 12841
+            },
+            {
+              "key": "present-polite",
+              "count": 12603
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 7620
+            },
+            {
+              "key": "time-expression",
+              "count": 7101
+            },
+            {
+              "key": "past-polite",
+              "count": 5231
+            },
+            {
+              "key": "topic-neun",
+              "count": 4990
+            },
+            {
+              "key": "future-geoyeyo",
+              "count": 3898
+            },
+            {
+              "key": "location-e",
+              "count": 3798
+            },
+            {
+              "key": "question-polite",
+              "count": 3361
+            },
+            {
+              "key": "location-eseo",
+              "count": 2663
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "also-do",
+              "count": 159
+            },
+            {
+              "key": "with-hago-wa",
+              "count": 205
+            },
+            {
+              "key": "propositive-eyo",
+              "count": 239
+            },
+            {
+              "key": "when-ttae",
+              "count": 460
+            },
+            {
+              "key": "only-man",
+              "count": 462
+            },
+            {
+              "key": "copula-negative-anieyo",
+              "count": 495
+            },
+            {
+              "key": "from-buteo",
+              "count": 562
+            },
+            {
+              "key": "must-ya-dwaeda",
+              "count": 957
+            },
+            {
+              "key": "until-kkaji",
+              "count": 1027
+            },
+            {
+              "key": "comparison-boda",
+              "count": 1051
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 367,
+          "min": 1,
+          "max": 250,
+          "mean": 81.7439,
+          "mostExposed": [
+            {
+              "key": "그 이유가 이해가 안 돼요.",
+              "count": 250
+            },
+            {
+              "key": "라면 한 그릇 먹고 싶어요.",
+              "count": 250
+            },
+            {
+              "key": "사이즈가 작아서 큰 옷으로 교환하고 싶어요.",
+              "count": 250
+            },
+            {
+              "key": "생각보다 안 비싸요.",
+              "count": 250
+            },
+            {
+              "key": "실수를 만회할 수 있는 좋은 기회가 주어졌어요.",
+              "count": 250
+            },
+            {
+              "key": "아직 학교에 도착하지 않았어요.",
+              "count": 250
+            },
+            {
+              "key": "안 매운 걸로 추천해 주세요.",
+              "count": 250
+            },
+            {
+              "key": "약속을 다음 주로 미룰 수 있어요?",
+              "count": 250
+            },
+            {
+              "key": "어릴 때 화가가 되고 싶어 하던 꿈을 이뤘어요.",
+              "count": 250
+            },
+            {
+              "key": "연락처 좀 알려 주실 수 있어요?",
+              "count": 250
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "저금통에 동전을 차곡차곡 모으는 재미가 있어요.",
+              "count": 1
+            },
+            {
+              "key": "이것은 책이에요.",
+              "count": 1
+            },
+            {
+              "key": "이거 주세요.",
+              "count": 1
+            },
+            {
+              "key": "안녕하세요. 저는 학생이에요.",
+              "count": 1
+            },
+            {
+              "key": "모르는 단어가 나오면 사전을 찾아요.",
+              "count": 1
+            },
+            {
+              "key": "도서관 내부의 와이파이 서비스는 모두 무료입니다.",
+              "count": 1
+            },
+            {
+              "key": "너는 어디 가?",
+              "count": 1
+            },
+            {
+              "key": "그것을 저에게 주세요.",
+              "count": 1
+            },
+            {
+              "key": "건강을 위해서 소식하는 습관을 기르는 것이 좋습니다.",
+              "count": 1
+            },
+            {
+              "key": "혹시 가방 안에 여분의 연필이 있으면 빌려주세요.",
+              "count": 2
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 367,
+          "min": 1,
+          "max": 250,
+          "mean": 81.7439,
+          "mostExposed": [
+            {
+              "key": "s0280",
+              "count": 250
+            },
+            {
+              "key": "s0353",
+              "count": 250
+            },
+            {
+              "key": "s0495",
+              "count": 250
+            },
+            {
+              "key": "s0810",
+              "count": 250
+            },
+            {
+              "key": "s0830",
+              "count": 250
+            },
+            {
+              "key": "s0897",
+              "count": 250
+            },
+            {
+              "key": "s1270",
+              "count": 250
+            },
+            {
+              "key": "s1276",
+              "count": 250
+            },
+            {
+              "key": "s2154",
+              "count": 250
+            },
+            {
+              "key": "s2160",
+              "count": 250
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s4001",
+              "count": 1
+            },
+            {
+              "key": "s2037",
+              "count": 1
+            },
+            {
+              "key": "s2015",
+              "count": 1
+            },
+            {
+              "key": "s1396",
+              "count": 1
+            },
+            {
+              "key": "s1169",
+              "count": 1
+            },
+            {
+              "key": "s0619",
+              "count": 1
+            },
+            {
+              "key": "s0085",
+              "count": 1
+            },
+            {
+              "key": "s0024",
+              "count": 1
+            },
+            {
+              "key": "s0011",
+              "count": 1
+            },
+            {
+              "key": "s2607",
+              "count": 2
+            }
+          ]
+        }
+      }
+    },
+    "sentence-exam-3": {
+      "requestedSequences": 250,
+      "completedSequences": 250,
+      "requestedForms": 1250,
+      "completedForms": 1250,
+      "deterministicRepeats": 250,
+      "historyImmutabilityChecks": 5,
+      "overlapCount": 0,
+      "fallbackResolved": 0,
+      "variationCount": {
+        "min": 114,
+        "max": 212
+      },
+      "failures": [],
+      "exposure": {
+        "totalSelections": 30000,
+        "sections": {
+          "distinct": 6,
+          "min": 2534,
+          "max": 6550,
+          "mean": 5000,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 6550
+            },
+            {
+              "key": "5",
+              "count": 5522
+            },
+            {
+              "key": "3",
+              "count": 5370
+            },
+            {
+              "key": "4",
+              "count": 5237
+            },
+            {
+              "key": "6",
+              "count": 4787
+            },
+            {
+              "key": "1",
+              "count": 2534
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "1",
+              "count": 2534
+            },
+            {
+              "key": "6",
+              "count": 4787
+            },
+            {
+              "key": "4",
+              "count": 5237
+            },
+            {
+              "key": "3",
+              "count": 5370
+            },
+            {
+              "key": "5",
+              "count": 5522
+            },
+            {
+              "key": "2",
+              "count": 6550
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 2500,
+          "max": 17500,
+          "mean": 6000,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 17500
+            },
+            {
+              "key": "F",
+              "count": 3750
+            },
+            {
+              "key": "X",
+              "count": 3750
+            },
+            {
+              "key": "C",
+              "count": 2500
+            },
+            {
+              "key": "R",
+              "count": 2500
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "R",
+              "count": 2500
+            },
+            {
+              "key": "C",
+              "count": 2500
+            },
+            {
+              "key": "X",
+              "count": 3750
+            },
+            {
+              "key": "F",
+              "count": 3750
+            },
+            {
+              "key": "P",
+              "count": 17500
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 37,
+          "min": 134,
+          "max": 12906,
+          "mean": 2828.4054,
+          "mostExposed": [
+            {
+              "key": "object-eul-reul",
+              "count": 12906
+            },
+            {
+              "key": "present-polite",
+              "count": 11493
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 8190
+            },
+            {
+              "key": "time-expression",
+              "count": 6818
+            },
+            {
+              "key": "past-polite",
+              "count": 5087
+            },
+            {
+              "key": "future-geoyeyo",
+              "count": 5023
+            },
+            {
+              "key": "topic-neun",
+              "count": 4681
+            },
+            {
+              "key": "honorific-si",
+              "count": 3969
+            },
+            {
+              "key": "formal-nida",
+              "count": 3882
+            },
+            {
+              "key": "location-e",
+              "count": 3545
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "copula-negative-anieyo",
+              "count": 134
+            },
+            {
+              "key": "only-man",
+              "count": 334
+            },
+            {
+              "key": "must-ya-dwaeda",
+              "count": 408
+            },
+            {
+              "key": "with-hago-wa",
+              "count": 506
+            },
+            {
+              "key": "want-go-sipda",
+              "count": 546
+            },
+            {
+              "key": "from-buteo",
+              "count": 580
+            },
+            {
+              "key": "also-do",
+              "count": 671
+            },
+            {
+              "key": "possessive-ui",
+              "count": 789
+            },
+            {
+              "key": "comparison-boda",
+              "count": 840
+            },
+            {
+              "key": "counter-phrase",
+              "count": 1041
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 337,
+          "min": 1,
+          "max": 250,
+          "mean": 89.0208,
+          "mostExposed": [
+            {
+              "key": "가격이 내려가면 바로 살게요.",
+              "count": 250
+            },
+            {
+              "key": "감기 걸렸을 때는 물을 많이 드세요.",
+              "count": 250
+            },
+            {
+              "key": "감기 때문에 학교에 못 갔어요.",
+              "count": 250
+            },
+            {
+              "key": "그때 도서관에 두고 온 우산을 드디어 찾았어요.",
+              "count": 250
+            },
+            {
+              "key": "기침이 멈추지 않아서 물을 마셨어요.",
+              "count": 250
+            },
+            {
+              "key": "다음에 시간 되면 같이 밥 먹어요.",
+              "count": 250
+            },
+            {
+              "key": "면접에서 긴장했지만 끝까지 말했어요.",
+              "count": 250
+            },
+            {
+              "key": "시간 날 때 같이 영화 봐요.",
+              "count": 250
+            },
+            {
+              "key": "아쉽지만 어쩔 수 없죠.",
+              "count": 250
+            },
+            {
+              "key": "아직 학교에 도착하지 않았어요.",
+              "count": 250
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "할머니가 흥겨운 가락의 전통 민요를 흥얼거리셔요.",
+              "count": 1
+            },
+            {
+              "key": "친한 친구가 생겨서 기뻐요.",
+              "count": 1
+            },
+            {
+              "key": "친구가 화를 내서 좀 당황했어요.",
+              "count": 1
+            },
+            {
+              "key": "최근 물가가 너무 많이 올라서 시장보기가 무서워요.",
+              "count": 1
+            },
+            {
+              "key": "조용하고 한적한 시골 마을에서 휴가를 보냈어요.",
+              "count": 1
+            },
+            {
+              "key": "일이 너무 많아서 주말에도 일해요.",
+              "count": 1
+            },
+            {
+              "key": "이번 탁구 시합에서 반드시 우승을 하고 싶어요.",
+              "count": 1
+            },
+            {
+              "key": "이 문은 접근하면 자동으로 열려요.",
+              "count": 1
+            },
+            {
+              "key": "우리 야구 팀이 결승에 진출해서 전국적인 관심을 받아요.",
+              "count": 1
+            },
+            {
+              "key": "연락이 없어서 걱정했어요.",
+              "count": 1
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 337,
+          "min": 1,
+          "max": 250,
+          "mean": 89.0208,
+          "mostExposed": [
+            {
+              "key": "s0743",
+              "count": 250
+            },
+            {
+              "key": "s0897",
+              "count": 250
+            },
+            {
+              "key": "s1028",
+              "count": 250
+            },
+            {
+              "key": "s1276",
+              "count": 250
+            },
+            {
+              "key": "s1557",
+              "count": 250
+            },
+            {
+              "key": "s1938",
+              "count": 250
+            },
+            {
+              "key": "s2078",
+              "count": 250
+            },
+            {
+              "key": "s2097",
+              "count": 250
+            },
+            {
+              "key": "s2098",
+              "count": 250
+            },
+            {
+              "key": "s2131",
+              "count": 250
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s3591",
+              "count": 1
+            },
+            {
+              "key": "s2855",
+              "count": 1
+            },
+            {
+              "key": "s2851",
+              "count": 1
+            },
+            {
+              "key": "s2607",
+              "count": 1
+            },
+            {
+              "key": "s2211",
+              "count": 1
+            },
+            {
+              "key": "s1977",
+              "count": 1
+            },
+            {
+              "key": "s1976",
+              "count": 1
+            },
+            {
+              "key": "s1619",
+              "count": 1
+            },
+            {
+              "key": "s1529",
+              "count": 1
+            },
+            {
+              "key": "s1443",
+              "count": 1
+            }
+          ]
+        }
+      }
+    },
+    "sentence-exam-4": {
+      "requestedSequences": 250,
+      "completedSequences": 250,
+      "requestedForms": 1250,
+      "completedForms": 1250,
+      "deterministicRepeats": 250,
+      "historyImmutabilityChecks": 5,
+      "overlapCount": 0,
+      "fallbackResolved": 0,
+      "variationCount": {
+        "min": 8,
+        "max": 44
+      },
+      "failures": [],
+      "exposure": {
+        "totalSelections": 30000,
+        "sections": {
+          "distinct": 8,
+          "min": 1507,
+          "max": 6257,
+          "mean": 3750,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 6257
+            },
+            {
+              "key": "7",
+              "count": 5062
+            },
+            {
+              "key": "3",
+              "count": 4979
+            },
+            {
+              "key": "8",
+              "count": 4938
+            },
+            {
+              "key": "4",
+              "count": 3494
+            },
+            {
+              "key": "5",
+              "count": 2245
+            },
+            {
+              "key": "1",
+              "count": 1518
+            },
+            {
+              "key": "6",
+              "count": 1507
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "6",
+              "count": 1507
+            },
+            {
+              "key": "1",
+              "count": 1518
+            },
+            {
+              "key": "5",
+              "count": 2245
+            },
+            {
+              "key": "4",
+              "count": 3494
+            },
+            {
+              "key": "8",
+              "count": 4938
+            },
+            {
+              "key": "3",
+              "count": 4979
+            },
+            {
+              "key": "7",
+              "count": 5062
+            },
+            {
+              "key": "2",
+              "count": 6257
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 2500,
+          "max": 17500,
+          "mean": 6000,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 17500
+            },
+            {
+              "key": "F",
+              "count": 3750
+            },
+            {
+              "key": "X",
+              "count": 3750
+            },
+            {
+              "key": "C",
+              "count": 2500
+            },
+            {
+              "key": "R",
+              "count": 2500
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "R",
+              "count": 2500
+            },
+            {
+              "key": "C",
+              "count": 2500
+            },
+            {
+              "key": "X",
+              "count": 3750
+            },
+            {
+              "key": "F",
+              "count": 3750
+            },
+            {
+              "key": "P",
+              "count": 17500
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 36,
+          "min": 24,
+          "max": 12653,
+          "mean": 3058.4444,
+          "mostExposed": [
+            {
+              "key": "object-eul-reul",
+              "count": 12653
+            },
+            {
+              "key": "present-polite",
+              "count": 9313
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 8329
+            },
+            {
+              "key": "time-expression",
+              "count": 5281
+            },
+            {
+              "key": "past-polite",
+              "count": 5045
+            },
+            {
+              "key": "topic-neun",
+              "count": 5003
+            },
+            {
+              "key": "formal-nida",
+              "count": 5000
+            },
+            {
+              "key": "future-geoyeyo",
+              "count": 5000
+            },
+            {
+              "key": "honorific-si",
+              "count": 5000
+            },
+            {
+              "key": "location-e",
+              "count": 4823
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "only-man",
+              "count": 24
+            },
+            {
+              "key": "counter-phrase",
+              "count": 484
+            },
+            {
+              "key": "from-buteo",
+              "count": 492
+            },
+            {
+              "key": "also-do",
+              "count": 500
+            },
+            {
+              "key": "with-hago-wa",
+              "count": 508
+            },
+            {
+              "key": "comparison-boda",
+              "count": 519
+            },
+            {
+              "key": "existence-itda",
+              "count": 749
+            },
+            {
+              "key": "propositive-eyo",
+              "count": 750
+            },
+            {
+              "key": "copula-ieyo",
+              "count": 1039
+            },
+            {
+              "key": "direction-euro",
+              "count": 1349
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 195,
+          "min": 1,
+          "max": 250,
+          "mean": 153.8462,
+          "mostExposed": [
+            {
+              "key": "가격이 내려가면 바로 살게요.",
+              "count": 250
+            },
+            {
+              "key": "감기 걸렸을 때는 물을 많이 드세요.",
+              "count": 250
+            },
+            {
+              "key": "강아지가 얌전해서 말썽을 부리지 않아요.",
+              "count": 250
+            },
+            {
+              "key": "겨울 날씨가 매우 추우니 외출할 때 옷을 따뜻이 입으세요.",
+              "count": 250
+            },
+            {
+              "key": "공부할 때 모르는 것을 메모해요.",
+              "count": 250
+            },
+            {
+              "key": "교수님께서 이메일로 회의 자료를 보내셨습니다.",
+              "count": 250
+            },
+            {
+              "key": "그 장군은 용감하고 강직한 이상적인 군인상입니다.",
+              "count": 250
+            },
+            {
+              "key": "그는 항상 예의 바르고 정직한 영국의 신사 같습니다.",
+              "count": 250
+            },
+            {
+              "key": "그동안 잘 지냈는지 친구들의 안부를 묻고 싶습니다.",
+              "count": 250
+            },
+            {
+              "key": "그때 도서관에 두고 온 우산을 드디어 찾았어요.",
+              "count": 250
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "그때 그 결정을 후회하지 않아요.",
+              "count": 1
+            },
+            {
+              "key": "수술이 잘 끝났다는 말에 안도의 한숨을 쉬었어요.",
+              "count": 2
+            },
+            {
+              "key": "상대방의 말을 끊지 않아요.",
+              "count": 2
+            },
+            {
+              "key": "배운 내용을 잊지 않으려고 복습해요.",
+              "count": 2
+            },
+            {
+              "key": "생각보다 안 비싸요.",
+              "count": 3
+            },
+            {
+              "key": "그 이유가 이해가 안 돼요.",
+              "count": 3
+            },
+            {
+              "key": "죄송합니다",
+              "count": 4
+            },
+            {
+              "key": "물 끓는 소리가 나자 주전자를 불에서 내렸어요.",
+              "count": 4
+            },
+            {
+              "key": "화요일에 친구를 만나요.",
+              "count": 5
+            },
+            {
+              "key": "피아노 음악회에 표가 있어요.",
+              "count": 5
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 195,
+          "min": 1,
+          "max": 250,
+          "mean": 153.8462,
+          "mostExposed": [
+            {
+              "key": "s0060",
+              "count": 250
+            },
+            {
+              "key": "s0300",
+              "count": 250
+            },
+            {
+              "key": "s0353",
+              "count": 250
+            },
+            {
+              "key": "s0371",
+              "count": 250
+            },
+            {
+              "key": "s0609",
+              "count": 250
+            },
+            {
+              "key": "s0732",
+              "count": 250
+            },
+            {
+              "key": "s0810",
+              "count": 250
+            },
+            {
+              "key": "s0830",
+              "count": 250
+            },
+            {
+              "key": "s0897",
+              "count": 250
+            },
+            {
+              "key": "s0905",
+              "count": 250
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s3117",
+              "count": 1
+            },
+            {
+              "key": "s4017",
+              "count": 2
+            },
+            {
+              "key": "s3599",
+              "count": 2
+            },
+            {
+              "key": "s1057",
+              "count": 2
+            },
+            {
+              "key": "s3006",
+              "count": 3
+            },
+            {
+              "key": "s2372",
+              "count": 3
+            },
+            {
+              "key": "s2050",
+              "count": 4
+            },
+            {
+              "key": "s1141",
+              "count": 4
+            },
+            {
+              "key": "s3382",
+              "count": 5
+            },
+            {
+              "key": "s1183",
+              "count": 5
+            }
+          ]
+        }
+      }
+    },
+    "sentence-exam-5": {
+      "requestedSequences": 500,
+      "completedSequences": 500,
+      "requestedForms": 2500,
+      "completedForms": 2500,
+      "deterministicRepeats": 500,
+      "historyImmutabilityChecks": 5,
+      "overlapCount": 0,
+      "fallbackResolved": 0,
+      "variationCount": {
+        "min": 264,
+        "max": 461
+      },
+      "failures": [],
+      "exposure": {
+        "totalSelections": 125000,
+        "sections": {
+          "distinct": 8,
+          "min": 13375,
+          "max": 21767,
+          "mean": 15625,
+          "mostExposed": [
+            {
+              "key": "2",
+              "count": 21767
+            },
+            {
+              "key": "3",
+              "count": 17613
+            },
+            {
+              "key": "4",
+              "count": 16355
+            },
+            {
+              "key": "7",
+              "count": 14573
+            },
+            {
+              "key": "6",
+              "count": 14239
+            },
+            {
+              "key": "8",
+              "count": 13658
+            },
+            {
+              "key": "5",
+              "count": 13420
+            },
+            {
+              "key": "1",
+              "count": 13375
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "1",
+              "count": 13375
+            },
+            {
+              "key": "5",
+              "count": 13420
+            },
+            {
+              "key": "8",
+              "count": 13658
+            },
+            {
+              "key": "6",
+              "count": 14239
+            },
+            {
+              "key": "7",
+              "count": 14573
+            },
+            {
+              "key": "4",
+              "count": 16355
+            },
+            {
+              "key": "3",
+              "count": 17613
+            },
+            {
+              "key": "2",
+              "count": 21767
+            }
+          ]
+        },
+        "strands": {
+          "distinct": 5,
+          "min": 10000,
+          "max": 75000,
+          "mean": 25000,
+          "mostExposed": [
+            {
+              "key": "P",
+              "count": 75000
+            },
+            {
+              "key": "F",
+              "count": 15000
+            },
+            {
+              "key": "C",
+              "count": 12500
+            },
+            {
+              "key": "R",
+              "count": 12500
+            },
+            {
+              "key": "X",
+              "count": 10000
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "X",
+              "count": 10000
+            },
+            {
+              "key": "R",
+              "count": 12500
+            },
+            {
+              "key": "C",
+              "count": 12500
+            },
+            {
+              "key": "F",
+              "count": 15000
+            },
+            {
+              "key": "P",
+              "count": 75000
+            }
+          ]
+        },
+        "tags": {
+          "distinct": 37,
+          "min": 2500,
+          "max": 57209,
+          "mean": 11485.6216,
+          "mostExposed": [
+            {
+              "key": "present-polite",
+              "count": 57209
+            },
+            {
+              "key": "object-eul-reul",
+              "count": 52973
+            },
+            {
+              "key": "subject-i-ga",
+              "count": 33423
+            },
+            {
+              "key": "time-expression",
+              "count": 29068
+            },
+            {
+              "key": "topic-neun",
+              "count": 24993
+            },
+            {
+              "key": "location-e",
+              "count": 16060
+            },
+            {
+              "key": "past-polite",
+              "count": 14710
+            },
+            {
+              "key": "future-geoyeyo",
+              "count": 12597
+            },
+            {
+              "key": "honorific-si",
+              "count": 11441
+            },
+            {
+              "key": "formal-nida",
+              "count": 11255
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "propositive-eyo",
+              "count": 2500
+            },
+            {
+              "key": "from-buteo",
+              "count": 2598
+            },
+            {
+              "key": "only-man",
+              "count": 2718
+            },
+            {
+              "key": "until-kkaji",
+              "count": 4712
+            },
+            {
+              "key": "copula-negative-anieyo",
+              "count": 5000
+            },
+            {
+              "key": "comparison-boda",
+              "count": 5000
+            },
+            {
+              "key": "also-do",
+              "count": 5004
+            },
+            {
+              "key": "want-go-sipda",
+              "count": 5006
+            },
+            {
+              "key": "neg-mot",
+              "count": 5111
+            },
+            {
+              "key": "but-jiman",
+              "count": 5162
+            }
+          ]
+        },
+        "targets": {
+          "distinct": 702,
+          "min": 1,
+          "max": 500,
+          "mean": 178.0627,
+          "mostExposed": [
+            {
+              "key": "거대한 태풍이 한반도 남쪽 바다를 통해 다가오고 있어요.",
+              "count": 500
+            },
+            {
+              "key": "게임보다 운동을 더 좋아해요.",
+              "count": 500
+            },
+            {
+              "key": "그것은 꿈이 아니에요.",
+              "count": 500
+            },
+            {
+              "key": "그것은 제 가방이 아니에요.",
+              "count": 500
+            },
+            {
+              "key": "그것은 제 실수가 아니에요.",
+              "count": 500
+            },
+            {
+              "key": "그동안 잘 지냈는지 친구들의 안부를 묻고 싶습니다.",
+              "count": 500
+            },
+            {
+              "key": "기분 나쁘게 하려던 건 아니에요.",
+              "count": 500
+            },
+            {
+              "key": "기존 아파트보다 새로 지은 현대식 건물이 훨씬 더 큽니다.",
+              "count": 500
+            },
+            {
+              "key": "다른 회사에도 지원해 볼게요.",
+              "count": 500
+            },
+            {
+              "key": "다음 달부터 새 일을 시작할 거예요.",
+              "count": 500
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "한민족은 한반도에서 오랜 역사를 함께 해 왔어요.",
+              "count": 1
+            },
+            {
+              "key": "한글 말하기 실력에 자신감을 갖고 당당히 말해 보세요.",
+              "count": 1
+            },
+            {
+              "key": "학교 정문 앞에서 아침 일찍 친구들을 만나기로 했어요.",
+              "count": 1
+            },
+            {
+              "key": "자신의 주장을 논리적으로 펴는 것이 중요해요.",
+              "count": 1
+            },
+            {
+              "key": "모르는 단어는 사전을 찾아서 뜻을 확인해요.",
+              "count": 1
+            },
+            {
+              "key": "두 국가는 국경 분쟁 상황을 국제법에 따라 조율했어요.",
+              "count": 1
+            },
+            {
+              "key": "동네 시장 골목에 새 빵집이 개업을 했어요.",
+              "count": 1
+            },
+            {
+              "key": "꽃밭에서 나비를 쫓아 뛰어노는 소녀의 모습이 예뻐요.",
+              "count": 1
+            },
+            {
+              "key": "그들은 결혼식을 마치고 깨끗한 아파트에서 신혼을 시작해요.",
+              "count": 1
+            },
+            {
+              "key": "그는 소설 작품으로 올해의 우수 문학상을 수상했어요.",
+              "count": 1
+            }
+          ]
+        },
+        "entries": {
+          "distinct": 702,
+          "min": 1,
+          "max": 500,
+          "mean": 178.0627,
+          "mostExposed": [
+            {
+              "key": "s0973",
+              "count": 500
+            },
+            {
+              "key": "s1028",
+              "count": 500
+            },
+            {
+              "key": "s1276",
+              "count": 500
+            },
+            {
+              "key": "s1530",
+              "count": 500
+            },
+            {
+              "key": "s1777",
+              "count": 500
+            },
+            {
+              "key": "s1910",
+              "count": 500
+            },
+            {
+              "key": "s1952",
+              "count": 500
+            },
+            {
+              "key": "s1975",
+              "count": 500
+            },
+            {
+              "key": "s2061",
+              "count": 500
+            },
+            {
+              "key": "s2064",
+              "count": 500
+            }
+          ],
+          "leastExposed": [
+            {
+              "key": "s1991",
+              "count": 1
+            },
+            {
+              "key": "s1950",
+              "count": 1
+            },
+            {
+              "key": "s1891",
+              "count": 1
+            },
+            {
+              "key": "s1775",
+              "count": 1
+            },
+            {
+              "key": "s1725",
+              "count": 1
+            },
+            {
+              "key": "s1669",
+              "count": 1
+            },
+            {
+              "key": "s1497",
+              "count": 1
+            },
+            {
+              "key": "s1409",
+              "count": 1
+            },
+            {
+              "key": "s1208",
+              "count": 1
+            },
+            {
+              "key": "s1007",
+              "count": 1
+            }
+          ]
+        }
+      }
+    }
+  },
+  "retentionAvoidance": {
+    "requested": 500,
+    "completed": 500,
+    "deterministicRepeats": 500,
+    "qualifyingTargetsExcluded": 25000,
+    "overlapCount": 0,
+    "failures": [],
+    "exposure": {
+      "totalSelections": 12500,
+      "sections": {
+        "distinct": 8,
+        "min": 825,
+        "max": 2446,
+        "mean": 1562.5,
+        "mostExposed": [
+          {
+            "key": "2",
+            "count": 2446
+          },
+          {
+            "key": "6",
+            "count": 1917
+          },
+          {
+            "key": "4",
+            "count": 1834
+          },
+          {
+            "key": "3",
+            "count": 1733
+          },
+          {
+            "key": "8",
+            "count": 1540
+          },
+          {
+            "key": "7",
+            "count": 1320
+          },
+          {
+            "key": "5",
+            "count": 885
+          },
+          {
+            "key": "1",
+            "count": 825
+          }
+        ],
+        "leastExposed": [
+          {
+            "key": "1",
+            "count": 825
+          },
+          {
+            "key": "5",
+            "count": 885
+          },
+          {
+            "key": "7",
+            "count": 1320
+          },
+          {
+            "key": "8",
+            "count": 1540
+          },
+          {
+            "key": "3",
+            "count": 1733
+          },
+          {
+            "key": "4",
+            "count": 1834
+          },
+          {
+            "key": "6",
+            "count": 1917
+          },
+          {
+            "key": "2",
+            "count": 2446
+          }
+        ]
+      },
+      "strands": {
+        "distinct": 5,
+        "min": 1000,
+        "max": 7500,
+        "mean": 2500,
+        "mostExposed": [
+          {
+            "key": "P",
+            "count": 7500
+          },
+          {
+            "key": "F",
+            "count": 1500
+          },
+          {
+            "key": "R",
+            "count": 1500
+          },
+          {
+            "key": "C",
+            "count": 1000
+          },
+          {
+            "key": "X",
+            "count": 1000
+          }
+        ],
+        "leastExposed": [
+          {
+            "key": "X",
+            "count": 1000
+          },
+          {
+            "key": "C",
+            "count": 1000
+          },
+          {
+            "key": "R",
+            "count": 1500
+          },
+          {
+            "key": "F",
+            "count": 1500
+          },
+          {
+            "key": "P",
+            "count": 7500
+          }
+        ]
+      },
+      "tags": {
+        "distinct": 37,
+        "min": 503,
+        "max": 5352,
+        "mean": 1302.1622,
+        "mostExposed": [
+          {
+            "key": "object-eul-reul",
+            "count": 5352
+          },
+          {
+            "key": "present-polite",
+            "count": 4799
+          },
+          {
+            "key": "subject-i-ga",
+            "count": 3624
+          },
+          {
+            "key": "time-expression",
+            "count": 2980
+          },
+          {
+            "key": "topic-neun",
+            "count": 2637
+          },
+          {
+            "key": "past-polite",
+            "count": 2169
+          },
+          {
+            "key": "location-e",
+            "count": 2004
+          },
+          {
+            "key": "future-geoyeyo",
+            "count": 1645
+          },
+          {
+            "key": "honorific-si",
+            "count": 1625
+          },
+          {
+            "key": "formal-nida",
+            "count": 1534
+          }
+        ],
+        "leastExposed": [
+          {
+            "key": "copula-negative-anieyo",
+            "count": 503
+          },
+          {
+            "key": "want-go-sipda",
+            "count": 517
+          },
+          {
+            "key": "only-man",
+            "count": 523
+          },
+          {
+            "key": "propositive-eyo",
+            "count": 524
+          },
+          {
+            "key": "from-buteo",
+            "count": 527
+          },
+          {
+            "key": "but-jiman",
+            "count": 548
+          },
+          {
+            "key": "comparison-boda",
+            "count": 552
+          },
+          {
+            "key": "also-do",
+            "count": 552
+          },
+          {
+            "key": "must-ya-dwaeda",
+            "count": 568
+          },
+          {
+            "key": "with-hago-wa",
+            "count": 589
+          }
+        ]
+      },
+      "targets": {
+        "distinct": 457,
+        "min": 1,
+        "max": 451,
+        "mean": 27.3523,
+        "mostExposed": [
+          {
+            "key": "사장님께서 주간 회의에 참석하실 예정이라고 들었습니다.",
+            "count": 451
+          },
+          {
+            "key": "돈을 조금만 빌릴 수 있을까요?",
+            "count": 282
+          },
+          {
+            "key": "시간 날 때 같이 영화 봐요.",
+            "count": 264
+          },
+          {
+            "key": "다음 달부터 새 일을 시작할 거예요.",
+            "count": 263
+          },
+          {
+            "key": "아침에는 커피를 못 마셔요.",
+            "count": 226
+          },
+          {
+            "key": "오늘은 연습을 못 해요.",
+            "count": 224
+          },
+          {
+            "key": "물건 가격을 확인하고 판매자의 은행 계좌로 입금했어요.",
+            "count": 223
+          },
+          {
+            "key": "다른 회사에도 지원해 볼게요.",
+            "count": 214
+          },
+          {
+            "key": "내일 무대에서 노래할 거예요.",
+            "count": 178
+          },
+          {
+            "key": "그동안 잘 지냈는지 친구들의 안부를 묻고 싶습니다.",
+            "count": 174
+          }
+        ],
+        "leastExposed": [
+          {
+            "key": "지진 발생으로 재난 지역에 대혼란이 찾아왔어요.",
+            "count": 1
+          },
+          {
+            "key": "지금 어디 가?",
+            "count": 1
+          },
+          {
+            "key": "제 말이 바로 그 말이에요.",
+            "count": 1
+          },
+          {
+            "key": "저쪽이에요.",
+            "count": 1
+          },
+          {
+            "key": "저는 한국어를 배운 지 벌써 삼 개월이 다 되었어요.",
+            "count": 1
+          },
+          {
+            "key": "일이 너무 많아서 주말에도 일해요.",
+            "count": 1
+          },
+          {
+            "key": "이곳은 제가 어릴 때 할머니와 함께 산 마을이에요.",
+            "count": 1
+          },
+          {
+            "key": "이 계약서는 법적 구속력을 지닌 문서입니다.",
+            "count": 1
+          },
+          {
+            "key": "우리 집은 거실 면적이 넓어서 탁 트인 느낌을 줘요.",
+            "count": 1
+          },
+          {
+            "key": "옆방에서 나는 소음 때문에 잠을 못 잤습니다.",
+            "count": 1
+          }
+        ]
+      },
+      "entries": {
+        "distinct": 457,
+        "min": 1,
+        "max": 451,
+        "mean": 27.3523,
+        "mostExposed": [
+          {
+            "key": "s3234",
+            "count": 451
+          },
+          {
+            "key": "s3030",
+            "count": 282
+          },
+          {
+            "key": "s2697",
+            "count": 264
+          },
+          {
+            "key": "s2271",
+            "count": 263
+          },
+          {
+            "key": "s2098",
+            "count": 226
+          },
+          {
+            "key": "s2097",
+            "count": 224
+          },
+          {
+            "key": "s1886",
+            "count": 223
+          },
+          {
+            "key": "s3980",
+            "count": 214
+          },
+          {
+            "key": "s2112",
+            "count": 178
+          },
+          {
+            "key": "s3396",
+            "count": 174
+          }
+        ],
+        "leastExposed": [
+          {
+            "key": "s3334",
+            "count": 1
+          },
+          {
+            "key": "s2998",
+            "count": 1
+          },
+          {
+            "key": "s2607",
+            "count": 1
+          },
+          {
+            "key": "s2094",
+            "count": 1
+          },
+          {
+            "key": "s2047",
+            "count": 1
+          },
+          {
+            "key": "s2045",
+            "count": 1
+          },
+          {
+            "key": "s2034",
+            "count": 1
+          },
+          {
+            "key": "s1943",
+            "count": 1
+          },
+          {
+            "key": "s1795",
+            "count": 1
+          },
+          {
+            "key": "s1721",
+            "count": 1
+          }
+        ]
+      }
+    }
+  },
+  "fallbackEvidence": {
+    "requestedSeed": "x1-audit-malformed-history",
+    "attemptsExecuted": 33,
+    "firstResolvedSeed": "x1-audit-malformed-history",
+    "lastResolvedSeed": "x1-audit-malformed-history#32"
+  },
+  "ready": true,
+  "blockers": []
+}
