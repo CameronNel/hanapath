@@ -14,142 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Validate static app
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      # Syntax-check every hand-edited runtime/data file the megabatch touches.
-      # NOTE: `node --check` only checks its first filename argument, so each
-      # file must be checked in its own invocation.
-      - name: Check syntax
-        run: |
-          for f in app.js sw.js exam_integrity.js sentence_exam_eligibility.js sentence_exam_prompt_templates.js sentence_exam_curated_bank.js sentence_exam_curated_bank_freeze.js sentence_exam_grader.js sentence_lesson_contrast_ui.js sentence_lesson_contrasts_sections_1_4.js sentence_lesson_contrasts_sections_5_8.js words_lesson_plan.js; do
-            echo "node --check $f"
-            node --check "$f"
-          done
-
-      # Exam programme + integrity gate.
-      - name: Audit exam integrity
-        run: node scripts/audit-exam-integrity.mjs
-      - name: Audit Hangul Mastery exam
-        run: node scripts/audit-hangul-mastery-exam.mjs
-      - name: Check word-exam competency map
-        run: node scripts/build-word-exam-competency-map.mjs --check
-      - name: Audit word exams
-        run: node scripts/audit-word-exams.mjs
-
-      # Learning-data gate (mirrors the Android workflow's learning-data step).
-      - name: Audit words data
-        run: node scripts/audit-words-data.mjs --strict
-      - name: Thin-lesson heuristic regression
-        run: node scripts/test-thin-lesson-heuristic.mjs
-      - name: Audit sentences data
-        run: node scripts/audit-sentences-data.mjs --strict
-      - name: Audit form checks
-        run: node scripts/audit-form-checks.mjs
-      - name: Audit learning questions
-        run: node scripts/audit-learning-questions.mjs
-      - name: Curriculum v2 migration regression
-        run: node scripts/test_curriculum_v2_migration.mjs
-      - name: L1 learner journey browser gate
-        run: node scripts/test-lesson-journey-gate.mjs
-      # The historical full-corpus eligibility audit remains active during the
-      # curated-bank migration so the 2,100 completed reviews stay protected.
-      - name: Audit sentence eligibility (schema + progress)
-        run: node scripts/audit-sentence-eligibility.mjs --allow-incomplete
-      - name: Audit curated sentence exam bank
-        run: node scripts/audit-sentence-exam-curated-bank.mjs
-      - name: Sentence exam ambiguity regression
-        run: node scripts/test-sentence-exam-ambiguity.mjs
-      - name: Sentence exam grader regression
-        run: node scripts/test-sentence-exam-grader.mjs
-      - name: Sentence exam candidate-ranking regression
-        run: node scripts/test-sentence-exam-candidate-ranking.mjs
-      - name: Check CB1 inventory and shortlist freshness
-        run: node scripts/build-sentence-exam-inventory.mjs --check
-      - name: Check CB4 curated-bank authoring syntax
-        run: |
-          node --check scripts/build-sentence-exam-curated-bank.mjs
-          node --check scripts/audit-sentence-exam-curated-bank-cb4.mjs
-          node --check scripts/test-sentence-exam-curated-bank-cb4.mjs
-      - name: Check CB4 curated-bank authoring freshness
-        run: node scripts/build-sentence-exam-curated-bank.mjs --check
-      - name: Audit CB4 curated-bank approved reviews
-        run: node scripts/audit-sentence-exam-curated-bank-cb4.mjs --require-approved
-      - name: CB4 curated-bank authoring regression
-        run: node scripts/test-sentence-exam-curated-bank-cb4.mjs
-      - name: Check CB6B capacity and expanded-bank syntax
-        run: |
-          node --check scripts/build-sentence-exam-capacity-remediation.mjs
-          node --check scripts/review-sentence-exam-capacity-remediation.mjs
-          node --check scripts/audit-sentence-exam-capacity-remediation.mjs
-          node --check scripts/test-sentence-exam-capacity-remediation.mjs
-          node --check scripts/build-sentence-exam-curated-bank-cb6b.mjs
-          node --check scripts/test-sentence-exam-bank-approval.mjs
-      - name: Check CB6B capacity package freshness
-        run: node scripts/build-sentence-exam-capacity-remediation.mjs --check
-      - name: Check CB6B independent-review freshness
-        run: node scripts/review-sentence-exam-capacity-remediation.mjs --check
-      - name: Audit CB6B exact five-attempt capacity
-        run: node scripts/audit-sentence-exam-capacity-remediation.mjs --require-approved
-      - name: CB6B capacity regression
-        run: node scripts/test-sentence-exam-capacity-remediation.mjs
-      - name: Check CB6B expanded curated-bank freshness
-        run: node scripts/build-sentence-exam-curated-bank-cb6b.mjs --check
-      - name: CB6B complete-bank approval regression
-        run: node scripts/test-sentence-exam-bank-approval.mjs
-      - name: Check CB5 curated-bank freeze syntax
-        run: |
-          node --check scripts/lib/sentence-exam-freeze.mjs
-          node --check scripts/build-sentence-exam-curated-bank-freeze.mjs
-          node --check scripts/test-sentence-exam-curated-bank-freeze.mjs
-      - name: Check CB5 curated-bank freeze freshness
-        run: node scripts/build-sentence-exam-curated-bank-freeze.mjs --check
-      - name: CB5 curated-bank freeze regression
-        run: node scripts/test-sentence-exam-curated-bank-freeze.mjs
-      - name: Sentence lesson contrast authoring regression
-        run: node scripts/test-sentence-lesson-contrast-authoring.mjs
-      - name: Sentence lesson contrast UI regression
-        run: node scripts/test-sentence-lesson-contrast-ui.mjs
-      - name: Check CB2 lesson contrast freshness
-        run: node scripts/build-sentence-lesson-contrasts.mjs --check
-      - name: Audit CB2 lesson contrast coverage and safety
-        run: node scripts/audit-sentence-lesson-contrasts.mjs
-      - name: Sentence lesson contrast browser fixtures
-        run: node scripts/test-sentence-lesson-contrasts-browser.mjs
-      - name: Check CB3 lesson contrast freshness
-        run: node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --check
-      - name: Audit CB3 lesson contrast coverage and safety
-        run: node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
-      - name: Sentence lesson contrast browser fixtures sections 5-8
-        run: node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs
-
-      # Authored-item audio closure (L3).
-      - name: Audit authored audio coverage
-        run: node scripts/audit-audio-coverage.mjs --strict
-      - name: Authored audio discovery regression
-        run: node scripts/test-authored-audio-targets.mjs
-      - name: Authored audio runtime regression
-        run: node scripts/test-authored-audio-runtime.mjs
-
-      # Alphabet / recognition / handwriting / shell gate.
-      - name: Audit alphabet audio coverage
-        run: node scripts/audit-alphabet-audio.mjs --strict
-      - name: Audit Hangul recognition
-        run: node scripts/audit-hangul-recognition.mjs
-      - name: Audit premium handwriting
-        run: node scripts/audit-premium-handwriting.mjs
-      - name: Audit app shell
-        run: node scripts/audit-app-shell.mjs
-
   core-gate:
     name: Core-release gate
     runs-on: ubuntu-latest
@@ -162,10 +26,14 @@ jobs:
         with:
           node-version: 22
 
-      # Single deterministic superset gate (docs/CORE_APP_COMPLETION_ROADMAP.md
-      # packet C1). Runs the full required audit matrix, verifies the generated
-      # status report is fresh, and exits non-zero on any child failure. The
-      # mobile-package step SKIPs here (no prepared mobile/www); the Android
-      # workflow performs that validation.
-      - name: Run full core-release gate
+      # mobile/www is intentionally generated and ignored. Prepare it from the
+      # exact checked-out static app so mobile-package validation is blocking
+      # in the same release matrix instead of becoming a permitted CI skip.
+      - name: Prepare isolated mobile web payload
+        run: node mobile/scripts/prepare-web.mjs
+
+      # The single deterministic superset gate covers every roadmap §9 family,
+      # real browser journeys, migrations, the prepared mobile payload, and the
+      # generated status report. Q2 permits no conditional or skipped steps.
+      - name: Run strict full core-release gate
         run: node scripts/audit-core-release.mjs --full

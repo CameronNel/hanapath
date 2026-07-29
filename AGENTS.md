@@ -32,10 +32,11 @@ are historical or design references. They are not permission to start work outsi
   contract is live while valid frozen-v2 retention windows remain supported.
 - Sentence lessons use the 4,177-row, 75-unit curriculum path.
 - E0, E1A, and E1B are merged; 2,100 full-corpus eligibility records remain protected evidence.
-- CB0 is merged. The curated Sentence exam bank is disabled until candidate lessons are restructured,
-  entries are independently reviewed, and CB5 freezes and enables it.
-- The next Sentence-exam packet is CB1. E1C, E1D, and E2 are superseded for exam readiness.
-- The formal Sentence exam engine and runner do not yet ship.
+- The enabled frozen Sentence exam bank contains 359 typed and 343 recognition entries with
+  independent review bound to revision `curated-sentence-exam-v2-cb6b`.
+- X1, X2, and Q1 are merged. Four Sentence stage exams, one final, delayed retention, strict grading,
+  provenance, Practice taint, migrations, and learner-journey browser acceptance ship.
+- Q2 is the final completion packet. E1C, E1D, and E2 remain superseded for exam readiness.
 
 No optional vocabulary expansion or new Sentence content is part of core completion.
 

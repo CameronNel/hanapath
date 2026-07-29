@@ -77,13 +77,14 @@ its packet lands, with no hand-edit to this report.
 
 ## Core gate steps
 
-Run by `node scripts/audit-core-release.mjs` (full). `blocking` steps fail the
-gate; `conditional` steps SKIP when the environment cannot perform them.
+Run by `node scripts/audit-core-release.mjs --full`. Every listed step is
+blocking; release mode permits no skipped or conditional core checks.
 
 | Step | Command | Kind |
 |---|---|---|
 | Syntax check (node --check, all root scripts) | `node --check` (all root scripts) | blocking |
 | Syntax-gate regression (every file checked) | `node scripts/test-core-release-syntax-gate.mjs` | blocking |
+| Release-candidate strict-gate wiring regression (Q2) | `node scripts/test-core-release-strict-gate.mjs` | blocking |
 | Sentence-exam readiness derivation regression | `node scripts/test-sentence-exam-readiness.mjs` | blocking |
 | Exam integrity | `node scripts/audit-exam-integrity.mjs` | blocking |
 | Hangul Mastery examination | `node scripts/audit-hangul-mastery-exam.mjs` | blocking |
@@ -97,7 +98,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Learning question coverage and answer-leak safety (L1) | `node scripts/audit-learning-questions.mjs` | blocking |
 | Curriculum v2 migration regression (L1) | `node scripts/test_curriculum_v2_migration.mjs` | blocking |
 | Lesson reachability and migration browser journey (L1) | `node scripts/test-lesson-journey-gate.mjs` | blocking |
-| Sentence eligibility (schema + progress) | `node scripts/audit-sentence-eligibility.mjs --allow-incomplete` | blocking |
+| Protected historical Sentence eligibility evidence | `node scripts/audit-sentence-eligibility.mjs --protect-historical-evidence` | blocking |
 | Eligibility shard-integrity fixtures (E0) | `node scripts/test-sentence-eligibility-shards.mjs` | blocking |
 | Enabled frozen curated Sentence exam bank (CB5) | `node scripts/audit-sentence-exam-curated-bank.mjs` | blocking |
 | Sentence-exam ambiguity screening regression (CB0) | `node scripts/test-sentence-exam-ambiguity.mjs` | blocking |
@@ -123,7 +124,7 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentence lesson contrast data freshness (CB3) | `node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --check` | blocking |
 | Sentence lesson contrast coverage and safety (CB3) | `node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs` | blocking |
 | Sentence lesson contrast browser fixtures sections 5-8 (CB3) | `node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs` | blocking |
-| Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | conditional |
+| Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | blocking |
 | Sentence Mastery X2 runner, provenance, and retention audit | `node scripts/audit-sentence-exam-runner.mjs` | blocking |
 | Sentence Mastery X2 state and scoring regression | `node scripts/test-sentence-exam-runner.mjs` | blocking |
 | Sentence Mastery X2 browser acceptance | `node scripts/test-sentence-exam-runner-browser.mjs` | blocking |
@@ -134,14 +135,14 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Hangul recognition | `node scripts/audit-hangul-recognition.mjs` | blocking |
 | Premium handwriting | `node scripts/audit-premium-handwriting.mjs` | blocking |
 | App shell | `node scripts/audit-app-shell.mjs` | blocking |
-| Mobile package validation | `node scripts/audit-mobile-package.mjs` | conditional |
+| Prepared mobile package validation | `node scripts/audit-mobile-package.mjs` | blocking |
 | CORE_APP_STATUS.md freshness | `--check-status` (internal) | blocking |
 
-## Open core gates
+## Release-candidate state
 
-- **Historical Sentence eligibility evidence** remains at 2100 / 4177 approved rows (50.28%). E1A/E1B stay protected; unfinished shards C/D are not release prerequisites. The strict source-bank gate is the enabled frozen curated bank.
-- **Sentence Mastery examination** engine/runner: seed audit present.
-- **Mobile package validation** is conditional on a prepared `mobile/www`; the Android workflow performs it after `npm run prepare:web`.
+- **Historical Sentence eligibility evidence:** 2100 protected approved rows. E1A/E1B remain immutable evidence; superseded E1C/E1D are not release prerequisites. The enabled frozen curated bank is the strict examination source.
+- **Sentence Mastery examination:** blueprints, engine, runner, provenance, results, and retention are shipped.
+- **Core CI:** prepares the isolated Capacitor web payload, then requires every full-gate step to pass with zero skips.
 
 ## Coverage gaps
 
