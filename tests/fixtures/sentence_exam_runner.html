@@ -37,6 +37,19 @@
           const cards = [...doc.querySelectorAll("[data-sentence-exam]")];
           assert(cards.length === 5, "expected exactly five Sentence exam cards");
           assert(cards.every((card) => !card.disabled), "all cards should unlock after section 8");
+          const hubItem = hook.hubItem();
+          assert(hubItem.sub === "Four cumulative stages, a mastery final, and delayed retention", "Sentence Mastery hub subtitle field is missing");
+          assert(!Object.prototype.hasOwnProperty.call(hubItem, "desc"), "Sentence Mastery hub registered the unsupported desc field");
+          const checksumFixture = { attemptId: "checksum-fixture", checksum: null };
+          assert(hook.resultChecksumIsValid(checksumFixture) === false, "null result checksum was accepted");
+          checksumFixture.checksum = win.HANAPATH_EXAM_INTEGRITY.fingerprint({ ...checksumFixture, checksum: null });
+          assert(hook.resultChecksumIsValid(checksumFixture) === true, "valid result checksum was rejected");
+          checksumFixture.attemptId = "checksum-tampered";
+          assert(hook.resultChecksumIsValid(checksumFixture) === false, "tampered result checksum was accepted");
+          const malformedMastery = hook.record("sentence-exam-5");
+          malformedMastery.masteryEarnedAt = Date.now();
+          assert(hook.masteryIsValid("sentence-exam-5") === false, "timestamp-only mastery record was accepted");
+          assert(hook.retentionPhase("sentence-exam-5").phase === "incompatible", "timestamp-only mastery record rendered as mastered");
           const progressBefore = JSON.stringify(hook.sentenceProgress());
 
           hook.startAttempt("sentence-exam-1", "achievement", "x2-browser-seed");
@@ -78,9 +91,33 @@
           assert(hook.state().generationHistory["sentence-exam-1"][1].status === "discarded", "discard lifecycle status missing");
           const historyText = JSON.stringify(hook.state().generationHistory);
           assert(!historyText.includes("candidateAnswer"), "discarded candidate answers leaked into generation history");
+
+          hook.startAttempt("sentence-exam-1", "achievement", "x2-browser-persistence-failure");
+          await waitFor(() => hook.attempt()?.stage === "attempt");
+          hook.answerAllCorrect();
+          const appState = hook.appState();
+          const recordBeforeFailure = JSON.stringify(hook.record("sentence-exam-1"));
+          const historyBeforeFailure = JSON.stringify(hook.state().generationHistory["sentence-exam-1"]);
+          const resultsBeforeFailure = JSON.stringify(appState.examResults);
+          const relationsBeforeFailure = JSON.stringify(appState.examIntegrity?.resultRelations || []);
+          const originalSaveState = win.saveState;
+          try {
+            win.saveState = () => false;
+            hook.submitNow(false);
+          } finally {
+            win.saveState = originalSaveState;
+          }
+          await waitFor(() => hook.attempt()?.stage === "results");
+          assert(hook.attempt().result.persistenceFailed === true, "persistence failure was not surfaced");
+          assert(hook.attempt().result.resultRecord.checksum === null, "unpersisted Practice result retained a HanaPath checksum");
+          assert(JSON.stringify(hook.record("sentence-exam-1")) === recordBeforeFailure, "persistence failure did not restore the achievement record");
+          assert(JSON.stringify(hook.state().generationHistory["sentence-exam-1"]) === historyBeforeFailure, "persistence failure did not restore generation lifecycle");
+          assert(JSON.stringify(appState.examResults) === resultsBeforeFailure, "persistence failure did not restore the result store");
+          assert(JSON.stringify(appState.examIntegrity?.resultRelations || []) === relationsBeforeFailure, "persistence failure did not restore result relations");
+
           const progressAfter = JSON.stringify(hook.sentenceProgress());
           assert(progressBefore === progressAfter, "Sentence exam mutated lesson/SRS progress");
-          pass("Sentence X2 runner, Practice gate, IME, review, persistence, and discard history");
+          pass("Sentence X2 runner, provenance, Practice gate, IME, rollback, review, and discard history");
         } catch (error) {
           fail(error && error.stack ? error.stack : String(error));
         }

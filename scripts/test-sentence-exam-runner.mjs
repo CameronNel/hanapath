@@ -132,7 +132,13 @@ const mastery = core.updateAchievementRecord(record, {
 assert.equal(mastery.mastered, true);
 assert.equal(record.retentionAttemptId, "retention-1");
 assert.equal(record.masteryEarnedAt, record.confirmationDueFrom);
-assert.equal(core.retentionStatus(record, finalExam, record.confirmationExpiresAt + 999).phase, "mastered");
+assert.equal(core.retentionStatus(record, finalExam, record.confirmationExpiresAt + 999).phase, "incompatible");
+assert.equal(core.retentionStatus(record, finalExam, record.confirmationExpiresAt + 999, { masteryIsValid: true }).phase, "mastered");
+const timestampOnlyMastery = core.normalizeSentenceExams({
+  byExamId: { [finalExam.id]: { masteryEarnedAt: 123_456 } },
+}, [finalExam]).byExamId[finalExam.id];
+assert.equal(timestampOnlyMastery.masteryEarnedAt, null);
+assert.equal(core.retentionStatus(timestampOnlyMastery, finalExam, 200_000).phase, "none");
 
 const historyAttempt = {
   examId: stage.id,
@@ -173,6 +179,39 @@ const timeoutEntry = core.makeGenerationEntry(timeoutAttempt, { generatedAt: 30,
 core.appendGenerationEntry(state, stage.id, timeoutEntry);
 assert.equal(core.markGenerationSubmitted(state, stage.id, timeoutEntry.generationId, "attempt-timeout", "timed-out"), true);
 assert.equal(state.generationHistory[stage.id][2].status, "timed-out");
+
+const transactionState = {
+  sentenceExams: core.normalizeSentenceExams(null, [stage]),
+  examResults: { version: 1, byAttemptId: { existing: { attemptId: "existing" } } },
+  examIntegrity: {
+    version: 1,
+    resultRelations: [{ relationId: "existing-relation", type: "retention", fromAttemptId: "a", toAttemptId: "b" }],
+  },
+};
+const transactionGeneration = core.makeGenerationEntry(historyAttempt, {
+  generatedAt: 40,
+  status: "hanaPath",
+  eligibilityRevision: "elig-v1",
+});
+core.appendGenerationEntry(transactionState.sentenceExams, stage.id, transactionGeneration);
+const transactionBefore = JSON.stringify(transactionState);
+const transactionSnapshot = core.snapshotSubmissionState(transactionState, {
+  examId: stage.id,
+  generationKey: stage.id,
+  generationId: transactionGeneration.generationId,
+  attemptId: "attempt-rollback",
+});
+transactionState.sentenceExams.byExamId[stage.id].attempts = 99;
+transactionState.examResults.byAttemptId["attempt-rollback"] = { attemptId: "attempt-rollback" };
+core.markGenerationSubmitted(transactionState.sentenceExams, stage.id, transactionGeneration.generationId, "attempt-rollback");
+transactionState.examIntegrity.resultRelations.push({
+  relationId: "rollback-relation",
+  type: "retention",
+  fromAttemptId: "qualifier",
+  toAttemptId: "attempt-rollback",
+});
+assert.equal(core.restoreSubmissionState(transactionState, transactionSnapshot), true);
+assert.equal(JSON.stringify(transactionState), transactionBefore);
 
 assert.equal(core.subscoreEvidence(4, 4).pct, null);
 assert.equal(core.subscoreEvidence(4, 5).label, "Strong this attempt");

@@ -43,8 +43,8 @@ const expectedAssets = [
   "./sentence_exam_grader.js?v=20260729a",
   "./sentence_exam_blueprints.js?v=20260729a",
   "./sentence_exam_engine.js?v=20260729a",
-  "./sentence_exam_runner_core.js?v=20260729a",
-  "./sentence_exam_runner.js?v=20260729a",
+  "./sentence_exam_runner_core.js?v=20260729b",
+  "./sentence_exam_runner.js?v=20260729b",
 ];
 for (const asset of expectedAssets) {
   check(index.includes(asset), `index.html is missing ${asset}`);
@@ -67,7 +67,7 @@ for (const file of orderedScripts) {
   check(at > previous, `index.html load order is wrong at ${file}`);
   previous = at;
 }
-check(/const CACHE_NAME = "hanapath-shell-v453";/.test(sw), "X2 must bump the service-worker cache to v453");
+check(/const CACHE_NAME = "hanapath-shell-v454";/.test(sw), "X2 must bump the service-worker cache to v454");
 check(runner.includes("No correctness, hints, accepted variants, answer reveals, or lesson helpers"), "pre-submit no-helper disclosure is missing");
 check(!runner.includes("scoreSentenceExamResponse("), "runner must delegate grading through the X1 engine, not call the grader directly");
 check(runner.includes("engine.gradeAttempt("), "runner does not delegate scoring to the X1 engine");
@@ -88,10 +88,15 @@ check(runner.includes("markGenerationDiscarded") && runner.includes("generationH
 check(runnerCore.includes('status: "active"') && runnerCore.includes('entry.status = "discarded"'), "generation lifecycle active/discarded states are missing");
 check(runnerCore.includes('lifecycleStatus !== "submitted" && lifecycleStatus !== "timed-out"'), "generation submitted/timed-out states are missing");
 check(runner.includes('auto ? "timed-out" : "submitted"'), "timeout does not persist a timed-out lifecycle status");
-check(runner.includes('qualifier.attemptMode === "achievement"') && runner.includes("qualifier.engineVersion === getMeta().engineVersion") && runner.includes("qualifier.eligibilityRevision === ELIGIBILITY_REVISION"), "retention qualifier provenance compatibility is incomplete");
+check(runner.includes("resultProvenanceIsValid(exam, \"achievement\", qualifier, generation)") && runner.includes("result.attemptMode === mode") && runner.includes("result.engineVersion === meta.engineVersion") && runner.includes("result.eligibilityRevision === ELIGIBILITY_REVISION"), "retention qualifier provenance compatibility is incomplete");
 check(runner.includes("qualifier.floorSummary?.details?.masteryQualified === true"), "retention qualifier does not prove the mastery-qualification floor");
-check(runner.includes("entry.submittedAttemptId === id && entry.generationId === qualifier?.generationId"), "retention qualifier is not linked to its exact generated form");
+check(runner.includes("entry.submittedAttemptId === result?.attemptId && entry.generationId === result?.generationId"), "retention qualifier is not linked to its exact generated form");
 check(runner.includes("targetKeysMatch") && runner.includes('generation.integrityStatus === "hanaPath"'), "retention qualifier target set or generation integrity linkage is incomplete");
+check(runner.includes("resultChecksumIsValid(result)") && runner.includes("integrity.fingerprint({ ...result, checksum: null }) === result.checksum"), "retention provenance does not verify the stored result checksum");
+check(runner.includes("masteryIsValid(exam, record)") && runner.includes("retention.submittedAt === record.masteryEarnedAt") && runner.includes("relationExists"), "Sentence Mastery does not fail closed on compatible retention evidence");
+check(runnerCore.includes('reason: "mastery-provenance"') && runnerCore.includes("evidence.masteryIsValid === true") && runnerCore.includes("qualifyingAttemptId && retentionAttemptId"), "timestamp-only Sentence Mastery records are not rejected");
+check(runner.includes("core.snapshotSubmissionState(state") && runner.includes("core.restoreSubmissionState(state, submissionSnapshot)") && runnerCore.includes("resultRelations"), "submission persistence rollback is not transactionally complete");
+check(runner.includes('sub: "Four cumulative stages, a mastery final, and delayed retention"'), "Sentence Mastery hub subtitle does not use the shared hub sub field");
 check(runner.includes('return { phase: "incompatible" }') && runner.includes("Exam version changed · qualify again with a new final"), "incompatible retention qualification is not surfaced before the learner starts");
 check((runner.match(/Retention requires a compatible HanaPath qualifying final/g) || []).length >= 2, "retention must fail closed at both intro and generation when qualifier provenance is incompatible");
 check(runner.includes("engineVersion: attempt.generated.engineVersion,"), "result provenance must store the numeric X1 engine version used by retention compatibility checks");

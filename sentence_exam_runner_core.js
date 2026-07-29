@@ -87,18 +87,23 @@
   function normalizeRecord(raw, exam) {
     const safe = isPlainObject(raw) ? raw : {};
     const base = defaultRecord(exam);
+    const qualifyingAttemptId = stringOrNull(safe.qualifyingAttemptId);
+    const retentionAttemptId = stringOrNull(safe.retentionAttemptId);
+    const masteryEarnedAt = qualifyingAttemptId && retentionAttemptId
+      ? finite(safe.masteryEarnedAt)
+      : null;
     return {
       blueprintVersion: integer(safe.blueprintVersion, base.blueprintVersion),
       attempts: Math.max(0, integer(safe.attempts, 0)),
       bestPct: Math.max(0, Math.min(100, finite(safe.bestPct, 0))),
       passed: safe.passed === true,
       distinguished: safe.distinguished === true,
-      masteryEarnedAt: finite(safe.masteryEarnedAt),
-      qualifyingAttemptId: stringOrNull(safe.qualifyingAttemptId),
+      masteryEarnedAt,
+      qualifyingAttemptId,
       confirmationDueFrom: finite(safe.confirmationDueFrom),
       confirmationExpiresAt: finite(safe.confirmationExpiresAt),
       qualifyingTargetKeys: Array.isArray(safe.qualifyingTargetKeys) ? uniqueStrings(safe.qualifyingTargetKeys) : null,
-      retentionAttemptId: stringOrNull(safe.retentionAttemptId),
+      retentionAttemptId,
       lastAttemptAt: finite(safe.lastAttemptAt),
       lastResultAttemptId: stringOrNull(safe.lastResultAttemptId),
       lastResult: isPlainObject(safe.lastResult) ? clone(safe.lastResult) : null,
@@ -174,9 +179,13 @@
     return sectionIds.length > 0 && sectionIds.every((sectionId) => isSectionComplete(sectionId));
   }
 
-  function retentionStatus(record, exam, now = Date.now()) {
+  function retentionStatus(record, exam, now = Date.now(), evidence = {}) {
     if (!exam || !exam.retention || !record) return { phase: "none" };
-    if (finite(record.masteryEarnedAt) != null) return { phase: "mastered", at: record.masteryEarnedAt };
+    if (finite(record.masteryEarnedAt) != null) {
+      return evidence.masteryIsValid === true
+        ? { phase: "mastered", at: record.masteryEarnedAt }
+        : { phase: "incompatible", reason: "mastery-provenance" };
+    }
     if (finite(record.confirmationDueFrom) == null) return { phase: "none" };
     if (now < record.confirmationDueFrom) return { phase: "waiting", opensAt: record.confirmationDueFrom };
     if (finite(record.confirmationExpiresAt) != null && now > record.confirmationExpiresAt) return { phase: "expired", expiredAt: record.confirmationExpiresAt };
@@ -338,6 +347,76 @@
     return true;
   }
 
+  function snapshotSubmissionState(appState, input) {
+    const safeState = isPlainObject(appState) ? appState : {};
+    const sentenceExams = isPlainObject(safeState.sentenceExams) ? safeState.sentenceExams : {};
+    const byExamId = isPlainObject(sentenceExams.byExamId) ? sentenceExams.byExamId : {};
+    const historyByKey = isPlainObject(sentenceExams.generationHistory) ? sentenceExams.generationHistory : {};
+    const history = Array.isArray(historyByKey[input.generationKey]) ? historyByKey[input.generationKey] : [];
+    const generationIndex = history.findIndex((entry) => entry && entry.generationId === input.generationId);
+    const examResults = isPlainObject(safeState.examResults) ? safeState.examResults : null;
+    const resultsById = examResults && isPlainObject(examResults.byAttemptId) ? examResults.byAttemptId : null;
+    const examIntegrity = isPlainObject(safeState.examIntegrity) ? safeState.examIntegrity : null;
+    return {
+      examId: input.examId,
+      generationKey: input.generationKey,
+      generationId: input.generationId,
+      generationIndex,
+      attemptId: input.attemptId,
+      record: clone(byExamId[input.examId]),
+      generationEntry: generationIndex >= 0 ? clone(history[generationIndex]) : null,
+      examResultsExisted: Boolean(examResults),
+      resultsByIdExisted: Boolean(resultsById),
+      resultExisted: Boolean(resultsById && Object.prototype.hasOwnProperty.call(resultsById, input.attemptId)),
+      resultRecord: resultsById && Object.prototype.hasOwnProperty.call(resultsById, input.attemptId)
+        ? clone(resultsById[input.attemptId])
+        : null,
+      examIntegrityExisted: Boolean(examIntegrity),
+      resultRelationsExisted: Boolean(examIntegrity && Array.isArray(examIntegrity.resultRelations)),
+      resultRelations: examIntegrity && Array.isArray(examIntegrity.resultRelations)
+        ? clone(examIntegrity.resultRelations)
+        : [],
+    };
+  }
+
+  function restoreSubmissionState(appState, snapshot) {
+    if (!isPlainObject(appState) || !isPlainObject(snapshot)) return false;
+    const sentenceExams = appState.sentenceExams;
+    if (!isPlainObject(sentenceExams) || !isPlainObject(sentenceExams.byExamId) || !isPlainObject(sentenceExams.generationHistory)) {
+      return false;
+    }
+    sentenceExams.byExamId[snapshot.examId] = clone(snapshot.record);
+    const history = sentenceExams.generationHistory[snapshot.generationKey];
+    if (Array.isArray(history)) {
+      const currentIndex = history.findIndex((entry) => entry && entry.generationId === snapshot.generationId);
+      if (snapshot.generationEntry && currentIndex >= 0) history[currentIndex] = clone(snapshot.generationEntry);
+      else if (snapshot.generationEntry && snapshot.generationIndex >= 0) history.splice(snapshot.generationIndex, 0, clone(snapshot.generationEntry));
+      else if (!snapshot.generationEntry && currentIndex >= 0) history.splice(currentIndex, 1);
+    }
+
+    if (!snapshot.examResultsExisted) {
+      delete appState.examResults;
+    } else {
+      if (!isPlainObject(appState.examResults)) appState.examResults = { version: 1, byAttemptId: {} };
+      if (!snapshot.resultsByIdExisted) {
+        delete appState.examResults.byAttemptId;
+      } else {
+        if (!isPlainObject(appState.examResults.byAttemptId)) appState.examResults.byAttemptId = {};
+        if (snapshot.resultExisted) appState.examResults.byAttemptId[snapshot.attemptId] = clone(snapshot.resultRecord);
+        else delete appState.examResults.byAttemptId[snapshot.attemptId];
+      }
+    }
+
+    if (!snapshot.examIntegrityExisted) {
+      delete appState.examIntegrity;
+    } else {
+      if (!isPlainObject(appState.examIntegrity)) appState.examIntegrity = { version: 1 };
+      if (snapshot.resultRelationsExisted) appState.examIntegrity.resultRelations = clone(snapshot.resultRelations);
+      else delete appState.examIntegrity.resultRelations;
+    }
+    return true;
+  }
+
   function compactResult(result, bands, mode, attemptId) {
     const strand = {};
     for (const code of ALL_STRANDS) {
@@ -455,6 +534,8 @@
     appendGenerationEntry,
     markGenerationSubmitted,
     markGenerationDiscarded,
+    snapshotSubmissionState,
+    restoreSubmissionState,
     compactResult,
     updateAchievementRecord,
     timingSummary,

@@ -95,7 +95,7 @@
 
   function retentionPhase(exam) {
     const record = getRecord(exam.id);
-    const phase = core.retentionStatus(record, exam, now());
+    const phase = core.retentionStatus(record, exam, now(), { masteryIsValid: masteryIsValid(exam, record) });
     if ((phase.phase === "waiting" || phase.phase === "open") && !qualifierIsValid(exam, record)) {
       return { phase: "incompatible" };
     }
@@ -111,7 +111,7 @@
 
   function bandLabel(record, exam) {
     if (!record || !record.lastResult) return "";
-    if (exam.retention && record.masteryEarnedAt) return "문장 완전 습득 · Sentence Mastery";
+    if (exam.retention && masteryIsValid(exam, record)) return "문장 완전 습득 · Sentence Mastery";
     if (record.distinguished) return "우수 · Distinction";
     if (record.passed) return "합격 · Passed";
     return "미합격 · Not yet passed";
@@ -163,7 +163,7 @@
       HUB_DEFS.exam.items.push({
         id: ITEM_ID,
         title: "Sentence Mastery",
-        desc: "Four cumulative stages, a mastery final, and delayed retention",
+        sub: "Four cumulative stages, a mastery final, and delayed retention",
         icon: "🧩",
         custom: "sentenceExamHub",
       });
@@ -646,35 +646,88 @@
     overlay.querySelector("#sentenceSubmitGo")?.addEventListener("click", () => { overlay.remove(); submitSentenceExam(false); });
   }
 
+  function resultChecksumIsValid(result) {
+    const integrity = window.HANAPATH_EXAM_INTEGRITY;
+    if (!result || typeof result.checksum !== "string" || !result.checksum || !integrity || typeof integrity.fingerprint !== "function") {
+      return false;
+    }
+    try {
+      return integrity.fingerprint({ ...result, checksum: null }) === result.checksum;
+    } catch {
+      return false;
+    }
+  }
+
+  function generationForResult(exam, mode, result) {
+    const history = state.sentenceExams?.generationHistory?.[generationKeyForMode(exam.id, mode)];
+    return Array.isArray(history)
+      ? history.find((entry) => entry.submittedAttemptId === result?.attemptId && entry.generationId === result?.generationId)
+      : null;
+  }
+
+  function resultProvenanceIsValid(exam, mode, result, generation) {
+    const meta = getMeta();
+    const expectedItems = mode === "retention" ? exam?.retention?.itemCount : exam?.itemCount;
+    return Boolean(result)
+      && resultChecksumIsValid(result)
+      && result.status === "hanaPath"
+      && result.legacyProvenanceStatus == null
+      && result.examId === exam.id
+      && result.attemptMode === mode
+      && result.blueprintVersion === meta.blueprintVersion
+      && result.engineVersion === meta.engineVersion
+      && result.contentBankRevision === meta.contentBankRevision
+      && result.eligibilityRevision === ELIGIBILITY_REVISION
+      && result.itemCount === expectedItems
+      && result.scoreSummary?.total === expectedItems
+      && Boolean(generation)
+      && generation.baseExamId === exam.id
+      && generation.attemptMode === mode
+      && (generation.status === "submitted" || generation.status === "timed-out")
+      && generation.integrityStatus === "hanaPath"
+      && generation.blueprintVersion === result.blueprintVersion
+      && generation.engineVersion === result.engineVersion
+      && generation.contentBankRevision === result.contentBankRevision
+      && generation.eligibilityRevision === result.eligibilityRevision
+      && generation.resolvedSeed === result.generationSeed;
+  }
+
   function qualifierIsValid(exam, record) {
     const id = record?.qualifyingAttemptId;
     const qualifier = id && typeof getExamResultRecord === "function" ? getExamResultRecord(id) : null;
-    const history = state.sentenceExams?.generationHistory?.[exam.id];
-    const generation = Array.isArray(history)
-      ? history.find((entry) => entry.submittedAttemptId === id && entry.generationId === qualifier?.generationId)
-      : null;
+    const generation = generationForResult(exam, "achievement", qualifier);
     const targetKeysMatch = Boolean(generation)
       && JSON.stringify(generation.targetKeys || []) === JSON.stringify(record?.qualifyingTargetKeys || []);
-    return Boolean(qualifier)
-      && qualifier.status === "hanaPath"
-      && qualifier.legacyProvenanceStatus == null
-      && qualifier.examId === exam.id
-      && qualifier.attemptMode === "achievement"
-      && qualifier.blueprintVersion === getMeta().blueprintVersion
-      && qualifier.engineVersion === getMeta().engineVersion
-      && qualifier.contentBankRevision === getMeta().contentBankRevision
-      && qualifier.eligibilityRevision === ELIGIBILITY_REVISION
+    return resultProvenanceIsValid(exam, "achievement", qualifier, generation)
       && qualifier.floorSummary?.details?.masteryQualified === true
-      && Boolean(generation)
-      && (generation.status === "submitted" || generation.status === "timed-out")
-      && generation.integrityStatus === "hanaPath"
-      && generation.blueprintVersion === qualifier.blueprintVersion
-      && generation.engineVersion === qualifier.engineVersion
-      && generation.contentBankRevision === qualifier.contentBankRevision
-      && generation.eligibilityRevision === qualifier.eligibilityRevision
       && Array.isArray(record.qualifyingTargetKeys)
       && record.qualifyingTargetKeys.length > 0
       && targetKeysMatch;
+  }
+
+  function masteryIsValid(exam, record) {
+    if (!Number.isFinite(record?.masteryEarnedAt) || !qualifierIsValid(exam, record)) return false;
+    const id = record.retentionAttemptId;
+    const retention = id && typeof getExamResultRecord === "function" ? getExamResultRecord(id) : null;
+    const generation = generationForResult(exam, "retention", retention);
+    const relationExists = Array.isArray(state.examIntegrity?.resultRelations)
+      && state.examIntegrity.resultRelations.some((relation) => relation
+        && relation.type === "retention"
+        && relation.fromAttemptId === record.qualifyingAttemptId
+        && relation.toAttemptId === id);
+    const qualifierTargets = new Set(record.qualifyingTargetKeys || []);
+    const targetOverlap = Array.isArray(generation?.targetKeys)
+      && generation.targetKeys.some((key) => qualifierTargets.has(key));
+    return resultProvenanceIsValid(exam, "retention", retention, generation)
+      && retention.attemptId === id
+      && retention.retentionAttemptId === id
+      && retention.qualifyingAttemptId === record.qualifyingAttemptId
+      && retention.submittedAt === record.masteryEarnedAt
+      && retention.floorSummary?.passed === true
+      && retention.floorSummary?.details?.mode === "retention"
+      && retention.floorSummary?.details?.passed === true
+      && relationExists
+      && targetOverlap === false;
   }
 
   function finalizeTiming(submittedAt, auto) {
@@ -740,7 +793,16 @@
     }
     const status = overrideFlags.length || overrideEventIds.length ? "practice" : "hanaPath";
     const attemptId = typeof makeExamAttemptId === "function" ? makeExamAttemptId() : `attempt-${Date.now()}-${Math.random()}`;
-    const recordBeforeUpdate = core.clone(record);
+    const submissionSnapshot = core.snapshotSubmissionState(state, {
+      examId: attempt.exam.id,
+      generationKey: attempt.generationKey,
+      generationId: attempt.generationId,
+      attemptId,
+    });
+    if (attempt.mode === "achievement" && Number.isFinite(record.masteryEarnedAt) && !masteryIsValid(attempt.exam, record)) {
+      record.masteryEarnedAt = null;
+      record.retentionAttemptId = null;
+    }
     const achievement = core.updateAchievementRecord(record, {
       result: graded,
       bands,
@@ -801,10 +863,10 @@
     }
     if (!saveState()) {
       overrideFlags = [...new Set([...overrideFlags, "persistence-failed"])];
-      state.sentenceExams.byExamId[attempt.exam.id] = recordBeforeUpdate;
-      if (state.examResults && state.examResults.byAttemptId) delete state.examResults.byAttemptId[attemptId];
+      core.restoreSubmissionState(state, submissionSnapshot);
       resultRecord.status = "practice";
       resultRecord.overrideFlags = overrideFlags;
+      resultRecord.checksum = null;
       attempt.result = { graded, bands, status: "practice", isPractice: true, attemptId, resultRecord, persistenceFailed: true };
     } else {
       attempt.result = { graded, bands, status, isPractice: status === "practice", attemptId, resultRecord, achievement };
@@ -900,7 +962,7 @@
   function qualificationNote(attempt) {
     const record = getRecord(attempt.exam.id);
     if (!attempt.exam.retention) return "";
-    if (record.masteryEarnedAt) return `<div class="word-exam-retention-note">${esc(core.MASTERY_LINE)}</div>`;
+    if (masteryIsValid(attempt.exam, record)) return `<div class="word-exam-retention-note">${esc(core.MASTERY_LINE)}</div>`;
     if (attempt.mode === "retention") return "";
     const phase = retentionPhase(attempt.exam);
     if (phase.phase === "waiting") {
@@ -926,7 +988,7 @@
       eyebrow = "연습 · Practice";
       title = "Practice result";
       copy = "This score is available for review but does not count toward passing, distinction, qualification, retention, or mastery.";
-    } else if (attempt.mode === "retention" && bands.passed && record.masteryEarnedAt) {
+    } else if (attempt.mode === "retention" && bands.passed && masteryIsValid(attempt.exam, record)) {
       tone = "crown"; icon = "crown"; eyebrow = "문장 완전 습득 · Sentence Mastery"; title = "Sentence Mastery retained"; copy = core.MASTERY_LINE;
     } else if (bands.distinguished) {
       tone = "success"; icon = "check"; eyebrow = "우수 · Distinction"; title = "Distinction"; copy = "Strong, balanced production across the taught Sentence curriculum.";
@@ -1053,7 +1115,22 @@
       setNow: (value) => { window.__SENTENCE_EXAM_NOW = value; },
       record: getRecord,
       state: () => state.sentenceExams,
+      appState: () => state,
       sentenceProgress: () => core.clone(getSentencesProgress()),
+      qualifierIsValid: (examId) => {
+        const exam = getExamById(examId);
+        return Boolean(exam) && qualifierIsValid(exam, getRecord(examId));
+      },
+      masteryIsValid: (examId) => {
+        const exam = getExamById(examId);
+        return Boolean(exam) && masteryIsValid(exam, getRecord(examId));
+      },
+      retentionPhase: (examId) => {
+        const exam = getExamById(examId);
+        return exam ? retentionPhase(exam) : { phase: "none" };
+      },
+      resultChecksumIsValid,
+      hubItem: () => core.clone(HUB_DEFS.exam.items.find((item) => item.id === ITEM_ID)),
       unlockThrough(order) {
         const progress = getSentencesProgress();
         const allowed = new Set(getSentenceSections().filter((section) => section.order <= order).map((section) => section.id));
