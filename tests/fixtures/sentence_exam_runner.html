@@ -65,6 +65,8 @@
           assert(record.passed === false, "__wetest Practice attempt awarded progression");
           assert(saved.generationHistory["sentence-exam-1"].length === 1, "generation history missing submitted form");
           assert(saved.generationHistory["sentence-exam-1"][0].submittedAttemptId, "generation history not linked to result");
+          assert(saved.generationHistory["sentence-exam-1"][0].status === "submitted", "submitted lifecycle status missing");
+          assert(saved.generationHistory["sentence-exam-1"][0].integrityStatus === "practice", "Practice generation integrity status missing");
           assert(doc.getElementById("screen-detail").textContent.includes("Practice result"), "Practice disclosure missing");
           assert(doc.getElementById("screen-detail").textContent.includes("Full answer review"), "full answer review missing after submission");
 
@@ -73,6 +75,7 @@
           hook.discard();
           assert(hook.state().generationHistory["sentence-exam-1"].length === 2, "discarded form disappeared from freshness history");
           assert(hook.state().generationHistory["sentence-exam-1"][1].discarded === true, "discarded form was not marked");
+          assert(hook.state().generationHistory["sentence-exam-1"][1].status === "discarded", "discard lifecycle status missing");
           const historyText = JSON.stringify(hook.state().generationHistory);
           assert(!historyText.includes("candidateAnswer"), "discarded candidate answers leaked into generation history");
           const progressAfter = JSON.stringify(hook.sentenceProgress());

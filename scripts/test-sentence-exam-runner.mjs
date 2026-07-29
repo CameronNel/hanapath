@@ -150,13 +150,29 @@ const historyAttempt = {
 const historyEntry = core.makeGenerationEntry(historyAttempt, { generatedAt: 10, status: "hanaPath", eligibilityRevision: "elig-v1" });
 core.appendGenerationEntry(state, stage.id, historyEntry);
 assert.equal(state.generationHistory[stage.id].length, 1);
+assert.equal(state.generationHistory[stage.id][0].status, "active");
+assert.equal(state.generationHistory[stage.id][0].integrityStatus, "hanaPath");
 assert.equal(core.markGenerationDiscarded(state, stage.id, historyEntry.generationId), true);
+assert.equal(state.generationHistory[stage.id][0].status, "discarded");
 assert.equal(state.generationHistory[stage.id][0].discarded, true);
+assert.equal(core.markGenerationSubmitted(state, stage.id, historyEntry.generationId, "attempt-invalid"), false);
 const engineHistory = core.generationHistoryForEngine(state, stage.id);
 assert.deepEqual(engineHistory[0].targetKeys, ["a", "b"]);
 assert.equal(engineHistory[0].freshnessCycleIndex, 0);
-assert.equal(core.markGenerationSubmitted(state, stage.id, historyEntry.generationId, "attempt-1"), true);
-assert.equal(state.generationHistory[stage.id][0].submittedAttemptId, "attempt-1");
+
+const submittedAttempt = { ...historyAttempt, requestedSeed: "submitted", resolvedSeed: "submitted" };
+const submittedEntry = core.makeGenerationEntry(submittedAttempt, { generatedAt: 20, status: "practice", eligibilityRevision: "elig-v1" });
+core.appendGenerationEntry(state, stage.id, submittedEntry);
+assert.equal(submittedEntry.integrityStatus, "practice");
+assert.equal(core.markGenerationSubmitted(state, stage.id, submittedEntry.generationId, "attempt-1"), true);
+assert.equal(state.generationHistory[stage.id][1].status, "submitted");
+assert.equal(state.generationHistory[stage.id][1].submittedAttemptId, "attempt-1");
+
+const timeoutAttempt = { ...historyAttempt, requestedSeed: "timeout", resolvedSeed: "timeout" };
+const timeoutEntry = core.makeGenerationEntry(timeoutAttempt, { generatedAt: 30, status: "hanaPath", eligibilityRevision: "elig-v1" });
+core.appendGenerationEntry(state, stage.id, timeoutEntry);
+assert.equal(core.markGenerationSubmitted(state, stage.id, timeoutEntry.generationId, "attempt-timeout", "timed-out"), true);
+assert.equal(state.generationHistory[stage.id][2].status, "timed-out");
 
 assert.equal(core.subscoreEvidence(4, 4).pct, null);
 assert.equal(core.subscoreEvidence(4, 5).label, "Strong this attempt");

@@ -111,6 +111,16 @@
     const resolvedSeed = stringOrNull(entry.resolvedSeed);
     const targetKeys = uniqueStrings(entry.targetKeys || entry.canonicalTargetKeys);
     if (!examId || !resolvedSeed || !targetKeys.length) return null;
+    const lifecycleStatus = ["active", "submitted", "timed-out", "discarded"].includes(entry.status)
+      ? entry.status
+      : entry.discarded === true
+        ? "discarded"
+        : stringOrNull(entry.submittedAttemptId)
+          ? "submitted"
+          : "active";
+    const integrityStatus = entry.integrityStatus === "practice" || entry.status === "practice"
+      ? "practice"
+      : "hanaPath";
     return {
       generationId: stringOrNull(entry.generationId) || `${examId}:${resolvedSeed}`,
       examId,
@@ -123,12 +133,13 @@
       requestedSeed: stringOrNull(entry.requestedSeed) || resolvedSeed,
       resolvedSeed,
       generatedAt: finite(entry.generatedAt),
-      status: entry.status === "practice" ? "practice" : "hanaPath",
+      status: lifecycleStatus,
+      integrityStatus,
       targetKeys,
       canonicalTargetKeys: targetKeys.slice(),
       freshnessCycleSeed: stringOrNull(entry.freshnessCycleSeed),
       freshnessCycleIndex: integer(entry.freshnessCycleIndex),
-      discarded: entry.discarded === true,
+      discarded: lifecycleStatus === "discarded" || entry.discarded === true,
       submittedAttemptId: stringOrNull(entry.submittedAttemptId),
     };
   }
@@ -272,7 +283,7 @@
 
   function makeGenerationEntry(attempt, options = {}) {
     const generatedAt = finite(options.generatedAt, Date.now());
-    const status = options.status === "practice" ? "practice" : "hanaPath";
+    const integrityStatus = options.status === "practice" ? "practice" : "hanaPath";
     return normalizeGenerationEntry({
       generationId: stringOrNull(options.generationId) || `${attempt.baseExamId || attempt.examId}:${attempt.resolvedSeed}:${generatedAt}`,
       examId: attempt.examId,
@@ -285,7 +296,8 @@
       requestedSeed: attempt.requestedSeed,
       resolvedSeed: attempt.resolvedSeed,
       generatedAt,
-      status,
+      status: "active",
+      integrityStatus,
       targetKeys: attempt.targetKeys || attempt.canonicalTargetKeys,
       freshnessCycleSeed: attempt.freshnessCycleSeed,
       freshnessCycleIndex: attempt.freshnessCycleIndex,
@@ -306,11 +318,13 @@
     return normalized;
   }
 
-  function markGenerationSubmitted(sentenceExams, key, generationId, attemptId) {
+  function markGenerationSubmitted(sentenceExams, key, generationId, attemptId, lifecycleStatus = "submitted") {
     const history = sentenceExams && sentenceExams.generationHistory && sentenceExams.generationHistory[key];
     const entry = Array.isArray(history) ? history.find((item) => item.generationId === generationId) : null;
-    if (!entry || entry.submittedAttemptId) return false;
+    if (!entry || entry.submittedAttemptId || entry.status === "discarded") return false;
+    if (lifecycleStatus !== "submitted" && lifecycleStatus !== "timed-out") return false;
     entry.submittedAttemptId = attemptId;
+    entry.status = lifecycleStatus;
     entry.discarded = false;
     return true;
   }
@@ -319,6 +333,7 @@
     const history = sentenceExams && sentenceExams.generationHistory && sentenceExams.generationHistory[key];
     const entry = Array.isArray(history) ? history.find((item) => item.generationId === generationId) : null;
     if (!entry || entry.submittedAttemptId) return false;
+    entry.status = "discarded";
     entry.discarded = true;
     return true;
   }

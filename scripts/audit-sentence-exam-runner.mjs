@@ -15,6 +15,7 @@ const check = (condition, message) => { if (!condition) errors.push(message); };
 const index = readFileSync(join(ROOT, "index.html"), "utf8");
 const sw = readFileSync(join(ROOT, "sw.js"), "utf8");
 const runner = readFileSync(join(ROOT, "sentence_exam_runner.js"), "utf8");
+const runnerCore = readFileSync(join(ROOT, "sentence_exam_runner_core.js"), "utf8");
 const css = readFileSync(join(ROOT, "sentence_exam_runner.css"), "utf8");
 const integrity = readFileSync(join(ROOT, "exam_integrity.js"), "utf8");
 
@@ -84,6 +85,11 @@ check(core.MASTERY_LINE === "You demonstrated and retained the taught HanaPath s
 check(integrity.includes("practice") && integrity.includes("hanaPath"), "generic Workstream 0 integrity status API is unavailable");
 check(runner.includes("writeExamResultRecord") && runner.includes("appendExamResultRelation"), "immutable result provenance/relation integration is missing");
 check(runner.includes("markGenerationDiscarded") && runner.includes("generationHistory"), "quit/discard freshness preservation is missing");
+check(runnerCore.includes('status: "active"') && runnerCore.includes('entry.status = "discarded"'), "generation lifecycle active/discarded states are missing");
+check(runnerCore.includes('lifecycleStatus !== "submitted" && lifecycleStatus !== "timed-out"'), "generation submitted/timed-out states are missing");
+check(runner.includes('auto ? "timed-out" : "submitted"'), "timeout does not persist a timed-out lifecycle status");
+check(runner.includes('qualifier.attemptMode === "achievement"') && runner.includes("qualifier.engineVersion === getMeta().engineVersion") && runner.includes("qualifier.eligibilityRevision === ELIGIBILITY_REVISION"), "retention qualifier provenance compatibility is incomplete");
+check(runner.includes("Item-mode timing summary") && runner.includes("meanActiveVisibleMs"), "result item-mode timing summary is missing");
 check(runner.includes("timedOut") && runner.includes("submitSentenceExam(true)"), "timeout submission is missing");
 check(runner.includes("openSentenceLesson"), "weak-area routes do not resolve exact Sentence lessons");
 check(css.includes("@media (max-width: 600px)"), "phone-width runner styling is missing");

@@ -640,8 +640,11 @@
       && qualifier.status === "hanaPath"
       && qualifier.legacyProvenanceStatus == null
       && qualifier.examId === exam.id
+      && qualifier.attemptMode === "achievement"
       && qualifier.blueprintVersion === getMeta().blueprintVersion
+      && qualifier.engineVersion === getMeta().engineVersion
       && qualifier.contentBankRevision === getMeta().contentBankRevision
+      && qualifier.eligibilityRevision === ELIGIBILITY_REVISION
       && Array.isArray(record.qualifyingTargetKeys)
       && record.qualifyingTargetKeys.length > 0;
   }
@@ -764,7 +767,7 @@
       resultRecord.checksum = integrity.fingerprint({ ...resultRecord, checksum: null });
     }
     if (typeof writeExamResultRecord === "function") writeExamResultRecord(attemptId, resultRecord);
-    core.markGenerationSubmitted(state.sentenceExams, attempt.generationKey, attempt.generationId, attemptId);
+    core.markGenerationSubmitted(state.sentenceExams, attempt.generationKey, attempt.generationId, attemptId, auto ? "timed-out" : "submitted");
     if (status === "hanaPath" && attempt.mode === "retention" && qualifyingAttemptId && typeof appendExamResultRelation === "function") {
       appendExamResultRelation({ type: "retention", fromAttemptId: qualifyingAttemptId, toAttemptId: attemptId });
     }
@@ -910,6 +913,10 @@
       <div class="word-exam-macro-profile"><div class="word-exam-weak-title">Typed-production profile</div><div class="word-exam-macro-row"><span class="word-exam-macro-name">P + F + X</span><span class="word-exam-macro-score">${evidenceHtml(bands.typed)}</span></div></div>
       <div class="word-exam-macro-profile"><div class="word-exam-weak-title">Macrostrand profile</div>${strandProfileHtml(attempt, graded)}</div>
       <div class="word-exam-macro-profile"><div class="word-exam-weak-title">Two-section bands</div>${bandProfileHtml(bands)}</div>
+      <div class="word-exam-macro-profile"><div class="word-exam-weak-title">Item-mode timing summary</div>
+        <div class="word-exam-macro-row"><span class="word-exam-macro-name">Typed production</span><span class="word-exam-macro-score">${resultRecord.timingSummary.typed.items ? formatClock(resultRecord.timingSummary.typed.meanActiveVisibleMs) + " mean active" : "Not recorded"}</span></div>
+        <div class="word-exam-macro-row"><span class="word-exam-macro-name">Selected response</span><span class="word-exam-macro-score">${resultRecord.timingSummary.selected.items ? formatClock(resultRecord.timingSummary.selected.meanActiveVisibleMs) + " mean active" : "Not recorded"}</span></div>
+      </div>
       ${patternProfileHtml(attempt, graded)}
       ${weakRoutesHtml(attempt, graded)}
       ${fullReviewHtml(resultRecord.answerReview)}`;
