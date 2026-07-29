@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Sentence exam X2 browser fixture</title></head>
+<body data-test-status="running">
+  <pre id="result">RUNNING</pre>
+  <iframe id="app" src="../../index.html?__wetest=1" style="width:100%;height:900px;border:0"></iframe>
+  <script>
+    (function () {
+      const result = document.getElementById("result");
+      const frame = document.getElementById("app");
+      const fail = (message) => {
+        document.body.dataset.testStatus = "fail";
+        result.textContent = `FAIL ${message}`;
+      };
+      const pass = (message) => {
+        document.body.dataset.testStatus = "pass";
+        result.textContent = `PASS ${innerWidth}x${innerHeight} ${message}`;
+      };
+      const assert = (condition, message) => { if (!condition) throw new Error(message); };
+      async function waitFor(predicate, timeout = 15000) {
+        const started = Date.now();
+        while (Date.now() - started < timeout) {
+          const value = predicate();
+          if (value) return value;
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+        throw new Error("timed out waiting for app fixture");
+      }
+      frame.addEventListener("load", async () => {
+        try {
+          const win = frame.contentWindow;
+          const doc = frame.contentDocument;
+          const hook = await waitFor(() => win.__sentenceExamTest);
+          hook.unlockThrough(8);
+          hook.openHub();
+          await waitFor(() => doc.querySelectorAll("[data-sentence-exam]").length === 5);
+          const cards = [...doc.querySelectorAll("[data-sentence-exam]")];
+          assert(cards.length === 5, "expected exactly five Sentence exam cards");
+          assert(cards.every((card) => !card.disabled), "all cards should unlock after section 8");
+          const progressBefore = JSON.stringify(hook.sentenceProgress());
+
+          hook.startAttempt("sentence-exam-1", "achievement", "x2-browser-seed");
+          await waitFor(() => doc.querySelector("#sentenceExamInput"));
+          const attempt = hook.attempt();
+          assert(attempt.items.length === 24, "stage paper must have 24 items");
+          assert(attempt.items.filter((item) => item.mode === "typed").length === 20, "stage paper must have 20 typed items");
+          assert(attempt.items.filter((item) => item.mode === "recognition").length === 4, "stage paper must have 4 selected items");
+          const detailText = doc.getElementById("screen-detail").textContent;
+          assert(!/Correct!|Incorrect|accepted answer/i.test(detailText), "pre-submit correctness or accepted-answer feedback leaked");
+          assert(!/word bank|next chunk|reveal answer/i.test(detailText), "helper ladder leaked into formal runner");
+
+          const input = doc.querySelector("#sentenceExamInput");
+          input.dispatchEvent(new CompositionEvent("compositionstart", { bubbles: true, data: "한" }));
+          input.value = "한";
+          input.dispatchEvent(new InputEvent("input", { bubbles: true, data: "한", inputType: "insertCompositionText" }));
+          input.dispatchEvent(new CompositionEvent("compositionend", { bubbles: true, data: "한" }));
+          assert(hook.attempt().answers[hook.attempt().items[0].itemId] === "한", "IME composition answer was not retained");
+
+          hook.answerAllCorrect();
+          hook.submitNow(false);
+          await waitFor(() => hook.attempt()?.stage === "results");
+          const saved = hook.state();
+          const record = hook.record("sentence-exam-1");
+          assert(record.attempts === 1, "submitted attempt count not preserved");
+          assert(record.passed === false, "__wetest Practice attempt awarded progression");
+          assert(saved.generationHistory["sentence-exam-1"].length === 1, "generation history missing submitted form");
+          assert(saved.generationHistory["sentence-exam-1"][0].submittedAttemptId, "generation history not linked to result");
+          assert(doc.getElementById("screen-detail").textContent.includes("Practice result"), "Practice disclosure missing");
+          assert(doc.getElementById("screen-detail").textContent.includes("Full answer review"), "full answer review missing after submission");
+
+          hook.startAttempt("sentence-exam-1", "achievement", "x2-browser-discard");
+          await waitFor(() => hook.attempt()?.stage === "attempt");
+          hook.discard();
+          assert(hook.state().generationHistory["sentence-exam-1"].length === 2, "discarded form disappeared from freshness history");
+          assert(hook.state().generationHistory["sentence-exam-1"][1].discarded === true, "discarded form was not marked");
+          const historyText = JSON.stringify(hook.state().generationHistory);
+          assert(!historyText.includes("candidateAnswer"), "discarded candidate answers leaked into generation history");
+          const progressAfter = JSON.stringify(hook.sentenceProgress());
+          assert(progressBefore === progressAfter, "Sentence exam mutated lesson/SRS progress");
+          pass("Sentence X2 runner, Practice gate, IME, review, persistence, and discard history");
+        } catch (error) {
+          fail(error && error.stack ? error.stack : String(error));
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
