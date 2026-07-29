@@ -39,7 +39,7 @@ const APP_SHELL = [
   "./exam_integrity.js?v=20260721b",
   "./form_check_blueprints.js?v=20260723a",
   "./sentence_feedback.js?v=20260727a",
-  "./app.js?v=20260727a",
+  "./app.js?v=20260729a",
   "./sentence_exam_runner.js?v=20260729a",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
