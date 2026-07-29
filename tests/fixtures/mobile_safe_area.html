@@ -1,0 +1,91 @@
+<!doctype html>
+<html
+  lang="en"
+  style="
+    --safe-area-inset-top: 32px;
+    --safe-area-inset-right: 14px;
+    --safe-area-inset-bottom: 28px;
+    --safe-area-inset-left: 12px;
+  "
+>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>HanaPath mobile safe-area fixture</title>
+  <link rel="stylesheet" href="../../styles.css?v=20260729a" />
+  <style>
+    .safe-area-probe {
+      visibility: hidden;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .fixture-header h1 { margin: 0; }
+    .fixture-result {
+      position: fixed;
+      left: var(--app-safe-left);
+      bottom: var(--app-safe-bottom);
+      z-index: 2000;
+      margin: 0;
+      color: transparent;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body data-test-status="pending">
+  <div id="onboardingProbe" class="screen-shell safe-area-probe">
+    <div class="ob-card">Safe-area onboarding probe</div>
+  </div>
+
+  <div id="appProbe" class="app-shell">
+    <button id="settingsProbe" class="app-settings-button" type="button" aria-label="Settings probe">S</button>
+    <main id="screenProbe" class="screen">
+      <header class="hub-header fixture-header">
+        <div class="eyebrow">Study &amp; practice</div>
+        <h1>Safe-area fixture</h1>
+      </header>
+    </main>
+    <nav id="navProbe" class="bottom-nav" aria-label="Fixture navigation">
+      <button id="navButtonProbe" class="nav-btn active" type="button"><span>Learn</span></button>
+      <button class="nav-btn" type="button"><span>Exam</span></button>
+      <button class="nav-btn" type="button"><span>Progress</span></button>
+    </nav>
+  </div>
+
+  <pre id="fixtureResult" class="fixture-result" role="status" aria-live="polite"></pre>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const errors = [];
+      const tolerance = 1;
+      const expected = { top: 32, right: 14, bottom: 28, left: 12 };
+      const onboarding = document.getElementById("onboardingProbe").getBoundingClientRect();
+      const app = document.getElementById("appProbe").getBoundingClientRect();
+      const screen = document.getElementById("screenProbe").getBoundingClientRect();
+      const settings = document.getElementById("settingsProbe").getBoundingClientRect();
+      const navButton = document.getElementById("navButtonProbe").getBoundingClientRect();
+      const navStyle = getComputedStyle(document.getElementById("navProbe"));
+      const close = (actual, wanted) => Math.abs(actual - wanted) <= tolerance;
+
+      if (!close(onboarding.top, expected.top)) errors.push(`onboarding-top-${onboarding.top}`);
+      if (!close(onboarding.left, expected.left)) errors.push(`onboarding-left-${onboarding.left}`);
+      if (!close(onboarding.right, window.innerWidth - expected.right)) errors.push(`onboarding-right-${onboarding.right}`);
+      if (!close(onboarding.bottom, window.innerHeight - expected.bottom)) errors.push(`onboarding-bottom-${onboarding.bottom}`);
+      if (!close(app.top, expected.top)) errors.push(`app-top-${app.top}`);
+      if (!close(app.left, expected.left)) errors.push(`app-left-${app.left}`);
+      if (!close(app.right, window.innerWidth - expected.right)) errors.push(`app-right-${app.right}`);
+      if (screen.top < expected.top - tolerance) errors.push(`screen-top-${screen.top}`);
+      if (settings.top < expected.top + 13) errors.push(`settings-top-${settings.top}`);
+      if (settings.right > window.innerWidth - expected.right - 15) errors.push(`settings-right-${settings.right}`);
+      if (!close(parseFloat(navStyle.paddingBottom), expected.bottom)) errors.push(`nav-padding-${navStyle.paddingBottom}`);
+      if (navButton.bottom > window.innerHeight - expected.bottom + tolerance) errors.push(`nav-button-bottom-${navButton.bottom}`);
+      if (document.documentElement.scrollWidth > window.innerWidth + tolerance) {
+        errors.push(`horizontal-overflow-${document.documentElement.scrollWidth}-${window.innerWidth}`);
+      }
+
+      document.body.dataset.testStatus = errors.length ? "fail" : "pass";
+      document.getElementById("fixtureResult").textContent = errors.length
+        ? errors.join("\n")
+        : `PASS ${window.innerWidth}x${window.innerHeight}`;
+    });
+  </script>
+</body>
+</html>
