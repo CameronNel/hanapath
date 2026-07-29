@@ -649,6 +649,12 @@
   function qualifierIsValid(exam, record) {
     const id = record?.qualifyingAttemptId;
     const qualifier = id && typeof getExamResultRecord === "function" ? getExamResultRecord(id) : null;
+    const history = state.sentenceExams?.generationHistory?.[exam.id];
+    const generation = Array.isArray(history)
+      ? history.find((entry) => entry.submittedAttemptId === id && entry.generationId === qualifier?.generationId)
+      : null;
+    const targetKeysMatch = Boolean(generation)
+      && JSON.stringify(generation.targetKeys || []) === JSON.stringify(record?.qualifyingTargetKeys || []);
     return Boolean(qualifier)
       && qualifier.status === "hanaPath"
       && qualifier.legacyProvenanceStatus == null
@@ -658,8 +664,17 @@
       && qualifier.engineVersion === getMeta().engineVersion
       && qualifier.contentBankRevision === getMeta().contentBankRevision
       && qualifier.eligibilityRevision === ELIGIBILITY_REVISION
+      && qualifier.floorSummary?.details?.masteryQualified === true
+      && Boolean(generation)
+      && (generation.status === "submitted" || generation.status === "timed-out")
+      && generation.integrityStatus === "hanaPath"
+      && generation.blueprintVersion === qualifier.blueprintVersion
+      && generation.engineVersion === qualifier.engineVersion
+      && generation.contentBankRevision === qualifier.contentBankRevision
+      && generation.eligibilityRevision === qualifier.eligibilityRevision
       && Array.isArray(record.qualifyingTargetKeys)
-      && record.qualifyingTargetKeys.length > 0;
+      && record.qualifyingTargetKeys.length > 0
+      && targetKeysMatch;
   }
 
   function finalizeTiming(submittedAt, auto) {

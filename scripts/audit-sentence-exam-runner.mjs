@@ -89,6 +89,9 @@ check(runnerCore.includes('status: "active"') && runnerCore.includes('entry.stat
 check(runnerCore.includes('lifecycleStatus !== "submitted" && lifecycleStatus !== "timed-out"'), "generation submitted/timed-out states are missing");
 check(runner.includes('auto ? "timed-out" : "submitted"'), "timeout does not persist a timed-out lifecycle status");
 check(runner.includes('qualifier.attemptMode === "achievement"') && runner.includes("qualifier.engineVersion === getMeta().engineVersion") && runner.includes("qualifier.eligibilityRevision === ELIGIBILITY_REVISION"), "retention qualifier provenance compatibility is incomplete");
+check(runner.includes("qualifier.floorSummary?.details?.masteryQualified === true"), "retention qualifier does not prove the mastery-qualification floor");
+check(runner.includes("entry.submittedAttemptId === id && entry.generationId === qualifier?.generationId"), "retention qualifier is not linked to its exact generated form");
+check(runner.includes("targetKeysMatch") && runner.includes('generation.integrityStatus === "hanaPath"'), "retention qualifier target set or generation integrity linkage is incomplete");
 check(runner.includes('return { phase: "incompatible" }') && runner.includes("Exam version changed · qualify again with a new final"), "incompatible retention qualification is not surfaced before the learner starts");
 check((runner.match(/Retention requires a compatible HanaPath qualifying final/g) || []).length >= 2, "retention must fail closed at both intro and generation when qualifier provenance is incompatible");
 check(runner.includes("engineVersion: attempt.generated.engineVersion,"), "result provenance must store the numeric X1 engine version used by retention compatibility checks");
