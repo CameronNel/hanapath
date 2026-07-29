@@ -8,6 +8,9 @@ import { spawnSync } from "node:child_process";
 const ROOT = join(fileURLToPath(new URL("..", import.meta.url)));
 const candidates = [
   process.env.CHROME_BIN,
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  process.env.LOCALAPPDATA ? join(process.env.LOCALAPPDATA, "Google", "Chrome", "Application", "chrome.exe") : null,
   "/usr/bin/google-chrome",
   "/usr/bin/google-chrome-stable",
   "/usr/bin/chromium",

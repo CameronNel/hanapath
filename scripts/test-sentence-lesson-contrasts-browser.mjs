@@ -8,6 +8,9 @@ import { spawnSync } from "node:child_process";
 const ROOT = join(fileURLToPath(new URL("..", import.meta.url)));
 const candidates = [
   process.env.CHROME_BIN,
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  process.env.LOCALAPPDATA ? join(process.env.LOCALAPPDATA, "Google", "Chrome", "Application", "chrome.exe") : null,
   "/usr/bin/google-chrome",
   "/usr/bin/google-chrome-stable",
   "/usr/bin/chromium",
@@ -34,7 +37,7 @@ for (const viewport of ["375,812", "1280,900"]) {
     "--allow-file-access-from-files",
     `--user-data-dir=${profile}`,
     `--window-size=${viewport}`,
-    "--virtual-time-budget=4000",
+    "--virtual-time-budget=20000",
     "--dump-dom",
     fixtureUrl,
   ], { encoding: "utf8", timeout: 30000, maxBuffer: 16 * 1024 * 1024 });
