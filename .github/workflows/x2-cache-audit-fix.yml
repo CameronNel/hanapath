@@ -1,0 +1,62 @@
+name: X2 cache audit repair
+
+on:
+  push:
+    branches: [core/x2-sentence-exam-runner]
+    paths: [.github/workflows/x2-cache-audit-fix.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event.head_commit.message == 'chore: stage X2 cache audit repair'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout X2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: core/x2-sentence-exam-runner
+          fetch-depth: 0
+
+      - name: Generalise stale cache assertions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          paths = [
+              Path('scripts/audit-sentence-lesson-contrasts.mjs'),
+              Path('scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs'),
+          ]
+          old = 'if (!/const CACHE_NAME = "hanapath-shell-v452";/.test(swJs)) fail("sw.js cache must be bumped to hanapath-shell-v452");'
+          new = '''const cacheName = swJs.match(/const CACHE_NAME = "([^"]+)";/)?.[1];
+          const integrityVersion = appJs.match(/const EXAM_INTEGRITY_APP_VERSION = "([^"]+)";/)?.[1];
+          if (!cacheName) fail("sw.js CACHE_NAME is missing");
+          if (!integrityVersion) fail("app.js EXAM_INTEGRITY_APP_VERSION is missing");
+          if (cacheName && integrityVersion && cacheName !== integrityVersion) {
+            fail(`sw.js cache ${cacheName} must match app integrity version ${integrityVersion}`);
+          }'''
+
+          for path in paths:
+              text = path.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one stale cache assertion, found {count}')
+              path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+
+      - name: Validate repaired contracts
+        run: |
+          node --check scripts/audit-sentence-lesson-contrasts.mjs
+          node --check scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
+          node scripts/audit-sentence-lesson-contrasts.mjs
+          node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
+          node scripts/audit-core-release.mjs --full
+
+      - name: Commit repair
+        run: |
+          git config user.name "HanaPath X2 integrator"
+          git config user.email "actions@users.noreply.github.com"
+          git add scripts/audit-sentence-lesson-contrasts.mjs scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
+          git commit -m "X2: generalize contrast cache audit"
+          git push origin HEAD:core/x2-sentence-exam-runner
