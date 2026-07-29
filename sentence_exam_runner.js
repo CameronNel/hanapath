@@ -94,7 +94,12 @@
   }
 
   function retentionPhase(exam) {
-    return core.retentionStatus(getRecord(exam.id), exam, now());
+    const record = getRecord(exam.id);
+    const phase = core.retentionStatus(record, exam, now());
+    if ((phase.phase === "waiting" || phase.phase === "open") && !qualifierIsValid(exam, record)) {
+      return { phase: "incompatible" };
+    }
+    return phase;
   }
 
   function stageScopeLabel(exam) {
@@ -209,6 +214,8 @@
         badge = `<div class="sentence-exam-badge">Retention opens in about ${days} day${days === 1 ? "" : "s"}</div>`;
       } else if (retention?.phase === "expired") {
         badge = `<div class="sentence-exam-badge is-expired">Retention window expired · qualify again with a new final</div>`;
+      } else if (retention?.phase === "incompatible") {
+        badge = `<div class="sentence-exam-badge is-expired">Exam version changed · qualify again with a new final</div>`;
       } else if (status) {
         badge = `<div class="sentence-exam-badge">${esc(status)} · best ${Number(record.bestPct || 0).toFixed(1).replace(/\.0$/, "")}%</div>`;
       }
@@ -251,6 +258,9 @@
     const retention = exam.retention ? retentionPhase(exam) : null;
     const mode = forcedMode || (retention?.phase === "open" ? "retention" : "achievement");
     if (mode === "retention" && retention?.phase !== "open") return renderSentenceExamHub();
+    if (mode === "retention" && !qualifierIsValid(exam, record)) {
+      return renderSentenceExamUnavailable(exam, new Error("Retention requires a compatible HanaPath qualifying final from this exact blueprint, engine, bank, and eligibility revision. Complete a new final to qualify again."));
+    }
     const blueprint = mode === "retention" ? engine.resolveBlueprint(exam.id, "retention") : exam;
     const el = mountScreen(exam.title, () => renderSentenceExamHub());
     if (!el) return;
@@ -292,6 +302,9 @@
     const exam = getExamById(examId);
     if (!exam || !examUnlocked(exam)) return renderSentenceExamHub();
     const record = getRecord(exam.id);
+    if (mode === "retention" && !qualifierIsValid(exam, record)) {
+      return renderSentenceExamUnavailable(exam, new Error("Retention requires a compatible HanaPath qualifying final from this exact blueprint, engine, bank, and eligibility revision. Complete a new final to qualify again."));
+    }
     const useSeed = seed == null ? randomSeed() : String(seed);
     const generatedAt = now();
     const initialFlags = testQueryActive() ? ["__wetest"] : [];
