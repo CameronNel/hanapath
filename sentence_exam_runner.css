@@ -1,0 +1,234 @@
+/* X2 · Sentence Mastery examination runner */
+.sentence-exam-hub,
+.sentence-exam-runner,
+.sentence-exam-completion {
+  width: min(100%, 860px);
+  margin: 0 auto;
+}
+
+.sentence-exam-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.sentence-exam-card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sentence-exam-card.is-locked {
+  opacity: 0.72;
+}
+
+.sentence-exam-card-main {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sentence-exam-card-main:disabled {
+  cursor: not-allowed;
+}
+
+.sentence-exam-card-main:focus-visible,
+.sentence-exam-last-result:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.sentence-exam-card-order {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent-strong, var(--accent));
+  font-weight: 800;
+}
+
+.sentence-exam-card-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.sentence-exam-card-title {
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.sentence-exam-card-scope,
+.sentence-exam-last,
+.sentence-exam-fineprint,
+.sentence-exam-prior {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.sentence-exam-badge,
+.sentence-exam-lock {
+  margin-top: 10px;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.sentence-exam-badge.is-mastered {
+  background: rgba(250, 204, 21, 0.13);
+  color: #facc15;
+}
+
+.sentence-exam-badge.is-retention {
+  background: rgba(45, 212, 191, 0.12);
+  color: #5eead4;
+}
+
+.sentence-exam-badge.is-expired,
+.sentence-exam-lock {
+  background: rgba(251, 146, 60, 0.11);
+  color: #fdba74;
+}
+
+.sentence-exam-last {
+  margin-top: 8px;
+}
+
+.sentence-exam-last-result {
+  margin-top: 8px;
+}
+
+.sentence-exam-rules {
+  margin: 14px 0;
+}
+
+.sentence-exam-intro-actions {
+  flex-wrap: wrap;
+}
+
+.sentence-exam-question {
+  min-height: 340px;
+}
+
+.sentence-exam-mode {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-bottom: 10px;
+}
+
+.sentence-exam-prompt {
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.sentence-exam-input-label {
+  display: block;
+  margin: 18px 0 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.sentence-exam-input {
+  width: 100%;
+  min-height: 112px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.sentence-exam-options .exam-option-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: 0.75rem;
+}
+
+.sentence-exam-nav {
+  gap: 8px;
+}
+
+.sentence-exam-pattern-profile {
+  margin-top: 14px;
+}
+
+.sentence-exam-pattern-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+}
+
+.sentence-exam-review-alts,
+.sentence-exam-review-diagnostics {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.sentence-exam-review-diagnostics {
+  color: #fdba74;
+}
+
+.sentence-exam-disclosure {
+  margin: 12px 0;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.sentence-exam-error pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.76rem;
+}
+
+@media (max-width: 600px) {
+  .sentence-exam-card {
+    border-radius: 14px;
+    padding: 11px;
+  }
+
+  .sentence-exam-question {
+    min-height: 280px;
+  }
+
+  .sentence-exam-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sentence-exam-nav .button.primary {
+    grid-column: 1 / -1;
+  }
+
+  .sentence-exam-intro-actions {
+    display: grid;
+  }
+
+  .sentence-exam-pattern-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+}

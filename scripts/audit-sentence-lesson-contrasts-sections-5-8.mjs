@@ -218,7 +218,13 @@ const swJs = read("sw.js");
 if (!swJs.includes(UI_ASSET)) fail(`sw.js APP_SHELL missing ${UI_ASSET}`);
 if (!swJs.includes(CB2_RUNTIME_ASSET)) fail(`sw.js APP_SHELL missing ${CB2_RUNTIME_ASSET}`);
 if (!swJs.includes(RUNTIME_ASSET)) fail(`sw.js APP_SHELL missing ${RUNTIME_ASSET}`);
-if (!/const CACHE_NAME = "hanapath-shell-v452";/.test(swJs)) fail("sw.js cache must be bumped to hanapath-shell-v452");
+const cacheName = swJs.match(/const CACHE_NAME = "([^"]+)";/)?.[1];
+const integrityVersion = appJs.match(/const EXAM_INTEGRITY_APP_VERSION = "([^"]+)";/)?.[1];
+if (!cacheName) fail("sw.js CACHE_NAME is missing");
+if (!integrityVersion) fail("app.js EXAM_INTEGRITY_APP_VERSION is missing");
+if (cacheName && integrityVersion && cacheName !== integrityVersion) {
+  fail(`sw.js cache ${cacheName} must match app integrity version ${integrityVersion}`);
+}
 
 if (report.generatedPromptCount > 0) {
   warn(`${report.generatedPromptCount} controlled lesson prompts remain explicitly marked for CB4 review; they are teaching prompts, not approved exam items.`);

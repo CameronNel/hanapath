@@ -29,7 +29,16 @@ const REQUIRED_VERSIONED_INDEX_ASSETS = new Set([
   "./sentence_lesson_contrasts_sections_1_4.js",
     "./sentence_lesson_contrasts_sections_5_8.js",
   "./sentence_feedback.js",
+  "./sentence_exam_runner.css",
+  "./sentence_exam_prompt_templates.js",
+  "./sentence_exam_curated_bank.js",
+  "./sentence_exam_curated_bank_freeze.js",
+  "./sentence_exam_grader.js",
+  "./sentence_exam_blueprints.js",
+  "./sentence_exam_engine.js",
+  "./sentence_exam_runner_core.js",
   "./app.js",
+  "./sentence_exam_runner.js",
   "./alphabet_skill_srs.js",
 ]);
 
