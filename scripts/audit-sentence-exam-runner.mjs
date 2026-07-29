@@ -36,7 +36,7 @@ check(meta?.runnerVersion === 1, "runner metadata marker must be version 1");
 check(meta?.retention === true, "runner metadata must declare delayed retention shipped");
 
 const expectedAssets = [
-  "./sentence_exam_runner.css?v=20260729a",
+  "./sentence_exam_runner.css?v=20260729b",
   "./sentence_exam_prompt_templates.js?v=20260729a",
   "./sentence_exam_curated_bank.js?v=20260729a",
   "./sentence_exam_curated_bank_freeze.js?v=20260729a",
@@ -67,7 +67,7 @@ for (const file of orderedScripts) {
   check(at > previous, `index.html load order is wrong at ${file}`);
   previous = at;
 }
-check(/const CACHE_NAME = "hanapath-shell-v455";/.test(sw), "X2 follow-up must bump the service-worker cache to v455");
+check(/const CACHE_NAME = "hanapath-shell-v455";/.test(sw), "X2 follow-up must keep the synchronized service-worker cache at v455");
 check(runner.includes("No correctness, hints, accepted variants, answer reveals, or lesson helpers"), "pre-submit no-helper disclosure is missing");
 check(!runner.includes("scoreSentenceExamResponse("), "runner must delegate grading through the X1 engine, not call the grader directly");
 check(runner.includes("engine.gradeAttempt("), "runner does not delegate scoring to the X1 engine");
@@ -100,6 +100,7 @@ check(runner.includes('sub: "Four cumulative stages, a mastery final, and delaye
 check(runnerCore.includes("const preserveWindow = context.replaceQualificationWindow !== true") && runnerCore.includes('currentWindow.phase === "waiting" || currentWindow.phase === "open"'), "a new qualifying final does not preserve an existing live retention window");
 check(runner.includes('if (phase.phase !== "open")') && runner.includes('retentionPhase(attempt.exam, submittedAt).phase !== "open"') && runner.includes('"retention-window-not-open"'), "retention does not recheck its live window at start and submission");
 check(runner.includes('showTab("practice")') && runner.indexOf('showTab("practice")') < runner.indexOf("openSentenceLesson(button.dataset.sentenceWeakRoute)"), "weak-area remediation does not reveal the Sentence surface before opening the lesson");
+check(css.includes(".sentence-exam-completion.completion-stage--crown #sentenceExamRetake") && css.includes("display: none;"), "mastered retention results still expose the unsupported retake action");
 check(runner.includes('return { phase: "incompatible" }') && runner.includes("Exam version changed · qualify again with a new final"), "incompatible retention qualification is not surfaced before the learner starts");
 check((runner.match(/Retention requires a compatible HanaPath qualifying final/g) || []).length >= 2, "retention must fail closed at both intro and generation when qualifier provenance is incompatible");
 check(runner.includes("engineVersion: attempt.generated.engineVersion,"), "result provenance must store the numeric X1 engine version used by retention compatibility checks");
