@@ -60,7 +60,7 @@ replaceOnce(
   `check(runner.includes('qualifier.attemptMode === "achievement"') && runner.includes("qualifier.engineVersion === getMeta().engineVersion") && runner.includes("qualifier.eligibilityRevision === ELIGIBILITY_REVISION"), "retention qualifier provenance compatibility is incomplete");`,
   `check(runner.includes('qualifier.attemptMode === "achievement"') && runner.includes("qualifier.engineVersion === getMeta().engineVersion") && runner.includes("qualifier.eligibilityRevision === ELIGIBILITY_REVISION"), "retention qualifier provenance compatibility is incomplete");
 check(runner.includes('return { phase: "incompatible" }') && runner.includes("Exam version changed · qualify again with a new final"), "incompatible retention qualification is not surfaced before the learner starts");
-check((runner.match(/mode === "retention" && !qualifierIsValid\(exam, record\)/g) || []).length >= 2, "retention must fail closed at both intro and generation when qualifier provenance is incompatible");`,
+check((runner.match(/Retention requires a compatible HanaPath qualifying final/g) || []).length >= 2, "retention must fail closed at both intro and generation when qualifier provenance is incompatible");`,
   "audit pre-start retention compatibility",
 );
 
