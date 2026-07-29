@@ -89,6 +89,8 @@ check(runnerCore.includes('status: "active"') && runnerCore.includes('entry.stat
 check(runnerCore.includes('lifecycleStatus !== "submitted" && lifecycleStatus !== "timed-out"'), "generation submitted/timed-out states are missing");
 check(runner.includes('auto ? "timed-out" : "submitted"'), "timeout does not persist a timed-out lifecycle status");
 check(runner.includes('qualifier.attemptMode === "achievement"') && runner.includes("qualifier.engineVersion === getMeta().engineVersion") && runner.includes("qualifier.eligibilityRevision === ELIGIBILITY_REVISION"), "retention qualifier provenance compatibility is incomplete");
+check(runner.includes("engineVersion: attempt.generated.engineVersion,"), "result provenance must store the numeric X1 engine version used by retention compatibility checks");
+check(!runner.includes("engineVersion: attempt.generated.engineRevision || attempt.generated.engineVersion"), "result provenance must not substitute the human-readable engine revision for engineVersion");
 check(runner.includes("Item-mode timing summary") && runner.includes("meanActiveVisibleMs"), "result item-mode timing summary is missing");
 check(runner.includes("timedOut") && runner.includes("submitSentenceExam(true)"), "timeout submission is missing");
 check(runner.includes("openSentenceLesson"), "weak-area routes do not resolve exact Sentence lessons");

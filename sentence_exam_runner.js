@@ -742,7 +742,7 @@
       examId: attempt.exam.id,
       attemptMode: attempt.mode,
       blueprintVersion: attempt.generated.blueprintVersion,
-      engineVersion: attempt.generated.engineRevision || attempt.generated.engineVersion,
+      engineVersion: attempt.generated.engineVersion,
       generationSeed: attempt.generated.resolvedSeed,
       contentBankRevision: attempt.generated.contentBankRevision,
       eligibilityRevision: ELIGIBILITY_REVISION,
