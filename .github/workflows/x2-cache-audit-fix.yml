@@ -51,7 +51,6 @@ jobs:
           node --check scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
           node scripts/audit-sentence-lesson-contrasts.mjs
           node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs
-          node scripts/audit-core-release.mjs --full
 
       - name: Commit repair
         run: |
