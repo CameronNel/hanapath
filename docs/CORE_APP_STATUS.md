@@ -54,9 +54,9 @@ owns *what to do next*; this file owns *what currently exists*.
 
 | Metric | Value |
 |---|---|
-| Service-worker cache name | hanapath-shell-v452 |
-| Versioned local assets loaded by index.html | 28 |
-| Precached service-worker shell assets | 201 |
+| Service-worker cache name | hanapath-shell-v453 |
+| Versioned local assets loaded by index.html | 37 |
+| Precached service-worker shell assets | 210 |
 
 ### Sentence Mastery examination readiness
 
@@ -124,6 +124,9 @@ gate; `conditional` steps SKIP when the environment cannot perform them.
 | Sentence lesson contrast coverage and safety (CB3) | `node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs` | blocking |
 | Sentence lesson contrast browser fixtures sections 5-8 (CB3) | `node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs` | blocking |
 | Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | conditional |
+| Sentence Mastery X2 runner, provenance, and retention audit | `node scripts/audit-sentence-exam-runner.mjs` | blocking |
+| Sentence Mastery X2 state and scoring regression | `node scripts/test-sentence-exam-runner.mjs` | blocking |
+| Sentence Mastery X2 browser acceptance | `node scripts/test-sentence-exam-runner-browser.mjs` | blocking |
 | Audio coverage | `node scripts/audit-audio-coverage.mjs` | blocking |
 | Authored audio target discovery regression (L3) | `node scripts/test-authored-audio-targets.mjs` | blocking |
 | Authored audio mapped-runtime regression (L3) | `node scripts/test-authored-audio-runtime.mjs` | blocking |

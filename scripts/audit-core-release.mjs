@@ -83,7 +83,11 @@ const DATA_FILES = [
 const SENTENCE_EXAM_CONTRACT = {
   blueprintsFile: "sentence_exam_blueprints.js",
   engineFile: "sentence_exam_engine.js",
+  runnerCoreFile: "sentence_exam_runner_core.js",
   seedAuditFile: "scripts/audit-sentence-exams.mjs",
+  runnerAuditFile: "scripts/audit-sentence-exam-runner.mjs",
+  runnerRegressionFile: "scripts/test-sentence-exam-runner.mjs",
+  runnerBrowserFile: "scripts/test-sentence-exam-runner-browser.mjs",
   blueprintsGlobal: "HANAPATH_SENTENCE_EXAM_BLUEPRINTS",
   metaGlobal: "HANAPATH_SENTENCE_EXAM_META",
 };
@@ -93,6 +97,7 @@ const SENTENCE_EXAM_CONTRACT = {
 const OPTIONAL_DATA_FILES = [
   SENTENCE_EXAM_CONTRACT.blueprintsFile,
   SENTENCE_EXAM_CONTRACT.engineFile,
+  SENTENCE_EXAM_CONTRACT.runnerCoreFile,
 ];
 
 function loadDataGlobals() {
@@ -354,6 +359,9 @@ const GATE_STEPS = [
     requiresPath: "scripts/audit-sentence-exams.mjs",
     pending: "packet X1 (Sentence exam engine) not yet shipped",
   },
+  { id: "sentence-exam-runner-audit", label: "Sentence Mastery X2 runner, provenance, and retention audit", script: SENTENCE_EXAM_CONTRACT.runnerAuditFile },
+  { id: "sentence-exam-runner-regression", label: "Sentence Mastery X2 state and scoring regression", script: SENTENCE_EXAM_CONTRACT.runnerRegressionFile },
+  { id: "sentence-exam-runner-browser", label: "Sentence Mastery X2 browser acceptance", script: SENTENCE_EXAM_CONTRACT.runnerBrowserFile },
   { id: "audio-coverage", label: "Audio coverage", script: "scripts/audit-audio-coverage.mjs" },
   { id: "authored-audio-targets", label: "Authored audio target discovery regression (L3)", script: "scripts/test-authored-audio-targets.mjs" },
   { id: "authored-audio-runtime", label: "Authored audio mapped-runtime regression (L3)", script: "scripts/test-authored-audio-runtime.mjs" },
