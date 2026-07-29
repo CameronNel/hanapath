@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - core/x2-sentence-exam-runner
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -16,6 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: core/x2-sentence-exam-runner
       - name: Apply X2 integration patches
         run: node scripts/apply-x2-bootstrap.mjs
       - name: Check X2 syntax
