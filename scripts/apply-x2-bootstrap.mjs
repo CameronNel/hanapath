@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// One-shot X2 integration patch. The follow-up commit triggers the temporary workflow.
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
