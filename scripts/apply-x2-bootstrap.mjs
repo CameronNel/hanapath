@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// One-shot X2 integration patch. The follow-up commit triggers the temporary workflow.
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -89,14 +88,5 @@ coreGate = replaceOnce(
   "core gate X2 tests",
 );
 write("scripts/audit-core-release.mjs", coreGate);
-
-let ci = read(".github/workflows/ci.yml");
-ci = replaceOnce(
-  ci,
-  '      # Authored-item audio closure (L3).\n',
-  '      # Sentence Mastery runner, provenance, results, and retention (X2).\n      - name: Check Sentence X2 runner syntax\n        run: |\n          node --check sentence_exam_runner_core.js\n          node --check sentence_exam_runner.js\n          node --check scripts/audit-sentence-exam-runner.mjs\n          node --check scripts/test-sentence-exam-runner.mjs\n          node --check scripts/test-sentence-exam-runner-browser.mjs\n      - name: Audit Sentence X2 runner contract\n        run: node scripts/audit-sentence-exam-runner.mjs\n      - name: Sentence X2 state and scoring regression\n        run: node scripts/test-sentence-exam-runner.mjs\n      - name: Sentence X2 browser acceptance\n        run: node scripts/test-sentence-exam-runner-browser.mjs\n\n      # Authored-item audio closure (L3).\n',
-  "CI X2 gates",
-);
-write(".github/workflows/ci.yml", ci);
 
 console.log("Applied X2 static integration patches.");
