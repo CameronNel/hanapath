@@ -241,17 +241,17 @@ The integrator updates this table after each merge. Workers do not edit it.
 | X1 | Sentence exam blueprints and pure engine | COMPLETE (#369) | CB6B | Deterministic papers and seed audit |
 | X2 | Sentence exam UI, provenance, results, and retention | COMPLETE (#374, #375) | X1 (L2 met) | Learner-facing exam suite |
 | Q1 | Full learner-journey acceptance | COMPLETE (#376) | X2 (L1-L3 met) | Defect closure and evidence |
-| Q2 | Strict release-candidate closure | ACTIVE (draft #377) | Q1 | Final evidence and documentation |
+| Q2 | Strict release-candidate closure | COMPLETE (#377) | Q1 | Final evidence and documentation |
 
-The active and final completion packet is **Q2**. After its draft is independently reviewed and
-merged, no READY core-completion packet remains; roadmap section 11 is owner-scoped post-core work.
+**Q2** is merged. No READY core-completion packet remains; roadmap section 11 is owner-scoped
+post-core work.
 
 ## 8. Packet instructions
 
 ### Completed historical packets
 
 D0, C1, E0, E1A, E1B, CB0, CB1, CB2, CB3, CB4, CB5, CB6A, CB6B, L1, L2, L3,
-X1, X2, and Q1 are complete. Do not recreate or rerun them as new packets.
+X1, X2, Q1, and Q2 are complete. Do not recreate or rerun them as new packets.
 The 2,100 E1A/E1B records remain protected candidate evidence. E1C, E1D, and E2 are superseded
 for exam readiness and must not be started.
 
