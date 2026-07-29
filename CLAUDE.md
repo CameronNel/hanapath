@@ -47,8 +47,10 @@ No new Words imports or Sentence scenario packs belong to core completion.
 - Hangul Mastery: shipped, 200 items.
 - Core Words: shipped, 10 exams, v3 typed past/negation production, delayed
   retention, valid frozen-v2 retention compatibility.
-- Sentence Mastery: not shipped. Eligibility covers 20 of 4,177 rows; strict
-  review, blueprints, engine, runner, provenance, and retention remain.
+- Sentence Mastery: shipped from the enabled frozen 359-typed/343-recognition
+  curated bank, with four stage exams, one final, delayed retention,
+  deterministic generation, strict grading, provenance, Practice taint, and
+  remediation.
 
 ### Integrity
 
@@ -118,7 +120,7 @@ separately. Core audit families include:
 - Words/Sentences data and curriculum foundation;
 - Alphabet/full audio coverage;
 - Hangul recognition and Handwriting Coach;
-- exam integrity, Hangul, Core Word, and later Sentence exams;
+- exam integrity, Hangul, Core Word, and Sentence exams;
 - Form Checks and Sentence eligibility;
 - browser journeys and migration fixtures;
 - Android package/build checks for native or packaged changes.

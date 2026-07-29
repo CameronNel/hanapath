@@ -36,9 +36,11 @@ packaging is an integration layer, not a rewrite.
 - **Core Word Examination Suite:** 10 deterministic achievement examinations,
   including the v3 typed past/negation production contract and delayed retention
   confirmation. Valid frozen-v2 retention windows remain supported.
-- **Sentence Mastery Examination:** specified and partially scaffolded, but not
-  yet complete. Eligibility review, strict pools, blueprints, engine, runner,
-  and retention are the primary remaining core-app programme.
+- **Sentence Mastery Examination Suite:** four cumulative stage exams, one
+  final, and delayed retention confirmation, driven by the enabled frozen
+  independently reviewed curated bank. Deterministic generation, strict typed
+  grading, Practice taint, immutable provenance, remediation, qualification,
+  and retention are shipped.
 
 ### Progress and integrity
 
@@ -91,38 +93,23 @@ tests.
 
 ## Current verification gate
 
-The one-command gate is `node scripts/audit-core-release.mjs --full` (also the
-`core-gate` CI job): it runs the wired subset of the checks below, regenerates
-and verifies `docs/CORE_APP_STATUS.md`, and exits non-zero on any failure. Use
-`--quick` for faster iteration and `--write-status` after data changes. The
-individual commands remain:
+The one-command release gate is `node scripts/audit-core-release.mjs --full`
+(also the `core-gate` CI job). It runs the complete core matrix, verifies
+`docs/CORE_APP_STATUS.md`, and exits non-zero on any failure. Every step is
+blocking. CI first generates the isolated `mobile/www` payload so mobile
+package validation cannot skip. Use `--quick` only for faster deterministic
+sample sizes and `--write-status` after data changes.
 
 ```bash
-for file in app.js sw.js exam_integrity.js sentence_exam_eligibility.js \
-  hangul_mastery_exam.js word_exam_blueprints.js word_exam_engine.js \
-  form_check_blueprints.js; do
-  node --check "$file"
-done
-
-node scripts/audit-exam-integrity.mjs
-node scripts/audit-hangul-mastery-exam.mjs
-node scripts/build-word-exam-competency-map.mjs --check
-node scripts/audit-word-exams.mjs
-node scripts/audit-words-data.mjs --strict
-node scripts/test-thin-lesson-heuristic.mjs
-node scripts/audit-sentences-data.mjs --strict
-node scripts/audit-sentences-foundation.mjs
-node scripts/audit-form-checks.mjs
-node scripts/audit-sentence-eligibility.mjs --allow-incomplete
-node scripts/audit-alphabet-audio.mjs --strict
-node scripts/audit-hangul-recognition.mjs
-node scripts/audit-premium-handwriting.mjs
-node scripts/audit-app-shell.mjs
+node mobile/scripts/prepare-web.mjs
+node scripts/audit-core-release.mjs --full
 ```
 
-`--allow-incomplete` is temporary and exists only because Sentence examination
-eligibility currently covers 20 of 4,177 rows. The completion roadmap removes
-that exception before release-candidate closure.
+The full-corpus E1C/E1D eligibility expansion was superseded by the curated
+Sentence-exam bank. The release gate instead uses
+`--protect-historical-evidence`, which strictly preserves the exact 2,100
+approved E1A/E1B records while the frozen curated-bank audits protect the live
+exam source.
 
 ## Repository shape
 
@@ -133,7 +120,12 @@ that exception before release-candidate closure.
 - `hangul_mastery_exam.js`: Hangul examination bank.
 - `word_exam_blueprints.js`, `word_exam_engine.js`: Core Word examination suite.
 - `exam_integrity.js`: immutable result provenance, taint, and migration layer.
-- `sentence_exam_eligibility.js`: partial Sentence examination eligibility data.
+- `sentence_exam_eligibility*.js`: protected 2,100-row historical review
+  evidence and its fail-closed shard merger.
+- `sentence_exam_curated_bank.js`, `sentence_exam_blueprints.js`,
+  `sentence_exam_engine.js`, `sentence_exam_runner*.js`: frozen Sentence
+  examination source, deterministic papers, grading, UI, provenance, and
+  retention.
 - `form_check_blueprints.js`: 17 non-certifying lesson diagnostics.
 - `audio_map.js`, `audio/`: generated offline audio assets.
 - `mobile/`: isolated Capacitor Android project.

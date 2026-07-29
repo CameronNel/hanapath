@@ -10,11 +10,11 @@
 ## Current Exam tab
 
 The bottom navigation is **Learn · Exam · Progress**. The Exam tab currently
-contains two shipped examination families and one planned core family:
+contains three shipped examination families:
 
 1. Hangul Mastery Examination: shipped.
 2. Core Word Examination Suite: shipped.
-3. Sentence Mastery Examination Suite: specified but not yet shipped.
+3. Sentence Mastery Examination Suite: shipped.
 
 All formal examination work is bound to `exam_integrity.js`. Live testing
 controls and tainted progression produce Practice results and cannot award
@@ -88,13 +88,14 @@ audits. Time-gated removal of v2 compatibility is not part of core completion.
 
 ### Status
 
-**Primary unfinished core feature.** The target product is:
+**Shipped and protected.** The suite provides:
 
 - four cumulative stage examinations after Sentences sections 2, 4, 6, and 8;
 - one cumulative final;
 - one delayed retention confirmation;
-- 80% typed production;
-- canonical-only, reviewed finite-variant, or excluded typed targets;
+- 24-item stage exams, a 50-item final, and a 25-item retention confirmation;
+- 20/40/20 typed allocations for stage/final/retention;
+- canonical-only or independently reviewed controlled finite targets;
 - deterministic seeded generation and five-attempt freshness;
 - full provenance, Practice handling, qualification, and retention.
 
@@ -103,21 +104,17 @@ The current repository has:
 - `docs/SENTENCE_MASTERY_EXAM_SPEC_DRAFT.md`: governing product/measurement
   contract;
 - `docs/SENTENCE_ELIGIBILITY_AUTHORING.md`: binding row review rules;
-- `sentence_exam_eligibility.js`: schema plus only 20 reviewed rows;
-- `scripts/audit-sentence-eligibility.mjs`: census/audit currently run with
-  `--allow-incomplete`.
-
-The current repository does **not** yet have:
-
-- complete eligibility review for all 4,177 rows;
-- strict pool/freshness freeze and lock;
-- Sentence exam blueprints;
-- a pure generator/grader/retention engine;
-- a Sentence exam seed audit;
-- browser attempt, result, remediation, qualification, or retention UI.
-
-Do not build these from this handover. Execute roadmap packets E0, E1A-D, E2,
-X1, X2, Q1, and Q2 in order.
+- `sentence_exam_eligibility*.js`: exactly 2,100 protected historical E1A/E1B
+  records; superseded E1C/E1D are not release prerequisites;
+- `sentence_exam_curated_bank.js` and freeze manifest: enabled, independently
+  reviewed 359-typed/343-recognition source;
+- `sentence_exam_blueprints.js` and `sentence_exam_engine.js`: pure,
+  deterministic papers, strict grading, freshness, and retention selection;
+- `sentence_exam_runner_core.js`, `sentence_exam_runner.js`, and `app.js`:
+  attempt, review, result, remediation, qualification, Practice handling,
+  provenance, migration, and retention UI;
+- full seed, runner, browser, migration, and integrity audits in the blocking
+  core-release matrix.
 
 ## Shared examination integrity
 
@@ -132,7 +129,7 @@ X1, X2, Q1, and Q2 in order.
 - additive legacy migration;
 - backup validation and rejection of malformed imported provenance.
 
-A future Sentence runner must use the same layer rather than inventing parallel
+The Sentence runner uses this same layer and must not be split into parallel
 state or labels.
 
 ## Shared learner-facing rules
@@ -155,9 +152,13 @@ node scripts/audit-exam-integrity.mjs
 node scripts/audit-hangul-mastery-exam.mjs
 node scripts/build-word-exam-competency-map.mjs --check
 node scripts/audit-word-exams.mjs
-node scripts/audit-sentence-eligibility.mjs --allow-incomplete
+node scripts/audit-sentence-eligibility.mjs --protect-historical-evidence
+node scripts/audit-sentence-exam-curated-bank.mjs
+node scripts/audit-sentence-exams.mjs
+node scripts/audit-sentence-exam-runner.mjs
+node scripts/test-sentence-exam-runner.mjs
+node scripts/test-sentence-exam-runner-browser.mjs
 ```
 
-After roadmap E2, the eligibility command becomes strict. After X1, add
-`scripts/audit-sentence-exams.mjs`. The complete release matrix is in the core
-roadmap.
+The complete strict release matrix is `node scripts/audit-core-release.mjs
+--full`; CI prepares the mobile payload first and permits zero skipped steps.

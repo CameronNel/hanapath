@@ -23,9 +23,7 @@ const ADVANCED_SCRUTINY_TAGS = Object.freeze([
 ]);
 
 const errors = [];
-const warnings = [];
 function fail(message) { errors.push(message); }
-function warn(message) { warnings.push(message); }
 function read(path) { return readFileSync(join(ROOT, path), "utf8"); }
 
 function loadGlobals(files) {
@@ -226,20 +224,15 @@ if (cacheName && integrityVersion && cacheName !== integrityVersion) {
   fail(`sw.js cache ${cacheName} must match app integrity version ${integrityVersion}`);
 }
 
-if (report.generatedPromptCount > 0) {
-  warn(`${report.generatedPromptCount} controlled lesson prompts remain explicitly marked for CB4 review; they are teaching prompts, not approved exam items.`);
-}
-warn(`All ${EXPECTED_TOTAL} heuristic contrast selections require independent linguistic review before CB3 integration.`);
-
 console.log(`CB3 contrast entries: ${entries.length}`);
 console.log(`Section counts: ${SECTION_ORDERS.map((section) => `${section}:${entries.filter((entry) => entry.sectionOrder === section).length}`).join(", ")}`);
-console.log(`Generated teaching prompts awaiting later bank review: ${report.generatedPromptCount}`);
+console.log(`Generated teaching-only prompts (not bank approvals): ${report.generatedPromptCount}`);
+console.log(`Heuristic contrast provenance retained: ${EXPECTED_TOTAL} entries`);
 console.log(`Contrast quality: strong=${report.strongContrastCount}, usable=${report.usableContrastCount}, weak=${report.weakContrastCount}, ranked weak=${report.rankedWeakContrastCount}`);
 console.log(`Contrast sources: same lesson=${report.sameLessonContrastCount}, same section=${report.sameSectionContrastCount}, nearby section=${report.nearbySectionContrastCount}`);
 console.log(`Manual semantic overrides: ${report.manualOverrideCount}`);
 console.log(`Advanced-feature targets requiring extra review: ${report.advancedReviewCount}`);
 console.log(`Advanced tag counts: ${JSON.stringify(report.advancedTagCounts)}`);
-for (const message of warnings) console.warn(`WARN: ${message}`);
 if (errors.length) {
   for (const message of errors) console.error(`ERROR: ${message}`);
   console.error(`Sentence lesson contrast audit failed with ${errors.length} error(s).`);

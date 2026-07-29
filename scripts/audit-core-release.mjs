@@ -4,10 +4,9 @@
 // Governing contract: docs/CORE_APP_COMPLETION_ROADMAP.md packet C1.
 //
 // Responsibilities:
-//   1. Run the wired core audit matrix as child processes and exit non-zero if
-//      any blocking child fails. This is a *superset* of the CI validate job and
-//      weakens no existing audit, but it is not yet the full roadmap §9 matrix —
-//      the generated report's coverage-gaps section names what is still excluded.
+//   1. Run the full roadmap §9 matrix as child processes and exit non-zero if
+//      any blocking child fails. This is the authoritative core CI job and
+//      weakens no existing audit.
 //   2. Derive every headline curriculum / examination / audio / eligibility /
 //      shell count directly from the live browser-global data files (no
 //      hand-entered numbers) and render docs/CORE_APP_STATUS.md from them.
@@ -92,9 +91,8 @@ const SENTENCE_EXAM_CONTRACT = {
   metaGlobal: "HANAPATH_SENTENCE_EXAM_META",
 };
 
-// Browser-global files loaded only when they exist, so the meta marker becomes
-// readable the moment X1/X2 add them (loaded after DATA_FILES for dependencies).
-const OPTIONAL_DATA_FILES = [
+// Shipped Sentence-exam browser globals, loaded after their data dependencies.
+const SENTENCE_EXAM_DATA_FILES = [
   SENTENCE_EXAM_CONTRACT.blueprintsFile,
   SENTENCE_EXAM_CONTRACT.engineFile,
   SENTENCE_EXAM_CONTRACT.runnerCoreFile,
@@ -107,7 +105,7 @@ function loadDataGlobals() {
   vm.createContext(sandbox);
   const files = [
     ...DATA_FILES,
-    ...OPTIONAL_DATA_FILES.filter((file) => existsSync(join(ROOT, file))),
+    ...SENTENCE_EXAM_DATA_FILES,
   ];
   for (const file of files) {
     const code = readFileSync(join(ROOT, file), "utf8");
@@ -298,12 +296,12 @@ function discoverRootScripts() {
 }
 const SYNTAX_FILES = discoverRootScripts();
 
-// Each step is a blocking audit unless marked optional. `quickArgs` replaces
-// `fullArgs` in --quick mode. `requiresPath` steps SKIP (do not fail) when the
-// path is absent — used for validations the local environment cannot perform.
+// Every step is blocking. `quickArgs` replaces `fullArgs` in --quick mode, but
+// quick mode changes only deterministic sample sizes; it never omits a gate.
 const GATE_STEPS = [
   { id: "syntax", label: "Syntax check (node --check, all root scripts)", internal: "syntax" },
   { id: "syntax-gate-regression", label: "Syntax-gate regression (every file checked)", script: "scripts/test-core-release-syntax-gate.mjs" },
+  { id: "strict-gate-regression", label: "Release-candidate strict-gate wiring regression (Q2)", script: "scripts/test-core-release-strict-gate.mjs" },
   { id: "readiness-derivation", label: "Sentence-exam readiness derivation regression", script: "scripts/test-sentence-exam-readiness.mjs" },
   { id: "exam-integrity", label: "Exam integrity", script: "scripts/audit-exam-integrity.mjs" },
   { id: "hangul-mastery", label: "Hangul Mastery examination", script: "scripts/audit-hangul-mastery-exam.mjs" },
@@ -319,12 +317,12 @@ const GATE_STEPS = [
   { id: "lesson-journey-browser", label: "Lesson reachability and migration browser journey (L1)", script: "scripts/test-lesson-journey-gate.mjs" },
   {
     id: "sentence-eligibility",
-    label: "Sentence eligibility (schema + progress)",
-    // Historical E1A/E1B evidence remains protected. Shards C/D are not release
-    // prerequisites after CB5, so this gate intentionally checks schema/progress.
+    label: "Protected historical Sentence eligibility evidence",
+    // Historical E1A/E1B evidence remains protected at exactly 2,100 approved
+    // rows. Shards C/D are not release prerequisites after CB5.
     script: "scripts/audit-sentence-eligibility.mjs",
-    fullArgs: ["--allow-incomplete"],
-    quickArgs: ["--allow-incomplete"],
+    fullArgs: ["--protect-historical-evidence"],
+    quickArgs: ["--protect-historical-evidence"],
   },
   { id: "eligibility-shards-regression", label: "Eligibility shard-integrity fixtures (E0)", script: "scripts/test-sentence-eligibility-shards.mjs" },
   { id: "curated-sentence-exam-bank", label: "Enabled frozen curated Sentence exam bank (CB5)", script: "scripts/audit-sentence-exam-curated-bank.mjs" },
@@ -351,14 +349,7 @@ const GATE_STEPS = [
     { id: "sentence-lesson-contrast-freshness-cb3", label: "Sentence lesson contrast data freshness (CB3)", script: "scripts/build-sentence-lesson-contrasts-sections-5-8.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
     { id: "sentence-lesson-contrasts-cb3", label: "Sentence lesson contrast coverage and safety (CB3)", script: "scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs" },
     { id: "sentence-lesson-contrast-browser-cb3", label: "Sentence lesson contrast browser fixtures sections 5-8 (CB3)", script: "scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs" },
-  {
-    id: "sentence-exams",
-    label: "Sentence Mastery examination seed audit",
-    script: "scripts/audit-sentence-exams.mjs",
-    // Ships in packet X1; SKIP (not fail) until the audit script exists.
-    requiresPath: "scripts/audit-sentence-exams.mjs",
-    pending: "packet X1 (Sentence exam engine) not yet shipped",
-  },
+  { id: "sentence-exams", label: "Sentence Mastery examination seed audit", script: "scripts/audit-sentence-exams.mjs" },
   { id: "sentence-exam-runner-audit", label: "Sentence Mastery X2 runner, provenance, and retention audit", script: SENTENCE_EXAM_CONTRACT.runnerAuditFile },
   { id: "sentence-exam-runner-regression", label: "Sentence Mastery X2 state and scoring regression", script: SENTENCE_EXAM_CONTRACT.runnerRegressionFile },
   { id: "sentence-exam-runner-browser", label: "Sentence Mastery X2 browser acceptance", script: SENTENCE_EXAM_CONTRACT.runnerBrowserFile },
@@ -369,15 +360,7 @@ const GATE_STEPS = [
   { id: "hangul-recognition", label: "Hangul recognition", script: "scripts/audit-hangul-recognition.mjs" },
   { id: "premium-handwriting", label: "Premium handwriting", script: "scripts/audit-premium-handwriting.mjs" },
   { id: "app-shell", label: "App shell", script: "scripts/audit-app-shell.mjs" },
-  {
-    id: "mobile-package",
-    label: "Mobile package validation",
-    script: "scripts/audit-mobile-package.mjs",
-    // Requires a prepared payload; the Android workflow runs `npm run
-    // prepare:web` first. SKIP locally when mobile/www is absent.
-    requiresPath: "mobile/www",
-    pending: "requires `npm run prepare:web` in mobile/ (produced by the Android workflow)",
-  },
+  { id: "mobile-package", label: "Prepared mobile package validation", script: "scripts/audit-mobile-package.mjs" },
   { id: "status-freshness", label: "CORE_APP_STATUS.md freshness", internal: "status-check" },
 ];
 
@@ -491,8 +474,8 @@ function renderStatusMarkdown(status) {
 
   lines.push("## Core gate steps");
   lines.push("");
-  lines.push("Run by `node scripts/audit-core-release.mjs` (full). `blocking` steps fail the");
-  lines.push("gate; `conditional` steps SKIP when the environment cannot perform them.");
+  lines.push("Run by `node scripts/audit-core-release.mjs --full`. Every listed step is");
+  lines.push("blocking; release mode permits no skipped or conditional core checks.");
   lines.push("");
   lines.push("| Step | Command | Kind |");
   lines.push("|---|---|---|");
@@ -501,26 +484,22 @@ function renderStatusMarkdown(status) {
     if (step.internal === "syntax") command = "`node --check` (all root scripts)";
     else if (step.internal === "status-check") command = "`--check-status` (internal)";
     else command = "`node " + [step.script, ...(step.fullArgs || [])].join(" ") + "`";
-    const kind = step.requiresPath ? "conditional" : "blocking";
-    lines.push(`| ${step.label} | ${command} | ${kind} |`);
+    lines.push(`| ${step.label} | ${command} | blocking |`);
   }
   lines.push("");
 
-  lines.push("## Open core gates");
+  lines.push("## Release-candidate state");
   lines.push("");
   lines.push(
-    `- **Historical Sentence eligibility evidence** remains at ${s.eligibilityApproved} / ${s.rows} approved rows ` +
-      `(${pct(s.eligibilityApproved, s.rows)}%). E1A/E1B stay protected; unfinished shards C/D are ` +
-      "not release prerequisites. The strict source-bank gate is the enabled frozen curated bank."
+    `- **Historical Sentence eligibility evidence:** ${s.eligibilityApproved} protected approved rows. ` +
+      "E1A/E1B remain immutable evidence; superseded E1C/E1D are not release prerequisites. " +
+      "The enabled frozen curated bank is the strict examination source."
   );
   lines.push(
-    `- **Sentence Mastery examination** engine/runner: ${
-      sentenceExamsShipped ? "seed audit present." : "not yet shipped (packets **X1** and **X2**); the seed audit step SKIPs."
-    }`
+    `- **Sentence Mastery examination:** ${sentenceExamsShipped ? "blueprints, engine, runner, provenance, results, and retention are shipped." : "release-critical artifacts missing."}`
   );
   lines.push(
-    "- **Mobile package validation** is conditional on a prepared `mobile/www`; the Android " +
-      "workflow performs it after `npm run prepare:web`."
+    "- **Core CI:** prepares the isolated Capacitor web payload, then requires every full-gate step to pass with zero skips."
   );
   lines.push("");
 
@@ -595,12 +574,6 @@ function runGate() {
   );
   const results = [];
   for (const step of GATE_STEPS) {
-    // Conditional steps skip cleanly when their prerequisite path is absent.
-    if (step.requiresPath && !existsSync(join(ROOT, step.requiresPath))) {
-      console.log(`--- SKIP ${step.id}: ${step.pending}`);
-      results.push({ step, state: "skip" });
-      continue;
-    }
     console.log(`--- RUN  ${step.id}: ${step.label}`);
     const started = Date.now();
     let ok;
@@ -613,13 +586,12 @@ function runGate() {
   }
 
   const failed = results.filter((r) => r.state === "fail");
-  const skipped = results.filter((r) => r.state === "skip");
   const passed = results.filter((r) => r.state === "pass");
 
   console.log("Summary");
   console.log("-------");
   console.log(`  passed : ${passed.length}`);
-  console.log(`  skipped: ${skipped.length}${skipped.length ? " (" + skipped.map((r) => r.step.id).join(", ") + ")" : ""}`);
+  console.log("  skipped: 0");
   console.log(`  failed : ${failed.length}${failed.length ? " (" + failed.map((r) => r.step.id).join(", ") + ")" : ""}`);
 
   if (failed.length > 0) {
@@ -635,7 +607,7 @@ function runGate() {
 
 // Exported so the regression tests can import these without triggering the gate
 // below (the entry point only runs when invoked as the main module).
-export { deriveStatus, renderStatusMarkdown, deriveSentenceExamReadiness };
+export { deriveStatus, renderStatusMarkdown, deriveSentenceExamReadiness, GATE_STEPS };
 
 function main() {
   if (args.includes("--list")) {
@@ -645,8 +617,7 @@ function main() {
         command = `node --check <each of ${SYNTAX_FILES.length} root scripts, separately>`;
       else if (step.internal === "status-check") command = "(internal status freshness check)";
       else command = "node " + [step.script, ...stepArgs(step)].join(" ");
-      const tag = step.requiresPath ? " [conditional]" : "";
-      console.log(`${step.id}${tag}: ${command}`);
+      console.log(`${step.id}: ${command}`);
     }
     process.exit(0);
   }

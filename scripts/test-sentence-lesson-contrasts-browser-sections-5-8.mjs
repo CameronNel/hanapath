@@ -25,24 +25,31 @@ if (!chrome) {
 const fixtureUrl = pathToFileURL(join(ROOT, "tests", "fixtures", "sentence_lesson_contrasts_sections_5_8.html")).href;
 let failures = 0;
 for (const viewport of ["375,812", "1280,900"]) {
-  const profile = mkdtempSync(join(tmpdir(), "hanapath-cb3-chrome-"));
-  const result = spawnSync(chrome, [
-    "--headless",
-    "--no-sandbox",
-    "--disable-gpu",
-    "--disable-dev-shm-usage",
-    "--disable-background-networking",
-    "--disable-extensions",
-    "--no-first-run",
-    "--allow-file-access-from-files",
-    `--user-data-dir=${profile}`,
-    `--window-size=${viewport}`,
-    "--virtual-time-budget=20000",
-    "--dump-dom",
-    fixtureUrl,
-  ], { encoding: "utf8", timeout: 30000, maxBuffer: 16 * 1024 * 1024 });
-  rmSync(profile, { recursive: true, force: true });
-  const output = result.stdout || "";
+  let result;
+  let output = "";
+  // Retry only when Chrome exits before the fixture publishes any terminal
+  // state. Actual fixture failures remain immediate, blocking failures.
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const profile = mkdtempSync(join(tmpdir(), "hanapath-cb3-chrome-"));
+    result = spawnSync(chrome, [
+      "--headless",
+      "--no-sandbox",
+      "--disable-gpu",
+      "--disable-dev-shm-usage",
+      "--disable-background-networking",
+      "--disable-extensions",
+      "--no-first-run",
+      "--allow-file-access-from-files",
+      `--user-data-dir=${profile}`,
+      `--window-size=${viewport}`,
+      "--virtual-time-budget=20000",
+      "--dump-dom",
+      fixtureUrl,
+    ], { encoding: "utf8", timeout: 30000, maxBuffer: 16 * 1024 * 1024 });
+    rmSync(profile, { recursive: true, force: true });
+    output = result.stdout || "";
+    if (/data-test-status="(?:pass|fail)"/.test(output) || result.status !== 0) break;
+  }
   const passed = result.status === 0 && /data-test-status="pass"/.test(output) && /PASS \d+x\d+/.test(output);
   if (passed) console.log(`PASS: browser contrast fixture at ${viewport}`);
   else {

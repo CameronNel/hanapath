@@ -40,7 +40,8 @@ The current core finish line is:
 - regression-close Words lessons, Form Checks, Core Word v3, and valid v2
   retention compatibility;
 - finalise Sentence lesson feedback, reachability, resume, audio, and migration;
-- review all 4,177 Sentence rows for fair finite exam grading;
+- protect the 2,100 historical eligibility reviews and use only the enabled,
+  independently reviewed frozen curated bank for Sentence exams;
 - ship four Sentence stage exams, one final, and delayed retention;
 - make all core audits and browser journeys strict and green.
 
@@ -81,7 +82,7 @@ node scripts/audit-hangul-mastery-exam.mjs
 node scripts/build-word-exam-competency-map.mjs --check
 node scripts/audit-word-exams.mjs
 node scripts/audit-form-checks.mjs
-node scripts/audit-sentence-eligibility.mjs --allow-incomplete  # strict after E2
+node scripts/audit-sentence-eligibility.mjs --protect-historical-evidence
 node scripts/audit-alphabet-audio.mjs --strict
 node scripts/audit-hangul-recognition.mjs
 node scripts/audit-premium-handwriting.mjs

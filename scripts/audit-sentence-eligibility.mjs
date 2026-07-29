@@ -66,7 +66,8 @@ function loadShardedEligibility() {
 
 // Pure structural validation of the shard registry. Returns an array of error
 // strings (empty === valid). These are HARD failures independent of
-// --allow-incomplete: they signal data corruption, not review incompleteness.
+// --allow-incomplete / --protect-historical-evidence: they signal data
+// corruption, not review incompleteness.
 //
 // `bankIds` may be an array (preferred — lets the audit detect duplicate and
 // malformed live-bank IDs) or a Set.
@@ -239,6 +240,13 @@ export function validateShardIntegrity(shards, bankIds) {
 }
 
 const allowIncomplete = process.argv.includes("--allow-incomplete");
+const protectHistoricalEvidence = process.argv.includes("--protect-historical-evidence");
+const PROTECTED_REVIEWED_ROWS = 2100;
+
+if (allowIncomplete && protectHistoricalEvidence) {
+  console.error("Use only one eligibility mode: --allow-incomplete or --protect-historical-evidence.");
+  process.exit(1);
+}
 
 const LOCKED_TAG_FLOORS = [
   { tag: "object-eul-reul", q_t: 4, r_t: 2 },
@@ -293,7 +301,7 @@ function main() {
     process.exit(1);
   }
 
-  // Shard integrity — hard failures regardless of --allow-incomplete.
+  // Shard integrity — hard failures regardless of the selected census mode.
   // Pass the raw ID array (not a Set) so duplicate/malformed bank IDs surface.
   const shardErrors = validateShardIntegrity(shards, sentences.map((s) => s.id));
   for (const err of shardErrors) errors.push(err);
@@ -363,7 +371,10 @@ function main() {
     }
   }
 
-  // Strict check vs allow-incomplete
+  // Full-corpus strict mode remains available for historical diagnostics.
+  // Core release uses --protect-historical-evidence because E1C/E1D were
+  // superseded by the independently reviewed, frozen curated bank. That mode
+  // is strict about retaining the exact completed E1A/E1B evidence.
   const approvedCount = reviewedIds.filter((id) => reviewedRows[id]?.reviewStatus === "approved").length;
   console.log(`Sentence Exam Eligibility Audit`);
   console.log(`=================================`);
@@ -371,7 +382,30 @@ function main() {
   console.log(`Reviewed rows      : ${reviewedIds.length} / ${sentences.length} (${((reviewedIds.length / sentences.length) * 100).toFixed(2)}%)`);
   console.log(`Approved rows      : ${approvedCount} / ${sentences.length} (${((approvedCount / sentences.length) * 100).toFixed(2)}%)`);
 
-  if (!allowIncomplete) {
+  if (protectHistoricalEvidence) {
+    if (reviewedIds.length !== PROTECTED_REVIEWED_ROWS) {
+      errors.push(
+        `Protected historical evidence must contain exactly ${PROTECTED_REVIEWED_ROWS} reviewed rows; found ${reviewedIds.length}`
+      );
+    }
+    if (approvedCount !== PROTECTED_REVIEWED_ROWS) {
+      errors.push(
+        `Protected historical evidence must contain exactly ${PROTECTED_REVIEWED_ROWS} approved rows; found ${approvedCount}`
+      );
+    }
+    for (let n = 1; n <= sentences.length; n++) {
+      const id = `s${String(n).padStart(4, "0")}`;
+      const rev = reviewedRows[id];
+      if (n <= PROTECTED_REVIEWED_ROWS) {
+        if (!rev) errors.push(`Protected historical row ${id} is missing`);
+        else if (rev.reviewStatus !== "approved") {
+          errors.push(`Protected historical row ${id} reviewStatus is '${rev.reviewStatus}' (not approved)`);
+        }
+      } else if (rev) {
+        errors.push(`Unexpected historical eligibility row ${id} beyond the protected E1A/E1B range`);
+      }
+    }
+  } else if (!allowIncomplete) {
     for (const sRow of sentences) {
       const rev = reviewedRows[sRow.id];
       if (!rev) {
@@ -441,14 +475,21 @@ function main() {
     const met = E_t >= M_t;
     if (!met) anyFloorFailed = true;
 
-    const statusStr = met ? "OK" : allowIncomplete ? "PENDING" : "FAIL";
+    const statusStr = met
+      ? "OK"
+      : protectHistoricalEvidence
+        ? "HISTORICAL"
+        : allowIncomplete
+          ? "PENDING"
+          : "FAIL";
 
     console.log(
       `${tag.padEnd(23)} ${String(rawCount).padStart(5)} ${String(revCount).padStart(5)} ${String(exclCount).padStart(5)} ${String(dupKeysCount).padStart(8)} ${String(class1Count).padStart(7)} ${String(class2Count).padStart(7)} ${String(E_t).padStart(4)} ${String(M_t).padStart(5)}   ${statusStr}`
     );
 
-    // Special hard-fail check for future-geoyeyo if E_future < 25 and not allowIncomplete
-    if (tag === "future-geoyeyo" && !met) {
+    // This legacy full-corpus floor report is relevant only in strict census
+    // mode. The protected-history release mode uses the curated-bank audits.
+    if (tag === "future-geoyeyo" && !met && !allowIncomplete && !protectHistoricalEvidence) {
       console.log(`\n--- FUTURE-TENSE GATE REPORT ---`);
       console.log(`Raw future-geoyeyo rows       : ${rawCount}`);
       console.log(`Excluded count by reason      : ${JSON.stringify(futureExclReasons)}`);
@@ -470,7 +511,7 @@ function main() {
     process.exit(1);
   }
 
-  if (!allowIncomplete && anyFloorFailed) {
+  if (!allowIncomplete && !protectHistoricalEvidence && anyFloorFailed) {
     console.error(`\nAudit failed: one or more tag floors (E_t < M_t) not satisfied in strict mode.`);
     process.exit(1);
   }
