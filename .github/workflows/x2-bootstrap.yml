@@ -38,11 +38,11 @@ jobs:
           node scripts/test-sentence-exam-runner-browser.mjs
       - name: Regenerate derived core status
         run: node scripts/audit-core-release.mjs --write-status
-      - name: Remove bootstrap machinery and commit
+      - name: Commit integrated X2 files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm scripts/apply-x2-bootstrap.mjs .github/workflows/x2-bootstrap.yml
+          git rm scripts/apply-x2-bootstrap.mjs
           git add -A
           git diff --cached --check
           git commit -m "X2: integrate Sentence exam runner and retention"
