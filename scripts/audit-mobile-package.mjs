@@ -121,6 +121,9 @@ if (!existsSync(wwwRoot)) {
 
   // index.html local references must resolve inside the package.
   const indexHtml = readFileSync(join(wwwRoot, "index.html"), "utf8");
+  if (!/<meta\b[^>]*name=["']viewport["'][^>]*content=["'][^"']*viewport-fit=cover/i.test(indexHtml)) {
+    errors.push("mobile/www/index.html must opt into viewport-fit=cover for safe-area insets");
+  }
   const refs = [];
   for (const match of indexHtml.matchAll(/<link\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)) refs.push(match[1]);
   for (const match of indexHtml.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)) refs.push(match[1]);
@@ -158,6 +161,23 @@ if (!existsSync(wwwRoot)) {
   const swGuard = appJs.match(/function registerServiceWorker\(\)\s*\{\s*if \(isHanaPathNative\(\)\)/);
   if (!swGuard) {
     errors.push("app.js registerServiceWorker() is not guarded by isHanaPathNative() — the native WebView would register a service worker");
+  }
+
+  // Capacitor 8 supplies --safe-area-inset-* when Android WebView env() values
+  // are unavailable or unreliable. The shared shell must consume those values
+  // first and preserve env() as the browser/PWA fallback.
+  const stylesCss = readFileSync(join(wwwRoot, "styles.css"), "utf8");
+  const safeAreaContracts = [
+    [/--app-safe-top:\s*var\(--safe-area-inset-top,\s*env\(safe-area-inset-top,\s*0px\)\)/, "top safe-area fallback"],
+    [/--app-safe-right:\s*var\(--safe-area-inset-right,\s*env\(safe-area-inset-right,\s*0px\)\)/, "right safe-area fallback"],
+    [/--app-safe-bottom:\s*var\(--safe-area-inset-bottom,\s*env\(safe-area-inset-bottom,\s*0px\)\)/, "bottom safe-area fallback"],
+    [/--app-safe-left:\s*var\(--safe-area-inset-left,\s*env\(safe-area-inset-left,\s*0px\)\)/, "left safe-area fallback"],
+    [/\.screen-shell\s*\{[\s\S]*?inset:\s*var\(--app-safe-top\)\s+var\(--app-safe-right\)\s+var\(--app-safe-bottom\)\s+var\(--app-safe-left\)/, "onboarding safe-area boundary"],
+    [/\.app-shell\s*\{[\s\S]*?inset:\s*var\(--app-safe-top\)\s+var\(--app-safe-right\)\s+0\s+var\(--app-safe-left\)/, "app-shell safe-area boundary"],
+    [/\.bottom-nav\s*\{[\s\S]*?padding-bottom:\s*var\(--app-safe-bottom\)/, "bottom-navigation safe area"],
+  ];
+  for (const [pattern, description] of safeAreaContracts) {
+    if (!pattern.test(stylesCss)) errors.push(`styles.css is missing the ${description} contract`);
   }
 
   // Deterministic manifest: recompute and compare byte-for-byte.
@@ -216,6 +236,9 @@ if (!existsSync(androidRoot)) {
   if (capacitorConfig.webDir !== "www") errors.push(`capacitor.config.json webDir is ${capacitorConfig.webDir}; expected www`);
   if (capacitorConfig.android && capacitorConfig.android.webContentsDebuggingEnabled === true) {
     errors.push("capacitor.config.json enables WebView debugging");
+  }
+  if (capacitorConfig.plugins?.SystemBars?.insetsHandling !== "css") {
+    errors.push('capacitor.config.json must keep SystemBars.insetsHandling at "css"');
   }
   if (targetSdk && appId) {
     console.log(`android: appId ${appId[1]}, minSdk ${minSdk ? minSdk[1] : "?"}, targetSdk ${targetSdk[1]}, permissions OK`);

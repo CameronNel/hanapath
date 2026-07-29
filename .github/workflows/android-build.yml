@@ -19,6 +19,7 @@ on:
       - "lib/**"
       - "icons/**"
       - "scripts/audit-mobile-package.mjs"
+      - "scripts/test-mobile-safe-area-browser.mjs"
       - "scripts/audit-premium-handwriting.mjs"
       - "scripts/audit-app-shell.mjs"
       # Learning-data audits run before packaging; re-run the build when they
@@ -28,6 +29,7 @@ on:
       - "scripts/audit-alphabet-audio.mjs"
       - "scripts/audit-hangul-recognition.mjs"
       - "scripts/lib/**"
+      - "tests/fixtures/mobile_safe_area.html"
       - ".github/workflows/android-build.yml"
   push:
     branches: [main]
@@ -70,6 +72,7 @@ jobs:
           node --check app.js
           node --check sw.js
           node scripts/audit-app-shell.mjs
+          node scripts/test-mobile-safe-area-browser.mjs
 
       - name: Learning-data audits
         run: |

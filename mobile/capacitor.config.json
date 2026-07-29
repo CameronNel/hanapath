@@ -9,5 +9,10 @@
   "android": {
     "allowMixedContent": false,
     "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css"
+    }
   }
 }

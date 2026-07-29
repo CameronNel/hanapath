@@ -29,6 +29,13 @@
   --radius-xs:    10px;
   --gap:          14px;
   --nav-h:        68px;
+  /* Capacitor 8 injects --safe-area-inset-* on Android WebViews where the
+     browser env() values are unreliable. Browser/PWA installs fall back to
+     the standards-based env() values, while desktop browsers resolve to 0. */
+  --app-safe-top:    var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --app-safe-right:  var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+  --app-safe-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --app-safe-left:   var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
 
   /* ── MOTION LANGUAGE ──────────────────────────────
      One small set of easings/durations so every
@@ -176,13 +183,17 @@ input, textarea { cursor: text; }
 /* ── ONBOARDING SHELL ────────────────────────────── */
 .screen-shell {
   position: fixed;
-  inset: 0;
+  inset:
+    var(--app-safe-top)
+    var(--app-safe-right)
+    var(--app-safe-bottom)
+    var(--app-safe-left);
   z-index: 100;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px 20px env(safe-area-inset-bottom);
+  padding: 24px 20px;
   overflow-y: auto;
 }
 
@@ -275,7 +286,7 @@ input, textarea { cursor: text; }
 /* ── APP SHELL ───────────────────────────────────── */
 .app-shell {
   position: fixed;
-  inset: 0;
+  inset: var(--app-safe-top) var(--app-safe-right) 0 var(--app-safe-left);
   display: flex;
   flex-direction: column;
   z-index: 1;
@@ -285,7 +296,7 @@ input, textarea { cursor: text; }
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 16px 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 16px);
+  padding: 16px 16px calc(var(--nav-h) + var(--app-safe-bottom) + 16px);
   will-change: transform, opacity;
 }
 .screen-enter {
@@ -296,8 +307,8 @@ input, textarea { cursor: text; }
 .bottom-nav {
   flex-shrink: 0;
   display: flex;
-  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(var(--nav-h) + var(--app-safe-bottom));
+  padding-bottom: var(--app-safe-bottom);
   background: var(--panel-strong);
   border-top: 1px solid var(--line);
   backdrop-filter: blur(24px);
@@ -1563,7 +1574,7 @@ button.bd-assembled:hover {
 
 .correct-toast {
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  top: calc(var(--app-safe-top) + 16px);
   left: 50%;
   z-index: 1200;
   min-width: min(320px, calc(100vw - 24px));
@@ -1627,7 +1638,7 @@ button.bd-assembled:hover {
 /* ── TRY-AGAIN POPUP ─────────────────────────────── */
 .retry-toast {
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  top: calc(var(--app-safe-top) + 16px);
   left: 50%;
   z-index: 1200;
   min-width: min(340px, calc(100vw - 24px));
@@ -1691,7 +1702,7 @@ button.bd-assembled:hover {
 /* ── TAP-TO-HEAR HINT ────────────────────────────── */
 .tap-hint-toast {
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  top: calc(var(--app-safe-top) + 16px);
   left: 50%;
   z-index: 1200;
   min-width: min(300px, calc(100vw - 24px));
@@ -5930,8 +5941,8 @@ li { margin-bottom: 4px; }
 /* ── SETTINGS (hub tile + screen) ────────────────── */
 .app-settings-button {
   position: fixed;
-  top: max(14px, env(safe-area-inset-top));
-  right: max(16px, env(safe-area-inset-right));
+  top: calc(var(--app-safe-top) + 14px);
+  right: calc(var(--app-safe-right) + 16px);
   z-index: 72;
   width: 44px;
   height: 44px;
