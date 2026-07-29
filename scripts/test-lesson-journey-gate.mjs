@@ -9,6 +9,9 @@ import { spawn } from "node:child_process";
 const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const candidates = [
   process.env.CHROME_BIN,
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  process.env.LOCALAPPDATA ? join(process.env.LOCALAPPDATA, "Google", "Chrome", "Application", "chrome.exe") : null,
   "/usr/bin/google-chrome",
   "/usr/bin/google-chrome-stable",
   "/usr/bin/chromium",
@@ -92,10 +95,17 @@ const server = createServer((request, response) => {
 function runChrome(url, viewport) {
   return new Promise((resolveRun) => {
     const profile = mkdtempSync(join(tmpdir(), "hanapath-l1-chrome-"));
+    const [widthText, heightText] = viewport.split(",");
+    const width = Number.parseInt(widthText, 10);
+    const height = Number.parseInt(heightText, 10);
+    // The fixture pins the app iframe to the requested viewport. Extra outer
+    // space keeps that iframe fully visible despite platform window chrome.
+    const windowSize = `${width + 64},${height + 192}`;
     const child = spawn(chrome, [
       "--headless",
       "--no-sandbox",
       "--disable-gpu",
+      "--hide-scrollbars",
       "--disable-dev-shm-usage",
       "--disable-background-networking",
       "--disable-extensions",
@@ -103,7 +113,7 @@ function runChrome(url, viewport) {
       "--no-first-run",
       "--mute-audio",
       `--user-data-dir=${profile}`,
-      `--window-size=${viewport}`,
+      `--window-size=${windowSize}`,
       "--virtual-time-budget=120000",
       "--run-all-compositor-stages-before-draw",
       "--dump-dom",
