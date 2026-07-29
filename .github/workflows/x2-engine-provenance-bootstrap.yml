@@ -1,0 +1,44 @@
+name: X2 engine provenance correction
+
+on:
+  push:
+    branches:
+      - core/x2-sentence-exam-runner
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: core/x2-sentence-exam-runner
+      - name: Apply engine provenance correction
+        run: node scripts/apply-x2-engine-provenance.mjs
+      - name: Validate focused X2 contracts
+        run: |
+          node --check sentence_exam_runner.js
+          node --check scripts/audit-sentence-exam-runner.mjs
+          node scripts/test-sentence-exam-runner.mjs
+          node scripts/audit-sentence-exam-runner.mjs
+          node scripts/audit-exam-integrity.mjs
+          node scripts/test-sentence-exam-readiness.mjs
+          node scripts/test-sentence-exam-runner-browser.mjs
+      - name: Regenerate derived status
+        run: node scripts/audit-core-release.mjs --write-status
+      - name: Commit engine provenance correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm scripts/apply-x2-engine-provenance.mjs
+          git add -A
+          git diff --cached --check
+          git commit -m "X2: align retention engine provenance"
+          git push origin HEAD:core/x2-sentence-exam-runner
