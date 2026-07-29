@@ -63,7 +63,7 @@ replaceOnce(
   `check(runner.includes('qualifier.attemptMode === "achievement"') && runner.includes("qualifier.engineVersion === getMeta().engineVersion") && runner.includes("qualifier.eligibilityRevision === ELIGIBILITY_REVISION"), "retention qualifier provenance compatibility is incomplete");
 check(runner.includes("qualifier.floorSummary?.details?.masteryQualified === true"), "retention qualifier does not prove the mastery-qualification floor");
 check(runner.includes("entry.submittedAttemptId === id && entry.generationId === qualifier?.generationId"), "retention qualifier is not linked to its exact generated form");
-check(runner.includes("targetKeysMatch") && runner.includes("generation.integrityStatus === \"hanaPath\""), "retention qualifier target set or generation integrity linkage is incomplete");`,
+check(runner.includes("targetKeysMatch") && runner.includes('generation.integrityStatus === "hanaPath"'), "retention qualifier target set or generation integrity linkage is incomplete");`,
   "audit qualifier linkage",
 );
 
