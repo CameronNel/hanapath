@@ -95,6 +95,8 @@
           hook.startAttempt("sentence-exam-1", "achievement", "x2-browser-persistence-failure");
           await waitFor(() => hook.attempt()?.stage === "attempt");
           hook.answerAllCorrect();
+          const weakItem = hook.attempt().items.find((item) => Array.isArray(item.sourceLessonIds) && item.sourceLessonIds.length);
+          hook.attempt().answers[weakItem.itemId] = "__wrong__";
           const appState = hook.appState();
           const recordBeforeFailure = JSON.stringify(hook.record("sentence-exam-1"));
           const historyBeforeFailure = JSON.stringify(hook.state().generationHistory["sentence-exam-1"]);
@@ -114,10 +116,89 @@
           assert(JSON.stringify(hook.state().generationHistory["sentence-exam-1"]) === historyBeforeFailure, "persistence failure did not restore generation lifecycle");
           assert(JSON.stringify(appState.examResults) === resultsBeforeFailure, "persistence failure did not restore the result store");
           assert(JSON.stringify(appState.examIntegrity?.resultRelations || []) === relationsBeforeFailure, "persistence failure did not restore result relations");
+          assert(progressBefore === JSON.stringify(hook.sentenceProgress()), "Sentence exam mutated lesson/SRS progress");
+          const weakRoute = doc.querySelector("[data-sentence-weak-route]");
+          assert(weakRoute, "weak-area remediation route was not rendered");
+          const weakLessonId = weakRoute.dataset.sentenceWeakRoute;
+          weakRoute.click();
+          await waitFor(() => !doc.getElementById("screen-speak").hidden && doc.getElementById("screen-detail").hidden);
+          assert(hook.appState().navTab === "practice", `weak route ${weakLessonId} did not switch to the Sentence surface`);
+          hook.unlockThrough(8);
+          const retentionProgressBefore = JSON.stringify(hook.sentenceProgress());
 
-          const progressAfter = JSON.stringify(hook.sentenceProgress());
-          assert(progressBefore === progressAfter, "Sentence exam mutated lesson/SRS progress");
-          pass("Sentence X2 runner, provenance, Practice gate, IME, rollback, review, and discard history");
+          const finalExam = win.HANAPATH_SENTENCE_EXAMS.find((exam) => exam.id === "sentence-exam-5");
+          const meta = win.HANAPATH_SENTENCE_EXAM_META;
+          const core = win.HANAPATH_SENTENCE_EXAM_RUNNER;
+          const engine = win.HANAPATH_SENTENCE_EXAM_ENGINE;
+          const qualifierId = "attempt-x2-window-qualifier";
+          const qualifierOpensAt = 2_000_000_000_000;
+          const qualifierExpiresAt = qualifierOpensAt + 60_000;
+          const qualifierGenerated = engine.generateAttempt(finalExam.id, "x2-window-qualifier", { freshnessHistory: [] });
+          const qualifierGeneration = core.makeGenerationEntry(qualifierGenerated, {
+            generatedAt: qualifierOpensAt - 7 * core.DAY_MS,
+            status: "hanaPath",
+            eligibilityRevision: win.HANAPATH_SENTENCE_EXAM_ELIGIBILITY.revision,
+          });
+          core.appendGenerationEntry(hook.state(), finalExam.id, qualifierGeneration);
+          core.markGenerationSubmitted(hook.state(), finalExam.id, qualifierGeneration.generationId, qualifierId);
+          const qualifierResult = core.buildResultRecord({
+            attemptId: qualifierId,
+            examId: finalExam.id,
+            attemptMode: "achievement",
+            blueprintVersion: meta.blueprintVersion,
+            engineVersion: meta.engineVersion,
+            generationSeed: qualifierGenerated.resolvedSeed,
+            contentBankRevision: meta.contentBankRevision,
+            eligibilityRevision: win.HANAPATH_SENTENCE_EXAM_ELIGIBILITY.revision,
+            generatedAt: qualifierGeneration.generatedAt,
+            submittedAt: qualifierGeneration.generatedAt + 1,
+            durationSeconds: 1,
+            scopeSectionIds: ["sn1", "sn2", "sn3", "sn4", "sn5", "sn6", "sn7", "sn8"],
+            itemCount: finalExam.itemCount,
+            scoreSummary: { correct: finalExam.itemCount, total: finalExam.itemCount, pct: 100, unanswered: 0 },
+            floorSummary: { passed: true, distinguished: true, details: { mode: "achievement", passed: true, masteryQualified: true } },
+            status: "hanaPath",
+            overrideFlags: [],
+            overrideEventIds: [],
+            generationId: qualifierGeneration.generationId,
+            answerReview: [],
+            responseTiming: {},
+          });
+          const qualifierChecksum = () => win.HANAPATH_EXAM_INTEGRITY.fingerprint(
+            win.Object.assign(new win.Object(), qualifierResult, { checksum: null }),
+          );
+          qualifierResult.checksum = qualifierChecksum();
+          appState.examResults.byAttemptId[qualifierId] = qualifierResult;
+          Object.assign(hook.record(finalExam.id), {
+            masteryEarnedAt: null,
+            retentionAttemptId: null,
+            qualifyingAttemptId: qualifierId,
+            confirmationDueFrom: qualifierOpensAt,
+            confirmationExpiresAt: qualifierExpiresAt,
+            qualifyingTargetKeys: qualifierGenerated.targetKeys.slice(),
+          });
+          assert(hook.qualifierIsValid(finalExam.id), "compatible browser qualifier fixture was rejected");
+
+          hook.setNow(qualifierOpensAt);
+          hook.startAttempt(finalExam.id, "retention", "x2-retention-expiry-submit");
+          assert(hook.attempt(), `open retention window did not start: ${doc.getElementById("screen-detail").textContent}`);
+          await waitFor(() => hook.attempt()?.stage === "attempt");
+          hook.answerAllCorrect();
+          hook.setNow(qualifierExpiresAt + 1);
+          hook.submitNow(false);
+          await waitFor(() => hook.attempt()?.stage === "results");
+          assert(hook.attempt().result.resultRecord.overrideFlags.includes("retention-window-not-open"), "expired retention submission did not degrade to Practice");
+          assert(hook.record(finalExam.id).masteryEarnedAt === null, "expired retention submission awarded mastery");
+          doc.querySelector("#sentenceExamBackHub").click();
+          await waitFor(() => hook.attempt() === null);
+
+          hook.setNow(qualifierExpiresAt + 1);
+          hook.startAttempt(finalExam.id, "retention", "x2-retention-expired-start");
+          await waitFor(() => doc.getElementById("screen-detail").textContent.includes("not currently open"));
+          assert(hook.attempt() === null, "expired retention window allowed a new attempt to start");
+
+          assert(retentionProgressBefore === JSON.stringify(hook.sentenceProgress()), "retention attempt mutated lesson/SRS progress");
+          pass("Sentence X2 runner, retention windows, remediation routing, provenance, rollback, and review");
         } catch (error) {
           fail(error && error.stack ? error.stack : String(error));
         }

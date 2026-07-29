@@ -457,11 +457,16 @@
           mastered = true;
         }
       } else if (!record.masteryEarnedAt && bands.masteryQualified) {
-        record.qualifyingAttemptId = attemptId;
-        record.confirmationDueFrom = now + Number(exam.retention.opensAfterDays || 7) * DAY_MS;
-        record.confirmationExpiresAt = record.confirmationDueFrom + Number(exam.retention.expiresAfterDays || 21) * DAY_MS;
-        record.qualifyingTargetKeys = uniqueStrings(attempt.targetKeys || attempt.canonicalTargetKeys);
-        qualified = true;
+        const currentWindow = retentionStatus(record, exam, now);
+        const preserveWindow = context.replaceQualificationWindow !== true
+          && (currentWindow.phase === "waiting" || currentWindow.phase === "open");
+        if (!preserveWindow) {
+          record.qualifyingAttemptId = attemptId;
+          record.confirmationDueFrom = now + Number(exam.retention.opensAfterDays || 7) * DAY_MS;
+          record.confirmationExpiresAt = record.confirmationDueFrom + Number(exam.retention.expiresAfterDays || 21) * DAY_MS;
+          record.qualifyingTargetKeys = uniqueStrings(attempt.targetKeys || attempt.canonicalTargetKeys);
+          qualified = true;
+        }
       }
     }
     return { qualified, mastered };
