@@ -241,7 +241,7 @@ The integrator updates this table after each merge. Workers do not edit it.
 | X1 | Sentence exam blueprints and pure engine | COMPLETE (#369) | CB6B | Deterministic papers and seed audit |
 | X2 | Sentence exam UI, provenance, results, and retention | COMPLETE (#374, #375) | X1 (L2 met) | Learner-facing exam suite |
 | Q1 | Full learner-journey acceptance | COMPLETE (#376) | X2 (L1-L3 met) | Defect closure and evidence |
-| Q2 | Strict release-candidate closure | ACTIVE (draft PR pending) | Q1 | Final evidence and documentation |
+| Q2 | Strict release-candidate closure | ACTIVE (draft #377) | Q1 | Final evidence and documentation |
 
 The active and final completion packet is **Q2**. After its draft is independently reviewed and
 merged, no READY core-completion packet remains; roadmap section 11 is owner-scoped post-core work.
