@@ -62,7 +62,7 @@ const orderedScripts = [
 ];
 let previous = -1;
 for (const file of orderedScripts) {
-  const at = index.indexOf(file);
+  const at = index.indexOf(`src="./${file}`);
   check(at > previous, `index.html load order is wrong at ${file}`);
   previous = at;
 }
@@ -83,7 +83,7 @@ check(runner.includes("core.DISCLOSURE"), "exact Sentence disclosure copy is not
 check(core.MASTERY_LINE === "You demonstrated and retained the taught HanaPath sentence patterns in this device-local assessment.", "mastery card copy drifted");
 check(integrity.includes("practice") && integrity.includes("hanaPath"), "generic Workstream 0 integrity status API is unavailable");
 check(runner.includes("writeExamResultRecord") && runner.includes("appendExamResultRelation"), "immutable result provenance/relation integration is missing");
-check(runner.includes("markGenerationDiscarded") && runner.includes("discarded"), "quit/discard freshness preservation is missing");
+check(runner.includes("markGenerationDiscarded") && runner.includes("generationHistory"), "quit/discard freshness preservation is missing");
 check(runner.includes("timedOut") && runner.includes("submitSentenceExam(true)"), "timeout submission is missing");
 check(runner.includes("openSentenceLesson"), "weak-area routes do not resolve exact Sentence lessons");
 check(css.includes("@media (max-width: 600px)"), "phone-width runner styling is missing");
