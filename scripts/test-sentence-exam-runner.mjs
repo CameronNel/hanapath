@@ -102,6 +102,85 @@ assert.deepEqual(record.qualifyingTargetKeys, targetKeys);
 assert.equal(core.retentionStatus(record, finalExam, record.confirmationDueFrom - 1).phase, "waiting");
 assert.equal(core.retentionStatus(record, finalExam, record.confirmationDueFrom).phase, "open");
 assert.equal(core.retentionStatus(record, finalExam, record.confirmationExpiresAt + 1).phase, "expired");
+const liveWindow = {
+  qualifyingAttemptId: record.qualifyingAttemptId,
+  confirmationDueFrom: record.confirmationDueFrom,
+  confirmationExpiresAt: record.confirmationExpiresAt,
+  qualifyingTargetKeys: record.qualifyingTargetKeys.slice(),
+};
+for (const [attemptId, attemptNow] of [
+  ["qualifier-waiting", record.confirmationDueFrom - 1],
+  ["qualifier-open", record.confirmationDueFrom + 1],
+]) {
+  const preserved = core.updateAchievementRecord(record, {
+    result: perfectFinal,
+    bands: finalBands,
+    mode: "achievement",
+    status: "hanaPath",
+    now: attemptNow,
+    attemptId,
+    attempt: { targetKeys: targetKeys.map((key) => `${attemptId}-${key}`) },
+    exam: finalExam,
+  });
+  assert.equal(preserved.qualified, false);
+  assert.deepEqual({
+    qualifyingAttemptId: record.qualifyingAttemptId,
+    confirmationDueFrom: record.confirmationDueFrom,
+    confirmationExpiresAt: record.confirmationExpiresAt,
+    qualifyingTargetKeys: record.qualifyingTargetKeys,
+  }, liveWindow);
+}
+
+const renewalRecord = core.normalizeSentenceExams(null, [finalExam]).byExamId[finalExam.id];
+core.updateAchievementRecord(renewalRecord, {
+  result: perfectFinal,
+  bands: finalBands,
+  mode: "achievement",
+  status: "hanaPath",
+  now: 3_000_000,
+  attemptId: "qualifier-old",
+  attempt: { targetKeys },
+  exam: finalExam,
+});
+const renewedAt = renewalRecord.confirmationExpiresAt + 1;
+const renewed = core.updateAchievementRecord(renewalRecord, {
+  result: perfectFinal,
+  bands: finalBands,
+  mode: "achievement",
+  status: "hanaPath",
+  now: renewedAt,
+  attemptId: "qualifier-renewed",
+  attempt: { targetKeys: targetKeys.map((key) => `renewed-${key}`) },
+  exam: finalExam,
+});
+assert.equal(renewed.qualified, true);
+assert.equal(renewalRecord.qualifyingAttemptId, "qualifier-renewed");
+assert.equal(renewalRecord.confirmationDueFrom, renewedAt + 7 * core.DAY_MS);
+
+const incompatibleRecord = core.normalizeSentenceExams(null, [finalExam]).byExamId[finalExam.id];
+core.updateAchievementRecord(incompatibleRecord, {
+  result: perfectFinal,
+  bands: finalBands,
+  mode: "achievement",
+  status: "hanaPath",
+  now: 4_000_000,
+  attemptId: "qualifier-incompatible",
+  attempt: { targetKeys },
+  exam: finalExam,
+});
+const forcedAt = incompatibleRecord.confirmationDueFrom - 1;
+core.updateAchievementRecord(incompatibleRecord, {
+  result: perfectFinal,
+  bands: finalBands,
+  mode: "achievement",
+  status: "hanaPath",
+  now: forcedAt,
+  attemptId: "qualifier-replacement",
+  attempt: { targetKeys: targetKeys.map((key) => `replacement-${key}`) },
+  exam: finalExam,
+  replaceQualificationWindow: true,
+});
+assert.equal(incompatibleRecord.qualifyingAttemptId, "qualifier-replacement");
 
 const practiceRecord = core.normalizeSentenceExams(null, [finalExam]).byExamId[finalExam.id];
 core.updateAchievementRecord(practiceRecord, {

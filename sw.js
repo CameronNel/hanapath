@@ -1,5 +1,5 @@
-// [2026-07-29] Cache bumped for X2 Sentence exam runner, provenance, results, and retention.
-const CACHE_NAME = "hanapath-shell-v454";
+// [2026-07-29] Cache refreshed for the X2 mastered-retention result action.
+const CACHE_NAME = "hanapath-shell-v455";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -7,7 +7,7 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=20260727a",
-  "./sentence_exam_runner.css?v=20260729a",
+  "./sentence_exam_runner.css?v=20260729b",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260727b",
@@ -31,7 +31,7 @@ const APP_SHELL = [
   "./sentence_exam_grader.js?v=20260729a",
   "./sentence_exam_blueprints.js?v=20260729a",
   "./sentence_exam_engine.js?v=20260729a",
-  "./sentence_exam_runner_core.js?v=20260729b",
+  "./sentence_exam_runner_core.js?v=20260729c",
   "./hangul_strokes.js?v=20260715b",
   "./hangul_mastery_exam.js?v=20260720a",
   "./word_exam_blueprints.js?v=20260723a",
@@ -39,8 +39,8 @@ const APP_SHELL = [
   "./exam_integrity.js?v=20260721b",
   "./form_check_blueprints.js?v=20260723a",
   "./sentence_feedback.js?v=20260727a",
-  "./app.js?v=20260729b",
-  "./sentence_exam_runner.js?v=20260729b",
+  "./app.js?v=20260729c",
+  "./sentence_exam_runner.js?v=20260729c",
   "./alphabet_skill_srs.js?v=20260630b",
   "./manifest.webmanifest",
   "./korean_5000_claude_ready.csv",

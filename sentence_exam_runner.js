@@ -93,9 +93,9 @@
     };
   }
 
-  function retentionPhase(exam) {
+  function retentionPhase(exam, at = now()) {
     const record = getRecord(exam.id);
-    const phase = core.retentionStatus(record, exam, now(), { masteryIsValid: masteryIsValid(exam, record) });
+    const phase = core.retentionStatus(record, exam, at, { masteryIsValid: masteryIsValid(exam, record) });
     if ((phase.phase === "waiting" || phase.phase === "open") && !qualifierIsValid(exam, record)) {
       return { phase: "incompatible" };
     }
@@ -302,11 +302,17 @@
     const exam = getExamById(examId);
     if (!exam || !examUnlocked(exam)) return renderSentenceExamHub();
     const record = getRecord(exam.id);
-    if (mode === "retention" && !qualifierIsValid(exam, record)) {
-      return renderSentenceExamUnavailable(exam, new Error("Retention requires a compatible HanaPath qualifying final from this exact blueprint, engine, bank, and eligibility revision. Complete a new final to qualify again."));
+    const generatedAt = now();
+    if (mode === "retention") {
+      const phase = retentionPhase(exam, generatedAt);
+      if (phase.phase !== "open") {
+        const message = phase.phase === "incompatible"
+          ? "Retention requires a compatible HanaPath qualifying final from this exact blueprint, engine, bank, and eligibility revision. Complete a new final to qualify again."
+          : "The retention confirmation is not currently open. Return to the Sentence exam hub for the current window status.";
+        return renderSentenceExamUnavailable(exam, new Error(message));
+      }
     }
     const useSeed = seed == null ? randomSeed() : String(seed);
-    const generatedAt = now();
     const initialFlags = testQueryActive() ? ["__wetest"] : [];
     const initialTaint = taintContext(exam, initialFlags);
     const generationKey = generationKeyForMode(exam.id, mode);
@@ -787,6 +793,9 @@
     let qualifyingAttemptId = null;
     if (attempt.mode === "retention") {
       qualifyingAttemptId = record.qualifyingAttemptId;
+      if (retentionPhase(attempt.exam, submittedAt).phase !== "open") {
+        overrideFlags = [...new Set([...overrideFlags, "retention-window-not-open"])];
+      }
       if (!qualifierIsValid(attempt.exam, record)) overrideFlags = [...new Set([...overrideFlags, "retention-qualifier-invalid"])];
       const overlap = attempt.generated.targetKeys.filter((key) => (record.qualifyingTargetKeys || []).includes(key));
       if (overlap.length) overrideFlags = [...new Set([...overrideFlags, "retention-target-overlap"])];
@@ -799,6 +808,9 @@
       generationId: attempt.generationId,
       attemptId,
     });
+    const qualificationPhase = attempt.mode === "achievement" && attempt.exam.retention
+      ? retentionPhase(attempt.exam, submittedAt)
+      : null;
     if (attempt.mode === "achievement" && Number.isFinite(record.masteryEarnedAt) && !masteryIsValid(attempt.exam, record)) {
       record.masteryEarnedAt = null;
       record.retentionAttemptId = null;
@@ -812,6 +824,7 @@
       attemptId,
       attempt: attempt.generated,
       exam: attempt.exam,
+      replaceQualificationWindow: qualificationPhase?.phase === "incompatible",
     });
     const answerReview = answerReviewRows(attempt, graded);
     const floorDetails = {
@@ -1031,6 +1044,7 @@
     el.querySelectorAll("[data-sentence-weak-route]").forEach((button) => {
       button.addEventListener("click", () => {
         sentenceExamAttempt = null;
+        if (typeof showTab === "function") showTab("practice");
         if (typeof openSentenceLesson === "function") openSentenceLesson(button.dataset.sentenceWeakRoute);
       });
     });

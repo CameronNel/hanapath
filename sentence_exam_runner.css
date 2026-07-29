@@ -203,6 +203,12 @@
   font-size: 0.76rem;
 }
 
+/* A mastered retention result has no supported retake path. Keep the truthful
+   Back to Sentence exams action and remove the dead primary retake control. */
+.sentence-exam-completion.completion-stage--crown #sentenceExamRetake {
+  display: none;
+}
+
 @media (max-width: 600px) {
   .sentence-exam-card {
     border-radius: 14px;
