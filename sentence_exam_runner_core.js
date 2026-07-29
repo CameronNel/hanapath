@@ -14,7 +14,7 @@
       });
     }
   }
-})(typeof globalThis !== "undefined" ? globalThis : this, function createSentenceExamRunnerCore() {
+})(typeof window !== "undefined" ? window : (typeof globalThis !== "undefined" ? globalThis : this), function createSentenceExamRunnerCore() {
   "use strict";
 
   const STATE_VERSION = 1;

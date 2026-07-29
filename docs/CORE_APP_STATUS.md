@@ -72,8 +72,8 @@ its packet lands, with no hand-edit to this report.
 | Exam blueprints (X1) | yes |
 | Generator/grader engine (X1) | yes — engine v1 |
 | Seed audit (X1) | yes |
-| Browser runner + provenance (X2) | no |
-| Delayed retention confirmation (X2) | no |
+| Browser runner + provenance (X2) | yes — runner v1 |
+| Delayed retention confirmation (X2) | yes |
 
 ## Core gate steps
 
