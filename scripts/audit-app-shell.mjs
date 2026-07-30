@@ -9,6 +9,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import "./test-audit-live-state-safety.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -27,7 +28,7 @@ const REQUIRED_VERSIONED_INDEX_ASSETS = new Set([
   "./sentences_core.js",
   "./sentence_lesson_contrast_ui.js",
   "./sentence_lesson_contrasts_sections_1_4.js",
-    "./sentence_lesson_contrasts_sections_5_8.js",
+  "./sentence_lesson_contrasts_sections_5_8.js",
   "./sentence_feedback.js",
   "./sentence_exam_runner.css",
   "./sentence_exam_prompt_templates.js",
