@@ -29,6 +29,73 @@
       .replace(/'/g, "&#39;");
   }
 
+  function characterDistance(leftValue, rightValue) {
+    const left = Array.from(normalizeToken(leftValue));
+    const right = Array.from(normalizeToken(rightValue));
+    const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+    for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+      const current = [leftIndex];
+      for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+        const substitution = previous[rightIndex - 1] + (left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1);
+        current[rightIndex] = Math.min(
+          previous[rightIndex] + 1,
+          current[rightIndex - 1] + 1,
+          substitution,
+        );
+      }
+      previous.splice(0, previous.length, ...current);
+    }
+    return previous[right.length];
+  }
+
+  function pairRemainingTokens(remainingTarget, remainingAttempt) {
+    const m = remainingTarget.length;
+    const n = remainingAttempt.length;
+    const cells = Array.from({ length: m + 1 }, () => Array(n + 1).fill(null));
+    cells[0][0] = { cost: 0, action: "done" };
+    for (let targetIndex = 1; targetIndex <= m; targetIndex += 1) {
+      cells[targetIndex][0] = { cost: targetIndex * 2, action: "missing" };
+    }
+    for (let attemptIndex = 1; attemptIndex <= n; attemptIndex += 1) {
+      cells[0][attemptIndex] = { cost: attemptIndex * 2, action: "extra" };
+    }
+
+    for (let targetIndex = 1; targetIndex <= m; targetIndex += 1) {
+      for (let attemptIndex = 1; attemptIndex <= n; attemptIndex += 1) {
+        const targetToken = remainingTarget[targetIndex - 1].token;
+        const attemptToken = remainingAttempt[attemptIndex - 1].token;
+        const maxLength = Math.max(Array.from(normalizeToken(targetToken)).length, Array.from(normalizeToken(attemptToken)).length, 1);
+        const similarityPenalty = Math.min(3, Math.max(1, Math.ceil((characterDistance(targetToken, attemptToken) / maxLength) * 3)));
+        const candidates = [
+          { cost: cells[targetIndex - 1][attemptIndex - 1].cost + similarityPenalty, action: "substituted" },
+          { cost: cells[targetIndex - 1][attemptIndex].cost + 2, action: "missing" },
+          { cost: cells[targetIndex][attemptIndex - 1].cost + 2, action: "extra" },
+        ];
+        candidates.sort((a, b) => a.cost - b.cost || ({ substituted: 0, missing: 1, extra: 2 }[a.action] - { substituted: 0, missing: 1, extra: 2 }[b.action]));
+        cells[targetIndex][attemptIndex] = candidates[0];
+      }
+    }
+
+    const pairs = [];
+    let targetIndex = m;
+    let attemptIndex = n;
+    while (targetIndex > 0 || attemptIndex > 0) {
+      const action = cells[targetIndex][attemptIndex].action;
+      if (action === "substituted") {
+        pairs.push({ action, target: remainingTarget[targetIndex - 1], attempt: remainingAttempt[attemptIndex - 1] });
+        targetIndex -= 1;
+        attemptIndex -= 1;
+      } else if (action === "missing") {
+        pairs.push({ action, target: remainingTarget[targetIndex - 1], attempt: null });
+        targetIndex -= 1;
+      } else {
+        pairs.push({ action: "extra", target: null, attempt: remainingAttempt[attemptIndex - 1] });
+        attemptIndex -= 1;
+      }
+    }
+    return pairs.reverse();
+  }
+
   function alignTokens(targetValue, typedValue) {
     const targetTokens = tokenize(targetValue);
     const attemptTokens = tokenize(typedValue);
@@ -128,17 +195,18 @@
 
     const remainingTarget = target.filter((item) => item.status === "pending");
     const remainingAttempt = attempt.filter((item) => item.status === "pending");
-    const substitutions = Math.min(remainingTarget.length, remainingAttempt.length);
-    for (let index = 0; index < substitutions; index++) {
-      const targetItem = remainingTarget[index];
-      const attemptItem = remainingAttempt[index];
-      targetItem.status = "substituted";
-      targetItem.attemptIndex = attemptItem.index;
-      attemptItem.status = "substituted";
-      attemptItem.targetIndex = targetItem.index;
+    for (const pair of pairRemainingTokens(remainingTarget, remainingAttempt)) {
+      if (pair.action === "substituted") {
+        pair.target.status = "substituted";
+        pair.target.attemptIndex = pair.attempt.index;
+        pair.attempt.status = "substituted";
+        pair.attempt.targetIndex = pair.target.index;
+      } else if (pair.action === "missing") {
+        pair.target.status = "missing";
+      } else {
+        pair.attempt.status = "extra";
+      }
     }
-    for (const item of remainingTarget.slice(substitutions)) item.status = "missing";
-    for (const item of remainingAttempt.slice(substitutions)) item.status = "extra";
 
     const counts = { correct: 0, moved: 0, substituted: 0, missing: 0, extra: 0 };
     for (const item of target) {
