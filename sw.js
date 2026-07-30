@@ -58,6 +58,14 @@ async function trimCache(cache, predicate, limit) {
   for (const request of matches.slice(0, Math.max(0, excess))) await cache.delete(request);
 }
 
+async function cleanupShellCache() {
+  const cache = await caches.open(CACHE_NAME);
+  const allowed = new Set(APP_SHELL.map((asset) => new URL(asset, self.registration.scope).href));
+  for (const request of await cache.keys()) {
+    if (!allowed.has(request.url)) await cache.delete(request);
+  }
+}
+
 async function cacheRuntimeResponse(request, response, requestUrl) {
   if (!response || response.status !== 200 || response.type !== "basic") return;
   const cache = await caches.open(RUNTIME_CACHE_NAME);
@@ -112,6 +120,7 @@ self.addEventListener("activate", (event) => {
           ? caches.delete(key)
           : null
       ))))
+      .then(() => cleanupShellCache())
       .then(() => self.clients.claim()),
   );
 });
