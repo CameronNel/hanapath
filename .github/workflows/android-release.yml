@@ -126,6 +126,7 @@ jobs:
           node --check app.js
           node --check sw.js
           node scripts/audit-app-shell.mjs
+          node scripts/test-android-release-safety.mjs
 
       - name: Learning-data audits
         run: |
@@ -166,7 +167,6 @@ jobs:
             echo "Decoded keystore is empty — check ANDROID_UPLOAD_KEYSTORE_BASE64" >&2
             exit 1
           fi
-          # Fail fast if the store password or alias is wrong (output discarded).
           keytool -list -keystore "$RUNNER_TEMP/upload-keystore.jks" \
             -storepass "$KS_STOREPASS" -alias "$KS_ALIAS" > /dev/null
 
@@ -189,13 +189,12 @@ jobs:
           grep -q 'package="io.github.cameronnel.hanapath"' "$merged" || { echo "package id mismatch" >&2; exit 1; }
           grep -q "android:versionCode=\"$VERSION_CODE\"" "$merged" || { echo "versionCode $VERSION_CODE missing from merged manifest" >&2; exit 1; }
           grep -q "android:versionName=\"$VERSION_NAME\"" "$merged" || { echo "versionName $VERSION_NAME missing from merged manifest" >&2; exit 1; }
-          # Only <uses-permission> elements grant permissions (same contract as
-          # the PR build workflow); INTERNET, BILLING, and the app's own
-          # signature-level receiver-hardening permission are the full allowlist.
+          # INTERNET and the app's own signature-level receiver-hardening
+          # permission are the full allowlist for the free_all release.
           perms=$(grep -oE '<uses-permission(-sdk-23)?[^>]*android:name="[^"]*"' "$merged" | grep -oE '"[^"]*"$' | tr -d '"' | sort -u || true)
           echo "Declared uses-permissions:"
           echo "${perms:-<none>}"
-          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^com\.android\.vending\.BILLING$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
+          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
           if [ -n "$unexpected" ]; then
             echo "Unexpected permissions in merged release manifest:" >&2
             echo "$unexpected" >&2
