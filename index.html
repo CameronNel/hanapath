@@ -31,7 +31,6 @@
             ? profile.stateMigrations
             : {};
           if (migrations[migrationId]) return;
-
           const completed = Array.isArray(profile.phaseOneCompleted)
             ? profile.phaseOneCompleted.filter((id) => typeof id === "string" && id)
             : [];
@@ -39,13 +38,8 @@
             const recovery = profile.migrationRecovery && typeof profile.migrationRecovery === "object"
               ? profile.migrationRecovery
               : {};
-            recovery.phaseOneCompletedBeforeSafetyV2 = {
-              ids: [...new Set(completed)],
-              capturedAt: Date.now(),
-            };
+            recovery.phaseOneCompletedBeforeSafetyV2 = { ids: [...new Set(completed)], capturedAt: Date.now() };
             profile.migrationRecovery = recovery;
-            // Existing progress is stronger evidence of a legacy learner than
-            // an absent onboarding flag. Fresh profiles still enter onboarding.
             profile.onboarded = true;
           }
           migrations[migrationId] = { appliedAt: Date.now(), preservedProgress: completed.length > 0 };
@@ -53,22 +47,16 @@
           localStorage.setItem(key, JSON.stringify(profile));
         } catch (error) {
           console.error("[HanaPath] Preflight state safety migration failed.", error);
-          try {
-            sessionStorage.setItem("hanapath-state-preflight-error", String(error && error.message ? error.message : error));
-          } catch {
-            // The console error is the final fallback.
-          }
+          try { sessionStorage.setItem("hanapath-state-preflight-error", String(error && error.message ? error.message : error)); } catch {}
         }
       })();
     </script>
     <script defer src="./lib/hangul.js"></script>
     <script defer src="./audio_map.js?v=20260727b"></script>
-    <!-- Words section curated data — must load before app.js -->
     <script defer src="./words_curated_core.js?v=20260705e"></script>
     <script defer src="./words_inflect.js?v=20260703c"></script>
     <script defer src="./words_lesson_plan.js?v=20260722f"></script>
     <script defer src="./raw_word_meanings.js?v=20260703b"></script>
-    <!-- Sentences section bank — load before app.js -->
     <script defer src="./sentences_core.js?v=20260717u"></script>
     <script defer src="./sentences_lesson_plan.js?v=20260717u"></script>
     <script defer src="./sentence_lesson_contrast_ui.js?v=20260726a"></script>
@@ -79,7 +67,6 @@
     <script defer src="./sentence_exam_eligibility_shard_c.js?v=20260725a"></script>
     <script defer src="./sentence_exam_eligibility_shard_d.js?v=20260725a"></script>
     <script defer src="./sentence_exam_eligibility.js?v=20260725a"></script>
-    <!-- Sentence Mastery Examination Suite — frozen bank, X1 engine, and X2 state contract -->
     <script defer src="./sentence_exam_prompt_templates.js?v=20260729a"></script>
     <script defer src="./sentence_exam_curated_bank.js?v=20260729a"></script>
     <script defer src="./sentence_exam_curated_bank_freeze.js?v=20260729a"></script>
@@ -87,19 +74,16 @@
     <script defer src="./sentence_exam_blueprints.js?v=20260729a"></script>
     <script defer src="./sentence_exam_engine.js?v=20260729a"></script>
     <script defer src="./sentence_exam_runner_core.js?v=20260729c"></script>
-    <!-- Alphabet Hangul-writing stroke data — load before app.js -->
     <script defer src="./lib/hangul_q_recognizer.js?v=20260715b"></script>
     <script defer src="./hangul_strokes.js?v=20260715b"></script>
-    <!-- Hangul Mastery Examination bank — load before app.js -->
     <script defer src="./hangul_mastery_exam.js?v=20260720a"></script>
-    <!-- Core Word Examination Suite — blueprints + engine, load before app.js -->
     <script defer src="./word_exam_blueprints.js?v=20260723a"></script>
     <script defer src="./word_exam_engine.js?v=20260723a"></script>
     <script defer src="./exam_integrity.js?v=20260721b"></script>
-    <!-- Form Checks declarative inventory (Box B1) — load before app.js -->
     <script defer src="./form_check_blueprints.js?v=20260723a"></script>
     <script defer src="./sentence_feedback.js?v=20260730b"></script>
     <script defer src="./app.js?v=20260729d"></script>
+    <script defer src="./exam_integrity_hardening.js?v=20260730a"></script>
     <script defer src="./audit_runtime_truthfulness.js?v=20260730a"></script>
     <script defer src="./sentence_exam_fairness.js?v=20260730a"></script>
     <script defer src="./sentence_exam_runner.js?v=20260729c"></script>
@@ -111,41 +95,24 @@
     <div id="correctToast" class="correct-toast" role="status" aria-live="polite" aria-atomic="true" hidden>Correct!</div>
     <div id="retryToast" class="retry-toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
     <div id="tapHintToast" class="tap-hint-toast" role="status" aria-live="polite" aria-atomic="true" hidden>Tap any Hangul to hear it</div>
-
-    <!-- Onboarding wizard -->
     <div id="onboarding" class="screen-shell"></div>
-
-    <!-- Main app shell -->
     <div id="app" class="app-shell" hidden>
       <button id="app-settings-button" class="app-settings-button" type="button" aria-label="Open settings" title="Settings" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
       <div id="detail-bar" class="detail-bar" hidden></div>
-      <div id="screen-today"    class="screen" data-screen="today"></div>
-      <div id="screen-path"     class="screen" data-screen="path"     hidden></div>
-      <div id="screen-review"   class="screen" data-screen="review"   hidden></div>
-      <div id="screen-speak"    class="screen" data-screen="speak"    hidden></div>
-      <div id="screen-library"  class="screen" data-screen="library"  hidden></div>
+      <div id="screen-today" class="screen" data-screen="today"></div>
+      <div id="screen-path" class="screen" data-screen="path" hidden></div>
+      <div id="screen-review" class="screen" data-screen="review" hidden></div>
+      <div id="screen-speak" class="screen" data-screen="speak" hidden></div>
+      <div id="screen-library" class="screen" data-screen="library" hidden></div>
       <div id="screen-progress" class="screen" data-screen="progress" hidden></div>
-      <div id="screen-menu"     class="screen" data-screen="menu"     hidden></div>
-      <div id="screen-detail"   class="screen" data-screen="detail"   hidden></div>
-
+      <div id="screen-menu" class="screen" data-screen="menu" hidden></div>
+      <div id="screen-detail" class="screen" data-screen="detail" hidden></div>
       <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
-        <button class="nav-btn" data-nav="learn" type="button">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-14A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>
-          <span>Learn</span>
-        </button>
-        <button class="nav-btn" data-nav="exam" type="button">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6a1 1 0 0 1 1 1v2H8V4a1 1 0 0 1 1-1z"/><path d="M16 5h2a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><path d="m9 13 2 2 4-4"/></svg>
-          <span>Exam</span>
-        </button>
-        <button class="nav-btn" data-nav="progress" type="button">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
-          <span>Progress</span>
-        </button>
+        <button class="nav-btn" data-nav="learn" type="button"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-14A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg><span>Learn</span></button>
+        <button class="nav-btn" data-nav="exam" type="button"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6a1 1 0 0 1 1 1v2H8V4a1 1 0 0 1 1-1z"/><path d="M16 5h2a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><path d="m9 13 2 2 4-4"/></svg><span>Exam</span></button>
+        <button class="nav-btn" data-nav="progress" type="button"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span>Progress</span></button>
       </nav>
     </div>
   </body>
