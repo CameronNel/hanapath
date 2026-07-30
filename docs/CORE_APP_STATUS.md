@@ -56,7 +56,7 @@ owns *what to do next*; this file owns *what currently exists*.
 |---|---|
 | Service-worker cache name | hanapath-shell-v456 |
 | Versioned local assets loaded by index.html | 37 |
-| Precached service-worker shell assets | 210 |
+| Precached service-worker shell assets | 42 |
 
 ### Sentence Mastery examination readiness
 
@@ -147,4 +147,3 @@ blocking; release mode permits no skipped or conditional core checks.
 ## Coverage gaps
 
 No roadmap §9 verification scripts are deliberately excluded from this gate.
-
