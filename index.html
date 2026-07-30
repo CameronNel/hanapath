@@ -16,6 +16,51 @@
     <link rel="stylesheet" href="./styles.css?v=20260729a" />
     <link rel="stylesheet" href="./sentence_exam_runner.css?v=20260729b" />
     <link rel="icon" type="image/png" href="./icons/icon-192.png">
+    <script>
+      // Runs before app.js so the historical Alphabet migration cannot erase
+      // legitimate progress from an older profile that lacks `onboarded`.
+      (() => {
+        const key = "hanapath-v1";
+        const migrationId = "alphabetProgressSafetyV2";
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) return;
+          const profile = JSON.parse(raw);
+          if (!profile || typeof profile !== "object" || Array.isArray(profile)) return;
+          const migrations = profile.stateMigrations && typeof profile.stateMigrations === "object"
+            ? profile.stateMigrations
+            : {};
+          if (migrations[migrationId]) return;
+
+          const completed = Array.isArray(profile.phaseOneCompleted)
+            ? profile.phaseOneCompleted.filter((id) => typeof id === "string" && id)
+            : [];
+          if (completed.length) {
+            const recovery = profile.migrationRecovery && typeof profile.migrationRecovery === "object"
+              ? profile.migrationRecovery
+              : {};
+            recovery.phaseOneCompletedBeforeSafetyV2 = {
+              ids: [...new Set(completed)],
+              capturedAt: Date.now(),
+            };
+            profile.migrationRecovery = recovery;
+            // Existing progress is stronger evidence of a legacy learner than
+            // an absent onboarding flag. Fresh profiles still enter onboarding.
+            profile.onboarded = true;
+          }
+          migrations[migrationId] = { appliedAt: Date.now(), preservedProgress: completed.length > 0 };
+          profile.stateMigrations = migrations;
+          localStorage.setItem(key, JSON.stringify(profile));
+        } catch (error) {
+          console.error("[HanaPath] Preflight state safety migration failed.", error);
+          try {
+            sessionStorage.setItem("hanapath-state-preflight-error", String(error && error.message ? error.message : error));
+          } catch {
+            // The console error is the final fallback.
+          }
+        }
+      })();
+    </script>
     <script defer src="./lib/hangul.js"></script>
     <script defer src="./audio_map.js?v=20260727b"></script>
     <!-- Words section curated data — must load before app.js -->
@@ -56,7 +101,7 @@
     <script defer src="./sentence_feedback.js?v=20260727a"></script>
     <script defer src="./app.js?v=20260729d"></script>
     <script defer src="./sentence_exam_runner.js?v=20260729c"></script>
-    <script defer src="./alphabet_skill_srs.js?v=20260630b"></script>
+    <script defer src="./alphabet_skill_srs.js?v=20260730a"></script>
   </head>
   <body>
     <div class="bg-orb orb-a" aria-hidden="true"></div>
