@@ -6,7 +6,6 @@
     <title>HanaPath</title>
     <meta name="description" content="A learner-first Korean app with Learn, Exam, and Progress tabs." />
     <meta name="theme-color" content="#0f1026" />
-    <!-- Fonts are vendored locally (fonts/, SIL OFL 1.1) so the app has no runtime network dependency -->
     <link rel="stylesheet" href="./fonts/fonts.css?v=20260716a" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icons/icon-192.png" />
@@ -17,14 +16,16 @@
     <link rel="stylesheet" href="./sentence_exam_runner.css?v=20260729b" />
     <link rel="icon" type="image/png" href="./icons/icon-192.png">
     <script>
-      // Runs before app.js so the historical Alphabet migration cannot erase
-      // legitimate progress from an older profile that lacks `onboarded`.
+      // Preflight runs before app.js. It preserves unreadable raw data before
+      // loadState's fallback can be saved over it, and protects legitimate
+      // legacy Alphabet progress from the historical onboarding migration.
       (() => {
         const key = "hanapath-v1";
+        const corruptRecoveryKey = "hanapath-v1-corrupt-recovery";
         const migrationId = "alphabetProgressSafetyV2";
+        const raw = localStorage.getItem(key);
+        if (!raw) return;
         try {
-          const raw = localStorage.getItem(key);
-          if (!raw) return;
           const profile = JSON.parse(raw);
           if (!profile || typeof profile !== "object" || Array.isArray(profile)) return;
           const migrations = profile.stateMigrations && typeof profile.stateMigrations === "object"
@@ -46,8 +47,14 @@
           profile.stateMigrations = migrations;
           localStorage.setItem(key, JSON.stringify(profile));
         } catch (error) {
-          console.error("[HanaPath] Preflight state safety migration failed.", error);
-          try { sessionStorage.setItem("hanapath-state-preflight-error", String(error && error.message ? error.message : error)); } catch {}
+          console.error("[HanaPath] Saved progress is unreadable; preserving the raw value before starting safely.", error);
+          try {
+            if (!localStorage.getItem(corruptRecoveryKey)) localStorage.setItem(corruptRecoveryKey, raw);
+            localStorage.removeItem(key);
+            sessionStorage.setItem("hanapath-state-preflight-error", String(error && error.message ? error.message : error));
+          } catch (recoveryError) {
+            console.error("[HanaPath] Could not preserve the unreadable raw save.", recoveryError);
+          }
         }
       })();
     </script>
@@ -84,6 +91,7 @@
     <script defer src="./sentence_feedback.js?v=20260730b"></script>
     <script defer src="./app.js?v=20260729d"></script>
     <script defer src="./exam_integrity_hardening.js?v=20260730a"></script>
+    <script defer src="./state_persistence_hardening.js?v=20260730a"></script>
     <script defer src="./audit_runtime_truthfulness.js?v=20260730a"></script>
     <script defer src="./sentence_exam_fairness.js?v=20260730a"></script>
     <script defer src="./sentence_exam_runner.js?v=20260729c"></script>
