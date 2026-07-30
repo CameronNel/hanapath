@@ -1,15 +1,19 @@
-// [2026-07-29] Cache refreshed for Android/PWA safe-area handling.
+// [2026-07-30] State-safety delivery and bounded HanaPath cache ownership.
 const CACHE_NAME = "hanapath-shell-v456";
+const RUNTIME_CACHE_NAME = "hanapath-runtime-v1";
+const CACHE_PREFIX = "hanapath-";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
-// Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
+const NON_AUDIO_RUNTIME_CACHE_LIMIT = 128;
+const NAVIGATION_TIMEOUT_MS = 5000;
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
+
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./fonts/fonts.css?v=20260716a",
   "./styles.css?v=20260729a",
   "./sentence_exam_runner.css?v=20260729b",
   "./lib/hangul.js",
-  "./lib/hangul_q_recognizer.js?v=20260715b",
   "./audio_map.js?v=20260727b",
   "./words_curated_core.js?v=20260705e",
   "./words_inflect.js?v=20260703c",
@@ -19,7 +23,7 @@ const APP_SHELL = [
   "./sentences_lesson_plan.js?v=20260717u",
   "./sentence_lesson_contrast_ui.js?v=20260726a",
   "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a",
-    "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b",
+  "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b",
   "./sentence_exam_eligibility_shard_a.js?v=20260725a",
   "./sentence_exam_eligibility_shard_b.js?v=20260725a",
   "./sentence_exam_eligibility_shard_c.js?v=20260725a",
@@ -32,6 +36,7 @@ const APP_SHELL = [
   "./sentence_exam_blueprints.js?v=20260729a",
   "./sentence_exam_engine.js?v=20260729a",
   "./sentence_exam_runner_core.js?v=20260729c",
+  "./lib/hangul_q_recognizer.js?v=20260715b",
   "./hangul_strokes.js?v=20260715b",
   "./hangul_mastery_exam.js?v=20260720a",
   "./word_exam_blueprints.js?v=20260723a",
@@ -41,248 +46,99 @@ const APP_SHELL = [
   "./sentence_feedback.js?v=20260727a",
   "./app.js?v=20260729d",
   "./sentence_exam_runner.js?v=20260729c",
-  "./alphabet_skill_srs.js?v=20260630b",
+  "./alphabet_skill_srs.js?v=20260730a",
   "./manifest.webmanifest",
-  "./korean_5000_claude_ready.csv",
-  "./korean_supplementary_15k.csv",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./fonts/fonts.css?v=20260716a",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.0.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.1.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.10.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.100.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.101.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.102.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.103.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.104.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.105.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.106.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.107.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.108.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.109.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.11.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.110.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.111.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.112.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.113.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.114.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.115.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.116.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.117.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.118.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.119.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.12.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.13.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.14.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.15.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.16.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.17.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.18.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.19.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.2.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.20.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.21.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.22.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.23.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.24.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.25.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.26.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.27.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.28.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.29.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.3.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.30.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.31.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.32.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.33.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.34.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.35.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.36.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.37.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.38.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.39.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.4.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.40.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.41.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.42.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.43.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.44.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.45.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.46.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.47.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.48.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.49.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.5.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.50.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.51.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.52.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.53.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.54.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.55.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.56.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.57.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.58.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.59.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.6.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.60.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.61.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.62.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.63.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.64.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.65.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.66.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.67.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.68.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.69.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.7.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.70.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.71.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.72.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.73.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.74.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.75.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.76.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.77.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.78.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.79.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.8.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.80.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.81.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.82.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.83.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.84.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.85.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.86.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.87.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.88.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.89.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.9.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.90.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.91.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.92.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.93.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.94.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.95.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.96.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.97.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.98.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5Cgm20xz64px_1hVWr0wuPNGmlQNMEfD4.99.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5CgmG0X7t.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5CgmG1X7t0JM.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5CgmG337t0JM.woff2",
-  "./fonts/files/PbykFmXiEBPT4ITbgNA5CgmG3n7t0JM.woff2",
-  "./fonts/files/QGYvz_MVcBeNP4NJtEtq.woff2",
-  "./fonts/files/QGYvz_MVcBeNP4NJuktqQ4E.woff2",
-  "./audio/sound_effects/correct/correct_1.wav",
-  "./audio/sound_effects/correct/correct_2.wav",
-  "./audio/sound_effects/correct/correct_3.wav",
-  "./audio/sound_effects/correct/correct_4.wav",
-  "./audio/sound_effects/correct/correct_5.wav",
-  "./audio/sound_effects/correct/correct_6.wav",
-  "./audio/sound_effects/correct/correct_7.wav",
-  "./audio/sound_effects/correct/correct_8.wav",
-  "./audio/sound_effects/correct/correct_9.wav",
-  "./audio/sound_effects/correct/correct_10.wav",
-  "./audio/sound_effects/correct/correct_11.wav",
-  "./audio/sound_effects/correct/correct_12.wav",
-  "./audio/sound_effects/correct/correct_13.wav",
-  "./audio/sound_effects/correct/correct_14.wav",
-  "./audio/sound_effects/correct/correct_15.wav",
-  "./audio/sound_effects/correct/correct_16.wav",
-  "./audio/sound_effects/correct/correct_17.wav",
-  "./audio/sound_effects/correct/correct_18.wav",
-  "./audio/sound_effects/correct/correct_19.wav",
-  "./audio/sound_effects/correct/correct_20.wav",
-  "./audio/sound_effects/incorrect/incorrect_1.wav",
-  "./audio/sound_effects/incorrect/incorrect_2.wav",
-  "./audio/sound_effects/incorrect/incorrect_3.wav",
-  "./audio/sound_effects/incorrect/incorrect_4.wav",
-  "./audio/sound_effects/incorrect/incorrect_5.wav",
-  "./audio/sound_effects/incorrect/incorrect_6.wav",
-  "./audio/sound_effects/incorrect/incorrect_7.wav",
-  "./audio/sound_effects/incorrect/incorrect_8.wav",
-  "./audio/sound_effects/incorrect/incorrect_9.wav",
-  "./audio/sound_effects/incorrect/incorrect_10.wav",
-  "./audio/sound_effects/incorrect/incorrect_11.wav",
-  "./audio/sound_effects/incorrect/incorrect_12.wav",
-  "./audio/sound_effects/incorrect/incorrect_13.wav",
-  "./audio/sound_effects/incorrect/incorrect_14.wav",
-  "./audio/sound_effects/incorrect/incorrect_15.wav",
-  "./audio/sound_effects/incorrect/incorrect_16.wav",
-  "./audio/sound_effects/incorrect/incorrect_17.wav",
-  "./audio/sound_effects/incorrect/incorrect_18.wav",
-  "./audio/sound_effects/incorrect/incorrect_19.wav",
-  "./audio/sound_effects/incorrect/incorrect_20.wav",
 ];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)),
+async function trimCache(cache, predicate, limit) {
+  const matches = (await cache.keys()).filter(predicate);
+  const excess = matches.length - limit;
+  for (const request of matches.slice(0, Math.max(0, excess))) await cache.delete(request);
+}
+
+async function cacheRuntimeResponse(request, response, requestUrl) {
+  if (!response || response.status !== 200 || response.type !== "basic") return;
+  const cache = await caches.open(RUNTIME_CACHE_NAME);
+  await cache.put(request, response);
+  const isAudio = requestUrl.pathname.startsWith(AUDIO_RUNTIME_PATH_PREFIX);
+  await trimCache(
+    cache,
+    (cachedRequest) => {
+      const path = new URL(cachedRequest.url).pathname;
+      return isAudio
+        ? path.startsWith(AUDIO_RUNTIME_PATH_PREFIX)
+        : !path.startsWith(AUDIO_RUNTIME_PATH_PREFIX);
+    },
+    isAudio ? AUDIO_RUNTIME_CACHE_LIMIT : NON_AUDIO_RUNTIME_CACHE_LIMIT,
   );
+}
+
+async function fetchWithTimeout(request, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(request, { signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function networkFirstNavigation(request) {
+  try {
+    const response = await fetchWithTimeout(request, NAVIGATION_TIMEOUT_MS);
+    if (response && response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put("./index.html", response.clone());
+    }
+    return response;
+  } catch {
+    const cache = await caches.open(CACHE_NAME);
+    return (await cache.match("./index.html")) || Response.error();
+  }
+}
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-          return null;
-        }),
-      ),
-    ).then(() => self.clients.claim()),
+    caches.keys()
+      .then((keys) => Promise.all(keys.map((key) => (
+        key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME && key !== RUNTIME_CACHE_NAME
+          ? caches.delete(key)
+          : null
+      ))))
+      .then(() => self.clients.claim()),
   );
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") {
-    return;
-  }
-
+  if (event.request.method !== "GET") return;
   const requestUrl = new URL(event.request.url);
-  if (requestUrl.origin !== self.location.origin) {
-    return;
-  }
+  if (requestUrl.origin !== self.location.origin) return;
 
   if (event.request.mode === "navigate") {
-    event.respondWith(
-      fetch(event.request).catch(async () => {
-        const cache = await caches.open(CACHE_NAME);
-        const cached = await cache.match("./index.html");
-        return cached || Response.error();
-      }),
-    );
+    event.respondWith(networkFirstNavigation(event.request));
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) {
-        return cached;
-      }
+  event.respondWith((async () => {
+    const shell = await caches.open(CACHE_NAME);
+    const shellMatch = await shell.match(event.request);
+    if (shellMatch) return shellMatch;
 
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== "basic") {
-          return response;
-        }
+    const runtime = await caches.open(RUNTIME_CACHE_NAME);
+    const runtimeMatch = await runtime.match(event.request);
+    if (runtimeMatch) return runtimeMatch;
 
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then(async (cache) => {
-          await cache.put(event.request, responseClone);
-          if (requestUrl.pathname.startsWith(AUDIO_RUNTIME_PATH_PREFIX)) {
-            const audioRequests = (await cache.keys()).filter((request) => new URL(request.url).pathname.startsWith(AUDIO_RUNTIME_PATH_PREFIX));
-            const excess = audioRequests.length - AUDIO_RUNTIME_CACHE_LIMIT;
-            for (const request of audioRequests.slice(0, Math.max(0, excess))) {
-              await cache.delete(request);
-            }
-          }
-        });
-        return response;
-      });
-    }),
-  );
+    const response = await fetch(event.request);
+    if (response && response.status === 200 && response.type === "basic") {
+      event.waitUntil(cacheRuntimeResponse(event.request, response.clone(), requestUrl));
+    }
+    return response;
+  })());
 });
