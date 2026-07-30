@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import "./test-audit-live-state-safety.mjs";
+import "./test-audit-runtime-truthfulness.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -39,6 +40,7 @@ const REQUIRED_VERSIONED_INDEX_ASSETS = new Set([
   "./sentence_exam_engine.js",
   "./sentence_exam_runner_core.js",
   "./app.js",
+  "./audit_runtime_truthfulness.js",
   "./sentence_exam_runner.js",
   "./alphabet_skill_srs.js",
 ]);
