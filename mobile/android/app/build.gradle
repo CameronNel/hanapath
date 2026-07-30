@@ -7,6 +7,9 @@ android {
         applicationId "io.github.cameronnel.hanapath"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        // The protected release workflow rewrites these placeholders through
+        // mobile/scripts/version-android.mjs and enforces monotonic versionCode
+        // tags before any signed AAB is produced.
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -56,9 +59,9 @@ dependencies {
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
     implementation 'com.google.mlkit:digital-ink-recognition:19.0.0'
-    // One-time, restorable Handwriting Coach entitlement. The bridge fails
-    // closed until Play Console product id + licence public key are configured.
-    implementation 'com.android.billingclient:billing:9.1.0'
+    // The active product contract is free_all. Google Play Billing must not be
+    // compiled into or permission-merged into this build. A future paid build
+    // must reintroduce its bridge in a separately reviewed store-mode packet.
     testImplementation "junit:junit:$junitVersion"
     testImplementation 'org.json:json:20240303'
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
