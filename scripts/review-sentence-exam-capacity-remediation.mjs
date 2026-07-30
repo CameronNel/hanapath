@@ -107,12 +107,10 @@ function validateAndSerializeReviews() {
 
     const prefix = `Entry ${review.id}`;
 
-    // 1. Verify approval status
     if (review.reviewStatus !== "approved") {
       throw new Error(`${prefix} has status '${review.reviewStatus}', must be 'approved'.`);
     }
 
-    // 2. Verify distinct reviewer
     if (!review.reviewedBy) {
       throw new Error(`${prefix} lacks a reviewer.`);
     }
@@ -120,32 +118,29 @@ function validateAndSerializeReviews() {
       throw new Error(`${prefix} must be reviewed by someone other than the author: got '${review.reviewedBy}'.`);
     }
 
-    // 3. Verify valid timestamp
     if (!validIsoTimestamp(review.reviewedAt)) {
       throw new Error(`${prefix} has invalid reviewedAt timestamp: '${review.reviewedAt}'.`);
     }
 
-    // 4. Verify reviewedRevision matches
     if (review.reviewedRevision !== authoring.revision) {
       throw new Error(`${prefix} reviewedRevision '${review.reviewedRevision}' does not match expected '${authoring.revision}'.`);
     }
 
-    // 5. Verify content hash (recompute raw hash and update in --write if needed, otherwise strict check)
+    // A stale approval is never rewritten into apparent freshness. `--write`
+    // may normalize formatting only after every reviewed hash already matches.
     const expectedHash = reviewContentHash(authored);
-    if (process.argv.includes("--check") && review.authoredContentHash !== expectedHash) {
-      throw new Error(`${prefix} content hash is stale or mismatched: got '${review.authoredContentHash}', expected '${expectedHash}'.`);
+    if (review.authoredContentHash !== expectedHash) {
+      throw new Error(`${prefix} content hash is stale or mismatched: got '${review.authoredContentHash}', expected '${expectedHash}'. Independent review must be repeated.`);
     }
 
-    // 6. Verify substantive reviewer note
     if (!review.reviewerNote || review.reviewerNote.trim().length < 40) {
       throw new Error(`${prefix} reviewerNote is missing or too short (must be >= 40 chars).`);
     }
 
-    // 7. Verify no mechanical template boilerplate is present
     const boilerplateKeywords = [
       "leaving no additional accepted",
       "leaving no additional accepted form",
-      "leaving no additional accepted Korean form to record"
+      "leaving no additional accepted Korean form to record",
     ];
     for (const keyword of boilerplateKeywords) {
       if (review.reviewerNote.includes(keyword)) {
@@ -153,13 +148,8 @@ function validateAndSerializeReviews() {
       }
     }
 
-    // 8. Verify the item-specific fairness decision rather than inferring approval from prose.
     validateReviewDecision(authored, review, prefix);
-
-    return {
-      ...review,
-      authoredContentHash: expectedHash, // Updated if mismatching in serialize/write mode
-    };
+    return { ...review };
   });
 
   return {
@@ -174,7 +164,7 @@ function validateAndSerializeReviews() {
 const expected = `${JSON.stringify(validateAndSerializeReviews(), null, 2)}\n`;
 if (process.argv.includes("--write")) {
   writeFileSync(REVIEW_FILE, expected);
-  console.log("Verified and serialized independent CB6B review decisions.");
+  console.log("Verified existing independent CB6B review decisions and normalized serialization.");
 } else if (process.argv.includes("--check")) {
   if (readFileSync(REVIEW_FILE, "utf8") !== expected) {
     console.error("CB6B independent-review decisions are stale or mismatched.");
