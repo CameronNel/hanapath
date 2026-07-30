@@ -4,8 +4,4 @@
     <string name="title_activity_main">HanaPath</string>
     <string name="package_name">io.github.cameronnel.hanapath</string>
     <string name="custom_url_scheme">io.github.cameronnel.hanapath</string>
-    <!-- Public Play configuration, deliberately empty until the owner creates
-         the permanent non-consumable product. Empty values disable checkout. -->
-    <string name="premium_writing_product_id"></string>
-    <string name="play_billing_public_key"></string>
 </resources>
