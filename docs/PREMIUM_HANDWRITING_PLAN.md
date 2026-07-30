@@ -1,33 +1,38 @@
-# Handwriting Coach plan — words, phrases, and sentences
+# Handwriting Coach plan: words, phrases, and sentences
 
-> **Owner approved 2026-07-20.** This plan supersedes the older owner gate in
-> `HANGUL_WRITING_PLAN.md` for multi-block content writing. Alphabet writing
-> remains free and capped at one jamo or syllable block. Word, phrase, and
-> sentence handwriting uses native on-device recognition. On 2026-07-20 the
-> owner changed the active product mode to `free_all` while the app is being
-> finished and tested. Billing remains implemented but dormant.
+> **Owner approved 2026-07-20; free-build safety updated 2026-07-30.** This plan
+> supersedes the older owner gate in `HANGUL_WRITING_PLAN.md` for multi-block
+> content writing. Alphabet writing remains free and capped at one jamo or
+> syllable block. Word, phrase, and sentence handwriting uses native on-device
+> recognition. The active product mode is `free_all`.
 
 ## 1. Product contract
 
 - **Current `free_all` mode:** every native-app user can write learned words,
   short phrases, and full sentences one Hangul block at a time. The app shows
   no paywall, price, purchase button, restore button, or paid/unlocked label.
+- The free Android build does not compile, register, configure, or request
+  permission for Google Play Billing. Dormant checkout code is not a release
+  feature and must not ride inside the binary merely for a possible later sale.
 - Alphabet writing keeps its authored-guide + `$Q` offline path and does not
   require the native model.
 - Multi-block writing still requires the supported native app and Korean ML Kit
   model; this is a capability boundary, not a purchase boundary.
-- **Future `store` mode:** the existing restorable non-consumable entitlement
-  path may be activated only when store setup and release evidence are ready.
+- **Future `store` mode:** a restorable non-consumable entitlement may be
+  reintroduced only in a separately reviewed store-mode packet after product,
+  privacy, refund, verification, device, and release evidence are ready.
 - Access mode is one source-level constant, not a user setting or persisted
-  entitlement override. Testers never need to change settings on their phones.
+  entitlement override.
 
 ## 2. Payment-without-service safety contract
 
-Purchase availability and feature availability are separate states. In
-`free_all` mode the billing bridge is not queried and access depends only on
-native recognizer readiness. If `store` mode is activated later, it requires:
+The current free build has no payment surface. `PremiumWritingStore` remains a
+web-side future boundary, but `free_all` never calls it and the native app ships
+without the corresponding purchase plugin.
 
-1. **Platform capable:** a supported native shell and store bridge exist.
+A future `store` build must prove all of the following before checkout appears:
+
+1. **Platform capable:** a supported native shell and reviewed store bridge exist.
 2. **Recognizer ready:** the Korean on-device model is downloaded and a warm-up
    recognition succeeds.
 3. **Product sellable:** the store returns the configured non-consumable with a
@@ -35,15 +40,15 @@ native recognizer readiness. If `store` mode is activated later, it requires:
 4. **Entitled:** the store reports a verified, purchased, non-pending,
    non-revoked transaction.
 
-The purchase button may appear only after states 1–3 are true. A completed or
-pending purchase is always re-queried when the app starts/resumes and after any
-purchase flow. Existing purchasers retain the entitlement when the model is
-temporarily unavailable; the UI offers model recovery, retry, typed practice,
-and Restore Purchases rather than asking them to pay again.
+The purchase button may appear only after states 1 through 3 are true. A
+completed or pending purchase must be re-queried when the app starts/resumes and
+after any purchase flow. Existing purchasers must retain entitlement when the
+model is temporarily unavailable; recovery may never ask them to pay twice.
 
 Never grant access from a plain local boolean. Never remove access merely
 because a model was deleted. Never acknowledge a pending Android purchase as
-delivered. Store-returned localized price text is the only price shown.
+delivered. Store-returned localized price text is the only price that may be
+shown. None of these future-store rules justify shipping billing in `free_all`.
 
 ## 3. Block-banking interaction
 
@@ -63,16 +68,15 @@ writable blocks. Spaces and punctuation are displayed and bank automatically.
   normalized top-candidate match banks automatically.
 - A weak or different result stays on the same block and reports “I read this
   as …”; ink remains available for Undo, Erase, or explicit Retry.
-- A successful block gives a short visual acknowledgement, clears the
-  canvas, advances focus, and is ready for the next stroke without an overlay.
+- A successful block gives a short visual acknowledgement, clears the canvas,
+  advances focus, and is ready for the next stroke without an overlay.
 - Back/Undo completed block returns to the previous syllable without erasing
   the rest of the prompt. Leaving the session preserves prompt position.
-- The entire prompt is complete only when every Hangul block is banked. Store
-  entitlement, recognition, and curriculum progress are independent concerns.
+- The entire prompt is complete only when every Hangul block is banked.
 
 ## 4. Recognition contract
 
-- Native paid writing uses Google ML Kit Digital Ink with Korean tag `ko`.
+- Native content writing uses Google ML Kit Digital Ink with Korean tag `ko`.
 - The bridge accepts real-timestamp strokes, writing area, and up to 20 Unicode
   characters of preceding banked text as `preContext`.
 - Text candidates do not expose reliable confidence scores. Automatic banking
@@ -80,8 +84,8 @@ writable blocks. Spaces and punctuation are displayed and bank automatically.
   feedback only and never silently pass.
 - `$Q` remains authoritative for free Alphabet writing and its deterministic
   audit. It is not presented as a full-word/sentence fallback.
-- If ML Kit becomes unavailable during a paid session, preserve the prompt,
-  block index, and ink; stop auto-advancing and show recovery actions.
+- If ML Kit becomes unavailable during a session, preserve the prompt, block
+  index, and ink; stop auto-advancing and show recovery actions.
 
 ## 5. Content selection
 
@@ -95,20 +99,17 @@ writable blocks. Spaces and punctuation are displayed and bank automatically.
 
 ## 6. Delivery gates
 
-1. Shared prompt/block model + browser-auditable renderer.
-2. Android ML Kit context support and paid-flow recognition authority.
-3. Android non-consumable Play Billing bridge, product configuration, restore,
-   pending purchase, acknowledgement, refund/revocation, and interrupted-flow
-   tests. Direct client verification is accepted only if the owner reaffirms
-   the no-backend trade-off before production; Google recommends server-side
-   purchase verification.
-4. Real Android phone/tablet recognition and purchase evidence. Checkout stays
-   disabled until this gate passes.
-5. iOS Capacitor shell + ML Kit/StoreKit 2 adapters on macOS/Xcode, with the
-   same entitlement and model-recovery tests. Windows work must not claim this
-   gate passed.
+1. Shared prompt/block model plus browser-auditable renderer.
+2. Android ML Kit context support and recognition authority.
+3. Real Android phone/tablet recognition evidence.
+4. A future paid packet, if approved, must separately add Play Billing product
+   configuration, restore, pending purchase, acknowledgement, revocation,
+   interrupted-flow, privacy, and server-verification decisions. It must not be
+   smuggled into the free build as dormant code.
+5. iOS Capacitor shell plus ML Kit adapter on macOS/Xcode. Any future StoreKit
+   work is a separate paid-mode gate.
 6. Store screenshots, privacy/Data Safety updates, refund/support copy, and
-   cold-install/upgrade validation before public sale.
+   cold-install/upgrade validation before any public sale.
 
 ## 7. Required evidence
 
@@ -118,7 +119,7 @@ writable blocks. Spaces and punctuation are displayed and bank automatically.
   accepts, retry rate, average latency, and p95 latency.
 - Model missing, download failure, airplane mode before/after download, low
   storage, model deletion, app update, and app reinstall.
-- Purchase cancelled, pending then completed, network loss immediately after
-  payment, relaunch recovery, second device, restore, refund/revocation, and
-  an already-entitled user with a missing model.
+- For any future paid build: purchase cancelled, pending then completed,
+  network loss immediately after payment, relaunch recovery, second device,
+  restore, refund/revocation, and an already-entitled user with a missing model.
 - Free Alphabet writing works in browsers and native apps throughout.
