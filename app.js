@@ -2444,6 +2444,7 @@ let els = {};
 let currentQuestion = null;
 let currentAnswered = false;
 let currentQuestionStartedAt = 0;
+let currentQuestionHiddenBaselineMs = 0;
 let quizStateByScope = {};
 const GENERIC_PRACTICE_LENGTH = 10;
 let practiceQuizSessions = {};
@@ -2912,8 +2913,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v456";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260729d";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v457";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260801a";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -4438,8 +4439,12 @@ function rehydrateWordLessonView(snapshot, lesson) {
     mode: snapshot.mode,
     stepIndex: snapshot.stepIndex,
     questionIndex: snapshot.questionIndex,
-    stepStartedAt: Number(snapshot.stepStartedAt) || 0,
-    questionStartedAt: Number(snapshot.questionStartedAt) || 0,
+    // Re-anchor the response clocks: the persisted timestamps predate a reload,
+    // so the gap while HanaPath was closed is not learner response time.
+    stepStartedAt: Number(snapshot.stepStartedAt) ? Date.now() : 0,
+    questionStartedAt: Number(snapshot.questionStartedAt) ? Date.now() : 0,
+    stepHiddenBaselineMs: getDocumentHiddenTotalMs(),
+    questionHiddenBaselineMs: getDocumentHiddenTotalMs(),
     steps: snapshot.steps,
     questions: snapshot.questions,
     words,
@@ -4471,20 +4476,65 @@ function persistWordLessonSession(view = wordLessonView) {
   saveState();
 }
 
+// ── Response-time measurement ────────────────────────────────────────────────
+// A wall-clock delta counts time the learner was not looking at the question:
+// a backgrounded tab, a locked phone, or a card left open while they did
+// something else. Analytics label these numbers "response time" and derive a
+// speed-based ease estimate from them, so the clock must stop when the document
+// is hidden and must never report an implausible single-answer duration.
+
+const RESPONSE_TIME_CAP_MS = 5 * 60 * 1000;
+let documentHiddenTotalMs = 0;
+let documentHiddenSince = typeof document !== "undefined" && document.hidden ? Date.now() : 0;
+
+function getDocumentHiddenTotalMs() {
+  const banked = documentHiddenTotalMs;
+  if (!documentHiddenSince) return banked;
+  return banked + Math.max(0, Date.now() - documentHiddenSince);
+}
+
+if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      if (!documentHiddenSince) documentHiddenSince = Date.now();
+      return;
+    }
+    if (documentHiddenSince) {
+      documentHiddenTotalMs += Math.max(0, Date.now() - documentHiddenSince);
+      documentHiddenSince = 0;
+    }
+  });
+}
+
+// Active milliseconds since `startedAt`, excluding hidden-document time banked
+// after `hiddenBaselineMs`, capped at a plausible single-answer duration.
+function getActiveElapsedMs(startedAt, hiddenBaselineMs = 0) {
+  const start = Number(startedAt);
+  if (!Number.isFinite(start) || start <= 0) return 0;
+  const wall = Math.max(0, Date.now() - start);
+  const baseline = Number.isFinite(Number(hiddenBaselineMs)) ? Math.max(0, Number(hiddenBaselineMs)) : 0;
+  const hidden = Math.max(0, getDocumentHiddenTotalMs() - baseline);
+  return Math.min(RESPONSE_TIME_CAP_MS, Math.max(0, wall - hidden));
+}
+
 function startWordLessonStudyTimer(view) {
-  if (view) view.stepStartedAt = Date.now();
+  if (!view) return;
+  view.stepStartedAt = Date.now();
+  view.stepHiddenBaselineMs = getDocumentHiddenTotalMs();
 }
 
 function startWordLessonQuestionTimer(view) {
-  if (view) view.questionStartedAt = Date.now();
+  if (!view) return;
+  view.questionStartedAt = Date.now();
+  view.questionHiddenBaselineMs = getDocumentHiddenTotalMs();
 }
 
 function getWordLessonStudyLatencyMs(view) {
-  return Math.max(0, Date.now() - (Number(view?.stepStartedAt) || Date.now()));
+  return getActiveElapsedMs(view?.stepStartedAt, view?.stepHiddenBaselineMs);
 }
 
 function getWordLessonQuestionLatencyMs(view) {
-  return Math.max(0, Date.now() - (Number(view?.questionStartedAt) || Date.now()));
+  return getActiveElapsedMs(view?.questionStartedAt, view?.questionHiddenBaselineMs);
 }
 
 function getCuratedWords() {
@@ -5076,6 +5126,14 @@ function getVocabSrsRecord(wordId, create = false) {
   return record || null;
 }
 
+// How many times the learner actually answered this word (or this direction).
+// `seen` is a queue marker that lesson completion and manual status changes also
+// bump, so only `correct + missed` may be treated as review evidence.
+function getVocabGradedAnswerCount(record) {
+  if (!record || typeof record !== "object") return 0;
+  return (Number(record.correct) || 0) + (Number(record.missed) || 0);
+}
+
 function getSrsDirectionRecord(record, direction) {
   if (!record.directions || typeof record.directions !== "object") record.directions = {};
   if (!record.directions[direction]) {
@@ -5172,6 +5230,14 @@ function recordVocabAttempt(wordId, direction, isCorrect, meta = {}) {
   const result = normalizeVocabReviewResult(meta.result, isCorrect);
   const latencyMs = Number.isFinite(Number(meta.latencyMs)) ? Math.max(0, Math.round(Number(meta.latencyMs))) : 0;
 
+  // Promotion needs a *graded* prior review, not merely an introduction. A word
+  // that a lesson only queued (correct + missed === 0) starts at box 0, so its
+  // first correct answer must serve box 0's interval before it is promoted.
+  // Reading correct/missed instead of `seen` keeps legacy saves honest, because
+  // only real answers ever touch those two counters.
+  const hadGradedReview = getVocabGradedAnswerCount(record) > 0;
+  const dirHadGradedReview = getVocabGradedAnswerCount(dir) > 0;
+
   record.seen += 1;
   record.lastSeen = now;
   record.lastResult = result;
@@ -5179,9 +5245,9 @@ function recordVocabAttempt(wordId, direction, isCorrect, meta = {}) {
 
   if (isCorrect) {
     record.correct += 1;
-    record.box = Math.min(record.box + 1, VOCAB_SRS_INTERVALS.length - 1);
+    if (hadGradedReview) record.box = Math.min(record.box + 1, VOCAB_SRS_INTERVALS.length - 1);
     dir.correct += 1;
-    dir.box = Math.min(dir.box + 1, VOCAB_SRS_INTERVALS.length - 1);
+    if (dirHadGradedReview) dir.box = Math.min(dir.box + 1, VOCAB_SRS_INTERVALS.length - 1);
   } else {
     record.missed += 1;
     record.box = 0;
@@ -5192,7 +5258,9 @@ function recordVocabAttempt(wordId, direction, isCorrect, meta = {}) {
   }
   record.due = now + VOCAB_SRS_INTERVALS[record.box];
   dir.due = now + VOCAB_SRS_INTERVALS[dir.box];
-  record.leech = record.missed >= 5 && record.missed / Math.max(1, record.seen) > 0.45;
+  // Leech ratio compares misses against graded answers. `seen` also counts the
+  // lesson introduction and manual status changes, which would dilute the rate.
+  record.leech = record.missed >= 5 && record.missed / Math.max(1, getVocabGradedAnswerCount(record)) > 0.45;
   pushVocabReviewEvent({
     wordId,
     direction: direction || "koToMeaning",
@@ -5221,17 +5289,27 @@ function setCuratedWordStatus(wordId, status) {
   if (status === "known") {
     record.isKnown = true;
     record.isHard = false;
-    record.box = Math.max(record.box, 4);
-    record.due = now + VOCAB_SRS_INTERVALS[record.box];
+    record.manualStatus = "known";
+    record.manualStatusAt = now;
+    // Tapping "known" is a learner declaration, not four successful reviews.
+    // The earned box stays where the answers put it; only the next due date
+    // moves out so a declared word stops crowding the review queue.
+    record.due = Math.max(Number(record.due) || 0, now + VOCAB_SRS_INTERVALS[4]);
   } else if (status === "hard") {
     record.isHard = true;
     record.isKnown = false;
+    record.manualStatus = "hard";
+    record.manualStatusAt = now;
     record.box = 0;
     record.due = now + VOCAB_SRS_INTERVALS[0];
   } else {
     record.isKnown = false;
     record.isHard = false;
+    record.manualStatus = null;
+    record.manualStatusAt = 0;
   }
+  // `seen` only marks queue membership here; correct/missed stay untouched so no
+  // graded-review evidence is invented for a word the learner never answered.
   if (record.seen === 0) record.seen = 1;
 
   const row = wordReferenceById.get(wordId);
@@ -5874,6 +5952,7 @@ function openWordReview() {
     questionIndex: 0,
     stepStartedAt: 0,
     questionStartedAt: Date.now(),
+    questionHiddenBaselineMs: getDocumentHiddenTotalMs(),
     steps: [],
     questions,
     words: due.map((item) => item.word),
@@ -6331,7 +6410,9 @@ function wordLessonCheckHtml(lesson, view) {
 function getWordLessonResultStats(view) {
   const total = view.results.length;
   const firstTryCorrect = view.results.filter((r) => r.correct).length;
-  const pct = total ? Math.round((firstTryCorrect / total) * 100) : 100;
+  // No graded answers means no evidence, not a perfect score. The old `: 100`
+  // fallback let an empty result set clear every accuracy threshold.
+  const pct = total ? Math.round((firstTryCorrect / total) * 100) : 0;
   const typedTotal = Object.keys(view.typedAttempts).length;
   const typedCorrect = Object.values(view.typedAttempts).filter(Boolean).length;
   return { total, firstTryCorrect, pct, typedTotal, typedCorrect };
@@ -6466,9 +6547,15 @@ function wordLessonResultHtml(lesson, view) {
 function wordLessonPassed(lesson, view) {
   const stats = getWordLessonResultStats(view);
   const minPct = lesson.pass?.minFirstTryPct ?? 75;
+  // No graded first-try answers means no evidence to pass on. The old stats
+  // helper reported 100% for an empty result set, which cleared every threshold.
+  if (!stats.total) return false;
   if (stats.pct < minPct) return false;
   if (lesson.pass?.requireTypedAttempt) {
-    return view.words.every((word) => word.id in view.typedAttempts);
+    // Typing must have succeeded. Skipping a type card writes `false` into
+    // typedAttempts, which the old `word.id in view.typedAttempts` check
+    // accepted as a satisfied typing requirement.
+    return view.words.every((word) => view.typedAttempts[word.id] === true);
   }
   return true;
 }
@@ -6478,11 +6565,15 @@ function finishWordLesson(lesson, view) {
   view.resultSaved = true;
   state.vocabLessonSession = null;
   if (view.isReview) { saveState(); return; }
-  // Make sure every new word has an SRS record so it shows up in review.
+  // Make sure every new word has an SRS record so it shows up in review. This
+  // only introduces the word: correct/missed stay at zero and the card stays in
+  // box 0, so a word the learner skipped never reads as a passed review.
   view.words.forEach((word) => {
     const record = getVocabSrsRecord(word.id, true);
     if (record.seen === 0) {
       record.seen = 1;
+      record.introducedAt = Date.now();
+      record.box = 0;
       record.due = Date.now() + VOCAB_SRS_INTERVALS[0];
     }
   });
@@ -6622,7 +6713,10 @@ function answerWordLessonTyped(view) {
   view.checkCorrect = isCorrect;
   view.results.push({ wordId: question.wordId, direction: question.direction, correct: firstTryCorrect, aided: Boolean(view.questionHelperUsed) });
   const typedAttemptKey = question.authoredItem ? question.attemptId : question.wordId;
-  if (typedAttemptKey) view.typedAttempts[typedAttemptKey] = isCorrect;
+  // Sticky, like the study-phase writer: the typed requirement asks whether the
+  // learner ever produced the word by typing it. Accuracy is scored separately
+  // by minFirstTryPct, so a later miss must not erase a demonstrated success.
+  if (typedAttemptKey) view.typedAttempts[typedAttemptKey] = isCorrect || Boolean(view.typedAttempts[typedAttemptKey]);
   view.checkFeedback = isCorrect
     ? `<strong>Correct.</strong> ${escapeHtml(question.explanation)}`
     : `<strong>Not quite.</strong> You typed <strong lang="ko">${escapeHtml(typed)}</strong>. The answer is <strong lang="ko">${escapeHtml(question.answer)}</strong>. ${escapeHtml(question.explanation)}`;
@@ -13479,6 +13573,7 @@ function renderQuestion(question, options = {}) {
   if (!preserveState) {
     currentAnswered = false;
     currentQuestionStartedAt = Date.now();
+    currentQuestionHiddenBaselineMs = getDocumentHiddenTotalMs();
     question.response = createQuestionResponse(question);
   } else if (!question.response) {
     question.response = createQuestionResponse(question);
@@ -13556,6 +13651,7 @@ function renderQuestion(question, options = {}) {
     question: currentQuestion,
     answered: currentAnswered,
     startedAt: currentQuestionStartedAt,
+    hiddenBaselineMs: currentQuestionHiddenBaselineMs,
   };
 }
 
@@ -13566,6 +13662,7 @@ function renderScopedQuestion(scope) {
     currentQuestion = cached.question;
     currentAnswered = Boolean(cached.answered);
     currentQuestionStartedAt = Number(cached.startedAt) || Date.now();
+    currentQuestionHiddenBaselineMs = Number(cached.hiddenBaselineMs) || 0;
     renderQuestion(cached.question, { preserveState: true, scope: normalized });
     return;
   }
@@ -13608,7 +13705,7 @@ function finalizeQuestionAttempt(userAnswer, isCorrect, feedbackHtml) {
   // Word questions carry their curated word id so attempts feed the vocab SRS.
   if (currentQuestion.srsWordId) {
     recordVocabAttempt(currentQuestion.srsWordId, currentQuestion.srsDirection || "koToMeaning", isCorrect, {
-      latencyMs: Math.max(0, Date.now() - (Number(currentQuestionStartedAt) || Date.now())),
+      latencyMs: getActiveElapsedMs(currentQuestionStartedAt, currentQuestionHiddenBaselineMs),
       source: "quiz",
     });
   }
@@ -22130,7 +22227,9 @@ function rehydrateSentenceLessonSession(snapshot) {
     transforms: snapshot.transforms && typeof snapshot.transforms === "object" ? snapshot.transforms : {},
     speech: null,
     autoPlayed: Boolean(snapshot.autoPlayed),
-    questionStartedAt: Number(snapshot.questionStartedAt) || 0,
+    // Re-anchored on resume: time spent with HanaPath closed is not response time.
+    questionStartedAt: Number(snapshot.questionStartedAt) ? Date.now() : 0,
+    questionHiddenBaselineMs: getDocumentHiddenTotalMs(),
     results: Array.isArray(snapshot.results) ? snapshot.results : [],
   };
 }
@@ -22800,6 +22899,7 @@ function prepareSentenceQuestion() {
   session.tilePool = [];
   session.speech = null;
   session.questionStartedAt = Date.now();
+  session.questionHiddenBaselineMs = getDocumentHiddenTotalMs();
   if (sentenceQuestionMode() === "build") {
     const row = session.rows[session.index];
     session.tilePool = makeSentenceTilePool(row, getSentenceRowsForBand(getSentencesProgress().band));
@@ -22824,6 +22924,9 @@ function recordSentenceResult(row, correct, revealed, meta = {}) {
   const results = progress.results;
   const record = results[row.id] || (results[row.id] = { seen: 0, correct: 0, streak: 0, last: 0, box: 0, due: 0, lapses: 0 });
 
+  // A first answer earns box 0's interval; promotion needs a prior review.
+  const hadPriorReview = (Number(record.seen) || 0) > 0;
+
   record.seen += 1;
   record.last = Date.now();
   if (!record.firstSeen) {
@@ -22835,7 +22938,7 @@ function recordSentenceResult(row, correct, revealed, meta = {}) {
     record.streak += 1;
 
     const hasHelpers = sentenceStudioSession.helperUsed.length > 0;
-    if (!hasHelpers) {
+    if (!hasHelpers && hadPriorReview) {
       record.box = Math.min((record.box || 0) + 1, VOCAB_SRS_INTERVALS.length - 1);
     } else {
       record.box = record.box || 0;
@@ -22851,7 +22954,7 @@ function recordSentenceResult(row, correct, revealed, meta = {}) {
   const result = revealed ? "revealed" : correct ? "correct" : "incorrect";
   const latencyMs = Number.isFinite(Number(meta.latencyMs))
     ? Math.max(0, Math.round(Number(meta.latencyMs)))
-    : Math.max(0, Date.now() - (Number(sentenceStudioSession.questionStartedAt) || Date.now()));
+    : getActiveElapsedMs(sentenceStudioSession.questionStartedAt, sentenceStudioSession.questionHiddenBaselineMs);
   pushSentenceReviewEvent({
     sentenceId: row.id,
     mode,
