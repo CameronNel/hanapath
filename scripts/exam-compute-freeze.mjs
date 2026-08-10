@@ -21,7 +21,8 @@
 // The input set is CAPTURED, not hand-written. A hand-maintained path list is
 // precisely how a gate silently stops covering a dependency, so --write runs
 // each audit with fs reads instrumented and records what it actually opened,
-// then unions that with a static scan of the audit source as a backstop.
+// then unions that with a recursive static scan of local module dependencies
+// and repo-file literals as a fail-closed backstop.
 //
 //   node scripts/exam-compute-freeze.mjs --write            # (re)pin the manifest
 //   node scripts/exam-compute-freeze.mjs --check            # frozen? exit 0 : 1
@@ -30,7 +31,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { dirname, join } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { tmpdir } from "node:os";
 
@@ -51,19 +52,99 @@ function sha256(relPath) {
   return createHash("sha256").update(readFileSync(join(ROOT, relPath))).digest("hex");
 }
 
-// Backstop for inputs behind a branch the capture run did not take: any
-// repo-relative file path spelled literally in the audit source.
-function staticallyReferencedFiles(scriptRel) {
-  const source = readFileSync(join(ROOT, scriptRel), "utf8");
+function repoFileFromAbsolute(candidate) {
+  const abs = resolve(candidate);
+  if (abs !== ROOT && !abs.startsWith(ROOT + sep)) return null;
+  if (!existsSync(abs)) return null;
+  return relative(ROOT, abs).split(sep).join("/");
+}
+
+function sourceRelativeFile(sourceRel, specifier) {
+  const base = resolve(ROOT, dirname(sourceRel), specifier);
+  for (const candidate of [
+    base,
+    `${base}.js`,
+    `${base}.mjs`,
+    join(base, "index.js"),
+    join(base, "index.mjs"),
+  ]) {
+    const rel = repoFileFromAbsolute(candidate);
+    if (rel) return rel;
+  }
+  return null;
+}
+
+function literalRepoFiles(sourceRel, source) {
   const found = new Set();
   for (const match of source.matchAll(/["'`]([\w./-]+\.(?:js|mjs|json))["'`]/g)) {
-    const candidate = match[1].replace(/^\.\//, "");
-    if (candidate.startsWith("node:")) continue;
+    const literal = match[1];
+    if (literal.startsWith("node:")) continue;
+
+    // First interpret explicit relative literals relative to the source module.
+    if (literal.startsWith(".")) {
+      const rel = sourceRelativeFile(sourceRel, literal);
+      if (rel) found.add(rel);
+    }
+
+    // Audits also conventionally spell repo-root data files as bare literals.
+    // Retain the historical prefix search for those paths.
+    const candidate = literal.replace(/^\.\//, "");
     for (const prefix of ["", "docs/generated/", "docs/authoring/", "docs/reviews/", "scripts/", "scripts/lib/"]) {
       const rel = prefix + candidate;
-      if (existsSync(join(ROOT, rel))) found.add(rel);
+      if (existsSync(join(ROOT, rel))) found.add(rel.split(sep).join("/"));
     }
   }
+  return found;
+}
+
+function localModuleSpecifiers(source) {
+  const specifiers = new Set();
+  const patterns = [
+    /\bimport\s+(?:[^"'`]*?\s+from\s+)?["'`]([^"'`]+)["'`]/g,
+    /\bexport\s+[^"'`]*?\s+from\s+["'`]([^"'`]+)["'`]/g,
+    /\bimport\s*\(\s*["'`]([^"'`]+)["'`]\s*\)/g,
+  ];
+  for (const pattern of patterns) {
+    for (const match of source.matchAll(pattern)) {
+      if (match[1]?.startsWith(".")) specifiers.add(match[1]);
+    }
+  }
+  return specifiers;
+}
+
+// Static fail-closed backstop. Runtime fs instrumentation catches actual data
+// reads; this walk additionally pins source files loaded by Node's module loader
+// (which does not go through the userland fs monkey patch) and scans those local
+// helpers for their own repo-file literals. Only actual relative import/export
+// edges recurse, so a string such as "app.js" does not make us crawl the entire
+// application graph and needlessly invalidate the expensive sweep.
+export function staticallyReferencedFiles(scriptRel) {
+  const found = new Set();
+  const scannedSources = new Set();
+
+  function visit(sourceRel) {
+    if (scannedSources.has(sourceRel)) return;
+    scannedSources.add(sourceRel);
+    found.add(sourceRel);
+
+    let source;
+    try {
+      source = readFileSync(join(ROOT, sourceRel), "utf8");
+    } catch {
+      return;
+    }
+
+    for (const rel of literalRepoFiles(sourceRel, source)) found.add(rel);
+
+    for (const specifier of localModuleSpecifiers(source)) {
+      const dependency = sourceRelativeFile(sourceRel, specifier);
+      if (!dependency) continue;
+      found.add(dependency);
+      if (/\.(?:js|mjs)$/.test(dependency)) visit(dependency);
+    }
+  }
+
+  visit(scriptRel);
   return found;
 }
 
