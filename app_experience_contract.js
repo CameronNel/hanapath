@@ -35,13 +35,13 @@
       : null;
     const overlay = document.createElement("div");
     overlay.className = "korean-keyboard-modal-overlay";
-    overlay.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 180ms ease;";
+    overlay.style.cssText = "position:fixed;inset:0;z-index:9999;background:var(--scrim, rgba(0,0,0,0.65));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 180ms ease;";
     overlay.innerHTML = `
-      <div class="korean-keyboard-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="koreanKeyboardModalTitle" aria-describedby="koreanKeyboardModalCopy" tabindex="-1" style="background:var(--card-bg, #18181b);border:1px solid var(--border-color, rgba(255,255,255,0.15));border-radius:16px;padding:24px;max-width:380px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,0.5);text-align:center;position:relative;">
-        <button class="korean-keyboard-modal-close" type="button" aria-label="Close Korean keyboard recommendation" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text-muted, #a1a1aa);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;">✕</button>
+      <div class="korean-keyboard-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="koreanKeyboardModalTitle" aria-describedby="koreanKeyboardModalCopy" tabindex="-1" style="background:var(--card, var(--panel, #18181b));border:1px solid var(--border, var(--line, rgba(255,255,255,0.15)));border-radius:16px;padding:24px;max-width:380px;width:100%;box-shadow:0 20px 40px rgba(var(--shadow-rgb, 0,0,0),0.5);text-align:center;position:relative;">
+        <button class="korean-keyboard-modal-close" type="button" aria-label="Close Korean keyboard recommendation" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text-muted, var(--muted, #a1a1aa));font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;">✕</button>
         <div style="font-size:28px;margin-bottom:12px;" aria-hidden="true">⌨️</div>
-        <h3 id="koreanKeyboardModalTitle" style="font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text-color, #f4f4f5);">Korean Keyboard Recommended</h3>
-        <p id="koreanKeyboardModalCopy" style="font-size:14px;color:var(--text-sub, #a1a1aa);line-height:1.5;margin-bottom:16px;">We recommend enabling the Korean keyboard on your device for the best learning experience.</p>
+        <h3 id="koreanKeyboardModalTitle" style="font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text, #f4f4f5);">Korean Keyboard Recommended</h3>
+        <p id="koreanKeyboardModalCopy" style="font-size:14px;color:var(--muted, #a1a1aa);line-height:1.5;margin-bottom:16px;">We recommend enabling the Korean keyboard on your device for the best learning experience.</p>
         <button class="button primary compact korean-keyboard-modal-ok" type="button" style="width:100%;">Got it</button>
       </div>
     `;
