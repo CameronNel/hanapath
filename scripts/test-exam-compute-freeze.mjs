@@ -4,6 +4,7 @@
 // CI for a hash comparison, so its failure mode matters more than its success
 // one: every ambiguous case must resolve to "run the sweep".
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -35,6 +36,35 @@ assert.deepEqual(
   ["b.js"],
   "only the changed input is reported",
 );
+
+// ── Capture instrumentation ─────────────────────────────────────────────────
+// Named ESM imports used to be able to bypass the default-fs monkey patch. The
+// fixture deliberately reads one file through node:fs and another through
+// node:fs/promises named imports; both must appear in the captured input set.
+const captureDir = mkdtempSync(join(tmpdir(), "hanapath-freeze-capture-"));
+try {
+  const capturePath = join(captureDir, "reads.json");
+  const capture = spawnSync(
+    process.execPath,
+    [
+      "scripts/lib/capture-audit-reads.mjs",
+      "scripts/fixtures/freeze-capture-named-import.mjs",
+      capturePath,
+    ],
+    { cwd: ROOT, encoding: "utf8" },
+  );
+  assert.equal(
+    capture.status,
+    0,
+    `named-import capture fixture failed:\n${capture.stderr || capture.stdout || "unknown error"}`,
+  );
+  assert.ok(existsSync(capturePath), "named-import capture fixture produced no read set");
+  const captured = JSON.parse(readFileSync(capturePath, "utf8"));
+  assert.ok(captured.includes("word_exam_blueprints.js"), "named node:fs readFileSync was not captured");
+  assert.ok(captured.includes("sentence_exam_blueprints.js"), "named node:fs/promises readFile was not captured");
+} finally {
+  rmSync(captureDir, { recursive: true, force: true });
+}
 
 // ── Trusted pull-request manifest ───────────────────────────────────────────
 // The manifest in a PR checkout is controlled by that PR. It is therefore not
@@ -134,5 +164,5 @@ assert.ok(
 
 console.log(
   `Exam compute freeze regression passed (${AUDITS.length} sweeps pinned, `
-  + `${Object.values(manifest.audits).reduce((n, a) => n + Object.keys(a.inputs).length, 0)} inputs, fail-closed).`,
+  + `${Object.values(manifest.audits).reduce((n, a) => n + Object.keys(a.inputs).length, 0)} inputs, trusted-base and named-import capture fail-closed).`,
 );
