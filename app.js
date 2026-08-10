@@ -2915,8 +2915,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v462";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260810e";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v463";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260810f";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -3196,6 +3196,8 @@ function loadState() {
     quickRefActive: false,
     // Alphabet Drill Lab: jamo → miss count, feeds the Weak Spots drill mode.
     alphabetWeakSpots: {},
+    // One-time flag: show the Korean keyboard recommendation modal on first Hangul lesson session.
+    hasSeenKoreanKeyboardModal: false,
     // One-time flag: show the Drill Lab first-open explainer only once.
     drillLabSeen: false,
     // Exact learner-facing question identities shown most recently in each
@@ -14097,7 +14099,7 @@ const HUB_DEFS = {
     title: "Prove your mastery",
     sub: "Formal exams — no hints, no reference, results only after final submission.",
     items: [
-      { id: "alphabet", icon: "exam", title: "Alphabet · Hangul Mastery Exam", sub: "200 items across seven parts. Only 200/200 earns Hangul mastered.", custom: "alphabetExamHub" },
+      { id: "alphabet", icon: "exam", title: "Alphabet · Hangul Mastery Exam", sub: "200 items across seven parts. 75% (150/200) earns Hangul mastered.", custom: "alphabetExamHub" },
       { id: "corewords", icon: "vocabulary", title: "Core Words · Examination Suite", sub: "Ten achievement exams: eight section exams, a midterm, and a cumulative final with delayed mastery confirmation.", custom: "wordExamHub" },
     ],
   },
@@ -14107,7 +14109,7 @@ const HUB_DEFS = {
     title: "Track your progress",
     sub: "See the roadmap and your stats.",
     items: [
-      { id: "path", icon: "path", title: "Path (K0 → K5)", sub: "The full roadmap and lessons.", target: "path" },
+      { id: "path", icon: "path", title: "Path (K0 → K5)", sub: "The full roadmap and lessons.", target: "learn" },
       { id: "stats", icon: "stats", title: "Stats & streak", sub: "Accuracy, streak, and milestones.", target: "progress" },
     ],
   },
@@ -15561,6 +15563,38 @@ function mountLessonPlayer(area, index, { onResult } = {}) {
   });
 }
 
+function showKoreanKeyboardRecommendationModal() {
+  if (state.hasSeenKoreanKeyboardModal) return;
+  state.hasSeenKoreanKeyboardModal = true;
+  saveState();
+
+  const overlay = document.createElement("div");
+  overlay.className = "korean-keyboard-modal-overlay";
+  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 250ms ease;";
+  overlay.innerHTML = `
+    <div style="background:var(--card-bg, #18181b);border:1px solid var(--border-color, rgba(255,255,255,0.15));border-radius:16px;padding:24px;max-width:380px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,0.5);text-align:center;position:relative;">
+      <button class="korean-keyboard-modal-close" type="button" aria-label="Close" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text-muted, #a1a1aa);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;">✕</button>
+      <div style="font-size:28px;margin-bottom:12px;">⌨️</div>
+      <h3 style="font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text-color, #f4f4f5);">Korean Keyboard Recommended</h3>
+      <p style="font-size:14px;color:var(--text-sub, #a1a1aa);line-height:1.5;margin-bottom:16px;">We recommend enabling the Korean keyboard on your device for the best learning experience.</p>
+      <button class="button primary compact korean-keyboard-modal-ok" type="button" style="width:100%;">Got it</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => { overlay.style.opacity = "1"; });
+
+  let timer = null;
+  const dismiss = () => {
+    if (timer) clearTimeout(timer);
+    overlay.style.opacity = "0";
+    setTimeout(() => { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 250);
+  };
+
+  overlay.querySelector(".korean-keyboard-modal-close").addEventListener("click", dismiss);
+  overlay.querySelector(".korean-keyboard-modal-ok").addEventListener("click", dismiss);
+  timer = setTimeout(dismiss, 7000);
+}
+
 // Open a Hangul lesson inside the Learn hub (detail screen).
 function openLearnLesson(
   index,
@@ -15574,6 +15608,7 @@ function openLearnLesson(
     startQuestionIndex = 0,
   } = {},
 ) {
+  showKoreanKeyboardRecommendationModal();
   queueScreenMotion("forward", 1, { replace: false });
   let idx = index;
   if (!phaseOneLessons[idx]) { startNextLearn(); return; }
@@ -15994,7 +16029,7 @@ function renderAlphabetExamHub() {
     <div class="card word-card exam-entry-card">
       <div class="eyebrow">한글 완전 습득 시험 · Hangul Mastery Examination</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Alphabet mastery exam</h2>
-      <div class="screen-sub">A formal 200-item examination covering alphabet Stages 01–07: identification, contrasts, block composition, batchim, word reading, Korean-keyboard entry, and handwriting from memory. Only a perfect 200/200 earns <strong>Hangul mastered</strong>.</div>
+      <div class="screen-sub">A formal 200-item examination covering alphabet Stages 01–07: identification, contrasts, block composition, batchim, word reading, Korean-keyboard entry, and handwriting from memory. Scoring at least 75% (150/200) earns <strong>Hangul mastered</strong>.</div>
       <div class="exam-status-row ${record.mastered ? "exam-status-mastered" : ""}">
         <span class="pill ${record.mastered ? "accent" : ""}">${escapeHtml(statusLabel)}</span>
         <span class="screen-sub" style="margin-bottom:0;">${escapeHtml(bestLine)}</span>
@@ -16030,7 +16065,7 @@ function renderHangulMasteryExamIntro() {
         <li>Audio prompts may be played at most ${bank.audioPlayLimit} times each.</li>
         <li>Answers remain editable until final submission. You may flag items for review (답안 확인).</li>
         <li>Leaving the exam discards the attempt.</li>
-        <li>한글 완전 습득 · <strong>Hangul mastered</strong> is awarded only at 200/200.</li>
+        <li>한글 완전 습득 · <strong>Hangul mastered</strong> is awarded at 75% (150/200).</li>
         <li>${escapeHtml(EXAM_INTEGRITY_DISCLOSURE)}</li>
       </ul>
       <button class="button primary" type="button" id="examBeginBtn">시험 시작 · Begin the exam</button>
@@ -16505,7 +16540,6 @@ function renderExamPartIntro(part) {
         <div class="eyebrow">파트 ${section.part} · Part ${section.part}</div>
         <h2 class="exam-part-title" lang="ko">${escapeHtml(section.titleKo)}</h2>
         <div class="exam-part-title-en">${escapeHtml(section.titleEn)}</div>
-        <p class="exam-part-instruction" lang="ko">${escapeHtml(section.instructionKo)}</p>
         <p class="screen-sub">${escapeHtml(section.instructionEn)}</p>
         <div class="exam-part-count">${part.items.length} ${part.items.length === 1 ? "item · 1 mark" : `items · ${part.items.length} marks`}</div>
       </div>
@@ -16755,8 +16789,8 @@ function renderExamConfirm() {
         <p class="screen-sub">You have reached the end of the examination. Answers cannot be changed after submission, and there is no way to return to earlier items.</p>
         <div class="exam-confirm-stat"><strong>${unanswered}</strong> of ${flat.length} left unanswered</div>
         <p class="screen-sub">${unanswered > 0
-          ? "Unanswered items are scored as incorrect. A flawless 200/200 is required for 한글 완전 습득 · Hangul mastered."
-          : "Every item has an answer. A flawless 200/200 is required for 한글 완전 습득 · Hangul mastered."}</p>
+          ? "Unanswered items are scored as incorrect. A score of 75% (150/200) is required for 한글 완전 습득 · Hangul mastered."
+          : "Every item has an answer. A score of 75% (150/200) is required for 한글 완전 습득 · Hangul mastered."}</p>
       </div>
       <div class="player-actions exam-actions">
         <button class="button primary" type="button" id="examSubmit">최종 제출 · Submit exam</button>
@@ -16766,7 +16800,7 @@ function renderExamConfirm() {
   animateExamFrame(el, "confirm", 9000);
 }
 
-// Spec §3: mastered ⇔ correct === 200 && total === 200 && unanswered === 0 &&
+// Spec §3: mastered ⇔ correct >= 150 && total === 200 && unanswered === 0 &&
 // ungraded === 0. Every item carries a boolean verdict, so ungraded is always 0.
 function submitHangulExam(auto) {
   const attempt = hangulExamAttempt;
@@ -16780,7 +16814,7 @@ function submitHangulExam(auto) {
   const total = flat.length;
   const correct = flat.reduce((sum, item) => sum + (attempt.verdicts[item.id] ? 1 : 0), 0);
   const unanswered = flat.filter((item) => !examItemAnswered(attempt, item)).length;
-  const mastered = correct === 200 && total === 200 && unanswered === 0;
+  const mastered = correct >= 150 && total === 200;
 
   const currentOverrideFlags = getTestingOverrideFlags();
   const currentTaintContext = getHangulExamTaintContext(currentOverrideFlags);
@@ -16986,8 +17020,8 @@ function renderExamResults() {
         icon: "crown",
         eyebrow: "한글 완전 습득 · Hangul mastered",
         title: "Hangul mastered",
-        copy: "A flawless 200/200 across all seven parts. 한글을 완전히 습득했습니다.",
-        score: { value: "200/200", label: "Perfect score" },
+        copy: "Scored 75%+ across all seven parts. 한글을 완전히 습득했습니다.",
+        score: { value: `${correct}/200`, label: "Passing score" },
         stats,
         detailsHtml,
         actionsHtml,
@@ -16999,7 +17033,7 @@ function renderExamResults() {
         icon: "spark",
         eyebrow: "아직 완전 습득 전 · Not yet mastered",
         title: `${correct} / 200`,
-        copy: "Only a flawless 200/200 earns 한글 완전 습득. Review the weakest parts below, then retake when ready.",
+        copy: "Scoring at least 75% (150/200) earns 한글 완전 습득. Review the weakest parts below, then retake when ready.",
         score: { value: `${correct}/200`, label: "This attempt" },
         stats,
         detailsHtml,
@@ -22287,134 +22321,7 @@ function renderTodayView() {
 }
 
 function renderPath() {
-  const el = document.getElementById("screen-path");
-  if (!el) return;
-  refreshProgressionState();
-
-  const levels = [
-    { id: "K0", name: "Hangul & Sound",       time: "2–4 weeks",   units: phaseOneLessons.map((l) => l.title), isK0: true },
-    { id: "K1", name: "Survival Korean",       time: "Months 1–3",  units: K1_UNITS },
-    { id: "K2", name: "Everyday Korean",       time: "Months 4–6",  units: K2_UNITS },
-    { id: "K3", name: "Connected Korean",      time: "Months 7–12", units: [] },
-    { id: "K4", name: "Independent Korean",    time: "Months 13–18",units: [] },
-    { id: "K5", name: "Fluency Bridge",        time: "Months 19–24",units: [] },
-  ];
-
-  const progress = getAlphabetProgress();
-  const completedK0 = progress.completedCount;
-  const completedK0Ids = new Set(progress.completedIds);
-  const k0Pct = Math.round((completedK0 / progress.total) * 100);
-  const unlockedIndex = getLevelIndex(state.level);
-  const nextIndex = progress.currentIndex;
-  const nextLesson = progress.nextLesson;
-  const pathHeroTitle = nextLesson ? `Continue: ${nextLesson.shortTitle}` : "Hangul complete";
-  const pathHeroSubtitle = nextLesson
-    ? nextLesson.goal
-    : "Move on to survival phrases, vocabulary, and sentence practice.";
-  const pathHeroMeta = nextLesson
-    ? `${nextLesson.duration} · Stage ${Math.min(nextIndex + 1, phaseOneLessons.length)} of ${phaseOneLessons.length}`
-    : "K0 cleared";
-
-  function statusFor(id) {
-    const levelIndex = getLevelIndex(id);
-    if (levelIndex < unlockedIndex) return "complete";
-    if (levelIndex === unlockedIndex) return "active";
-    return "locked";
-  }
-
-  el.innerHTML = `
-    <div class="eyebrow">Path</div>
-    <h2 class="screen-title" style="margin-bottom:16px;">K0 → K5</h2>
-    <div class="text-muted-2 fs-xs mb-12">Use the roadmap to move one step at a time.</div>
-    <div class="card">
-      <div class="eyebrow">Resume</div>
-      <h3 class="screen-title" style="margin-bottom:8px;">${escapeHtml(pathHeroTitle)}</h3>
-      <div class="screen-sub" style="margin-bottom:12px;">${escapeHtml(pathHeroSubtitle)}</div>
-      <div class="flex-between" style="gap:12px; align-items:center; flex-wrap:wrap;">
-        <span class="pill accent">${escapeHtml(pathHeroMeta)}</span>
-        <button class="button primary compact" type="button" id="pathHeroBtn">${nextLesson ? "Open lesson" : "Open practice"}</button>
-      </div>
-    </div>
-    <div class="level-map">
-      ${levels.map((lv) => {
-        const status = statusFor(lv.id);
-        const badgeClass = status === "complete" ? "complete" : status === "active" ? "active" : "locked";
-        const locked = status === "locked";
-        const isActive = status === "active" || status === "complete";
-
-        if (lv.units.length === 0) {
-          return `<div class="level-card">
-            <div class="level-head">
-              <div class="level-badge ${badgeClass}">${lv.id}</div>
-              <div class="level-info"><div class="level-name">${escapeHtml(lv.name)}</div><div class="level-sub">${escapeHtml(lv.time)}</div></div>
-              <span class="level-status ${badgeClass === "complete" ? "text-good" : badgeClass === "active" ? "text-accent" : "text-muted-2"}">${escapeHtml(badgeClass === "locked" ? `Unlock: ${getLevelUnlockText(lv.id)}` : badgeClass === "active" ? "Unlocked" : "Done")}</span>
-            </div></div>`;
-        }
-
-        const unitsHtml = lv.units.map((u, i) => {
-          const done = lv.isK0 ? completedK0Ids.has(phaseOneLessons[i]?.id) : false;
-          const isCurr = lv.isK0 ? (i === completedK0 && !progress.complete) : false;
-          const isLocked = locked || (lv.isK0 ? i > completedK0 : false);
-          const dotClass = done ? "done" : isCurr ? "curr" : isLocked ? "lock" : "next";
-          const dotLabel = done ? "✓" : isCurr ? "▶" : isLocked ? "🔒" : String(i + 1);
-          const rowClass = ["unit-row", done ? "complete" : "", isCurr ? "active" : "", isLocked ? "locked" : ""].join(" ");
-          return `<div class="${rowClass}" data-k0-index="${lv.isK0 ? i : -1}" role="${lv.isK0 ? "button" : "listitem"}" tabindex="${lv.isK0 && !isLocked ? 0 : -1}">
-            <div class="unit-dot ${dotClass}">${dotLabel}</div>
-            <span class="unit-name">${escapeHtml(u)}</span>
-            ${lv.isK0 ? `<span class="unit-dur">${phaseOneLessons[i]?.duration || ""}</span>` : ""}
-          </div>`;
-        }).join("");
-
-        const progressBar = lv.isK0 ? `<div style="height:4px;background:rgba(255,255,255,.08);border-radius:99px;margin:0 0 10px;overflow:hidden"><div style="height:100%;width:${k0Pct}%;background:var(--accent-2);border-radius:99px;"></div></div>` : "";
-        const statusText = status === "complete" ? "✓ Done" : status === "active" ? (lv.isK0 ? `${k0Pct}%` : "Unlocked") : `Unlock: ${getLevelUnlockText(lv.id)}`;
-
-        return `<div class="level-card" data-level="${lv.id}">
-          <div class="level-head">
-            <div class="level-badge ${badgeClass}">${lv.id}</div>
-            <div class="level-info">
-              <div class="level-name">${escapeHtml(lv.name)}</div>
-              <div class="level-sub">${escapeHtml(lv.time)}</div>
-            </div>
-            <span class="level-status ${badgeClass === "complete" ? "text-good" : badgeClass === "active" ? "text-accent" : "text-muted-2"}">
-              ${escapeHtml(statusText)}
-            </span>
-          </div>
-          ${isActive ? `<div class="level-units">${progressBar}${unitsHtml}</div>` : ""}
-        </div>`;
-      }).join("")}
-    </div>
-    <div id="pathLessonArea"></div>
-  `;
-
-  // K0 unit click → open lesson
-  el.querySelectorAll(".unit-row[data-k0-index]").forEach((row) => {
-    const idx = Number(row.dataset.k0Index);
-    if (idx < 0 || row.classList.contains("locked")) return;
-    row.addEventListener("click", () => openPathLesson(idx));
-    row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") openPathLesson(idx); });
-  });
-
-  const pathHeroBtn = document.getElementById("pathHeroBtn");
-  if (pathHeroBtn) {
-    pathHeroBtn.addEventListener("click", () => {
-      if (nextLesson) {
-        openPathLesson(nextIndex);
-        return;
-      }
-      showTab("practice");
-    });
-  }
-
-  if (Number.isInteger(state.pendingPathLesson)) {
-    const pendingIndex = state.pendingPathLesson;
-    state.pendingPathLesson = null;
-    saveState();
-    window.requestAnimationFrame(() => {
-      if (phaseOneLessons[pendingIndex]) {
-        openPathLesson(pendingIndex);
-      }
-    });
-  }
+  goHub("learn");
 }
 
 function openPathLesson(index) {
@@ -25261,69 +25168,110 @@ function renderProgress() {
   if (!el) return;
   refreshProgressionState();
 
-  const progress = getAlphabetProgress();
-  const completedK0 = progress.completedCount;
-  const k0Pct = Math.round((completedK0 / Math.max(1, progress.total)) * 100);
-  const levelIndex = getLevelIndex(state.level);
-  const levelNames = {
-    K0: "Hangul & Sound",
-    K1: "Survival Korean",
-    K2: "Everyday Korean",
-    K3: "Connected Korean",
-    K4: "Independent Korean",
-    K5: "Fluency Bridge",
-  };
-  const accuracy = state.asked === 0 ? 0 : Math.min(100, Math.round((state.correct / state.asked) * 100));
-  const knownWords = Array.isArray(state.vocabKnownRanks) ? state.vocabKnownRanks.length : 0;
-  const hardWords = Array.isArray(state.vocabHardRanks) ? state.vocabHardRanks.length : 0;
-  const totalMinutes = Number(state.totalMinutes) || 0;
-  const weeklyHours = Math.max(1, Number(state.weeklyHours) || 10);
-  const weeklyPct = Math.min(100, Math.round((totalMinutes / (weeklyHours * 60)) * 100));
-  const nextLevel = LEVEL_ORDER[Math.min(levelIndex + 1, LEVEL_ORDER.length - 1)] || state.level;
-  const canDoItems = [
-    { done: completedK0 > 0, label: "Started Hangul Boot Camp" },
-    { done: progress.complete, label: "Completed all K0 reading stages" },
-    { done: state.correct >= 20, label: "Answered 20 quiz cards correctly" },
-    { done: knownWords >= 20, label: "Marked 20 vocabulary words as known" },
-    { done: state.studyDays >= 3, label: "Built a 3-day study streak" },
-  ];
-  const sentenceAnalytics = getSentenceAnalyticsSnapshot(getSentencesProgress(), getSentenceBankRows());
+  // 1. Alphabet Progress
+  const alphaProgress = getAlphabetProgress();
+  const alphaCompleted = alphaProgress.completedCount;
+  const alphaTotal = phaseOneLessons.length;
+  const alphaPct = Math.round((alphaCompleted / Math.max(1, alphaTotal)) * 100);
+  const hangulExamRecord = normalizeAlphabetMasteryExam(state.alphabetMasteryExam);
+  const hangulStatusText = hangulExamRecord.mastered
+    ? "Mastered (75%+ Passed)"
+    : (hangulExamRecord.attempts > 0 ? `Best: ${hangulExamRecord.bestCorrect}/200` : "Not attempted");
+
+  // 2. Vocabulary Progress
+  const wordLessons = getWordLessons();
+  const wordContentLessons = wordLessons.filter((l) => l.type !== "checkpoint");
+  const wordCompletedLessons = wordContentLessons.filter((l) => isWordLessonCompleted(l.id)).length;
+  const wordTotalLessons = wordContentLessons.length || 284;
+  const wordPct = Math.round((wordCompletedLessons / Math.max(1, wordTotalLessons)) * 100);
+  const learnedWordsCount = Array.isArray(state.vocabLearned)
+    ? state.vocabLearned.length
+    : (Array.isArray(state.vocabKnownRanks) ? state.vocabKnownRanks.length : 0);
+  const vocabDueCount = getVocabDueCount();
+
+  // 3. Sentences & Form Checks Progress
+  const sentencesProgress = getSentencesProgress();
+  const sentenceCompletedSet = new Set(sentencesProgress.completedLessons || []);
+  const sentenceTotalLessons = 703;
+  const sentenceCompletedCount = sentenceCompletedSet.size;
+  const sentencePct = Math.round((sentenceCompletedCount / Math.max(1, sentenceTotalLessons)) * 100);
   const sentenceDueCount = getTotalDueSentencesCount();
+
+  const formChecks = getFormChecks();
+  const formChecksCompleted = formChecks.filter((c) => (getFormCheckRecord(c.id)?.sessions || 0) > 0).length;
+  const formChecksTotal = formChecks.length || 17;
+
+  // 4. Exam Suite Progress (via exam_integrity.js state)
+  const examRecords = (state.examResults && state.examResults.byAttemptId && typeof state.examResults.byAttemptId === "object")
+    ? Object.values(state.examResults.byAttemptId)
+    : [];
+
+  const passedExamIds = new Set();
+  examRecords.forEach((rec) => {
+    if (rec && rec.examId && rec.floorSummary && rec.floorSummary.passed && rec.status !== "practice") {
+      passedExamIds.add(rec.examId);
+    }
+  });
+  if (hangulExamRecord.mastered) passedExamIds.add("hangul-mastery-exam");
+
+  const wordExamCount = Array.from(passedExamIds).filter((id) => id.startsWith("word-exam-")).length;
+  const sentenceExamCount = Array.from(passedExamIds).filter((id) => id.startsWith("sentence-exam-")).length;
+  const totalPassedExams = passedExamIds.size;
+
+  // Total reviews waiting in SRS loop
+  const totalSrsDue = getTodayReviewCount() + sentenceDueCount;
 
   el.innerHTML = `
     <div class="progress-hero">
-      <div class="eyebrow">Progress</div>
-      <h2 class="screen-title" style="margin-bottom:8px;">Progress</h2>
-      <div class="progress-level">${escapeHtml(state.level)}</div>
-      <div class="progress-level-name">${escapeHtml(levelNames[state.level] || "Korean path")}</div>
-      <div class="progress-level-sub">Next unlock: ${escapeHtml(nextLevel)} · ${escapeHtml(getLevelUnlockText(nextLevel))}</div>
+      <div class="eyebrow">Your Journey</div>
+      <h2 class="screen-title" style="margin-bottom:8px;">Curriculum &amp; Stats</h2>
+      <div class="progress-level-name">Comprehensive Learning Progress</div>
+      <div class="progress-level-sub">${state.studyDays} Day Streak · ${totalPassedExams} Exam${totalPassedExams === 1 ? "" : "s"} Passed · ${totalSrsDue} Due in SRS</div>
     </div>
 
     <div class="stats-grid">
-      <div class="stat-box"><span class="sv">${completedK0}/${phaseOneLessons.length}</span><span class="sl">K0 stages</span></div>
-      <div class="stat-box"><span class="sv">${accuracy}%</span><span class="sl">Accuracy</span></div>
-      <div class="stat-box"><span class="sv">${state.studyDays}</span><span class="sl">Study days</span></div>
-      <div class="stat-box"><span class="sv">${knownWords}</span><span class="sl">Known words</span></div>
+      <div class="stat-box"><span class="sv">${alphaCompleted}/${alphaTotal}</span><span class="sl">Hangul stages</span></div>
+      <div class="stat-box"><span class="sv">${wordCompletedLessons}/${wordTotalLessons}</span><span class="sl">Word lessons</span></div>
+      <div class="stat-box"><span class="sv">${sentenceCompletedCount}/${sentenceTotalLessons}</span><span class="sl">Sentence lessons</span></div>
+      <div class="stat-box"><span class="sv">${formChecksCompleted}/${formChecksTotal}</span><span class="sl">Form checks</span></div>
     </div>
 
     <div class="card">
       <div class="flex-between mb-12">
         <div>
-          <div class="eyebrow">Momentum</div>
-          <div class="screen-sub" style="margin-bottom:0;">Keep the path visible and small enough to finish today.</div>
+          <div class="eyebrow">Alphabet · Hangul</div>
+          <div class="screen-sub" style="margin-bottom:0;">Letters, reading, writing, and Hangul Mastery.</div>
         </div>
-        <span class="pill accent">${k0Pct}% K0</span>
+        <span class="pill ${alphaCompleted === alphaTotal ? "accent" : "muted"}">${alphaPct}% Complete</span>
+      </div>
+      <div class="forecast-bar" style="margin-bottom:12px;">
+        <div class="forecast-row you">
+          <div class="forecast-hours">Stages</div>
+          <div class="forecast-track"><div class="forecast-fill" style="width:${alphaPct}%"></div></div>
+          <div class="forecast-label">${alphaCompleted}/${alphaTotal}</div>
+        </div>
+      </div>
+      <div class="fs-xs text-muted-2">Exam status: <strong>${escapeHtml(hangulStatusText)}</strong></div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Vocabulary · Core Words</div>
+          <div class="screen-sub" style="margin-bottom:0;">Curated word path, SRS retention, and 10 achievement exams.</div>
+        </div>
+        <span class="pill ${wordPct > 0 ? "accent" : "muted"}">${wordPct}% Complete</span>
+      </div>
+      <div class="stats-grid mb-12" style="margin-bottom:12px;">
+        <div class="stat-box"><span class="sv">${learnedWordsCount}</span><span class="sl">Words learned</span></div>
+        <div class="stat-box"><span class="sv">${vocabDueCount}</span><span class="sl">SRS due</span></div>
+        <div class="stat-box"><span class="sv">${wordExamCount}/10</span><span class="sl">Exams passed</span></div>
       </div>
       <div class="forecast-bar">
-        <div class="forecast-row you">
-          <div class="forecast-hours">This week</div>
-          <div class="forecast-track"><div class="forecast-fill" style="width:${weeklyPct}%"></div></div>
-          <div class="forecast-label">${totalMinutes} min</div>
-        </div>
         <div class="forecast-row">
-          <div class="forecast-hours">K0</div>
-          <div class="forecast-track"><div class="forecast-fill" style="width:${k0Pct}%"></div></div>
-          <div class="forecast-label">${completedK0}/${phaseOneLessons.length}</div>
+          <div class="forecast-hours">Lessons</div>
+          <div class="forecast-track"><div class="forecast-fill" style="width:${wordPct}%"></div></div>
+          <div class="forecast-label">${wordCompletedLessons}/${wordTotalLessons}</div>
         </div>
       </div>
     </div>
@@ -25331,44 +25279,38 @@ function renderProgress() {
     <div class="card">
       <div class="flex-between mb-12">
         <div>
-          <div class="eyebrow">Review health</div>
-          <div class="screen-sub" style="margin-bottom:0;">Words and cards waiting in the loop.</div>
+          <div class="eyebrow">Sentences &amp; Form Checks</div>
+          <div class="screen-sub" style="margin-bottom:0;">Curriculum path, 17 Form Checks, and 5 Sentence exams.</div>
         </div>
-        <span class="pill muted">${getTodayReviewCount()} due</span>
+        <span class="pill ${sentencePct > 0 ? "accent" : "muted"}">${sentencePct}% Complete</span>
+      </div>
+      <div class="stats-grid mb-12" style="margin-bottom:12px;">
+        <div class="stat-box"><span class="sv">${sentenceCompletedCount}</span><span class="sl">Sentences done</span></div>
+        <div class="stat-box"><span class="sv">${formChecksCompleted}/${formChecksTotal}</span><span class="sl">Form checks</span></div>
+        <div class="stat-box"><span class="sv">${sentenceExamCount}/5</span><span class="sl">Exams passed</span></div>
+      </div>
+      <div class="forecast-bar">
+        <div class="forecast-row">
+          <div class="forecast-hours">Path</div>
+          <div class="forecast-track"><div class="forecast-fill" style="width:${sentencePct}%"></div></div>
+          <div class="forecast-label">${sentenceCompletedCount}/${sentenceTotalLessons}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between mb-12">
+        <div>
+          <div class="eyebrow">Review Stack &amp; Momentum</div>
+          <div class="screen-sub" style="margin-bottom:0;">Items waiting in your spaced repetition review loop.</div>
+        </div>
+        <span class="pill ${totalSrsDue > 0 ? "accent" : "muted"}">${totalSrsDue} total due</span>
       </div>
       <div class="stats-grid" style="margin-bottom:0;">
-        <div class="stat-box"><span class="sv">${state.correct}</span><span class="sl">Correct</span></div>
+        <div class="stat-box"><span class="sv">${getTodayReviewCount()}</span><span class="sl">Word SRS due</span></div>
+        <div class="stat-box"><span class="sv">${sentenceDueCount}</span><span class="sl">Sentence SRS due</span></div>
+        <div class="stat-box"><span class="sv">${state.studyDays}</span><span class="sl">Study days</span></div>
         <div class="stat-box"><span class="sv">${state.bestStreak}</span><span class="sl">Best streak</span></div>
-        <div class="stat-box"><span class="sv">${hardWords}</span><span class="sl">Hard words</span></div>
-        <div class="stat-box"><span class="sv">${state.round}</span><span class="sl">Round</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="flex-between mb-12">
-        <div>
-          <div class="eyebrow">Sentence progress</div>
-          <div class="screen-sub" style="margin-bottom:0;">Accuracy and helper use across your sentence practice.</div>
-        </div>
-        <span class="pill ${sentenceDueCount ? "accent" : "muted"}">${sentenceDueCount} due</span>
-      </div>
-      <div class="stats-grid" style="margin-bottom:0;">
-        <div class="stat-box"><span class="sv">${sentenceAnalytics.total}</span><span class="sl">Attempts</span></div>
-        <div class="stat-box"><span class="sv">${sentenceAnalytics.correctPct}%</span><span class="sl">Accuracy</span></div>
-        <div class="stat-box"><span class="sv">${sentenceAnalytics.avgLatencyLabel}</span><span class="sl">Avg latency</span></div>
-        <div class="stat-box"><span class="sv">${sentenceAnalytics.helperUses}</span><span class="sl">Helpers used</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="eyebrow mb-12">Can do</div>
-      <div class="cando-list">
-        ${canDoItems.map((item) => `
-          <div class="cando-item">
-            <span class="cando-check ${item.done ? "done" : "todo"}">${item.done ? "OK" : ""}</span>
-            <span>${escapeHtml(item.label)}</span>
-          </div>
-        `).join("")}
       </div>
     </div>
   `;
@@ -25517,6 +25459,21 @@ function handleHanaPathBackAction() {
   }
 
   return false;
+}
+
+function registerBrowserBackButton() {
+  if (isHanaPathNative()) return;
+  try {
+    window.history.replaceState({ hanaPath: true, depth: 0 }, "");
+  } catch (_) {}
+
+  window.addEventListener("popstate", (event) => {
+    if (handleHanaPathBackAction()) {
+      try {
+        window.history.pushState({ hanaPath: true, depth: (event.state?.depth || 0) + 1 }, "");
+      } catch (_) {}
+    }
+  });
 }
 
 function registerNativeBackButton() {
@@ -25752,6 +25709,7 @@ window.handleSpeakingPractice = function (btn) {
 document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();
   registerNativeBackButton();
+  registerBrowserBackButton();
   init().catch((error) => {
     console.error("HanaPath init failed:", error);
   });

@@ -1,12 +1,12 @@
 // [2026-08-10] Cache refreshed for premium theming (violet on pitch black), full accent palette, and hub lesson progress.
-const CACHE_NAME = "hanapath-shell-v462";
+const CACHE_NAME = "hanapath-shell-v463";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260810e",
+  "./styles.css?v=20260810f",
   "./sentence_exam_runner.css?v=20260729b",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
@@ -41,7 +41,7 @@ const APP_SHELL = [
   "./sentence_feedback.js?v=20260810c",
   "./google_auth.js?v=20260810c",
   "./google_auth_web.js?v=20260810c",
-  "./app.js?v=20260810e",
+  "./app.js?v=20260810f",
   "./sentence_exam_runner.js?v=20260810c",
   "./alphabet_skill_srs.js?v=20260810c",
   "./manifest.webmanifest",

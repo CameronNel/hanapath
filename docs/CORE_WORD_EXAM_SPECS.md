@@ -724,7 +724,7 @@ its context floor uses `X` alone.
 
 #### Final
 
-- **Final passed:** 80% overall; `R` at least 75%; `P` at least 65%; `X` at
+- **Final passed:** 75% overall; `R` at least 75%; `P` at least 65%; `X` at
   least 65%; `F` at least 60%; no section below 60%.
 - **Final distinction:** 90% overall; every major macrostrand at least 80%; no
   section below 75%.
@@ -741,7 +741,7 @@ After a learner first earns at least **88% overall**, with `R`, `P`, `X`, and
 2. allow completion for 21 days;
 3. use a new seed and no repeated target from the qualifying attempt where the
    bank permits;
-4. require at least 80% overall, `P` and `X+F` at least 65%, and no section
+4. require at least 75% overall, `P` and `X+F` at least 65%, and no section
    below 60%;
 5. only then award **Core Words mastered**.
 
