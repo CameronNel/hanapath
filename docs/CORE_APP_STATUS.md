@@ -80,6 +80,12 @@ its packet lands, with no hand-edit to this report.
 Run by `node scripts/audit-core-release.mjs --full`. Every listed step is
 blocking; release mode permits no skipped or conditional core checks.
 
+Steps marked *freezable* are the two exam seed sweeps. They are pure
+deterministic computation over a pinned set of input files, so on pull
+requests only (`--respect-freeze`) they are skipped while every pinned hash
+still matches, and reported as FROZEN rather than PASS. `push:main`, release
+runs, and any plain `--full` invocation run them unconditionally.
+
 | Step | Command | Kind |
 |---|---|---|
 | Syntax check (node --check, all root scripts) | `node --check` (all root scripts) | blocking |
@@ -93,7 +99,7 @@ blocking; release mode permits no skipped or conditional core checks.
 | Post-onboarding bootstrap and save-recovery contract | `node scripts/test-app-bootstrap-and-recovery.mjs` | blocking |
 | Hangul Mastery examination | `node scripts/audit-hangul-mastery-exam.mjs` | blocking |
 | Word-exam competency map | `node scripts/build-word-exam-competency-map.mjs --check` | blocking |
-| Core Word examinations | `node scripts/audit-word-exams.mjs` | blocking |
+| Core Word examinations | `node scripts/audit-word-exams.mjs` | blocking, freezable |
 | Words data | `node scripts/audit-words-data.mjs --strict` | blocking |
 | Thin-lesson heuristic regression | `node scripts/test-thin-lesson-heuristic.mjs` | blocking |
 | Sentences data | `node scripts/audit-sentences-data.mjs --strict` | blocking |
@@ -128,7 +134,8 @@ blocking; release mode permits no skipped or conditional core checks.
 | Sentence lesson contrast data freshness (CB3) | `node scripts/build-sentence-lesson-contrasts-sections-5-8.mjs --check` | blocking |
 | Sentence lesson contrast coverage and safety (CB3) | `node scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs` | blocking |
 | Sentence lesson contrast browser fixtures sections 5-8 (CB3) | `node scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs` | blocking |
-| Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | blocking |
+| Exam compute freeze integrity | `node scripts/test-exam-compute-freeze.mjs` | blocking |
+| Sentence Mastery examination seed audit | `node scripts/audit-sentence-exams.mjs` | blocking, freezable |
 | Sentence Mastery X2 runner, provenance, and retention audit | `node scripts/audit-sentence-exam-runner.mjs` | blocking |
 | Sentence Mastery X2 state and scoring regression | `node scripts/test-sentence-exam-runner.mjs` | blocking |
 | Sentence Mastery X2 browser acceptance | `node scripts/test-sentence-exam-runner-browser.mjs` | blocking |
@@ -146,7 +153,7 @@ blocking; release mode permits no skipped or conditional core checks.
 
 - **Historical Sentence eligibility evidence:** 2100 protected approved rows. E1A/E1B remain immutable evidence; superseded E1C/E1D are not release prerequisites. The enabled frozen curated bank is the strict examination source.
 - **Sentence Mastery examination:** blueprints, engine, runner, provenance, results, and retention are shipped.
-- **Core CI:** prepares the isolated Capacitor web payload, then requires every full-gate step to pass with zero skips.
+- **Core CI:** prepares the isolated Capacitor web payload, then requires every full-gate step to pass. Pull-request runs may report the two freezable exam sweeps as FROZEN when their pinned inputs are unchanged; `push:main` and release runs permit no skips at all.
 
 ## Coverage gaps
 

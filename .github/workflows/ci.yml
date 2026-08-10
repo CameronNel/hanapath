@@ -35,5 +35,21 @@ jobs:
       # The single deterministic superset gate covers every roadmap §9 family,
       # real browser journeys, migrations, the prepared mobile payload, and the
       # generated status report. Q2 permits no conditional or skipped steps.
+      #
+      # The one sanctioned narrowing is content freezing, and it applies to pull
+      # requests only. The two exam seed sweeps are ~20 of the gate's ~24 minutes
+      # and are pure deterministic computation over a pinned set of input files;
+      # when every one of those files is byte-identical to its recorded hash the
+      # sweep cannot reach a different verdict. A frozen step is reported as
+      # FROZEN, never as PASS.
+      #
+      # push:main and workflow_dispatch deliberately omit --respect-freeze, so
+      # every commit that lands on main is certified by a full run of both
+      # sweeps regardless of what the pull-request run skipped.
+      - name: Run strict full core-release gate (pull request, freeze-aware)
+        if: github.event_name == 'pull_request'
+        run: node scripts/audit-core-release.mjs --full --respect-freeze
+
       - name: Run strict full core-release gate
+        if: github.event_name != 'pull_request'
         run: node scripts/audit-core-release.mjs --full

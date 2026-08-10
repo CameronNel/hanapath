@@ -114,7 +114,19 @@ section 9. `node scripts/audit-core-release.mjs --full` (the `core-gate` CI job)
 runs the wired subset as one deterministic gate and regenerates/verifies the
 machine-derived `docs/CORE_APP_STATUS.md`; use `--write-status` after data
 changes. `node --check` only checks its first argument — check each edited file
-separately. Core audit families include:
+separately.
+
+The two exam seed sweeps are ~20 of the gate's ~24 minutes and are pure
+deterministic computation over a pinned input set, so pull-request CI adds
+`--respect-freeze` and skips one when every input hash in
+`docs/generated/exam_compute_freeze.json` still matches. A skipped sweep is
+reported as FROZEN, never PASS. `push:main`, release runs, and any plain
+`--full` invocation ignore the freeze and run both sweeps. Re-pin with
+`node scripts/exam-compute-freeze.mjs --write`, which refuses to pin unless
+both audits pass a full run. This is the only sanctioned skip; do not add
+path-conditional steps.
+
+Core audit families include:
 
 - syntax, shell, cache wiring;
 - Words/Sentences data and curriculum foundation;

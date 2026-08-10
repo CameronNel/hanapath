@@ -29,12 +29,18 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
+import { checkFreeze } from "./exam-compute-freeze.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const STATUS_FILE = join(ROOT, "docs", "CORE_APP_STATUS.md");
 
 const args = process.argv.slice(2);
 const QUICK = args.includes("--quick");
+// Opt-in only. A step carrying a freezeKey may be skipped when every input it
+// reads is byte-identical to the pinned hash, because both exam sweeps are pure
+// deterministic computation over those bytes. CI passes this on pull requests
+// and withholds it on push:main, so main is never certified by a skipped sweep.
+const RESPECT_FREEZE = args.includes("--respect-freeze");
 
 // ---------------------------------------------------------------------------
 // Live-data derivation (deterministic; no hand-entered counts)
@@ -310,7 +316,7 @@ const GATE_STEPS = [
   { id: "shell-bootstrap-recovery", label: "Post-onboarding bootstrap and save-recovery contract", script: "scripts/test-app-bootstrap-and-recovery.mjs" },
   { id: "hangul-mastery", label: "Hangul Mastery examination", script: "scripts/audit-hangul-mastery-exam.mjs" },
   { id: "word-competency-map", label: "Word-exam competency map", script: "scripts/build-word-exam-competency-map.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
-  { id: "word-exams", label: "Core Word examinations", script: "scripts/audit-word-exams.mjs", fullArgs: [], quickArgs: ["--quick"] },
+  { id: "word-exams", label: "Core Word examinations", script: "scripts/audit-word-exams.mjs", fullArgs: [], quickArgs: ["--quick"], freezeKey: "word-exams" },
   { id: "words-data", label: "Words data", script: "scripts/audit-words-data.mjs", fullArgs: ["--strict"], quickArgs: ["--strict"] },
   { id: "thin-lesson", label: "Thin-lesson heuristic regression", script: "scripts/test-thin-lesson-heuristic.mjs" },
   { id: "sentences-data", label: "Sentences data", script: "scripts/audit-sentences-data.mjs", fullArgs: ["--strict"], quickArgs: ["--strict"] },
@@ -353,7 +359,9 @@ const GATE_STEPS = [
     { id: "sentence-lesson-contrast-freshness-cb3", label: "Sentence lesson contrast data freshness (CB3)", script: "scripts/build-sentence-lesson-contrasts-sections-5-8.mjs", fullArgs: ["--check"], quickArgs: ["--check"] },
     { id: "sentence-lesson-contrasts-cb3", label: "Sentence lesson contrast coverage and safety (CB3)", script: "scripts/audit-sentence-lesson-contrasts-sections-5-8.mjs" },
     { id: "sentence-lesson-contrast-browser-cb3", label: "Sentence lesson contrast browser fixtures sections 5-8 (CB3)", script: "scripts/test-sentence-lesson-contrasts-browser-sections-5-8.mjs" },
-  { id: "sentence-exams", label: "Sentence Mastery examination seed audit", script: "scripts/audit-sentence-exams.mjs" },
+  // Never freezable: this is the audit that keeps the freeze honest.
+  { id: "exam-compute-freeze", label: "Exam compute freeze integrity", script: "scripts/test-exam-compute-freeze.mjs" },
+  { id: "sentence-exams", label: "Sentence Mastery examination seed audit", script: "scripts/audit-sentence-exams.mjs", freezeKey: "sentence-exams" },
   { id: "sentence-exam-runner-audit", label: "Sentence Mastery X2 runner, provenance, and retention audit", script: SENTENCE_EXAM_CONTRACT.runnerAuditFile },
   { id: "sentence-exam-runner-regression", label: "Sentence Mastery X2 state and scoring regression", script: SENTENCE_EXAM_CONTRACT.runnerRegressionFile },
   { id: "sentence-exam-runner-browser", label: "Sentence Mastery X2 browser acceptance", script: SENTENCE_EXAM_CONTRACT.runnerBrowserFile },
@@ -481,6 +489,12 @@ function renderStatusMarkdown(status) {
   lines.push("Run by `node scripts/audit-core-release.mjs --full`. Every listed step is");
   lines.push("blocking; release mode permits no skipped or conditional core checks.");
   lines.push("");
+  lines.push("Steps marked *freezable* are the two exam seed sweeps. They are pure");
+  lines.push("deterministic computation over a pinned set of input files, so on pull");
+  lines.push("requests only (`--respect-freeze`) they are skipped while every pinned hash");
+  lines.push("still matches, and reported as FROZEN rather than PASS. `push:main`, release");
+  lines.push("runs, and any plain `--full` invocation run them unconditionally.");
+  lines.push("");
   lines.push("| Step | Command | Kind |");
   lines.push("|---|---|---|");
   for (const step of GATE_STEPS) {
@@ -488,7 +502,7 @@ function renderStatusMarkdown(status) {
     if (step.internal === "syntax") command = "`node --check` (all root scripts)";
     else if (step.internal === "status-check") command = "`--check-status` (internal)";
     else command = "`node " + [step.script, ...(step.fullArgs || [])].join(" ") + "`";
-    lines.push(`| ${step.label} | ${command} | blocking |`);
+    lines.push(`| ${step.label} | ${command} | ${step.freezeKey ? "blocking, freezable" : "blocking"} |`);
   }
   lines.push("");
 
@@ -503,7 +517,9 @@ function renderStatusMarkdown(status) {
     `- **Sentence Mastery examination:** ${sentenceExamsShipped ? "blueprints, engine, runner, provenance, results, and retention are shipped." : "release-critical artifacts missing."}`
   );
   lines.push(
-    "- **Core CI:** prepares the isolated Capacitor web payload, then requires every full-gate step to pass with zero skips."
+    "- **Core CI:** prepares the isolated Capacitor web payload, then requires every full-gate step to pass. "
+      + "Pull-request runs may report the two freezable exam sweeps as FROZEN when their pinned inputs are unchanged; "
+      + "`push:main` and release runs permit no skips at all."
   );
   lines.push("");
 
@@ -580,6 +596,22 @@ function runGate() {
   for (const step of GATE_STEPS) {
     console.log(`--- RUN  ${step.id}: ${step.label}`);
     const started = Date.now();
+
+    // A frozen step is reported as FROZEN, never as PASS. The distinction has
+    // to survive into the log and the summary, or a skipped sweep reads as a
+    // verified one.
+    if (RESPECT_FREEZE && step.freezeKey) {
+      const freeze = checkFreeze(step.freezeKey);
+      if (freeze.frozen) {
+        console.log(`  ${freeze.reason}; verdict cannot differ, skipping the sweep.`);
+        console.log(`--- FROZEN ${step.id} (${Date.now() - started} ms)\n`);
+        results.push({ step, state: "frozen" });
+        continue;
+      }
+      console.log(`  freeze not applicable (${freeze.reason}); running in full.`);
+      for (const rel of freeze.changed.slice(0, 6)) console.log(`      changed: ${rel}`);
+    }
+
     let ok;
     if (step.internal === "syntax") ok = runSyntaxStep();
     else if (step.internal === "status-check") ok = runStatusCheckStep();
@@ -591,15 +623,24 @@ function runGate() {
 
   const failed = results.filter((r) => r.state === "fail");
   const passed = results.filter((r) => r.state === "pass");
+  const frozen = results.filter((r) => r.state === "frozen");
 
   console.log("Summary");
   console.log("-------");
   console.log(`  passed : ${passed.length}`);
+  console.log(`  frozen : ${frozen.length}${frozen.length ? " (" + frozen.map((r) => r.step.id).join(", ") + ")" : ""}`);
   console.log("  skipped: 0");
   console.log(`  failed : ${failed.length}${failed.length ? " (" + failed.map((r) => r.step.id).join(", ") + ")" : ""}`);
 
   if (failed.length > 0) {
     process.exit(1);
+  }
+  if (frozen.length > 0) {
+    console.log(
+      `\nCore-release gate passed with ${frozen.length} frozen step(s). Frozen steps are not`
+      + "\nrelease evidence: push:main and release runs omit --respect-freeze and run them in full.",
+    );
+    process.exit(0);
   }
   console.log("\nCore-release gate passed.");
   process.exit(0);
