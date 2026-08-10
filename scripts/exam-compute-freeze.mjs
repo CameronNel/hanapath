@@ -158,10 +158,14 @@ export function compareTrustedManifest(trustedManifestPath) {
 // Returns {frozen, reason, changed[]} — frozen only when every pinned input is
 // byte-identical. Anything unexpected (missing manifest, missing file, new
 // schema, or an untrusted PR manifest) reports not-frozen so the gate falls
-// back to running the sweep.
+// back to running the sweep. GitHub pull-request jobs require the trusted-base
+// comparison automatically; local --check remains a simple content check.
 export function checkFreeze(
   key,
-  { trustedManifestPath = null, requireTrustedManifest = false } = {},
+  {
+    trustedManifestPath = process.env.HANAPATH_TRUSTED_FREEZE_MANIFEST || null,
+    requireTrustedManifest = process.env.GITHUB_EVENT_NAME === "pull_request",
+  } = {},
 ) {
   if (requireTrustedManifest) {
     const trust = compareTrustedManifest(trustedManifestPath);
