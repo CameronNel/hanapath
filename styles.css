@@ -302,7 +302,10 @@ input, textarea { cursor: text; }
   pointer-events: none;
   border-radius: 50%;
   filter: blur(42px);
-  opacity: .8;
+  /* The drift keyframes carry their own opacity (.22-.38), so this value only
+     applies once animation is off. Keep it inside that range: at .8 a
+     reduced-motion learner got a glow ~3x heavier than everyone else. */
+  opacity: .3;
 }
 .orb-a {
   width: 320px; height: 320px;
@@ -316,7 +319,7 @@ input, textarea { cursor: text; }
   background: radial-gradient(circle, rgba(var(--accent-2-rgb),.34), transparent 70%);
   animation: orb-drift-b 32s ease-in-out infinite alternate;
 }
-:root[data-color-mode="light"] .bg-orb { opacity: .5; }
+:root[data-color-mode="light"] .bg-orb { opacity: .24; }
 @media (prefers-reduced-motion: reduce) {
   .orb-a, .orb-b { animation: none; }
 }
