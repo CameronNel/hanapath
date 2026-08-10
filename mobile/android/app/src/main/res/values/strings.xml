@@ -4,4 +4,7 @@
     <string name="title_activity_main">HanaPath</string>
     <string name="package_name">io.github.cameronnel.hanapath</string>
     <string name="custom_url_scheme">io.github.cameronnel.hanapath</string>
+    <!-- Deliberately empty fallback. Release builds inject the owner-configured
+         Web OAuth client ID through HANAPATH_GOOGLE_SERVER_CLIENT_ID. -->
+    <string name="google_sign_in_server_client_id" translatable="false"></string>
 </resources>

@@ -1,5 +1,20 @@
 apply plugin: 'com.android.application'
 
+// The Web OAuth client ID is public configuration, not a secret, but it is
+// still owner-controlled release metadata. Keep source builds unconfigured by
+// default and inject it through either -PHANAPATH_GOOGLE_SERVER_CLIENT_ID=...
+// or the matching environment variable in the protected build environment.
+def googleSignInServerClientId = providers
+    .gradleProperty('HANAPATH_GOOGLE_SERVER_CLIENT_ID')
+    .orElse(providers.environmentVariable('HANAPATH_GOOGLE_SERVER_CLIENT_ID'))
+    .getOrElse('')
+    .trim()
+def escapedGoogleSignInServerClientId = googleSignInServerClientId
+    .replace('\\', '\\\\')
+    .replace('"', '\\"')
+    .replace('\r', '')
+    .replace('\n', '')
+
 android {
     namespace = "io.github.cameronnel.hanapath"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -12,6 +27,7 @@ android {
         // tags before any signed AAB is produced.
         versionCode 1
         versionName "1.0"
+        buildConfigField "String", "GOOGLE_SIGN_IN_SERVER_CLIENT_ID", "\"${escapedGoogleSignInServerClientId}\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -44,6 +60,9 @@ android {
             }
         }
     }
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 repositories {
@@ -59,6 +78,9 @@ dependencies {
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
     implementation 'com.google.mlkit:digital-ink-recognition:19.0.0'
+    implementation 'androidx.credentials:credentials:1.6.0'
+    implementation 'androidx.credentials:credentials-play-services-auth:1.6.0'
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.2.0'
     // The active product contract is free_all. Google Play Billing must not be
     // compiled into or permission-merged into this build. A future paid build
     // must reintroduce its bridge in a separately reviewed store-mode packet.
