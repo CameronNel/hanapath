@@ -80,10 +80,30 @@ for (const id of FREEZABLE_STEPS) {
   );
 }
 
+// The checked-out manifest is PR-controlled, so PR CI must compare it with the
+// immutable base-commit copy before a sweep may freeze. This closes the
+// self-certification hole where a PR edits an input and re-pins its own hash.
+const freezeSource = readFileSync(join(ROOT, "scripts", "exam-compute-freeze.mjs"), "utf8");
+assert.match(freezeSource, /compareTrustedManifest/);
+assert.match(freezeSource, /HANAPATH_TRUSTED_FREEZE_MANIFEST/);
+assert.match(freezeSource, /GITHUB_EVENT_NAME === "pull_request"/);
+assert.match(freezeSource, /freeze manifest differs from trusted PR base/);
+
 const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
 assert.match(workflow, /node mobile\/scripts\/prepare-web\.mjs/);
 assert.match(workflow, /node scripts\/audit-core-release\.mjs --full/);
 assert.doesNotMatch(workflow, /--allow-incomplete|continue-on-error/);
+assert.match(workflow, /fetch-depth:\s*0/, "PR-base manifest lookup requires base history to be available");
+assert.match(
+  workflow,
+  /git show "\$\{BASE_SHA\}:docs\/generated\/exam_compute_freeze\.json"/,
+  "ci.yml must materialize the freeze manifest from the immutable PR base SHA",
+);
+assert.match(
+  workflow,
+  /HANAPATH_TRUSTED_FREEZE_MANIFEST=/,
+  "ci.yml must pass the trusted PR-base manifest path to the freeze checker",
+);
 // The freeze may shorten pull requests. It must never shorten main or a
 // release, so the branch-push job has to run the gate without it.
 assert.match(
