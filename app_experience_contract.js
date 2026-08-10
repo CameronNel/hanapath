@@ -125,7 +125,10 @@
         ? `Best: ${hangulExamRecord.bestCorrect}/${hangulTotal || 200}`
         : "Not attempted");
 
-    const wordLessons = getWordLessons().filter((lesson) => lesson?.type !== "checkpoint");
+    // Count the complete live curriculum, including checkpoint lessons. This
+    // keeps Progress aligned with the generated 284-lesson curriculum count
+    // instead of silently switching to the Learn hub's content-only metric.
+    const wordLessons = getWordLessons();
     const wordLessonIds = new Set(wordLessons.map((lesson) => lesson?.id).filter(Boolean));
     const wordCompletedLessons = wordLessons.filter((lesson) => lesson?.id && isWordLessonCompleted(lesson.id)).length;
     const wordTotalLessons = wordLessonIds.size;
