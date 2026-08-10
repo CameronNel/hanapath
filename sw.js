@@ -1,4 +1,4 @@
-// [2026-08-10] Cache refreshed for release theming, auth, state safety, and testing mode.
+// [2026-08-10] Cache refreshed for release theming, Firebase cloud sync, auth, state safety, and testing mode.
 const CACHE_NAME = "hanapath-shell-v460";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
