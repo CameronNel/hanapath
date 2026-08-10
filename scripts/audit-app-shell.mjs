@@ -22,6 +22,7 @@ const swJs = readFileSync(join(root, "sw.js"), "utf8");
 
 const REQUIRED_VERSIONED_INDEX_ASSETS = new Set([
   "./styles.css",
+  "./app_experience_contract.css",
   "./audio_map.js",
   "./words_curated_core.js",
   "./words_inflect.js",
