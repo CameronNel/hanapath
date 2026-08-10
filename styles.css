@@ -220,23 +220,10 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Ambient colour wash behind the whole app — one soft accent-lit vignette
-   that makes pitch-black and white surfaces feel lit rather than flat. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(110% 55% at 50% -12%, rgba(var(--accent-rgb), .10), transparent 62%),
-    radial-gradient(80% 45% at 92% 108%, rgba(var(--accent-3-rgb), .055), transparent 60%);
-}
-:root[data-color-mode="light"] body::before {
-  background:
-    radial-gradient(110% 55% at 50% -12%, rgba(var(--accent-rgb), .08), transparent 62%),
-    radial-gradient(80% 45% at 92% 108%, rgba(var(--accent-3-rgb), .05), transparent 60%);
-}
+/* No ambient wash and no drifting orbs. Both read as a dirty smudge in the
+   top-left against a pitch-black surface rather than as lighting, so the
+   background stays a flat true black (or true white) and the accent shows up
+   only on real elements. */
 
 ::selection {
   background: rgba(var(--accent-rgb), .32);
@@ -296,32 +283,11 @@ input, textarea { cursor: text; }
 }
 
 /* ── BACKGROUND ORBS ─────────────────────────────── */
+/* Off. A blurred accent blob bleeding out of the top-left corner reads as a
+   smudge on the panel, not as lighting. The markup stays so the shell is
+   unchanged; nothing paints. */
 .bg-orb {
-  position: fixed;
-  z-index: 0;
-  pointer-events: none;
-  border-radius: 50%;
-  filter: blur(42px);
-  /* The drift keyframes carry their own opacity (.22-.38), so this value only
-     applies once animation is off. Keep it inside that range: at .8 a
-     reduced-motion learner got a glow ~3x heavier than everyone else. */
-  opacity: .3;
-}
-.orb-a {
-  width: 320px; height: 320px;
-  top: -80px; left: -80px;
-  background: radial-gradient(circle, rgba(var(--accent-deep-rgb),.5), transparent 70%);
-  animation: orb-drift-a 26s ease-in-out infinite alternate;
-}
-.orb-b {
-  width: 280px; height: 280px;
-  bottom: 80px; right: -60px;
-  background: radial-gradient(circle, rgba(var(--accent-2-rgb),.34), transparent 70%);
-  animation: orb-drift-b 32s ease-in-out infinite alternate;
-}
-:root[data-color-mode="light"] .bg-orb { opacity: .24; }
-@media (prefers-reduced-motion: reduce) {
-  .orb-a, .orb-b { animation: none; }
+  display: none;
 }
 
 /* ── ONBOARDING SHELL ────────────────────────────── */
@@ -1999,18 +1965,6 @@ button.bd-assembled:hover {
   }
 }
 
-@keyframes orb-drift-a {
-  0%   { transform: translate3d(0, 0, 0) scale(1);          opacity: .28; }
-  50%  { transform: translate3d(40px, 30px, 0) scale(1.08); opacity: .38; }
-  100% { transform: translate3d(18px, 56px, 0) scale(1.04); opacity: .3;  }
-}
-
-@keyframes orb-drift-b {
-  0%   { transform: translate3d(0, 0, 0) scale(1);            opacity: .3;  }
-  50%  { transform: translate3d(-34px, -22px, 0) scale(1.07); opacity: .22; }
-  100% { transform: translate3d(-46px, -40px, 0) scale(1.03); opacity: .32; }
-}
-
 .review-header {
   display: flex;
   justify-content: space-between;
@@ -3384,6 +3338,72 @@ li { margin-bottom: 4px; }
 .alphabet-step-override {
   align-self: flex-start;
   margin-top: -6px;
+}
+
+/* Audio preview rows. These play a line on tap, so they need the affordances a
+   real control has: full-width hit area, a hover/press state that is obvious on
+   a touch screen (where there is no hover at all), and a focus ring. */
+.ss-audio-row {
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+}
+.ss-audio-row:hover { border-color: rgba(var(--accent-rgb), .34); }
+.ss-audio-row:active {
+  transform: scale(.99);
+  background: rgba(var(--accent-rgb), .12);
+  border-color: rgba(var(--accent-rgb), .5);
+  transition-duration: var(--dur-1);
+}
+.ss-audio-cue {
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
+}
+.ss-audio-row:hover .ss-audio-cue,
+.ss-audio-row:active .ss-audio-cue {
+  background: rgba(var(--accent-rgb), .26);
+  border-color: rgba(var(--accent-rgb), .5);
+}
+/* Touch devices never fire :hover, so the pressed state is the whole signal. */
+@media (hover: none) {
+  .ss-audio-row { border-color: rgba(var(--accent-rgb), .18); }
+}
+
+/* Resume offer for a part-finished alphabet lesson. Sits under Step 1 rather
+   than inside the tile, because the tile is itself a button. */
+.alphabet-step-resume-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 14px;
+  margin-top: -4px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(var(--accent-rgb), .28);
+  background: rgba(var(--accent-rgb), .08);
+}
+.alphabet-step-resume-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.alphabet-step-resume-copy strong {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.alphabet-step-resume-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* At phone width the two actions share the row instead of overflowing it. */
+@media (max-width: 420px) {
+  .alphabet-step-resume-actions { width: 100%; }
+  .alphabet-step-resume-actions .button { flex: 1; }
 }
 .alphabet-step-tile.is-locked {
   cursor: not-allowed;

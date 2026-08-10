@@ -2915,8 +2915,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v461";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260810d";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v462";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260810e";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -7967,6 +7967,25 @@ function alphabetStagesSectionHtml() {
   const testingOverride = TEST_ENABLE_WORD_SECTION_COMPLETION && isWordExamTestQueryActive() && !progress.complete
     ? '<button class="button secondary compact alphabet-step-override" type="button" data-complete-alphabet-section>Testing override</button>'
     : "";
+  // Resuming a part-finished lesson is deliberate, not automatic: the Learn tab
+  // no longer reopens it on its own, so the offer lives here. Both choices are
+  // offered explicitly — picking up mid-attempt and starting the lesson over are
+  // different intentions, and guessing wrong costs the learner their place.
+  // Buttons cannot nest inside the tile button, so they sit alongside it.
+  const resumable = getResumableAlphabetLesson();
+  const resumeHtml = resumable
+    ? `
+    <div class="alphabet-step-resume-row">
+      <div class="alphabet-step-resume-copy">
+        <span class="eyebrow">In progress</span>
+        <strong>${escapeHtml(getLearnStageInfo("alphabet", resumable.index + 1).detail)}</strong>
+      </div>
+      <div class="alphabet-step-resume-actions">
+        <button class="button secondary compact" type="button" data-restart-alphabet-lesson="${resumable.index}">Restart lesson</button>
+        <button class="button primary compact" type="button" data-resume-alphabet-lesson="${resumable.index}">Continue attempt</button>
+      </div>
+    </div>`
+    : "";
   return `
     <button class="hub-tile alphabet-step-tile" type="button" data-alphabet-section="stages">
       <span class="hub-tile-icon">${hubIconSvg("vocabulary")}</span>
@@ -7977,6 +7996,7 @@ function alphabetStagesSectionHtml() {
       </span>
       ${progress.complete ? `<span class="pill accent">${progress.completedCount}/${progress.total}</span>` : `<span class="hub-tile-go" aria-hidden="true">›</span>`}
     </button>
+    ${resumeHtml}
     ${testingOverride}
   `;
 }
@@ -8350,6 +8370,24 @@ function bindAlphabetSectionCards(el) {
   el.querySelectorAll("[data-alphabet-section]").forEach((btn) => {
     btn.addEventListener("click", () => openAlphabetSubsection(btn.dataset.alphabetSection));
   });
+  const resumeButton = el.querySelector("[data-resume-alphabet-lesson]");
+  if (resumeButton) {
+    resumeButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const index = Number(resumeButton.dataset.resumeAlphabetLesson);
+      if (Number.isInteger(index)) openLearnLesson(index, { resume: true });
+    });
+  }
+  const restartButton = el.querySelector("[data-restart-alphabet-lesson]");
+  if (restartButton) {
+    restartButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const index = Number(restartButton.dataset.restartAlphabetLesson);
+      // resume:false re-enters at the intro with a fresh question run; the
+      // learner's completed-lesson record is untouched either way.
+      if (Number.isInteger(index)) openLearnLesson(index, { resume: false });
+    });
+  }
   const completeButton = el.querySelector("[data-complete-alphabet-section]");
   if (completeButton) {
     completeButton.addEventListener("click", (event) => {
@@ -15312,16 +15350,22 @@ function openHubItem(hub, itemId) {
 }
 
 // Tapping the Learn tab: resume an in-progress lesson, else show the menu.
+// Tapping a bottom-nav tab always lands on that hub. It used to drop straight
+// back into a half-finished alphabet lesson, which made leaving the Learn tab
+// and coming back feel like a trap — there was no way to reach the hub without
+// first quitting a lesson you did not ask to reopen. Resuming is still one tap,
+// but it is now an explicit Continue button inside the Alphabet section.
 function tapLearnTab() {
   refreshProgressionState();
-  const idx = getFirstIncompletePhaseOneIndex();
-  if (state.learnInProgress && idx < phaseOneLessons.length) {
-    activeHub = "learn";
-    setNavActive("learn");
-    openLearnLesson(idx, { resume: true });
-    return;
-  }
   goHub("learn");
+}
+
+// The in-progress alphabet lesson, or null when there is nothing to resume.
+function getResumableAlphabetLesson() {
+  if (!state.learnInProgress) return null;
+  const index = getFirstIncompletePhaseOneIndex();
+  if (!(index < phaseOneLessons.length)) return null;
+  return { index, lesson: phaseOneLessons[index] };
 }
 
 // Open the next new thing to learn: an alphabet lesson while Hangul is
@@ -23673,13 +23717,13 @@ function sentenceStudioHubHtml() {
   if (!isLocked) {
     const preview = pickSentenceSessionRows(progress.band, 3)
       .map((row) => `
-        <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
+        <button class="study-row ss-audio-row" type="button" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}" aria-label="Hear ${escapeHtml(row.korean)}">
           <div>
             <div class="study-row-ko" lang="ko">${escapeHtml(row.korean)}</div>
             <div class="study-row-sub">${escapeHtml(row.english)}</div>
           </div>
-          <span class="pill muted">▶</span>
-        </div>
+          <span class="pill accent ss-audio-cue" aria-hidden="true">▶</span>
+        </button>
       `)
       .join("");
 
@@ -23784,14 +23828,17 @@ function sentenceStudioHubHtml() {
 function sentenceLessonIntroHtml(lesson) {
   const rows = getSentenceLessonRows(lesson);
   const firstRow = rows[0];
+  // A real <button>: the row plays audio, so it needs button semantics,
+  // keyboard focus, and a visible pressed state rather than a styled <div>
+  // with a decorative pill that only looks tappable.
   const examples = rows.slice(0, 6).map((row) => `
-    <div class="study-row" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}">
+    <button class="study-row ss-audio-row" type="button" data-ss-preview-speak="${escapeHtml(row.voiceText || row.korean)}" aria-label="Hear ${escapeHtml(row.korean)}">
       <div>
         <div class="study-row-ko" lang="ko">${escapeHtml(row.korean)}</div>
         <div class="study-row-sub">${escapeHtml(row.english)}</div>
       </div>
-      <span class="pill muted">Hear</span>
-    </div>
+      <span class="pill accent ss-audio-cue" aria-hidden="true">▶ Hear</span>
+    </button>
   `).join("");
   const tagTips = (lesson.patternTags || [])
     .map((tag) => PATTERN_TAG_INFO[tag])
