@@ -252,20 +252,6 @@
     return persistCanonicalState(canonical);
   }
 
-  function restoreRecoveredAlphabetProgress() {
-    const canonical = getCanonicalStateObject();
-    const recovery = canonical.migrationRecovery && canonical.migrationRecovery.phaseOneCompletedBeforeSafetyV2;
-    if (!recovery || !Array.isArray(recovery.ids) || recovery.restoredAt) return false;
-    const restored = [...new Set(recovery.ids.filter((id) => typeof id === "string" && id))];
-    canonical.phaseOneCompleted = restored;
-    recovery.restoredAt = Date.now();
-    if (typeof state !== "undefined" && state && typeof state === "object") {
-      state.phaseOneCompleted = restored;
-      state.migrationRecovery = canonical.migrationRecovery;
-    }
-    return persistCanonicalState(canonical);
-  }
-
   function getCompletedPhaseOneIds() {
     if (typeof getAlphabetProgress === "function") {
       const progress = getAlphabetProgress();
@@ -301,33 +287,6 @@
 
   function shouldOfferSkillCard() {
     return !(typeof getStudio === "function" && getStudio() !== "alphabet");
-  }
-
-  function installOnboardingGuard() {
-    if (typeof init !== "function") return false;
-    if (init.__hanapathOnboardingGuard) return true;
-    const originalInit = init;
-    const guarded = async function guardedHanaPathInit() {
-      const canonical = getCanonicalStateObject();
-      const query = new URLSearchParams(window.location.search);
-      const needsOnboarding = canonical.onboarded !== true && !query.has("onboarding");
-      if (!needsOnboarding) return originalInit.apply(this, arguments);
-
-      const originalUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      const temporary = new URL(window.location.href);
-      temporary.searchParams.set("onboarding", "1");
-      window.history.replaceState(window.history.state, "", `${temporary.pathname}${temporary.search}${temporary.hash}`);
-      try {
-        return await originalInit.apply(this, arguments);
-      } finally {
-        window.history.replaceState(window.history.state, "", originalUrl);
-      }
-    };
-    guarded.__hanapathOnboardingGuard = true;
-    guarded.__hanapathOriginalInit = originalInit;
-    init = guarded;
-    window.init = guarded;
-    return true;
   }
 
   function installQuestionHooks() {
@@ -377,11 +336,9 @@
   }
 
   migrateLegacySkillState();
-  restoreRecoveredAlphabetProgress();
   if (typeof ALPHABET_LESSON_IDS !== "undefined" && Array.isArray(ALPHABET_LESSON_IDS)) {
     Object.freeze(ALPHABET_LESSON_IDS);
   }
-  installOnboardingGuard();
   installQuestionHooks();
 
   window.HANAPATH_ALPHABET_SKILL_SRS = Object.freeze({
@@ -390,6 +347,5 @@
     readSkillState,
     recordSkillReview,
     migrateLegacySkillState,
-    restoreRecoveredAlphabetProgress,
   });
 })();

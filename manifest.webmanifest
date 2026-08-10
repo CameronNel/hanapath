@@ -5,9 +5,9 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0f1026",
-  "theme_color": "#0f1026",
-  "description": "A Korean fluency operating system. From zero to B2-level Korean.",
+  "background_color": "#202020",
+  "theme_color": "#202020",
+  "description": "Structured Korean lessons for Hangul, vocabulary, sentences, and mastery exams.",
   "icons": [
     {
       "src": "./icons/icon-192.png",

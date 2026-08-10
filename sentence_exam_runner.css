@@ -89,19 +89,19 @@
 }
 
 .sentence-exam-badge.is-mastered {
-  background: rgba(250, 204, 21, 0.13);
-  color: #facc15;
+  background: rgba(var(--accent-rgb), 0.13);
+  color: var(--accent);
 }
 
 .sentence-exam-badge.is-retention {
-  background: rgba(45, 212, 191, 0.12);
-  color: #5eead4;
+  background: rgba(var(--accent-rgb), 0.12);
+  color: var(--accent);
 }
 
 .sentence-exam-badge.is-expired,
 .sentence-exam-lock {
-  background: rgba(251, 146, 60, 0.11);
-  color: #fdba74;
+  background: color-mix(in srgb, var(--warn) 11%, transparent);
+  color: var(--warn);
 }
 
 .sentence-exam-last {
@@ -184,7 +184,7 @@
 }
 
 .sentence-exam-review-diagnostics {
-  color: #fdba74;
+  color: var(--warn);
 }
 
 .sentence-exam-disclosure {

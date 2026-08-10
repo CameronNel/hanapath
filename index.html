@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>HanaPath</title>
     <meta name="description" content="A learner-first Korean app with Learn, Exam, and Progress tabs." />
-    <meta name="theme-color" content="#0f1026" />
+    <meta name="theme-color" content="#202020" />
     <!-- Fonts are vendored locally (fonts/, SIL OFL 1.1) so the app has no runtime network dependency -->
     <link rel="stylesheet" href="./fonts/fonts.css?v=20260716a" />
     <link rel="manifest" href="./manifest.webmanifest" />
@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="HanaPath" />
-    <link rel="stylesheet" href="./styles.css?v=20260729a" />
+    <link rel="stylesheet" href="./styles.css?v=20260810c" />
     <link rel="stylesheet" href="./sentence_exam_runner.css?v=20260729b" />
     <link rel="icon" type="image/png" href="./icons/icon-192.png">
     <script defer src="./lib/hangul.js"></script>
@@ -50,17 +50,21 @@
     <!-- Core Word Examination Suite — blueprints + engine, load before app.js -->
     <script defer src="./word_exam_blueprints.js?v=20260723a"></script>
     <script defer src="./word_exam_engine.js?v=20260723a"></script>
-    <script defer src="./exam_integrity.js?v=20260721b"></script>
+    <script defer src="./exam_integrity.js?v=20260810c"></script>
     <!-- Form Checks declarative inventory (Box B1) — load before app.js -->
     <script defer src="./form_check_blueprints.js?v=20260723a"></script>
-    <script defer src="./sentence_feedback.js?v=20260727a"></script>
-    <script defer src="./app.js?v=20260729d"></script>
-    <script defer src="./sentence_exam_runner.js?v=20260729c"></script>
-    <script defer src="./alphabet_skill_srs.js?v=20260630b"></script>
+    <script defer src="./sentence_feedback.js?v=20260810c"></script>
+    <script defer src="./google_auth.js?v=20260810c"></script>
+    <!-- Browser-only GIS adapter. Native packaging removes this tag and uses Android Credential Manager. -->
+    <script defer data-browser-only src="./google_auth_web.js?v=20260810c"></script>
+    <script defer src="./app.js?v=20260810c"></script>
+    <script defer src="./sentence_exam_runner.js?v=20260810c"></script>
+    <script defer src="./alphabet_skill_srs.js?v=20260810c"></script>
   </head>
   <body>
     <div class="bg-orb orb-a" aria-hidden="true"></div>
     <div class="bg-orb orb-b" aria-hidden="true"></div>
+    <div id="testing-mode-banner" class="testing-mode-banner" role="status" hidden>Testing mode · formal exam results are Practice only</div>
     <div id="correctToast" class="correct-toast" role="status" aria-live="polite" aria-atomic="true" hidden>Correct!</div>
     <div id="retryToast" class="retry-toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
     <div id="tapHintToast" class="tap-hint-toast" role="status" aria-live="polite" aria-atomic="true" hidden>Tap any Hangul to hear it</div>

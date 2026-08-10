@@ -46,6 +46,16 @@
     return typeof location !== "undefined" && /[?&]__wetest=1\b/.test(location.search);
   }
 
+  function testingOverrideFlags() {
+    const shared = typeof window.HANAPATH_GET_TESTING_OVERRIDE_FLAGS === "function"
+      ? window.HANAPATH_GET_TESTING_OVERRIDE_FLAGS()
+      : [];
+    return Array.from(new Set([
+      ...(Array.isArray(shared) ? shared : []),
+      ...(testQueryActive() ? ["__wetest"] : []),
+    ]));
+  }
+
   function getMeta() {
     return window.HANAPATH_SENTENCE_EXAM_META || {};
   }
@@ -85,11 +95,12 @@
     if (api && typeof api.getAttemptTaintContext === "function") {
       return api.getAttemptTaintContext(state, scopeSectionIds(exam), normalizedFlags);
     }
+    const failClosedFlags = Array.from(new Set([...normalizedFlags, "integrity-api-unavailable"]));
     return {
       overrideEventIds: [],
-      overrideFlags: normalizedFlags,
-      status: normalizedFlags.length ? "practice" : "hanaPath",
-      isPractice: normalizedFlags.length > 0,
+      overrideFlags: failClosedFlags,
+      status: "practice",
+      isPractice: true,
     };
   }
 
@@ -313,7 +324,7 @@
       }
     }
     const useSeed = seed == null ? randomSeed() : String(seed);
-    const initialFlags = testQueryActive() ? ["__wetest"] : [];
+    const initialFlags = testingOverrideFlags();
     const initialTaint = taintContext(exam, initialFlags);
     const generationKey = generationKeyForMode(exam.id, mode);
     const options = mode === "retention"
@@ -786,7 +797,7 @@
     graded.unanswered = attempt.items.filter((item) => !answered(attempt, item)).length;
     const bands = core.evaluateBands(attempt.exam, graded, attempt.mode, attempt.items);
     const record = getRecord(attempt.exam.id);
-    const submitFlags = testQueryActive() ? ["__wetest"] : [];
+    const submitFlags = testingOverrideFlags();
     const submitTaint = taintContext(attempt.exam, submitFlags);
     let overrideFlags = [...new Set([...(attempt.overrideFlags || []), ...(submitTaint.overrideFlags || [])])];
     const overrideEventIds = [...new Set([...(attempt.overrideEventIds || []), ...(submitTaint.overrideEventIds || [])])];

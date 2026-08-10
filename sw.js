@@ -1,12 +1,12 @@
-// [2026-07-29] Cache refreshed for Android/PWA safe-area handling.
-const CACHE_NAME = "hanapath-shell-v456";
+// [2026-08-10] Cache refreshed for release theming, auth, state safety, and testing mode.
+const CACHE_NAME = "hanapath-shell-v460";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260729a",
+  "./styles.css?v=20260810c",
   "./sentence_exam_runner.css?v=20260729b",
   "./lib/hangul.js",
   "./lib/hangul_q_recognizer.js?v=20260715b",
@@ -19,7 +19,7 @@ const APP_SHELL = [
   "./sentences_lesson_plan.js?v=20260717u",
   "./sentence_lesson_contrast_ui.js?v=20260726a",
   "./sentence_lesson_contrasts_sections_1_4.js?v=20260726a",
-    "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b",
+  "./sentence_lesson_contrasts_sections_5_8.js?v=20260726b",
   "./sentence_exam_eligibility_shard_a.js?v=20260725a",
   "./sentence_exam_eligibility_shard_b.js?v=20260725a",
   "./sentence_exam_eligibility_shard_c.js?v=20260725a",
@@ -36,13 +36,16 @@ const APP_SHELL = [
   "./hangul_mastery_exam.js?v=20260720a",
   "./word_exam_blueprints.js?v=20260723a",
   "./word_exam_engine.js?v=20260723a",
-  "./exam_integrity.js?v=20260721b",
+  "./exam_integrity.js?v=20260810c",
   "./form_check_blueprints.js?v=20260723a",
-  "./sentence_feedback.js?v=20260727a",
-  "./app.js?v=20260729d",
-  "./sentence_exam_runner.js?v=20260729c",
-  "./alphabet_skill_srs.js?v=20260630b",
+  "./sentence_feedback.js?v=20260810c",
+  "./google_auth.js?v=20260810c",
+  "./google_auth_web.js?v=20260810c",
+  "./app.js?v=20260810c",
+  "./sentence_exam_runner.js?v=20260810c",
+  "./alphabet_skill_srs.js?v=20260810c",
   "./manifest.webmanifest",
+  "./privacy.html",
   "./korean_5000_claude_ready.csv",
   "./korean_supplementary_15k.csv",
   "./icons/icon-192.png",
@@ -252,6 +255,10 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request).catch(async () => {
         const cache = await caches.open(CACHE_NAME);
+        // Preserve real offline documents such as privacy.html. Only unknown
+        // client-side routes should fall back to the app shell.
+        const direct = await cache.match(event.request, { ignoreSearch: true });
+        if (direct) return direct;
         const cached = await cache.match("./index.html");
         return cached || Response.error();
       }),

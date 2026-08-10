@@ -5,28 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
   <title>HanaPath — Privacy Policy</title>
-  <!-- Deliberately self-contained: no scripts, no external styles or fonts,
-       not part of the PWA app shell (never referenced by index.html/sw.js),
-       and never packaged into the native app. Served from GitHub Pages at
-       https://cameronnel.github.io/hanapath/privacy.html -->
+  <!-- Deliberately self-contained: no scripts, external styles, or fonts. -->
   <style>
     :root {
       color-scheme: light dark;
-      --bg: #faf7f2;
-      --fg: #2b2b33;
-      --muted: #6b6b76;
-      --accent: #7a5cf0;
+      --bg: #f7f7f5;
+      --fg: #252523;
+      --muted: #62625e;
+      --accent: #686864;
       --card: #ffffff;
-      --border: #e5e0d8;
+      --border: #e2e2de;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #17171d;
-        --fg: #ececf1;
-        --muted: #a2a2ad;
-        --accent: #a58cff;
-        --card: #20202a;
-        --border: #34343f;
+        --bg: #1b1b1b;
+        --fg: #f1f1ee;
+        --muted: #b6b6b0;
+        --accent: #a4a4a0;
+        --card: #252525;
+        --border: #333333;
       }
     }
     * { box-sizing: border-box; }
@@ -56,28 +53,34 @@
 </head>
 <body>
   <main>
+    <p><a href="./index.html">← Back to HanaPath</a></p>
     <h1>HanaPath Privacy Policy</h1>
-    <p class="updated">Last updated: 20 July 2026 · Applies to the HanaPath
+    <p class="updated">Last updated: 10 August 2026 · Applies to the HanaPath
     website/PWA at <a href="https://cameronnel.github.io/hanapath/">cameronnel.github.io/hanapath</a>
     and the HanaPath Android app (<code>io.github.cameronnel.hanapath</code>).</p>
 
     <div class="card">
-      <p><strong>The short version:</strong> HanaPath has no accounts, ads,
-      tracking, or developer-operated server. Your lesson progress and actual
-      handwriting stay on your device. The Android app uses Google ML Kit for
-      on-device handwriting recognition and Google Play for an optional
-      purchase; those Google services process the limited technical and store
-      data described below.</p>
+      <p><strong>The short version:</strong> HanaPath has no ads, tracking, or
+      developer analytics. Your lesson progress and handwriting stay on your
+      device. The current release does not enable accounts or cloud sync. The
+      Android app uses Google ML Kit for optional on-device handwriting
+      recognition as described below.</p>
     </div>
 
     <h2>What data HanaPath collects</h2>
-    <p>HanaPath has no sign-up, no login, and no server of its own. We do not
+    <p>The current release has no enabled sign-up, login, or account server.
+    A disabled Google sign-in option may be visible while the owner completes
+    secure server and Play configuration; it sends nothing. We do not
     receive your lesson progress, typed answers, or handwriting. Google ML Kit
     may collect limited device/app information, per-installation identifiers,
     performance and feature-event diagnostics, and the configured recognition
     language. Google states that this information is encrypted in transit and
     is not shared with third parties. It does not include your handwriting
-    strokes or recognition results.</p>
+    strokes or recognition results. On the website/PWA, optional Transcript
+    practice uses your browser or device speech-recognition service; that
+    provider may process microphone audio under its own terms and returns a
+    transcript to the page. HanaPath does not upload or store that audio or
+    transcript. The Android package declares no microphone permission.</p>
 
     <h2>What stays on your device</h2>
     <ul>
@@ -99,7 +102,9 @@
       standard technical server logs (such as IP addresses) to operate the
       service; see <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's
       privacy statement</a>. HanaPath adds no analytics or tracking on top,
-      and once installed as a PWA it works offline.</li>
+      and once installed as a PWA it works offline. If you choose Transcript
+      practice, the browser may use its speech-recognition provider as
+      disclosed immediately before the action.</li>
       <li><strong>Android app:</strong> all lessons and audio are bundled and
       the free learning paths work offline. If you use native handwriting, ML
       Kit downloads a Korean recognition model (roughly 20&nbsp;MB). Recognition
@@ -107,19 +112,13 @@
       above. See Google's
       <a href="https://developers.google.com/ml-kit/android-data-disclosure">ML Kit data disclosure</a>
       and <a href="https://policies.google.com/privacy">privacy policy</a>.</li>
-      <li><strong>Optional purchase:</strong> the Android app can offer a
-      one-time, restorable Handwriting Coach unlock. Google Play processes the
-      purchase, account, and payment information under Google's policy.
-      HanaPath receives only the product and purchase state needed to unlock or
-      restore access; we do not receive payment-card details. Normal order
-      records may be visible to the developer through Play Console.</li>
     </ul>
 
     <h2>Ads, analytics, and third-party services</h2>
     <p>HanaPath contains no advertising, social, cross-app tracking, or
     developer analytics service. The Android package includes Google ML Kit
-    Digital Ink Recognition and Google Play Billing for the purposes described
-    above. If that changes, this policy and the Google Play Data Safety
+    Digital Ink Recognition for the purpose described above. If that changes,
+    this policy and the Google Play Data Safety
     declaration will be updated.</p>
 
     <h2>Children</h2>
@@ -133,10 +132,7 @@
       clearing the site's browsing data.</li>
       <li>Use the bundled free lessons offline (native app, or the PWA after
       first load).</li>
-      <li>Skip the handwriting-model download and optional Handwriting Coach;
-      free Alphabet block practice remains available.</li>
-      <li>Manage Google Play purchases and payment data through your Google
-      Play account.</li>
+      <li>Skip the handwriting-model download; all learning paths remain free.</li>
     </ul>
 
     <h2>Changes to this policy</h2>

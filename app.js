@@ -2437,6 +2437,8 @@ const conversationDialogueBank = [
 });
 
 const STORAGE_KEY = "hanapath-v1";
+const STORAGE_RECOVERY_KEY = `${STORAGE_KEY}-recovery`;
+const STORAGE_CORRUPT_KEY = `${STORAGE_KEY}-corrupt`;
 
 // Populated by rehydrate functions after each screen renders
 let els = {};
@@ -2904,7 +2906,7 @@ const ALPHABET_LESSON_IDS = phaseOneLessons.map((lesson) => lesson.id);
 // (this only bypasses the access gate, not completion tracking) — see
 // isLessonUnlocked() below and isWordLessonUnlocked() further down for the
 // two places this is consumed. Flip to true only for local testing.
-const TEST_UNLOCK_ALL_STAGES = false;
+const TEST_UNLOCK_ALL_STAGES = true;
 // Owner-enabled control: show a path button that crowns every lesson in a v2
 // section. NEVER flip this off again without the owner's explicit request.
 // The handler remains guarded so a stale button cannot mutate completion if
@@ -2913,8 +2915,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v457";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260801a";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v460";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260810c";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -2922,6 +2924,18 @@ const EXAM_INTEGRITY_ASSET_REVISION = "20260801a";
 function isWordExamTestQueryActive() {
   return typeof location !== "undefined" && /[?&]__wetest=1\b/.test(location.search);
 }
+
+function getTestingOverrideFlags() {
+  const flags = [];
+  if (TEST_UNLOCK_ALL_STAGES) flags.push("global-test-unlock");
+  if (isWordExamTestQueryActive()) flags.push("__wetest");
+  return flags;
+}
+
+// Sentence exams live in a separate plain-browser script. Expose only the
+// immutable classification helper so every formal runner records the same
+// Practice taint at both attempt creation and submission.
+window.HANAPATH_GET_TESTING_OVERRIDE_FLAGS = getTestingOverrideFlags;
 
 // Canonicalize a stored completion list: drop unknown ids, drop duplicates, and
 // collapse to the longest ordered prefix of the real lesson order.
@@ -2962,12 +2976,35 @@ function getAlphabetProgress() {
 // unknown ids). Runs at load before anything reads phaseOneCompleted.
 function migrateAlphabetProgress() {
   const before = JSON.stringify(Array.isArray(state.phaseOneCompleted) ? state.phaseOneCompleted : null);
-  let cleaned = normalizeCompletedAlphabetIds(state.phaseOneCompleted);
-  // A profile that has not finished onboarding cannot have legitimate alphabet
-  // progress, so any completion here is leftover debug/seed data — clear it.
-  if (!state.onboarded) cleaned = [];
+  let rawCompleted = Array.isArray(state.phaseOneCompleted) ? [...state.phaseOneCompleted] : [];
+  // A profile from before the safety-v2 migration can still carry an unconsumed
+  // rescue record for alphabet completion that migration truncated. Honour it
+  // exactly once, ahead of canonicalization, so rescued ids obey the same
+  // ordering rules as any other completion list. Removing this path would
+  // strand every live save that has not yet been reopened since the rescue.
+  const rescue = state.migrationRecovery?.phaseOneCompletedBeforeSafetyV2;
+  let rescueConsumed = false;
+  if (rescue && Array.isArray(rescue.ids) && !rescue.restoredAt) {
+    const rescuedIds = rescue.ids.filter((id) => typeof id === "string" && id);
+    if (rescuedIds.length) rawCompleted = [...new Set([...rawCompleted, ...rescuedIds])];
+    rescue.restoredAt = Date.now();
+    rescueConsumed = true;
+  }
+  const cleaned = normalizeCompletedAlphabetIds(rawCompleted);
+  // Keep non-prefix legacy evidence available for recovery without putting it
+  // back into the canonical completion field used by progression gates.
+  if (JSON.stringify(rawCompleted) !== JSON.stringify(cleaned) && rawCompleted.length) {
+    state.migrationRecovery = {
+      ...(state.migrationRecovery && typeof state.migrationRecovery === "object" ? state.migrationRecovery : {}),
+      alphabetPhaseOneEvidence: rawCompleted,
+    };
+  }
+  // Old profiles may predate the onboarding flag while containing genuine
+  // Alphabet, Words, Sentence, or exam history. Never erase that evidence or
+  // send the learner through onboarding again.
+  if (!state.onboarded && hasMeaningfulLearnerProgress(state)) state.onboarded = true;
   state.phaseOneCompleted = cleaned;
-  if (JSON.stringify(cleaned) !== before) saveState();
+  if (rescueConsumed || JSON.stringify(cleaned) !== before) saveState();
 }
 
 const state = loadState();
@@ -3025,6 +3062,125 @@ migrateAlphabetProgress();
 // consts declared further down this file, so it can't run at load time here.
 
 // (quick-nav removed in HanaPath)
+
+function isPlainRecord(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function objectHasEntries(value) {
+  return isPlainRecord(value) && Object.keys(value).length > 0;
+}
+
+function hasMeaningfulSentenceExamProgress(value) {
+  if (!isPlainRecord(value)) return false;
+  const records = isPlainRecord(value.byExamId) ? Object.values(value.byExamId) : [];
+  if (records.some((record) => isPlainRecord(record) && (
+    Number(record.attempts) > 0
+    || Number(record.lastAttemptAt) > 0
+    || Boolean(record.lastResultAttemptId || record.qualifyingAttemptId || record.retentionAttemptId)
+    || isPlainRecord(record.lastResult)
+  ))) return true;
+  return isPlainRecord(value.generationHistory)
+    && Object.values(value.generationHistory).some((entries) => Array.isArray(entries) && entries.length > 0);
+}
+
+function hasMeaningfulLearnerProgress(profile) {
+  if (!isPlainRecord(profile)) return false;
+  const populatedArrays = [
+    profile.phaseOneCompleted,
+    profile.todayDone,
+    profile.vocabKnownRanks,
+    profile.vocabHardRanks,
+    profile.vocabLessonCompleted,
+    profile.vocabReviewEvents,
+    profile.hangulWritingHistory,
+  ];
+  if (populatedArrays.some((items) => Array.isArray(items) && items.length > 0)) return true;
+  if ([profile.alphabetWeakSpots, profile.vocabSrs, profile.letterSrs].some(objectHasEntries)) return true;
+  if (objectHasEntries(profile.sentencesProgress?.results) || Number(profile.sentencesProgress?.sessionsDone) > 0) return true;
+  if (objectHasEntries(profile.examResults?.byAttemptId) || Array.isArray(profile.examIntegrity?.resultRelations) && profile.examIntegrity.resultRelations.length > 0) return true;
+  if (Number(profile.alphabetMasteryExam?.attempts) > 0) return true;
+  if (isPlainRecord(profile.wordExams) && Object.values(profile.wordExams).some((record) => Number(record?.attempts) > 0)) return true;
+  // The Sentence runner eagerly installs an empty, versioned scaffold before
+  // init(). Only real attempts/generations are learner evidence; treating the
+  // scaffold itself as progress silently skipped onboarding on fresh installs.
+  if (hasMeaningfulSentenceExamProgress(profile.sentenceExams)) return true;
+  return [profile.asked, profile.correct, profile.totalMinutes, profile.studyDays, profile.round]
+    .some((value, index) => Number(value) > (index === 4 ? 1 : 0));
+}
+
+function hasRecognizableStateShape(profile) {
+  if (!isPlainRecord(profile)) return false;
+  const owns = (key) => Object.prototype.hasOwnProperty.call(profile, key);
+  const objectKeys = [
+    "route", "skills", "recentQuestionKeys", "tabLevels", "alphabetWeakSpots",
+    "vocabSrs", "letterSrs", "sentencesProgress", "sentenceExams", "examResults",
+    "examIntegrity", "migrationRecovery",
+  ];
+  const nullableObjectKeys = ["wordExams", "vocabLessonSession", "sentenceLessonSession", "wordQuickRefReturn"];
+  const arrayKeys = [
+    "phaseOneCompleted", "todayDone", "vocabKnownRanks", "vocabHardRanks",
+    "vocabReviewEvents", "vocabLessonCompleted", "hangulWritingHistory",
+  ];
+  const stringKeys = [
+    "goal", "speakingAnxiety", "level", "navTab", "mainTab", "alphabetView",
+    "alphabetBoardMode", "alphabetBoardLabels", "studio", "todayDate", "lastDate",
+    "libTab", "vocabQuery", "vocabBand", "vocabView", "wordPathCategory",
+    "wordPathLevel", "wordBankQuery", "wordBankFilter", "wordBankSort",
+    "appearance", "theme",
+  ];
+  const nullableStringKeys = ["vocabLessonActive"];
+  const finiteNumberKeys = [
+    "weeklyHours", "activeCorrectSound", "activeIncorrectSound", "soundEffectPresetVersion",
+    "round", "asked", "correct", "streak", "bestStreak", "phaseOneActive",
+    "totalMinutes", "studyDays", "vocabPage", "vocabActiveRank", "vocabDailyNewTarget",
+    "wordBankPage", "wordBankPageSize", "writingLineWidth",
+  ];
+  const nullableNumberKeys = ["pendingPathLesson"];
+  const booleanKeys = [
+    "onboarded", "knowsHangul", "learnInProgress", "quickRefActive", "drillLabSeen",
+    "wordQuickRefActive", "speakDone", "resetArmed", "useMLKit", "reduceMotion",
+  ];
+
+  // A parseable payload is not necessarily a usable profile. Reject the whole
+  // live value when any known field has an impossible type so recovery remains
+  // authoritative instead of being overwritten by normalized corruption.
+  if (objectKeys.some((key) => owns(key) && !isPlainRecord(profile[key]))) return false;
+  if (nullableObjectKeys.some((key) => owns(key) && profile[key] !== null && !isPlainRecord(profile[key]))) return false;
+  if (arrayKeys.some((key) => owns(key) && !Array.isArray(profile[key]))) return false;
+  if (stringKeys.some((key) => owns(key) && typeof profile[key] !== "string")) return false;
+  if (nullableStringKeys.some((key) => owns(key) && profile[key] !== null && typeof profile[key] !== "string")) return false;
+  if (finiteNumberKeys.some((key) => owns(key) && !Number.isFinite(profile[key]))) return false;
+  if (nullableNumberKeys.some((key) => owns(key) && profile[key] !== null && !Number.isFinite(profile[key]))) return false;
+  if (booleanKeys.some((key) => owns(key) && typeof profile[key] !== "boolean")) return false;
+
+  const structuredCount = [...objectKeys, ...nullableObjectKeys, ...arrayKeys].filter(owns).length;
+  if (structuredCount > 0) return true;
+  const scalarKeys = [...booleanKeys, ...stringKeys, ...nullableStringKeys, ...finiteNumberKeys, ...nullableNumberKeys];
+  return scalarKeys.filter(owns).length >= 2;
+}
+
+function parseRecognizableState(raw) {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    return hasRecognizableStateShape(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function mergeStateDefaults(defaults, parsed) {
+  return {
+    ...defaults,
+    ...parsed,
+    route: { ...defaults.route, ...(isPlainRecord(parsed.route) ? parsed.route : {}) },
+    skills: { ...defaults.skills, ...(isPlainRecord(parsed.skills) ? parsed.skills : {}) },
+    recentQuestionKeys: { ...defaults.recentQuestionKeys, ...(isPlainRecord(parsed.recentQuestionKeys) ? parsed.recentQuestionKeys : {}) },
+    tabLevels: { ...defaults.tabLevels, ...(isPlainRecord(parsed.tabLevels) ? parsed.tabLevels : {}) },
+    sentencesProgress: { ...defaults.sentencesProgress, ...(isPlainRecord(parsed.sentencesProgress) ? parsed.sentencesProgress : {}) },
+  };
+}
 
 function loadState() {
   const defaults = {
@@ -3101,8 +3257,10 @@ function loadState() {
     sentenceLessonSession: null,
     speakDone: false,
     resetArmed: false,
-    // Settings → Theme colors: accent palette id, see THEME_DEFS.
-    theme: "ocean",
+    // Appearance and accent are independent: every accent works in both light
+    // and dark mode. Graphite is the neutral default for new and legacy saves.
+    appearance: "system",
+    theme: "graphite",
     // Free-drawing preferences. Grading uses stroke centre-lines, so visible
     // ink width never changes recognition accuracy.
     writingLineWidth: 14,
@@ -3117,8 +3275,14 @@ function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaults;
-    const parsed = JSON.parse(raw);
-    return { ...defaults, ...parsed, skills: { ...defaults.skills, ...(parsed.skills || {}) } };
+    const parsed = parseRecognizableState(raw);
+    if (parsed) return mergeStateDefaults(defaults, parsed);
+
+    // Preserve the unreadable payload for support/recovery. A quota failure
+    // here must never delete or overwrite the live key.
+    try { localStorage.setItem(STORAGE_CORRUPT_KEY, raw); } catch {}
+    const recovered = parseRecognizableState(localStorage.getItem(STORAGE_RECOVERY_KEY));
+    return recovered ? mergeStateDefaults(defaults, recovered) : defaults;
   } catch {
     return defaults;
   }
@@ -3127,8 +3291,25 @@ function loadState() {
 function saveState() {
   try {
     const serialized = JSON.stringify(state);
+    const previous = localStorage.getItem(STORAGE_KEY);
+    const previousIsValid = Boolean(parseRecognizableState(previous));
+
+    // A verified copy of the last valid profile is written before the live
+    // key. If storage cannot hold the copy, leave the live profile untouched.
+    if (previousIsValid && previous !== serialized) {
+      localStorage.setItem(STORAGE_RECOVERY_KEY, previous);
+      if (localStorage.getItem(STORAGE_RECOVERY_KEY) !== previous) return false;
+    }
+
     localStorage.setItem(STORAGE_KEY, serialized);
-    return localStorage.getItem(STORAGE_KEY) === serialized;
+    if (localStorage.getItem(STORAGE_KEY) === serialized) return true;
+
+    // Storage implementations may fail without throwing. Restore the previous
+    // valid value where possible; never remove a live key on an ambiguous fail.
+    if (previousIsValid) {
+      try { localStorage.setItem(STORAGE_KEY, previous); } catch {}
+    }
+    return false;
   } catch {
     // Most app flows remain usable without persistence. Integrity-sensitive
     // controls explicitly inspect this boolean and refuse to mutate progress.
@@ -4149,7 +4330,7 @@ function buildVocabMetricsView() {
             <div class="study-row-sub">7d ${summary.retention1w.samples ? formatVocabRatio(summary.retention1w.pct) : "collecting"} · 30d ${summary.retention1m.samples ? formatVocabRatio(summary.retention1m.pct) : "collecting"} · last ${formatVocabRelativeTime(summary.lastAt)}</div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <span class="pill ${masteryClass}">${summary.mastery}% mastery</span>
+            <span class="pill ${masteryClass}">${summary.mastery}% practice score</span>
             ${hearIconButton(word.voiceText || word.korean, "data-speak")}
           </div>
         </div>
@@ -4176,7 +4357,7 @@ function buildVocabMetricsView() {
         <div ${rowAttrs}>
           <div>
             <div class="study-row-ko" lang="ko">${escapeHtml(word?.display || word?.korean || event.wordId)}</div>
-            <div class="study-row-sub">${escapeHtml(label)} · ${escapeHtml(event.direction)} · ${formatVocabLatencyMs(event.latencyMs)} · conf ${formatVocabRatio(event.confidence)} · ${escapeHtml(event.errorType || "none")}</div>
+            <div class="study-row-sub">${escapeHtml(label)} · ${escapeHtml(event.direction)} · ${formatVocabLatencyMs(event.latencyMs)} · ease estimate ${formatVocabRatio(event.confidence)} · ${escapeHtml(event.errorType || "none")}</div>
             <div class="study-row-sub">${escapeHtml(event.source)} · ${formatVocabRelativeTime(event.at)}</div>
           </div>
           <span class="pill ${masteryClass}">${formatVocabRatio(event.confidence)}</span>
@@ -4194,9 +4375,9 @@ function buildVocabMetricsView() {
 
   return `
     <div class="card">
-      <div class="eyebrow">Assessment & analytics</div>
+      <div class="eyebrow">Practice history & estimates</div>
       <h2 class="screen-title" style="margin-bottom:8px;">Word insights</h2>
-      <div class="screen-sub" style="margin-bottom:12px;">Review events persist per item, and the dashboard tracks mastery, latency, and retention windows.</div>
+      <div class="screen-sub" style="margin-bottom:12px;">Review events persist per item. Practice scores, ease estimates, and delayed-recall proxies are uncalibrated study aids, not proficiency or retention measurements.</div>
       <div class="flex-between" style="gap:12px; flex-wrap:wrap;">
         <span class="pill accent">${stats.totalEvents} events</span>
         <span class="pill muted">${stats.reviewedWords} words tracked</span>
@@ -4210,14 +4391,14 @@ function buildVocabMetricsView() {
     <div class="stats-grid">
       <div class="stat-box"><span class="sv">${stats.correctPct}%</span><span class="sl">Accuracy</span></div>
       <div class="stat-box"><span class="sv">${stats.avgLatencyLabel}</span><span class="sl">Avg latency</span></div>
-      <div class="stat-box"><span class="sv">${stats.masteryAvg}%</span><span class="sl">Mastery</span></div>
-      <div class="stat-box"><span class="sv">${stats.masteredWords}</span><span class="sl">Mastered words</span></div>
+      <div class="stat-box"><span class="sv">${stats.masteryAvg}%</span><span class="sl">Practice score</span></div>
+      <div class="stat-box"><span class="sv">${stats.masteredWords}</span><span class="sl">High practice scores</span></div>
     </div>
 
     <div class="stats-grid">
-      <div class="stat-box"><span class="sv">${retention1wLabel}</span><span class="sl">1-week retention</span></div>
-      <div class="stat-box"><span class="sv">${retention1mLabel}</span><span class="sl">1-month retention</span></div>
-      <div class="stat-box"><span class="sv">${stats.avgConfidencePct}%</span><span class="sl">Confidence</span></div>
+      <div class="stat-box"><span class="sv">${retention1wLabel}</span><span class="sl">7-day recall proxy</span></div>
+      <div class="stat-box"><span class="sv">${retention1mLabel}</span><span class="sl">30-day recall proxy</span></div>
+      <div class="stat-box"><span class="sv">${stats.avgConfidencePct}%</span><span class="sl">Speed-based ease estimate</span></div>
       <div class="stat-box"><span class="sv">${stats.reviewedWords}</span><span class="sl">Tracked words</span></div>
     </div>
 
@@ -4242,12 +4423,12 @@ function buildVocabMetricsView() {
       <div class="flex-between mb-12">
         <div>
           <div class="eyebrow">Weak spots</div>
-          <div class="screen-sub" style="margin-bottom:0;">Lowest mastery items bubble to the top.</div>
+          <div class="screen-sub" style="margin-bottom:0;">Lowest heuristic practice scores bubble to the top.</div>
         </div>
         <span class="pill muted">${stats.weakWords.length} shown</span>
       </div>
       <div class="study-list">${weakRows}</div>
-      <div class="screen-sub fs-xs" style="margin-top:8px;">1-week sample: ${stats.retention1w.samples} · 1-month sample: ${stats.retention1m.samples}</div>
+      <div class="screen-sub fs-xs" style="margin-top:8px;">7-day proxy sample: ${stats.retention1w.samples} · 30-day proxy sample: ${stats.retention1m.samples}</div>
     </div>
 
     <div class="card">
@@ -4739,7 +4920,9 @@ function completeAlphabetSectionForTesting(options = {}) {
   return { ok: true, taintEventId: event.taintEventId };
 }
 function isWordUnitUnlocked(unit) {
-  if (!unit || !isWordSectionUnlocked(getWordSectionById(unit.sectionId))) return false;
+  if (!unit) return false;
+  if (TEST_UNLOCK_ALL_STAGES) return true;
+  if (!isWordSectionUnlocked(getWordSectionById(unit.sectionId))) return false;
   return !unit.prerequisiteUnitId || isWordUnitCrowned(getWordUnitById(unit.prerequisiteUnitId));
 }
 function getLegacyCompletedWordIds(legacyLessonIds) {
@@ -5745,6 +5928,7 @@ function isWordLessonCompleted(lessonId) {
 
 function isWordLessonUnlocked(lesson) {
   if (!lesson) return false;
+  if (TEST_UNLOCK_ALL_STAGES) return true;
   if (isWordCurriculumV2()) {
     const unit = getWordUnitById(lesson.unitId);
     if (!isWordUnitUnlocked(unit)) return false;
@@ -5753,7 +5937,6 @@ function isWordLessonUnlocked(lesson) {
     const index = contentLessons.findIndex((contentLesson) => contentLesson.id === lesson.id);
     return index <= 0 || isWordLessonCompleted(contentLessons[index - 1].id);
   }
-  if (TEST_UNLOCK_ALL_STAGES) return true; // see TEST_UNLOCK_ALL_STAGES above — must come before the alphabet-complete gate, not after
   if (lesson.unlock?.requiresAlphabetComplete && !getAlphabetProgress().complete) return false;
   const prev = lesson.unlock?.previousLessonId;
   return !prev || isWordLessonCompleted(prev);
@@ -7285,7 +7468,7 @@ function wordAttemptTrailHtml(row) {
         vocabAttemptDirectionLabel(event.direction),
         vocabAttemptSourceLabel(event),
         formatVocabLatencyMs(event.latencyMs),
-        `conf ${formatVocabRatio(event.confidence)}`,
+        `ease estimate ${formatVocabRatio(event.confidence)}`,
       ].filter(Boolean).join(" / ");
       return `
         <div class="word-attempt-row">
@@ -7430,8 +7613,9 @@ function wordBankDetailHtml(row) {
       </div>
 
       <div class="speaking-practice-area" data-speaking-target="${escapeHtml(word.voiceText || word.korean)}" data-speaking-label="${escapeHtml(word.display || word.korean)}" style="margin:12px 0; padding:12px; border:1px dashed var(--accent-text); border-radius:6px; background:rgba(128,128,128,0.05); text-align:center;">
+        <div class="speech-practice-disclosure" style="margin-bottom:8px; font-size:0.76rem; color:var(--text-muted-2);">${escapeHtml(SPEECH_PRACTICE_DISCLOSURE)}</div>
         <button class="button secondary compact" type="button" onclick="handleSpeakingPractice(this)">
-          🎤 Practice Speaking (Beta)
+          Transcript practice (Beta)
         </button>
         <div class="speaking-feedback" style="margin-top:8px; display:none; font-size:0.85rem;">
           <div class="speaking-wave" style="display:flex; justify-content:center; gap:4px; margin:8px 0;">
@@ -7785,7 +7969,7 @@ function alphabetStagesSectionHtml() {
     : "";
   return `
     <button class="hub-tile alphabet-step-tile" type="button" data-alphabet-section="stages">
-      <span class="hub-tile-icon">📖</span>
+      <span class="hub-tile-icon">${hubIconSvg("vocabulary")}</span>
       <span class="hub-tile-text">
         <span class="hub-tile-eyebrow">Step 1</span>
         <strong>Learning lessons</strong>
@@ -12657,7 +12841,7 @@ function generateConversationReplyQuestion() {
     mode: "Conversation studio",
     prompt: item.cue,
     detail: "Pick the phrase you would say out loud.",
-    visual: `<div class="big-glyph">💬</div>`,
+    visual: `<div class="big-glyph">${hubIconSvg("sentences")}</div>`,
     options,
     answer: item.answer,
     explanation: item.explanation,
@@ -13855,18 +14039,18 @@ const HUB_DEFS = {
     label: "Learn",
     eyebrow: "Study & practice",
     title: "What do you want to work on?",
-    sub: "Study a skill, then drill it — lessons on top, practice below.",
+    sub: "Choose one path. Practice tools live inside each subject.",
     items: [
-      { id: "alphabet",   icon: "가", title: "Alphabet (Hangul)", sub: "Learn to read, one stage at a time.", custom: "alphabetLesson" },
-      { id: "vocabulary", icon: "📚", title: "Vocabulary",         sub: "Today's words and the full word list.", target: "library" },
-      { id: "sentences",  icon: "💬", title: "Sentences",          sub: "Read and build real sentences.", target: "practice" },
-      { id: "listening",  icon: "🎧", title: "Listening",          sub: "Hear sentences and follow along.", target: "listening" },
-      { id: "alphabet-practice", icon: "🎯", title: "Alphabet practice", sub: "Review letters, take a quiz, or train pronunciation.", custom: "alphabetPracticeHub", drill: true },
-      { id: "vocabulary-quiz",   icon: "🎯", title: "Vocabulary quiz",   sub: "Test the words you've learned.", target: "library", view: "test", drill: true },
-      { id: "sentence-studio",   icon: "🎯", title: "Sentence Studio",   sub: "Review due lines or choose a sentence drill.", target: "practice", drill: true },
-      { id: "listening-quiz",    icon: "🎯", title: "Listening quiz",    sub: "Choose or type what you heard.", target: "listening", drill: true },
-      { id: "writing",           icon: "✍", title: "Writing practice",  sub: "Draw Hangul from the alphabet, your words, or your sentences.", custom: "writingHub", drill: true },
-      { id: "form-checks",       icon: "🔎", title: "Form Checks",       sub: "Short blocked practice with instant correction.", custom: "formChecksHub", drill: true },
+      { id: "alphabet",   icon: "alphabet", title: "Alphabet",   sub: "Learn Hangul, write it, and drill it." },
+      { id: "vocabulary", icon: "vocabulary", title: "Vocabulary", sub: "Lessons, reviews, dictionary, and quizzes.", target: "library" },
+      { id: "sentences",  icon: "sentences", title: "Sentences",  sub: "Lessons, listening, form checks, and practice.", target: "practice" },
+      { id: "listening",  icon: "listening", title: "Listening", sub: "Hear sentences and follow along.", target: "listening", showInHub: false },
+      { id: "alphabet-practice", icon: "practice", title: "Alphabet practice", sub: "Review letters, take a quiz, or train pronunciation.", custom: "alphabetPracticeHub", drill: true, showInHub: false },
+      { id: "vocabulary-quiz", icon: "practice", title: "Vocabulary quiz", sub: "Test the words you've learned.", target: "library", view: "test", drill: true, showInHub: false },
+      { id: "sentence-studio", icon: "practice", title: "Sentence practice", sub: "Review due lines or choose a sentence drill.", target: "practice", drill: true, showInHub: false },
+      { id: "listening-quiz", icon: "listening", title: "Listening quiz", sub: "Choose or type what you heard.", target: "listening", drill: true, showInHub: false },
+      { id: "writing", icon: "writing", title: "Writing practice", sub: "Draw Hangul from the alphabet, your words, or your sentences.", custom: "writingHub", drill: true, showInHub: false },
+      { id: "form-checks", icon: "checks", title: "Form Checks", sub: "Short blocked practice with instant correction.", custom: "formChecksHub", drill: true, showInHub: false },
     ],
   },
   exam: {
@@ -13875,8 +14059,8 @@ const HUB_DEFS = {
     title: "Prove your mastery",
     sub: "Formal exams — no hints, no reference, results only after final submission.",
     items: [
-      { id: "alphabet", icon: "📝", title: "Alphabet · Hangul Mastery Exam", sub: "200 items across seven parts. Only 200/200 earns Hangul mastered.", custom: "alphabetExamHub" },
-      { id: "corewords", icon: "📚", title: "Core Words · Examination Suite", sub: "Ten achievement exams: eight section exams, a midterm, and a cumulative final with delayed mastery confirmation.", custom: "wordExamHub" },
+      { id: "alphabet", icon: "exam", title: "Alphabet · Hangul Mastery Exam", sub: "200 items across seven parts. Only 200/200 earns Hangul mastered.", custom: "alphabetExamHub" },
+      { id: "corewords", icon: "vocabulary", title: "Core Words · Examination Suite", sub: "Ten achievement exams: eight section exams, a midterm, and a cumulative final with delayed mastery confirmation.", custom: "wordExamHub" },
     ],
   },
   progress: {
@@ -13885,25 +14069,66 @@ const HUB_DEFS = {
     title: "Track your progress",
     sub: "See the roadmap and your stats.",
     items: [
-      { id: "path",  icon: "🗺", title: "Path (K0 → K5)", sub: "The full roadmap and lessons.", target: "path" },
-      { id: "stats", icon: "📊", title: "Stats & streak", sub: "Accuracy, streak, and milestones.", target: "progress" },
+      { id: "path", icon: "path", title: "Path (K0 → K5)", sub: "The full roadmap and lessons.", target: "path" },
+      { id: "stats", icon: "stats", title: "Stats & streak", sub: "Accuracy, streak, and milestones.", target: "progress" },
     ],
   },
 };
 
-// Settings → Theme colors. `swatch` paints the picker dot; the real palette
-// lives in styles.css as a matching `:root[data-theme="<id>"]` block
-// ("ocean" is the default palette, so it has no override block).
+const HUB_ICON_PATHS = {
+  alphabet: '<path d="M6 5h12M9 5v5a3 3 0 0 1-3 3M15 5v8M5 18h14M9 14v4M15 14v4"/>',
+  vocabulary: '<path d="M5 4.5h6.5A2.5 2.5 0 0 1 14 7v13H7a2 2 0 0 1-2-2V4.5Zm14 0h-5M19 4.5V18a2 2 0 0 0-2-2h-3"/>',
+  sentences: '<path d="M5 5h14v10H9l-4 4V5Z"/><path d="M8 9h8M8 12h5"/>',
+  listening: '<path d="M4 13v-2a8 8 0 0 1 16 0v2M4 13h3v6H5a1 1 0 0 1-1-1v-5Zm16 0h-3v6h2a1 1 0 0 0 1-1v-5Z"/>',
+  practice: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3"/>',
+  writing: '<path d="m5 19 3.5-.7L19 7.8 16.2 5 5.7 15.5 5 19Z"/><path d="m14.8 6.4 2.8 2.8"/>',
+  checks: '<path d="M4 5h16v14H4z"/><path d="m8 12 2.2 2.2L16 8.5"/>',
+  exam: '<path d="M8 4h8v3H8zM6 6H5v15h14V6h-1"/><path d="M8 12h8M8 16h5"/>',
+  path: '<path d="M5 19c0-4 5-3 5-7s5-3 5-7"/><circle cx="5" cy="19" r="2"/><circle cx="15" cy="5" r="2"/><path d="M17 5h3"/>',
+  stats: '<path d="M5 19V11h3v8M11 19V5h3v14M17 19v-5h3v5M3 19h19"/>',
+  lock: '<path d="M6 10h12v10H6zM9 10V7a3 3 0 0 1 6 0v3"/>',
+};
+
+function hubIconSvg(icon) {
+  const paths = HUB_ICON_PATHS[icon] || HUB_ICON_PATHS.practice;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+}
+
+// Appearance controls the surface; accents remain usable in either mode.
 const THEME_DEFS = [
-  { id: "ocean",  name: "Ocean Blue",  swatch: "#5b9dff" },
-  { id: "sakura", name: "Sakura Pink", swatch: "#f472b6" },
-  { id: "mint",   name: "Mint Green",  swatch: "#34d399" },
-  { id: "sunset", name: "Sunset",      swatch: "#fb923c" },
-  { id: "violet", name: "Violet",      swatch: "#a78bfa" },
-  { id: "rose",   name: "Rose",        swatch: "#fb7185" },
-  { id: "gold",   name: "Gold",        swatch: "#fbbf24" },
-  { id: "cyan",   name: "Cyan",        swatch: "#22d3ee" },
+  { id: "graphite", name: "Graphite", swatch: "#8f8f8f" },
+  { id: "sage", name: "Sage", swatch: "#7d9686" },
+  { id: "clay", name: "Clay", swatch: "#a47f68" },
+  { id: "plum", name: "Plum", swatch: "#967f91" },
 ];
+
+const LEGACY_THEME_MIGRATION = {
+  ocean: "graphite", cyan: "graphite",
+  mint: "sage",
+  sunset: "clay", gold: "clay",
+  sakura: "plum", violet: "plum", rose: "plum",
+};
+
+function normalizeThemeId(value) {
+  const migrated = LEGACY_THEME_MIGRATION[value] || value;
+  return THEME_DEFS.some((theme) => theme.id === migrated) ? migrated : "graphite";
+}
+
+function normalizeAppearance(value) {
+  return ["system", "light", "dark"].includes(value) ? value : "system";
+}
+
+function getThemeAccentColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#8f8f8f";
+}
+
+// Canvas cannot read CSS variables, so stroke/badge colors resolve the same
+// `--*-rgb` channels the stylesheet uses. Keeps guides on-theme in both modes.
+const THEME_RGB_FALLBACKS = { "accent-rgb": "164, 164, 160", "good-rgb": "142, 165, 145", "bad-rgb": "217, 141, 137", "warn-rgb": "200, 170, 116" };
+function getThemeRgba(channel, alpha) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(`--${channel}`).trim();
+  return `rgba(${value || THEME_RGB_FALLBACKS[channel] || "164, 164, 160"}, ${alpha})`;
+}
 
 const SETTINGS_ICON_SVG = `
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -13918,14 +14143,31 @@ function setSettingsShortcutVisible(visible) {
   button.setAttribute("aria-hidden", visible ? "false" : "true");
 }
 
+let appearanceMediaQuery = null;
+
 function applyTheme() {
-  const themeId = THEME_DEFS.some((t) => t.id === state.theme) ? state.theme : "ocean";
-  if (themeId === "ocean") {
-    delete document.documentElement.dataset.theme;
-  } else {
-    document.documentElement.dataset.theme = themeId;
+  const themeId = normalizeThemeId(state.theme);
+  const appearance = normalizeAppearance(state.appearance);
+  if (!appearanceMediaQuery && window.matchMedia) {
+    appearanceMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    appearanceMediaQuery.addEventListener?.("change", () => {
+      if (normalizeAppearance(state.appearance) === "system") applyTheme();
+    });
   }
+  const colorMode = appearance === "system"
+    ? (appearanceMediaQuery?.matches === false ? "light" : "dark")
+    : appearance;
+  state.theme = themeId;
+  state.appearance = appearance;
+  document.documentElement.dataset.theme = themeId;
+  document.documentElement.dataset.colorMode = colorMode;
+  document.documentElement.style.colorScheme = colorMode;
   document.documentElement.classList.toggle("app-reduced-motion", Boolean(state.reduceMotion));
+  document.documentElement.classList.toggle("testing-mode-enabled", TEST_UNLOCK_ALL_STAGES);
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.setAttribute("content", colorMode === "dark" ? "#202020" : "#f7f7f5");
+  const testingBanner = document.getElementById("testing-mode-banner");
+  if (testingBanner) testingBanner.hidden = !TEST_UNLOCK_ALL_STAGES;
 }
 
 // Legacy nav names (used by in-screen buttons) → {hub, item}.
@@ -13993,7 +14235,7 @@ let screenExitNode = null;
 const lessonMotionFrames = new Map();
 
 function motionIsReduced() {
-  return Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+  return Boolean(state.reduceMotion || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 }
 
 function queueScreenMotion(kind = "forward", direction = 1, { replace = true } = {}) {
@@ -14061,7 +14303,7 @@ function beginScreenExit(screen, motion) {
   screen.classList.add("screen-motion-exit", `screen-motion-exit-${motion.kind}`);
   if (motion.direction < 0) screen.classList.add("motion-reverse");
   screenExitNode = screen;
-  screenExitTimer = window.setTimeout(finishScreenExit, 420);
+  screenExitTimer = window.setTimeout(finishScreenExit, 240);
 }
 
 function playScreenEntrance(screen, motion) {
@@ -14073,7 +14315,7 @@ function playScreenEntrance(screen, motion) {
   if (motion.direction < 0) screen.classList.add("motion-reverse");
   window.setTimeout(() => {
     SCREEN_MOTION_CLASSES.forEach((className) => screen.classList.remove(className));
-  }, 720);
+  }, 380);
 }
 
 function resetLessonMotion(channel) {
@@ -14449,9 +14691,9 @@ function renderHubMenu(hub) {
       <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(def.sub)}</div>
     </div>
     <div class="hub-tiles">
-      ${def.items.map((item) => `
+      ${def.items.filter((item) => item.showInHub !== false).map((item) => `
         <button class="hub-tile" type="button" data-hub-item="${escapeHtml(item.id)}">
-          <span class="hub-tile-icon">${item.icon}</span>
+          <span class="hub-tile-icon">${hubIconSvg(item.icon)}</span>
           <span class="hub-tile-text">
             <strong>${escapeHtml(item.title)}</strong>
             <small>${escapeHtml(item.sub)}</small>
@@ -14479,7 +14721,8 @@ function renderSettingsScreen(hub = activeHub) {
   if (!el) return;
   showDetailBar(hub, "Settings");
 
-  const activeTheme = THEME_DEFS.some((t) => t.id === state.theme) ? state.theme : "ocean";
+  const activeTheme = normalizeThemeId(state.theme);
+  const activeAppearance = normalizeAppearance(state.appearance);
   const writingLineWidth = Math.max(6, Math.min(28, Number(state.writingLineWidth) || 14));
   el.innerHTML = `
     <div class="hub-header">
@@ -14488,8 +14731,18 @@ function renderSettingsScreen(hub = activeHub) {
       <div class="screen-sub" style="margin-bottom:0;">Make HanaPath feel like yours.</div>
     </div>
     <div class="settings-section">
-      <h3 class="settings-section-title">Theme colors</h3>
-      <p class="settings-section-sub">Pick an accent color for buttons, glows, and highlights. Applies instantly.</p>
+      <h3 class="settings-section-title">Appearance</h3>
+      <p class="settings-section-sub">Use your device setting, light surfaces, or dark grey surfaces.</p>
+      <div class="appearance-picker" role="group" aria-label="Appearance">
+        ${["system", "light", "dark"].map((mode) => `
+          <button class="appearance-option ${mode === activeAppearance ? "active" : ""}" type="button"
+            data-appearance-pick="${mode}" aria-pressed="${mode === activeAppearance}">${mode[0].toUpperCase()}${mode.slice(1)}</button>
+        `).join("")}
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3 class="settings-section-title">Accent</h3>
+      <p class="settings-section-sub">Choose a restrained accent. It applies consistently in light and dark mode.</p>
       <div class="theme-grid">
         ${THEME_DEFS.map((theme) => `
           <button class="theme-swatch ${theme.id === activeTheme ? "active" : ""}" type="button"
@@ -14520,6 +14773,11 @@ function renderSettingsScreen(hub = activeHub) {
       <button class="settings-toggle ${state.reduceMotion ? "active" : ""}" type="button" id="reduceMotionToggle" role="switch" aria-label="Use reduced motion" aria-checked="${state.reduceMotion ? "true" : "false"}"><span></span></button>
     </div>
     <div class="settings-section">
+      <h3 class="settings-section-title">Account</h3>
+      <p class="settings-section-sub">Google sign-in is optional. It does not sync or replace your device-local progress backup.</p>
+      <div id="googleAuthSettings" class="google-auth-panel"></div>
+    </div>
+    <div class="settings-section">
       <h3 class="settings-section-title">Progress backup</h3>
       <p class="settings-section-sub">Progress lives on this device. Export a backup file to keep it safe or to move it — for example between the browser and the installed app, which store progress separately.</p>
       <div class="settings-backup-actions">
@@ -14529,7 +14787,30 @@ function renderSettingsScreen(hub = activeHub) {
       </div>
       <p class="settings-section-sub" id="backupStatusLine" role="status" aria-live="polite" style="margin-top:10px; margin-bottom:0;"></p>
     </div>
+    <div class="settings-section">
+      <h3 class="settings-section-title">About &amp; support</h3>
+      <p class="settings-section-sub">Read the policy inside the app, including while offline.</p>
+      <div class="settings-backup-actions">
+        <a class="button secondary compact" href="./privacy.html">Privacy policy</a>
+        <a class="button secondary compact" href="https://github.com/CameronNel/hanapath/issues" target="_blank" rel="noopener noreferrer">Support</a>
+      </div>
+    </div>
   `;
+
+  window.HANAPATH_GOOGLE_AUTH?.render(el.querySelector("#googleAuthSettings"));
+
+  el.querySelectorAll("[data-appearance-pick]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.appearance = normalizeAppearance(btn.dataset.appearancePick);
+      saveState();
+      applyTheme();
+      el.querySelectorAll("[data-appearance-pick]").forEach((option) => {
+        const active = option === btn;
+        option.classList.toggle("active", active);
+        option.setAttribute("aria-pressed", String(active));
+      });
+    });
+  });
 
   el.querySelectorAll("[data-theme-pick]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -14671,13 +14952,13 @@ function renderLearnStageMenu(itemId) {
   const referenceTileHtml = itemId === "alphabet"
     ? `
       <button class="learn-stage-reference-tile" type="button" data-open-entire-alphabet aria-label="Open All Hangul reference">
-        <span class="learn-stage-reference-icon" aria-hidden="true">📚</span>
+        <span class="learn-stage-reference-icon" aria-hidden="true">${hubIconSvg("vocabulary")}</span>
         <span class="learn-stage-reference-label">All Hangul</span>
       </button>`
     : ["vocabulary", "sentences"].includes(itemId)
       ? `
       <button class="learn-stage-reference-tile" type="button" data-open-word-bank aria-label="Open Dictionary reference">
-        <span class="learn-stage-reference-icon" aria-hidden="true">📚</span>
+        <span class="learn-stage-reference-icon" aria-hidden="true">${hubIconSvg("vocabulary")}</span>
         <span class="learn-stage-reference-label">Dictionary</span>
       </button>`
       : "";
@@ -14698,7 +14979,7 @@ function renderLearnStageMenu(itemId) {
     </div>`
     : "";
   const sentenceDueCount = getTotalDueSentencesCount();
-  const sentenceReviewHtml = itemId === "vocabulary" && sentenceDueCount > 0
+  const sentenceReviewHtml = itemId === "sentences" && sentenceDueCount > 0
     ? `
     <div class="card letter-review-banner">
       <div class="flex-between" style="gap:16px;">
@@ -14730,6 +15011,21 @@ function renderLearnStageMenu(itemId) {
       </div>
     </div>`;
 
+  const nestedPracticeHtml = itemId === "vocabulary"
+    ? `
+      <button class="card word-section-card" type="button" data-nested-learn="vocabulary-quiz">
+        <div><div class="eyebrow">Practice</div><div class="study-row-ko">Vocabulary quiz</div><div class="screen-sub" style="margin-bottom:0;">Test words from your current path.</div></div>
+        <span class="nested-action-icon">${hubIconSvg("practice")}</span>
+      </button>`
+    : itemId === "sentences"
+      ? `
+      <div class="nested-practice-grid" aria-label="Sentence practice tools">
+        <button class="card word-section-card" type="button" data-nested-learn="sentence-studio"><div><div class="eyebrow">Practice</div><div class="study-row-ko">Sentence practice</div><div class="screen-sub" style="margin-bottom:0;">Build and review complete lines.</div></div><span class="nested-action-icon">${hubIconSvg("practice")}</span></button>
+        <button class="card word-section-card" type="button" data-nested-learn="listening"><div><div class="eyebrow">Listen</div><div class="study-row-ko">Listening</div><div class="screen-sub" style="margin-bottom:0;">Hear sentences and follow along.</div></div><span class="nested-action-icon">${hubIconSvg("listening")}</span></button>
+        <button class="card word-section-card" type="button" data-nested-learn="form-checks"><div><div class="eyebrow">Check form</div><div class="study-row-ko">Form Checks</div><div class="screen-sub" style="margin-bottom:0;">Short focused practice with correction.</div></div><span class="nested-action-icon">${hubIconSvg("checks")}</span></button>
+      </div>`
+      : "";
+
   // Vocabulary and Sentences end with writing; Alphabet keeps Drill Lab last.
   const writingSource = ["alphabet", "vocabulary", "sentences"].includes(itemId) ? itemId : null;
   const writingCopy = {
@@ -14742,7 +15038,7 @@ function renderLearnStageMenu(itemId) {
     : itemId === "alphabet"
       ? `
     <button class="hub-tile alphabet-step-tile" type="button" data-learn-writing="${writingSource}">
-      <span class="hub-tile-icon">✍️</span>
+      <span class="hub-tile-icon">${hubIconSvg("writing")}</span>
       <span class="hub-tile-text">
         <span class="hub-tile-eyebrow">Step 2</span>
         <strong>Writing practice</strong>
@@ -14757,20 +15053,20 @@ function renderLearnStageMenu(itemId) {
         <div class="study-row-ko">Writing practice</div>
         <div class="screen-sub" style="margin-bottom:0;">${escapeHtml(writingCopy[writingSource])}</div>
       </div>
-      <span class="alpha-board-entry-glyphs" aria-hidden="true">✍</span>
+      <span class="alpha-board-entry-glyphs" aria-hidden="true">${hubIconSvg("writing")}</span>
     </button>`;
 
   const alphabetDrillUnlocked = progress.complete || TEST_UNLOCK_ALL_STAGES;
   const alphabetDrillStepHtml = itemId === "alphabet"
     ? `
     <button class="hub-tile alphabet-step-tile${alphabetDrillUnlocked ? "" : " is-locked"}" type="button" data-learn-drill ${alphabetDrillUnlocked ? "" : 'disabled aria-disabled="true"'}>
-      <span class="hub-tile-icon">🎯</span>
+      <span class="hub-tile-icon">${hubIconSvg("practice")}</span>
       <span class="hub-tile-text">
         <span class="hub-tile-eyebrow">Step 3</span>
         <strong>Drill lab</strong>
         <small>${alphabetDrillUnlocked ? "Quick mixed, build, split, letter, and batchim drills." : "Complete Step 1 to unlock quick drills."}</small>
       </span>
-      <span class="hub-tile-go" aria-hidden="true">${alphabetDrillUnlocked ? "›" : "🔒"}</span>
+      <span class="hub-tile-go" aria-hidden="true">${alphabetDrillUnlocked ? "›" : hubIconSvg("lock")}</span>
     </button>`
     : "";
 
@@ -14799,6 +15095,7 @@ function renderLearnStageMenu(itemId) {
       ${sentenceReviewHtml}
       ${wordPathHtml}
       ${stagesHtml}
+      ${nestedPracticeHtml}
     `}
     ${itemId === "alphabet" ? "" : writingStepHtml}
     </div>
@@ -14814,6 +15111,12 @@ function renderLearnStageMenu(itemId) {
   });
   el.querySelector("[data-open-entire-alphabet]")?.addEventListener("click", () => openEntireAlphabet());
   el.querySelector("[data-open-word-bank]")?.addEventListener("click", () => openEntireWordBank());
+  el.querySelectorAll("[data-nested-learn]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      queueScreenMotion("forward", 1);
+      openHubItem("learn", btn.dataset.nestedLearn);
+    });
+  });
 
   el.querySelectorAll("[data-learn-stage]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -15499,8 +15802,8 @@ function renderAlphabetPracticeHub() {
     </div>
     ${due ? `<button class="card word-section-card" type="button" data-alphabet-practice="review"><div><div class="eyebrow">Make it stick</div><div class="section-card-title" lang="en">Letter review</div><div class="screen-sub" style="margin-bottom:0;">${due} letter${due === 1 ? "" : "s"} ready for spaced review.</div></div><span class="pill accent">${due} due</span></button>` : ""}
     <button class="card word-section-card" type="button" data-alphabet-practice="quiz"><div><div class="eyebrow">Quick check</div><div class="section-card-title" lang="en">Alphabet quiz</div><div class="screen-sub" style="margin-bottom:0;">Match each Hangul letter to its sound.</div></div><span class="alpha-board-entry-glyphs" lang="ko" aria-hidden="true">가</span></button>
-    <button class="card word-section-card" type="button" data-alphabet-practice="pronunciation"><div><div class="eyebrow">Listen closely</div><div class="section-card-title" lang="en">Pronunciation drill</div><div class="screen-sub" style="margin-bottom:0;">Train tense, aspirated, and plain consonant contrasts.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">🎧</span></button>
-    <button class="card word-section-card" type="button" data-alphabet-practice="writing"><div><div class="eyebrow">Write it</div><div class="section-card-title" lang="en">Hangul writing</div><div class="screen-sub" style="margin-bottom:0;">Draw letters and syllable blocks by hand.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">✍</span></button>
+    <button class="card word-section-card" type="button" data-alphabet-practice="pronunciation"><div><div class="eyebrow">Listen closely</div><div class="section-card-title" lang="en">Pronunciation drill</div><div class="screen-sub" style="margin-bottom:0;">Train tense, aspirated, and plain consonant contrasts.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">${hubIconSvg("listening")}</span></button>
+    <button class="card word-section-card" type="button" data-alphabet-practice="writing"><div><div class="eyebrow">Write it</div><div class="section-card-title" lang="en">Hangul writing</div><div class="screen-sub" style="margin-bottom:0;">Draw letters and syllable blocks by hand.</div></div><span class="alpha-board-entry-glyphs" aria-hidden="true">${hubIconSvg("writing")}</span></button>
   `;
   el.querySelectorAll("[data-alphabet-practice]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -15690,7 +15993,7 @@ function buildHangulExamAttempt(bank) {
       item.type === "mcq" ? { ...item, options: shuffle(item.options) } : { ...item }),
   }));
   const now = Date.now();
-  const initialOverrideFlags = typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive() ? ["__wetest"] : [];
+  const initialOverrideFlags = getTestingOverrideFlags();
   const initialTaintContext = getHangulExamTaintContext(initialOverrideFlags);
   return {
     bank,
@@ -15717,11 +16020,12 @@ function getHangulExamTaintContext(overrideFlags) {
   if (integrityApi && typeof integrityApi.getAttemptTaintContext === "function") {
     return integrityApi.getAttemptTaintContext(state, ["alphabet"], normalizedFlags);
   }
+  const failClosedFlags = Array.from(new Set([...normalizedFlags, "integrity-api-unavailable"]));
   return {
     overrideEventIds: [],
-    overrideFlags: normalizedFlags,
-    status: normalizedFlags.length ? "practice" : "hanaPath",
-    isPractice: Boolean(normalizedFlags.length),
+    overrideFlags: failClosedFlags,
+    status: "practice",
+    isPractice: true,
   };
 }
 
@@ -15802,11 +16106,12 @@ function getWordExamTaintContext(exam, overrideFlags) {
   if (api && typeof api.getAttemptTaintContext === "function") {
     return api.getAttemptTaintContext(state, scope, normalizedFlags);
   }
+  const failClosedFlags = Array.from(new Set([...normalizedFlags, "integrity-api-unavailable"]));
   return {
     overrideEventIds: [],
-    overrideFlags: normalizedFlags,
-    status: normalizedFlags.length ? "practice" : "hanaPath",
-    isPractice: Boolean(normalizedFlags.length),
+    overrideFlags: failClosedFlags,
+    status: "practice",
+    isPractice: true,
   };
 }
 
@@ -16233,7 +16538,7 @@ function drawExamCanvas(canvas, strokes) {
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.save();
-  ctx.strokeStyle = "#7a5cff";
+  ctx.strokeStyle = getThemeAccentColor();
   ctx.lineWidth = Math.max(6, Math.min(28, Number(state.writingLineWidth) || 14));
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
@@ -16385,7 +16690,7 @@ function submitHangulExam(auto) {
   const unanswered = flat.filter((item) => !examItemAnswered(attempt, item)).length;
   const mastered = correct === 200 && total === 200 && unanswered === 0;
 
-  const currentOverrideFlags = typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive() ? ["__wetest"] : [];
+  const currentOverrideFlags = getTestingOverrideFlags();
   const currentTaintContext = getHangulExamTaintContext(currentOverrideFlags);
   const overrideFlags = Array.from(new Set([
     ...(attempt.overrideFlags || []),
@@ -16822,14 +17127,14 @@ function renderWordExamHub() {
   if (s3Crowned || isWordLessonCompleted("s3-grammar-u2-l2") || bridgeComplete) {
     if (bridgeComplete) {
       bridgeBannerHtml = `
-        <div class="word-exam-bridge-banner word-exam-bridge-banner--ready" style="margin-bottom:14px; padding:10px 14px; border:1px solid rgba(45,212,191,.4); background:rgba(45,212,191,.1); border-radius:12px;">
-          <div style="font-weight:700; color:#2dd4bf; margin-bottom:2px;">✓ Production ready (v3)</div>
+        <div class="word-exam-bridge-banner word-exam-bridge-banner--ready" style="margin-bottom:14px; padding:10px 14px; border:1px solid rgba(var(--accent-rgb),.4); background:rgba(var(--accent-rgb),.1); border-radius:12px;">
+          <div style="font-weight:700; color:var(--good); margin-bottom:2px;">✓ Production ready (v3)</div>
           <div style="font-size:0.82rem; color:var(--text);">Typed polite past and negation production unlocked for Core Word exams.</div>
         </div>`;
     } else {
       bridgeBannerHtml = `
-        <div class="word-exam-bridge-banner" style="margin-bottom:14px; padding:12px 14px; border:1px solid rgba(251,146,60,.45); background:rgba(251,146,60,.12); border-radius:12px; display:flex; flex-direction:column; gap:8px;">
-          <div style="font-weight:700; color:#fdba74;">Production bridge available</div>
+        <div class="word-exam-bridge-banner" style="margin-bottom:14px; padding:12px 14px; border:1px solid color-mix(in srgb, var(--warn) 45%, transparent); background:color-mix(in srgb, var(--warn) 12%, transparent); border-radius:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="font-weight:700; color:var(--warn);">Production bridge available</div>
           <div style="font-size:0.82rem; color:var(--text);">Complete <strong>과거와 부정 만들기 (s3-grammar-u2-l3)</strong> to activate typed polite-past and negation production in exams.</div>
           <div><button class="button secondary compact" type="button" id="openProductionBridgeBtn" data-open-bridge="s3-grammar-u2-l3">Open bridge lesson →</button></div>
         </div>`;
@@ -16909,7 +17214,7 @@ function renderWordExamIntro(examId) {
   let bridgeIntroNote = "";
   if (!isWordsProductionBridgeComplete() && (rawExam.minPastProduction > 0 || rawExam.minNegationProduction > 0)) {
     bridgeIntroNote = `
-      <div class="word-exam-bridge-intro-note" style="margin-top:10px; margin-bottom:10px; padding:10px 12px; border:1px solid rgba(251,146,60,.35); background:rgba(251,146,60,.08); border-radius:10px; font-size:0.8rem; color:#fdba74;">
+      <div class="word-exam-bridge-intro-note" style="margin-top:10px; margin-bottom:10px; padding:10px 12px; border:1px solid color-mix(in srgb, var(--warn) 35%, transparent); background:color-mix(in srgb, var(--warn) 8%, transparent); border-radius:10px; font-size:0.8rem; color:var(--warn);">
         Production bridge available: Complete lesson <strong>과거와 부정 만들기 (s3-grammar-u2-l3)</strong> to unlock v3 typed past/negation production. Current attempt uses frozen v2 allocations.
         <button class="button secondary compact" type="button" id="introBridgeBtn" data-open-bridge="s3-grammar-u2-l3" style="margin-top:6px; display:block;">Open bridge lesson →</button>
       </div>`;
@@ -16964,7 +17269,7 @@ function startWordExamAttempt(examId, opts) {
   clearWordExamCountdown();
   const now = Date.now();
   const timeMin = mode === "confirmation" ? exam.retention.confirmationTimeMinutes : exam.timeMinutes;
-  const startFlags = (typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive()) ? ["__wetest"] : [];
+  const startFlags = getTestingOverrideFlags();
   const startTaint = getWordExamTaintContext(exam, startFlags);
   wordExamAttempt = {
     exam, mode, seed, items: attempt.items,
@@ -17220,7 +17525,7 @@ function submitWordExamAttempt(auto) {
 
   // Box 0D — taint context: union the generation-time and submission-time
   // classifications so a taint created mid-attempt is still caught (spec §5.1).
-  const submitFlags = (typeof isWordExamTestQueryActive === "function" && isWordExamTestQueryActive()) ? ["__wetest"] : [];
+  const submitFlags = getTestingOverrideFlags();
   const submitTaint = getWordExamTaintContext(a.exam, submitFlags);
   let overrideFlags = Array.from(new Set([...(a.overrideFlags || []), ...submitTaint.overrideFlags]));
   const overrideEventIds = Array.from(new Set([...(a.overrideEventIds || []), ...submitTaint.overrideEventIds]));
@@ -18206,8 +18511,8 @@ window.renderPronunciationDrill = function() {
   if (pronDrillState.answered) {
     const isCorrect = pronDrillState.selectedOption.text === q.answer.text;
     feedbackAreaHtml = `
-      <div class="card" style="margin-top:16px; border:2px solid ${isCorrect ? "#2ecc71" : "#e74c3c"};">
-        <h3 style="color:${isCorrect ? "#2ecc71" : "#e74c3c"}; margin:0 0 6px 0;">
+      <div class="card" style="margin-top:16px; border:2px solid ${isCorrect ? "var(--good)" : "var(--bad)"};">
+        <h3 style="color:${isCorrect ? "var(--good)" : "var(--bad)"}; margin:0 0 6px 0;">
           ${isCorrect ? "✓ Correct!" : "✗ Incorrect"}
         </h3>
         <div class="fs-sm" style="margin-bottom:12px;">
@@ -18978,11 +19283,11 @@ function runParallelMLKitRecognition(canvas) {
     if (res.ready && res.candidates.length) {
       const topCand = res.candidates[0];
       const scoreLabel = Number.isFinite(topCand.score) ? ` · score ${topCand.score.toFixed(3)}` : "";
-      diagnosticHtml = `<div class="mlkit-diagnostic-info" style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 4px;">
+      diagnosticHtml = `<div class="mlkit-diagnostic-info" style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px; border-top: 1px dashed var(--line-strong); padding-top: 4px;">
         ML Kit diagnostic: ${escapeHtml(topCand.name)}${scoreLabel} · ${res.latencyMs}ms · $Q still grades this attempt
       </div>`;
     } else if (res.error) {
-      diagnosticHtml = `<div class="mlkit-diagnostic-info" style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 4px; color: #ff8888;">
+      diagnosticHtml = `<div class="mlkit-diagnostic-info" style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px; border-top: 1px dashed var(--line-strong); padding-top: 4px; color: var(--bad);">
         ML Kit diagnostic unavailable: ${escapeHtml(res.error)} · $Q still grades this attempt
       </div>`;
     }
@@ -19635,11 +19940,11 @@ function drawHangulGuideStrokes(ctx, canvas, guide, opts) {
     let color = "rgba(127, 127, 127, 0.26)";
     let width = baseWidth;
     if (emphasize) {
-      color = "rgba(122, 92, 255, 0.5)";
+      color = getThemeRgba("accent-rgb", 0.5);
     } else if (i < completed) {
-      color = "rgba(56, 176, 120, 0.6)";
+      color = getThemeRgba("good-rgb", 0.6);
     } else if (i === activeIndex) {
-      color = "rgba(122, 92, 255, 0.8)";
+      color = getThemeRgba("accent-rgb", 0.8);
       width = baseWidth * 1.12;
     }
     ctx.strokeStyle = color;
@@ -19653,10 +19958,10 @@ function drawHangulGuideStrokes(ctx, canvas, guide, opts) {
       const bx = pts[0].x;
       const by = pts[0].y;
       ctx.beginPath();
-      ctx.fillStyle = i === activeIndex ? "rgba(122, 92, 255, 0.95)" : "rgba(90, 90, 110, 0.55)";
+      ctx.fillStyle = i === activeIndex ? getThemeRgba("accent-rgb", 0.95) : "rgba(127, 127, 127, 0.55)";
       ctx.arc(bx, by, badgeR, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--on-accent").trim() || "#191919";
       ctx.font = `bold ${Math.round(badgeR * 1.15)}px system-ui, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -19734,7 +20039,7 @@ function watchHangulGuide(canvas, guide) {
     drawHangulGuideStrokes(ctx, canvas, guide, { showNumbers: true, completed: 0, activeIndex: -1 });
 
     ctx.save();
-    ctx.strokeStyle = "#7a5cff";
+    ctx.strokeStyle = getThemeAccentColor();
     ctx.lineWidth = Math.max(6, W * 0.032);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -19754,7 +20059,7 @@ function watchHangulGuide(canvas, guide) {
       }
     }
     if (head) {
-      ctx.fillStyle = "#7a5cff";
+      ctx.fillStyle = getThemeAccentColor();
       ctx.beginPath();
       ctx.arc(head.x, head.y, Math.max(5, W * 0.02), 0, Math.PI * 2);
       ctx.fill();
@@ -20129,7 +20434,7 @@ function drawHangulWritingCanvas(canvas) {
   // Learner ink only. No guide, no faint glyph — the writing area stays
   // blank; the stroke guide appears solely inside the Help! demo animation.
   ctx.save();
-  ctx.strokeStyle = "#7a5cff";
+  ctx.strokeStyle = getThemeAccentColor();
   ctx.lineWidth = Math.max(6, Math.min(28, Number(state.writingLineWidth) || 14));
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
@@ -21146,7 +21451,7 @@ function drawPremiumWritingCanvas(canvas) {
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.lineCap = "round";
   context.lineJoin = "round";
-  context.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#58a6ff";
+  context.strokeStyle = getThemeAccentColor();
   context.lineWidth = Math.max(6, Math.min(28, Number(state.writingLineWidth) || 14));
   premiumWritingState.strokes.forEach((stroke) => {
     if (!stroke.length) return;
@@ -21680,8 +21985,11 @@ function renderOnboarding() {
         This is realistic — not a marketing promise. Fluency takes hundreds of hours.
         HanaPath will track every minute and adjust your plan as you go.
       </div>
-      <button class="button primary full" id="obStartBtn" type="button" style="margin-top:8px;">Start HanaPath →</button>
+      <div id="googleAuthOnboarding" class="google-auth-panel onboarding-auth"></div>
+      <button class="button primary full" id="obStartBtn" type="button" style="margin-top:8px;">Continue without an account →</button>
     </div>`;
+
+  window.HANAPATH_GOOGLE_AUTH?.render(document.getElementById("googleAuthOnboarding"));
 
   document.getElementById("obStartBtn").addEventListener("click", () => {
     Object.assign(state, {
@@ -21696,10 +22004,9 @@ function renderOnboarding() {
     });
     saveState();
     shell.hidden = true;
-    const app = document.getElementById("app");
-    if (app) app.hidden = false;
-    showTab("today");
-    bindKeyboardShortcuts();
+    // Same bootstrap the returning-profile path runs, so a fresh install gets
+    // a working bottom nav, settings shortcut, and Learn home immediately.
+    startAppShell();
   });
 }
 
@@ -23284,8 +23591,8 @@ function sentenceStudioHubHtml() {
   let modeCardsHtml = "";
   if (isLocked) {
     modeCardsHtml = `
-      <div class="locked-card text-center" style="padding: 24px; border: 1px dashed var(--bad); border-radius: 8px; background: rgba(248,113,113,.04);">
-        <div class="lock-icon" style="font-size: 32px; margin-bottom: 12px; filter: grayscale(1);">🔒</div>
+      <div class="locked-card text-center" style="padding: 24px; border: 1px dashed var(--bad); border-radius: 8px; background: rgba(var(--bad-rgb),.04);">
+        <div class="lock-icon" aria-hidden="true">${hubIconSvg("lock")}</div>
         <div class="eyebrow" style="color: var(--bad); margin-bottom: 6px;">Band ${progress.band} is Locked</div>
         <div class="screen-sub" style="margin-bottom: 16px;">
           To unlock, learn more vocabulary. This band requires focus words you haven't studied yet.
@@ -23706,11 +24013,11 @@ function sentenceQuestionHtml(session) {
   } else if (mode === "shadow") {
     const speech = session.speech || {};
     const speechRecognitionSupported = Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
-    const speechPassed = Boolean(speech.score && speech.score.segmental >= 75);
+    const speechPassed = Boolean(speech.score && (speech.score.transcriptMatch ?? speech.score.segmental) >= 75);
     const scoreHtml = speech.score
       ? `<div class="ss-helper-panel">${speakingScoreHtml(row.korean, speech.transcript || "", speech.score)}</div>`
       : speech.status
-        ? `<div class="ss-helper-panel"><div class="ss-helper-title">Speech scoring</div><div class="screen-sub" style="margin-bottom:0;">${escapeHtml(speech.status)}</div></div>`
+        ? `<div class="ss-helper-panel"><div class="ss-helper-title">Transcript check</div><div class="screen-sub" style="margin-bottom:0;">${escapeHtml(speech.status)}</div><div class="speech-practice-disclosure" style="margin-top:8px;font-size:.76rem;color:var(--text-muted-2);">${escapeHtml(SPEECH_PRACTICE_DISCLOSURE)}</div></div>`
         : "";
     const words = (row.sourceWordIds || []).map(id => curatedWordsById.get(id)).filter(Boolean);
     const soundNotes = words.map(w => w.soundNote).filter(Boolean);
@@ -23736,11 +24043,11 @@ function sentenceQuestionHtml(session) {
             <button class="button secondary compact" type="button" data-sentence-selfmark="incorrect">Repeat again later</button>
             <button class="button primary compact" type="button" data-sentence-selfmark="correct">I repeated it</button>
           </div>`
-        : `<div class="screen-sub" style="margin:10px 0 0;text-align:center;">${session.showRepeatPrompt ? "Record your repetition to check it without revealing the line." : "Listen first; the Korean stays hidden until you attempt it."}</div>`;
+        : `<div class="screen-sub" style="margin:10px 0 0;text-align:center;">${session.showRepeatPrompt ? "Record your repetition to compare the returned transcript without revealing the line." : "Listen first; the Korean stays hidden until you attempt it."}</div>`;
     innerContent = `
       ${sentenceSessionProgressHtml(session.index + 1, session.rows.length)}
       <div class="ss-shadow-listen-hero" aria-label="Hidden Korean shadow prompt">
-        <span class="ss-shadow-listen-icon" aria-hidden="true">🎧</span>
+        <span class="ss-shadow-listen-icon" aria-hidden="true">${hubIconSvg("listening")}</span>
         <strong>Listen, then repeat from memory</strong>
         <span>The written Korean appears only after your attempt.</span>
       </div>
@@ -23750,7 +24057,7 @@ function sentenceQuestionHtml(session) {
       <div class="word-card-actions word-card-audio-actions">
         <button class="button secondary compact" type="button" data-sentence-play>▶ Play</button>
         <button class="button secondary compact" type="button" data-sentence-slow>↻ Slow replay</button>
-        <button class="button secondary compact" type="button" data-sentence-record>${speech.listening ? "Listening..." : "🎙️ Record attempt"}</button>
+        <button class="button secondary compact" type="button" data-sentence-record>${speech.listening ? "Listening..." : "Check transcript"}</button>
       </div>
       ${scoreHtml}
       ${shadowActions}
@@ -24268,39 +24575,41 @@ function startSentenceSpeechScoring() {
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   session.speech = { listening: false, status: "", transcript: "", score: null };
   if (!Recognition) {
-    session.speech.status = "Speech scoring is not supported in this browser. You can still self-mark the shadow attempt.";
+    session.speech.status = "Transcript practice is not supported in this browser. You can still self-mark the shadow attempt.";
     renderPracticeView();
     return;
   }
   const recognition = new Recognition();
   const startedAt = performance.now();
   let transcript = "";
+  let handledError = false;
   recognition.lang = "ko-KR";
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
   recognition.continuous = false;
-  session.speech = { listening: true, status: "Listening...", transcript: "", score: null };
+  session.speech = { listening: true, status: "Listening for a transcript...", transcript: "", score: null };
   renderPracticeView();
   recognition.onresult = (event) => {
     const first = event.results && event.results[0] && event.results[0][0];
     transcript = first ? first.transcript : "";
   };
   recognition.onerror = () => {
+    handledError = true;
     session.speech = {
       listening: false,
-      status: "Speech scoring could not hear a usable attempt. Try again, or self-mark.",
+      status: "No usable transcript was returned. Try again, or self-mark.",
       transcript: "",
       score: null,
     };
     renderPracticeView();
   };
   recognition.onend = () => {
-    if (!sentenceStudioSession || sentenceStudioSession !== session) return;
+    if (handledError || !sentenceStudioSession || sentenceStudioSession !== session) return;
     const durationMs = performance.now() - startedAt;
     const score = scoreSpeechAttempt(row.voiceText || row.korean, transcript, durationMs);
     session.speech = {
       listening: false,
-      status: "Analysis complete.",
+      status: "Transcript check complete.",
       transcript,
       score,
     };
@@ -24311,7 +24620,7 @@ function startSentenceSpeechScoring() {
   } catch (error) {
     session.speech = {
       listening: false,
-      status: error && error.message ? error.message : "Speech scoring could not start.",
+      status: error && error.message ? error.message : "Transcript practice could not start.",
       transcript: "",
       score: null,
     };
@@ -24998,8 +25307,9 @@ async function init() {
   const appDiv = document.getElementById("app");
   const onboardingRequested = new URLSearchParams(window.location.search).has("onboarding");
 
-  // Public visitors land in the app; onboarding is opt-in via ?onboarding=1.
-  if (onboardingRequested) {
+  // Fresh installs receive onboarding. Legacy profiles with real learning
+  // evidence are marked onboarded by the migration above and never reset.
+  if (onboardingRequested || (!state.onboarded && !hasMeaningfulLearnerProgress(state))) {
     if (appDiv) appDiv.hidden = true;
     renderOnboarding();
     return;
@@ -25010,6 +25320,20 @@ async function init() {
     saveState();
   }
 
+  startAppShell();
+}
+
+// Everything the shell needs once onboarding is behind us: delegated click
+// handlers, the settings shortcut, bottom-nav wiring, and the initial route.
+// init() calls this for returning profiles; the onboarding start button calls
+// it for fresh installs, which otherwise landed on the Learn hub with a dead
+// bottom nav and no settings until the next app launch.
+let appShellStarted = false;
+function startAppShell() {
+  if (appShellStarted) return;
+  appShellStarted = true;
+  const onbDiv = document.getElementById("onboarding");
+  const appDiv = document.getElementById("app");
   if (onbDiv) onbDiv.hidden = true;
   if (appDiv) appDiv.hidden = false;
   if (appDiv) appDiv.addEventListener("click", (event) => {
@@ -25198,6 +25522,8 @@ function clampScore(value) {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
 
+const SPEECH_PRACTICE_DISCLOSURE = "Uses your browser or device speech-recognition service. Its provider may process microphone audio under its own terms. HanaPath compares only the returned transcript and elapsed time on this page; this is not phonetic or prosodic analysis.";
+
 function scoreSpeechAttempt(targetText, transcript, durationMs) {
   const target = normalizeKoreanForSpeechScore(targetText);
   const heard = normalizeKoreanForSpeechScore(transcript);
@@ -25206,25 +25532,37 @@ function scoreSpeechAttempt(targetText, transcript, durationMs) {
   const expectedMs = Math.max(900, target.length * 420);
   const timingRatio = durationMs > 0 ? Math.abs(durationMs - expectedMs) / expectedMs : 1;
   const prosodic = clampScore(100 - timingRatio * 70);
-  return { target, heard, segmental, prosodic };
+  return {
+    target,
+    heard,
+    // Keep historical keys for saved/debug compatibility, but expose truthful
+    // proxy names to every learner-facing surface.
+    segmental,
+    prosodic,
+    transcriptMatch: segmental,
+    speakingTimeFit: prosodic,
+    measurementKind: "transcript-and-duration-proxy",
+  };
 }
 
 function speakingScoreHtml(targetLabel, transcript, score) {
-  const segmentColor = score.segmental >= 80 ? "#2ecc71" : score.segmental >= 55 ? "#f1c40f" : "#e74c3c";
-  const prosodyColor = score.prosodic >= 80 ? "#2ecc71" : score.prosodic >= 55 ? "#f1c40f" : "#e74c3c";
-  const tip = score.segmental >= 80
-    ? "Good match. Repeat once more and try to keep the rhythm steady."
-    : "Listen again, then focus on matching each Hangul block in order.";
+  const transcriptMatch = Number(score.transcriptMatch ?? score.segmental ?? 0);
+  const speakingTimeFit = Number(score.speakingTimeFit ?? score.prosodic ?? 0);
+  const scoreColor = (value) => value >= 80 ? "var(--good)" : value >= 55 ? "var(--warn)" : "var(--bad)";
+  const tip = transcriptMatch >= 80
+    ? "The recognizer returned text close to the target. Listen and repeat again to practise pronunciation."
+    : "The returned transcript differed from the target. Listen again and repeat slowly, one Hangul block at a time.";
   return `
     <div style="display:flex; justify-content:space-between; gap:12px; margin-bottom:4px;">
-      <strong>Segmental accuracy:</strong> <span style="color:${segmentColor};">${score.segmental}%</span>
+      <strong>Transcript match:</strong> <span style="color:${scoreColor(transcriptMatch)};">${Math.round(transcriptMatch)}%</span>
     </div>
     <div style="display:flex; justify-content:space-between; gap:12px; margin-bottom:4px;">
-      <strong>Prosodic fluency:</strong> <span style="color:${prosodyColor};">${score.prosodic}%</span>
+      <strong>Speaking-time estimate:</strong> <span style="color:${scoreColor(speakingTimeFit)};">${Math.round(speakingTimeFit)}%</span>
     </div>
     <div style="margin-top:6px;"><strong>Target:</strong> <span lang="ko">${escapeHtml(targetLabel)}</span></div>
-    <div style="margin-top:4px;"><strong>Heard:</strong> <span lang="ko">${escapeHtml(transcript || "No transcript")}</span></div>
+    <div style="margin-top:4px;"><strong>Recognizer returned:</strong> <span lang="ko">${escapeHtml(transcript || "No transcript")}</span></div>
     <div style="margin-top:6px; font-size:0.8rem; color:var(--text-muted-2);">${escapeHtml(tip)}</div>
+    <div class="speech-practice-disclosure" style="margin-top:8px; font-size:0.76rem; color:var(--text-muted-2);">${escapeHtml(SPEECH_PRACTICE_DISCLOSURE)}</div>
   `;
 }
 
@@ -25240,7 +25578,7 @@ window.handleSpeakingPractice = function (btn) {
 
   btn.disabled = true;
   feedback.style.display = "block";
-  status.innerText = "Listening...";
+  status.innerText = "Listening for a transcript...";
   results.style.display = "none";
   results.innerHTML = "";
   wave.style.display = "flex";
@@ -25260,11 +25598,12 @@ window.handleSpeakingPractice = function (btn) {
   }
 
   if (!Recognition) {
-    finish("Speech scoring is not supported in this browser.");
+    finish("Transcript practice is not supported in this browser.");
     results.innerHTML = `
       <div style="font-size:0.85rem; color:var(--text-muted-2);">
-        This practice needs the browser SpeechRecognition API. You can still use Hear word and repeat aloud, but HanaPath cannot score this attempt here.
+        Use Hear word and repeat aloud. This device cannot return a speech-recognition transcript to compare.
       </div>
+      <div class="speech-practice-disclosure" style="margin-top:8px; font-size:0.76rem; color:var(--text-muted-2);">${escapeHtml(SPEECH_PRACTICE_DISCLOSURE)}</div>
     `;
     results.style.display = "block";
     return;
@@ -25283,11 +25622,12 @@ window.handleSpeakingPractice = function (btn) {
     transcript = first ? first.transcript : "";
   };
   recognition.onerror = () => {
-    finish("Speech scoring could not hear a usable attempt.");
+    finish("No usable transcript was returned.");
     results.innerHTML = `
       <div style="font-size:0.85rem; color:var(--text-muted-2);">
-        Try again in a quiet room, or use Hear word and repeat aloud without scoring.
+        Try again in a quiet room, or use Hear word and repeat aloud without transcript comparison.
       </div>
+      <div class="speech-practice-disclosure" style="margin-top:8px; font-size:0.76rem; color:var(--text-muted-2);">${escapeHtml(SPEECH_PRACTICE_DISCLOSURE)}</div>
     `;
     results.style.display = "block";
   };
@@ -25295,7 +25635,7 @@ window.handleSpeakingPractice = function (btn) {
     if (!btn.disabled) return;
     const durationMs = performance.now() - startedAt;
     const score = scoreSpeechAttempt(targetText, transcript, durationMs);
-    finish("Analysis complete.");
+    finish("Transcript check complete.");
     results.innerHTML = speakingScoreHtml(targetLabel, transcript, score);
     results.style.display = "block";
   };
@@ -25303,11 +25643,12 @@ window.handleSpeakingPractice = function (btn) {
   try {
     recognition.start();
   } catch (error) {
-    finish("Speech scoring could not start.");
+    finish("Transcript practice could not start.");
     results.innerHTML = `
       <div style="font-size:0.85rem; color:var(--text-muted-2);">
         ${escapeHtml(error && error.message ? error.message : "The browser blocked microphone recognition.")}
       </div>
+      <div class="speech-practice-disclosure" style="margin-top:8px; font-size:0.76rem; color:var(--text-muted-2);">${escapeHtml(SPEECH_PRACTICE_DISCLOSURE)}</div>
     `;
     results.style.display = "block";
   }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">HanaPath mark</title>
+  <desc id="desc">A restrained geometric Hangul hieut mark in warm white on graphite.</desc>
+  <rect width="1024" height="1024" fill="#2D3033"/>
+  <g fill="#F4F2EC">
+    <rect x="280" y="258" width="464" height="80" rx="40"/>
+    <path fill-rule="evenodd" d="M512 390a188 188 0 1 1 0 376 188 188 0 0 1 0-376Zm0 88a100 100 0 1 0 0 200 100 100 0 0 0 0-200Z"/>
+  </g>
+</svg>
