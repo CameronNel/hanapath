@@ -56,6 +56,11 @@ for (const liveSource of [
 ]) {
   assert.ok(contract.includes(liveSource), `Progress must derive from ${liveSource}`);
 }
+assert.doesNotMatch(
+  contract,
+  /getWordLessons\(\)\.filter[\s\S]{0,160}checkpoint/,
+  "Progress must count the full live Word curriculum, including checkpoint lessons",
+);
 assert.match(contract, /record\.status !== "hanaPath"/);
 assert.match(contract, /record\.floorSummary\?\.passed !== true/);
 assert.doesNotMatch(contract, /\|\|\s*284\b/);
@@ -96,4 +101,4 @@ assert.match(sw, /const CACHE_NAME = "hanapath-shell-v463"/);
 assert.match(sw, /"\.\/hangul_mastery_scoring_policy\.js\?v=20260810f"/);
 assert.match(sw, /"\.\/app_experience_contract\.js\?v=20260810f"/);
 
-console.log("App experience contract regression passed (neutral lesson surface, live Progress, formal-only exam counts, accessible keyboard modal, sentinel Back, Hangul 75% policy). ");
+console.log("App experience contract regression passed (neutral lesson surface, full live Word curriculum, formal-only exam counts, accessible keyboard modal, sentinel Back, Hangul 75% policy). ");
