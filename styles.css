@@ -1,24 +1,24 @@
 :root {
   color-scheme: dark;
-  --bg:           #1b1b1b;
-  --bg-2:         #232323;
-  --panel:        #252525;
-  --panel-strong: #202020;
-  --line:         rgba(255, 255, 255, 0.09);
-  --line-strong:  rgba(255, 255, 255, 0.18);
-  --text:         #f1f1ee;
-  --muted:        #b6b6b0;
-  --muted-2:      #8d8d87;
-  --accent:       #a4a4a0;
+  --bg:           #000000;
+  --bg-2:         #0c0c0f;
+  --panel:        #121216;
+  --panel-strong: #17171c;
+  --line:         rgba(255, 255, 255, 0.10);
+  --line-strong:  rgba(255, 255, 255, 0.20);
+  --text:         #f2f2f0;
+  --muted:        #b9b9b3;
+  --muted-2:      #8e8e89;
+  --accent:       #a78bfa;
   /* Accent as raw RGB channels so themes can retint every rgba() glow/border. */
-  --accent-rgb:      164, 164, 160;
-  --accent-deep-rgb: 112, 112, 108;
+  --accent-rgb:      167, 139, 250;
+  --accent-deep-rgb: 124, 74, 237;
   /* Secondary channels keep tonal variants inside the selected accent family. */
-  --accent-2-rgb:    164, 164, 160;
-  --accent-3-rgb:    184, 184, 180;
+  --accent-2-rgb:    167, 139, 250;
+  --accent-3-rgb:    196, 181, 253;
   --accent-2:     rgb(var(--accent-2-rgb));
   --accent-3:     rgb(var(--accent-3-rgb));
-  --accent-4:     #b7a09f;
+  --accent-4:     #c4b5fd;
   --good:         #8ea591;
   --bad:          #d98d89;
   --warn:         #c8aa74;
@@ -27,34 +27,41 @@
   --good-rgb:     142, 165, 145;
   --bad-rgb:      217, 141, 137;
   --warn-rgb:     200, 170, 116;
-  --on-accent:    #191919;
+  --on-accent:    #0b0b10;
   --on-good:      #171917;
   --on-bad:       #1a1515;
   --on-warn:      #1a1710;
   /* Raised surfaces (toasts, popovers, result sheets) and modal scrims. */
-  --elevated:     #2b2b2b;
-  --elevated-2:   #232323;
-  --scrim:        rgba(8, 8, 8, .74);
+  --elevated:     #1b1b21;
+  --elevated-2:   #131318;
+  --scrim:        rgba(0, 0, 0, .78);
   --surface:      var(--panel);
   --surface-1:    var(--bg-2);
-  --surface-hover:#2d2d2d;
-  --surface-light:rgba(255, 255, 255, 0.06);
+  --surface-hover:#1e1e25;
+  --surface-light:rgba(255, 255, 255, 0.065);
   --card:         var(--panel);
   --border:       var(--line);
-  --accent-bg:    rgba(var(--accent-rgb), .14);
+  --accent-bg:    rgba(var(--accent-rgb), .15);
   --accent-text:  var(--accent);
   --text-muted:   var(--muted);
   --text-muted-2: var(--muted-2);
   --shadow-rgb:   0, 0, 0;
-  --shadow:       0 8px 24px rgba(var(--shadow-rgb), .22);
-  --shadow-sm:    0 3px 10px rgba(var(--shadow-rgb), .16);
-  --completion-start: #292929;
-  --completion-end: #202020;
+  --shadow:       0 12px 32px rgba(var(--shadow-rgb), .5);
+  --shadow-sm:    0 4px 14px rgba(var(--shadow-rgb), .32);
+  --completion-start: #191920;
+  --completion-end: #0a0a0e;
   --radius:       14px;
   --radius-sm:    10px;
   --radius-xs:    8px;
   --gap:          14px;
   --nav-h:        68px;
+  /* Premium lighting language: a soft inner top highlight on raised surfaces,
+     a faint white sheen gradient, a focused accent ring, and title gradients. */
+  --inner-hi:     inset 0 1px 0 rgba(255, 255, 255, 0.075);
+  --surface-grad: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 62%);
+  --ring-accent:  0 0 0 1px rgba(var(--accent-rgb), .38), 0 0 26px rgba(var(--accent-rgb), .20);
+  --title-a:      #ffffff;
+  --title-b:      #b6b6c4;
   /* Capacitor 8 injects --safe-area-inset-* on Android WebViews where the
      browser env() values are unreliable. Browser/PWA installs fall back to
      the standards-based env() values, while desktop browsers resolve to 0. */
@@ -72,77 +79,129 @@
   --dur-1:        .14s;   /* taps / state flips     */
   --dur-2:        .24s;   /* hovers / lifts         */
   --dur-3:        .30s;
-  --glow-accent:  0 0 0 1px rgba(var(--accent-rgb), .24), 0 6px 18px rgba(var(--accent-rgb), .10);
+  --glow-accent:  0 0 0 1px rgba(var(--accent-rgb), .30), 0 8px 26px rgba(var(--accent-rgb), .18);
 }
 
 /* ── THEME COLORS ─────────────────────────────────
-   Picked in Settings → Theme colors. Each theme only swaps the accent
-   family; panels, text, and semantic good/bad/warn colors stay shared.
+   Picked in Settings → Accent. Each theme swaps the whole accent family;
+   panels, text, and semantic good/bad/warn colors stay shared. Hana Violet
+   is the HanaPath default; Graphite stays available as a neutral and the
+   rest cover the primary/secondary colour wheel plus gold.
    Keep ids in sync with THEME_DEFS in app.js. */
-:root[data-theme="sage"] {
-  --accent: #91aa99; --accent-rgb: 145, 170, 153; --accent-deep-rgb: 91, 121, 101;
-  --accent-2-rgb: 145, 170, 153; --accent-3-rgb: 169, 188, 175;
+:root[data-theme="violet"] {
+  --accent: #a78bfa; --accent-rgb: 167, 139, 250; --accent-deep-rgb: 124, 74, 237;
+  --accent-2-rgb: 167, 139, 250; --accent-3-rgb: 196, 181, 253; --accent-4: #c4b5fd;
 }
-:root[data-theme="clay"] {
-  --accent: #b6937b; --accent-rgb: 182, 147, 123; --accent-deep-rgb: 128, 91, 70;
-  --accent-2-rgb: 182, 147, 123; --accent-3-rgb: 200, 171, 150;
+:root[data-theme="graphite"] {
+  --accent: #a8a8a4; --accent-rgb: 168, 168, 164; --accent-deep-rgb: 110, 110, 106;
+  --accent-2-rgb: 168, 168, 164; --accent-3-rgb: 190, 190, 186; --accent-4: #c1b1b0;
 }
-:root[data-theme="plum"] {
-  --accent: #aa93a5; --accent-rgb: 170, 147, 165; --accent-deep-rgb: 119, 88, 111;
-  --accent-2-rgb: 170, 147, 165; --accent-3-rgb: 193, 174, 189;
+:root[data-theme="blue"] {
+  --accent: #6cb2ff; --accent-rgb: 108, 178, 255; --accent-deep-rgb: 37, 99, 235;
+  --accent-2-rgb: 108, 178, 255; --accent-3-rgb: 147, 197, 253; --accent-4: #bfcdfa;
+}
+:root[data-theme="red"] {
+  --accent: #ff7a72; --accent-rgb: 255, 122, 114; --accent-deep-rgb: 220, 50, 43;
+  --accent-2-rgb: 255, 122, 114; --accent-3-rgb: 255, 165, 159; --accent-4: #f5a8a3;
+}
+:root[data-theme="yellow"] {
+  --accent: #f5d13f; --accent-rgb: 245, 209, 63; --accent-deep-rgb: 214, 158, 22;
+  --accent-2-rgb: 245, 209, 63; --accent-3-rgb: 247, 222, 126; --accent-4: #e6c96b;
+}
+:root[data-theme="green"] {
+  --accent: #5ddb8a; --accent-rgb: 93, 219, 138; --accent-deep-rgb: 22, 163, 74;
+  --accent-2-rgb: 93, 219, 138; --accent-3-rgb: 127, 229, 166; --accent-4: #9fd9b4;
+}
+:root[data-theme="orange"] {
+  --accent: #ffa057; --accent-rgb: 255, 160, 87; --accent-deep-rgb: 234, 88, 12;
+  --accent-2-rgb: 255, 160, 87; --accent-3-rgb: 255, 186, 128; --accent-4: #f0b98d;
+}
+:root[data-theme="gold"] {
+  --accent: #f2c466; --accent-rgb: 242, 196, 102; --accent-deep-rgb: 212, 160, 36;
+  --accent-2-rgb: 242, 196, 102; --accent-3-rgb: 246, 214, 143; --accent-4: #e8c98a;
 }
 
 :root[data-color-mode="light"] {
   color-scheme: light;
-  --bg: #f7f7f5; --bg-2: #eeeeeb; --panel: #ffffff; --panel-strong: #ffffff;
-  --line: rgba(30, 30, 28, .11); --line-strong: rgba(30, 30, 28, .22);
-  --text: #252523; --muted: #62625e; --muted-2: #7c7c76;
-  --accent: #686864; --accent-rgb: 104, 104, 100; --accent-deep-rgb: 72, 72, 69;
-  --accent-2-rgb: 104, 104, 100; --accent-3-rgb: 126, 126, 121;
-  --good: #4d7256; --good-rgb: 77, 114, 86;
-  --bad: #a44e4a; --bad-rgb: 164, 78, 74;
-  --warn: #866730; --warn-rgb: 134, 103, 48;
+  --bg: #ffffff; --bg-2: #f4f4f7; --panel: #ffffff; --panel-strong: #fbfbfd;
+  --line: rgba(24, 24, 30, .10); --line-strong: rgba(24, 24, 30, .20);
+  --text: #1b1b20; --muted: #5c5c66; --muted-2: #83838c;
+  --accent: #6d4fd1; --accent-rgb: 109, 79, 209; --accent-deep-rgb: 88, 60, 186;
+  --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 122, 94, 224; --accent-4: #7c5cd6;
+  --good: #2f9e58; --good-rgb: 47, 158, 88;
+  --bad: #d9574f; --bad-rgb: 217, 87, 79;
+  --warn: #a17913; --warn-rgb: 161, 121, 19;
   --on-accent: #ffffff; --on-good: #ffffff;
   --on-bad: #ffffff; --on-warn: #ffffff;
-  --elevated: #ffffff; --elevated-2: #f7f7f5;
-  --scrim: rgba(38, 38, 35, .42);
-  --surface-hover: #f1f1ee; --surface-light: rgba(20, 20, 18, .045);
-  --shadow-rgb: 35, 35, 31; --shadow: 0 7px 22px rgba(var(--shadow-rgb), .10);
-  --shadow-sm: 0 2px 8px rgba(var(--shadow-rgb), .09);
-  --completion-start: #ffffff; --completion-end: #efefec;
+  --elevated: #ffffff; --elevated-2: #f6f6f9;
+  --scrim: rgba(20, 20, 26, .40);
+  --surface-hover: #f1f1f6; --surface-light: rgba(18, 18, 24, .05);
+  --shadow-rgb: 35, 35, 45; --shadow: 0 10px 28px rgba(var(--shadow-rgb), .12);
+  --shadow-sm: 0 3px 10px rgba(var(--shadow-rgb), .10);
+  --completion-start: #ffffff; --completion-end: #f2f2f6;
+  --inner-hi: inset 0 1px 0 rgba(255, 255, 255, .9);
+  --surface-grad: linear-gradient(180deg, rgba(255, 255, 255, .8), rgba(255, 255, 255, 0) 62%);
+  --title-a: #1b1b20; --title-b: #4b4b58;
 }
-:root[data-color-mode="light"][data-theme="sage"] {
-  --accent: #5f7767; --accent-rgb: 95, 119, 103; --accent-deep-rgb: 66, 89, 74;
-  --accent-2-rgb: 95, 119, 103; --accent-3-rgb: 116, 137, 122;
+/* Light-mode accents are the darkened members of each family. White sits on
+   --accent (buttons) and --accent/-3/-4 sit on white panels (text, pills), so
+   every value here is held at >= 4.6:1 against white. Dark mode keeps the
+   bright members because there the text on accent is --on-accent (near-black). */
+:root[data-color-mode="light"][data-theme="violet"] {
+  --accent: #6d4fd1; --accent-rgb: 109, 79, 209; --accent-deep-rgb: 88, 60, 186;
+  --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 122, 94, 224; --accent-4: #7c5cd6;
 }
-:root[data-color-mode="light"][data-theme="clay"] {
-  --accent: #84614d; --accent-rgb: 132, 97, 77; --accent-deep-rgb: 101, 70, 54;
-  --accent-2-rgb: 132, 97, 77; --accent-3-rgb: 151, 116, 94;
+:root[data-color-mode="light"][data-theme="graphite"] {
+  --accent: #6e6e6c; --accent-rgb: 110, 110, 108; --accent-deep-rgb: 74, 74, 72;
+  --accent-2-rgb: 110, 110, 108; --accent-3-rgb: 117, 117, 114; --accent-4: #827170;
 }
-:root[data-color-mode="light"][data-theme="plum"] {
-  --accent: #775f71; --accent-rgb: 119, 95, 113; --accent-deep-rgb: 87, 66, 82;
-  --accent-2-rgb: 119, 95, 113; --accent-3-rgb: 140, 116, 134;
+:root[data-color-mode="light"][data-theme="blue"] {
+  --accent: #1e6ddc; --accent-rgb: 30, 109, 220; --accent-deep-rgb: 22, 92, 192;
+  --accent-2-rgb: 30, 109, 220; --accent-3-rgb: 39, 113, 226; --accent-4: #4073cf;
+}
+:root[data-color-mode="light"][data-theme="red"] {
+  --accent: #d0352c; --accent-rgb: 208, 53, 44; --accent-deep-rgb: 178, 45, 38;
+  --accent-2-rgb: 208, 53, 44; --accent-3-rgb: 215, 59, 48; --accent-4: #c64d47;
+}
+:root[data-color-mode="light"][data-theme="yellow"] {
+  --accent: #8f6900; --accent-rgb: 143, 105, 0; --accent-deep-rgb: 116, 84, 0;
+  --accent-2-rgb: 143, 105, 0; --accent-3-rgb: 147, 110, 20; --accent-4: #877425;
+}
+:root[data-color-mode="light"][data-theme="green"] {
+  --accent: #168143; --accent-rgb: 22, 129, 67; --accent-deep-rgb: 14, 106, 52;
+  --accent-2-rgb: 22, 129, 67; --accent-3-rgb: 54, 131, 88; --accent-4: #278455;
+}
+:root[data-color-mode="light"][data-theme="orange"] {
+  --accent: #b75110; --accent-rgb: 183, 81, 16; --accent-deep-rgb: 150, 60, 4;
+  --accent-2-rgb: 183, 81, 16; --accent-3-rgb: 187, 89, 29; --accent-4: #a96430;
+}
+:root[data-color-mode="light"][data-theme="gold"] {
+  --accent: #91690e; --accent-rgb: 145, 105, 14; --accent-deep-rgb: 118, 84, 6;
+  --accent-2-rgb: 145, 105, 14; --accent-3-rgb: 145, 112, 40; --accent-4: #906f24;
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-color-mode]) {
     color-scheme: light;
-    --bg: #f7f7f5; --bg-2: #eeeeeb; --panel: #ffffff; --panel-strong: #ffffff;
-    --line: rgba(30, 30, 28, .11); --line-strong: rgba(30, 30, 28, .22);
-    --text: #252523; --muted: #62625e; --muted-2: #7c7c76;
-    --accent: #686864; --accent-rgb: 104, 104, 100; --accent-deep-rgb: 72, 72, 69;
-    --accent-2-rgb: 104, 104, 100; --accent-3-rgb: 126, 126, 121;
-    --good: #4d7256; --good-rgb: 77, 114, 86;
-    --bad: #a44e4a; --bad-rgb: 164, 78, 74;
-    --warn: #866730; --warn-rgb: 134, 103, 48;
+    --bg: #ffffff; --bg-2: #f4f4f7; --panel: #ffffff; --panel-strong: #fbfbfd;
+    --line: rgba(24, 24, 30, .10); --line-strong: rgba(24, 24, 30, .20);
+    --text: #1b1b20; --muted: #5c5c66; --muted-2: #83838c;
+    --accent: #6d4fd1; --accent-rgb: 109, 79, 209; --accent-deep-rgb: 88, 60, 186;
+    --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 122, 94, 224; --accent-4: #7c5cd6;
+    --good: #2f9e58; --good-rgb: 47, 158, 88;
+    --bad: #d9574f; --bad-rgb: 217, 87, 79;
+    --warn: #a17913; --warn-rgb: 161, 121, 19;
     --on-accent: #ffffff; --on-good: #ffffff;
     --on-bad: #ffffff; --on-warn: #ffffff;
-    --elevated: #ffffff; --elevated-2: #f7f7f5;
-    --scrim: rgba(38, 38, 35, .42);
-    --surface-hover: #f1f1ee; --surface-light: rgba(20, 20, 18, .045);
-    --shadow-rgb: 35, 35, 31; --shadow: 0 7px 22px rgba(var(--shadow-rgb), .10);
-    --shadow-sm: 0 2px 8px rgba(var(--shadow-rgb), .09);
-    --completion-start: #ffffff; --completion-end: #efefec;
+    --elevated: #ffffff; --elevated-2: #f6f6f9;
+    --scrim: rgba(20, 20, 26, .40);
+    --surface-hover: #f1f1f6; --surface-light: rgba(18, 18, 24, .05);
+    --shadow-rgb: 35, 35, 45; --shadow: 0 10px 28px rgba(var(--shadow-rgb), .12);
+    --shadow-sm: 0 3px 10px rgba(var(--shadow-rgb), .10);
+    --completion-start: #ffffff; --completion-end: #f2f2f6;
+    --inner-hi: inset 0 1px 0 rgba(255, 255, 255, .9);
+    --surface-grad: linear-gradient(180deg, rgba(255, 255, 255, .8), rgba(255, 255, 255, 0) 62%);
+    --title-a: #1b1b20; --title-b: #4b4b58;
   }
 }
 
@@ -159,6 +218,37 @@ body {
   line-height: 1.5;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Ambient colour wash behind the whole app — one soft accent-lit vignette
+   that makes pitch-black and white surfaces feel lit rather than flat. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(110% 55% at 50% -12%, rgba(var(--accent-rgb), .10), transparent 62%),
+    radial-gradient(80% 45% at 92% 108%, rgba(var(--accent-3-rgb), .055), transparent 60%);
+}
+:root[data-color-mode="light"] body::before {
+  background:
+    radial-gradient(110% 55% at 50% -12%, rgba(var(--accent-rgb), .08), transparent 62%),
+    radial-gradient(80% 45% at 92% 108%, rgba(var(--accent-3-rgb), .05), transparent 60%);
+}
+
+::selection {
+  background: rgba(var(--accent-rgb), .32);
+  color: var(--text);
+}
+
+/* Slim, quiet scrollbars on desktop; the mobile PWA stays scrollbar-free. */
+@media (hover: hover) and (pointer: fine) {
+  * { scrollbar-width: thin; scrollbar-color: rgba(var(--accent-rgb), .35) transparent; }
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-thumb { border-radius: 99px; background: rgba(var(--accent-rgb), .30); }
+  *::-webkit-scrollbar-track { background: transparent; }
 }
 
 a { color: inherit; text-decoration: none; }
@@ -181,7 +271,7 @@ input, textarea { cursor: text; }
 /* Keyboard focus only — never on mouse/touch taps. */
 :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent), 0 0 22px rgba(var(--accent-rgb), .28);
   border-radius: var(--radius-xs);
 }
 
@@ -207,19 +297,31 @@ input, textarea { cursor: text; }
 
 /* ── BACKGROUND ORBS ─────────────────────────────── */
 .bg-orb {
-  display: none;
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(42px);
+  /* The drift keyframes carry their own opacity (.22-.38), so this value only
+     applies once animation is off. Keep it inside that range: at .8 a
+     reduced-motion learner got a glow ~3x heavier than everyone else. */
+  opacity: .3;
 }
 .orb-a {
   width: 320px; height: 320px;
   top: -80px; left: -80px;
-  background: radial-gradient(circle, rgba(var(--accent-deep-rgb),.45), transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-deep-rgb),.5), transparent 70%);
   animation: orb-drift-a 26s ease-in-out infinite alternate;
 }
 .orb-b {
   width: 280px; height: 280px;
   bottom: 80px; right: -60px;
-  background: radial-gradient(circle, rgba(var(--accent-2-rgb),.3), transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-2-rgb),.34), transparent 70%);
   animation: orb-drift-b 32s ease-in-out infinite alternate;
+}
+:root[data-color-mode="light"] .bg-orb { opacity: .24; }
+@media (prefers-reduced-motion: reduce) {
+  .orb-a, .orb-b { animation: none; }
 }
 
 /* ── ONBOARDING SHELL ────────────────────────────── */
@@ -7277,3 +7379,182 @@ li { margin-bottom: 4px; }
   color: var(--muted-2);
 }
 .lock-icon svg { width: 32px; height: 32px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM VISUAL POLISH — layered lighting, refined borders, accent glows.
+   Everything resolves through theme tokens, so light/dark and every accent
+   pick stay consistent. Fonts, tile sizes, and radii are unchanged.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Screen titles: a quiet two-stop gradient for depth in both modes. */
+.screen-title {
+  background: linear-gradient(180deg, var(--title-a), var(--title-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--title-a);
+}
+
+/* The Hangul graduation heading ends in a colour emoji, and background-clip:
+   text would repaint it as a flat gradient silhouette. Solid fill there. */
+.alphabet-complete-panel .screen-title {
+  background: none;
+  -webkit-text-fill-color: var(--title-a);
+  color: var(--title-a);
+}
+
+/* Eyebrows get a touch more air. */
+.eyebrow { letter-spacing: .12em; }
+
+/* Cards: lit from above, softly shadowed. */
+.card {
+  background: var(--surface-grad), var(--panel);
+  box-shadow: var(--inner-hi), var(--shadow-sm);
+}
+
+/* Primary buttons: gradient + inner highlight + accent shadow. Dark mode lifts
+   toward the light member (--on-accent is near-black there); light mode drops
+   toward the deep member, because there --on-accent is white and the lighter
+   member would put it below 4.5:1. */
+.button.primary {
+  background: linear-gradient(180deg, var(--accent-3), var(--accent));
+  color: var(--on-accent);
+  border: 1px solid rgba(var(--accent-rgb), .35);
+  box-shadow: var(--inner-hi), 0 8px 20px rgba(var(--accent-rgb), .22);
+}
+:root[data-color-mode="light"] .button.primary {
+  background: linear-gradient(180deg, var(--accent), rgb(var(--accent-deep-rgb)));
+}
+.button.primary:hover:not(:disabled) {
+  box-shadow: var(--inner-hi), 0 14px 34px rgba(var(--accent-rgb), .34);
+}
+.button.secondary {
+  background: var(--surface-light);
+  border-color: var(--line-strong);
+  box-shadow: var(--inner-hi);
+}
+
+/* Pills: crisper chips with a hairline edge. */
+.pill { border: 1px solid transparent; }
+.pill.accent { background: rgba(var(--accent-rgb), .14); color: var(--accent); border-color: rgba(var(--accent-rgb), .28); }
+.pill.green  { background: rgba(var(--accent-2-rgb), .13); color: var(--accent-2); border-color: rgba(var(--accent-2-rgb), .26); }
+.pill.blue   { background: rgba(var(--accent-3-rgb), .13); color: var(--accent-3); border-color: rgba(var(--accent-3-rgb), .26); }
+.pill.pink   { background: rgba(var(--bad-rgb), .13); color: var(--accent-4); border-color: rgba(var(--bad-rgb), .24); }
+.pill.muted  { background: var(--surface-light); color: var(--muted); border-color: var(--line); }
+
+/* Hub tiles: layered surface, inner light, accent ring on hover. */
+.hub-tile {
+  background: var(--surface-grad), var(--panel);
+  box-shadow: var(--inner-hi), var(--shadow-sm);
+}
+.hub-tile:hover {
+  border-color: rgba(var(--accent-rgb), .42);
+  box-shadow: var(--inner-hi), var(--glow-accent);
+}
+.hub-tile-icon {
+  background: linear-gradient(145deg, rgba(var(--accent-rgb), .24), rgba(var(--accent-rgb), .07));
+  border-color: rgba(var(--accent-rgb), .34);
+  box-shadow: var(--inner-hi), 0 6px 16px rgba(var(--accent-rgb), .14);
+}
+.hub-tile-text strong { letter-spacing: -.01em; }
+.hub-tile-go { color: var(--accent); opacity: .62; }
+.hub-tile:hover .hub-tile-go { color: var(--accent); opacity: 1; }
+
+/* Lesson progress inside the Learn hub tiles (curated lessons only). */
+.hub-tile-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding-right: 8px;
+}
+.hub-tile-progress-meta {
+  font-size: .7rem;
+  font-weight: 750;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  /* --muted, not --muted-2: at 11px this is small text, and --muted-2 only
+     reaches 3.8:1 on a white panel. Uppercase weight keeps the hierarchy. */
+  color: var(--muted);
+}
+.hub-tile-progress-track {
+  position: relative;
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-light);
+  box-shadow: inset 0 1px 2px rgba(var(--shadow-rgb), .35);
+}
+.hub-tile-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), .5);
+  transition: width .54s var(--ease-premium);
+}
+
+/* Study rows: hover raises with an accent hairline. */
+.study-row { border: 1px solid transparent; }
+.study-row:hover { background: var(--surface-light); border-color: rgba(var(--accent-rgb), .22); }
+.word-metrics-row { border: 0; }
+/* --accent-2-rgb tracks --accent-rgb in every theme, so complete and current
+   have to separate on weight, not hue: finished rows stay a faint wash, the
+   current row carries the lit accent edge that says "you are here". */
+.stage-row.complete { background: rgba(var(--accent-2-rgb), .06); border-color: rgba(var(--accent-2-rgb), .14); }
+.stage-row.current { background: rgba(var(--accent-rgb), .16); border-color: rgba(var(--accent-rgb), .46); }
+
+/* Bottom nav: frosted glass with a lit active indicator. */
+.bottom-nav {
+  background: color-mix(in srgb, var(--panel-strong) 82%, transparent);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  box-shadow: 0 -14px 34px rgba(var(--shadow-rgb), .38);
+}
+.nav-btn.active { color: var(--accent); font-weight: 650; }
+.nav-btn.active::before {
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  box-shadow: 0 2px 10px rgba(var(--accent-rgb), .6);
+}
+.nav-btn.active .nav-icon { stroke: var(--accent); filter: drop-shadow(0 2px 7px rgba(var(--accent-rgb), .55)); }
+
+/* Detail bar: the same glass as the nav. */
+.detail-bar {
+  background: color-mix(in srgb, var(--panel-strong) 82%, transparent);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+}
+.back-btn {
+  background: var(--surface-light);
+  border-color: var(--line-strong);
+  box-shadow: var(--inner-hi);
+}
+
+/* Settings: swatches get a premium pill and ring. */
+.settings-section {
+  background: var(--surface-grad), var(--panel);
+  box-shadow: var(--inner-hi), var(--shadow-sm);
+}
+.theme-swatch {
+  background: var(--surface-grad), rgba(255, 255, 255, .03);
+  box-shadow: var(--inner-hi);
+}
+.theme-swatch.active { border-color: rgba(var(--accent-rgb), .6); box-shadow: var(--ring-accent); }
+.theme-swatch-dot { border-color: rgba(255, 255, 255, .28); }
+.appearance-picker { background: var(--surface-1); }
+.appearance-option.active {
+  background: var(--panel);
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px rgba(var(--accent-rgb), .35);
+}
+
+/* Completion stage: keep the shared ceremony, just light it better. */
+.completion-stage {
+  box-shadow: var(--inner-hi), 0 28px 75px rgba(var(--shadow-rgb), .45), 0 0 56px rgba(var(--completion-rgb), .1);
+}
+
+/* Light-mode corrections for the new lighting layers. */
+:root[data-color-mode="light"] .study-row:hover { background: rgba(18, 18, 24, .04); }
+:root[data-color-mode="light"] .stage-row.current { background: rgba(var(--accent-rgb), .13); }
+:root[data-color-mode="light"] .pill.muted { background: rgba(18, 18, 24, .04); border-color: rgba(24, 24, 30, .10); }
+:root[data-color-mode="light"] .hub-tile-progress-track { background: rgba(18, 18, 24, .07); }

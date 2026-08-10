@@ -54,7 +54,7 @@ owns *what to do next*; this file owns *what currently exists*.
 
 | Metric | Value |
 |---|---|
-| Service-worker cache name | hanapath-shell-v460 |
+| Service-worker cache name | hanapath-shell-v461 |
 | Versioned local assets loaded by index.html | 39 |
 | Precached service-worker shell assets | 213 |
 
