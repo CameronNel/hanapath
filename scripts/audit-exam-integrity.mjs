@@ -55,7 +55,7 @@ function auditBrowserWiring() {
   assert.ok(integrityRef >= 0, "index.html does not load versioned exam_integrity.js");
   assert.ok(appRef > integrityRef, "exam_integrity.js must load before app.js");
   assert.match(app, /HANAPATH_EXAM_INTEGRITY\.migrateExamIntegrityState\(state/);
-  assert.match(sw, /hanapath-shell-v463/);
+  assert.match(sw, /hanapath-shell-v464/);
   assert.match(sw, /\.\/exam_integrity\.js\?v=20260810c/);
   assert.match(sw, /\.\/app\.js\?v=20260810f/);
   assert.match(app, /function submitHangulExam/);
@@ -206,7 +206,7 @@ const missingTaintField = deepClone(taintedWordFixture);
 delete missingTaintField.examIntegrity.taintEvents[0].appAssetRevision;
 expectValidationError(missingTaintField, options, /missing appAssetRevision|missing app revision/); assertions += 1;
 const duplicateTaint = deepClone(taintedWordFixture);
-duplicateTaint.examIntegrity.taintEvents.push(deepClone(duplicateTaint.examIntegrity.taintEvents[0]));
+duplicateTaint.examIntegrity.taintEvents.push(deepClone(taintedWordFixture.examIntegrity.taintEvents[0]));
 expectValidationError(duplicateTaint, options, /duplicate taintEventId/); assertions += 1;
 const selectiveClear = deepClone(taintedWordFixture);
 selectiveClear.examIntegrity.taintEvents[0].clearedAt = 1784655000000;
