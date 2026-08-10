@@ -15,6 +15,7 @@ import {
   checkFreeze,
   compareTrustedManifest,
   diffPinnedInputs,
+  staticallyReferencedFiles,
 } from "./exam-compute-freeze.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -65,6 +66,15 @@ try {
 } finally {
   rmSync(captureDir, { recursive: true, force: true });
 }
+
+// Node's ESM loader does not necessarily read imported module source through
+// the patched userland fs surface. The static backstop therefore walks actual
+// relative import/export edges recursively and scans those helper modules for
+// repo-file literals without crawling arbitrary .js strings as module graphs.
+const staticRefs = staticallyReferencedFiles("scripts/fixtures/freeze-static-import-root.mjs");
+assert.ok(staticRefs.has("scripts/fixtures/freeze-static-import-root.mjs"), "static walk must include its root source");
+assert.ok(staticRefs.has("scripts/fixtures/freeze-static-import-helper.mjs"), "static walk missed a relative imported helper");
+assert.ok(staticRefs.has("word_exam_engine.js"), "static walk did not scan imported helper source for repo-file literals");
 
 // ── Trusted pull-request manifest ───────────────────────────────────────────
 // The manifest in a PR checkout is controlled by that PR. It is therefore not
@@ -164,5 +174,5 @@ assert.ok(
 
 console.log(
   `Exam compute freeze regression passed (${AUDITS.length} sweeps pinned, `
-  + `${Object.values(manifest.audits).reduce((n, a) => n + Object.keys(a.inputs).length, 0)} inputs, trusted-base and named-import capture fail-closed).`,
+  + `${Object.values(manifest.audits).reduce((n, a) => n + Object.keys(a.inputs).length, 0)} inputs, trusted-base + named-import + recursive-static fail-closed).`,
 );
