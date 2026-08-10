@@ -273,10 +273,12 @@
   };
 
   // -------------------------------------------------------------------------
-  // Browser/PWA back: keep one sentinel entry above the page root. A browser
+  // Browser/PWA back: keep one sentinel entry above the app root. A browser
   // Back action first consumes the sentinel, mirrors HanaPath's visible back
-  // contract, then reinstates the sentinel. At the true app root, the second
-  // history.back() is allowed to leave the app normally.
+  // contract, then reinstates the sentinel. At the true app root, Back is
+  // released to real browser history. If there is no prior history entry, the
+  // browser simply stays put; in that case restore the guard so later internal
+  // navigation still has working Back semantics.
   // -------------------------------------------------------------------------
   registerBrowserBackButton = function registerBrowserBackButtonWithSentinel() {
     if (isHanaPathNative() || window.__hanaPathBrowserBackRegistered) return;
@@ -284,6 +286,17 @@
 
     const rootState = { hanaPath: true, hanaPathBackGuard: false };
     const guardState = { hanaPath: true, hanaPathBackGuard: true };
+    const pushGuardFromRoot = () => {
+      const current = window.history.state;
+      if (!current || current.hanaPath !== true || current.hanaPathBackGuard === true) return false;
+      try {
+        window.history.pushState(guardState, "");
+        return true;
+      } catch (_) {
+        return false;
+      }
+    };
+
     try {
       window.history.replaceState(rootState, "");
       window.history.pushState(guardState, "");
@@ -292,8 +305,49 @@
     }
 
     let releasingToBrowser = false;
-    window.addEventListener("popstate", () => {
-      if (releasingToBrowser) return;
+    let leftHanaPathHistory = false;
+    let repairingFromPageShow = false;
+    let releaseWatchdog = null;
+
+    // Returning to a bfcached HanaPath root via browser Forward restores the
+    // sentinel before the learner navigates internally again. pageshow precedes
+    // popstate on traversal, so the flag suppresses that stale traversal event.
+    window.addEventListener("pageshow", () => {
+      releasingToBrowser = false;
+      if (releaseWatchdog) {
+        window.clearTimeout(releaseWatchdog);
+        releaseWatchdog = null;
+      }
+      if (pushGuardFromRoot()) {
+        repairingFromPageShow = true;
+        window.setTimeout(() => { repairingFromPageShow = false; }, 0);
+      }
+    });
+
+    window.addEventListener("popstate", (event) => {
+      if (repairingFromPageShow && window.history.state?.hanaPathBackGuard === true) {
+        repairingFromPageShow = false;
+        return;
+      }
+
+      // During the deliberate second Back at HanaPath root, a same-document
+      // prior entry can still dispatch popstate into this document. Record that
+      // we genuinely left the HanaPath sentinel pair and otherwise leave it alone.
+      if (releasingToBrowser) {
+        if (event.state?.hanaPath !== true) leftHanaPathHistory = true;
+        return;
+      }
+
+      // If a same-document Forward traversal returns from an unrelated history
+      // entry to HanaPath's root state, treat it as re-entry, not another Back.
+      if (leftHanaPathHistory && event.state?.hanaPath === true) {
+        leftHanaPathHistory = false;
+        pushGuardFromRoot();
+        return;
+      }
+
+      // Never hijack unrelated same-document history entries.
+      if (event.state?.hanaPath !== true) return;
 
       if (handleHanaPathBackAction()) {
         try {
@@ -302,16 +356,25 @@
         return;
       }
 
-      // We are already at the app's true root. Consume the actual browser
-      // history now instead of trapping the user behind a synthetic entry.
+      // We are at HanaPath's true root. Consume real browser history now instead
+      // of trapping the learner behind the synthetic guard.
       releasingToBrowser = true;
       try {
         window.history.back();
       } catch (_) {
         releasingToBrowser = false;
+        pushGuardFromRoot();
         return;
       }
-      window.setTimeout(() => { releasingToBrowser = false; }, 0);
+
+      // history.back() is a no-op when an installed PWA/new tab has no prior
+      // entry. If we are still sitting on HanaPath's root state shortly after,
+      // restore the guard so future lesson/detail Back actions remain reliable.
+      releaseWatchdog = window.setTimeout(() => {
+        releasingToBrowser = false;
+        releaseWatchdog = null;
+        pushGuardFromRoot();
+      }, 250);
     });
   };
 })();
