@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // HanaPath cloud sync stores exactly one progress snapshot per Firebase UID.
+    // Client code may read/write only its own document. No public listing,
+    // cross-user access, or client-writable purchase entitlement surface exists.
+    match /users/{userId}/progress/current {
+      allow read, create, update, delete: if request.auth != null
+        && request.auth.uid == userId;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
