@@ -1289,6 +1289,10 @@ const sentenceRendererCorpusSandbox = {
   sentenceAnswerBoxHtml: () => '<input aria-label="answer">',
   sentenceAttemptFeedbackHtml: () => "",
   sentenceHelperLadderHtml: () => "",
+  // Presentation-only globals the renderer reads for inline icons and the
+  // speech-practice disclosure; neither affects question or answer content.
+  hubIconSvg: () => "",
+  SPEECH_PRACTICE_DISCLOSURE: "",
   escapeHtml: (value) => String(value ?? ""),
 };
 vm.createContext(sentenceRendererCorpusSandbox);
@@ -1527,6 +1531,10 @@ const shadowRendererSandbox = {
   sentenceModeMetaHtml: (_row, label) => `<div>${label}</div>`,
   speakingScoreHtml: (target, transcript) => `<div>${target} ${transcript}</div>`,
   approximateSentenceRomanization: () => shadowRomanizationProbe,
+  // Presentation-only globals the shadow branch reads. Both render empty here
+  // so the leak probes below still see only real question content.
+  hubIconSvg: () => "",
+  SPEECH_PRACTICE_DISCLOSURE: "",
   escapeHtml: (value) => String(value ?? ""),
 };
 vm.createContext(shadowRendererSandbox);
