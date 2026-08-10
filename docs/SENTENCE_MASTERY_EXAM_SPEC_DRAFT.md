@@ -60,8 +60,8 @@ standards** until expert standard setting and learner pilot data exist.
 - Minimum pool formula: `M_t = max(5q_t, q_t + r_t)`.
 - No future-tense authoring. Workstream D is re-triggered only if audited
   `E_future < 25`.
-- Stage pass 75%, final pass 80%, mastery qualification 88%, retention 84%
-  (`21/25`), 7-day opening, 21-day expiry, sticky mastery.
+- Stage pass 75%, final pass 75%, mastery qualification 88%, retention 75%
+  (75%), 7-day opening, 21-day expiry, sticky mastery.
 - Sentence-only graduated subscore guard:
   0–4 no percentage; 5–7 directional plus `n/N`; 8+ percentage; 10+ may carry
   a floor only after pilot review.
@@ -657,7 +657,7 @@ All thresholds are provisional.
 
 **Pass**
 
-- overall at least 80%;
+- overall at least 75%;
 - typed at least 75%;
 - `P` at least 75%;
 - combined `F+X` at least 70%;
@@ -685,7 +685,7 @@ opening.
 
 ### 11.4 Retention
 
-- 21/25 correct, exactly 84% or higher;
+- 19/25 correct, 75% or higher;
 - typed at least 80%;
 - no two-section band below 70%;
 - no qualifying target repeats;

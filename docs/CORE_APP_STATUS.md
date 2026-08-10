@@ -17,7 +17,7 @@ owns *what to do next*; this file owns *what currently exists*.
 |---|---|
 | Hangul stroke guides | 40 |
 | Hangul Mastery Examination items | 200 (across 7 parts) |
-| Hangul Mastery required-correct pool | 200 |
+| Hangul Mastery required-correct pool | 150 |
 | Hangul Mastery blueprint version | 2 |
 
 ### Words
@@ -54,9 +54,9 @@ owns *what to do next*; this file owns *what currently exists*.
 
 | Metric | Value |
 |---|---|
-| Service-worker cache name | hanapath-shell-v462 |
-| Versioned local assets loaded by index.html | 39 |
-| Precached service-worker shell assets | 213 |
+| Service-worker cache name | hanapath-shell-v464 |
+| Versioned local assets loaded by index.html | 42 |
+| Precached service-worker shell assets | 216 |
 
 ### Sentence Mastery examination readiness
 

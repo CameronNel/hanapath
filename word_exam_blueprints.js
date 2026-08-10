@@ -166,7 +166,7 @@
     distinction: { overallPct: 88, noSectionBelowPct: 75, everyMacrostrandPct: 75 },
   };
   var FINAL_SCORING = {
-    pass: { overallPct: 80, noSectionBelowPct: 60, floors: { R: 75, P: 65, X: 65, F: 60 } },
+    pass: { overallPct: 75, noSectionBelowPct: 60, floors: { R: 75, P: 65, X: 65, F: 60 } },
     distinction: { overallPct: 90, noSectionBelowPct: 75, everyMajorMacrostrandPct: 80 },
   };
 
@@ -415,7 +415,7 @@
         },
         // Confirmation pass thresholds (§7.2) → awards Core Words mastered.
         confirm: {
-          overallPct: 80,
+          overallPct: 75,
           floors: { P: 65, XF: 65 },
           noSectionBelowPct: 60,
         },
