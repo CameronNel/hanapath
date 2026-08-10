@@ -54,6 +54,19 @@
     <!-- Form Checks declarative inventory (Box B1) — load before app.js -->
     <script defer src="./form_check_blueprints.js?v=20260723a"></script>
     <script defer src="./sentence_feedback.js?v=20260810c"></script>
+    <!--
+      Public Firebase client identifiers. These are intentionally empty until
+      the owner creates the HanaPath Firebase project. Firebase Web API keys and
+      OAuth client IDs are public client configuration, not server secrets.
+      With any required value empty, google_auth.js stays fail-closed.
+    -->
+    <script>
+      window.HANAPATH_AUTH_CONFIG = Object.freeze({
+        firebaseApiKey: "",
+        firebaseProjectId: "",
+        webClientId: "",
+      });
+    </script>
     <script defer src="./google_auth.js?v=20260810c"></script>
     <!-- Browser-only GIS adapter. Native packaging removes this tag and uses Android Credential Manager. -->
     <script defer data-browser-only src="./google_auth_web.js?v=20260810c"></script>
