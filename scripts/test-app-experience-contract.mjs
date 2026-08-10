@@ -19,6 +19,18 @@ const app = read("app.js");
 const hangulAudit = read("scripts/audit-hangul-mastery-exam.mjs");
 const amendment = read("docs/HANGUL_MASTERY_SCORING_POLICY_AMENDMENT.md");
 
+// Structural lesson surfaces stay neutral. The older lesson-player stylesheet
+// paints a radial accent wash from the top-right; the v463 experience layer
+// deliberately overrides that surface to the plain panel while keeping accent
+// on progress, buttons, focus, and feedback where it communicates state.
+assert.match(contract, /hanapath-experience-surface-policy/);
+assert.match(contract, /\.alphabet-lesson-player\s*\{\s*background:\s*var\(--panel\);/s);
+assert.doesNotMatch(
+  contract,
+  /\.alphabet-lesson-player\s*\{[^}]*radial-gradient/s,
+  "the experience override must not reintroduce the top-right accent bloom",
+);
+
 // Korean keyboard recommendation: an actual accessible dialog that persists
 // until the learner dismisses it. The old seven-second timer is forbidden.
 assert.match(contract, /role="dialog"/);
@@ -84,4 +96,4 @@ assert.match(sw, /const CACHE_NAME = "hanapath-shell-v463"/);
 assert.match(sw, /"\.\/hangul_mastery_scoring_policy\.js\?v=20260810f"/);
 assert.match(sw, /"\.\/app_experience_contract\.js\?v=20260810f"/);
 
-console.log("App experience contract regression passed (live Progress, formal-only exam counts, accessible keyboard modal, sentinel Back, Hangul 75% policy). ");
+console.log("App experience contract regression passed (neutral lesson surface, live Progress, formal-only exam counts, accessible keyboard modal, sentinel Back, Hangul 75% policy). ");
