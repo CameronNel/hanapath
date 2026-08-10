@@ -2,11 +2,24 @@
 //
 // This file deliberately contains only browser-shell policy that must wrap the
 // monolithic app without changing curriculum data: accessible one-time Korean
-// keyboard guidance, live-derived Progress statistics, and browser/PWA back
-// behavior. It loads after app.js so the existing global entry points can be
-// tightened in one small, auditable surface.
+// keyboard guidance, live-derived Progress statistics, browser/PWA back
+// behavior, and neutral structural surfaces. It loads after app.js so the
+// existing global entry points can be tightened in one small, auditable surface.
 (function installHanaPathExperienceContract() {
   "use strict";
+
+  // Structural containers stay neutral. Accent belongs on controls, progress,
+  // focus, and feedback, not as a diffuse bloom leaking through translucent
+  // lesson cards. styles.css still carries the older top-right radial wash;
+  // this late policy layer removes it for the unreleased v463 experience packet.
+  const surfacePolicy = document.createElement("style");
+  surfacePolicy.id = "hanapath-experience-surface-policy";
+  surfacePolicy.textContent = `
+    .alphabet-lesson-player {
+      background: var(--panel);
+    }
+  `;
+  document.head.appendChild(surfacePolicy);
 
   // -------------------------------------------------------------------------
   // One-time Korean keyboard recommendation: accessible modal semantics,
