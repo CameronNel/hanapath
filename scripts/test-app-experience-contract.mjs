@@ -42,6 +42,12 @@ assert.match(contract, /event\.key !== "Tab"/);
 assert.match(contract, /restoreFocus/);
 assert.match(contract, /previousFocus\.focus\(\)/);
 assert.doesNotMatch(contract, /setTimeout\(dismiss,\s*7000\)/, "keyboard recommendation must not disappear on a timer");
+for (const token of ["--scrim", "--card", "--border", "--text", "--muted"]) {
+  assert.ok(contract.includes(token), `keyboard modal must use canonical theme token ${token}`);
+}
+for (const staleToken of ["--card-bg", "--border-color", "--text-color", "--text-sub"]) {
+  assert.ok(!contract.includes(staleToken), `keyboard modal must not rely on undefined theme token ${staleToken}`);
+}
 
 // Progress denominators and exam totals are live data, not copied scorecard
 // numbers. Formal achievement counts only immutable full-provenance hanaPath
@@ -108,4 +114,4 @@ assert.match(sw, /const CACHE_NAME = "hanapath-shell-v463"/);
 assert.match(sw, /"\.\/hangul_mastery_scoring_policy\.js\?v=20260810f"/);
 assert.match(sw, /"\.\/app_experience_contract\.js\?v=20260810f"/);
 
-console.log("App experience contract regression passed (neutral lesson surface, full live Word curriculum, formal-only exam counts, accessible keyboard modal, resilient sentinel Back, Hangul 75% policy). ");
+console.log("App experience contract regression passed (neutral lesson surface, themed accessible modal, full live Word curriculum, formal-only exam counts, resilient sentinel Back, Hangul 75% policy). ");
