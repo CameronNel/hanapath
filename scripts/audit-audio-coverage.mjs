@@ -392,6 +392,12 @@ function collectAppStaticData(collector, appSource) {
     for (const option of value.options || []) {
       if (typeof option === "string" && hasHangul(option)) collector.add(option, "app-korean-option");
     }
+    // Hangul Writing speaks each raw jamo in HANGUL_WRITING_UNITS.glyphs.
+    // Keep that runtime surface explicit so future edits cannot silently fall
+    // back to browser TTS even though the nested array has no voiceText field.
+    for (const glyph of value.glyphs || []) {
+      if (typeof glyph === "string" && hasHangul(glyph)) collector.add(glyph, "hangul-writing-glyph");
+    }
     for (const nested of Object.values(value)) {
       if (nested && typeof nested === "object") visit(nested, category, collectSentenceTokens);
     }

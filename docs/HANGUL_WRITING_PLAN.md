@@ -1,24 +1,27 @@
 # Hangul Writing plan — draw-to-learn for the Alphabet section
 
 > **Status:** W0–W2 and syllable-guide composition are merged. W1b still needs
-> advanced-jamo guides; W3 persistence remains open. The owner approved W4's
-> offline mobile handwriting recognizer on 2026-07-12; its implementation is
-> pending review on `codex/mobile-hangul-recognition`. The normative W2 stroke
-> pedagogy remains §7. One focused change = one PR, per repo convention.
+> advanced-jamo guides; W3 persistence remains open. W4's offline native
+> recognition implementation is present, with real-device provider evidence
+> still open. The normative W2 stroke pedagogy remains §7. The current release
+> access contract is `free_all`; paid-plan text is retained only as superseded
+> historical provenance. One focused change = one PR, per repo convention.
 
 ## 1. Goal
 
 Learners should be able to **draw Hangul with a finger/stylus/mouse** to learn
 letter shapes and stroke order, inside the existing Alphabet section flows.
 
-Owner-set scope boundary (2026-07-10), amended by the owner on 2026-07-20:
+Owner-set scope boundary (2026-07-10), most recently amended on 2026-08-10:
 
 - **Alphabet section: writing caps at a single syllable block** (jamo → CV →
   CVC). Nothing longer than one block ever appears here.
-- **Words/Sentences:** the owner approved the separate paid multi-block
-  expansion on 2026-07-20. Its governing contract is
-  [`PREMIUM_HANDWRITING_PLAN.md`](PREMIUM_HANDWRITING_PLAN.md). Alphabet
-  writing remains free and capped at a single block.
+- **Words/Sentences:** multi-block handwriting is included for every learner
+  under the current `free_all` release. There is no billing, purchase,
+  entitlement, or restore requirement. The earlier 2026-07-20 paid expansion
+  contract in [`PREMIUM_HANDWRITING_PLAN.md`](PREMIUM_HANDWRITING_PLAN.md) is
+  preserved as superseded history, not current implementation authority.
+  Alphabet writing remains capped at a single block.
 
 ## 2. Hard constraints (inherited from CLAUDE.md — restated because they bind every phase)
 
@@ -110,7 +113,7 @@ stub comments.
   link from the finished-alphabet reference screen. **No SRS, no XP changes,
   no gating changes** without a separate owner decision.
 - [~] **W4 — Mobile handwriting recognition.** *(Owner-approved 2026-07-12;
-  implemented on `codex/mobile-hangul-recognition`, pending review.)* Vendor a
+  implementation present; real-device comparison evidence remains open.)* Vendor a
   guarded New-BSD `$Q` browser adapter and generate its templates from the
   existing authored jamo/composed-syllable guides. Let learners keep real
   finger/stylus ink, report ranked “I read this as…” results, and retain the W2
@@ -120,8 +123,9 @@ stub comments.
   must remain suitable for eventual Google Play packaging.
 
 Writing SRS remains owner-gated. Multi-block word, phrase, and sentence
-writing is now owner-approved only under `PREMIUM_HANDWRITING_PLAN.md`; W4's
-single-block Alphabet contract remains unchanged.
+writing is available under the current `free_all` release contract; W4's
+single-block Alphabet contract remains unchanged. The former paid-access
+contract does not gate either surface.
 
 ## 5. Design decisions already made (don't relitigate)
 
@@ -141,12 +145,16 @@ single-block Alphabet contract remains unchanged.
 - Unlock gating mirrors the lesson that *teaches* the glyphs (see
   `unlockLessonIndex` in the shell). Writing never unlocks anything else.
 
-## 6. Approved separate expansion
+## 6. Current multi-block expansion
 
-- **Words/Phrases/Sentences:** sequential block-banking handwriting is approved
-  as a paid native feature under `PREMIUM_HANDWRITING_PLAN.md`. It does not
-  write to Words/Sentences SRS until a separate pedagogy decision is recorded.
-  The single-block cap and free access in the Alphabet section stand.
+- **Words/Phrases/Sentences:** sequential block-banking handwriting is included
+  free for all learners. It does not write to Words/Sentences SRS until a
+  separate pedagogy decision is recorded. The single-block cap in the Alphabet
+  section stands.
+- **Superseded history:** `PREMIUM_HANDWRITING_PLAN.md` records the former paid
+  native-feature design approved on 2026-07-20. It must not be used to restore
+  Play Billing, prices, checkout, purchase restoration, or entitlement gating
+  without a new owner decision and separately reviewed release packet.
 
 ## 7. W2 grading pipeline — normative spec (implement exactly; don't redesign)
 

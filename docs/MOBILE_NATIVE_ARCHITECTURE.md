@@ -1,7 +1,7 @@
 # Mobile native architecture record (M0)
 
-> Status: **M5 drafts + M4 scaffolding + Android premium-handwriting implementation** on
-> top of
+> Status: **M5 drafts + M4 scaffolding + Android `free_all` handwriting and
+> configuration-gated Google sign-in adapters** on top of
 > M1 (reproducible Capacitor Android shell) and M2 code (back contract,
 > progress export/import, device-test checklist; the real-device evidence in
 > `MOBILE_DEVICE_TEST_CHECKLIST.md` remains open). M3 now has the native
@@ -21,9 +21,11 @@ delivered on multiple surfaces: hosted website, installable PWA, and a
 Capacitor-packaged Android app (later iOS/iPadOS). Capacitor wraps generated,
 allowlisted copies of the audited web assets in `mobile/www/`; it never points
 at the repository root. No UI rewrite, no framework, no bundler. Native
-capability (ML Kit handwriting, if it wins the comparison gate) enters through
-tiny platform adapters behind a single runtime-detection helper, always with
-the existing web fallback.
+capabilities enter through small platform adapters behind explicit runtime and
+configuration boundaries. ML Kit handwriting always retains the existing web
+fallback. Google Credential Manager can return only an opaque ID token plus
+the request nonce; neither the plugin nor the web app treats that response as
+authenticated without an owner-operated verifier.
 
 ```text
 Canonical HanaPath HTML/CSS/JS (repo root — unchanged rules)
@@ -34,30 +36,33 @@ Canonical HanaPath HTML/CSS/JS (repo root — unchanged rules)
     └── ios/ (later — M6)
 ```
 
-## 2. Pinned toolchain (verified 2026-07-16)
+## 2. Pinned toolchain (re-verified 2026-08-10)
 
 | Component | Version | Notes |
 |---|---|---|
 | Capacitor (`@capacitor/core`, `cli`, `android`) | **8.4.2** (current stable major 8) | Verified on npm 2026-07-16; pin exact in `mobile/package-lock.json` at M1 |
 | Node | **22.x LTS** | v22.22.2 verified in the build environment |
 | Java | **21 (OpenJDK)** | 21.0.10 verified; matches Capacitor 8 / current AGP requirements |
-| Android target SDK | **API 35+ (Android 15)** | Current Play requirement for new apps; re-verify before every release |
+| Android target SDK | **API 36 (Android 16)** | Tracked compile/target level for the 2026 release; re-verify Play policy before every release |
 | Android min SDK | **24** | Tracked Capacitor 8 project floor; ML Kit Digital Ink itself requires API 23+ |
 | Android Studio | Not required for CI builds | Gradle wrapper + command line is the canonical build path; Studio is optional local tooling |
 
-Re-verify all rows against official docs at M1 before generating the project;
-none of these numbers is authoritative forever.
+Re-verify all rows against official documentation immediately before each
+signed release; none of these versions or policy requirements is authoritative
+forever.
 
-## 3. Repository facts (re-measured 2026-07-16)
+## 3. Repository facts (re-measured 2026-08-10)
 
-- `audio/`: **35,916 files**, ~**155 MiB** apparent size (Opus `.ogg`) —
-  matches the handover's 154.01 MiB measurement.
-- Working tree excluding `.git`: ~**183 MiB** apparent size.
+- `audio/`: **39,116 files**, ~**174.1 MiB** apparent size across the current
+  generated audio formats. The release workflow must measure the final AAB;
+  old repository-size figures are not release evidence.
 - `scripts/`: ~**20 MiB** (down from the handover's 79 MiB measurement;
   still never packaged).
-- Runtime network dependencies: **Google Fonts only** (three references in
-  `index.html`: two preconnects + one stylesheet for Outfit and Noto Sans KR).
-  These get vendored locally in M1.
+- Fonts and core runtime assets are local. Network use is limited to explicit
+  features: ML Kit's first Korean-model download and, only after owner
+  activation, Google Identity/Credential Manager plus HanaPath's trusted
+  session endpoint. The browser-only Google Identity adapter is removed from
+  the generated native payload.
 - `manifest.webmanifest`: `display: standalone`, `id: "/"`,
   `start_url: "./index.html"`, `scope: "./"`, 192/512 icons (512 maskable).
 - Learner state: synchronous `localStorage` key `hanapath-v1`.
@@ -81,32 +86,48 @@ none of these numbers is authoritative forever.
    install-time asset pack. No remote streaming, no hand-edits to
    `audio_map.js`.
 5. **Recognition**: `$Q` stays the web implementation and universal fallback.
-   ML Kit Digital Ink (`ko`) remains diagnostic-only for free Alphabet writing,
-   but is the explicitly approved recognizer for the separately entitled
-   Handwriting Coach word/phrase/sentence flow. Public sale remains blocked on
-   the comparison and device gates in `PREMIUM_HANDWRITING_PLAN.md`. The bridge uses
+   ML Kit Digital Ink (`ko`) remains diagnostic-only for free Alphabet writing
+   and is the native recognizer for the `free_all` Handwriting Coach
+   word/phrase/sentence flow. There is no entitlement or checkout gate. The
+   bridge uses
    a narrow `HangulRecognition` Capacitor plugin, on-demand model download,
    real pointer timestamps, writing-area context, and a cancellable JSON report
    containing candidates, target rank, false accepts, latency, and fallback
-   rate, plus banked-text context for premium recognition. The native status
-   check performs a real recognition warm-up; checkout is unavailable unless
-   both model presence and that warm-up succeed.
+   rate, plus banked-text context for multi-block recognition. The native
+   status check performs a real recognition warm-up before ML Kit is offered;
+   failed readiness returns to the local `$Q`/typed fallback without changing
+   access.
 6. **Minimal permissions**: CI fails on unexpected manifest permissions
    (handover §9.3). The ML Kit dependency transitively contributes
    WorkManager permissions; HanaPath removes those declarations in its app
-   manifest. The intentional allowlist is now `INTERNET` plus the normal
-   `com.android.vending.BILLING` permission for the optional unlock. The M3 device
-   matrix must therefore cover interrupted and backgrounded downloads.
+   manifest. The intentional platform permission allowlist for the `free_all`
+   release is `INTERNET`; Play Billing is not compiled or permission-merged.
+   The M3 device matrix must therefore cover interrupted and backgrounded
+   model downloads.
 7. **Milestone PRs M0→M6** as sequenced in handover §16; every native PR
    re-runs the full web audit gate (§12.2).
-8. **Premium entitlement boundary**: Android uses a one-time, restorable Play
-   product. Product ID and Play public key are empty public resources by
-   default, so checkout fails closed. A verified, purchased, non-pending store
-   transaction is required; local learner state never grants entitlement.
-   Client-side signature verification implements the requested no-server
-   architecture, but Google recommends server verification and the owner must
-   reaffirm this trade-off before public sale. iOS requires a separate StoreKit
-   2 adapter built and tested on macOS/Xcode.
+8. **Handwriting access boundary**: the current release is `free_all` on every
+   surface. No Billing library, permission, product ID, purchase state, restore
+   action, or store entitlement participates in access. The earlier paid
+   Handwriting Coach design remains historical provenance in
+   `PREMIUM_HANDWRITING_PLAN.md`; reintroducing it would require a separate
+   owner decision, policy update, implementation packet, and store/device
+   review.
+9. **Google sign-in boundary**: the checked-in adapters are intentionally
+   unconfigured. The current release creates no HanaPath account or session and
+   does not sync progress. Android requires the public Web/server OAuth client
+   ID through `HANAPATH_GOOGLE_SERVER_CLIENT_ID`; browsers require
+   `window.HANAPATH_AUTH_CONFIG.webClientId`; both require an HTTPS
+   `window.HANAPATH_AUTH_CONFIG.sessionEndpoint` configured before
+   `google_auth.js` loads. A future native activation therefore needs an
+   explicitly generated, audited packaged config; none exists in the current
+   release. The native plugin returns an opaque ID token and its exact generated
+   nonce, never a trusted local login.
+   Activation is blocked until an owner-controlled service verifies signature,
+   issuer, audience, expiry and the single-use nonce before minting a secure
+   HanaPath session. See the exact owner setup in
+   [`play-store/OWNER_DECISIONS.md`](play-store/OWNER_DECISIONS.md) and
+   [`play-store/SIGNING_AND_RELEASE.md`](play-store/SIGNING_AND_RELEASE.md).
 
 ## 5. Build and verify (M1)
 
@@ -140,13 +161,18 @@ artifacts. Owner setup and the release runbook live in
   code-side ML Kit proof of concept is present, but the comparison matrix and
   fallback scenarios in `MOBILE_DEVICE_TEST_CHECKLIST.md` must be executed
   before ML Kit can become authoritative.
-- **Premium product activation** — owner-created Play product ID, price, Play
-  license-test setup, public-key configuration, no-backend trade-off
-  reaffirmation, and all recognition/purchase cases in the device checklist.
-  Empty configuration intentionally exposes no checkout.
-- **iOS parity** — an iOS Capacitor shell, ML Kit adapter, StoreKit 2
-  entitlement/restore flow, and device evidence require macOS/Xcode; the
-  Windows Android implementation does not satisfy this gate.
+- **Google sign-in activation is deferred** — the current release must keep
+  the adapters unconfigured and expose no working account/session/sync. A
+  later activation needs the Web/server client ID, Android OAuth registrations
+  for `io.github.cameronnel.hanapath` with both upload and Play App Signing
+  SHA-1/SHA-256 fingerprints, the trusted token-plus-nonce verifier, updated
+  privacy/Data Safety/account-deletion contracts, and the device matrix.
+- **Superseded paid plan** — Play Billing activation is not a current blocker
+  because the selected release is `free_all`. The historical paid plan is not
+  permission to restore Billing or a purchase UI.
+- **iOS parity** — an iOS Capacitor shell, native recognition adapter, Google
+  sign-in adapter if later activated, and device evidence require macOS/Xcode;
+  the Windows Android implementation does not satisfy this gate.
 - **M4 first signed build** — owner actions in
   [`play-store/SIGNING_AND_RELEASE.md`](play-store/SIGNING_AND_RELEASE.md):
   generate the upload keystore, create the protected `google-play-release`

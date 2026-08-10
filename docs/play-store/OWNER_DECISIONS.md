@@ -41,15 +41,22 @@
   search keywords) or `HanaPath — Korean from zero`.
 - Changeable later, unlike the package ID, but churn hurts recognition.
 
-### 3. Free vs paid — ✅ owner-confirmed 2026-07-20
+### 3. Free listing and current monetization — ✅ owner-confirmed 2026-08-10
 
-**Confirmed: Free listing with an optional paid, restorable Handwriting Coach
-in-app purchase.**
+**Confirmed: Free listing with the Handwriting Coach included for every
+learner (`free_all`). The current release has no in-app purchase, Play Billing
+dependency, billing permission, checkout, restore flow, or store entitlement.**
 
-- Matches the current product (no ads, no accounts, no tracking).
+- Matches the current release (no ads, no active accounts, no developer
+  tracking, and no purchases).
 - Irreversibility warning: a **free listing can never become paid**; a paid
   app can later become free. Choosing Free is a permanent commitment for this
   listing (future revenue would need in-app purchases or a separate listing).
+- **Superseded history:** the 2026-07-20 decision described an optional paid,
+  restorable Handwriting Coach. That paid plan is retained in historical
+  planning documents for provenance, but it is not the current release
+  contract and must not be presented in the app, store listing, privacy page,
+  Data Safety form, manifest, or release bundle.
 
 ### 4. Target audience / children — ⏳
 
@@ -88,11 +95,51 @@ accounts show the verified name rules Google applies at registration).
 - **Drafted (M5):** `privacy.html` now exists at the repository root and goes
   live at that URL on merge (GitHub Pages serves the repo root). It states
   the actual behaviour: learning state and handwriting content stay on-device;
-  there are no ads, accounts, or developer analytics; Google ML Kit may send
-  limited SDK diagnostics and Google Play handles the optional purchase.
+  there are no ads, active HanaPath accounts, purchases, or developer
+  analytics; Google ML Kit may send limited SDK diagnostics. The
+  configuration-gated Google sign-in shell is not an account or sync feature
+  in the current release.
 - Required for Data Safety even for apps that collect nothing. The URL
   entered in Play Console is this decision; the page existing does not
   confirm it.
+
+### 9. Google sign-in activation boundary — ✅ current release confirmed 2026-08-10
+
+**Confirmed for the current release: Google sign-in remains unconfigured and
+fail-closed. HanaPath creates no account or authenticated session, sends no ID
+token to a verifier, and does not sync learner progress.** A disabled sign-in
+control may explain that owner configuration is required; it must not imply
+that an account exists or that local progress is backed up.
+
+Activating sign-in in a later reviewed release requires all of these owner
+actions together; setting only a client ID is not sufficient:
+
+1. Choose an owner-controlled Google Cloud project, configure its OAuth consent
+   screen, authorized domains, production status, and support/privacy links.
+2. Create a **Web application OAuth client**. Its client ID is the server/Web
+   client ID and the required `aud` value for every Google ID token. Supply it
+   to Android as `HANAPATH_GOOGLE_SERVER_CLIENT_ID`; supply it to the browser as
+   `window.HANAPATH_AUTH_CONFIG.webClientId` before `google_auth.js` loads.
+3. Create Android OAuth client registrations for the exact package
+   `io.github.cameronnel.hanapath`. Record **upload-key SHA-1 and SHA-256** and,
+   after Play App Signing enrolment, the distinct **Play App Signing SHA-1 and
+   SHA-256**. Use each certificate's SHA-1 in the corresponding Android OAuth
+   client and register SHA-256 wherever the linked Google/Firebase or Android
+   developer configuration requests it. A locally signed/upload-key build
+   working does not prove that a Play-installed build will work.
+4. Operate a trusted HTTPS session endpoint and configure it as
+   `window.HANAPATH_AUTH_CONFIG.sessionEndpoint` before `google_auth.js` loads
+   on both hosted web and an explicitly generated native configuration. It must
+   verify the Google ID token's cryptographic signature and current Google
+   keys, allowed issuer, exact Web-client audience, expiry/timing claims, and
+   the exact request nonce. The nonce must be single-use/replay-resistant before
+   the service creates its own secure session. The browser or Android plugin
+   must never decode a token and treat it as authenticated locally.
+5. Define the actual account lifecycle, sign-out/revocation behaviour, data
+   retention, in-app deletion path, public account-deletion URL, reviewer
+   access, privacy text, and Data Safety declarations before enabling the
+   control. Progress remains device-local unless a separately reviewed sync
+   service and migration contract are shipped.
 
 ## Record of confirmations
 
@@ -100,9 +147,10 @@ accounts show the verified name rules Google applies at registration).
 |---|---|---|---|---|
 | 1 | Package ID | ⏳ | — | — |
 | 2 | Store app name | ⏳ | — | — |
-| 3 | Free vs paid | ✅ | Free listing; optional Handwriting Coach IAP | 2026-07-20 |
+| 3 | Free vs paid | ✅ | Free listing; `free_all` Handwriting Coach; no Billing/IAP | 2026-08-10 |
 | 4 | Audience/countries | ⏳ | — | — |
 | 5 | Account type | ⏳ | — | — |
 | 6 | Publisher name | ⏳ | — | — |
 | 7 | Support contacts | ⏳ | — | — |
 | 8 | Privacy-policy URL | ⏳ | — | — |
+| 9 | Google sign-in activation | ✅ | Unconfigured/fail-closed; no account, session, or sync in current release | 2026-08-10 |

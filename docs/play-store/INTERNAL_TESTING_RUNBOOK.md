@@ -4,6 +4,11 @@
 > Play, and what stands between internal testing and production. Written
 > 2026-07-16 against handover §15; **re-check each linked Google requirement
 > at execution time** — Play policies change without notice.
+>
+> **Current release contract (2026-08-10):** the listing is free and
+> Handwriting Coach is `free_all`; the bundle contains no Play Billing or
+> purchase flow. Google sign-in is configuration-required and remains disabled
+> for this release, so there is no HanaPath account, session, or progress sync.
 
 ## 0. Prerequisites (in order)
 
@@ -19,6 +24,12 @@
 5. `privacy.html` live at the confirmed URL, and the
    [`DATA_SAFETY.md`](DATA_SAFETY.md) answers re-verified against that exact
    build.
+6. Merged-manifest/dependency evidence confirms no
+   `com.android.vending.BILLING`, Billing client, price, checkout, restore, or
+   store-entitlement surface.
+7. The release is built without `HANAPATH_GOOGLE_SERVER_CLIENT_ID` and without
+   a browser `window.HANAPATH_AUTH_CONFIG` session endpoint. Activating only
+   one piece of Google configuration is a release failure, not a partial login.
 
 ## 1. Create the app (once)
 
@@ -26,8 +37,11 @@ Play Console → **Create app**: app name (decision #2), default language,
 App (not game), Free (decision #3 — permanent), then accept the developer
 policies and **Play App Signing** terms. Complete the **App content** section
 early (privacy policy URL, ads = no, data safety per `DATA_SAFETY.md`, app
-access = full, content rating questionnaire, target audience per decision
-#4) — an incomplete App content section blocks every release, even internal.
+access = full with no login required, content rating questionnaire, target
+audience per decision #4) — an incomplete App content section blocks every
+release, even internal. The current answers must not declare an in-app purchase
+or active HanaPath account merely because historical paid-plan documents and
+configuration-gated sign-in adapters exist in the repository.
 
 ## 2. Internal testing release (hours, not days)
 
@@ -44,6 +58,12 @@ access = full, content rating questionnaire, target audience per decision
 Roll a new build (bug fix): re-run the release workflow with the **next
 versionCode**, upload the new AAB to the same track.
 
+Before sharing the opt-in URL, install the Play-delivered build once and
+confirm that Handwriting Coach opens without a paywall, the Google sign-in
+control reports configuration required, and local progress remains usable
+without an account. A locally installed upload-key build is not a substitute
+for this Play App Signing smoke test.
+
 ## 3. Tester instructions (copy-paste template)
 
 > Thanks for testing HanaPath! 🇰🇷
@@ -52,7 +72,12 @@ versionCode**, upload the new AAB to the same track.
 > 2. Install HanaPath from the Play Store link on that page.
 > 3. Use it like a real learner for a few sessions: finish at least one
 >    alphabet lesson, one writing exercise, one word review, and one
->    sentence exercise. Try airplane mode — everything should still work.
+>    sentence exercise. Open word/sentence Handwriting Coach and confirm there
+>    is no price, purchase, or restore prompt. The Google sign-in option should
+>    be disabled as configuration-required and must not claim that progress is
+>    synced. Try airplane mode — core learning and local progress should still
+>    work, with the documented local fallback if the optional ML Kit model has
+>    not been downloaded.
 > 4. Send feedback with the template below. Screenshots welcome.
 >
 > **Feedback template**
@@ -103,3 +128,33 @@ Production rollout stays a manual owner action after closed testing and
 production-access approval — staged rollout (start ≤20%), with rollback =
 halt rollout and/or ship a higher-versionCode revert (handover §17). No
 automation promotes anything to production.
+
+## 7. Later Google sign-in activation — not part of this release
+
+Do not turn the current disabled control into a working login by changing only
+a client ID. A later internal-track candidate must first have:
+
+1. An owner-controlled Google Cloud OAuth consent screen and a Web application
+   client ID used as the server/Web token audience.
+2. Android OAuth clients for package `io.github.cameronnel.hanapath`, covering
+   the upload certificate's SHA-1/SHA-256 and the distinct Play App Signing
+   certificate's SHA-1/SHA-256. Use the SHA-1 values for the corresponding
+   Android OAuth clients and register SHA-256 wherever the linked Google or
+   Android developer configuration requests it. Test both direct/upload-key and
+   Play-installed builds.
+3. `HANAPATH_GOOGLE_SERVER_CLIENT_ID` injected into the Android build and
+   `window.HANAPATH_AUTH_CONFIG.webClientId` plus a secure
+   `sessionEndpoint` configured before `google_auth.js` on web. The packaged
+   native app also needs that endpoint through an audited generated
+   configuration.
+4. A trusted HTTPS verifier that validates Google signature/keys, issuer,
+   exact audience, timing claims, and the exact single-use request nonce before
+   issuing its own secure session. The client and native plugin are not trust
+   boundaries.
+5. Updated privacy, Data Safety, reviewer-access, retention, sign-out/revocation,
+   and in-app/public account-deletion contracts. Account activation still does
+   not authorize progress sync; sync requires a separate reviewed design.
+
+Run the E4 matrix in
+[`../MOBILE_DEVICE_TEST_CHECKLIST.md`](../MOBILE_DEVICE_TEST_CHECKLIST.md) on
+the internal track before changing the Play Console account declarations.

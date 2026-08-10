@@ -111,10 +111,10 @@
         return null;
       }
 
-      async function replaceState(nextState) {
-        // Unload the current app before changing storage. HanaPath may persist its
-        // in-memory state during navigation, which would otherwise overwrite the
-        // fixture's deterministic seed between journey phases.
+      async function unloadApp() {
+        // Unload the current app before changing storage. HanaPath may persist
+        // in-memory state during navigation, which would otherwise overwrite a
+        // deterministic corruption or migration seed.
         const unloadMarker = `l1-unload-${Date.now()}-${loadSerial}`;
         frame.src = `about:blank#${unloadMarker}`;
         await waitFor(() => {
@@ -127,6 +127,10 @@
           }
         }, "blank app unload");
         await sleep(20);
+      }
+
+      async function replaceState(nextState) {
+        await unloadApp();
         localStorage.setItem(storageKey, JSON.stringify(nextState));
         await loadApp();
         return getState();
@@ -194,17 +198,72 @@
             assertUsableScreen(`nav-${hub}`);
           }
 
+          step("transactional storage recovery and legacy normalization");
+          const recoverySeed = getState();
+          recoverySeed.onboarded = true;
+          recoverySeed.totalMinutes = 321;
+          check(
+            typeof w.hasRecognizableStateShape === "function" && w.hasRecognizableStateShape(recoverySeed),
+            "recovery-seed-recognized",
+            JSON.stringify(Object.fromEntries(Object.entries(recoverySeed).map(([key, value]) => [key, Array.isArray(value) ? "array" : value === null ? "null" : typeof value]))),
+          );
+          await unloadApp();
+          localStorage.setItem(`${storageKey}-recovery`, JSON.stringify(recoverySeed));
+          localStorage.setItem(storageKey, "{broken-json");
+          await loadApp();
+          w = appWindow(); d = appDocument();
+          check(getState().totalMinutes === 321, "corrupt-live-recovers-last-valid-profile");
+          check(Boolean(w.localStorage.getItem(`${storageKey}-corrupt`)), "corrupt-payload-preserved");
+
+          const typedRecoverySeed = getState();
+          typedRecoverySeed.totalMinutes = 654;
+          await unloadApp();
+          localStorage.setItem(`${storageKey}-recovery`, JSON.stringify(typedRecoverySeed));
+          localStorage.setItem(storageKey, JSON.stringify({ phaseOneCompleted: "broken" }));
+          await loadApp();
+          w = appWindow(); d = appDocument();
+          check(getState().totalMinutes === 654, "parseable-corrupt-live-recovers-last-valid-profile");
+          check(w.localStorage.getItem(`${storageKey}-recovery`) === JSON.stringify(typedRecoverySeed), "parseable-corrupt-live-does-not-overwrite-recovery");
+
+          const alphabetIds = w.getAlphabetProgress().orderedLessonIds;
+          const gappedLegacy = getState();
+          gappedLegacy.onboarded = false;
+          gappedLegacy.phaseOneCompleted = [alphabetIds[0], alphabetIds[2]];
+          gappedLegacy.vocabSrs = { legacy: validVocabRecord() };
+          await replaceState(gappedLegacy);
+          w = appWindow(); d = appDocument();
+          const normalizedLegacy = getState();
+          check(normalizedLegacy.onboarded === true, "legacy-progress-skips-repeat-onboarding");
+          check(same(normalizedLegacy.phaseOneCompleted, [alphabetIds[0]]), "gapped-alphabet-progress-normalized-to-prefix");
+          check(same(normalizedLegacy.migrationRecovery?.alphabetPhaseOneEvidence, [alphabetIds[0], alphabetIds[2]]), "gapped-evidence-preserved-outside-canonical-progress");
+
+          const liveBeforeQuota = w.localStorage.getItem(storageKey);
+          const originalSetItemForQuota = w.Storage.prototype.setItem;
+          w.Storage.prototype.setItem = function (key, value) {
+            if (key === `${storageKey}-recovery`) throw new w.DOMException("Quota exceeded", "QuotaExceededError");
+            return originalSetItemForQuota.call(this, key, value);
+          };
+          w.setTrackLevel("alphabet", 2);
+          check(w.saveState() === false, "backup-quota-fails-save-closed");
+          check(w.localStorage.getItem(storageKey) === liveBeforeQuota, "backup-quota-preserves-live-profile");
+          w.Storage.prototype.setItem = originalSetItemForQuota;
+
           step("Learn destination reachability");
           await goLearn();
-          const requiredHubItems = ["alphabet", "vocabulary", "sentences", "listening", "alphabet-practice", "vocabulary-quiz", "listening-quiz", "writing", "form-checks"];
-          for (const id of requiredHubItems) check(Boolean(d.querySelector(`[data-hub-item="${id}"]`)), `learn-item-${id}`);
-          await openHubItem("alphabet-practice");
+          const visibleLearnItems = Array.from(d.querySelectorAll("[data-hub-item]")).map((node) => node.dataset.hubItem);
+          check(JSON.stringify(visibleLearnItems) === JSON.stringify(["alphabet", "vocabulary", "sentences"]), "learn-has-only-three-visible-destinations");
+          check(typeof w.openHubItem === "function", "hidden-learn-route-loader-exposed");
+          w.openHubItem("learn", "alphabet-practice");
+          await sleep(100);
           check(/practice|drill/i.test(visibleScreen()?.textContent || ""), "drill-lab-reachable");
-          await openHubItem("listening");
+          w.openHubItem("learn", "listening");
+          await sleep(100);
           check(/listening|hear/i.test(visibleScreen()?.textContent || ""), "listening-reachable");
-          await openHubItem("writing");
+          w.openHubItem("learn", "writing");
+          await sleep(100);
           check(d.querySelectorAll("[data-writing-source]").length >= 3, "writing-sources-reachable");
-          await openHubItem("form-checks");
+          w.openHubItem("learn", "form-checks");
+          await sleep(100);
           check(/Form Checks/i.test(visibleScreen()?.textContent || ""), "form-checks-reachable");
 
           step("Alphabet, Words, and Sentences lesson launches and unlocks");

@@ -8,7 +8,7 @@ const billingPluginUrl = new URL("../mobile/android/app/src/main/java/io/github/
 const recognitionJava = readFileSync(new URL("../mobile/android/app/src/main/java/io/github/cameronnel/hanapath/HangulRecognitionPlugin.java", import.meta.url), "utf8");
 const strings = readFileSync(new URL("../mobile/android/app/src/main/res/values/strings.xml", import.meta.url), "utf8");
 const manifest = readFileSync(new URL("../mobile/android/app/src/main/AndroidManifest.xml", import.meta.url), "utf8");
-const filePaths = readFileSync(new URL("../mobile/android/app/src/main/res/xml/file_paths.xml", import.meta.url), "utf8");
+const filePathsUrl = new URL("../mobile/android/app/src/main/res/xml/file_paths.xml", import.meta.url);
 const buildGradle = readFileSync(new URL("../mobile/android/app/build.gradle", import.meta.url), "utf8");
 const plan = readFileSync(new URL("../docs/PREMIUM_HANDWRITING_PLAN.md", import.meta.url), "utf8");
 
@@ -80,11 +80,10 @@ requireCheck(!strings.includes('name="premium_writing_product_id"') && !strings.
 
 requireCheck(manifest.includes('android:allowBackup="false"'), "Android learner state is still eligible for OS backup");
 requireCheck(manifest.includes('android:fullBackupContent="false"'), "Android full-backup policy is not explicitly disabled");
-requireCheck(!/<external-path\b/.test(filePaths), "FileProvider exposes external storage");
-requireCheck(!/path=["']\.["']/.test(filePaths), "FileProvider exposes an entire storage root");
-requireCheck(filePaths.includes('path="exports/"') && filePaths.includes('path="shared/"'), "FileProvider is not limited to explicit export/share staging directories");
+requireCheck(!/androidx\.core\.content\.FileProvider/.test(manifest), "unused Android FileProvider remains registered");
+requireCheck(!existsSync(filePathsUrl), "orphaned FileProvider path configuration remains packaged");
 
-requireCheck(plan.includes("free Android build does not compile, register, configure, or request permission for Google Play Billing"), "governing plan does not state the billing-free free-build contract");
+requireCheck(/free Android build does not compile, register, configure, or request\s+permission for Google Play Billing/.test(plan), "governing plan does not state the billing-free free-build contract");
 requireCheck(plan.includes("separately reviewed store-mode packet"), "future billing reintroduction is not isolated behind a fresh review gate");
 
 console.log("Handwriting and Android release-safety audit");

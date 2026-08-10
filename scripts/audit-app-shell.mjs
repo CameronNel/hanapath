@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import "./test-audit-words-assessment-integrity.mjs";
+import "./test-runtime-truthfulness.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -126,6 +127,14 @@ for (const asset of shellAssets) {
 
 if (!shellSet.has("./index.html")) errors.push("sw.js APP_SHELL must include ./index.html");
 if (!shellSet.has("./")) errors.push("sw.js APP_SHELL must include ./");
+if (!shellSet.has("./privacy.html")) errors.push("sw.js APP_SHELL must include ./privacy.html for offline policy access");
+
+const navigationHandler = swJs.match(/if \(event\.request\.mode === "navigate"\) \{([\s\S]*?)\n  \}/)?.[1] || "";
+const directNavigationMatch = navigationHandler.indexOf("cache.match(event.request, { ignoreSearch: true })");
+const appShellFallback = navigationHandler.indexOf('cache.match("./index.html")');
+if (directNavigationMatch < 0 || appShellFallback < 0 || directNavigationMatch > appShellFallback) {
+  errors.push("sw.js navigation fallback must try the requested cached document before index.html");
+}
 
 console.log(`Index local assets: ${indexAssets.length}`);
 console.log(`Service worker shell assets: ${shellAssets.length}`);

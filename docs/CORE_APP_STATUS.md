@@ -54,9 +54,9 @@ owns *what to do next*; this file owns *what currently exists*.
 
 | Metric | Value |
 |---|---|
-| Service-worker cache name | hanapath-shell-v456 |
-| Versioned local assets loaded by index.html | 37 |
-| Precached service-worker shell assets | 210 |
+| Service-worker cache name | hanapath-shell-v460 |
+| Versioned local assets loaded by index.html | 39 |
+| Precached service-worker shell assets | 213 |
 
 ### Sentence Mastery examination readiness
 
@@ -87,6 +87,9 @@ blocking; release mode permits no skipped or conditional core checks.
 | Release-candidate strict-gate wiring regression (Q2) | `node scripts/test-core-release-strict-gate.mjs` | blocking |
 | Sentence-exam readiness derivation regression | `node scripts/test-sentence-exam-readiness.mjs` | blocking |
 | Exam integrity | `node scripts/audit-exam-integrity.mjs` | blocking |
+| Global testing-mode Practice taint | `node scripts/test-testing-mode-integrity.mjs` | blocking |
+| Google sign-in trust and platform boundary | `node scripts/test-google-auth-contract.mjs` | blocking |
+| Theme, Learn hub, and motion contract | `node scripts/test-theme-and-learn-hub.mjs` | blocking |
 | Hangul Mastery examination | `node scripts/audit-hangul-mastery-exam.mjs` | blocking |
 | Word-exam competency map | `node scripts/build-word-exam-competency-map.mjs --check` | blocking |
 | Core Word examinations | `node scripts/audit-word-exams.mjs` | blocking |

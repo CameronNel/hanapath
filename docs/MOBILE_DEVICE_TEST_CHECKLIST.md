@@ -71,11 +71,39 @@ grader.
 - [ ] Low-storage/download interruption returns to `$Q` cleanly and does not leave a false “ready” state.
 - [ ] Only after evidence review: record the provider decision in the PR and change learner grading authority in a separate, explicitly reviewed patch if ML Kit wins.
 
-## E3. Premium Handwriting Coach safety evidence
+## E3. `free_all` Handwriting Coach release evidence
 
-Public checkout must remain disabled until every case below has recorded
-evidence. Use Play license testers and the real configured non-consumable; never
-test real-money purchases from an unreviewed build.
+The selected release includes Handwriting Coach for every learner. There is no
+purchase, entitlement, or restore boundary.
+
+- [ ] Word, phrase, and sentence Handwriting Coach entry points are available
+  on a fresh install without an account, entitlement, or network connection.
+- [ ] The merged release manifest has no
+  `com.android.vending.BILLING` permission, and the dependency report contains
+  no Play Billing client.
+- [ ] No screen shows a price, paywall, Buy/Restore control, purchase error, or
+  premium-lock copy.
+- [ ] Missing/offline/interrupted ML Kit model setup returns to `$Q` or typed
+  practice without changing access or suggesting a purchase.
+- [ ] Reinstalling or clearing app data never asks the learner to restore a
+  purchase; access remains free while local progress follows the documented
+  export/import lifecycle.
+- [ ] Write at least 100 varied real Korean blocks across multiple writers;
+  record top-1 accuracy, false accepts, retry rate, mean latency, and p95.
+- [ ] A correct exact top-1 result banks once, clears the canvas, highlights
+  the next block immediately, and never skips spaces/punctuation incorrectly.
+- [ ] A lower-ranked target, wrong result, recognition error, or lost
+  connectivity does not bank; ink remains editable.
+- [ ] Complete word, phrase, and sentence sets on narrow phone, typical phone,
+  and tablet with finger and stylus.
+
+### Superseded paid-plan checklist — historical only
+
+The cases below preserve the earlier paid Handwriting Coach acceptance design.
+The 2026-08-10 `free_all` decision supersedes that plan for the current release;
+do not configure a Play product, perform purchase tests, or treat these items as
+release requirements unless a later owner-approved paid-mode packet explicitly
+reactivates them.
 
 - [ ] Free Alphabet block writing works before model download and without an entitlement.
 - [ ] Model absent/offline, interrupted, and low-storage cases expose no purchase button and charge nothing.
@@ -93,6 +121,44 @@ test real-money purchases from an unreviewed build.
 - [ ] A lower-ranked target, wrong result, recognition error, or lost connectivity does not bank; ink remains editable.
 - [ ] Leave and re-enter mid-line: block/prompt position resumes, but store ownership and model readiness are re-queried.
 - [ ] Complete word, phrase, and sentence sets on narrow phone, typical phone, and tablet with finger and stylus.
+
+## E4. Google sign-in configuration boundary
+
+The current release has no HanaPath account, authenticated session, or sync.
+The sign-in adapters must remain visibly fail-closed until every later
+activation prerequisite is configured and reviewed.
+
+- [ ] In the normal unsigned, debug, and signed release builds,
+  `HANAPATH_GOOGLE_SERVER_CLIENT_ID` is empty and no secure session endpoint is
+  injected; the control is disabled with configuration-required copy.
+- [ ] In Chrome/PWA without `window.HANAPATH_AUTH_CONFIG.webClientId` and a
+  secure `sessionEndpoint`, no Google Identity request starts and the disabled
+  control does not imply that an account exists.
+- [ ] Using the disabled control creates no cookie/session, sends no ID token,
+  and leaves all progress device-local. Export/import remains the only transfer
+  path between browser/PWA and Android storage containers.
+- [ ] Airplane mode and Google Play Services unavailable/outdated states do not
+  affect onboarding, lessons, examinations, handwriting, progress, or backup.
+
+Before a later release activates sign-in, add recorded evidence for all of the
+following:
+
+- [ ] The Android OAuth clients use package
+  `io.github.cameronnel.hanapath`; the upload-key and Play App Signing
+  certificate records include SHA-1/SHA-256, and their corresponding Android
+  OAuth/client configurations both work on the installed builds they sign.
+- [ ] The Web/server client ID is the token audience on Android and web, and
+  browser authorized origins match the production HTTPS origin exactly.
+- [ ] The trusted HTTPS service accepts only a valid Google signature, allowed
+  issuer, exact audience, valid timing claims, and the exact outstanding nonce;
+  it rejects wrong-audience, expired, altered, missing-nonce, and replayed-token
+  fixtures without creating a HanaPath session.
+- [ ] Cancel, no credential, offline, interrupted activity, sign-out, and
+  revoked-account paths fail safely on phone and tablet.
+- [ ] Privacy, Data Safety, app-access/reviewer instructions, retention, and
+  both in-app and public account-deletion paths match the activated service.
+- [ ] Signing in does not silently sync or overwrite `hanapath-v1`; any future
+  sync behaviour has its own reviewed migration and conflict contract.
 
 ## F. Layout, safe areas, system UI
 

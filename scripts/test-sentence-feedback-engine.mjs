@@ -70,12 +70,12 @@ assert.equal((html.match(/data-sentence-token-status="moved"/g) || []).length, 2
 assert.equal((html.match(/data-sentence-token-status="substituted"/g) || []).length, 2);
 assert.doesNotMatch(feedback.render(["<script>"], "<img>"), /<script>|<img>/, "rendered tokens must be escaped");
 
-const feedbackRef = indexHtml.indexOf("./sentence_feedback.js?v=20260727a");
-const appRef = indexHtml.indexOf("./app.js?v=20260727a");
+const feedbackRef = indexHtml.indexOf("./sentence_feedback.js?v=20260810c");
+const appRef = indexHtml.indexOf("./app.js?v=20260810c");
 assert.ok(feedbackRef >= 0 && appRef > feedbackRef, "sentence feedback helper must load before app.js");
-assert.match(swSource, /"\.\/sentence_feedback\.js\?v=20260727a"/);
-assert.match(swSource, /"\.\/app\.js\?v=20260727a"/);
-assert.match(swSource, /"\.\/styles\.css\?v=20260727a"/);
+assert.match(swSource, /"\.\/sentence_feedback\.js\?v=20260810c"/);
+assert.match(swSource, /"\.\/app\.js\?v=20260810c"/);
+assert.match(swSource, /"\.\/styles\.css\?v=20260810c"/);
 
 assert.match(appSource, /function alignSentenceTokens\(targetValue, typedValue\)[\s\S]*HANAPATH_SENTENCE_FEEDBACK/);
 assert.match(appSource, /function sentenceTokenDiffHtml\(row, typed\)[\s\S]*feedback\.render\(targetTokens, typed\)/);

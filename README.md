@@ -25,9 +25,10 @@ packaging is an integration layer, not a rewrite.
 - 4,177 unique, audio-backed sentences organised into a 75-unit Sentence path,
   with listen-and-shadow study, Translate & Type, sentence building, dictation,
   transform practice, checkpoints, SRS, listening, and exact remediation routes.
-- Optional native Handwriting Coach for words, phrases, and sentences. The
-  current shipped access mode is `free_all`; billing code remains dormant for a
-  later owner decision.
+- Native Handwriting Coach for words, phrases, and sentences. The current
+  release access mode is `free_all`: every learner can use it, and the Android
+  package contains no Play Billing dependency, billing permission, purchase
+  flow, or store entitlement.
 
 ### Exam
 
@@ -71,7 +72,13 @@ finishing lessons and examinations.
 
 Browser/PWA and native-app progress currently live in separate storage
 containers. Export/import is the supported transfer path; account sync is not a
-shipped feature.
+shipped feature. The Google sign-in adapters are configuration-gated and fail
+closed: the current release has no configured session service, creates no
+HanaPath account or session, and never treats a Google ID token as trusted on
+the device. Activation requires the owner-controlled OAuth clients, Android
+certificate registrations, and trusted token-plus-nonce verifier recorded in
+[`docs/play-store/OWNER_DECISIONS.md`](docs/play-store/OWNER_DECISIONS.md) and
+[`docs/play-store/SIGNING_AND_RELEASE.md`](docs/play-store/SIGNING_AND_RELEASE.md).
 
 ## Run locally
 

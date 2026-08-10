@@ -19,10 +19,11 @@ const androidRoot = join(repoRoot, "mobile", "android");
 const errors = [];
 const warnings = [];
 
-// Documented size expectations (MiB). The base payload is ~167 MiB today,
-// dominated by the audio library (handover §7 parity experiment).
-const SIZE_WARN_MIB = 200;
-const SIZE_FAIL_MIB = 400;
+// Conservative uncompressed payload guard. The current package is close
+// enough to Play delivery thresholds that further growth must be an explicit
+// release decision, not a silent warning hundreds of MiB later.
+const SIZE_WARN_MIB = 190;
+const SIZE_FAIL_MIB = 200;
 
 // Assets the app cannot run without.
 const REQUIRED_ASSETS = [
@@ -68,7 +69,8 @@ const DISALLOWED_FILE_PATTERNS = [
 // Remote references in load positions (same contract as prepare-web.mjs).
 const REMOTE_DEPENDENCY_PATTERNS = [
   /url\(\s*["']?https?:\/\//i,
-  /\b(?:src|href)\s*=\s*["']https?:\/\//i,
+  /\bsrc\s*=\s*["']https?:\/\//i,
+  /<link\b[^>]*\bhref\s*=\s*["']https?:\/\//i,
   /\bfetch\(\s*["'`]https?:\/\//,
   /\.src\s*=\s*["'`]https?:\/\//,
   /\bimportScripts\(/,
@@ -76,12 +78,11 @@ const REMOTE_DEPENDENCY_PATTERNS = [
   /\bnew\s+Worker\(\s*["'`]https?:\/\//,
 ];
 
-// Android permissions the app is allowed to declare. Both are normal
-// (non-dangerous): INTERNET supports the hosted product/model download and
-// BILLING supports the owner-approved, restorable Handwriting Coach IAP.
+// INTERNET supports the optional ML Kit model download and a future
+// owner-configured account service. The free_all release fails if Billing or
+// any other permission reappears.
 const ALLOWED_ANDROID_PERMISSIONS = new Set([
   "android.permission.INTERNET",
-  "com.android.vending.BILLING",
 ]);
 
 function walk(dir, out = []) {
@@ -229,7 +230,7 @@ if (!existsSync(androidRoot)) {
   if (!minSdk) errors.push("variables.gradle: minSdkVersion missing");
   else if (Number(minSdk[1]) < 23) errors.push(`minSdkVersion ${minSdk[1]} is below the supported floor of 23`);
   if (!targetSdk) errors.push("variables.gradle: targetSdkVersion missing");
-  else if (Number(targetSdk[1]) < 35) errors.push(`targetSdkVersion ${targetSdk[1]} is below the current Play requirement of 35`);
+  else if (Number(targetSdk[1]) !== 36) errors.push(`targetSdkVersion ${targetSdk[1]} does not match HanaPath's audited API 36 release contract`);
 
   const capacitorConfig = JSON.parse(readFileSync(join(repoRoot, "mobile", "capacitor.config.json"), "utf8"));
   if (capacitorConfig.appId !== "io.github.cameronnel.hanapath") errors.push(`capacitor.config.json appId is ${capacitorConfig.appId}`);
