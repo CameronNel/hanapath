@@ -44,7 +44,8 @@ No new Words imports or Sentence scenario packs belong to core completion.
 
 ### Examinations
 
-- Hangul Mastery: shipped, 200 items.
+- Hangul Mastery: shipped, 200 items; current owner-approved mastery threshold is
+  150/200 (75%) under `docs/HANGUL_MASTERY_SCORING_POLICY_AMENDMENT.md`.
 - Core Words: shipped, 10 exams, v3 typed past/negation production, delayed
   retention, valid frozen-v2 retention compatibility.
 - Sentence Mastery: shipped from the enabled frozen 359-typed/343-recognition
@@ -93,7 +94,8 @@ backup validation. Never bypass or weaken this layer.
 | `docs/SENTENCES_FINAL_ROADMAP.md` | Historical Sentence build/content record, not an active queue |
 | `docs/SENTENCE_ELIGIBILITY_AUTHORING.md` | Binding row-classification rules for Sentence exams |
 | `docs/SENTENCE_MASTERY_EXAM_SPEC_DRAFT.md` | Binding Sentence stage/final/retention contract for roadmap packets E/X |
-| `docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md` | Hangul Mastery design contract |
+| `docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md` | Hangul Mastery design contract except where explicitly superseded by the scoring amendment below |
+| `docs/HANGUL_MASTERY_SCORING_POLICY_AMENDMENT.md` | Binding current Hangul mastery threshold; supersedes only the older 200/200 scoring clauses |
 | `docs/CORE_WORD_EXAM_SPECS.md` | Core Word suite contract; shipped v3 changes and compatibility must remain audited |
 | `docs/CORE_WORD_EXAM_COMPETENCY_MAP.md` | Generated proof of taught-before-tested Word competencies |
 | `docs/INTEGRITY_AND_PROVENANCE_SPEC_DRAFT.md` | Result provenance, taint, migration, disclosure, and relation contract |
