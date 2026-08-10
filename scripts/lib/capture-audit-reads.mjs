@@ -8,6 +8,7 @@
 // The audit runs to completion; its own exit code is preserved so a capture
 // against a failing audit cannot be mistaken for a clean one.
 import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import { syncBuiltinESMExports } from "node:module";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -28,7 +29,7 @@ function record(candidate) {
   if (typeof candidate !== "string" && !(candidate instanceof URL)) return; // fd or Buffer handle
   try {
     const abs = path.resolve(candidate instanceof URL ? fileURLToPath(candidate) : candidate);
-    if (!abs.startsWith(ROOT)) return;
+    if (abs !== ROOT && !abs.startsWith(ROOT + path.sep)) return;
     const rel = path.relative(ROOT, abs).split(path.sep).join("/");
     // node_modules and generated mobile payloads are not audit inputs.
     if (rel.startsWith("node_modules/") || rel.startsWith("mobile/www/")) return;
@@ -38,12 +39,10 @@ function record(candidate) {
   }
 }
 
-// Patch the CommonJS/default fs surface first, then synchronize Node's builtin
+// Patch the mutable default fs surfaces first, then synchronize Node's builtin
 // ESM live bindings. The target audit is imported only after this point, so both
-// `import fs from "node:fs"` and named forms such as
-// `import { readFileSync } from "node:fs"` observe the instrumented functions.
-// The same synchronization also covers named imports from `node:fs/promises`
-// after its promise methods are patched below.
+// default and named imports observe the instrumented functions. Patch
+// node:fs/promises directly rather than relying on fs.promises object identity.
 const nativeWrite = fs.writeFileSync.bind(fs);
 const nativeExists = fs.existsSync.bind(fs);
 const nativeStat = fs.statSync.bind(fs);
@@ -56,9 +55,9 @@ for (const name of ["readFileSync", "readFile", "openSync", "createReadStream"])
   };
 }
 for (const name of ["readFile", "open"]) {
-  const original = fs.promises?.[name];
+  const original = fsPromises[name];
   if (typeof original !== "function") continue;
-  fs.promises[name] = function patchedPromiseRead(target_, ...rest) {
+  fsPromises[name] = function patchedPromiseRead(target_, ...rest) {
     record(target_);
     return original.call(this, target_, ...rest);
   };
