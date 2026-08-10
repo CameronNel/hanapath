@@ -29,7 +29,7 @@
 //   node scripts/exam-compute-freeze.mjs --check sentence-exams
 //   node scripts/exam-compute-freeze.mjs --status           # human summary
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -56,6 +56,11 @@ function repoFileFromAbsolute(candidate) {
   const abs = resolve(candidate);
   if (abs !== ROOT && !abs.startsWith(ROOT + sep)) return null;
   if (!existsSync(abs)) return null;
+  try {
+    if (!statSync(abs).isFile()) return null;
+  } catch {
+    return null;
+  }
   return relative(ROOT, abs).split(sep).join("/");
 }
 
@@ -87,11 +92,17 @@ function literalRepoFiles(sourceRel, source) {
     }
 
     // Audits also conventionally spell repo-root data files as bare literals.
-    // Retain the historical prefix search for those paths.
+    // Retain the historical prefix search for those paths, but only pin files.
     const candidate = literal.replace(/^\.\//, "");
     for (const prefix of ["", "docs/generated/", "docs/authoring/", "docs/reviews/", "scripts/", "scripts/lib/"]) {
       const rel = prefix + candidate;
-      if (existsSync(join(ROOT, rel))) found.add(rel.split(sep).join("/"));
+      const abs = join(ROOT, rel);
+      if (!existsSync(abs)) continue;
+      try {
+        if (statSync(abs).isFile()) found.add(rel.split(sep).join("/"));
+      } catch {
+        /* fail closed at write time by omitting an unreadable pseudo-file */
+      }
     }
   }
   return found;
