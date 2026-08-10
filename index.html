@@ -45,8 +45,9 @@
     <!-- Alphabet Hangul-writing stroke data — load before app.js -->
     <script defer src="./lib/hangul_q_recognizer.js?v=20260715b"></script>
     <script defer src="./hangul_strokes.js?v=20260715b"></script>
-    <!-- Hangul Mastery Examination bank — load before app.js -->
+    <!-- Hangul Mastery Examination bank + current scoring policy — load before app.js -->
     <script defer src="./hangul_mastery_exam.js?v=20260720a"></script>
+    <script defer src="./hangul_mastery_scoring_policy.js?v=20260810f"></script>
     <!-- Core Word Examination Suite — blueprints + engine, load before app.js -->
     <script defer src="./word_exam_blueprints.js?v=20260723a"></script>
     <script defer src="./word_exam_engine.js?v=20260723a"></script>
@@ -58,6 +59,7 @@
     <!-- Browser-only GIS adapter. Native packaging removes this tag and uses Android Credential Manager. -->
     <script defer data-browser-only src="./google_auth_web.js?v=20260810c"></script>
     <script defer src="./app.js?v=20260810f"></script>
+    <script defer src="./app_experience_contract.js?v=20260810f"></script>
     <script defer src="./sentence_exam_runner.js?v=20260810c"></script>
     <script defer src="./alphabet_skill_srs.js?v=20260810c"></script>
   </head>
