@@ -88,13 +88,13 @@
       unlockSectionOrders: Object.freeze([1,2,3,4,5,6,7,8]), itemCount: 50, timeLimitMinutes: 75,
       allocations: FINAL_ALLOCATIONS, tagFloors: FINAL_TAG_FLOORS,
       sectionFloors: Object.freeze({ "section-1":5,"section-2":5,"section-3":5,"section-4":5,"section-5":5,"section-6":5,"section-7":5,"section-8":5 }),
-      passPct: 80, distinctionPct: 90, masteryQualifierPct: 88,
+      passPct: 75, distinctionPct: 90, masteryQualifierPct: 88,
       retention: Object.freeze({
         id: "sentence-exam-5:retention", title: "Retention Confirmation · 지연 확인",
         itemCount: 25, timeLimitMinutes: 40, opensAfterDays: 7, expiresAfterDays: 21,
         allocations: RETENTION_ALLOCATIONS, tagFloors: RETENTION_TAG_FLOORS,
         sectionFloors: Object.freeze({ "band-1":5,"band-2":5,"band-3":5,"band-4":5 }),
-        passPct: 84,
+        passPct: 75,
       }),
     }),
   ]);

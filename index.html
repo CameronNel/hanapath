@@ -13,7 +13,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="HanaPath" />
-    <link rel="stylesheet" href="./styles.css?v=20260810e" />
+    <link rel="stylesheet" href="./styles.css?v=20260810f" />
+    <link rel="stylesheet" href="./app_experience_contract.css?v=20260810g" />
     <link rel="stylesheet" href="./sentence_exam_runner.css?v=20260729b" />
     <link rel="icon" type="image/png" href="./icons/icon-192.png">
     <script defer src="./lib/hangul.js"></script>
@@ -45,8 +46,9 @@
     <!-- Alphabet Hangul-writing stroke data — load before app.js -->
     <script defer src="./lib/hangul_q_recognizer.js?v=20260715b"></script>
     <script defer src="./hangul_strokes.js?v=20260715b"></script>
-    <!-- Hangul Mastery Examination bank — load before app.js -->
+    <!-- Hangul Mastery Examination bank + current scoring policy — load before app.js -->
     <script defer src="./hangul_mastery_exam.js?v=20260720a"></script>
+    <script defer src="./hangul_mastery_scoring_policy.js?v=20260810f"></script>
     <!-- Core Word Examination Suite — blueprints + engine, load before app.js -->
     <script defer src="./word_exam_blueprints.js?v=20260723a"></script>
     <script defer src="./word_exam_engine.js?v=20260723a"></script>
@@ -57,7 +59,8 @@
     <script defer src="./google_auth.js?v=20260810c"></script>
     <!-- Browser-only GIS adapter. Native packaging removes this tag and uses Android Credential Manager. -->
     <script defer data-browser-only src="./google_auth_web.js?v=20260810c"></script>
-    <script defer src="./app.js?v=20260810e"></script>
+    <script defer src="./app.js?v=20260810f"></script>
+    <script defer src="./app_experience_contract.js?v=20260810g"></script>
     <script defer src="./sentence_exam_runner.js?v=20260810c"></script>
     <script defer src="./alphabet_skill_srs.js?v=20260810c"></script>
   </head>

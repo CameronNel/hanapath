@@ -1,0 +1,6 @@
+/* PR #391 final learner-experience surface policy.
+   Structural lesson containers stay neutral; accent remains for controls,
+   progress, focus, selected state, feedback, and status. */
+.alphabet-lesson-player {
+  background: var(--panel);
+}

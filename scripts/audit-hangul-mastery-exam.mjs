@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-// Audit the Hangul Mastery Examination bank (hangul_mastery_exam.js) against
-// the coverage invariants in docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md §7:
+// Audit the Hangul Mastery Examination bank against its coverage invariants and
+// the current scoring policy. The immutable v2 bank remains the 200-item content
+// source; hangul_mastery_scoring_policy.js is the binding threshold amendment.
 //
 //   MCQ count = 120, Typed count = 40, Drawing count = 40, Total = 200
+//   Current mastery threshold = 150/200 (75%)
 //   Every MCQ has exactly 6 unique options; its answer appears exactly once
 //   Part 1 targets all 21 vowels and all 19 consonants exactly once
 //   Part 6 contains all 21 vowel demo syllables and all 19 consonant demo syllables
@@ -21,16 +23,25 @@ import vm from "node:vm";
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), "..");
 
-function loadBrowserGlobal(file, key) {
-  const src = fs.readFileSync(path.join(ROOT, file), "utf8");
+function loadBrowserGlobals(files) {
   const sandbox = { window: {} };
+  sandbox.globalThis = sandbox.window;
+  sandbox.self = sandbox.window;
   vm.createContext(sandbox);
-  vm.runInContext(src, sandbox);
-  return sandbox.window[key];
+  for (const file of files) {
+    const src = fs.readFileSync(path.join(ROOT, file), "utf8");
+    vm.runInContext(src, sandbox, { filename: file });
+  }
+  return sandbox.window;
 }
 
-const exam = loadBrowserGlobal("hangul_mastery_exam.js", "HANGUL_MASTERY_EXAM");
-const AUDIO_MAP = loadBrowserGlobal("audio_map.js", "AUDIO_MAP") || {};
+const hangulGlobals = loadBrowserGlobals([
+  "hangul_mastery_exam.js",
+  "hangul_mastery_scoring_policy.js",
+]);
+const exam = hangulGlobals.HANGUL_MASTERY_EXAM;
+const scoringPolicy = hangulGlobals.HANAPATH_HANGUL_MASTERY_SCORING_POLICY;
+const AUDIO_MAP = loadBrowserGlobals(["audio_map.js"]).AUDIO_MAP || {};
 
 const VOWELS = [..."ㅏㅑㅓㅕㅗㅛㅜㅠㅡㅣㅐㅒㅔㅖㅘㅙㅚㅝㅞㅟㅢ"];
 const CONSONANTS = [..."ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㄲㄸㅃㅆㅉ"];
@@ -48,7 +59,11 @@ if (!exam || !Array.isArray(exam.sections)) {
 }
 
 if (exam.version !== 2) fail(`version must be 2, got ${exam.version}`);
-if (exam.requiredCorrect !== 200) fail(`requiredCorrect must be 200, got ${exam.requiredCorrect}`);
+if (!scoringPolicy) fail("window.HANAPATH_HANGUL_MASTERY_SCORING_POLICY is missing");
+if (scoringPolicy?.totalItems !== 200) fail(`scoring policy totalItems must be 200, got ${scoringPolicy?.totalItems}`);
+if (scoringPolicy?.requiredCorrect !== 150) fail(`scoring policy requiredCorrect must be 150, got ${scoringPolicy?.requiredCorrect}`);
+if (scoringPolicy?.passPct !== 75) fail(`scoring policy passPct must be 75, got ${scoringPolicy?.passPct}`);
+if (exam.requiredCorrect !== 150) fail(`runtime requiredCorrect must be 150 after scoring policy, got ${exam.requiredCorrect}`);
 if (exam.optionCount !== 6) fail(`optionCount must be 6, got ${exam.optionCount}`);
 if (exam.referenceAllowed !== false) fail("referenceAllowed must be false");
 if (exam.feedbackDuringExam !== false) fail("feedbackDuringExam must be false");
@@ -63,6 +78,12 @@ if (mcq.length !== 120) fail(`MCQ count must be 120, got ${mcq.length}`);
 if (typed.length !== 40) fail(`Typed count must be 40, got ${typed.length}`);
 if (drawn.length !== 40) fail(`Drawing count must be 40, got ${drawn.length}`);
 if (all.length !== 200) fail(`Total count must be 200, got ${all.length}`);
+if (all.length && scoringPolicy?.requiredCorrect > all.length) {
+  fail(`requiredCorrect ${scoringPolicy.requiredCorrect} exceeds ${all.length}-item bank`);
+}
+if (all.length && Math.round((scoringPolicy?.requiredCorrect / all.length) * 100) !== scoringPolicy?.passPct) {
+  fail("scoring policy requiredCorrect/passPct disagree with the live bank size");
+}
 
 // Unique IDs
 const seenIds = new Set();
@@ -179,6 +200,7 @@ function report() {
   console.log(
     `audit-hangul-mastery-exam: OK — ${all?.length ?? 0} items ` +
     `(${mcq?.length ?? 0} MCQ / ${typed?.length ?? 0} typed / ${drawn?.length ?? 0} drawn), ` +
+    `${scoringPolicy?.requiredCorrect ?? "?"}/${scoringPolicy?.totalItems ?? "?"} mastery threshold, ` +
     `${audioTexts?.length ?? 0} audio tokens verified`,
   );
   process.exit(0);

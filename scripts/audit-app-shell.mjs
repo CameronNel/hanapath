@@ -11,6 +11,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import "./test-audit-words-assessment-integrity.mjs";
 import "./test-runtime-truthfulness.mjs";
+import "./test-app-experience-contract.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -21,6 +22,7 @@ const swJs = readFileSync(join(root, "sw.js"), "utf8");
 
 const REQUIRED_VERSIONED_INDEX_ASSETS = new Set([
   "./styles.css",
+  "./app_experience_contract.css",
   "./audio_map.js",
   "./words_curated_core.js",
   "./words_inflect.js",
@@ -29,7 +31,7 @@ const REQUIRED_VERSIONED_INDEX_ASSETS = new Set([
   "./sentences_core.js",
   "./sentence_lesson_contrast_ui.js",
   "./sentence_lesson_contrasts_sections_1_4.js",
-    "./sentence_lesson_contrasts_sections_5_8.js",
+  "./sentence_lesson_contrasts_sections_5_8.js",
   "./sentence_feedback.js",
   "./sentence_exam_runner.css",
   "./sentence_exam_prompt_templates.js",
@@ -39,7 +41,9 @@ const REQUIRED_VERSIONED_INDEX_ASSETS = new Set([
   "./sentence_exam_blueprints.js",
   "./sentence_exam_engine.js",
   "./sentence_exam_runner_core.js",
+  "./hangul_mastery_scoring_policy.js",
   "./app.js",
+  "./app_experience_contract.js",
   "./sentence_exam_runner.js",
   "./alphabet_skill_srs.js",
 ]);
