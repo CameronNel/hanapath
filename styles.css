@@ -7392,6 +7392,14 @@ li { margin-bottom: 4px; }
   color: var(--title-a);
 }
 
+/* The Hangul graduation heading ends in a colour emoji, and background-clip:
+   text would repaint it as a flat gradient silhouette. Solid fill there. */
+.alphabet-complete-panel .screen-title {
+  background: none;
+  -webkit-text-fill-color: var(--title-a);
+  color: var(--title-a);
+}
+
 /* Eyebrows get a touch more air. */
 .eyebrow { letter-spacing: .12em; }
 
