@@ -20,6 +20,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # Pull-request freezing is allowed only against the manifest committed
+          # on the trusted base SHA, so that object must be available to git show.
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -32,6 +36,25 @@ jobs:
       - name: Prepare isolated mobile web payload
         run: node mobile/scripts/prepare-web.mjs
 
+      # The freeze manifest used by PR code is not itself trusted. Capture the
+      # manifest from the immutable pull-request base SHA and require the branch
+      # copy to be byte-identical before either expensive sweep may be frozen.
+      # The PR that first introduces the manifest therefore runs both sweeps in
+      # full, as does any later PR that edits or re-pins the manifest.
+      - name: Capture trusted exam-freeze manifest from pull-request base
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          trusted="$RUNNER_TEMP/exam_compute_freeze_base.json"
+          if git show "${BASE_SHA}:docs/generated/exam_compute_freeze.json" > "$trusted" 2>/dev/null; then
+            echo "HANAPATH_TRUSTED_FREEZE_MANIFEST=$trusted" >> "$GITHUB_ENV"
+          else
+            rm -f "$trusted"
+            echo "No trusted freeze manifest exists on the PR base; exam sweeps will run in full."
+          fi
+
       # The single deterministic superset gate covers every roadmap §9 family,
       # real browser journeys, migrations, the prepared mobile payload, and the
       # generated status report. Q2 permits no conditional or skipped steps.
@@ -39,8 +62,9 @@ jobs:
       # The one sanctioned narrowing is content freezing, and it applies to pull
       # requests only. The two exam seed sweeps are ~20 of the gate's ~24 minutes
       # and are pure deterministic computation over a pinned set of input files;
-      # when every one of those files is byte-identical to its recorded hash the
-      # sweep cannot reach a different verdict. A frozen step is reported as
+      # when every one of those files is byte-identical to its recorded hash AND
+      # the manifest itself is byte-identical to the trusted PR-base manifest,
+      # the sweep cannot reach a different verdict. A frozen step is reported as
       # FROZEN, never as PASS.
       #
       # push:main and workflow_dispatch deliberately omit --respect-freeze, so
