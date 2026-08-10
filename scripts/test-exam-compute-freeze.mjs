@@ -4,10 +4,17 @@
 // CI for a hash comparison, so its failure mode matters more than its success
 // one: every ambiguous case must resolve to "run the sweep".
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { AUDITS, MANIFEST_PATH, checkFreeze, diffPinnedInputs } from "./exam-compute-freeze.mjs";
+import {
+  AUDITS,
+  MANIFEST_PATH,
+  checkFreeze,
+  compareTrustedManifest,
+  diffPinnedInputs,
+} from "./exam-compute-freeze.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -17,7 +24,7 @@ assert.equal(manifest.schemaVersion, 1);
 
 // ── Fail-closed behaviour ───────────────────────────────────────────────────
 // Anything the freeze does not positively recognise must report not-frozen.
-const unknown = checkFreeze("no-such-audit");
+const unknown = checkFreeze("no-such-audit", { requireTrustedManifest: false });
 assert.equal(unknown.frozen, false, "an unpinned key must never report frozen");
 
 assert.deepEqual(diffPinnedInputs({ "a.js": "hash" }, () => "hash"), [], "matching hashes are unchanged");
@@ -28,6 +35,47 @@ assert.deepEqual(
   ["b.js"],
   "only the changed input is reported",
 );
+
+// ── Trusted pull-request manifest ───────────────────────────────────────────
+// The manifest in a PR checkout is controlled by that PR. It is therefore not
+// sufficient for its hashes to match the same checkout: the manifest itself
+// must match the immutable copy from the PR base. Otherwise a PR could edit an
+// exam input and simply re-pin the new hash to manufacture FROZEN.
+const trustDir = mkdtempSync(join(tmpdir(), "hanapath-freeze-trust-"));
+try {
+  const trustedPath = join(trustDir, "trusted.json");
+  const manifestBytes = readFileSync(MANIFEST_PATH);
+  writeFileSync(trustedPath, manifestBytes);
+
+  const trust = compareTrustedManifest(trustedPath);
+  assert.equal(trust.trusted, true, "an identical PR-base manifest must be trusted");
+
+  const pinnedKey = AUDITS[0].key;
+  const trustedFreeze = checkFreeze(pinnedKey, {
+    trustedManifestPath: trustedPath,
+    requireTrustedManifest: true,
+  });
+  assert.equal(trustedFreeze.frozen, true, "an unchanged pinned sweep with the trusted base manifest should freeze");
+
+  writeFileSync(trustedPath, Buffer.concat([manifestBytes, Buffer.from("\n") ]));
+  const changedTrust = compareTrustedManifest(trustedPath);
+  assert.equal(changedTrust.trusted, false, "a branch manifest that differs from the PR base must not be trusted");
+  assert.match(changedTrust.reason, /differs from trusted PR base/);
+
+  const selfPinnedAttempt = checkFreeze(pinnedKey, {
+    trustedManifestPath: trustedPath,
+    requireTrustedManifest: true,
+  });
+  assert.equal(selfPinnedAttempt.frozen, false, "a PR-authored/re-pinned manifest must force the full sweep");
+
+  const missingTrust = checkFreeze(pinnedKey, {
+    trustedManifestPath: null,
+    requireTrustedManifest: true,
+  });
+  assert.equal(missingTrust.frozen, false, "missing PR-base trust material must force the full sweep");
+} finally {
+  rmSync(trustDir, { recursive: true, force: true });
+}
 
 // ── Pinned surface ──────────────────────────────────────────────────────────
 for (const audit of AUDITS) {
