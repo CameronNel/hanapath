@@ -67,6 +67,20 @@ assert.doesNotMatch(
   /getWordLessons\(\)\.filter[\s\S]{0,160}checkpoint/,
   "Progress must count the full live Word curriculum, including checkpoint lessons",
 );
+// The 284-lesson denominator is legitimate only while checkpoints use the same
+// completion store as content lessons. A crowned unit is defined by its
+// checkpoint id being completed, and any passed Word lesson writes that lesson
+// id into vocabLessonCompleted without excluding checkpoint type.
+assert.match(
+  app,
+  /function isWordUnitCrowned\(unit\) \{ return Boolean\(unit && isWordLessonCompleted\(unit\.checkpointId\)\); \}/,
+  "Word unit crowns must remain backed by checkpoint lesson completion",
+);
+assert.match(
+  app,
+  /if \(wordLessonPassed\(lesson, view\)\) \{[\s\S]{0,180}state\.vocabLessonCompleted\.push\(lesson\.id\)/,
+  "passed Word checkpoints must remain in the same completion store as content lessons",
+);
 assert.match(contract, /record\.status !== "hanaPath"/);
 assert.match(contract, /record\.floorSummary\?\.passed !== true/);
 assert.doesNotMatch(contract, /\|\|\s*284\b/);
@@ -114,4 +128,4 @@ assert.match(sw, /const CACHE_NAME = "hanapath-shell-v463"/);
 assert.match(sw, /"\.\/hangul_mastery_scoring_policy\.js\?v=20260810f"/);
 assert.match(sw, /"\.\/app_experience_contract\.js\?v=20260810f"/);
 
-console.log("App experience contract regression passed (neutral lesson surface, themed accessible modal, full live Word curriculum, formal-only exam counts, resilient sentinel Back, Hangul 75% policy). ");
+console.log("App experience contract regression passed (neutral lesson surface, themed accessible modal, full live Word curriculum with checkpoint completion, formal-only exam counts, resilient sentinel Back, Hangul 75% policy). ");
