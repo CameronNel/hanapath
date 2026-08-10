@@ -127,7 +127,7 @@
   --line: rgba(24, 24, 30, .10); --line-strong: rgba(24, 24, 30, .20);
   --text: #1b1b20; --muted: #5c5c66; --muted-2: #83838c;
   --accent: #6d4fd1; --accent-rgb: 109, 79, 209; --accent-deep-rgb: 88, 60, 186;
-  --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 133, 108, 227; --accent-4: #7c5cd6;
+  --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 122, 94, 224; --accent-4: #7c5cd6;
   --good: #2f9e58; --good-rgb: 47, 158, 88;
   --bad: #d9574f; --bad-rgb: 217, 87, 79;
   --warn: #a17913; --warn-rgb: 161, 121, 19;
@@ -143,37 +143,41 @@
   --surface-grad: linear-gradient(180deg, rgba(255, 255, 255, .8), rgba(255, 255, 255, 0) 62%);
   --title-a: #1b1b20; --title-b: #4b4b58;
 }
+/* Light-mode accents are the darkened members of each family. White sits on
+   --accent (buttons) and --accent/-3/-4 sit on white panels (text, pills), so
+   every value here is held at >= 4.6:1 against white. Dark mode keeps the
+   bright members because there the text on accent is --on-accent (near-black). */
 :root[data-color-mode="light"][data-theme="violet"] {
   --accent: #6d4fd1; --accent-rgb: 109, 79, 209; --accent-deep-rgb: 88, 60, 186;
-  --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 133, 108, 227; --accent-4: #7c5cd6;
+  --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 122, 94, 224; --accent-4: #7c5cd6;
 }
 :root[data-color-mode="light"][data-theme="graphite"] {
   --accent: #6e6e6c; --accent-rgb: 110, 110, 108; --accent-deep-rgb: 74, 74, 72;
-  --accent-2-rgb: 110, 110, 108; --accent-3-rgb: 130, 130, 127; --accent-4: #8f7e7d;
+  --accent-2-rgb: 110, 110, 108; --accent-3-rgb: 117, 117, 114; --accent-4: #827170;
 }
 :root[data-color-mode="light"][data-theme="blue"] {
-  --accent: #1f6fe0; --accent-rgb: 31, 111, 224; --accent-deep-rgb: 22, 92, 192;
-  --accent-2-rgb: 31, 111, 224; --accent-3-rgb: 86, 144, 232; --accent-4: #4a7ad1;
+  --accent: #1e6ddc; --accent-rgb: 30, 109, 220; --accent-deep-rgb: 22, 92, 192;
+  --accent-2-rgb: 30, 109, 220; --accent-3-rgb: 39, 113, 226; --accent-4: #4073cf;
 }
 :root[data-color-mode="light"][data-theme="red"] {
-  --accent: #d6453d; --accent-rgb: 214, 69, 61; --accent-deep-rgb: 178, 45, 38;
-  --accent-2-rgb: 214, 69, 61; --accent-3-rgb: 224, 104, 96; --accent-4: #c95852;
+  --accent: #d0352c; --accent-rgb: 208, 53, 44; --accent-deep-rgb: 178, 45, 38;
+  --accent-2-rgb: 208, 53, 44; --accent-3-rgb: 215, 59, 48; --accent-4: #c64d47;
 }
 :root[data-color-mode="light"][data-theme="yellow"] {
-  --accent: #a17600; --accent-rgb: 161, 118, 0; --accent-deep-rgb: 130, 94, 0;
-  --accent-2-rgb: 161, 118, 0; --accent-3-rgb: 186, 140, 26; --accent-4: #a18a2c;
+  --accent: #8f6900; --accent-rgb: 143, 105, 0; --accent-deep-rgb: 116, 84, 0;
+  --accent-2-rgb: 143, 105, 0; --accent-3-rgb: 147, 110, 20; --accent-4: #877425;
 }
 :root[data-color-mode="light"][data-theme="green"] {
-  --accent: #188a47; --accent-rgb: 24, 138, 71; --accent-deep-rgb: 14, 106, 52;
-  --accent-2-rgb: 24, 138, 71; --accent-3-rgb: 74, 179, 120; --accent-4: #2e9a63;
+  --accent: #168143; --accent-rgb: 22, 129, 67; --accent-deep-rgb: 14, 106, 52;
+  --accent-2-rgb: 22, 129, 67; --accent-3-rgb: 54, 131, 88; --accent-4: #278455;
 }
 :root[data-color-mode="light"][data-theme="orange"] {
-  --accent: #d35e12; --accent-rgb: 211, 94, 18; --accent-deep-rgb: 178, 74, 8;
-  --accent-2-rgb: 211, 94, 18; --accent-3-rgb: 227, 131, 72; --accent-4: #c97a3f;
+  --accent: #b75110; --accent-rgb: 183, 81, 16; --accent-deep-rgb: 150, 60, 4;
+  --accent-2-rgb: 183, 81, 16; --accent-3-rgb: 187, 89, 29; --accent-4: #a96430;
 }
 :root[data-color-mode="light"][data-theme="gold"] {
-  --accent: #a87a10; --accent-rgb: 168, 122, 16; --accent-deep-rgb: 138, 98, 8;
-  --accent-2-rgb: 168, 122, 16; --accent-3-rgb: 196, 151, 54; --accent-4: #b98f2e;
+  --accent: #91690e; --accent-rgb: 145, 105, 14; --accent-deep-rgb: 118, 84, 6;
+  --accent-2-rgb: 145, 105, 14; --accent-3-rgb: 145, 112, 40; --accent-4: #906f24;
 }
 
 @media (prefers-color-scheme: light) {
@@ -183,7 +187,7 @@
     --line: rgba(24, 24, 30, .10); --line-strong: rgba(24, 24, 30, .20);
     --text: #1b1b20; --muted: #5c5c66; --muted-2: #83838c;
     --accent: #6d4fd1; --accent-rgb: 109, 79, 209; --accent-deep-rgb: 88, 60, 186;
-    --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 133, 108, 227; --accent-4: #7c5cd6;
+    --accent-2-rgb: 109, 79, 209; --accent-3-rgb: 122, 94, 224; --accent-4: #7c5cd6;
     --good: #2f9e58; --good-rgb: 47, 158, 88;
     --bad: #d9574f; --bad-rgb: 217, 87, 79;
     --warn: #a17913; --warn-rgb: 161, 121, 19;
@@ -7397,12 +7401,18 @@ li { margin-bottom: 4px; }
   box-shadow: var(--inner-hi), var(--shadow-sm);
 }
 
-/* Primary buttons: gradient + inner highlight + accent shadow. */
+/* Primary buttons: gradient + inner highlight + accent shadow. Dark mode lifts
+   toward the light member (--on-accent is near-black there); light mode drops
+   toward the deep member, because there --on-accent is white and the lighter
+   member would put it below 4.5:1. */
 .button.primary {
   background: linear-gradient(180deg, var(--accent-3), var(--accent));
   color: var(--on-accent);
   border: 1px solid rgba(var(--accent-rgb), .35);
   box-shadow: var(--inner-hi), 0 8px 20px rgba(var(--accent-rgb), .22);
+}
+:root[data-color-mode="light"] .button.primary {
+  background: linear-gradient(180deg, var(--accent), rgb(var(--accent-deep-rgb)));
 }
 .button.primary:hover:not(:disabled) {
   box-shadow: var(--inner-hi), 0 14px 34px rgba(var(--accent-rgb), .34);
@@ -7453,7 +7463,9 @@ li { margin-bottom: 4px; }
   letter-spacing: .05em;
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
-  color: var(--muted-2);
+  /* --muted, not --muted-2: at 11px this is small text, and --muted-2 only
+     reaches 3.8:1 on a white panel. Uppercase weight keeps the hierarchy. */
+  color: var(--muted);
 }
 .hub-tile-progress-track {
   position: relative;
@@ -7476,8 +7488,11 @@ li { margin-bottom: 4px; }
 .study-row { border: 1px solid transparent; }
 .study-row:hover { background: var(--surface-light); border-color: rgba(var(--accent-rgb), .22); }
 .word-metrics-row { border: 0; }
-.stage-row.complete { background: rgba(var(--accent-2-rgb), .07); border-color: rgba(var(--accent-2-rgb), .16); }
-.stage-row.current { background: rgba(var(--accent-rgb), .06); border-color: rgba(var(--accent-rgb), .20); }
+/* --accent-2-rgb tracks --accent-rgb in every theme, so complete and current
+   have to separate on weight, not hue: finished rows stay a faint wash, the
+   current row carries the lit accent edge that says "you are here". */
+.stage-row.complete { background: rgba(var(--accent-2-rgb), .06); border-color: rgba(var(--accent-2-rgb), .14); }
+.stage-row.current { background: rgba(var(--accent-rgb), .16); border-color: rgba(var(--accent-rgb), .46); }
 
 /* Bottom nav: frosted glass with a lit active indicator. */
 .bottom-nav {
@@ -7529,6 +7544,6 @@ li { margin-bottom: 4px; }
 
 /* Light-mode corrections for the new lighting layers. */
 :root[data-color-mode="light"] .study-row:hover { background: rgba(18, 18, 24, .04); }
-:root[data-color-mode="light"] .stage-row.current { background: rgba(var(--accent-rgb), .07); }
+:root[data-color-mode="light"] .stage-row.current { background: rgba(var(--accent-rgb), .13); }
 :root[data-color-mode="light"] .pill.muted { background: rgba(18, 18, 24, .04); border-color: rgba(24, 24, 30, .10); }
 :root[data-color-mode="light"] .hub-tile-progress-track { background: rgba(18, 18, 24, .07); }

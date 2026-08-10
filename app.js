@@ -14687,9 +14687,11 @@ function getActiveLearnLevel(itemId) {
   return getTrackLevel(itemId);
 }
 
-// Curated-lesson progress for the three main Learn tiles. Only curated
-// curriculum lessons count (alphabet phases, word content lessons, sentence
-// content lessons); checkpoints, drills, and reference content are excluded.
+// Curated-lesson progress for the three main Learn tiles. The Word and
+// Sentence plans hold exactly two lesson types, `content` and `checkpoint`, so
+// filtering out checkpoints leaves the taught lessons (209 word, 628 sentence).
+// Alphabet counts its 8 phases. Drills, reference, and practice tools are not
+// lessons in these arrays, so they never entered the total to begin with.
 function getHubItemLessonProgress(itemId) {
   if (itemId === "alphabet") {
     const progress = getLearnProgress("alphabet");
