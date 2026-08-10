@@ -90,6 +90,7 @@ blocking; release mode permits no skipped or conditional core checks.
 | Global testing-mode Practice taint | `node scripts/test-testing-mode-integrity.mjs` | blocking |
 | Google sign-in trust and platform boundary | `node scripts/test-google-auth-contract.mjs` | blocking |
 | Theme, Learn hub, and motion contract | `node scripts/test-theme-and-learn-hub.mjs` | blocking |
+| Post-onboarding bootstrap and save-recovery contract | `node scripts/test-app-bootstrap-and-recovery.mjs` | blocking |
 | Hangul Mastery examination | `node scripts/audit-hangul-mastery-exam.mjs` | blocking |
 | Word-exam competency map | `node scripts/build-word-exam-competency-map.mjs --check` | blocking |
 | Core Word examinations | `node scripts/audit-word-exams.mjs` | blocking |
