@@ -30,6 +30,58 @@ assert.match(app, /hub-tile-progress-meta/);
 assert.match(css, /\.hub-tile-progress \{/);
 assert.match(css, /\.hub-tile-progress-track span \{/);
 
+// Light-mode accent contrast. Light mode paints white on --accent (primary
+// buttons) and paints --accent/-3/-4 on white panels (accent text, pills), so
+// every one of those members has to clear WCAG AA on white. A lighter, prettier
+// accent silently pushed the primary button to 2.6:1 once, on all eight themes.
+// Dark mode is exempt: there the text on accent is --on-accent, a near-black.
+function relativeLuminance([r, g, b]) {
+  const channel = (value) => {
+    const c = value / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+}
+function contrastOnWhite(rgb) {
+  return 1.05 / (relativeLuminance(rgb) + 0.05);
+}
+function hexToRgb(hex) {
+  return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+}
+
+const LIGHT_ACCENT_MIN = 4.5;
+const lightThemeBlocks = [...css.matchAll(
+  /:root\[data-color-mode="light"\]\[data-theme="(\w+)"\]\s*\{([^}]*)\}/g,
+)];
+assert.equal(lightThemeBlocks.length, 8, "expected one light block per accent theme");
+for (const [, theme, body] of lightThemeBlocks) {
+  const accentHex = /--accent:\s*(#[0-9a-fA-F]{6})/.exec(body);
+  const accent4Hex = /--accent-4:\s*(#[0-9a-fA-F]{6})/.exec(body);
+  const accent3Rgb = /--accent-3-rgb:\s*(\d+),\s*(\d+),\s*(\d+)/.exec(body);
+  const accentDeepRgb = /--accent-deep-rgb:\s*(\d+),\s*(\d+),\s*(\d+)/.exec(body);
+  assert.ok(accentHex && accent4Hex && accent3Rgb && accentDeepRgb, `light theme ${theme} is missing an accent member`);
+
+  const members = {
+    accent: hexToRgb(accentHex[1]),
+    "accent-3": accent3Rgb.slice(1, 4).map(Number),
+    "accent-4": hexToRgb(accent4Hex[1]),
+  };
+  for (const [name, rgb] of Object.entries(members)) {
+    const ratio = contrastOnWhite(rgb);
+    assert.ok(
+      ratio >= LIGHT_ACCENT_MIN,
+      `light ${theme}: --${name} is ${ratio.toFixed(2)}:1 on white, below ${LIGHT_ACCENT_MIN}:1`,
+    );
+  }
+  // The light primary button runs --accent -> --accent-deep, so the deep member
+  // must stay at least as dark as --accent or the gradient inverts.
+  assert.ok(
+    relativeLuminance(accentDeepRgb.slice(1, 4).map(Number)) <= relativeLuminance(members.accent),
+    `light ${theme}: --accent-deep-rgb is lighter than --accent, inverting the button gradient`,
+  );
+}
+assert.match(css, /:root\[data-color-mode="light"\] \.button\.primary \{/, "light mode must override the primary-button gradient");
+
 const visibleLearnDefinitions = [...app.matchAll(/\{ id: "(alphabet|vocabulary|sentences)"[^\n]*\}/g)].slice(0, 3);
 assert.equal(visibleLearnDefinitions.length, 3);
 assert.match(app, /def\.items\.filter\(\(item\) => item\.showInHub !== false\)/);
