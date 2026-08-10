@@ -1,34 +1,21 @@
 // HanaPath learner-experience contract fixes layered after app.js.
 //
-// This file deliberately contains only browser-shell policy that must wrap the
-// monolithic app without changing curriculum data: accessible one-time Korean
-// keyboard guidance, live-derived Progress statistics, browser/PWA back
-// behavior, and neutral structural surfaces. It loads after app.js so the
-// existing global entry points can be tightened in one small, auditable surface.
+// This file deliberately contains only browser-shell behavior that must wrap
+// the monolithic app without changing curriculum data: accessible one-time
+// Korean keyboard guidance, live-derived Progress statistics, and browser/PWA
+// Back behavior. Structural lesson styling lives in static CSS, not runtime JS.
 (function installHanaPathExperienceContract() {
   "use strict";
-
-  // Structural containers stay neutral. Accent belongs on controls, progress,
-  // focus, and feedback, not as a diffuse bloom leaking through translucent
-  // lesson cards. Keep this late override until the underlying stylesheet rule
-  // is removed when the stacked visual packet is flattened for merge.
-  const surfacePolicy = document.createElement("style");
-  surfacePolicy.id = "hanapath-experience-surface-policy";
-  surfacePolicy.textContent = `
-    .alphabet-lesson-player {
-      background: var(--panel);
-    }
-  `;
-  document.head.appendChild(surfacePolicy);
 
   // -------------------------------------------------------------------------
   // One-time Korean keyboard recommendation: accessible modal semantics,
   // explicit dismissal only, keyboard focus trap, Escape, and focus restore.
+  // `hasSeenKoreanKeyboardModal` is persisted on dismissal rather than merely
+  // on paint, so an app killed while the recommendation is visible can show it
+  // again on the next lesson entry.
   // -------------------------------------------------------------------------
   showKoreanKeyboardRecommendationModal = function showKoreanKeyboardRecommendationModalAccessible() {
-    if (state.hasSeenKoreanKeyboardModal) return;
-    state.hasSeenKoreanKeyboardModal = true;
-    saveState();
+    if (state.hasSeenKoreanKeyboardModal || document.querySelector(".korean-keyboard-modal-overlay")) return;
 
     const previousFocus = document.activeElement instanceof HTMLElement
       ? document.activeElement
@@ -38,7 +25,7 @@
     overlay.style.cssText = "position:fixed;inset:0;z-index:9999;background:var(--scrim, rgba(0,0,0,0.65));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 180ms ease;";
     overlay.innerHTML = `
       <div class="korean-keyboard-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="koreanKeyboardModalTitle" aria-describedby="koreanKeyboardModalCopy" tabindex="-1" style="background:var(--card, var(--panel, #18181b));border:1px solid var(--border, var(--line, rgba(255,255,255,0.15)));border-radius:16px;padding:24px;max-width:380px;width:100%;box-shadow:0 20px 40px rgba(var(--shadow-rgb, 0,0,0),0.5);text-align:center;position:relative;">
-        <button class="korean-keyboard-modal-close" type="button" aria-label="Close Korean keyboard recommendation" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text-muted, var(--muted, #a1a1aa));font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;">✕</button>
+        <button class="korean-keyboard-modal-close" type="button" aria-label="Close Korean keyboard recommendation" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted, #a1a1aa);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;">✕</button>
         <div style="font-size:28px;margin-bottom:12px;" aria-hidden="true">⌨️</div>
         <h3 id="koreanKeyboardModalTitle" style="font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text, #f4f4f5);">Korean Keyboard Recommended</h3>
         <p id="koreanKeyboardModalCopy" style="font-size:14px;color:var(--muted, #a1a1aa);line-height:1.5;margin-bottom:16px;">We recommend enabling the Korean keyboard on your device for the best learning experience.</p>
@@ -79,6 +66,8 @@
     const dismiss = () => {
       if (dismissed) return;
       dismissed = true;
+      state.hasSeenKoreanKeyboardModal = true;
+      saveState();
       document.removeEventListener("keydown", onKeyDown, true);
       overlay.style.opacity = "0";
       window.setTimeout(() => {
@@ -172,7 +161,12 @@
     }
     const wordExamCount = [...passedExamIds].filter((id) => wordExamIds.has(id)).length;
     const sentenceExamCount = [...passedExamIds].filter((id) => sentenceExamIds.has(id)).length;
-    const totalPassedExams = wordExamCount + sentenceExamCount + (hangulExamRecord.mastered ? 1 : 0);
+    const hangulFormalPassed = examRecords.some((record) =>
+      record?.examId === "hangul-mastery-exam"
+        && record.status === "hanaPath"
+        && record.floorSummary?.passed === true,
+    );
+    const totalPassedExams = wordExamCount + sentenceExamCount + (hangulFormalPassed ? 1 : 0);
 
     const wordSrsDue = getTodayReviewCount();
     const totalSrsDue = wordSrsDue + sentenceDueCount;
@@ -193,81 +187,26 @@
       </div>
 
       <div class="card">
-        <div class="flex-between mb-12">
-          <div>
-            <div class="eyebrow">Alphabet · Hangul</div>
-            <div class="screen-sub" style="margin-bottom:0;">Letters, reading, writing, and Hangul Mastery.</div>
-          </div>
-          <span class="pill ${alphaCompleted === alphaTotal && alphaTotal > 0 ? "accent" : "muted"}">${alphaPct}% Complete</span>
-        </div>
-        <div class="forecast-bar" style="margin-bottom:12px;">
-          <div class="forecast-row you">
-            <div class="forecast-hours">Stages</div>
-            <div class="forecast-track"><div class="forecast-fill" style="width:${alphaPct}%"></div></div>
-            <div class="forecast-label">${alphaCompleted}/${alphaTotal}</div>
-          </div>
-        </div>
+        <div class="flex-between mb-12"><div><div class="eyebrow">Alphabet · Hangul</div><div class="screen-sub" style="margin-bottom:0;">Letters, reading, writing, and Hangul Mastery.</div></div><span class="pill ${alphaCompleted === alphaTotal && alphaTotal > 0 ? "accent" : "muted"}">${alphaPct}% Complete</span></div>
+        <div class="forecast-bar" style="margin-bottom:12px;"><div class="forecast-row you"><div class="forecast-hours">Stages</div><div class="forecast-track"><div class="forecast-fill" style="width:${alphaPct}%"></div></div><div class="forecast-label">${alphaCompleted}/${alphaTotal}</div></div></div>
         <div class="fs-xs text-muted-2">Exam status: <strong>${escapeHtml(hangulStatusText)}</strong></div>
       </div>
 
       <div class="card">
-        <div class="flex-between mb-12">
-          <div>
-            <div class="eyebrow">Vocabulary · Core Words</div>
-            <div class="screen-sub" style="margin-bottom:0;">Curated word path, SRS retention, and ${wordExamBlueprints.length} achievement exams.</div>
-          </div>
-          <span class="pill ${wordPct > 0 ? "accent" : "muted"}">${wordPct}% Complete</span>
-        </div>
-        <div class="stats-grid mb-12" style="margin-bottom:12px;">
-          <div class="stat-box"><span class="sv">${learnedWordsCount}</span><span class="sl">Words learned</span></div>
-          <div class="stat-box"><span class="sv">${vocabDueCount}</span><span class="sl">SRS due</span></div>
-          <div class="stat-box"><span class="sv">${wordExamCount}/${wordExamBlueprints.length}</span><span class="sl">Exams passed</span></div>
-        </div>
-        <div class="forecast-bar">
-          <div class="forecast-row">
-            <div class="forecast-hours">Lessons</div>
-            <div class="forecast-track"><div class="forecast-fill" style="width:${wordPct}%"></div></div>
-            <div class="forecast-label">${wordCompletedLessons}/${wordTotalLessons}</div>
-          </div>
-        </div>
+        <div class="flex-between mb-12"><div><div class="eyebrow">Vocabulary · Core Words</div><div class="screen-sub" style="margin-bottom:0;">Curated word path, SRS retention, and ${wordExamBlueprints.length} achievement exams.</div></div><span class="pill ${wordPct > 0 ? "accent" : "muted"}">${wordPct}% Complete</span></div>
+        <div class="stats-grid mb-12" style="margin-bottom:12px;"><div class="stat-box"><span class="sv">${learnedWordsCount}</span><span class="sl">Words learned</span></div><div class="stat-box"><span class="sv">${vocabDueCount}</span><span class="sl">SRS due</span></div><div class="stat-box"><span class="sv">${wordExamCount}/${wordExamBlueprints.length}</span><span class="sl">Exams passed</span></div></div>
+        <div class="forecast-bar"><div class="forecast-row"><div class="forecast-hours">Lessons</div><div class="forecast-track"><div class="forecast-fill" style="width:${wordPct}%"></div></div><div class="forecast-label">${wordCompletedLessons}/${wordTotalLessons}</div></div></div>
       </div>
 
       <div class="card">
-        <div class="flex-between mb-12">
-          <div>
-            <div class="eyebrow">Sentences &amp; Form Checks</div>
-            <div class="screen-sub" style="margin-bottom:0;">Curriculum path, ${formChecksTotal} Form Checks, and ${sentenceExamBlueprints.length} Sentence exams.</div>
-          </div>
-          <span class="pill ${sentencePct > 0 ? "accent" : "muted"}">${sentencePct}% Complete</span>
-        </div>
-        <div class="stats-grid mb-12" style="margin-bottom:12px;">
-          <div class="stat-box"><span class="sv">${sentenceCompletedCount}</span><span class="sl">Lessons done</span></div>
-          <div class="stat-box"><span class="sv">${formChecksCompleted}/${formChecksTotal}</span><span class="sl">Form checks</span></div>
-          <div class="stat-box"><span class="sv">${sentenceExamCount}/${sentenceExamBlueprints.length}</span><span class="sl">Exams passed</span></div>
-        </div>
-        <div class="forecast-bar">
-          <div class="forecast-row">
-            <div class="forecast-hours">Path</div>
-            <div class="forecast-track"><div class="forecast-fill" style="width:${sentencePct}%"></div></div>
-            <div class="forecast-label">${sentenceCompletedCount}/${sentenceTotalLessons}</div>
-          </div>
-        </div>
+        <div class="flex-between mb-12"><div><div class="eyebrow">Sentences &amp; Form Checks</div><div class="screen-sub" style="margin-bottom:0;">Curriculum path, ${formChecksTotal} Form Checks, and ${sentenceExamBlueprints.length} Sentence exams.</div></div><span class="pill ${sentencePct > 0 ? "accent" : "muted"}">${sentencePct}% Complete</span></div>
+        <div class="stats-grid mb-12" style="margin-bottom:12px;"><div class="stat-box"><span class="sv">${sentenceCompletedCount}</span><span class="sl">Lessons done</span></div><div class="stat-box"><span class="sv">${formChecksCompleted}/${formChecksTotal}</span><span class="sl">Form checks</span></div><div class="stat-box"><span class="sv">${sentenceExamCount}/${sentenceExamBlueprints.length}</span><span class="sl">Exams passed</span></div></div>
+        <div class="forecast-bar"><div class="forecast-row"><div class="forecast-hours">Path</div><div class="forecast-track"><div class="forecast-fill" style="width:${sentencePct}%"></div></div><div class="forecast-label">${sentenceCompletedCount}/${sentenceTotalLessons}</div></div></div>
       </div>
 
       <div class="card">
-        <div class="flex-between mb-12">
-          <div>
-            <div class="eyebrow">Review Stack &amp; Momentum</div>
-            <div class="screen-sub" style="margin-bottom:0;">Items waiting in your spaced repetition review loop.</div>
-          </div>
-          <span class="pill ${totalSrsDue > 0 ? "accent" : "muted"}">${totalSrsDue} total due</span>
-        </div>
-        <div class="stats-grid" style="margin-bottom:0;">
-          <div class="stat-box"><span class="sv">${wordSrsDue}</span><span class="sl">Word SRS due</span></div>
-          <div class="stat-box"><span class="sv">${sentenceDueCount}</span><span class="sl">Sentence SRS due</span></div>
-          <div class="stat-box"><span class="sv">${state.studyDays}</span><span class="sl">Study days</span></div>
-          <div class="stat-box"><span class="sv">${state.bestStreak}</span><span class="sl">Best streak</span></div>
-        </div>
+        <div class="flex-between mb-12"><div><div class="eyebrow">Review Stack &amp; Momentum</div><div class="screen-sub" style="margin-bottom:0;">Items waiting in your spaced repetition review loop.</div></div><span class="pill ${totalSrsDue > 0 ? "accent" : "muted"}">${totalSrsDue} total due</span></div>
+        <div class="stats-grid" style="margin-bottom:0;"><div class="stat-box"><span class="sv">${wordSrsDue}</span><span class="sl">Word SRS due</span></div><div class="stat-box"><span class="sv">${sentenceDueCount}</span><span class="sl">Sentence SRS due</span></div><div class="stat-box"><span class="sv">${state.studyDays}</span><span class="sl">Study days</span></div><div class="stat-box"><span class="sv">${state.bestStreak}</span><span class="sl">Best streak</span></div></div>
       </div>
     `;
   };
@@ -309,9 +248,6 @@
     let repairingFromPageShow = false;
     let releaseWatchdog = null;
 
-    // Returning to a bfcached HanaPath root via browser Forward restores the
-    // sentinel before the learner navigates internally again. pageshow precedes
-    // popstate on traversal, so the flag suppresses that stale traversal event.
     window.addEventListener("pageshow", () => {
       releasingToBrowser = false;
       if (releaseWatchdog) {
@@ -330,16 +266,11 @@
         return;
       }
 
-      // During the deliberate second Back at HanaPath root, a same-document
-      // prior entry can still dispatch popstate into this document. Record that
-      // we genuinely left the HanaPath sentinel pair and otherwise leave it alone.
       if (releasingToBrowser) {
         if (event.state?.hanaPath !== true) leftHanaPathHistory = true;
         return;
       }
 
-      // If a same-document Forward traversal returns from an unrelated history
-      // entry to HanaPath's root state, treat it as re-entry, not another Back.
       if (leftHanaPathHistory && event.state?.hanaPath === true) {
         leftHanaPathHistory = false;
         pushGuardFromRoot();
@@ -356,8 +287,6 @@
         return;
       }
 
-      // We are at HanaPath's true root. Consume real browser history now instead
-      // of trapping the learner behind the synthetic guard.
       releasingToBrowser = true;
       try {
         window.history.back();
@@ -367,9 +296,6 @@
         return;
       }
 
-      // history.back() is a no-op when an installed PWA/new tab has no prior
-      // entry. If we are still sitting on HanaPath's root state shortly after,
-      // restore the guard so future lesson/detail Back actions remain reliable.
       releaseWatchdog = window.setTimeout(() => {
         releasingToBrowser = false;
         releaseWatchdog = null;
