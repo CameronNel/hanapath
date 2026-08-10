@@ -10,8 +10,8 @@
 
   // Structural containers stay neutral. Accent belongs on controls, progress,
   // focus, and feedback, not as a diffuse bloom leaking through translucent
-  // lesson cards. styles.css still carries the older top-right radial wash;
-  // this late policy layer removes it for the unreleased v463 experience packet.
+  // lesson cards. Keep this late override until the underlying stylesheet rule
+  // is removed when the stacked visual packet is flattened for merge.
   const surfacePolicy = document.createElement("style");
   surfacePolicy.id = "hanapath-experience-surface-policy";
   surfacePolicy.textContent = `
