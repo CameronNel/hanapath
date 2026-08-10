@@ -2,12 +2,43 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function owns(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validProgressShape() {
+      return request.resource.data.keys().hasOnly([
+          'schemaVersion',
+          'stateJson',
+          'stateSha256',
+          'revision',
+          'deviceId',
+          'clientUpdatedAt'
+        ])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.stateJson is string
+        && request.resource.data.stateJson.size() <= 716800
+        && request.resource.data.stateSha256 is string
+        && request.resource.data.stateSha256.matches('^[0-9a-f]{64}$')
+        && request.resource.data.revision is int
+        && request.resource.data.revision >= 1
+        && request.resource.data.deviceId is string
+        && request.resource.data.deviceId.size() >= 16
+        && request.resource.data.deviceId.size() <= 128
+        && request.resource.data.clientUpdatedAt is timestamp;
+    }
+
     // HanaPath cloud sync stores exactly one progress snapshot per Firebase UID.
-    // Client code may read/write only its own document. No public listing,
-    // cross-user access, or client-writable purchase entitlement surface exists.
+    // Client code may read/write only its own document. There is deliberately no
+    // client-writable purchase entitlement surface in this database contract.
     match /users/{userId}/progress/current {
-      allow read, create, update, delete: if request.auth != null
-        && request.auth.uid == userId;
+      allow read, delete: if owns(userId);
+      allow create: if owns(userId)
+        && validProgressShape()
+        && request.resource.data.revision == 1;
+      allow update: if owns(userId)
+        && validProgressShape()
+        && request.resource.data.revision == resource.data.revision + 1;
     }
 
     match /{document=**} {
