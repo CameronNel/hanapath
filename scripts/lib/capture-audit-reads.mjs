@@ -8,6 +8,7 @@
 // The audit runs to completion; its own exit code is preserved so a capture
 // against a failing audit cannot be mistaken for a clean one.
 import fs from "node:fs";
+import { syncBuiltinESMExports } from "node:module";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -37,9 +38,12 @@ function record(candidate) {
   }
 }
 
-// Patch on the module object so every `import fs from "node:fs"` consumer sees
-// it. Audits that destructure named exports would bypass this, so the freeze
-// tool unions this capture with a static scan of the audit source.
+// Patch the CommonJS/default fs surface first, then synchronize Node's builtin
+// ESM live bindings. The target audit is imported only after this point, so both
+// `import fs from "node:fs"` and named forms such as
+// `import { readFileSync } from "node:fs"` observe the instrumented functions.
+// The same synchronization also covers named imports from `node:fs/promises`
+// after its promise methods are patched below.
 const nativeWrite = fs.writeFileSync.bind(fs);
 const nativeExists = fs.existsSync.bind(fs);
 const nativeStat = fs.statSync.bind(fs);
@@ -51,6 +55,15 @@ for (const name of ["readFileSync", "readFile", "openSync", "createReadStream"])
     return original.call(this, target_, ...rest);
   };
 }
+for (const name of ["readFile", "open"]) {
+  const original = fs.promises?.[name];
+  if (typeof original !== "function") continue;
+  fs.promises[name] = function patchedPromiseRead(target_, ...rest) {
+    record(target_);
+    return original.call(this, target_, ...rest);
+  };
+}
+syncBuiltinESMExports();
 
 let flushed = false;
 function flush() {
