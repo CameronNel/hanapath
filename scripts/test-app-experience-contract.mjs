@@ -69,14 +69,21 @@ assert.doesNotMatch(contract, /\|\|\s*17\b/);
 assert.doesNotMatch(contract, />\$\{wordExamCount\}\/10</);
 assert.doesNotMatch(contract, />\$\{sentenceExamCount\}\/5</);
 
-// Browser/PWA Back needs a sentinel above the app root. Replacing the current
-// entry alone cannot intercept a first Back action. At HanaPath's true root the
-// handler must deliberately release to the real browser history.
+// Browser/PWA Back needs a sentinel above the app root. Root exit must not leave
+// HanaPath without a guard when browser history has nowhere to go, and a Forward
+// traversal back into a bfcached/same-document app must restore the sentinel
+// rather than immediately bouncing out again.
 assert.match(contract, /history\.replaceState\(rootState/);
 assert.match(contract, /history\.pushState\(guardState/);
 assert.match(contract, /if \(handleHanaPathBackAction\(\)\)/);
 assert.match(contract, /releasingToBrowser = true/);
 assert.match(contract, /window\.history\.back\(\)/);
+assert.match(contract, /window\.addEventListener\("pageshow"/);
+assert.match(contract, /leftHanaPathHistory/);
+assert.match(contract, /event\.state\?\.hanaPath !== true/);
+assert.match(contract, /pushGuardFromRoot\(\)/);
+assert.match(contract, /releaseWatchdog = window\.setTimeout/);
+assert.match(contract, /Never hijack unrelated same-document history entries/);
 
 // Current Hangul mastery policy is an explicit source of truth, not an
 // undocumented disagreement between app.js and the old 200/200 design text.
@@ -101,4 +108,4 @@ assert.match(sw, /const CACHE_NAME = "hanapath-shell-v463"/);
 assert.match(sw, /"\.\/hangul_mastery_scoring_policy\.js\?v=20260810f"/);
 assert.match(sw, /"\.\/app_experience_contract\.js\?v=20260810f"/);
 
-console.log("App experience contract regression passed (neutral lesson surface, full live Word curriculum, formal-only exam counts, accessible keyboard modal, sentinel Back, Hangul 75% policy). ");
+console.log("App experience contract regression passed (neutral lesson surface, full live Word curriculum, formal-only exam counts, accessible keyboard modal, resilient sentinel Back, Hangul 75% policy). ");
