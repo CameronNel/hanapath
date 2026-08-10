@@ -28,10 +28,26 @@ const mastered =
 - Practice/tainted attempts remain ineligible to award formal achievement.
 - Every other requirement in `docs/HANGUL_MASTERY_EXAM_CLAUDE_SPEC.md` remains binding unless a later explicit amendment says otherwise.
 
+## Historical records
+
+The new threshold is **prospective for formal achievement**. Existing
+compatibility summaries and `legacy-incomplete` result wrappers retain the
+achievement state that was actually recorded when those attempts were made. A
+historical aggregate such as `bestCorrect: 150–199` is not enough, by itself, to
+retroactively create a formal HanaPath mastery result because that compatibility
+summary does not carry the complete immutable attempt provenance required by the
+current integrity layer.
+
+Existing valid mastered state remains sticky. A learner with only historical
+non-mastered/legacy-incomplete evidence earns mastery by completing a new clean
+HanaPath attempt under the current 150/200 rule. Practice/tainted history never
+becomes achievement-bearing merely because the threshold changed.
+
 ## Runtime source of truth
 
 `hangul_mastery_exam.js` remains the immutable 200-item bank. The current scoring
 policy is applied by `hangul_mastery_scoring_policy.js` immediately after the
-bank loads and before `app.js` starts. Runtime code and generated status must
-read `window.HANGUL_MASTERY_EXAM.requiredCorrect`, not repeat a historical
-hard-coded threshold.
+bank loads and before `app.js` starts. Generated status and derived learner-facing
+surfaces read `window.HANGUL_MASTERY_EXAM.requiredCorrect`; the formal scoring
+branch is regression-locked to the same 150/200 policy until that monolithic
+handler is split into the shared scoring-policy layer.
