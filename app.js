@@ -2915,8 +2915,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v460";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260810c";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v461";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260810d";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -3258,9 +3258,9 @@ function loadState() {
     speakDone: false,
     resetArmed: false,
     // Appearance and accent are independent: every accent works in both light
-    // and dark mode. Graphite is the neutral default for new and legacy saves.
+    // and dark mode. Hana Violet on pitch black is the default look.
     appearance: "system",
-    theme: "graphite",
+    theme: "violet",
     // Free-drawing preferences. Grading uses stroke centre-lines, so visible
     // ink width never changes recognition accuracy.
     writingLineWidth: 14,
@@ -14095,23 +14095,31 @@ function hubIconSvg(icon) {
 }
 
 // Appearance controls the surface; accents remain usable in either mode.
+// Hana Violet is the default brand accent; Graphite stays as a neutral, and
+// the rest cover the primary/secondary colour wheel plus gold.
 const THEME_DEFS = [
-  { id: "graphite", name: "Graphite", swatch: "#8f8f8f" },
-  { id: "sage", name: "Sage", swatch: "#7d9686" },
-  { id: "clay", name: "Clay", swatch: "#a47f68" },
-  { id: "plum", name: "Plum", swatch: "#967f91" },
+  { id: "violet", name: "Hana Violet", swatch: "#a78bfa" },
+  { id: "graphite", name: "Graphite", swatch: "#a8a8a4" },
+  { id: "blue", name: "Ocean Blue", swatch: "#6cb2ff" },
+  { id: "red", name: "Ruby Red", swatch: "#ff7a72" },
+  { id: "yellow", name: "Sun Yellow", swatch: "#f5d13f" },
+  { id: "green", name: "Emerald", swatch: "#5ddb8a" },
+  { id: "orange", name: "Flame Orange", swatch: "#ffa057" },
+  { id: "gold", name: "Gold", swatch: "#f2c466" },
 ];
 
 const LEGACY_THEME_MIGRATION = {
-  ocean: "graphite", cyan: "graphite",
-  mint: "sage",
-  sunset: "clay", gold: "clay",
-  sakura: "plum", violet: "plum", rose: "plum",
+  ocean: "blue", cyan: "blue",
+  mint: "green",
+  sunset: "orange",
+  gold: "gold",
+  sakura: "violet", violet: "violet", plum: "violet",
+  rose: "red", clay: "orange", sage: "green", graphite: "graphite",
 };
 
 function normalizeThemeId(value) {
   const migrated = LEGACY_THEME_MIGRATION[value] || value;
-  return THEME_DEFS.some((theme) => theme.id === migrated) ? migrated : "graphite";
+  return THEME_DEFS.some((theme) => theme.id === migrated) ? migrated : "violet";
 }
 
 function normalizeAppearance(value) {
@@ -14119,15 +14127,15 @@ function normalizeAppearance(value) {
 }
 
 function getThemeAccentColor() {
-  return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#8f8f8f";
+  return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#a78bfa";
 }
 
 // Canvas cannot read CSS variables, so stroke/badge colors resolve the same
 // `--*-rgb` channels the stylesheet uses. Keeps guides on-theme in both modes.
-const THEME_RGB_FALLBACKS = { "accent-rgb": "164, 164, 160", "good-rgb": "142, 165, 145", "bad-rgb": "217, 141, 137", "warn-rgb": "200, 170, 116" };
+const THEME_RGB_FALLBACKS = { "accent-rgb": "167, 139, 250", "good-rgb": "142, 165, 145", "bad-rgb": "217, 141, 137", "warn-rgb": "200, 170, 116" };
 function getThemeRgba(channel, alpha) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(`--${channel}`).trim();
-  return `rgba(${value || THEME_RGB_FALLBACKS[channel] || "164, 164, 160"}, ${alpha})`;
+  return `rgba(${value || THEME_RGB_FALLBACKS[channel] || "167, 139, 250"}, ${alpha})`;
 }
 
 const SETTINGS_ICON_SVG = `
@@ -14165,7 +14173,7 @@ function applyTheme() {
   document.documentElement.classList.toggle("app-reduced-motion", Boolean(state.reduceMotion));
   document.documentElement.classList.toggle("testing-mode-enabled", TEST_UNLOCK_ALL_STAGES);
   const themeMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeMeta) themeMeta.setAttribute("content", colorMode === "dark" ? "#202020" : "#f7f7f5");
+  if (themeMeta) themeMeta.setAttribute("content", colorMode === "dark" ? "#000000" : "#ffffff");
   const testingBanner = document.getElementById("testing-mode-banner");
   if (testingBanner) testingBanner.hidden = !TEST_UNLOCK_ALL_STAGES;
 }
@@ -14679,6 +14687,43 @@ function getActiveLearnLevel(itemId) {
   return getTrackLevel(itemId);
 }
 
+// Curated-lesson progress for the three main Learn tiles. Only curated
+// curriculum lessons count (alphabet phases, word content lessons, sentence
+// content lessons); checkpoints, drills, and reference content are excluded.
+function getHubItemLessonProgress(itemId) {
+  if (itemId === "alphabet") {
+    const progress = getLearnProgress("alphabet");
+    return { done: progress.completedCount, total: progress.total };
+  }
+  if (itemId === "vocabulary") {
+    const lessons = getWordLessons().filter((lesson) => lesson.type !== "checkpoint");
+    return {
+      done: lessons.filter((lesson) => isWordLessonCompleted(lesson.id)).length,
+      total: lessons.length,
+    };
+  }
+  if (itemId === "sentences") {
+    const lessons = getSentenceLessons().filter((lesson) => lesson.type !== "checkpoint");
+    const completed = new Set(getSentencesProgress().completedLessons);
+    return {
+      done: lessons.filter((lesson) => completed.has(lesson.id)).length,
+      total: lessons.length,
+    };
+  }
+  return null;
+}
+
+function hubTileLessonProgressHtml(progress) {
+  if (!progress || !progress.total) return "";
+  const percent = Math.min(100, Math.max(0, (progress.done / progress.total) * 100));
+  return `
+    <span class="hub-tile-progress">
+      <span class="hub-tile-progress-meta">${progress.done} of ${progress.total} lessons</span>
+      <span class="hub-tile-progress-track"><span style="width:${percent.toFixed(1)}%"></span></span>
+    </span>
+  `;
+}
+
 function renderHubMenu(hub) {
   const def = HUB_DEFS[hub];
   const el = showScreen("menu");
@@ -14697,6 +14742,7 @@ function renderHubMenu(hub) {
           <span class="hub-tile-text">
             <strong>${escapeHtml(item.title)}</strong>
             <small>${escapeHtml(item.sub)}</small>
+            ${hub === "learn" ? hubTileLessonProgressHtml(getHubItemLessonProgress(item.id)) : ""}
           </span>
           <span class="hub-tile-go" aria-hidden="true">›</span>
         </button>
@@ -14732,7 +14778,7 @@ function renderSettingsScreen(hub = activeHub) {
     </div>
     <div class="settings-section">
       <h3 class="settings-section-title">Appearance</h3>
-      <p class="settings-section-sub">Use your device setting, light surfaces, or dark grey surfaces.</p>
+      <p class="settings-section-sub">Use your device setting, pure white surfaces, or pitch-black surfaces.</p>
       <div class="appearance-picker" role="group" aria-label="Appearance">
         ${["system", "light", "dark"].map((mode) => `
           <button class="appearance-option ${mode === activeAppearance ? "active" : ""}" type="button"
@@ -14742,7 +14788,7 @@ function renderSettingsScreen(hub = activeHub) {
     </div>
     <div class="settings-section">
       <h3 class="settings-section-title">Accent</h3>
-      <p class="settings-section-sub">Choose a restrained accent. It applies consistently in light and dark mode.</p>
+      <p class="settings-section-sub">Choose a vibrant accent. It applies consistently in light and dark mode.</p>
       <div class="theme-grid">
         ${THEME_DEFS.map((theme) => `
           <button class="theme-swatch ${theme.id === activeTheme ? "active" : ""}" type="button"

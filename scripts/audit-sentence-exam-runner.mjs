@@ -67,7 +67,7 @@ for (const file of orderedScripts) {
   check(at > previous, `index.html load order is wrong at ${file}`);
   previous = at;
 }
-check(/const CACHE_NAME = "hanapath-shell-v460";/.test(sw), "Sentence exam runner must use the synchronized service-worker cache at v460");
+check(/const CACHE_NAME = "hanapath-shell-v461";/.test(sw), "Sentence exam runner must use the synchronized service-worker cache at v461");
 check(runner.includes("No correctness, hints, accepted variants, answer reveals, or lesson helpers"), "pre-submit no-helper disclosure is missing");
 check(!runner.includes("scoreSentenceExamResponse("), "runner must delegate grading through the X1 engine, not call the grader directly");
 check(runner.includes("engine.gradeAttempt("), "runner does not delegate scoring to the X1 engine");
