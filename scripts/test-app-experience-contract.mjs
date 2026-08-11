@@ -19,6 +19,20 @@ const app = read("app.js");
 const hangulAudit = read("scripts/audit-hangul-mastery-exam.mjs");
 const amendment = read("docs/HANGUL_MASTERY_SCORING_POLICY_AMENDMENT.md");
 
+// Generic practice must keep question generation scoped to the active tab;
+// otherwise a stale global studio can leak Alphabet questions into Vocabulary
+// (or another subject) after the first answered prompt.
+assert.match(
+  app,
+  /function generateFreshQuestion\(scope = getCurrentQuizScope\(\)[\s\S]*?generateQuestion\(safeScope\)/,
+  "scoped practice must pass the active subject into question generation",
+);
+assert.match(
+  app,
+  /function generateQuestion\(scope = null\)[\s\S]*?scope == null[\s\S]*?getStudioForNavTab\(getNavTabForMainTab\(normalizeMainTab\(scope\)\)\)/,
+  "question generation must derive its studio from the requested scope",
+);
+
 // Structural lesson surfaces stay neutral in static CSS. Do not recreate the
 // old top-right accent bloom or inject policy CSS at runtime from JavaScript.
 assert.match(contractCss, /\.alphabet-lesson-player\s*\{\s*background:\s*var\(--panel\);\s*\}/s);
@@ -128,20 +142,19 @@ assert.match(app, /const mastered = correct >= 150 && total === 200/);
 assert.match(hangulAudit, /hangul_mastery_scoring_policy\.js/);
 assert.match(hangulAudit, /requiredCorrect must be 150/);
 
-// Shell order and offline/native parity. The large app and policy files did not
-// change in this final cleanup, so they remain on revision f. The modified
-// experience JS and new static experience CSS use revision g under cache v464.
+// Shell order and offline/native parity. The Hangul policy remains on revision
+// f; the app source and mobile experience CSS have their own current pins.
 const bankRef = index.indexOf('src="./hangul_mastery_exam.js');
 const policyRef = index.indexOf('src="./hangul_mastery_scoring_policy.js?v=20260810f"');
-const appRef = index.indexOf('src="./app.js?v=20260810f"');
+const appRef = index.indexOf('src="./app.js?v=20260811c"');
 const contractRef = index.indexOf('src="./app_experience_contract.js?v=20260810g"');
 const contractCssRef = index.indexOf('href="./app_experience_contract.css?v=20260810g"');
 assert.ok(bankRef >= 0 && policyRef > bankRef && appRef > policyRef, "Hangul scoring policy must load after the bank and before app.js");
 assert.ok(contractRef > appRef, "experience contract must load after app.js so its global overrides win before DOMContentLoaded");
 assert.ok(contractCssRef >= 0, "static experience surface policy must be loaded by index.html");
-assert.match(sw, /const CACHE_NAME = "hanapath-shell-v464"/);
+assert.match(sw, /const CACHE_NAME = "hanapath-shell-v466"/);
 assert.match(sw, /"\.\/hangul_mastery_scoring_policy\.js\?v=20260810f"/);
 assert.match(sw, /"\.\/app_experience_contract\.css\?v=20260810g"/);
 assert.match(sw, /"\.\/app_experience_contract\.js\?v=20260810g"/);
 
-console.log("App experience contract regression passed (static neutral lesson surface, accessible dismissal-persisted keyboard modal, live curricula, formal-only exam counts, resilient sentinel Back, Hangul 75% policy, v464 shell wiring).");
+console.log("App experience contract regression passed (static neutral lesson surface, accessible dismissal-persisted keyboard modal, live curricula, formal-only exam counts, resilient sentinel Back, Hangul 75% policy, v466 shell wiring).");

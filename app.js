@@ -2698,7 +2698,7 @@ function generateFreshQuestion(scope = getCurrentQuizScope()) {
   // Every live lab has thousands of semantic identities. The bounded retry is
   // only a guard for a temporarily narrow due queue or partially loaded bank.
   for (let attempt = 0; attempt < 500; attempt += 1) {
-    const question = generateQuestion();
+    const question = generateQuestion(safeScope);
     const key = learningQuestionKey(question, safeScope);
     fallback = { question, key };
     if (!recent.has(key)) {
@@ -2707,7 +2707,7 @@ function generateFreshQuestion(scope = getCurrentQuizScope()) {
       return question;
     }
   }
-  if (!fallback) return generateQuestion();
+  if (!fallback) return generateQuestion(safeScope);
   fallback.question.questionKey = fallback.key;
   rememberRecentQuestionKey(safeScope, fallback.key);
   return fallback.question;
@@ -2915,8 +2915,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v463";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260810f";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v466";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260811c";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -13231,9 +13231,14 @@ function generateVocabQuestion(forcedType) {
   };
 }
 
-function generateQuestion() {
+function generateQuestion(scope = null) {
   const pools = getPools();
-  const studio = getStudio();
+  // Generic practice sessions can render more than one scope over their
+  // lifetime. Derive the generator from the requested quiz scope instead of
+  // the last global studio a different tab happened to leave behind.
+  const studio = scope == null
+    ? getStudio()
+    : getStudioForNavTab(getNavTabForMainTab(normalizeMainTab(scope)));
   const vocabularyLevel = getTrackLevel("vocabulary");
   const sentenceLevel = getTrackLevel("sentences");
   const listeningLevel = getTrackLevel("listening");

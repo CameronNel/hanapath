@@ -1112,6 +1112,16 @@ input, textarea { cursor: text; }
 .checkpoint-token.tappable:focus-visible {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
 }
+/* Hangul lesson tokens are real speaker controls, not decorative glyphs.
+   Keep the glyph compact while preserving a phone-sized touch target. */
+.alphabet-lesson-player .concept-token.tappable,
+.alphabet-lesson-player .checkpoint-token.tappable {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
 .visual-stack {
   display: inline-flex;
   min-width: 0;
@@ -1374,8 +1384,9 @@ button.bd-assembled:hover {
 }
 .bd-tile-wrap .bd-tile-speak {
   width: 100%;
-  height: 34px;
-  min-height: 34px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
   padding: 0;
   font-size: .78rem;
   border-radius: 9px;
@@ -2571,7 +2582,8 @@ button.bd-assembled:hover {
 .lib-kr { font-size: 1.1rem; font-family: "Noto Sans KR", sans-serif; flex: 1; }
 .lib-en { font-size: .78rem; color: var(--muted-2); margin-top: 3px; }
 .lib-hear-btn {
-  width: 36px; height: 36px;
+  width: 44px; height: 44px;
+  min-width: 44px; min-height: 44px;
   border-radius: 50%;
   background: rgba(var(--accent-rgb),.14);
   border: 1px solid rgba(var(--accent-rgb),.25);
@@ -3874,7 +3886,8 @@ li { margin-bottom: 4px; }
 }
 
 .lesson-option-row .speak-option-btn {
-  width: 34px;
+  width: 44px;
+  min-width: 44px;
   height: auto;
   min-height: 58px;
   display: flex;
@@ -4594,7 +4607,7 @@ li { margin-bottom: 4px; }
 .word-typed-success-title { color: var(--accent-text); font-size: 1.45rem; font-weight: 900; }
 .word-typed-success-answer-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 14px; }
 .word-typed-success-answer { color: var(--text); font-family: "Noto Sans KR", sans-serif; font-size: 2.1rem; font-weight: 900; }
-.word-typed-success-play { width: 36px; height: 36px; padding: 0; border: 1px solid rgba(var(--accent-rgb),.48); border-radius: 50%; color: var(--accent-text); background: rgba(var(--accent-rgb),.18); font-size: .85rem; cursor: pointer; }
+.word-typed-success-play { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; border: 1px solid rgba(var(--accent-rgb),.48); border-radius: 50%; color: var(--accent-text); background: rgba(var(--accent-rgb),.18); font-size: .85rem; cursor: pointer; }
 .word-typed-success-play:hover { background: rgba(var(--accent-rgb),.3); transform: scale(1.08); }
 .word-typed-success-prompt { margin-top: 34px; color: var(--muted); font-size: .86rem; }
 .word-typed-success-actions { margin-top: 16px; }
