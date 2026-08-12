@@ -10,11 +10,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
-    <!-- ML Kit's model downloader brings WorkManager declarations that are not
-         needed for HanaPath's foreground, user-initiated download. -->
+    <!-- Keep transitive SDK permissions tightly scoped. ML Kit's downloader
+         brings WorkManager permissions that HanaPath does not need for its
+         foreground, user-initiated download. Google Mobile Ads still declares
+         the now-deprecated Android Privacy Sandbox permissions by default;
+         HanaPath opts out instead of widening the release permission surface. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" tools:node="remove" />
     <uses-permission android:name="android.permission.WAKE_LOCK" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_TOPICS" tools:node="remove" />
     <uses-permission android:name="com.android.vending.BILLING" tools:node="remove" />
     <!-- Credential Manager's generic biometric dependency is not used by the
          Google-ID-only flow, so keep those permissions out of the release. -->
