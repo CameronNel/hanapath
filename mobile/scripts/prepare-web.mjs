@@ -28,6 +28,13 @@ const RUNTIME_FETCHED_FILES = [
   "privacy.html",
 ];
 
+// Android-only bridge code. It is injected into the generated Capacitor index
+// after app.js, so the hosted browser/PWA remains ad-free and never loads a
+// native monetization shim.
+const NATIVE_ONLY_FILES = [
+  { source: join(mobileRoot, "web", "native_ads.js"), target: "native_ads.js" },
+];
+
 // Directories copied wholesale. audio/ follows the handover §7 parity
 // experiment: bundle everything first, measure, then decide.
 const RUNTIME_DIRS = ["lib", "icons", "fonts", "audio"];
@@ -65,7 +72,12 @@ function extractIndexAssets(indexHtml) {
 }
 
 function nativeIndexHtml(indexHtml) {
-  return indexHtml.replace(/\s*<!--[^>]*Browser-only GIS adapter[^>]*-->\s*<script\b[^>]*\bdata-browser-only\b[^>]*><\/script>/gi, "");
+  const withoutBrowserOnly = indexHtml.replace(/\s*<!--[^>]*Browser-only GIS adapter[^>]*-->\s*<script\b[^>]*\bdata-browser-only\b[^>]*><\/script>/gi, "");
+  const appScript = /(<script\s+defer\s+src=["']\.\/app\.js\?v=[^"']+["']><\/script>)/i;
+  if (!appScript.test(withoutBrowserOnly)) {
+    throw new Error("prepare-web: app.js script anchor missing; cannot inject native_ads.js safely");
+  }
+  return withoutBrowserOnly.replace(appScript, '$1\n    <script defer src="./native_ads.js"></script>');
 }
 
 const indexHtml = readFileSync(join(repoRoot, "index.html"), "utf8");
@@ -97,6 +109,9 @@ for (const file of rootFiles) {
     fail(`index.html references a missing local file: ${file}`);
   }
 }
+for (const nativeOnly of NATIVE_ONLY_FILES) {
+  if (!existsSync(nativeOnly.source)) fail(`native-only runtime file missing: ${relative(repoRoot, nativeOnly.source)}`);
+}
 for (const dir of RUNTIME_DIRS) {
   if (!existsSync(join(repoRoot, dir))) fail(`required runtime directory missing: ${dir}`);
 }
@@ -120,6 +135,11 @@ for (const file of [...rootFiles].sort()) {
   mkdirSync(dirname(target), { recursive: true });
   if (file === "index.html") writeFileSync(target, nativeIndexHtml(indexHtml));
   else cpSync(join(repoRoot, file), target);
+}
+for (const nativeOnly of NATIVE_ONLY_FILES) {
+  const target = join(wwwRoot, nativeOnly.target);
+  mkdirSync(dirname(target), { recursive: true });
+  cpSync(nativeOnly.source, target);
 }
 for (const dir of RUNTIME_DIRS) {
   cpSync(join(repoRoot, dir), join(wwwRoot, dir), { recursive: true });
