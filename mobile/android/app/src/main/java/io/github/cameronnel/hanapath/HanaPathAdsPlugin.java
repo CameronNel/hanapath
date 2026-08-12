@@ -28,7 +28,6 @@ public class HanaPathAdsPlugin extends Plugin {
     private static final String TAG = "HanaPathAds";
     private static final String PREFS_NAME = "hanapath_ads";
     private static final String PREF_LAST_SHOWN_AT = "last_interstitial_shown_at";
-    private static final long AD_COOLDOWN_MS = 5L * 60L * 1000L;
     private static final long AD_MAX_AGE_MS = 55L * 60L * 1000L;
     private static final String GOOGLE_TEST_INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712";
 
@@ -146,23 +145,22 @@ public class HanaPathAdsPlugin extends Plugin {
         return preferences == null ? 0L : preferences.getLong(PREF_LAST_SHOWN_AT, 0L);
     }
 
-    private long cooldownBaseline() {
-        return Math.max(sessionStartedAt, lastShownAt());
-    }
-
     private JSObject status(boolean shown, String reason, long now) {
         JSObject ret = new JSObject();
-        long baseline = cooldownBaseline();
+        long lastShown = lastShownAt();
         ret.put("shown", shown);
         ret.put("reason", reason);
-        ret.put("cooldownMs", AD_COOLDOWN_MS);
-        ret.put("lastShownAt", lastShownAt());
+        ret.put("cooldownMs", AdCadence.COOLDOWN_MS);
+        ret.put("lastShownAt", lastShown);
         ret.put("sessionStartedAt", sessionStartedAt);
-        ret.put("eligibleAt", baseline + AD_COOLDOWN_MS);
-        ret.put("remainingMs", Math.max(0L, (baseline + AD_COOLDOWN_MS) - now));
+        ret.put("eligibleAt", AdCadence.eligibleAt(sessionStartedAt, lastShown));
+        ret.put("remainingMs", AdCadence.remainingMs(sessionStartedAt, lastShown, now));
         ret.put("configured", BuildConfig.ADMOB_CONFIGURED);
         ret.put("testAds", BuildConfig.DEBUG);
         ret.put("ready", interstitialAd != null);
+        ret.put("privacyOptionsRequired", consentInformation != null
+            && consentInformation.getPrivacyOptionsRequirementStatus()
+                == ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED);
         return ret;
     }
 
@@ -174,15 +172,14 @@ public class HanaPathAdsPlugin extends Plugin {
             return;
         }
 
-        long baseline = cooldownBaseline();
-        if (now - baseline < AD_COOLDOWN_MS) {
+        if (!AdCadence.isEligible(sessionStartedAt, lastShownAt(), now)) {
             call.resolve(status(false, "cooldown", now));
             return;
         }
 
         getActivity().runOnUiThread(() -> {
             long showNow = System.currentTimeMillis();
-            if (showNow - cooldownBaseline() < AD_COOLDOWN_MS) {
+            if (!AdCadence.isEligible(sessionStartedAt, lastShownAt(), showNow)) {
                 call.resolve(status(false, "cooldown", showNow));
                 return;
             }
