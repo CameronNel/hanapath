@@ -1,19 +1,38 @@
 apply plugin: 'com.android.application'
 
-// The Web OAuth client ID is public configuration, not a secret, but it is
-// still owner-controlled release metadata. Keep source builds unconfigured by
-// default and inject it through either -PHANAPATH_GOOGLE_SERVER_CLIENT_ID=...
-// or the matching environment variable in the protected build environment.
+// Public release configuration. None of these values are secrets, but they are
+// owner-controlled identifiers and source builds must remain safe when they are
+// absent. Debug builds use Google's dedicated sample/test AdMob identifiers;
+// release builds do not request ads until both production identifiers exist.
 def googleSignInServerClientId = providers
     .gradleProperty('HANAPATH_GOOGLE_SERVER_CLIENT_ID')
     .orElse(providers.environmentVariable('HANAPATH_GOOGLE_SERVER_CLIENT_ID'))
     .getOrElse('')
     .trim()
-def escapedGoogleSignInServerClientId = googleSignInServerClientId
-    .replace('\\', '\\\\')
-    .replace('"', '\\"')
-    .replace('\r', '')
-    .replace('\n', '')
+def adMobAppId = providers
+    .gradleProperty('HANAPATH_ADMOB_APP_ID')
+    .orElse(providers.environmentVariable('HANAPATH_ADMOB_APP_ID'))
+    .getOrElse('')
+    .trim()
+def adMobInterstitialId = providers
+    .gradleProperty('HANAPATH_ADMOB_INTERSTITIAL_ID')
+    .orElse(providers.environmentVariable('HANAPATH_ADMOB_INTERSTITIAL_ID'))
+    .getOrElse('')
+    .trim()
+def adMobConfigured = !adMobAppId.isEmpty() && !adMobInterstitialId.isEmpty()
+def effectiveAdMobAppId = adMobConfigured
+    ? adMobAppId
+    : 'ca-app-pub-3940256099942544~3347511713'
+
+def escapeBuildConfigString = { value ->
+    value
+        .replace('\\', '\\\\')
+        .replace('"', '\\"')
+        .replace('\r', '')
+        .replace('\n', '')
+}
+def escapedGoogleSignInServerClientId = escapeBuildConfigString(googleSignInServerClientId)
+def escapedAdMobInterstitialId = escapeBuildConfigString(adMobInterstitialId)
 
 android {
     namespace = "io.github.cameronnel.hanapath"
@@ -27,7 +46,10 @@ android {
         // tags before any signed AAB is produced.
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [hanapathAdMobAppId: effectiveAdMobAppId]
         buildConfigField "String", "GOOGLE_SIGN_IN_SERVER_CLIENT_ID", "\"${escapedGoogleSignInServerClientId}\""
+        buildConfigField "String", "ADMOB_INTERSTITIAL_ID", "\"${escapedAdMobInterstitialId}\""
+        buildConfigField "boolean", "ADMOB_CONFIGURED", adMobConfigured.toString()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -81,9 +103,10 @@ dependencies {
     implementation 'androidx.credentials:credentials:1.6.0'
     implementation 'androidx.credentials:credentials-play-services-auth:1.6.0'
     implementation 'com.google.android.libraries.identity.googleid:googleid:1.2.0'
-    // The active product contract is free_all. Google Play Billing must not be
-    // compiled into or permission-merged into this build. A future paid build
-    // must reintroduce its bridge in a separately reviewed store-mode packet.
+    implementation 'com.google.android.gms:play-services-ads:25.4.0'
+    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
+    // The active product contract remains free_all for learning features. Ads
+    // are interstitial-only; Google Play Billing is still absent.
     testImplementation "junit:junit:$junitVersion"
     testImplementation 'org.json:json:20240303'
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
