@@ -11,6 +11,8 @@ const manifest = readFileSync(join(androidRoot, "src", "main", "AndroidManifest.
 const extractionRules = readFileSync(join(androidRoot, "src", "main", "res", "xml", "data_extraction_rules.xml"), "utf8");
 const mainActivity = readFileSync(join(javaRoot, "MainActivity.java"), "utf8");
 const adsPlugin = readFileSync(join(javaRoot, "HanaPathAdsPlugin.java"), "utf8");
+const adCadence = readFileSync(join(javaRoot, "AdCadence.java"), "utf8");
+const adCadenceTest = readFileSync(join(androidRoot, "src", "test", "java", "io", "github", "cameronnel", "hanapath", "AdCadenceTest.java"), "utf8");
 const buildGradle = readFileSync(join(androidRoot, "build.gradle"), "utf8");
 const strings = readFileSync(join(androidRoot, "src", "main", "res", "values", "strings.xml"), "utf8");
 const nativeAds = readFileSync(join(root, "mobile", "web", "native_ads.js"), "utf8");
@@ -43,23 +45,27 @@ assert.doesNotMatch(buildGradle, /com\.android\.billingclient|billingclient/i);
 assert.doesNotMatch(strings, /premium_writing_product_id|play_billing_public_key/);
 assert.doesNotMatch(packageAudit.match(/const ALLOWED_ANDROID_PERMISSIONS = new Set\(\[([\s\S]*?)\]\);/)?.[1] || "", /BILLING/);
 
-// Android ads are native-only, configuration-gated in release, and use
-// Google's official test inventory in debug builds.
 assert.match(mainActivity, /registerPlugin\(HanaPathAdsPlugin\.class\)/);
 assert.match(buildGradle, /com\.google\.android\.gms:play-services-ads:25\.4\.0/);
 assert.match(buildGradle, /com\.google\.android\.ump:user-messaging-platform:4\.0\.0/);
 assert.match(buildGradle, /HANAPATH_ADMOB_APP_ID/);
 assert.match(buildGradle, /HANAPATH_ADMOB_INTERSTITIAL_ID/);
 assert.match(buildGradle, /ADMOB_CONFIGURED/);
-assert.match(adsPlugin, /AD_COOLDOWN_MS\s*=\s*5L\s*\*\s*60L\s*\*\s*1000L/);
+assert.match(adCadence, /COOLDOWN_MS\s*=\s*5L\s*\*\s*60L\s*\*\s*1000L/);
+assert.match(adCadenceTest, /4L \* MINUTE/);
+assert.match(adCadenceTest, /7L \* MINUTE/);
+assert.match(adCadenceTest, /12L \* MINUTE/);
+assert.match(adsPlugin, /AdCadence\.isEligible/);
 assert.match(adsPlugin, /GOOGLE_TEST_INTERSTITIAL_ID\s*=\s*"ca-app-pub-3940256099942544\/1033173712"/);
 assert.match(adsPlugin, /onAdShowedFullScreenContent\(\)[\s\S]*?PREF_LAST_SHOWN_AT/);
 assert.match(adsPlugin, /onAdFailedToShowFullScreenContent[\s\S]*?Do not advance the cooldown/);
 assert.match(adsPlugin, /UserMessagingPlatform\.loadAndShowConsentFormIfRequired/);
+assert.match(adsPlugin, /PrivacyOptionsRequirementStatus\.REQUIRED/);
 assert.match(nativeAds, /profile\.phaseOneCompleted/);
 assert.match(nativeAds, /profile\.vocabLessonCompleted/);
 assert.match(nativeAds, /completedLessons/);
 assert.match(nativeAds, /if \(completions\.length !== 1\) return;/);
+assert.match(nativeAds, /window\.addEventListener\("load", arm/);
 assert.match(nativeAds, /plugin\.lessonCompleted/);
 assert.match(prepareWeb, /native_ads\.js/);
 assert.doesNotMatch(readFileSync(join(root, "index.html"), "utf8"), /native_ads\.js/, "hosted PWA must remain ad-free");
