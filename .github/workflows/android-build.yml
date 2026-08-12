@@ -116,9 +116,14 @@ jobs:
           perms=$(grep -oE '<uses-permission(-sdk-23)?[^>]*android:name="[^"]*"' "$merged" | grep -oE '"[^"]*"$' | tr -d '"' | sort -u || true)
           echo "Declared uses-permissions:"
           echo "${perms:-<none>}"
-          # Allowed: INTERNET for Capacitor/model download, plus the app's own
-          # signature-level receiver-hardening permission added by androidx.
-          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
+          # INTERNET + network state + advertising ID are the audited AdMob
+          # surface. AndroidX may add the app's signature-level receiver guard.
+          unexpected=$(echo "$perms" \
+            | grep -v '^android\.permission\.INTERNET$' \
+            | grep -v '^android\.permission\.ACCESS_NETWORK_STATE$' \
+            | grep -v '^com\.google\.android\.gms\.permission\.AD_ID$' \
+            | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' \
+            | grep -v '^$' || true)
           if [ -n "$unexpected" ]; then
             echo "Unexpected permissions in merged manifest:" >&2
             echo "$unexpected" >&2
