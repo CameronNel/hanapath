@@ -1,5 +1,5 @@
 // [2026-08-10] Final #391 cache refresh after the learner-experience contract cleanup.
-const CACHE_NAME = "hanapath-shell-v464";
+const CACHE_NAME = "hanapath-shell-v466";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -7,7 +7,7 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./fonts/fonts.css?v=20260716a",
-  "./styles.css?v=20260810f",
+  "./styles.css?v=20260811b",
   "./app_experience_contract.css?v=20260810g",
   "./sentence_exam_runner.css?v=20260729b",
   "./lib/hangul.js",
@@ -44,7 +44,7 @@ const APP_SHELL = [
   "./sentence_feedback.js?v=20260810c",
   "./google_auth.js?v=20260810c",
   "./google_auth_web.js?v=20260810c",
-  "./app.js?v=20260810f",
+  "./app.js?v=20260811c",
   "./app_experience_contract.js?v=20260810g",
   "./sentence_exam_runner.js?v=20260810c",
   "./alphabet_skill_srs.js?v=20260810c",

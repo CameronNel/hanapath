@@ -520,7 +520,9 @@ function renderStatusMarkdown(status) {
   }
   lines.push("");
 
-  return lines.join("\n") + "\n";
+  // The final empty line above already supplies the canonical trailing newline.
+  // Do not append another one: that makes generated status fail `git diff --check`.
+  return lines.join("\n");
 }
 
 // ---------------------------------------------------------------------------
