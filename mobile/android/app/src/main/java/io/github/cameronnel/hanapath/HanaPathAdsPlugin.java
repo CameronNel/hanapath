@@ -73,6 +73,18 @@ public class HanaPathAdsPlugin extends Plugin {
         return BuildConfig.ADMOB_INTERSTITIAL_ID == null ? "" : BuildConfig.ADMOB_INTERSTITIAL_ID.trim();
     }
 
+    private boolean isPrivacyOptionsRequired() {
+        return consentInformation != null
+            && consentInformation.getPrivacyOptionsRequirementStatus()
+                == ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED;
+    }
+
+    private void notifyPrivacyOptionsStatus() {
+        JSObject ret = new JSObject();
+        ret.put("required", isPrivacyOptionsRequired());
+        notifyListeners("privacyOptionsStatusChanged", ret, true);
+    }
+
     private void initializeConsentAndAds() {
         consentInformation = UserMessagingPlatform.getConsentInformation(getContext());
         ConsentRequestParameters params = new ConsentRequestParameters.Builder().build();
@@ -80,12 +92,14 @@ public class HanaPathAdsPlugin extends Plugin {
             getActivity(),
             params,
             () -> {
+                notifyPrivacyOptionsStatus();
                 UserMessagingPlatform.loadAndShowConsentFormIfRequired(
                     getActivity(),
                     formError -> {
                         if (formError != null) {
                             Log.w(TAG, "Consent form dismissed with error: " + formError.getMessage());
                         }
+                        notifyPrivacyOptionsStatus();
                         if (consentInformation.canRequestAds()) initializeMobileAds();
                     }
                 );
@@ -95,6 +109,7 @@ public class HanaPathAdsPlugin extends Plugin {
                 Log.w(TAG, "Consent information update failed: " + requestConsentError.getMessage());
                 // A prior valid consent state may still permit requests even if
                 // this launch's refresh fails (for example, transient network).
+                notifyPrivacyOptionsStatus();
                 if (consentInformation.canRequestAds()) initializeMobileAds();
             }
         );
@@ -158,9 +173,7 @@ public class HanaPathAdsPlugin extends Plugin {
         ret.put("configured", BuildConfig.ADMOB_CONFIGURED);
         ret.put("testAds", BuildConfig.DEBUG);
         ret.put("ready", interstitialAd != null);
-        ret.put("privacyOptionsRequired", consentInformation != null
-            && consentInformation.getPrivacyOptionsRequirementStatus()
-                == ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED);
+        ret.put("privacyOptionsRequired", isPrivacyOptionsRequired());
         return ret;
     }
 
@@ -244,6 +257,7 @@ public class HanaPathAdsPlugin extends Plugin {
         getActivity().runOnUiThread(() -> UserMessagingPlatform.showPrivacyOptionsForm(
             getActivity(),
             (FormError formError) -> {
+                notifyPrivacyOptionsStatus();
                 if (formError != null) {
                     call.reject(formError.getMessage(), "PRIVACY_OPTIONS_FAILED");
                     return;
