@@ -48,9 +48,10 @@ Alternatives:
 > next block is highlighted. All handwriting paths are included for free. The
 > optional Korean recognition model is tested on your device before use.
 >
-> **🔒 Local learning progress**
-> No required account. Your lesson progress stays on your device, and you can
-> export or import it as a backup file whenever you like.
+> **🔒 Optional progress sync**
+> No account is required. Progress stays available locally and offline. Sign in
+> with Google to back it up and merge it across your HanaPath devices, or use
+> export/import for a manual backup.
 >
 > **Core learning works offline**
 > Every lesson and audio clip is bundled. The optional ML Kit handwriting model

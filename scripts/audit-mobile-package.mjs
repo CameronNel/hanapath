@@ -29,6 +29,9 @@ const SIZE_FAIL_MIB = 200;
 const REQUIRED_ASSETS = [
   "index.html",
   "app.js",
+  "firebase_config.js",
+  "cloud_sync_merge.js",
+  "google_auth.js",
   "native_ads.js",
   "styles.css",
   "audio_map.js",
@@ -242,6 +245,19 @@ if (!existsSync(androidRoot)) {
   }
   if (!/HANAPATH_PLAY_BILLING_PUBLIC_KEY/.test(buildGradle)) {
     errors.push("app/build.gradle must keep the Play Billing licence public key owner-configured");
+  }
+  const googleServicesPath = join(androidRoot, "app", "google-services.json");
+  if (!existsSync(googleServicesPath)) {
+    errors.push("app/google-services.json is required for Firebase Authentication");
+  } else {
+    const googleServices = JSON.parse(readFileSync(googleServicesPath, "utf8"));
+    if (googleServices.project_info?.project_id !== "hanapath") {
+      errors.push("app/google-services.json must target Firebase project hanapath");
+    }
+    const packages = (googleServices.client || []).map((entry) => entry.client_info?.android_client_info?.package_name);
+    if (!packages.includes("io.github.cameronnel.hanapath")) {
+      errors.push("app/google-services.json is missing the HanaPath Android package");
+    }
   }
 
   const variablesGradle = readFileSync(join(androidRoot, "variables.gradle"), "utf8");

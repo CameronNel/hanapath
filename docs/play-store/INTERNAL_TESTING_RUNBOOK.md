@@ -11,8 +11,9 @@
 > interstitials only at newly completed lesson boundaries and no more often
 > than once every five minutes. An optional US$2/month Google Play subscription
 > removes Android ads while active; it does not unlock learning content.
-> Google sign-in remains disabled for this release, so there is no HanaPath
-> account, session, or progress sync. The hosted website/PWA remains ad-free.
+> Optional Google sign-in uses Firebase Authentication and user-owned Firestore
+> progress sync. All learning remains available without an account. The hosted
+> website/PWA remains ad-free.
 
 ## 0. Prerequisites (in order)
 
@@ -41,8 +42,9 @@
 9. Merged-manifest/dependency evidence confirms AdMob's reviewed INTERNET,
    network-state and advertising-ID permissions plus Play Billing used only for
    ad suppression. Microphone and unrelated purchase products remain absent.
-10. Google sign-in remains unconfigured: no `HANAPATH_GOOGLE_SERVER_CLIENT_ID`
-   and no browser `window.HANAPATH_AUTH_CONFIG` session endpoint.
+10. Firebase Authentication and Firestore production rules are deployed.
+    Register the upload and Play App Signing SHA fingerprints before testing
+    each corresponding signed build.
 
 ## 1. Create the app (once)
 
@@ -57,8 +59,8 @@ child age treatment, or Play's optional **Restrict minor access** control; the
 app has no age-restricted content and does not need an advertising age gate.
 
 Declare the ad-free subscription as an in-app product. Do not declare paid
-learning content or an active HanaPath account: Handwriting Coach remains free
-and the configuration-gated sign-in adapter still creates no account.
+learning content: Handwriting Coach remains free. Declare optional Google
+account access and the in-app account-deletion route.
 
 ## 2. Internal testing release
 
@@ -75,8 +77,10 @@ uploading the new AAB to the same track.
 Before sharing the opt-in URL widely, confirm on the Play-installed build:
 
 - Handwriting Coach opens without a paywall.
-- Google sign-in reports configuration required.
-- Local progress works without an account.
+- Google sign-in creates the Firebase-linked account and syncs progress.
+- Local progress still works without an account and while offline.
+- A second signed-in device merges progress; sign-out preserves its local copy.
+- In-app account deletion removes the Firebase account and cloud/local progress.
 - The applicable UMP consent flow appears where required.
 - If UMP says privacy options are required, Settings shows **Privacy choices**
   and opens the Google privacy-options form.
@@ -147,25 +151,10 @@ Production rollout remains a manual owner action after testing and production
 access. Use a staged rollout and keep rollback/revert procedures ready. No
 repository automation promotes a build to production.
 
-## 7. Later Google sign-in activation — not part of this release
+## 7. Google sign-in and progress-sync release check
 
-Do not turn the disabled control into a working login by changing only a client
-ID. A later internal-track candidate must first have:
-
-1. An owner-controlled Google Cloud OAuth consent screen and Web application
-   client ID used as the token audience.
-2. Android OAuth clients for package `io.github.cameronnel.hanapath`, covering
-   both upload and Play App Signing certificates as required by the configured
-   Google services.
-3. `HANAPATH_GOOGLE_SERVER_CLIENT_ID` injected into Android plus a secure web
-   `sessionEndpoint` configuration.
-4. A trusted HTTPS verifier that validates Google signature/keys, issuer,
-   audience, timing claims, and the exact single-use request nonce before
-   issuing a session.
-5. Updated privacy, Data Safety, reviewer-access, retention, sign-out/revocation,
-   and account-deletion contracts. Account activation still does not authorize
-   progress sync; sync requires a separate reviewed design.
-
-Run the E4 matrix in
-[`../MOBILE_DEVICE_TEST_CHECKLIST.md`](../MOBILE_DEVICE_TEST_CHECKLIST.md) before
-changing the Play Console account declarations.
+Firebase Authentication verifies Google credentials and issues the app session;
+Firestore Security Rules enforce that each backup is accessible only to its
+matching Firebase UID. Before every Play build, register that build's signing
+certificate fingerprints and run the E4 matrix in
+[`../MOBILE_DEVICE_TEST_CHECKLIST.md`](../MOBILE_DEVICE_TEST_CHECKLIST.md).

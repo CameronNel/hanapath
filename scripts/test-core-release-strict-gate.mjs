@@ -22,6 +22,7 @@ for (const step of GATE_STEPS) {
 }
 
 for (const required of [
+  "cloud-sync-contract",
   "sentence-exams",
   "sentence-exam-runner-audit",
   "sentence-exam-runner-regression",

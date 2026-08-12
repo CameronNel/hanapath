@@ -83,9 +83,9 @@ Families-only advertising and do not add an age gate merely for advertising.**
   does not require Play's optional **Restrict minor access** control. HanaPath
   has no age-restricted functionality, so no in-app age gate is added.
 
-### 5. Developer account: personal vs organization — ⏳
+### 5. Developer account: personal vs organization — ✅ owner-confirmed 2026-08-12
 
-**Proposed: personal developer account** (one-time $25 registration).
+**Confirmed: personal developer account** (Google currently presents a one-time registration charge during signup; payment still requires explicit approval at checkout).
 
 - Note: personal accounts created after 2023-11-13 may have testing
   requirements before production access. Re-check the current Play requirement
@@ -111,48 +111,24 @@ accounts show the verified name rules Google applies at registration).
   sent to AdMob; the Android app may show five-minute-gated lesson-completion
   interstitials; the Google Mobile Ads SDK performs its documented ad/analytics/
   fraud-prevention data processing; the website/PWA remains ad-free.
-- The same page continues to document local progress, ML Kit, disabled Google
-  sign-in, UMP privacy choices, and Google Play subscription handling.
+- The same page documents optional Firebase account/progress sync, in-app
+  deletion, local progress, ML Kit, UMP privacy choices, and Google Play
+  subscription handling.
 - Required for the ad-enabled Play release. Use this exact URL in AdMob and
   Play Console.
 
-### 9. Google sign-in activation boundary — ✅ current release confirmed 2026-08-10
+### 9. Google sign-in and progress sync — ✅ owner-confirmed 2026-08-12
 
-**Confirmed for the current release: Google sign-in remains unconfigured and
-fail-closed. HanaPath creates no account or authenticated session, sends no ID
-token to a verifier, and does not sync learner progress.** A disabled sign-in
-control may explain that owner configuration is required; it must not imply
-that an account exists or that local progress is backed up.
+**Confirmed:** Optional Google sign-in creates a Firebase Authentication
+account and stores one Firestore progress backup owned by that Firebase UID.
+The app remains fully usable offline and without an account. Signed-in devices
+merge additive progress, keep a local offline copy, expose manual sync and
+sign-out, and provide in-app permanent account/cloud/local deletion.
 
-Activating sign-in in a later reviewed release requires all of these owner
-actions together; setting only a client ID is not sufficient:
-
-1. Choose an owner-controlled Google Cloud project, configure its OAuth consent
-   screen, authorized domains, production status, and support/privacy links.
-2. Create a **Web application OAuth client**. Its client ID is the server/Web
-   client ID and the required `aud` value for every Google ID token. Supply it
-   to Android as `HANAPATH_GOOGLE_SERVER_CLIENT_ID`; supply it to the browser as
-   `window.HANAPATH_AUTH_CONFIG.webClientId` before `google_auth.js` loads.
-3. Create Android OAuth client registrations for the exact package
-   `io.github.cameronnel.hanapath`. Record **upload-key SHA-1 and SHA-256** and,
-   after Play App Signing enrolment, the distinct **Play App Signing SHA-1 and
-   SHA-256**. Use each certificate's SHA-1 in the corresponding Android OAuth
-   client and register SHA-256 wherever the linked Google/Firebase or Android
-   developer configuration requests it. A locally signed/upload-key build
-   working does not prove that a Play-installed build will work.
-4. Operate a trusted HTTPS session endpoint and configure it as
-   `window.HANAPATH_AUTH_CONFIG.sessionEndpoint` before `google_auth.js` loads
-   on both hosted web and an explicitly generated native configuration. It must
-   verify the Google ID token's cryptographic signature and current Google
-   keys, allowed issuer, exact Web-client audience, expiry/timing claims, and
-   the exact request nonce. The nonce must be single-use/replay-resistant before
-   the service creates its own secure session. The browser or Android plugin
-   must never decode a token and treat it as authenticated locally.
-5. Define the actual account lifecycle, sign-out/revocation behaviour, data
-   retention, in-app deletion path, public account-deletion URL, reviewer
-   access, privacy text, and Data Safety declarations before enabling the
-   control. Progress remains device-local unless a separately reviewed sync
-   service and migration contract are shipped.
+Firebase project `hanapath` uses the no-cost Spark plan and the `(default)`
+Firestore database in `africa-south1`. Google is the enabled identity provider.
+Release and Play App Signing SHA fingerprints must still be registered after
+those certificates exist; the debug SHA-1 is registered for local builds.
 
 ## Record of confirmations
 
@@ -162,8 +138,8 @@ actions together; setting only a client ID is not sufficient:
 | 2 | Store app name | ⏳ | — | — |
 | 3 | Free vs paid / monetization | ✅ | Free listing and all-free learning; Android AdMob lesson-completion interstitials; optional US$2/month Play subscription removes ads | 2026-08-12 |
 | 4 | Audience/countries | ✅ | Not directed at children; Play target age `18 and over`; worldwide; no Families-only ads or advertising age gate | 2026-08-12 |
-| 5 | Account type | ⏳ | — | — |
+| 5 | Account type | ✅ | Personal | 2026-08-12 |
 | 6 | Publisher name | ⏳ | — | — |
 | 7 | Support contacts | ⏳ | — | — |
 | 8 | Privacy-policy URL | ✅ | `https://cameronnel.github.io/hanapath/privacy.html` | 2026-08-12 |
-| 9 | Google sign-in activation | ✅ | Unconfigured/fail-closed; no account, session, or sync in current release | 2026-08-10 |
+| 9 | Google sign-in activation | ✅ | Optional Firebase Authentication + user-owned Firestore progress sync and in-app deletion | 2026-08-12 |

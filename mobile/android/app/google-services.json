@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "978247158815",
+    "project_id": "hanapath",
+    "storage_bucket": "hanapath.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978247158815:android:d631d09f19e13f5cb1d92a",
+        "android_client_info": {
+          "package_name": "io.github.cameronnel.hanapath"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "978247158815-cola78nh6a10bvoid2brp0vsbnoth7vs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.github.cameronnel.hanapath",
+            "certificate_hash": "3f4c5848f7450878ade980e7aeb27101f95e319d"
+          }
+        },
+        {
+          "client_id": "978247158815-ho8seo1bt9a2ebavbeg4bcbsfh7pfpkp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_a3CKdyVklPVeD-yYeP9bRUhvm0m5HQg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "978247158815-ho8seo1bt9a2ebavbeg4bcbsfh7pfpkp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

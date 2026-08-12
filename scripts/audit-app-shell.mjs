@@ -131,7 +131,7 @@ for (const asset of shellAssets) {
 
 if (!shellSet.has("./index.html")) errors.push("sw.js APP_SHELL must include ./index.html");
 if (!shellSet.has("./")) errors.push("sw.js APP_SHELL must include ./");
-if (!shellSet.has("./privacy.html?v=20260812b")) errors.push("sw.js APP_SHELL must include the current versioned privacy policy for offline access");
+if (!shellSet.has("./privacy.html?v=20260812c")) errors.push("sw.js APP_SHELL must include the current versioned privacy policy for offline access");
 
 const navigationHandler = swJs.match(/if \(event\.request\.mode === "navigate"\) \{([\s\S]*?)\n  \}/)?.[1] || "";
 const directNavigationMatch = navigationHandler.indexOf("cache.match(event.request, { ignoreSearch: true })");

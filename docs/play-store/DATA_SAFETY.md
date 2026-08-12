@@ -1,4 +1,4 @@
-# Google Play Data Safety — draft answers (ads + optional ad-free subscription)
+# Google Play Data Safety — draft answers (accounts, sync, ads, and subscription)
 
 > Revised 2026-08-12 for the Android build with AdMob interstitials and an
 > optional monthly Google Play ad-free subscription. Re-check
@@ -7,7 +7,12 @@
 
 ## Measured product behaviour
 
-- HanaPath has no enabled learner accounts or developer-operated backend.
+- Google sign-in is optional. Firebase Authentication processes the Google
+  account identifier, email, display name, profile image, and authentication
+  tokens needed to create and maintain the HanaPath account.
+- Cloud Firestore stores one authenticated, user-owned progress backup with
+  learning progress, answers, scores, review schedules, exam history, and
+  settings. Security Rules limit access to the matching Firebase user ID.
 - Google Play Billing 9.1.0 supplies one auto-renewing subscription,
   `hanapath_ad_free_monthly`. It removes Android ads while active and does not
   unlock learning content. The app queries Play for product, purchase, pending,
@@ -16,12 +21,9 @@
 - The Android app uses Google AdMob interstitial advertising only after a newly
   completed lesson and no more often than once every five minutes. The hosted
   website/PWA remains ad-free.
-- The Google sign-in controls are configuration-required and disabled by
-  default. They transmit nothing in this release. Enabling them later requires
-  a secure token-verification/session service, account deletion routes, and a
-  new Data Safety and privacy review.
-- Learning progress remains in on-device `localStorage` (`hanapath-v1`). Cloud
-  backup and device-transfer extraction are explicitly excluded on Android.
+- Learning progress remains in on-device `localStorage` (`hanapath-v1`) for
+  offline use and is synced to Firestore only after optional sign-in. Android
+  device-transfer extraction remains excluded.
   Lesson IDs, answers, scores, handwriting strokes, and local progress are not
   added to AdMob ad requests.
 - Handwriting strokes and recognition candidates are processed on-device and
@@ -65,7 +67,7 @@ Official sources to re-check at submission:
 |---|---|---|
 | Does your app collect or share any required user data types? | **Yes — collects and shares** | Google Mobile Ads 25.4.0 automatically collects and shares listed data for ads, analytics, and fraud prevention; ML Kit also performs its documented SDK collection. |
 | Is collected data encrypted in transit? | **Yes** | Google's Mobile Ads disclosure specifies TLS; ML Kit specifies encrypted transport for its documented SDK data. |
-| Can users request deletion? | **No developer-held account data exists** | Local learning data is removed by clearing app data/uninstalling. Complete the console's current deletion/exemption wording based on the final SDK disclosures. |
+| Can users request deletion? | **Yes — in app** | Settings → Account → Delete account deletes the Firestore backup, Firebase Authentication account, and local progress after confirmation. |
 
 Data types to validate against the exact uploaded dependency graph and current
 Play taxonomy:
@@ -76,11 +78,17 @@ Play taxonomy:
 | App interactions | Advertising, analytics, fraud prevention; ML Kit diagnostics | AdMob collects launch/tap/video interaction information; ML Kit records documented feature/model events |
 | Diagnostics / app performance | Advertising, analytics, fraud prevention; SDK diagnostics | AdMob collects SDK/app performance information; ML Kit collects documented performance/error metrics |
 | Device or other IDs | Advertising, analytics, fraud prevention; SDK diagnostics | AdMob collects advertising ID, app set ID, and applicable account-related identifiers; ML Kit may collect per-installation identifiers |
-| Purchase history | App functionality | Google Play returns the subscription product and ownership/status needed to suppress ads. It remains on-device; there is no HanaPath backend. Validate the Console answer against the exact Play Billing SDK disclosure and uploaded AAB. |
+| Name | Account management | Optional Google sign-in may provide the learner's display name to Firebase Authentication. |
+| Email address | Account management | Optional Google sign-in provides the account email to Firebase Authentication. |
+| User IDs | Account management, app functionality | Firebase Authentication assigns a user ID used to secure the learner's Firestore backup. |
+| App interactions / other user-generated content | App functionality | Signed-in progress backup includes lesson/exam activity, answers, scores, and learning settings. |
+| Purchase history | App functionality | Google Play returns the subscription product and ownership/status needed to suppress ads. It remains device-side and is not trusted from Firestore. Validate the Console answer against the exact Play Billing SDK disclosure and uploaded AAB. |
 
-Do **not** select names, email, payment-card information, precise location,
-contacts, photos/files, handwriting content, typed answers, or lesson progress
-unless the final AAB or an enabled account service changes the facts. Review
+Do **not** select payment-card information, precise location, contacts,
+photos/files, or handwriting-stroke content unless the final AAB changes the
+facts. Names, email, user IDs, typed answers, and lesson progress are part of
+the optional account/sync flow and must be declared using Play's current
+optional-collection and deletion wording. Review
 Play's current **Purchase history** wording carefully because the client does
 receive subscription ownership/status, even though there is no HanaPath
 backend. Advertising must not be omitted merely because HanaPath itself does
@@ -91,8 +99,9 @@ not operate the ad servers.
 | Declaration | Draft answer |
 |---|---|
 | Privacy policy URL | `https://cameronnel.github.io/hanapath/privacy.html` (owner-confirmed) |
+| Account deletion URL | `https://cameronnel.github.io/hanapath/privacy.html#account-deletion` (instructions plus in-app/web deletion path) |
 | Ads | **Yes — contains Google AdMob interstitial ads in the Android app** |
-| App access | No login required; all learning paths and handwriting remain available without an account |
+| App access | No login required; all learning paths and handwriting remain available without an account; Google sign-in enables progress sync |
 | Target audience | Not directed at children; select only `18 and over` for worldwide distribution; do not opt into Families or add an advertising age gate |
 | Financial features | One optional US$2/month auto-renewing Google Play subscription removes ads; every learning feature remains free |
 

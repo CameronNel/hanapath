@@ -7330,6 +7330,10 @@ li { margin-bottom: 4px; }
 .google-auth-note { margin: 0; color: var(--muted); font-size: .78rem; }
 .google-auth-status[data-tone="error"] { color: var(--bad); }
 .google-auth-status[data-tone="success"] { color: var(--good); }
+.google-auth-account { display: grid; gap: 2px; }
+.google-auth-email { color: var(--muted); font-size: .82rem; }
+.google-auth-actions { align-items: center; }
+.google-auth-actions [data-google-delete] { color: var(--bad); }
 .onboarding-auth { margin: 14px 0 4px; }
 
 :root[data-color-mode="light"] .button.secondary,

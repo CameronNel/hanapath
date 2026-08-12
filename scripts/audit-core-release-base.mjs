@@ -306,6 +306,7 @@ const GATE_STEPS = [
   { id: "exam-integrity", label: "Exam integrity", script: "scripts/audit-exam-integrity.mjs" },
   { id: "testing-mode-integrity", label: "Global testing-mode Practice taint", script: "scripts/test-testing-mode-integrity.mjs" },
   { id: "google-auth-contract", label: "Google sign-in trust and platform boundary", script: "scripts/test-google-auth-contract.mjs" },
+  { id: "cloud-sync-contract", label: "Offline-first Firebase progress merge", script: "scripts/test-cloud-sync.mjs" },
   { id: "theme-learn-motion", label: "Theme, Learn hub, and motion contract", script: "scripts/test-theme-and-learn-hub.mjs" },
   { id: "shell-bootstrap-recovery", label: "Post-onboarding bootstrap and save-recovery contract", script: "scripts/test-app-bootstrap-and-recovery.mjs" },
   { id: "hangul-mastery", label: "Hangul Mastery examination", script: "scripts/audit-hangul-mastery-exam.mjs" },

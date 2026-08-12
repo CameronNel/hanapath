@@ -72,16 +72,17 @@ recommended stronger verification model and should be considered before broad
 production scale; the current no-account release performs verification on the
 device.
 
-## Google sign-in configuration is a separate trust boundary
+## Google sign-in release fingerprints
 
-The current release intentionally has no configured HanaPath account, session
-service, or progress sync. The signed-release workflow does not inject a Google
-sign-in client ID or session endpoint. Advertising does not change that.
+Firebase Authentication and Firestore progress sync are configured in the
+source using public Firebase client identifiers. The committed
+`google-services.json` generates Android's Web client ID; no private service
+account key is bundled or required.
 
-For a later reviewed account activation, the owner must configure the Google
-Cloud/OAuth project, Android/Web client identities, trusted token-verification
-endpoint, nonce/replay handling, account lifecycle/deletion routes, and updated
-privacy/Data Safety declarations before enabling sign-in.
+Before testing a release-signed or Play-delivered build, add both the upload
+certificate and Play App Signing certificate SHA-1/SHA-256 fingerprints to the
+Firebase Android app. Debug sign-in working does not prove that either release
+identity is registered.
 
 ## 1. Owner action — generate the upload keystore (once)
 
@@ -184,7 +185,7 @@ identity uses the Play-held certificate.
      signature-level receiver-hardening permissions;
    - verifies Billing is isolated to the ad-free subscription and microphone
      remains absent;
-   - leaves Google sign-in fail-closed;
+   - verifies Firebase/Google sign-in configuration is packaged;
    - verifies the AAB signature and upload certificate;
    - enforces the project's conservative 190 MiB AAB ceiling;
    - writes `release-report.txt`, which records that AdMob interstitials and the

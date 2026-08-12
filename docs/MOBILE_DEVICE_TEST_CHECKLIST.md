@@ -122,43 +122,27 @@ reactivates them.
 - [ ] Leave and re-enter mid-line: block/prompt position resumes, but store ownership and model readiness are re-queried.
 - [ ] Complete word, phrase, and sentence sets on narrow phone, typical phone, and tablet with finger and stylus.
 
-## E4. Google sign-in configuration boundary
+## E4. Google sign-in and progress sync
 
-The current release has no HanaPath account, authenticated session, or sync.
-The sign-in adapters must remain visibly fail-closed until every later
-activation prerequisite is configured and reviewed.
-
-- [ ] In the normal unsigned, debug, and signed release builds,
-  `HANAPATH_GOOGLE_SERVER_CLIENT_ID` is empty and no secure session endpoint is
-  injected; the control is disabled with configuration-required copy.
-- [ ] In Chrome/PWA without `window.HANAPATH_AUTH_CONFIG.webClientId` and a
-  secure `sessionEndpoint`, no Google Identity request starts and the disabled
-  control does not imply that an account exists.
-- [ ] Using the disabled control creates no cookie/session, sends no ID token,
-  and leaves all progress device-local. Export/import remains the only transfer
-  path between browser/PWA and Android storage containers.
-- [ ] Airplane mode and Google Play Services unavailable/outdated states do not
-  affect onboarding, lessons, examinations, handwriting, progress, or backup.
-
-Before a later release activates sign-in, add recorded evidence for all of the
-following:
-
-- [ ] The Android OAuth clients use package
-  `io.github.cameronnel.hanapath`; the upload-key and Play App Signing
-  certificate records include SHA-1/SHA-256, and their corresponding Android
-  OAuth/client configurations both work on the installed builds they sign.
-- [ ] The Web/server client ID is the token audience on Android and web, and
-  browser authorized origins match the production HTTPS origin exactly.
-- [ ] The trusted HTTPS service accepts only a valid Google signature, allowed
-  issuer, exact audience, valid timing claims, and the exact outstanding nonce;
-  it rejects wrong-audience, expired, altered, missing-nonce, and replayed-token
-  fixtures without creating a HanaPath session.
-- [ ] Cancel, no credential, offline, interrupted activity, sign-out, and
-  revoked-account paths fail safely on phone and tablet.
-- [ ] Privacy, Data Safety, app-access/reviewer instructions, retention, and
-  both in-app and public account-deletion paths match the activated service.
-- [ ] Signing in does not silently sync or overwrite `hanapath-v1`; any future
-  sync behaviour has its own reviewed migration and conflict contract.
+- [ ] Google sign-in succeeds on browser/PWA, debug Android, upload-signed
+  Android, and the Play-delivered build using their registered origins and
+  SHA-1/SHA-256 certificate identities.
+- [ ] Cancel, no credential, offline, interrupted activity, sign-out, expired
+  token, and revoked-account paths fail safely on phone and tablet.
+- [ ] A fresh account uploads one user-owned backup; another account cannot read
+  or write it; unauthenticated Firestore access is denied.
+- [ ] A second device downloads progress when its local copy is unchanged and
+  additively merges completed lessons, review evidence, and exam attempts when
+  both devices changed.
+- [ ] Device preferences and in-progress navigation remain local during merges;
+  sync never broadens grading evidence or turns Practice results into mastery.
+- [ ] Offline learning saves locally and syncs after reconnecting. A sync error
+  never blocks lessons, examinations, handwriting, or manual export/import.
+- [ ] Sign-out removes the Firebase session but preserves local progress.
+- [ ] The confirmed in-app deletion action removes the Firestore backup,
+  Firebase Authentication account, and local progress, then prevents refresh.
+- [ ] Privacy, Data Safety, reviewer-access, and deletion declarations match the
+  exact released implementation.
 
 ## F. Layout, safe areas, system UI
 
