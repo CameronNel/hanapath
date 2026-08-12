@@ -9083,8 +9083,8 @@ function makeTextChoices(answer, pool, count = 4) {
   return shuffle([...choices]);
 }
 
-function getPools() {
-  if (getStudio() === "alphabet") {
+function getPools(studio = getStudio()) {
+  if (studio === "alphabet") {
     return getAlphabetQuizPools();
   }
 
@@ -13231,14 +13231,23 @@ function generateVocabQuestion(forcedType) {
   };
 }
 
+const SPECIAL_PRACTICE_STUDIOS = new Set(["sound", "survival", "grammar", "verb", "conversation"]);
+
+function getQuestionStudio(scope = null) {
+  const selectedStudio = getStudio();
+  // A specialist drill is an explicit learner choice. It shares a main-tab
+  // session with the generic practice runner, so its scope must not collapse
+  // the selected studio back to that tab's canonical generator.
+  if (scope == null || SPECIAL_PRACTICE_STUDIOS.has(selectedStudio)) return selectedStudio;
+  return getStudioForNavTab(getNavTabForMainTab(normalizeMainTab(scope)));
+}
+
 function generateQuestion(scope = null) {
-  const pools = getPools();
-  // Generic practice sessions can render more than one scope over their
-  // lifetime. Derive the generator from the requested quiz scope instead of
-  // the last global studio a different tab happened to leave behind.
-  const studio = scope == null
-    ? getStudio()
-    : getStudioForNavTab(getNavTabForMainTab(normalizeMainTab(scope)));
+  // Derive both routing decisions from one effective studio. In particular,
+  // Alphabet must use getAlphabetQuizPools() even if another tab left the
+  // persisted studio stale before the next scoped question is generated.
+  const studio = getQuestionStudio(scope);
+  const pools = getPools(studio);
   const vocabularyLevel = getTrackLevel("vocabulary");
   const sentenceLevel = getTrackLevel("sentences");
   const listeningLevel = getTrackLevel("listening");
