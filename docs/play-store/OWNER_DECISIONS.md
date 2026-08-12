@@ -41,17 +41,23 @@
   search keywords) or `HanaPath — Korean from zero`.
 - Changeable later, unlike the package ID, but churn hurts recognition.
 
-### 3. Free listing and current monetization — ✅ owner-confirmed 2026-08-10
+### 3. Free listing and current monetization — ✅ owner-confirmed 2026-08-12
 
 **Confirmed: Free listing with the Handwriting Coach included for every
-learner (`free_all`). The current release has no in-app purchase, Play Billing
-dependency, billing permission, checkout, restore flow, or store entitlement.**
+learner (`free_all`) and Google AdMob interstitial advertising in the Android
+app. There is still no in-app purchase, Play Billing dependency, billing
+permission, checkout, restore flow, or store entitlement.**
 
-- Matches the current release (no ads, no active accounts, no developer
-  tracking, and no purchases).
+- Owner instruction on 2026-08-12 sets the ad cadence: an interstitial may be
+  shown only after a newly completed lesson and only when at least five minutes
+  have elapsed since app-session start or the last ad that actually appeared.
+  A lesson completed inside the cooldown shows no ad and does not queue one.
+- The website/PWA remains ad-free. Android production ads are configuration-
+  gated behind owner-controlled AdMob IDs and UMP consent readiness.
 - Irreversibility warning: a **free listing can never become paid**; a paid
   app can later become free. Choosing Free is a permanent commitment for this
-  listing (future revenue would need in-app purchases or a separate listing).
+  listing; future revenue can use advertising, in-app purchases, or a separate
+  listing subject to a new reviewed product decision.
 - **Superseded history:** the 2026-07-20 decision described an optional paid,
   restorable Handwriting Coach. That paid plan is retained in historical
   planning documents for provenance, but it is not the current release
@@ -62,19 +68,18 @@ dependency, billing permission, checkout, restore flow, or store entitlement.**
 
 **Proposed: 13+ / general audience; not directed at children.**
 
-- Avoids the Google Play Families policy (stricter review, additional
-  declarations). Younger users may still use an app rated for everyone; this
-  declaration is about *intended* audience.
+- This decision is now a **hard blocker for production ad configuration**.
+  AdMob/Play child-directed and age-treatment settings must be based on the
+  confirmed audience, not inferred from an old proposal.
 - Also proposed: **all countries/regions** for availability.
 
 ### 5. Developer account: personal vs organization — ⏳
 
 **Proposed: personal developer account** (one-time $25 registration).
 
-- Note: personal accounts created after 2023-11-13 must run a closed test
-  with **≥12 opted-in testers for 14 continuous days** before they can apply
-  for production access. Plan tester recruitment well before launch
-  (handover §15.4).
+- Note: personal accounts created after 2023-11-13 may have testing
+  requirements before production access. Re-check the current Play requirement
+  when the account is created rather than relying on this planning document.
 
 ### 6. Publisher/developer display name — ⏳
 
@@ -92,16 +97,15 @@ accounts show the verified name rules Google applies at registration).
 **Proposed: host a static page in this repo**, at
 `https://cameronnel.github.io/hanapath/privacy.html`.
 
-- **Drafted (M5):** `privacy.html` now exists at the repository root and goes
-  live at that URL on merge (GitHub Pages serves the repo root). It states
-  the actual behaviour: learning state and handwriting content stay on-device;
-  there are no ads, active HanaPath accounts, purchases, or developer
-  analytics; Google ML Kit may send limited SDK diagnostics. The
-  configuration-gated Google sign-in shell is not an account or sync feature
-  in the current release.
-- Required for Data Safety even for apps that collect nothing. The URL
-  entered in Play Console is this decision; the page existing does not
-  confirm it.
+- **Drafted (M5):** `privacy.html` exists at the repository root and now states
+  the ad-supported Android behaviour: local learning/handwriting data is not
+  sent to AdMob; the Android app may show five-minute-gated lesson-completion
+  interstitials; the Google Mobile Ads SDK performs its documented ad/analytics/
+  fraud-prevention data processing; the website/PWA remains ad-free.
+- The same page continues to document local progress, ML Kit, disabled Google
+  sign-in, and UMP privacy choices.
+- Required for the ad-enabled Play release. The URL entered in Play Console is
+  still an owner decision; the page existing does not confirm the URL.
 
 ### 9. Google sign-in activation boundary — ✅ current release confirmed 2026-08-10
 
@@ -147,7 +151,7 @@ actions together; setting only a client ID is not sufficient:
 |---|---|---|---|---|
 | 1 | Package ID | ⏳ | — | — |
 | 2 | Store app name | ⏳ | — | — |
-| 3 | Free vs paid | ✅ | Free listing; `free_all` Handwriting Coach; no Billing/IAP | 2026-08-10 |
+| 3 | Free vs paid / monetization | ✅ | Free listing; `free_all` Handwriting Coach; Android AdMob lesson-completion interstitials with 5-minute shown-ad cooldown; no Billing/IAP | 2026-08-12 |
 | 4 | Audience/countries | ⏳ | — | — |
 | 5 | Account type | ⏳ | — | — |
 | 6 | Publisher name | ⏳ | — | — |
