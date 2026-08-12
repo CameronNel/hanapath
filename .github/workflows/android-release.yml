@@ -54,13 +54,18 @@ jobs:
       VERSION_NAME: ${{ inputs.versionName }}
       VERSION_CODE: ${{ inputs.versionCode }}
       RELEASE_CHANNEL: ${{ inputs.releaseChannel }}
+      # AdMob app/ad-unit IDs are public identifiers, not secrets. Keep them in
+      # protected environment variables so source/debug builds remain on Google
+      # test inventory while every signed release is explicitly monetized.
+      HANAPATH_ADMOB_APP_ID: ${{ vars.HANAPATH_ADMOB_APP_ID }}
+      HANAPATH_ADMOB_INTERSTITIAL_ID: ${{ vars.HANAPATH_ADMOB_INTERSTITIAL_ID }}
     steps:
       - name: Checkout (full history for tags and main check)
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
-      - name: Require signing secrets
+      - name: Require signing and AdMob release configuration
         env:
           KS_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
           KS_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
@@ -74,9 +79,11 @@ jobs:
           [ -n "$KS_STOREPASS" ] || missing="$missing ANDROID_UPLOAD_STORE_PASSWORD"
           [ -n "$KS_KEYPASS" ] || missing="$missing ANDROID_UPLOAD_KEY_PASSWORD"
           [ -n "$KS_CERT_SHA256" ] || missing="$missing ANDROID_UPLOAD_CERT_SHA256"
+          [ -n "$HANAPATH_ADMOB_APP_ID" ] || missing="$missing HANAPATH_ADMOB_APP_ID"
+          [ -n "$HANAPATH_ADMOB_INTERSTITIAL_ID" ] || missing="$missing HANAPATH_ADMOB_INTERSTITIAL_ID"
           if [ -n "$missing" ]; then
-            echo "Missing secrets in the google-play-release environment:$missing" >&2
-            echo "Follow docs/play-store/SIGNING_AND_RELEASE.md to create the keystore and secrets." >&2
+            echo "Missing protected google-play-release configuration:$missing" >&2
+            echo "Configure signing plus the production AdMob app/interstitial IDs before building a signed release." >&2
             exit 1
           fi
 
@@ -185,12 +192,18 @@ jobs:
           grep -q 'package="io.github.cameronnel.hanapath"' "$merged" || { echo "package id mismatch" >&2; exit 1; }
           grep -q "android:versionCode=\"$VERSION_CODE\"" "$merged" || { echo "versionCode $VERSION_CODE missing from merged manifest" >&2; exit 1; }
           grep -q "android:versionName=\"$VERSION_NAME\"" "$merged" || { echo "versionName $VERSION_NAME missing from merged manifest" >&2; exit 1; }
-          # INTERNET and the app's own signature-level receiver-hardening
-          # permission are the full allowlist for the free_all release.
+          # INTERNET + network state + advertising ID are the reviewed ad
+          # surface. AndroidX may add the app's own signature-level receiver
+          # hardening permission; Billing and everything else remain forbidden.
           perms=$(grep -oE '<uses-permission(-sdk-23)?[^>]*android:name="[^"]*"' "$merged" | grep -oE '"[^"]*"$' | tr -d '"' | sort -u || true)
           echo "Declared uses-permissions:"
           echo "${perms:-<none>}"
-          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
+          unexpected=$(echo "$perms" \
+            | grep -v '^android\.permission\.INTERNET$' \
+            | grep -v '^android\.permission\.ACCESS_NETWORK_STATE$' \
+            | grep -v '^com\.google\.android\.gms\.permission\.AD_ID$' \
+            | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' \
+            | grep -v '^$' || true)
           if [ -n "$unexpected" ]; then
             echo "Unexpected permissions in merged release manifest:" >&2
             echo "$unexpected" >&2
@@ -229,6 +242,7 @@ jobs:
             echo "versionCode: $VERSION_CODE"
             echo "channel: $RELEASE_CHANNEL"
             echo "applicationId: io.github.cameronnel.hanapath"
+            echo "ads: AdMob interstitials configured; five-minute lesson-completion cooldown"
             echo "targetSdk: $(grep -oE 'targetSdkVersion\s*=\s*[0-9]+' mobile/android/variables.gradle)"
             echo "minSdk: $(grep -oE 'minSdkVersion\s*=\s*[0-9]+' mobile/android/variables.gradle)"
             echo "aabSize: $(stat -c%s "$aab") bytes"
