@@ -365,6 +365,7 @@ const GATE_STEPS = [
   { id: "premium-handwriting", label: "Premium handwriting", script: "scripts/audit-premium-handwriting.mjs" },
   { id: "app-shell", label: "App shell", script: "scripts/audit-app-shell.mjs" },
   { id: "mobile-package", label: "Prepared mobile package validation", script: "scripts/audit-mobile-package.mjs" },
+  { id: "native-lesson-ads", label: "Native lesson-completion ad trigger", script: "scripts/test-native-lesson-ads.mjs" },
   { id: "status-freshness", label: "CORE_APP_STATUS.md freshness", internal: "status-check" },
 ];
 

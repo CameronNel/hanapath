@@ -24,7 +24,15 @@
 
   function readCompletionSnapshot() {
     const profile = typeof state !== "undefined" && state && typeof state === "object" ? state : {};
+    let alphabetIds = [];
     let sentenceIds = [];
+    try {
+      alphabetIds = typeof getAlphabetProgress === "function"
+        ? safeArray(getAlphabetProgress()?.completedIds)
+        : safeArray(profile.phaseOneCompleted);
+    } catch (_) {
+      alphabetIds = safeArray(profile.phaseOneCompleted);
+    }
     try {
       if (typeof getSentencesProgress === "function") {
         sentenceIds = safeArray(getSentencesProgress()?.completedLessons);
@@ -36,7 +44,7 @@
     }
 
     return {
-      alphabet: new Set(safeArray(profile.phaseOneCompleted)),
+      alphabet: new Set(alphabetIds),
       words: new Set(safeArray(profile.vocabLessonCompleted)),
       sentences: new Set(sentenceIds),
     };

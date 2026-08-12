@@ -61,7 +61,8 @@ assert.match(adsPlugin, /onAdShowedFullScreenContent\(\)[\s\S]*?PREF_LAST_SHOWN_
 assert.match(adsPlugin, /onAdFailedToShowFullScreenContent[\s\S]*?Do not advance the cooldown/);
 assert.match(adsPlugin, /UserMessagingPlatform\.loadAndShowConsentFormIfRequired/);
 assert.match(adsPlugin, /PrivacyOptionsRequirementStatus\.REQUIRED/);
-assert.match(nativeAds, /profile\.phaseOneCompleted/);
+assert.match(nativeAds, /getAlphabetProgress\(\)\?\.completedIds/);
+assert.match(nativeAds, /profile\.phaseOneCompleted/, "native fallback must remain migration-safe when the helper is unavailable");
 assert.match(nativeAds, /profile\.vocabLessonCompleted/);
 assert.match(nativeAds, /completedLessons/);
 assert.match(nativeAds, /if \(completions\.length !== 1\) return;/);

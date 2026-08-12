@@ -31,4 +31,20 @@ public class AdCadenceTest {
         assertEquals(27L * MINUTE, AdCadence.eligibleAt(sessionStart, lastShown));
         assertEquals(2L * MINUTE, AdCadence.remainingMs(sessionStart, lastShown, 25L * MINUTE));
     }
+
+    @Test
+    public void noFillOrShowFailureDoesNotAdvanceTheCooldown() {
+        long sessionStart = 0L;
+        long unchangedLastShown = 0L;
+        assertTrue(AdCadence.isEligible(sessionStart, unchangedLastShown, 7L * MINUTE));
+        assertTrue(AdCadence.isEligible(sessionStart, unchangedLastShown, 8L * MINUTE));
+    }
+
+    @Test
+    public void completionInsideCooldownDoesNotQueueADeferredAd() {
+        long sessionStart = 0L;
+        long shownAtMinuteSeven = 7L * MINUTE;
+        assertFalse(AdCadence.isEligible(sessionStart, shownAtMinuteSeven, 11L * MINUTE));
+        assertTrue(AdCadence.isEligible(sessionStart, shownAtMinuteSeven, 12L * MINUTE));
+    }
 }

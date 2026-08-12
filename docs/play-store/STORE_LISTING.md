@@ -87,7 +87,8 @@ behaviour. Keep the source captures in owner storage, not in the repository.
 | Tags | Language learning / Korean |
 | Contact email | ⏳ decision #7 (publicly visible — owner may want a dedicated address) |
 | Website | `https://cameronnel.github.io/hanapath/` |
-| Privacy policy | `https://cameronnel.github.io/hanapath/privacy.html` (⏳ decision #8) |
-| Countries | All (⏳ decision #4) |
+| Privacy policy | `https://cameronnel.github.io/hanapath/privacy.html` (owner-confirmed) |
+| Countries | Worldwide (owner-confirmed) |
+| Target audience | Not directed at children; Play target age `18 and over`; no Families enrolment or advertising age gate |
 | Price | Free download; ad-supported; no in-app purchases in the current `free_all` release |
 | Contains ads | Yes — Google AdMob interstitials in the Android app |

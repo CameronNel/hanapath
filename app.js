@@ -2915,8 +2915,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v466";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260811c";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v467";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260812a";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -14893,7 +14893,7 @@ function renderSettingsScreen(hub = activeHub) {
       <h3 class="settings-section-title">About &amp; support</h3>
       <p class="settings-section-sub">Read the policy inside the app, including while offline.</p>
       <div class="settings-backup-actions">
-        <a class="button secondary compact" href="./privacy.html">Privacy policy</a>
+        <a class="button secondary compact" href="./privacy.html?v=20260812a">Privacy policy</a>
         <a class="button secondary compact" href="https://github.com/CameronNel/hanapath/issues" target="_blank" rel="noopener noreferrer">Support</a>
       </div>
     </div>

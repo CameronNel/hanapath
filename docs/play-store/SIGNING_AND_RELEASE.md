@@ -40,8 +40,9 @@ traffic.
 
 Before supplying the production IDs:
 
-1. Confirm the owner target-audience/children decision in
-   [`OWNER_DECISIONS.md`](OWNER_DECISIONS.md).
+1. Apply the confirmed non-child decision in
+   [`OWNER_DECISIONS.md`](OWNER_DECISIONS.md): worldwide distribution, Play
+   target age `18 and over`, and no Families-only or child-age ad treatment.
 2. Create the AdMob app and one interstitial ad unit.
 3. Configure the applicable **Privacy & messaging** message(s) in AdMob.
 4. Re-check [`DATA_SAFETY.md`](DATA_SAFETY.md) and `privacy.html`.

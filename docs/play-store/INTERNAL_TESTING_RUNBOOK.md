@@ -15,10 +15,10 @@
 
 ## 0. Prerequisites (in order)
 
-1. Every release-blocking ⏳ decision in
-   [`OWNER_DECISIONS.md`](OWNER_DECISIONS.md) confirmed ✅ — especially the
-   permanent package ID and target audience. Audience is now also required to
-   configure ad treatment correctly.
+1. Every remaining release-blocking ⏳ decision in
+   [`OWNER_DECISIONS.md`](OWNER_DECISIONS.md) confirmed ✅. The permanent
+   package ID, privacy URL, worldwide availability, and non-child audience are
+   already confirmed.
 2. Google Play developer account registered and identity-verified.
 3. Upload keystore + `google-play-release` environment set up per
    [`SIGNING_AND_RELEASE.md`](SIGNING_AND_RELEASE.md) §1–§2.
@@ -46,6 +46,10 @@ Play Console → **Create app**: app name (decision #2), default language, App
 Signing terms. Complete the **App content** section early: privacy-policy URL,
 **contains ads = yes**, Data Safety per `DATA_SAFETY.md`, app access = full with
 no login required, content rating, and target audience per decision #4.
+
+For target audience, select only **18 and over**. Do not enable Families,
+child age treatment, or Play's optional **Restrict minor access** control; the
+app has no age-restricted content and does not need an advertising age gate.
 
 Do not declare an in-app purchase or active HanaPath account merely because
 historical paid-plan documents and configuration-gated sign-in adapters exist

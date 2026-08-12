@@ -201,15 +201,15 @@ assert.match(hangulAudit, /requiredCorrect must be 150/);
 // f; the app source and mobile experience CSS have their own current pins.
 const bankRef = index.indexOf('src="./hangul_mastery_exam.js');
 const policyRef = index.indexOf('src="./hangul_mastery_scoring_policy.js?v=20260810f"');
-const appRef = index.indexOf('src="./app.js?v=20260811c"');
+const appRef = index.indexOf('src="./app.js?v=20260812a"');
 const contractRef = index.indexOf('src="./app_experience_contract.js?v=20260810g"');
 const contractCssRef = index.indexOf('href="./app_experience_contract.css?v=20260810g"');
 assert.ok(bankRef >= 0 && policyRef > bankRef && appRef > policyRef, "Hangul scoring policy must load after the bank and before app.js");
 assert.ok(contractRef > appRef, "experience contract must load after app.js so its global overrides win before DOMContentLoaded");
 assert.ok(contractCssRef >= 0, "static experience surface policy must be loaded by index.html");
-assert.match(sw, /const CACHE_NAME = "hanapath-shell-v466"/);
+assert.match(sw, /const CACHE_NAME = "hanapath-shell-v467"/);
 assert.match(sw, /"\.\/hangul_mastery_scoring_policy\.js\?v=20260810f"/);
 assert.match(sw, /"\.\/app_experience_contract\.css\?v=20260810g"/);
 assert.match(sw, /"\.\/app_experience_contract\.js\?v=20260810g"/);
 
-console.log("App experience contract regression passed (static neutral lesson surface, accessible dismissal-persisted keyboard modal, live curricula, formal-only exam counts, resilient sentinel Back, Hangul 75% policy, v466 shell wiring).");
+console.log("App experience contract regression passed (static neutral lesson surface, accessible dismissal-persisted keyboard modal, live curricula, formal-only exam counts, resilient sentinel Back, Hangul 75% policy, v467 shell wiring).");

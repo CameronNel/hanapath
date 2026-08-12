@@ -17,9 +17,9 @@
 
 ## Blocking M1 (Capacitor project generation)
 
-### 1. Permanent application/package ID — ⏳
+### 1. Permanent application/package ID — ✅ owner-confirmed 2026-08-12
 
-**Proposed: `io.github.cameronnel.hanapath`**
+**Confirmed: `io.github.cameronnel.hanapath`.**
 
 - Reverse-DNS of the GitHub Pages domain the owner already controls
   (`cameronnel.github.io`). Honest, free, and collision-proof.
@@ -64,14 +64,22 @@ permission, checkout, restore flow, or store entitlement.**
   contract and must not be presented in the app, store listing, privacy page,
   Data Safety form, manifest, or release bundle.
 
-### 4. Target audience / children — ⏳
+### 4. Target audience / children — ✅ owner-confirmed 2026-08-12
 
-**Proposed: 13+ / general audience; not directed at children.**
+**Confirmed: HanaPath is not directed at children. Distribute worldwide and
+select only Google Play's `18 and over` target-age group. Do not enable
+Families-only advertising and do not add an age gate merely for advertising.**
 
-- This decision is now a **hard blocker for production ad configuration**.
-  AdMob/Play child-directed and age-treatment settings must be based on the
-  confirmed audience, not inferred from an old proposal.
-- Also proposed: **all countries/regions** for availability.
+- Google's current Play guidance says the `13–15` and `16–17` groups may be
+  considered to include children in some locales. For worldwide distribution,
+  `18 and over` is therefore the broadest available group that is consistently
+  non-child across locales.
+- Do not opt HanaPath into the Families program or tag ordinary ad requests for
+  child age treatment. UMP still handles consent and privacy choices wherever
+  required by regional law.
+- Selecting an adult target audience does not make the app adult content and
+  does not require Play's optional **Restrict minor access** control. HanaPath
+  has no age-restricted functionality, so no in-app age gate is added.
 
 ### 5. Developer account: personal vs organization — ⏳
 
@@ -92,10 +100,9 @@ accounts show the verified name rules Google applies at registration).
   a dedicated address over a personal one.
 - Proposed support website: `https://cameronnel.github.io/hanapath/`.
 
-### 8. Privacy-policy URL — ⏳
+### 8. Privacy-policy URL — ✅ owner-confirmed 2026-08-12
 
-**Proposed: host a static page in this repo**, at
-`https://cameronnel.github.io/hanapath/privacy.html`.
+**Confirmed:** `https://cameronnel.github.io/hanapath/privacy.html`.
 
 - **Drafted (M5):** `privacy.html` exists at the repository root and now states
   the ad-supported Android behaviour: local learning/handwriting data is not
@@ -104,8 +111,8 @@ accounts show the verified name rules Google applies at registration).
   fraud-prevention data processing; the website/PWA remains ad-free.
 - The same page continues to document local progress, ML Kit, disabled Google
   sign-in, and UMP privacy choices.
-- Required for the ad-enabled Play release. The URL entered in Play Console is
-  still an owner decision; the page existing does not confirm the URL.
+- Required for the ad-enabled Play release. Use this exact URL in AdMob and
+  Play Console.
 
 ### 9. Google sign-in activation boundary — ✅ current release confirmed 2026-08-10
 
@@ -149,12 +156,12 @@ actions together; setting only a client ID is not sufficient:
 
 | # | Decision | Status | Confirmed value | Date |
 |---|---|---|---|---|
-| 1 | Package ID | ⏳ | — | — |
+| 1 | Package ID | ✅ | `io.github.cameronnel.hanapath` | 2026-08-12 |
 | 2 | Store app name | ⏳ | — | — |
 | 3 | Free vs paid / monetization | ✅ | Free listing; `free_all` Handwriting Coach; Android AdMob lesson-completion interstitials with 5-minute shown-ad cooldown; no Billing/IAP | 2026-08-12 |
-| 4 | Audience/countries | ⏳ | — | — |
+| 4 | Audience/countries | ✅ | Not directed at children; Play target age `18 and over`; worldwide; no Families-only ads or advertising age gate | 2026-08-12 |
 | 5 | Account type | ⏳ | — | — |
 | 6 | Publisher name | ⏳ | — | — |
 | 7 | Support contacts | ⏳ | — | — |
-| 8 | Privacy-policy URL | ⏳ | — | — |
+| 8 | Privacy-policy URL | ✅ | `https://cameronnel.github.io/hanapath/privacy.html` | 2026-08-12 |
 | 9 | Google sign-in activation | ✅ | Unconfigured/fail-closed; no account, session, or sync in current release | 2026-08-10 |

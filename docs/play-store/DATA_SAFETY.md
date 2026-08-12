@@ -80,10 +80,10 @@ because HanaPath itself does not operate the ad servers.
 
 | Declaration | Draft answer |
 |---|---|
-| Privacy policy URL | `https://cameronnel.github.io/hanapath/privacy.html` (owner decision #8 still needs final confirmation) |
+| Privacy policy URL | `https://cameronnel.github.io/hanapath/privacy.html` (owner-confirmed) |
 | Ads | **Yes — contains Google AdMob interstitial ads in the Android app** |
 | App access | No login required; all learning paths and handwriting remain available without an account |
-| Target audience | Owner decision still required before ad-enabled public release; the previous proposal was 13+ / not directed at children |
+| Target audience | Not directed at children; select only `18 and over` for worldwide distribution; do not opt into Families or add an advertising age gate |
 | Financial features | None; no billing library, permission, checkout, or paid feature ships |
 
 ## Release blockers specific to ads
@@ -95,9 +95,10 @@ Before a signed/public ad-enabled release:
    `HANAPATH_ADMOB_APP_ID` and `HANAPATH_ADMOB_INTERSTITIAL_ID`.
 2. Configure the applicable AdMob **Privacy & messaging** message(s). Production
    code refuses to initialize Mobile Ads until UMP says ads may be requested.
-3. Confirm the Google Play target audience/children decision before choosing
-   AdMob child-directed or under-age treatment configuration. Do not infer this
-   from the old draft.
+3. Apply the confirmed non-child configuration: Play target age `18 and over`,
+   worldwide availability, no Families-only advertising, and no child age-
+   treatment tag. Keep UMP consent/privacy handling enabled for applicable
+   regions.
 4. Mark **Contains ads** in Play Console and complete Data Safety from the
    exact signed AAB/dependency graph.
 5. Re-check this file, `privacy.html`, and the store listing against the exact
