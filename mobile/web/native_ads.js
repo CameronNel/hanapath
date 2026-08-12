@@ -3,6 +3,7 @@
 
   const PLUGIN_NAME = "HanaPathAds";
   const SUBJECTS = ["alphabet", "words", "sentences"];
+  const PRIVACY_SECTION_ID = "nativeAdsPrivacySettings";
 
   function isNativeRuntime() {
     try {
@@ -56,10 +57,60 @@
   let previous = null;
   let scanQueued = false;
   let armed = false;
+  let privacyOptionsRequired = false;
+
+  function ensurePrivacyOptionsUI() {
+    const existing = document.getElementById(PRIVACY_SECTION_ID);
+    if (!privacyOptionsRequired) {
+      existing?.remove();
+      return;
+    }
+    if (existing) return;
+
+    const settings = document.getElementById("screen-menu");
+    if (!settings || !settings.querySelector(".settings-section")) return;
+
+    const section = document.createElement("div");
+    section.id = PRIVACY_SECTION_ID;
+    section.className = "settings-section";
+    section.innerHTML = `
+      <h3 class="settings-section-title">Ad privacy</h3>
+      <p class="settings-section-sub">Review the privacy choices used for ads in the Android app.</p>
+      <button class="button secondary compact" type="button" id="nativeAdsPrivacyBtn">Privacy choices</button>
+    `;
+    section.querySelector("#nativeAdsPrivacyBtn")?.addEventListener("click", async () => {
+      const plugin = getAdsPlugin();
+      if (!plugin?.showPrivacyOptions) return;
+      try {
+        await plugin.showPrivacyOptions();
+      } catch (error) {
+        console.warn("HanaPath ad privacy options could not be shown", error);
+      }
+    });
+    settings.appendChild(section);
+  }
+
+  function setPrivacyOptionsRequired(required) {
+    privacyOptionsRequired = required === true;
+    ensurePrivacyOptionsUI();
+  }
+
+  async function refreshPrivacyOptionsRequirement() {
+    const plugin = getAdsPlugin();
+    if (!plugin?.getStatus) return;
+    try {
+      const status = await plugin.getStatus();
+      setPrivacyOptionsRequired(status?.privacyOptionsRequired === true);
+    } catch (_) {
+      // Consent state is allowed to be unavailable while the native plugin is
+      // starting. The plugin also emits a status event after UMP resolves.
+    }
+  }
 
   async function scanForCompletion() {
     scanQueued = false;
     if (!armed || !previous) return;
+    ensurePrivacyOptionsUI();
 
     const current = readCompletionSnapshot();
     const completions = newlyCompleted(previous, current);
@@ -106,6 +157,14 @@
         subtree: true,
         characterData: true,
       });
+      refreshPrivacyOptionsRequirement();
+
+      const plugin = getAdsPlugin();
+      if (plugin?.addListener) {
+        plugin.addListener("privacyOptionsStatusChanged", (event) => {
+          setPrivacyOptionsRequired(event?.required === true);
+        });
+      }
     });
   }
 
@@ -116,6 +175,9 @@
   // Refresh the baseline without showing an ad for work that did not complete
   // at a visible lesson boundary.
   document.addEventListener("visibilitychange", () => {
-    if (armed && document.visibilityState === "visible") previous = readCompletionSnapshot();
+    if (armed && document.visibilityState === "visible") {
+      previous = readCompletionSnapshot();
+      refreshPrivacyOptionsRequirement();
+    }
   });
 })();
