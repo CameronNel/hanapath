@@ -29,6 +29,7 @@ const SIZE_FAIL_MIB = 200;
 const REQUIRED_ASSETS = [
   "index.html",
   "app.js",
+  "native_ads.js",
   "styles.css",
   "audio_map.js",
   "words_curated_core.js",
@@ -78,11 +79,13 @@ const REMOTE_DEPENDENCY_PATTERNS = [
   /\bnew\s+Worker\(\s*["'`]https?:\/\//,
 ];
 
-// INTERNET supports the optional ML Kit model download and a future
-// owner-configured account service. The free_all release fails if Billing or
-// any other permission reappears.
+// INTERNET and network-state access support the optional ML Kit download and
+// AdMob delivery. AD_ID is a normal Google Play services permission used by the
+// ads SDK; Billing and all unrelated permissions remain forbidden.
 const ALLOWED_ANDROID_PERMISSIONS = new Set([
   "android.permission.INTERNET",
+  "android.permission.ACCESS_NETWORK_STATE",
+  "com.google.android.gms.permission.AD_ID",
 ]);
 
 function walk(dir, out = []) {
@@ -124,6 +127,9 @@ if (!existsSync(wwwRoot)) {
   const indexHtml = readFileSync(join(wwwRoot, "index.html"), "utf8");
   if (!/<meta\b[^>]*name=["']viewport["'][^>]*content=["'][^"']*viewport-fit=cover/i.test(indexHtml)) {
     errors.push("mobile/www/index.html must opt into viewport-fit=cover for safe-area insets");
+  }
+  if (!/<script\b[^>]*\bsrc=["']\.\/native_ads\.js["'][^>]*><\/script>/i.test(indexHtml)) {
+    errors.push("mobile/www/index.html must load the native-only lesson ad trigger");
   }
   const refs = [];
   for (const match of indexHtml.matchAll(/<link\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)) refs.push(match[1]);
@@ -213,6 +219,9 @@ if (!existsSync(androidRoot)) {
       errors.push(`AndroidManifest.xml declares an unexpected permission: ${permission}`);
     }
   }
+  if (!/com\.google\.android\.gms\.ads\.APPLICATION_ID/.test(manifestXml)) {
+    errors.push("AndroidManifest.xml is missing the AdMob application-id metadata");
+  }
   if (/android:usesCleartextTraffic=["']true["']/.test(manifestXml)) {
     errors.push("AndroidManifest.xml enables cleartext traffic");
   }
@@ -223,6 +232,11 @@ if (!existsSync(androidRoot)) {
   else if (appId[1] !== "io.github.cameronnel.hanapath") errors.push(`app/build.gradle applicationId is ${appId[1]}; expected io.github.cameronnel.hanapath`);
   if (!/versionCode\s+\d+/.test(buildGradle)) errors.push("app/build.gradle: versionCode missing");
   if (!/versionName\s+["']/.test(buildGradle)) errors.push("app/build.gradle: versionName missing");
+  if (!/com\.google\.android\.gms:play-services-ads:25\.4\.0/.test(buildGradle)) errors.push("app/build.gradle must pin Google Mobile Ads SDK 25.4.0");
+  if (!/com\.google\.android\.ump:user-messaging-platform:4\.0\.0/.test(buildGradle)) errors.push("app/build.gradle must pin UMP SDK 4.0.0");
+  if (!/HANAPATH_ADMOB_APP_ID/.test(buildGradle) || !/HANAPATH_ADMOB_INTERSTITIAL_ID/.test(buildGradle)) {
+    errors.push("app/build.gradle must keep production AdMob identifiers owner-configured");
+  }
 
   const variablesGradle = readFileSync(join(androidRoot, "variables.gradle"), "utf8");
   const minSdk = variablesGradle.match(/minSdkVersion\s*=\s*(\d+)/);
