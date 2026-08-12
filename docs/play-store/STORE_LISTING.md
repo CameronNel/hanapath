@@ -1,7 +1,7 @@
 # Google Play store listing — text drafts and asset checklist (M5)
 
-> Drafts prepared 2026-07-16 and revised 2026-08-12 for the free,
-> ad-supported Android release. Everything here is a **proposal for the owner
+> Drafts prepared 2026-07-16 and revised 2026-08-12 for the free Android
+> release with ads and an optional ad-free subscription. Everything here is a **proposal for the owner
 > to edit and approve** — nothing is submitted anywhere by an agent.
 > Names/contacts marked ⏳ trace to [`OWNER_DECISIONS.md`](OWNER_DECISIONS.md).
 > Claims below describe features that actually exist today; keep it that way.
@@ -62,6 +62,12 @@ Alternatives:
 > with a minimum five-minute interval between displayed ads. Ads are never
 > inserted in the middle of a lesson.
 >
+> **Optional ad-free subscription**
+> Subscribe through Google Play for US$2/month (or Play's localized regional
+> price) to remove Android ads while the subscription is active. The plan
+> renews monthly unless canceled. Every lesson, exam, and Handwriting Coach
+> feature remains available without subscribing.
+>
 > HanaPath is a focused study path — start with the alphabet and work your way
 > to typing sentences you actually understand.
 
@@ -90,5 +96,6 @@ behaviour. Keep the source captures in owner storage, not in the repository.
 | Privacy policy | `https://cameronnel.github.io/hanapath/privacy.html` (owner-confirmed) |
 | Countries | Worldwide (owner-confirmed) |
 | Target audience | Not directed at children; Play target age `18 and over`; no Families enrolment or advertising age gate |
-| Price | Free download; ad-supported; no in-app purchases in the current `free_all` release |
+| Price | Free download; optional US$2/month auto-renewing Google Play subscription removes ads; all learning remains free |
 | Contains ads | Yes — Google AdMob interstitials in the Android app |
+| In-app products | `HanaPath Ad-Free` monthly subscription; product `hanapath_ad_free_monthly`, base plan `monthly`, no free trial |

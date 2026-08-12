@@ -22,12 +22,12 @@ const buildWorkflow = readFileSync(join(root, ".github", "workflows", "android-b
 const versionScript = readFileSync(join(root, "mobile", "scripts", "version-android.mjs"), "utf8");
 const packageAudit = readFileSync(join(root, "scripts", "audit-mobile-package.mjs"), "utf8");
 const billingPlugin = join(javaRoot, "PremiumWritingPlugin.java");
+const purchaseVerifier = readFileSync(join(javaRoot, "PlayPurchaseVerifier.java"), "utf8");
 
 assert.match(manifest, /android:allowBackup="false"/);
 assert.match(manifest, /android:fullBackupContent="false"/);
 assert.match(manifest, /android:dataExtractionRules="@xml\/data_extraction_rules"/);
-assert.doesNotMatch(manifest, /<uses-permission android:name="com\.android\.vending\.BILLING"\s*\/>/);
-assert.match(manifest, /android:name="com\.android\.vending\.BILLING" tools:node="remove"/);
+assert.match(manifest, /<uses-permission android:name="com\.android\.vending\.BILLING"\s*\/>/);
 assert.doesNotMatch(manifest, /android\.permission\.RECORD_AUDIO/);
 assert.match(manifest, /android:name="android\.permission\.ACCESS_NETWORK_STATE"/);
 assert.match(manifest, /android:name="com\.google\.android\.gms\.permission\.AD_ID"/);
@@ -41,9 +41,11 @@ assert.match(extractionRules, /<device-transfer>[\s\S]*?<exclude domain="device_
 
 assert.equal(existsSync(billingPlugin), false, "free_all build must not ship PremiumWritingPlugin.java");
 assert.doesNotMatch(mainActivity, /PremiumWritingPlugin/);
-assert.doesNotMatch(buildGradle, /com\.android\.billingclient|billingclient/i);
+assert.match(buildGradle, /com\.android\.billingclient:billing:9\.1\.0/);
+assert.match(buildGradle, /HANAPATH_PLAY_BILLING_PUBLIC_KEY/);
+assert.match(buildGradle, /PLAY_BILLING_CONFIGURED/);
 assert.doesNotMatch(strings, /premium_writing_product_id|play_billing_public_key/);
-assert.doesNotMatch(packageAudit.match(/const ALLOWED_ANDROID_PERMISSIONS = new Set\(\[([\s\S]*?)\]\);/)?.[1] || "", /BILLING/);
+assert.match(packageAudit.match(/const ALLOWED_ANDROID_PERMISSIONS = new Set\(\[([\s\S]*?)\]\);/)?.[1] || "", /BILLING/);
 
 assert.match(mainActivity, /registerPlugin\(HanaPathAdsPlugin\.class\)/);
 assert.match(buildGradle, /com\.google\.android\.gms:play-services-ads:25\.4\.0/);
@@ -61,6 +63,16 @@ assert.match(adsPlugin, /onAdShowedFullScreenContent\(\)[\s\S]*?PREF_LAST_SHOWN_
 assert.match(adsPlugin, /onAdFailedToShowFullScreenContent[\s\S]*?Do not advance the cooldown/);
 assert.match(adsPlugin, /UserMessagingPlatform\.loadAndShowConsentFormIfRequired/);
 assert.match(adsPlugin, /PrivacyOptionsRequirementStatus\.REQUIRED/);
+assert.match(adsPlugin, /AD_FREE_PRODUCT_ID\s*=\s*"hanapath_ad_free_monthly"/);
+assert.match(adsPlugin, /AD_FREE_BASE_PLAN_ID\s*=\s*"monthly"/);
+assert.match(adsPlugin, /BillingClient\.ProductType\.SUBS/);
+assert.match(adsPlugin, /offer\.getOfferId\(\) == null/, "checkout must select only the no-offer monthly base plan");
+assert.match(adsPlugin, /Purchase\.PurchaseState\.PURCHASED/);
+assert.match(adsPlugin, /acknowledgePurchase/);
+assert.match(adsPlugin, /if \(adFree\(\)\)[\s\S]*?"ad-free-subscription"/);
+assert.match(adsPlugin, /handleOnResume\(\)[\s\S]*?refreshSubscriptionState/);
+assert.match(adsPlugin, /store\/account\/subscriptions\?sku=/);
+assert.match(purchaseVerifier, /Signature\.getInstance\("SHA1withRSA"\)/);
 assert.match(nativeAds, /getAlphabetProgress\(\)\?\.completedIds/);
 assert.match(nativeAds, /profile\.phaseOneCompleted/, "native fallback must remain migration-safe when the helper is unavailable");
 assert.match(nativeAds, /profile\.vocabLessonCompleted/);
@@ -68,6 +80,12 @@ assert.match(nativeAds, /completedLessons/);
 assert.match(nativeAds, /if \(completions\.length !== 1\) return;/);
 assert.match(nativeAds, /window\.addEventListener\("load", arm/);
 assert.match(nativeAds, /plugin\.lessonCompleted/);
+assert.match(nativeAds, /subscription\.entitled/);
+assert.match(nativeAds, /purchaseAdFree/);
+assert.match(nativeAds, /restoreAdFree/);
+assert.match(nativeAds, /manageSubscription/);
+assert.match(nativeAds, /Monthly auto-renewing subscription billed by Google Play/);
+assert.doesNotMatch(nativeAds, /(?:US)?\$\s*2(?:\.00)?/, "native checkout UI must use Google Play's localized price");
 assert.match(prepareWeb, /native_ads\.js/);
 assert.doesNotMatch(readFileSync(join(root, "index.html"), "utf8"), /native_ads\.js/, "hosted PWA must remain ad-free");
 
@@ -75,8 +93,9 @@ assert.match(versionScript, /expected exactly one versionCode line/);
 assert.match(releaseWorkflow, /Inject release version/);
 assert.match(releaseWorkflow, /Enforce monotonic versionCode/);
 assert.match(releaseWorkflow, /if \[ "\$VERSION_CODE" -le "\$last" \]; then/);
-assert.doesNotMatch(buildWorkflow, /grep -v '\^com\\\.android\\\.vending\\\.BILLING\$'/);
-assert.doesNotMatch(releaseWorkflow, /grep -v '\^com\\\.android\\\.vending\\\.BILLING\$'/);
+assert.match(buildWorkflow, /grep -v '\^com\\\.android\\\.vending\\\.BILLING\$'/);
+assert.match(releaseWorkflow, /grep -v '\^com\\\.android\\\.vending\\\.BILLING\$'/);
+assert.match(releaseWorkflow, /HANAPATH_PLAY_BILLING_PUBLIC_KEY/);
 assert.match(buildWorkflow, /node scripts\/test-android-release-safety\.mjs/);
 assert.match(releaseWorkflow, /node scripts\/audit-core-release\.mjs --full/);
 assert.match(releaseWorkflow, /git rev-parse HEAD.*git rev-parse origin\/main/);
@@ -87,4 +106,4 @@ assert.match(releaseWorkflow, /Signed AAB certificate does not match/);
 assert.match(releaseWorkflow, /190 MiB release ceiling/);
 assert.doesNotMatch(releaseWorkflow, /uses:\s+actions\/[\w-]+@v\d+/);
 
-console.log("Android extraction, native lesson ads, billing-free build, permissions, and release versioning contracts passed.");
+console.log("Android extraction, native lesson ads, ad-free subscription, permissions, and release versioning contracts passed.");

@@ -43,10 +43,10 @@
 
 ### 3. Free listing and current monetization — ✅ owner-confirmed 2026-08-12
 
-**Confirmed: Free listing with the Handwriting Coach included for every
-learner (`free_all`) and Google AdMob interstitial advertising in the Android
-app. There is still no in-app purchase, Play Billing dependency, billing
-permission, checkout, restore flow, or store entitlement.**
+**Confirmed: Free listing with every learning feature and Handwriting Coach
+included for every learner (`free_all`), Google AdMob interstitial advertising
+in the Android app, and an optional US$2/month Google Play subscription that
+removes ads while active.**
 
 - Owner instruction on 2026-08-12 sets the ad cadence: an interstitial may be
   shown only after a newly completed lesson and only when at least five minutes
@@ -54,15 +54,17 @@ permission, checkout, restore flow, or store entitlement.**
   A lesson completed inside the cooldown shows no ad and does not queue one.
 - The website/PWA remains ad-free. Android production ads are configuration-
   gated behind owner-controlled AdMob IDs and UMP consent readiness.
+- The subscription product ID is `hanapath_ad_free_monthly`, with the monthly
+  auto-renewing base plan ID `monthly`, no free trial, and Play-localized
+  regional pricing. A purchase never unlocks learning content; it only
+  suppresses Android interstitials while Google Play reports active ownership.
 - Irreversibility warning: a **free listing can never become paid**; a paid
   app can later become free. Choosing Free is a permanent commitment for this
   listing; future revenue can use advertising, in-app purchases, or a separate
   listing subject to a new reviewed product decision.
 - **Superseded history:** the 2026-07-20 decision described an optional paid,
-  restorable Handwriting Coach. That paid plan is retained in historical
-  planning documents for provenance, but it is not the current release
-  contract and must not be presented in the app, store listing, privacy page,
-  Data Safety form, manifest, or release bundle.
+  restorable Handwriting Coach. Handwriting remains free; Play Billing is
+  isolated to the ad-free subscription and must not become a content paywall.
 
 ### 4. Target audience / children — ✅ owner-confirmed 2026-08-12
 
@@ -110,7 +112,7 @@ accounts show the verified name rules Google applies at registration).
   interstitials; the Google Mobile Ads SDK performs its documented ad/analytics/
   fraud-prevention data processing; the website/PWA remains ad-free.
 - The same page continues to document local progress, ML Kit, disabled Google
-  sign-in, and UMP privacy choices.
+  sign-in, UMP privacy choices, and Google Play subscription handling.
 - Required for the ad-enabled Play release. Use this exact URL in AdMob and
   Play Console.
 
@@ -158,7 +160,7 @@ actions together; setting only a client ID is not sufficient:
 |---|---|---|---|---|
 | 1 | Package ID | ✅ | `io.github.cameronnel.hanapath` | 2026-08-12 |
 | 2 | Store app name | ⏳ | — | — |
-| 3 | Free vs paid / monetization | ✅ | Free listing; `free_all` Handwriting Coach; Android AdMob lesson-completion interstitials with 5-minute shown-ad cooldown; no Billing/IAP | 2026-08-12 |
+| 3 | Free vs paid / monetization | ✅ | Free listing and all-free learning; Android AdMob lesson-completion interstitials; optional US$2/month Play subscription removes ads | 2026-08-12 |
 | 4 | Audience/countries | ✅ | Not directed at children; Play target age `18 and over`; worldwide; no Families-only ads or advertising age gate | 2026-08-12 |
 | 5 | Account type | ⏳ | — | — |
 | 6 | Publisher name | ⏳ | — | — |

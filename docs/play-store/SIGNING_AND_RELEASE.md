@@ -18,10 +18,11 @@ The release build signs with the upload key only when the
 `HANAPATH_UPLOAD_*` environment variables are present. PR/debug builds never
 receive signing material.
 
-The selected product mode remains `free_all`: all learning and Handwriting
-Coach paths are available without Billing or purchases. The Android app is now
-**ad-supported**. Advertising is separate from entitlement: no ad result can
-lock/unlock learning content or create a purchase state.
+The selected learning-product mode remains `free_all`: all learning and
+Handwriting Coach paths are available without a purchase. The Android app is
+**ad-supported** and offers one optional monthly Google Play subscription that
+suppresses ads while active. No ad or purchase result can lock or unlock
+learning content.
 
 ## Advertising release configuration
 
@@ -52,6 +53,24 @@ The native integration requests UMP consent information every configured app
 launch. Production ads are not requested until UMP reports that ads may be
 requested. If UMP requires a privacy-options entry point, the native Settings
 screen exposes **Privacy choices**.
+
+## Ad-free subscription release configuration
+
+Play Console must contain subscription `hanapath_ad_free_monthly` with an
+auto-renewing monthly base plan named `monthly`, a US$2.00 base price with
+regional conversion, and no free trial. The app renders only Google Play's
+localized price and terms.
+
+Store the app's Google Play licence public key in the protected environment as
+`HANAPATH_PLAY_BILLING_PUBLIC_KEY`. It is public verification configuration,
+not a payment credential, but release builds fail closed when it is missing.
+The client queries current subscription ownership on startup/resume, verifies
+the signed purchase, acknowledges initial completed purchases, grants nothing
+for pending purchases, exposes restore/manage controls, and suppresses ads only
+while Play reports an active subscription. A secure backend remains Google's
+recommended stronger verification model and should be considered before broad
+production scale; the current no-account release performs verification on the
+device.
 
 ## Google sign-in configuration is a separate trust boundary
 
@@ -115,10 +134,10 @@ Add these **environment variables** (not secrets):
 |---|---|
 | `HANAPATH_ADMOB_APP_ID` | Production AdMob Android app ID |
 | `HANAPATH_ADMOB_INTERSTITIAL_ID` | Production interstitial ad-unit ID |
+| `HANAPATH_PLAY_BILLING_PUBLIC_KEY` | Google Play app licence public key used to verify subscription purchase signatures |
 
-The signed-release workflow fails before building if either AdMob variable is
-missing, so an accidental ad-free production artifact cannot masquerade as the
-owner-approved ad-supported release.
+The signed-release workflow fails before building if either AdMob variable or
+the Play Billing public key is missing.
 
 Base64 example:
 
@@ -152,7 +171,8 @@ identity uses the Play-held certificate.
 3. Approve the protected environment prompt.
 4. The workflow:
    - requires the exact latest `main` commit;
-   - requires all signing secrets and both production AdMob variables;
+   - requires all signing secrets, both production AdMob variables, and the
+     Play Billing public key;
    - rebuilds the deterministic native web payload;
    - runs the full authoritative release gate;
    - injects the version without editing source;
@@ -160,9 +180,10 @@ identity uses the Play-held certificate.
    - runs lint + Android unit tests, including the five-minute ad-cadence test;
    - builds the signed AAB with the configured production AdMob identifiers;
    - verifies the merged manifest: package/version plus only the reviewed
-     `INTERNET`, `ACCESS_NETWORK_STATE`, `AD_ID`, and AndroidX signature-level
-     receiver-hardening permissions;
-   - verifies Billing and microphone permissions remain absent;
+     `INTERNET`, `ACCESS_NETWORK_STATE`, `AD_ID`, `BILLING`, and AndroidX
+     signature-level receiver-hardening permissions;
+   - verifies Billing is isolated to the ad-free subscription and microphone
+     remains absent;
    - leaves Google sign-in fail-closed;
    - verifies the AAB signature and upload certificate;
    - enforces the project's conservative 190 MiB AAB ceiling;
@@ -208,6 +229,10 @@ The website/PWA does not package the native ad bridge.
 - **Missing AdMob IDs** — configure the two protected environment variables;
   the release workflow deliberately refuses to produce a signed AAB without
   them.
+- **Missing Play Billing key/product** — configure
+  `HANAPATH_PLAY_BILLING_PUBLIC_KEY`, create and activate the exact subscription
+  and monthly base plan, upload a Play build, and use a licence tester. A
+  sideloaded debug APK cannot prove real subscription product availability.
 - **Consent/privacy setup incomplete** — fix AdMob Privacy & messaging and
   re-run device/internal testing; do not bypass UMP in code.
 - **Wrong signing password/alias/fingerprint** — correct the protected signing

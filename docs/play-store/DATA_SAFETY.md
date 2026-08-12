@@ -1,13 +1,18 @@
-# Google Play Data Safety — draft answers (free ad-supported release)
+# Google Play Data Safety — draft answers (ads + optional ad-free subscription)
 
-> Revised 2026-08-12 for the Android build with AdMob interstitials. Re-check
+> Revised 2026-08-12 for the Android build with AdMob interstitials and an
+> optional monthly Google Play ad-free subscription. Re-check
 > the uploaded AAB, current SDK disclosures, and current Play Console wording at
 > submission. This is an evidence draft, not a substitute for the actual form.
 
 ## Measured product behaviour
 
-- HanaPath has no enabled learner accounts, billing, or developer-operated
-  backend in the current release.
+- HanaPath has no enabled learner accounts or developer-operated backend.
+- Google Play Billing 9.1.0 supplies one auto-renewing subscription,
+  `hanapath_ad_free_monthly`. It removes Android ads while active and does not
+  unlock learning content. The app queries Play for product, purchase, pending,
+  acknowledgement, and current entitlement state; HanaPath never receives a
+  payment-card number or other payment method details.
 - The Android app uses Google AdMob interstitial advertising only after a newly
   completed lesson and no more often than once every five minutes. The hosted
   website/PWA remains ad-free.
@@ -40,8 +45,9 @@
 - The reviewed app manifest permits `android.permission.INTERNET`,
   `android.permission.ACCESS_NETWORK_STATE`, and
   `com.google.android.gms.permission.AD_ID`, plus Android's app-specific
-  signature-level receiver permission in the merged manifest. Billing,
-  microphone, and unrelated permissions remain blocked by CI.
+  signature-level receiver permission in the merged manifest. The reviewed
+  `com.android.vending.BILLING` permission supports only the optional ad-free
+  subscription. Microphone and unrelated permissions remain blocked by CI.
 - Browser/PWA Transcript practice is outside the Android declaration: its
   speech-recognition provider boundary is disclosed in-app and in the privacy
   policy, while the Android AAB has no microphone permission.
@@ -50,6 +56,7 @@ Official sources to re-check at submission:
 
 - <https://developers.google.com/admob/android/privacy/play-data-disclosure>
 - <https://developers.google.com/admob/android/privacy>
+- <https://developer.android.com/google/play/billing/integrate>
 - <https://developers.google.com/ml-kit/android-data-disclosure>
 
 ## Questionnaire draft
@@ -69,12 +76,15 @@ Play taxonomy:
 | App interactions | Advertising, analytics, fraud prevention; ML Kit diagnostics | AdMob collects launch/tap/video interaction information; ML Kit records documented feature/model events |
 | Diagnostics / app performance | Advertising, analytics, fraud prevention; SDK diagnostics | AdMob collects SDK/app performance information; ML Kit collects documented performance/error metrics |
 | Device or other IDs | Advertising, analytics, fraud prevention; SDK diagnostics | AdMob collects advertising ID, app set ID, and applicable account-related identifiers; ML Kit may collect per-installation identifiers |
+| Purchase history | App functionality | Google Play returns the subscription product and ownership/status needed to suppress ads. It remains on-device; there is no HanaPath backend. Validate the Console answer against the exact Play Billing SDK disclosure and uploaded AAB. |
 
-Do **not** select names, email, purchase history, precise location, contacts,
-photos/files, handwriting content, typed answers, lesson progress, or purchase
-information unless the final AAB or an enabled account service changes the
-facts. Advertising is now part of the product and must not be omitted merely
-because HanaPath itself does not operate the ad servers.
+Do **not** select names, email, payment-card information, precise location,
+contacts, photos/files, handwriting content, typed answers, or lesson progress
+unless the final AAB or an enabled account service changes the facts. Review
+Play's current **Purchase history** wording carefully because the client does
+receive subscription ownership/status, even though there is no HanaPath
+backend. Advertising must not be omitted merely because HanaPath itself does
+not operate the ad servers.
 
 ## Related declarations
 
@@ -84,9 +94,9 @@ because HanaPath itself does not operate the ad servers.
 | Ads | **Yes — contains Google AdMob interstitial ads in the Android app** |
 | App access | No login required; all learning paths and handwriting remain available without an account |
 | Target audience | Not directed at children; select only `18 and over` for worldwide distribution; do not opt into Families or add an advertising age gate |
-| Financial features | None; no billing library, permission, checkout, or paid feature ships |
+| Financial features | One optional US$2/month auto-renewing Google Play subscription removes ads; every learning feature remains free |
 
-## Release blockers specific to ads
+## Release blockers specific to ads and subscriptions
 
 Before a signed/public ad-enabled release:
 
@@ -103,6 +113,13 @@ Before a signed/public ad-enabled release:
    exact signed AAB/dependency graph.
 5. Re-check this file, `privacy.html`, and the store listing against the exact
    release artifact.
+6. Create and activate subscription `hanapath_ad_free_monthly` with monthly
+   base plan `monthly`, US$2.00 base price, worldwide regional conversion, no
+   trial, and the appropriate digital-service tax classification.
+7. Store the Play licence public key as protected environment variable
+   `HANAPATH_PLAY_BILLING_PUBLIC_KEY`, then test purchase, cancellation,
+   pending completion, acknowledgement, restore, grace period, account hold,
+   expiry, refund/revocation, second device, and subscription management.
 
 ## Change control
 

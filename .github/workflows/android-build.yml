@@ -119,11 +119,13 @@ jobs:
           echo "Declared uses-permissions:"
           echo "${perms:-<none>}"
           # INTERNET + network state + advertising ID are the audited AdMob
-          # surface. AndroidX may add the app's signature-level receiver guard.
+          # surface. BILLING supports the optional ad-free subscription.
+          # AndroidX may add the app's signature-level receiver guard.
           unexpected=$(echo "$perms" \
             | grep -v '^android\.permission\.INTERNET$' \
             | grep -v '^android\.permission\.ACCESS_NETWORK_STATE$' \
             | grep -v '^com\.google\.android\.gms\.permission\.AD_ID$' \
+            | grep -v '^com\.android\.vending\.BILLING$' \
             | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' \
             | grep -v '^$' || true)
           if [ -n "$unexpected" ]; then

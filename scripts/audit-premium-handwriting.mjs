@@ -73,9 +73,8 @@ requireCheck(recognitionJava.includes("preContextCodePoints > 20"), "Android pre
 
 requireCheck(!existsSync(billingPluginUrl), "free_all Android build still ships PremiumWritingPlugin.java");
 requireCheck(!mainActivity.includes("PremiumWritingPlugin"), "free_all Android activity still registers the billing bridge");
-requireCheck(!/billingclient/i.test(buildGradle), "free_all Android build still compiles Google Play Billing");
-requireCheck(!manifest.includes('<uses-permission android:name="com.android.vending.BILLING" />'), "free_all Android manifest still directly grants Play Billing");
-requireCheck(manifest.includes('android:name="com.android.vending.BILLING" tools:node="remove"'), "manifest does not actively strip transitive Play Billing permission declarations");
+requireCheck(/com\.android\.billingclient:billing:9\.1\.0/.test(buildGradle), "ad-free subscription does not pin the reviewed Play Billing version");
+requireCheck(manifest.includes('<uses-permission android:name="com.android.vending.BILLING" />'), "ad-free subscription is missing its Play Billing permission");
 requireCheck(!strings.includes('name="premium_writing_product_id"') && !strings.includes('name="play_billing_public_key"'), "free_all build still carries dormant Play product configuration");
 
 requireCheck(manifest.includes('android:allowBackup="false"'), "Android learner state is still eligible for OS backup");
@@ -83,8 +82,8 @@ requireCheck(manifest.includes('android:fullBackupContent="false"'), "Android fu
 requireCheck(!/androidx\.core\.content\.FileProvider/.test(manifest), "unused Android FileProvider remains registered");
 requireCheck(!existsSync(filePathsUrl), "orphaned FileProvider path configuration remains packaged");
 
-requireCheck(/free Android build does not compile, register, configure, or request\s+permission for Google Play Billing/.test(plan), "governing plan does not state the billing-free free-build contract");
-requireCheck(plan.includes("separately reviewed store-mode packet"), "future billing reintroduction is not isolated behind a fresh review gate");
+requireCheck(plan.includes("ad-free subscription never gates Handwriting Coach"), "governing plan does not separate ad-free billing from Handwriting Coach access");
+requireCheck(plan.includes("no handwriting product ID"), "governing plan does not forbid a hidden Handwriting Coach product");
 
 console.log("Handwriting and Android release-safety audit");
 console.log("============================================");
@@ -93,9 +92,9 @@ console.log(`sample static chars    : ${blocks.length - writable.length}`);
 console.log(`free Alphabet boundary : ${errors.some((error) => error.includes("free Alphabet")) ? "fail" : "pass"}`);
 console.log(`all-access mode        : ${errors.some((error) => /all-access|free-all|paid\/unlocked|billing on entry/.test(error)) ? "fail" : "pass"}`);
 console.log(`top-1 bank contract    : ${errors.some((error) => error.includes("top candidate")) ? "fail" : "pass"}`);
-console.log(`billing-free binary    : ${errors.some((error) => /Billing|billing|purchase plugin|product configuration/.test(error)) ? "fail" : "pass"}`);
+console.log(`billing isolation      : ${errors.some((error) => /Billing|billing|purchase plugin|product configuration/.test(error)) ? "fail" : "pass"}`);
 console.log(`backup/provider safety : ${errors.some((error) => /backup|FileProvider|storage root/.test(error)) ? "fail" : "pass"}`);
 console.log(`errors                 : ${errors.length}`);
 errors.forEach((error) => console.log(`  ERROR ${error}`));
 if (errors.length) process.exitCode = 1;
-else console.log("Result: multi-block writing is free and model-gated; the Android binary has no dormant billing surface, OS backup, or broad FileProvider root.");
+else console.log("Result: multi-block writing is free and model-gated; Play Billing is isolated to ad suppression, with no handwriting purchase surface, OS backup, or broad FileProvider root.");

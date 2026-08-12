@@ -2915,8 +2915,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v467";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260812a";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v468";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260812b";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -14893,7 +14893,7 @@ function renderSettingsScreen(hub = activeHub) {
       <h3 class="settings-section-title">About &amp; support</h3>
       <p class="settings-section-sub">Read the policy inside the app, including while offline.</p>
       <div class="settings-backup-actions">
-        <a class="button secondary compact" href="./privacy.html?v=20260812a">Privacy policy</a>
+        <a class="button secondary compact" href="./privacy.html?v=20260812b">Privacy policy</a>
         <a class="button secondary compact" href="https://github.com/CameronNel/hanapath/issues" target="_blank" rel="noopener noreferrer">Support</a>
       </div>
     </div>
@@ -21102,9 +21102,9 @@ function renderHangulWriting() {
 
 // ─── PREMIUM HANDWRITING COACH ──────────────────────────────────────────────
 // Alphabet writing above remains the free, single-block `$Q` experience.
-// Words, phrases, and sentences use native ML Kit recognition. Billing remains
-// implemented for a later release, but one build-time mode controls access for
-// the whole app so testers never need to flip per-device or in-app switches.
+// Words, phrases, and sentences use native ML Kit recognition. The optional
+// Android ad-free subscription never gates learning or Handwriting Coach; this
+// separate build-time mode therefore remains free_all.
 const PREMIUM_WRITING_PRODUCT_KEY = "handwriting_coach";
 const PREMIUM_WRITING_ACCESS_MODE = "free_all"; // Later: change once to "store" when checkout is ready to ship.
 

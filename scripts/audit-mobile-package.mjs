@@ -81,11 +81,13 @@ const REMOTE_DEPENDENCY_PATTERNS = [
 
 // INTERNET and network-state access support the optional ML Kit download and
 // AdMob delivery. AD_ID is a normal Google Play services permission used by the
-// ads SDK; Billing and all unrelated permissions remain forbidden.
+// ads SDK. BILLING supports the optional ad-free Play subscription; every
+// learning feature remains available without a purchase.
 const ALLOWED_ANDROID_PERMISSIONS = new Set([
   "android.permission.INTERNET",
   "android.permission.ACCESS_NETWORK_STATE",
   "com.google.android.gms.permission.AD_ID",
+  "com.android.vending.BILLING",
 ]);
 
 function walk(dir, out = []) {
@@ -234,8 +236,12 @@ if (!existsSync(androidRoot)) {
   if (!/versionName\s+["']/.test(buildGradle)) errors.push("app/build.gradle: versionName missing");
   if (!/com\.google\.android\.gms:play-services-ads:25\.4\.0/.test(buildGradle)) errors.push("app/build.gradle must pin Google Mobile Ads SDK 25.4.0");
   if (!/com\.google\.android\.ump:user-messaging-platform:4\.0\.0/.test(buildGradle)) errors.push("app/build.gradle must pin UMP SDK 4.0.0");
+  if (!/com\.android\.billingclient:billing:9\.1\.0/.test(buildGradle)) errors.push("app/build.gradle must pin Google Play Billing 9.1.0");
   if (!/HANAPATH_ADMOB_APP_ID/.test(buildGradle) || !/HANAPATH_ADMOB_INTERSTITIAL_ID/.test(buildGradle)) {
     errors.push("app/build.gradle must keep production AdMob identifiers owner-configured");
+  }
+  if (!/HANAPATH_PLAY_BILLING_PUBLIC_KEY/.test(buildGradle)) {
+    errors.push("app/build.gradle must keep the Play Billing licence public key owner-configured");
   }
 
   const variablesGradle = readFileSync(join(androidRoot, "variables.gradle"), "utf8");

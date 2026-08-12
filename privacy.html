@@ -65,8 +65,10 @@
       developer analytics. The Android app may show Google AdMob interstitial
       ads only after a newly completed lesson and never more often than once
       every five minutes. HanaPath does not send your lesson progress or
-      handwriting to the advertising service. The current release does not
-      enable HanaPath accounts or cloud sync.</p>
+      handwriting to the advertising service. An optional monthly Google Play
+      subscription removes Android ads while active; every learning feature
+      remains free. The current release does not enable HanaPath accounts or
+      cloud sync.</p>
     </div>
 
     <h2>What data HanaPath collects</h2>
@@ -82,6 +84,12 @@
     Google states that this data is encrypted in transit. HanaPath does not add
     lesson identifiers, answers, scores, handwriting, or local progress to its
     ad requests.</p>
+    <p>The Android app uses Google Play Billing for one optional auto-renewing
+    monthly ad-free subscription. The app receives the product's localized
+    price and whether the Google Play account has an active or pending
+    entitlement. Google Play processes payment details directly; HanaPath does
+    not receive your card number or other payment-method details and operates
+    no billing backend.</p>
     <p>Google ML Kit may collect limited device/app information,
     per-installation identifiers, performance and feature-event diagnostics,
     and the configured recognition language. Google states that this
@@ -107,6 +115,10 @@
       recently displayed interstitial so the five-minute cooldown survives
       normal app use. That timestamp is not learner progress and is not sent to
       HanaPath.</li>
+      <li><strong>Ad-free status</strong> keeps the last verified active Play
+      entitlement in private app storage so a transient Play Store connection
+      problem does not suddenly show ads to a subscriber. The app rechecks
+      current ownership with Google Play at startup and resume.</li>
     </ul>
 
     <h2>Network use</h2>
@@ -122,7 +134,9 @@
       <li><strong>Android app:</strong> lessons and audio are bundled and the
       learning paths work offline. When online, the app may contact Google to
       request AdMob ads and to manage any privacy/consent message required for
-      advertising. If you use native handwriting, ML Kit may also download a
+      advertising. It may also contact Google Play to display, purchase,
+      restore, acknowledge, or manage the optional ad-free subscription. If
+      you use native handwriting, ML Kit may also download a
       Korean recognition model (roughly 20&nbsp;MB). Recognition remains
       on-device. See Google's
       <a href="https://developers.google.com/admob/android/privacy/play-data-disclosure">Mobile Ads data disclosure</a>,
@@ -142,6 +156,17 @@
     <p>The website/PWA does not load the native AdMob integration and remains
     ad-free. HanaPath does not sell learner progress or use lesson content as ad
     targeting data.</p>
+
+    <h2>Ad-free subscription</h2>
+    <p>HanaPath Ad-Free is an optional monthly auto-renewing subscription sold
+    through Google Play. The app shows Google Play's localized price before
+    checkout; the intended US base price is US$2.00 per month. The subscription
+    renews unless canceled through Google Play. While Google Play reports the
+    subscription as active, HanaPath does not request or display interstitial
+    ads. Canceling stops future renewal but normally keeps the ad-free benefit
+    until the paid period ends. Pending, expired, held, refunded, or revoked
+    purchases do not grant the benefit. Every lesson, exam, offline feature,
+    and Handwriting Coach remains available without subscribing.</p>
 
     <h2>Consent and privacy choices</h2>
     <p>The Android app uses Google's User Messaging Platform to request an
@@ -165,6 +190,9 @@
       fetched while the Android device is offline.</li>
       <li>Use the Android <strong>Privacy choices</strong> setting whenever the
       Google consent SDK requires that option to be available.</li>
+      <li>Purchase or restore HanaPath Ad-Free in Android Settings, and use
+      <strong>Manage subscription</strong> to open Google Play's cancellation
+      and payment-management screen.</li>
       <li>Skip the handwriting-model download; the learning paths remain
       available.</li>
     </ul>

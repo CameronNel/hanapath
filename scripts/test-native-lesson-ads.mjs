@@ -8,7 +8,7 @@ import vm from "node:vm";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const source = readFileSync(join(root, "mobile", "web", "native_ads.js"), "utf8");
 
-function createHarness({ native = true } = {}) {
+function createHarness({ native = true, adFree = false } = {}) {
   const state = {
     phaseOneCompleted: [],
     vocabLessonCompleted: [],
@@ -18,12 +18,19 @@ function createHarness({ native = true } = {}) {
   const calls = [];
   const rafQueue = [];
   const documentListeners = new Map();
+  const pluginListeners = new Map();
   let observerCallback = null;
   let observerCount = 0;
 
   const plugin = {
-    async getStatus() { return { privacyOptionsRequired: false }; },
-    addListener() {},
+    async getStatus() {
+      return {
+        privacyOptionsRequired: false,
+        adFree,
+        subscription: { available: true, configured: true, resolved: true, entitled: adFree, pending: false },
+      };
+    },
+    addListener(type, callback) { pluginListeners.set(type, callback); },
     async lessonCompleted(payload) { calls.push(payload); return { shown: false }; },
   };
   const document = {
@@ -70,6 +77,7 @@ function createHarness({ native = true } = {}) {
     calls,
     document,
     documentListeners,
+    pluginListeners,
     get observerCount() { return observerCount; },
     state,
     async arm() { await flushFrames(); },
@@ -79,6 +87,14 @@ function createHarness({ native = true } = {}) {
       await flushFrames();
     },
   };
+}
+
+{
+  const h = createHarness({ adFree: true });
+  await h.arm();
+  h.state.vocabLessonCompleted.push("subscriber-word");
+  await h.mutate();
+  assert.deepEqual(h.calls, [], "an active ad-free subscriber must never request a lesson ad");
 }
 
 {
@@ -144,4 +160,4 @@ function createHarness({ native = true } = {}) {
   assert.deepEqual(h.calls, [], "hidden completion must not queue an ad for resume");
 }
 
-console.log("Native lesson-ad trigger tests passed: native-only, startup/navigation/replay/bulk/hidden safe, all lesson families covered.");
+console.log("Native lesson-ad trigger tests passed: native-only, subscriber/startup/navigation/replay/bulk/hidden safe, all lesson families covered.");

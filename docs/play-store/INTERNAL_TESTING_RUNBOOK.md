@@ -9,7 +9,8 @@
 > **Current release contract (2026-08-12):** the listing is free, Handwriting
 > Coach is `free_all`, and the Android app is ad-supported with Google AdMob
 > interstitials only at newly completed lesson boundaries and no more often
-> than once every five minutes. There is no Play Billing or purchase flow.
+> than once every five minutes. An optional US$2/month Google Play subscription
+> removes Android ads while active; it does not unlock learning content.
 > Google sign-in remains disabled for this release, so there is no HanaPath
 > account, session, or progress sync. The hosted website/PWA remains ad-free.
 
@@ -28,15 +29,19 @@
 5. Configure the applicable AdMob **Privacy & messaging** message(s). The
    production app requests consent information at launch and does not request
    ads until UMP reports that ads may be requested.
-6. A signed AAB artifact from a green run of the **Android signed release**
+6. Create and activate Play subscription `hanapath_ad_free_monthly`, monthly
+   base plan `monthly`, US$2.00 base price, worldwide regional pricing, and no
+   free trial. Store the app licence key as protected environment variable
+   `HANAPATH_PLAY_BILLING_PUBLIC_KEY`.
+7. A signed AAB artifact from a green run of the **Android signed release**
    workflow. That workflow fails closed if the production AdMob identifiers are
    absent.
-7. `privacy.html` live at the confirmed URL and
+8. `privacy.html` live at the confirmed URL and
    [`DATA_SAFETY.md`](DATA_SAFETY.md) re-verified against that exact build.
-8. Merged-manifest/dependency evidence confirms AdMob's reviewed INTERNET,
-   network-state and advertising-ID permissions, while Billing, microphone,
-   price, checkout, restore, and store-entitlement surfaces remain absent.
-9. Google sign-in remains unconfigured: no `HANAPATH_GOOGLE_SERVER_CLIENT_ID`
+9. Merged-manifest/dependency evidence confirms AdMob's reviewed INTERNET,
+   network-state and advertising-ID permissions plus Play Billing used only for
+   ad suppression. Microphone and unrelated purchase products remain absent.
+10. Google sign-in remains unconfigured: no `HANAPATH_GOOGLE_SERVER_CLIENT_ID`
    and no browser `window.HANAPATH_AUTH_CONFIG` session endpoint.
 
 ## 1. Create the app (once)
@@ -51,9 +56,9 @@ For target audience, select only **18 and over**. Do not enable Families,
 child age treatment, or Play's optional **Restrict minor access** control; the
 app has no age-restricted content and does not need an advertising age gate.
 
-Do not declare an in-app purchase or active HanaPath account merely because
-historical paid-plan documents and configuration-gated sign-in adapters exist
-in the repository.
+Declare the ad-free subscription as an in-app product. Do not declare paid
+learning content or an active HanaPath account: Handwriting Coach remains free
+and the configuration-gated sign-in adapter still creates no account.
 
 ## 2. Internal testing release
 
@@ -75,6 +80,10 @@ Before sharing the opt-in URL widely, confirm on the Play-installed build:
 - The applicable UMP consent flow appears where required.
 - If UMP says privacy options are required, Settings shows **Privacy choices**
   and opens the Google privacy-options form.
+- Settings shows Google Play's localized monthly price, purchase, restore, and
+  manage controls for HanaPath Ad-Free.
+- An active subscription suppresses all interstitial requests immediately;
+  cancellation keeps access until Play stops reporting active entitlement.
 - A lesson completed before minute five shows no interstitial.
 - The first newly completed lesson after minute five can show an interstitial.
 - After an ad actually appears, another lesson completed inside the next five
@@ -96,9 +105,13 @@ Before sharing the opt-in URL widely, confirm on the Play-installed build:
 >    lesson or appear just because you changed tabs.
 > 4. If a consent/privacy message is shown, complete it normally. If Settings
 >    includes **Privacy choices**, make sure it reopens the privacy form.
-> 5. Confirm Handwriting Coach has no price/purchase/restore prompt and Google
+> 5. Test the ad-free product with a Play licence tester: purchase cancellation,
+>    pending payment, completion, relaunch, restore, second device, manage/cancel,
+>    grace period, account hold, expiry, and refund/revocation. Confirm active
+>    subscribers see no lesson ads and that the displayed price comes from Play.
+> 6. Confirm Handwriting Coach has no price/purchase/restore prompt and Google
 >    sign-in does not claim that progress is synced.
-> 6. Try airplane mode: core learning and local progress must keep working;
+> 7. Try airplane mode: core learning and local progress must keep working;
 >    ads simply cannot be fetched while offline.
 >
 > **Feedback template**

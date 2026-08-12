@@ -2,13 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- The free-all build has no checkout surface and therefore declares no
-         billing or microphone permission. Learner state is intentionally kept
+    <!-- The optional subscription uses Google Play Billing only to suppress
+         ads; it does not gate learning content. Learner state is intentionally kept
          out of Android cloud/device-transfer backup; HanaPath export/import is
          the explicit, reviewable transfer path. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <!-- Keep transitive SDK permissions tightly scoped. ML Kit's downloader
          brings WorkManager permissions that HanaPath does not need for its
@@ -21,7 +22,6 @@
     <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" tools:node="remove" />
     <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" tools:node="remove" />
     <uses-permission android:name="android.permission.ACCESS_ADSERVICES_TOPICS" tools:node="remove" />
-    <uses-permission android:name="com.android.vending.BILLING" tools:node="remove" />
     <!-- Credential Manager's generic biometric dependency is not used by the
          Google-ID-only flow, so keep those permissions out of the release. -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" tools:node="remove" />
