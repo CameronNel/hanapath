@@ -53,14 +53,14 @@
 
   if (!isNativeRuntime()) return;
 
-  // Defer the baseline until the canonical app has finished its startup
-  // migrations. Anything already complete when the app opens is history, not a
-  // learner completion boundary and must never cause an interstitial.
-  let previous = readCompletionSnapshot();
+  let previous = null;
   let scanQueued = false;
+  let armed = false;
 
   async function scanForCompletion() {
     scanQueued = false;
+    if (!armed || !previous) return;
+
     const current = readCompletionSnapshot();
     const completions = newlyCompleted(previous, current);
     previous = current;
@@ -85,22 +85,37 @@
   }
 
   function queueScan() {
-    if (scanQueued) return;
+    if (!armed || scanQueued) return;
     scanQueued = true;
     requestAnimationFrame(scanForCompletion);
   }
 
   const observer = new MutationObserver(queueScan);
-  observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-  });
+
+  function arm() {
+    if (armed) return;
+    // Arm only after the window load boundary and one paint. That puts the
+    // snapshot after load-time state migration/bootstrap, so a migration that
+    // repairs one historical lesson can never masquerade as a fresh learner
+    // completion and display an ad.
+    requestAnimationFrame(() => {
+      previous = readCompletionSnapshot();
+      armed = true;
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    });
+  }
+
+  if (document.readyState === "complete") arm();
+  else window.addEventListener("load", arm, { once: true });
 
   // A resumed app can have had state restored while its WebView was hidden.
   // Refresh the baseline without showing an ad for work that did not complete
   // at a visible lesson boundary.
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") previous = readCompletionSnapshot();
+    if (armed && document.visibilityState === "visible") previous = readCompletionSnapshot();
   });
 })();
