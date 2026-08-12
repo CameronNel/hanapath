@@ -6,16 +6,20 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const androidRoot = join(root, "mobile", "android", "app");
+const javaRoot = join(androidRoot, "src", "main", "java", "io", "github", "cameronnel", "hanapath");
 const manifest = readFileSync(join(androidRoot, "src", "main", "AndroidManifest.xml"), "utf8");
 const extractionRules = readFileSync(join(androidRoot, "src", "main", "res", "xml", "data_extraction_rules.xml"), "utf8");
-const mainActivity = readFileSync(join(androidRoot, "src", "main", "java", "io", "github", "cameronnel", "hanapath", "MainActivity.java"), "utf8");
+const mainActivity = readFileSync(join(javaRoot, "MainActivity.java"), "utf8");
+const adsPlugin = readFileSync(join(javaRoot, "HanaPathAdsPlugin.java"), "utf8");
 const buildGradle = readFileSync(join(androidRoot, "build.gradle"), "utf8");
 const strings = readFileSync(join(androidRoot, "src", "main", "res", "values", "strings.xml"), "utf8");
+const nativeAds = readFileSync(join(root, "mobile", "web", "native_ads.js"), "utf8");
+const prepareWeb = readFileSync(join(root, "mobile", "scripts", "prepare-web.mjs"), "utf8");
 const releaseWorkflow = readFileSync(join(root, ".github", "workflows", "android-release.yml"), "utf8");
 const buildWorkflow = readFileSync(join(root, ".github", "workflows", "android-build.yml"), "utf8");
 const versionScript = readFileSync(join(root, "mobile", "scripts", "version-android.mjs"), "utf8");
 const packageAudit = readFileSync(join(root, "scripts", "audit-mobile-package.mjs"), "utf8");
-const billingPlugin = join(androidRoot, "src", "main", "java", "io", "github", "cameronnel", "hanapath", "PremiumWritingPlugin.java");
+const billingPlugin = join(javaRoot, "PremiumWritingPlugin.java");
 
 assert.match(manifest, /android:allowBackup="false"/);
 assert.match(manifest, /android:fullBackupContent="false"/);
@@ -23,6 +27,10 @@ assert.match(manifest, /android:dataExtractionRules="@xml\/data_extraction_rules
 assert.doesNotMatch(manifest, /<uses-permission android:name="com\.android\.vending\.BILLING"\s*\/>/);
 assert.match(manifest, /android:name="com\.android\.vending\.BILLING" tools:node="remove"/);
 assert.doesNotMatch(manifest, /android\.permission\.RECORD_AUDIO/);
+assert.match(manifest, /android:name="android\.permission\.ACCESS_NETWORK_STATE"/);
+assert.match(manifest, /android:name="com\.google\.android\.gms\.permission\.AD_ID"/);
+assert.match(manifest, /android:name="com\.google\.android\.gms\.ads\.APPLICATION_ID"/);
+assert.match(manifest, /android:value="\$\{hanapathAdMobAppId\}"/);
 
 assert.doesNotMatch(manifest, /androidx\.core\.content\.FileProvider/);
 assert.equal(existsSync(join(androidRoot, "src", "main", "res", "xml", "file_paths.xml")), false);
@@ -34,6 +42,27 @@ assert.doesNotMatch(mainActivity, /PremiumWritingPlugin/);
 assert.doesNotMatch(buildGradle, /com\.android\.billingclient|billingclient/i);
 assert.doesNotMatch(strings, /premium_writing_product_id|play_billing_public_key/);
 assert.doesNotMatch(packageAudit.match(/const ALLOWED_ANDROID_PERMISSIONS = new Set\(\[([\s\S]*?)\]\);/)?.[1] || "", /BILLING/);
+
+// Android ads are native-only, configuration-gated in release, and use
+// Google's official test inventory in debug builds.
+assert.match(mainActivity, /registerPlugin\(HanaPathAdsPlugin\.class\)/);
+assert.match(buildGradle, /com\.google\.android\.gms:play-services-ads:25\.4\.0/);
+assert.match(buildGradle, /com\.google\.android\.ump:user-messaging-platform:4\.0\.0/);
+assert.match(buildGradle, /HANAPATH_ADMOB_APP_ID/);
+assert.match(buildGradle, /HANAPATH_ADMOB_INTERSTITIAL_ID/);
+assert.match(buildGradle, /ADMOB_CONFIGURED/);
+assert.match(adsPlugin, /AD_COOLDOWN_MS\s*=\s*5L\s*\*\s*60L\s*\*\s*1000L/);
+assert.match(adsPlugin, /GOOGLE_TEST_INTERSTITIAL_ID\s*=\s*"ca-app-pub-3940256099942544\/1033173712"/);
+assert.match(adsPlugin, /onAdShowedFullScreenContent\(\)[\s\S]*?PREF_LAST_SHOWN_AT/);
+assert.match(adsPlugin, /onAdFailedToShowFullScreenContent[\s\S]*?Do not advance the cooldown/);
+assert.match(adsPlugin, /UserMessagingPlatform\.loadAndShowConsentFormIfRequired/);
+assert.match(nativeAds, /profile\.phaseOneCompleted/);
+assert.match(nativeAds, /profile\.vocabLessonCompleted/);
+assert.match(nativeAds, /completedLessons/);
+assert.match(nativeAds, /if \(completions\.length !== 1\) return;/);
+assert.match(nativeAds, /plugin\.lessonCompleted/);
+assert.match(prepareWeb, /native_ads\.js/);
+assert.doesNotMatch(readFileSync(join(root, "index.html"), "utf8"), /native_ads\.js/, "hosted PWA must remain ad-free");
 
 assert.match(versionScript, /expected exactly one versionCode line/);
 assert.match(releaseWorkflow, /Inject release version/);
@@ -51,4 +80,4 @@ assert.match(releaseWorkflow, /Signed AAB certificate does not match/);
 assert.match(releaseWorkflow, /190 MiB release ceiling/);
 assert.doesNotMatch(releaseWorkflow, /uses:\s+actions\/[\w-]+@v\d+/);
 
-console.log("Android extraction, no-FileProvider, billing-free build, permissions, and release versioning contracts passed.");
+console.log("Android extraction, native lesson ads, billing-free build, permissions, and release versioning contracts passed.");
