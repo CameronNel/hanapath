@@ -66,6 +66,7 @@ assert.match(adsPlugin, /PrivacyOptionsRequirementStatus\.REQUIRED/);
 assert.match(adsPlugin, /AD_FREE_PRODUCT_ID\s*=\s*"hanapath_ad_free_monthly"/);
 assert.match(adsPlugin, /AD_FREE_BASE_PLAN_ID\s*=\s*"monthly"/);
 assert.match(adsPlugin, /BillingClient\.ProductType\.SUBS/);
+assert.match(adsPlugin, /enableAutoServiceReconnection\(\)/);
 assert.match(adsPlugin, /offer\.getOfferId\(\) == null/, "checkout must select only the no-offer monthly base plan");
 assert.match(adsPlugin, /Purchase\.PurchaseState\.PURCHASED/);
 assert.match(adsPlugin, /acknowledgePurchase/);

@@ -82,6 +82,7 @@ public class HanaPathAdsPlugin extends Plugin implements PurchasesUpdatedListene
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
             )
+            .enableAutoServiceReconnection()
             .build();
 
         if (!adsEnabledForThisBuild()) {
