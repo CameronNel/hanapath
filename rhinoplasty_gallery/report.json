@@ -1,0 +1,12 @@
+{
+  "paired_cases": 127,
+  "rows": 508,
+  "classes": {
+    "after": 254,
+    "before": 254
+  },
+  "html_mb": 2.24,
+  "source": "https://huggingface.co/datasets/morlako/rhinoplasty_lora",
+  "license": "CC BY-NC 4.0",
+  "generated_at": "2026-08-13T21:04:15Z"
+}
