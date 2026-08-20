@@ -3,85 +3,90 @@
 > Governing brief: [`../FABLE_MOBILE_PLAY_STORE_HANDOVER.md`](../FABLE_MOBILE_PLAY_STORE_HANDOVER.md)
 > §13.2 (protected release workflow) and §14 (signing and key custody).
 >
-> The release pipeline itself is
+> The release pipeline is
 > [`.github/workflows/android-release.yml`](../../.github/workflows/android-release.yml).
-> Everything in **§1–§3 below is an owner action** — it involves creating and
-> guarding a real cryptographic key, which no agent should (or can) do for
-> you. Nothing in this document contains a real secret.
+> Keystore creation, production AdMob identifiers, audience declarations, and
+> Play Console actions remain owner-controlled release work.
 
 ## How signing works for this app
 
-Google Play requires new apps to use **Play App Signing**: Google holds the
-*app signing key* and signs what users download; you hold an **upload key**
-and sign every AAB you send to the Play Console. If the upload key is ever
-lost or leaked, Google can verify your identity and reset it — which is why
-Play App Signing is non-negotiable here. The keystore you create below is the
-upload key only.
+Google Play App Signing holds the app-signing key used for Play-delivered
+builds; the owner holds an upload key and signs each AAB submitted to Play. The
+keystore below is the upload key only.
 
-The release build signs with the upload key **only** when the
-`HANAPATH_UPLOAD_*` environment variables are present (see the
-`signingConfigs` block in `mobile/android/app/build.gradle`). PR builds,
-debug builds, and ordinary local builds never see them and are unchanged.
+The release build signs with the upload key only when the
+`HANAPATH_UPLOAD_*` environment variables are present. PR/debug builds never
+receive signing material.
 
-The selected release is `free_all`: signing configuration must not restore a
-Billing dependency, billing permission, purchase product, or entitlement.
+The selected learning-product mode remains `free_all`: all learning and
+Handwriting Coach paths are available without a purchase. The Android app is
+**ad-supported** and offers one optional monthly Google Play subscription that
+suppresses ads while active. No ad or purchase result can lock or unlock
+learning content.
 
-## Google sign-in configuration is a separate trust boundary
+## Advertising release configuration
 
-The repository contains fail-closed Google sign-in adapters, but the current
-release intentionally has **no configured HanaPath account, session service,
-or progress sync**. The signed-release workflow does not inject a Google client
-ID or session endpoint. This is deliberate: an OAuth client ID alone cannot
-securely authenticate a HanaPath user.
+Two public AdMob identifiers are required by the protected release workflow:
 
-For a later reviewed activation, the owner must complete every item below:
+- `HANAPATH_ADMOB_APP_ID` — the AdMob Android app ID
+  (`ca-app-pub-…~…` format).
+- `HANAPATH_ADMOB_INTERSTITIAL_ID` — the production interstitial ad-unit ID
+  (`ca-app-pub-…/…` format).
 
-1. Create an owner-controlled Google Cloud project and production OAuth consent
-   screen. Create a **Web application OAuth client**; its public client ID is
-   both the server/Web client ID and the exact expected `aud` claim in Google ID
-   tokens. Android Credential Manager's `setServerClientId` specifically takes
-   this Web client ID, not an Android client ID
-   ([Credential Manager implementation](https://developer.android.com/identity/sign-in/credential-manager-siwg-implementation)).
-2. Create Android OAuth client registrations for package
-   `io.github.cameronnel.hanapath`. Record both SHA-1 and SHA-256 for the upload
-   certificate and the distinct **Play App Signing** certificate. Use each
-   signing certificate's SHA-1 in its Android OAuth client entry, and register
-   the SHA-256 too wherever the linked Google/Firebase or Android developer
-   configuration requests it. Successful upload-key testing does not validate
-   a Play-installed build; Google explicitly requires the Play-held signing
-   fingerprint to be registered with API providers
-   ([Play App Signing](https://support.google.com/googleplay/android-developer/answer/9842756)).
-3. Inject the Web/server client ID into Android with the Gradle property
-   `-PHANAPATH_GOOGLE_SERVER_CLIENT_ID=<client-id>` or the matching
-   `HANAPATH_GOOGLE_SERVER_CLIENT_ID` environment variable. For CI, add it as a
-   protected GitHub environment **variable** and explicitly pass it to the
-   Gradle build step in a reviewed workflow change; it is public metadata, not
-   a signing secret.
-4. Configure `window.HANAPATH_AUTH_CONFIG` before `google_auth.js` loads. The
-   hosted browser needs `webClientId` and an HTTPS `sessionEndpoint`; the native
-   payload needs that same `sessionEndpoint` through an explicitly generated,
-   audited packaged configuration. No such configuration artifact exists in
-   the current release. The native payload excludes the browser-only Google
-   Identity loader from `mobile/www`.
-5. Operate that endpoint on trusted infrastructure. It must verify Google's
-   current signature/keys, allowed issuer, exact Web-client audience,
-   expiry/timing claims, and the exact outstanding nonce returned with the
-   credential. Consume the nonce once to prevent replay before issuing a
-   secure HanaPath session. Never trust a token merely because browser code or
-   the Android plugin decoded it. Prefer Google's supported server library and
-   checks
-   ([server-side ID-token verification](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token)).
-6. Before activation, update privacy/Data Safety/app-access declarations and
-   ship sign-out, revocation, retention, and both in-app and public
-   account-deletion paths. Google sign-in still must not imply progress sync;
-   sync needs a separate reviewed storage and migration contract.
+They are public configuration, not cryptographic secrets. Store them as
+**environment variables** in the protected `google-play-release` GitHub
+environment. Debug/PR builds do not use them: the source build uses Google's
+dedicated test AdMob IDs so development cannot generate invalid live-ad
+traffic.
+
+Before supplying the production IDs:
+
+1. Apply the confirmed non-child decision in
+   [`OWNER_DECISIONS.md`](OWNER_DECISIONS.md): worldwide distribution, Play
+   target age `18 and over`, and no Families-only or child-age ad treatment.
+2. Create the AdMob app and one interstitial ad unit.
+3. Configure the applicable **Privacy & messaging** message(s) in AdMob.
+4. Re-check [`DATA_SAFETY.md`](DATA_SAFETY.md) and `privacy.html`.
+5. In Play Console, declare **Contains ads = Yes** for the release.
+
+The native integration requests UMP consent information every configured app
+launch. Production ads are not requested until UMP reports that ads may be
+requested. If UMP requires a privacy-options entry point, the native Settings
+screen exposes **Privacy choices**.
+
+## Ad-free subscription release configuration
+
+Play Console must contain subscription `hanapath_ad_free_monthly` with an
+auto-renewing monthly base plan named `monthly`, a US$2.00 base price with
+regional conversion, and no free trial. The app renders only Google Play's
+localized price and terms.
+
+Store the app's Google Play licence public key in the protected environment as
+`HANAPATH_PLAY_BILLING_PUBLIC_KEY`. It is public verification configuration,
+not a payment credential, but release builds fail closed when it is missing.
+The client queries current subscription ownership on startup/resume, verifies
+the signed purchase, acknowledges initial completed purchases, grants nothing
+for pending purchases, exposes restore/manage controls, and suppresses ads only
+while Play reports an active subscription. A secure backend remains Google's
+recommended stronger verification model and should be considered before broad
+production scale; the current no-account release performs verification on the
+device.
+
+## Google sign-in release fingerprints
+
+Firebase Authentication and Firestore progress sync are configured in the
+source using public Firebase client identifiers. The committed
+`google-services.json` generates Android's Web client ID; no private service
+account key is bundled or required.
+
+Before testing a release-signed or Play-delivered build, add both the upload
+certificate and Play App Signing certificate SHA-1/SHA-256 fingerprints to the
+Firebase Android app. Debug sign-in working does not prove that either release
+identity is registered.
 
 ## 1. Owner action — generate the upload keystore (once)
 
-On a trusted machine with a JDK installed (any Java 17+; `keytool` ships with
-it). Pick two strong, unique passwords first (store password and key
-password; they may be the same value, but write both down in your password
-manager as separate entries).
+On a trusted machine with a JDK installed, create a dedicated upload key:
 
 ```powershell
 keytool -genkeypair `
@@ -92,144 +97,150 @@ keytool -genkeypair `
   -dname "CN=HanaPath Upload"
 ```
 
-(Same command works on macOS/Linux without the backticks, all on one line.)
-`keytool` will prompt for the store password and key password interactively —
-that keeps them out of your shell history.
+(Same command works on macOS/Linux without the PowerShell backticks.)
 
-Rules (handover §14):
+Rules:
 
-1. **Never commit the keystore.** `.gitignore` already blocks `*.jks`,
-   `*.keystore`, `*.p12`, and `keystore.properties`; keep it that way.
-2. **Back it up in at least two secure, owner-controlled places** (e.g.
-   password manager attachment + encrypted offline drive), together with the
-   alias and both passwords. Losing all copies means a support process with
-   Google to reset the upload key.
-3. Record the certificate fingerprints (safe to write down; they are public):
+1. **Never commit the keystore.** `.gitignore` blocks the usual keystore/key
+   extensions; keep it that way.
+2. Keep at least two secure owner-controlled backups, along with alias and
+   passwords in a password manager.
+3. Record the public SHA-1/SHA-256 certificate fingerprints:
 
    ```powershell
    keytool -list -v -keystore hanapath-upload.jks -alias hanapath-upload
    ```
 
-   Copy the SHA-1 and SHA-256 lines somewhere durable. Never write down the
-   passwords next to the keystore file itself. These are the **upload-key**
-   fingerprints. They are not the Play App Signing fingerprints that identify
-   the certificate on builds users install from Google Play.
+These are upload-key fingerprints, not the distinct Play App Signing
+fingerprints users' Play-installed builds will carry.
 
 ## 2. Owner action — create the protected GitHub environment
 
-In the GitHub repo: **Settings → Environments → New environment** named
-exactly `google-play-release`.
+Repo → **Settings → Environments → New environment** named exactly
+`google-play-release`.
 
-- Add **Required reviewers** and put yourself in it. Every release run will
-  then pause until you approve it in the Actions UI — this is the "protected"
-  part; without it any collaborator with write access could mint signed
-  builds.
-- Add the five **environment secrets** (environment secrets, not repository
-  secrets, so only this workflow behind your approval can read them):
+Add required reviewers, then add these **environment secrets**:
 
 | Secret | Value |
 |---|---|
-| `ANDROID_UPLOAD_KEYSTORE_BASE64` | The keystore file, base64-encoded (below) |
-| `ANDROID_UPLOAD_KEY_ALIAS` | `hanapath-upload` (or whatever alias you chose) |
-| `ANDROID_UPLOAD_STORE_PASSWORD` | The store password |
-| `ANDROID_UPLOAD_KEY_PASSWORD` | The key password |
-| `ANDROID_UPLOAD_CERT_SHA256` | The upload certificate's SHA-256 fingerprint from `keytool -list -v` |
+| `ANDROID_UPLOAD_KEYSTORE_BASE64` | Base64-encoded upload keystore |
+| `ANDROID_UPLOAD_KEY_ALIAS` | Upload-key alias |
+| `ANDROID_UPLOAD_STORE_PASSWORD` | Keystore password |
+| `ANDROID_UPLOAD_KEY_PASSWORD` | Key password |
+| `ANDROID_UPLOAD_CERT_SHA256` | Upload certificate SHA-256 |
 
-Base64-encoding the keystore:
+Add these **environment variables** (not secrets):
+
+| Variable | Value |
+|---|---|
+| `HANAPATH_ADMOB_APP_ID` | Production AdMob Android app ID |
+| `HANAPATH_ADMOB_INTERSTITIAL_ID` | Production interstitial ad-unit ID |
+| `HANAPATH_PLAY_BILLING_PUBLIC_KEY` | Google Play app licence public key used to verify subscription purchase signatures |
+
+The signed-release workflow fails before building if either AdMob variable or
+the Play Billing public key is missing.
+
+Base64 example:
 
 ```powershell
-# Windows PowerShell
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("hanapath-upload.jks")) | Set-Clipboard
 ```
 
 ```bash
-# macOS/Linux
-base64 -w0 hanapath-upload.jks   # (on macOS: base64 -i hanapath-upload.jks)
+base64 -w0 hanapath-upload.jks
 ```
 
-Paste the single-line output into the secret, then clear your clipboard.
+Clear the clipboard after storing the value.
 
-## 3. Owner action — first Play Console enrolment (at M5)
+## 3. Owner action — first Play Console enrolment
 
-When the app is first created in the Play Console (after the
-[`OWNER_DECISIONS.md`](OWNER_DECISIONS.md) items are confirmed ✅), accept the
-**Play App Signing** terms and upload the first AAB built by this workflow.
-Google derives the accepted upload certificate from that first bundle.
-After enrolment, open Play Console's **App integrity / App signing** page and
-record the Play App Signing certificate's SHA-1 and SHA-256 beside the upload
-certificate fingerprints. Keep both sets: release verification checks the
-upload signature, while any later Google sign-in activation must recognize the
-Play signing identity used on tester and production devices.
+After the owner decisions are confirmed, create the app, accept Play App
+Signing, and upload the first AAB built by the protected workflow. Record both
+sets of public signing fingerprints afterward:
 
-## 4. Running a release (the boring part, by design)
+- owner upload certificate SHA-1/SHA-256;
+- Play App Signing certificate SHA-1/SHA-256.
 
-1. GitHub → **Actions → "Android signed release" → Run workflow**, on
-   `main`.
-2. Fill in:
-   - `versionName` — user-visible, e.g. `1.0.0`.
-   - `versionCode` — integer, strictly greater than every previous release.
-     The workflow enforces this against the `android-release/<versionCode>`
-     tags it pushes after each successful build, so an accidental repeat
-     fails before anything is signed. (The Play Console independently rejects
-     repeats — the tag guard just catches it earlier.)
-   - `releaseChannel` — `internal` (the only option until closed testing
-     opens; see the internal-testing runbook at M5).
-   - `releaseNotes` — optional one-liner stored next to the AAB.
-3. Approve the run when the `google-play-release` environment asks.
-4. The workflow, from a clean checkout of that `main` commit:
-   - fails unless the commit is actually on `main`;
-   - re-runs the **full audit gate** (app shell, words/sentences/alphabet
-     strict, Hangul recognition, mobile package);
-   - rebuilds `mobile/www` deterministically and re-audits it;
-   - injects the version via `mobile/scripts/version-android.mjs` (the
-     committed `build.gradle` keeps placeholder values; nothing is pushed);
-   - restores the keystore from the base64 secret into a `0600` temp file,
-     fails fast if the alias/password or protected SHA-256 fingerprint is wrong,
-     builds `bundleRelease`, and
-     **deletes the temp keystore even on failure**;
-   - verifies the merged release manifest: package ID
-     `io.github.cameronnel.hanapath`, exact versionName/versionCode, and the
-     permission allowlist (INTERNET only, plus the app's own signature-level
-     receiver-hardening permission);
-   - leaves Google sign-in unconfigured for the current release: no
-     `HANAPATH_GOOGLE_SERVER_CLIENT_ID` or trusted session endpoint is injected,
-     so the control remains fail-closed and no account/session/sync is created;
-   - verifies the AAB signature (`jarsigner -verify -strict`), checks its
-     signing certificate against `ANDROID_UPLOAD_CERT_SHA256`, and records the
-     public certificate fingerprints;
-   - fails if the AAB grows past the conservative 190 MiB release ceiling,
-     forcing an audio/package review before Play upload;
-   - uploads one artifact `hanapath-android-release-<name>-c<code>`
-     containing the signed `.aab`, its `.sha256`, `release-report.txt`,
-     `www-manifest.json`, and your release notes;
-   - pushes the `android-release/<versionCode>` tag.
-5. Download the artifact, check `release-report.txt`, and upload the `.aab`
-   to the Play Console internal track yourself. **Nothing auto-uploads to
-   Google Play** — automated upload is a separate, later milestone behind
-   this same environment (handover §13.3), and production promotion stays a
-   deliberate owner action permanently.
+Keep them distinct. The workflow verifies the upload signature; Play-delivered
+identity uses the Play-held certificate.
 
-## 5. Secret-safety properties of the workflow
+## 4. Running a release
 
-- Secrets are referenced only in the steps that need them and are passed
-  as environment variables; GitHub masks their values in logs, and no step
-  ever `echo`es them.
-- The decoded keystore lives only in `$RUNNER_TEMP` with `0600` permissions
-  on an ephemeral runner and is shredded in an `if: always()` step.
-- Pull-request workflows (`android-build.yml`) use **no** secrets and cannot:
-  environment secrets are invisible outside the `google-play-release`
-  environment.
-- The AAB artifact contains only what users would receive from Play anyway;
-  the report records public fingerprints, never key material.
+1. GitHub → **Actions → Android signed release → Run workflow** on `main`.
+2. Supply `versionName`, a strictly increasing integer `versionCode`, internal
+   release channel, and optional notes.
+3. Approve the protected environment prompt.
+4. The workflow:
+   - requires the exact latest `main` commit;
+   - requires all signing secrets, both production AdMob variables, and the
+     Play Billing public key;
+   - rebuilds the deterministic native web payload;
+   - runs the full authoritative release gate;
+   - injects the version without editing source;
+   - validates the upload keystore and expected SHA-256;
+   - runs lint + Android unit tests, including the five-minute ad-cadence test;
+   - builds the signed AAB with the configured production AdMob identifiers;
+   - verifies the merged manifest: package/version plus only the reviewed
+     `INTERNET`, `ACCESS_NETWORK_STATE`, `AD_ID`, `BILLING`, and AndroidX
+     signature-level receiver-hardening permissions;
+   - verifies Billing is isolated to the ad-free subscription and microphone
+     remains absent;
+   - verifies Firebase/Google sign-in configuration is packaged;
+   - verifies the AAB signature and upload certificate;
+   - enforces the project's conservative 190 MiB AAB ceiling;
+   - writes `release-report.txt`, which records that AdMob interstitials and the
+     five-minute lesson-completion cooldown are configured;
+   - uploads the release artifact bundle and records the monotonic release tag.
+5. Download and inspect the artifact, then upload the AAB to Play internal
+   testing manually. No workflow promotes a build to production.
 
-## 6. If something goes wrong
+## 5. What the ad cadence means in a release build
 
-- **Wrong password/alias** — the run fails at "Restore upload keystore"
-  before anything is built or signed. Fix the environment secret and re-run.
-- **versionCode rejected** — pick the next integer; check the highest
-  existing `android-release/*` tag.
-- **Keystore lost** — restore from a backup (§1.2). If all copies are gone,
-  use the Play Console's upload-key reset process (identity verification
-  through Google support); the app signing key held by Google is unaffected.
-- **Keystore leaked** — reset the upload key through the Play Console
-  immediately and rotate all five secrets, including the expected fingerprint.
+The native app starts a five-minute eligibility window when the app session
+starts. Only a **newly completed** Alphabet, Words, or Sentences lesson can ask
+for an interstitial. If that completion happens before the window opens, no ad
+shows and nothing is queued.
+
+When an interstitial actually appears, the cooldown timestamp is persisted at
+`onAdShowedFullScreenContent`. A load failure, no-fill, or failed-to-show event
+never advances the cooldown. Therefore:
+
+- lesson completion at minute 4 → no ad;
+- newly completed lesson at minute 7 → eligible ad;
+- if that ad appears at minute 7, a lesson at minute 11 → no ad;
+- a newly completed lesson at minute 12 or later → eligible again.
+
+Startup migrations, bulk state changes, hidden/resumed state restoration,
+failed lessons, and replays that do not add a new completion ID are excluded.
+The website/PWA does not package the native ad bridge.
+
+## 6. Secret/configuration safety
+
+- Signing secrets are visible only inside the protected release environment and
+  are passed as environment variables to the steps that need them.
+- The decoded keystore lives in runner temporary storage and is removed even on
+  failure.
+- PR workflows use no signing secrets and use Google test ad inventory.
+- AdMob IDs are public environment variables and may appear in the shipped
+  manifest/binary; that is expected.
+- No release step prints passwords or private key material.
+
+## 7. Failure cases
+
+- **Missing AdMob IDs** — configure the two protected environment variables;
+  the release workflow deliberately refuses to produce a signed AAB without
+  them.
+- **Missing Play Billing key/product** — configure
+  `HANAPATH_PLAY_BILLING_PUBLIC_KEY`, create and activate the exact subscription
+  and monthly base plan, upload a Play build, and use a licence tester. A
+  sideloaded debug APK cannot prove real subscription product availability.
+- **Consent/privacy setup incomplete** — fix AdMob Privacy & messaging and
+  re-run device/internal testing; do not bypass UMP in code.
+- **Wrong signing password/alias/fingerprint** — correct the protected signing
+  environment and re-run.
+- **versionCode rejected** — use the next integer after the highest recorded
+  `android-release/*` tag.
+- **AAB exceeds 190 MiB** — treat it as a package-size review, not permission to
+  silently weaken the gate.
+- **Keystore lost or compromised** — follow the Play upload-key reset/recovery
+  process and rotate the protected signing configuration.

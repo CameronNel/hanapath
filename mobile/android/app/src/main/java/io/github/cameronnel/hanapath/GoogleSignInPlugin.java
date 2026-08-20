@@ -257,6 +257,15 @@ public class GoogleSignInPlugin extends Plugin {
     private String getConfiguredServerClientId() {
         String buildValue = normalizeServerClientId(BuildConfig.GOOGLE_SIGN_IN_SERVER_CLIENT_ID);
         if (isConfiguredServerClientId(buildValue)) return buildValue;
+        int generatedId = getContext().getResources().getIdentifier(
+            "default_web_client_id",
+            "string",
+            getContext().getPackageName()
+        );
+        if (generatedId != 0) {
+            String generatedValue = normalizeServerClientId(getContext().getString(generatedId));
+            if (isConfiguredServerClientId(generatedValue)) return generatedValue;
+        }
         return normalizeServerClientId(getContext().getString(R.string.google_sign_in_server_client_id));
     }
 

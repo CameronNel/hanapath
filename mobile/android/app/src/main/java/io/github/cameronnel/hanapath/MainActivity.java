@@ -8,6 +8,7 @@ public class MainActivity extends BridgeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         registerPlugin(HangulRecognitionPlugin.class);
         registerPlugin(GoogleSignInPlugin.class);
+        registerPlugin(HanaPathAdsPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

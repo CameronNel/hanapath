@@ -1,6 +1,6 @@
 # Handwriting Coach plan: words, phrases, and sentences
 
-> **Owner approved 2026-07-20; free-build safety updated 2026-07-30.** This plan
+> **Owner approved 2026-07-20; ad-free subscription isolation updated 2026-08-12.** This plan
 > supersedes the older owner gate in `HANGUL_WRITING_PLAN.md` for multi-block
 > content writing. Alphabet writing remains free and capped at one jamo or
 > syllable block. Word, phrase, and sentence handwriting uses native on-device
@@ -11,24 +11,26 @@
 - **Current `free_all` mode:** every native-app user can write learned words,
   short phrases, and full sentences one Hangul block at a time. The app shows
   no paywall, price, purchase button, restore button, or paid/unlocked label.
-- The free Android build does not compile, register, configure, or request
-  permission for Google Play Billing. Dormant checkout code is not a release
-  feature and must not ride inside the binary merely for a possible later sale.
+- Android compiles Google Play Billing only for the optional monthly ad-free
+  subscription. The ad-free subscription never gates Handwriting Coach or any
+  other learning feature.
+- There is no handwriting product ID, Handwriting purchase bridge, Handwriting
+  price, paid/unlocked label, or local Handwriting entitlement.
 - Alphabet writing keeps its authored-guide + `$Q` offline path and does not
   require the native model.
 - Multi-block writing still requires the supported native app and Korean ML Kit
   model; this is a capability boundary, not a purchase boundary.
-- **Future `store` mode:** a restorable non-consumable entitlement may be
-  reintroduced only in a separately reviewed store-mode packet after product,
-  privacy, refund, verification, device, and release evidence are ready.
+- The dormant `store` mode remains unshipped. Any future attempt to sell
+  Handwriting Coach still requires a separate owner-approved product packet.
 - Access mode is one source-level constant, not a user setting or persisted
   entitlement override.
 
 ## 2. Payment-without-service safety contract
 
-The current free build has no payment surface. `PremiumWritingStore` remains a
-web-side future boundary, but `free_all` never calls it and the native app ships
-without the corresponding purchase plugin.
+The current app has one payment surface, shown in Android Settings: a monthly
+Google Play subscription that removes lesson-completion interstitial ads.
+`PremiumWritingStore` remains a web-side future boundary, but `free_all` never
+calls it and the native app ships without the corresponding purchase plugin.
 
 A future `store` build must prove all of the following before checkout appears:
 
@@ -45,10 +47,11 @@ completed or pending purchase must be re-queried when the app starts/resumes and
 after any purchase flow. Existing purchasers must retain entitlement when the
 model is temporarily unavailable; recovery may never ask them to pay twice.
 
-Never grant access from a plain local boolean. Never remove access merely
+Never grant Handwriting access from a plain local boolean. Never remove access merely
 because a model was deleted. Never acknowledge a pending Android purchase as
 delivered. Store-returned localized price text is the only price that may be
-shown. None of these future-store rules justify shipping billing in `free_all`.
+shown. None of these future Handwriting-store rules are implemented by the
+separate ad-free subscription.
 
 ## 3. Block-banking interaction
 
@@ -102,7 +105,7 @@ writable blocks. Spaces and punctuation are displayed and bank automatically.
 1. Shared prompt/block model plus browser-auditable renderer.
 2. Android ML Kit context support and recognition authority.
 3. Real Android phone/tablet recognition evidence.
-4. A future paid packet, if approved, must separately add Play Billing product
+4. A future paid Handwriting packet, if approved, must separately add product
    configuration, restore, pending purchase, acknowledgement, revocation,
    interrupted-flow, privacy, and server-verification decisions. It must not be
    smuggled into the free build as dormant code.

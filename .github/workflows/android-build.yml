@@ -21,6 +21,7 @@ on:
       - "scripts/audit-mobile-package.mjs"
       - "scripts/test-mobile-safe-area-browser.mjs"
       - "scripts/test-android-release-safety.mjs"
+      - "scripts/test-native-lesson-ads.mjs"
       - "scripts/audit-premium-handwriting.mjs"
       - "scripts/audit-app-shell.mjs"
       # Learning-data audits run before packaging; re-run the build when they
@@ -75,6 +76,7 @@ jobs:
           node scripts/audit-app-shell.mjs
           node scripts/test-mobile-safe-area-browser.mjs
           node scripts/test-android-release-safety.mjs
+          node scripts/test-native-lesson-ads.mjs
 
       - name: Learning-data audits
         run: |
@@ -116,9 +118,16 @@ jobs:
           perms=$(grep -oE '<uses-permission(-sdk-23)?[^>]*android:name="[^"]*"' "$merged" | grep -oE '"[^"]*"$' | tr -d '"' | sort -u || true)
           echo "Declared uses-permissions:"
           echo "${perms:-<none>}"
-          # Allowed: INTERNET for Capacitor/model download, plus the app's own
-          # signature-level receiver-hardening permission added by androidx.
-          unexpected=$(echo "$perms" | grep -v '^android\.permission\.INTERNET$' | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' | grep -v '^$' || true)
+          # INTERNET + network state + advertising ID are the audited AdMob
+          # surface. BILLING supports the optional ad-free subscription.
+          # AndroidX may add the app's signature-level receiver guard.
+          unexpected=$(echo "$perms" \
+            | grep -v '^android\.permission\.INTERNET$' \
+            | grep -v '^android\.permission\.ACCESS_NETWORK_STATE$' \
+            | grep -v '^com\.google\.android\.gms\.permission\.AD_ID$' \
+            | grep -v '^com\.android\.vending\.BILLING$' \
+            | grep -v '^io\.github\.cameronnel\.hanapath\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$' \
+            | grep -v '^$' || true)
           if [ -n "$unexpected" ]; then
             echo "Unexpected permissions in merged manifest:" >&2
             echo "$unexpected" >&2

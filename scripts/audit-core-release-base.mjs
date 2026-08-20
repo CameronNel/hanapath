@@ -306,6 +306,7 @@ const GATE_STEPS = [
   { id: "exam-integrity", label: "Exam integrity", script: "scripts/audit-exam-integrity.mjs" },
   { id: "testing-mode-integrity", label: "Global testing-mode Practice taint", script: "scripts/test-testing-mode-integrity.mjs" },
   { id: "google-auth-contract", label: "Google sign-in trust and platform boundary", script: "scripts/test-google-auth-contract.mjs" },
+  { id: "cloud-sync-contract", label: "Offline-first Firebase progress merge", script: "scripts/test-cloud-sync.mjs" },
   { id: "theme-learn-motion", label: "Theme, Learn hub, and motion contract", script: "scripts/test-theme-and-learn-hub.mjs" },
   { id: "shell-bootstrap-recovery", label: "Post-onboarding bootstrap and save-recovery contract", script: "scripts/test-app-bootstrap-and-recovery.mjs" },
   { id: "hangul-mastery", label: "Hangul Mastery examination", script: "scripts/audit-hangul-mastery-exam.mjs" },
@@ -365,6 +366,7 @@ const GATE_STEPS = [
   { id: "premium-handwriting", label: "Premium handwriting", script: "scripts/audit-premium-handwriting.mjs" },
   { id: "app-shell", label: "App shell", script: "scripts/audit-app-shell.mjs" },
   { id: "mobile-package", label: "Prepared mobile package validation", script: "scripts/audit-mobile-package.mjs" },
+  { id: "native-lesson-ads", label: "Native lesson-completion ad trigger", script: "scripts/test-native-lesson-ads.mjs" },
   { id: "status-freshness", label: "CORE_APP_STATUS.md freshness", internal: "status-check" },
 ];
 

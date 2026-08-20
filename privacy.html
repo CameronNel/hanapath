@@ -55,27 +55,53 @@
   <main>
     <p><a href="./index.html">← Back to HanaPath</a></p>
     <h1>HanaPath Privacy Policy</h1>
-    <p class="updated">Last updated: 10 August 2026 · Applies to the HanaPath
+    <p class="updated">Last updated: 12 August 2026 · Applies to the HanaPath
     website/PWA at <a href="https://cameronnel.github.io/hanapath/">cameronnel.github.io/hanapath</a>
     and the HanaPath Android app (<code>io.github.cameronnel.hanapath</code>).</p>
 
     <div class="card">
-      <p><strong>The short version:</strong> HanaPath has no ads, tracking, or
-      developer analytics. Your lesson progress and handwriting stay on your
-      device. The current release does not enable accounts or cloud sync. The
-      Android app uses Google ML Kit for optional on-device handwriting
-      recognition as described below.</p>
+      <p><strong>The short version:</strong> HanaPath keeps a local copy of
+      your learning progress for offline use. If you choose Google sign-in,
+      your Google account identity is used to create a HanaPath account and
+      your progress is encrypted in transit and backed up in Firebase so it
+      can merge across your signed-in devices. Handwriting strokes remain on
+      your device. The website/PWA has no advertising or
+      developer analytics. The Android app may show Google AdMob interstitial
+      ads only after a newly completed lesson and never more often than once
+      every five minutes. HanaPath does not send your lesson progress or
+      handwriting to the advertising service. An optional monthly Google Play
+      subscription removes Android ads while active; every learning feature
+      remains free. You can use all learning features without signing in.</p>
     </div>
 
     <h2>What data HanaPath collects</h2>
-    <p>The current release has no enabled sign-up, login, or account server.
-    A disabled Google sign-in option may be visible while the owner completes
-    secure server and Play configuration; it sends nothing. We do not
-    receive your lesson progress, typed answers, or handwriting. Google ML Kit
-    may collect limited device/app information, per-installation identifiers,
-    performance and feature-event diagnostics, and the configured recognition
-    language. Google states that this information is encrypted in transit and
-    is not shared with third parties. It does not include your handwriting
+    <p>If you choose <strong>Continue with Google</strong>, Google provides
+    Firebase Authentication with your Google account identifier, email
+    address, display name, and profile image, if present. HanaPath stores the
+    resulting authenticated session in the browser's or app's private local
+    storage. Firebase Cloud Firestore stores one user-owned progress backup,
+    including completed lessons, review schedules, scores, answers, streaks,
+    exam history, and learning settings. Firestore security rules restrict that
+    backup to the matching authenticated user. HanaPath does not request your
+    contacts, Google Drive files, or Google password.</p>
+    <p>On Android, the Google Mobile Ads SDK may process information needed to
+    request, deliver, measure, and protect advertising. Google's current SDK
+    disclosure includes IP address (which may be used to estimate general
+    location), app/user interactions, diagnostic information, and device or
+    account identifiers such as the Android advertising ID and app set ID.
+    Google states that this data is encrypted in transit. HanaPath does not add
+    lesson identifiers, answers, scores, handwriting, or local progress to its
+    ad requests.</p>
+    <p>The Android app uses Google Play Billing for one optional auto-renewing
+    monthly ad-free subscription. The app receives the product's localized
+    price and whether the Google Play account has an active or pending
+    entitlement. Google Play processes payment details directly; HanaPath does
+    not receive your card number or other payment-method details and operates
+    no billing backend.</p>
+    <p>Google ML Kit may collect limited device/app information,
+    per-installation identifiers, performance and feature-event diagnostics,
+    and the configured recognition language. Google states that this
+    information is encrypted in transit and does not include your handwriting
     strokes or recognition results. On the website/PWA, optional Transcript
     practice uses your browser or device speech-recognition service; that
     provider may process microphone audio under its own terms and returns a
@@ -84,15 +110,25 @@
 
     <h2>What stays on your device</h2>
     <ul>
-      <li><strong>Learning progress</strong> (completed lessons, review
-      schedule, streaks, settings) is stored locally in your browser's or the
-      app's private storage. Deleting the app, or clearing the site's browsing
-      data, permanently deletes it.</li>
+      <li><strong>Learning progress</strong> is always stored locally for
+      offline use. If you are signed in, the progress backup is also stored in
+      Firebase and can return after reinstalling or clearing local data.</li>
       <li><strong>Handwriting practice</strong> is recognized on your device.
       Your strokes are processed locally and are never uploaded anywhere.</li>
       <li><strong>Progress backups</strong> (Settings → Progress backup) are
       plain files created only when you ask for them, saved wherever you
       choose. They never leave your device unless you move them yourself.</li>
+      <li><strong>Ad timing</strong> stores only the local timestamp of the most
+      recently displayed interstitial so the five-minute cooldown survives
+      normal app use. That timestamp is not learner progress and is not sent to
+      HanaPath.</li>
+      <li><strong>Ad-free status</strong> keeps the last verified active Play
+      entitlement in private app storage so a transient Play Store connection
+      problem does not suddenly show ads to a subscriber. The app rechecks
+      current ownership with Google Play at startup and resume.</li>
+      <li><strong>Account session</strong> information is kept in private local
+      storage so you stay signed in. Signing out removes the local Firebase
+      session but leaves local learning progress on that device.</li>
     </ul>
 
     <h2>Network use</h2>
@@ -101,38 +137,98 @@
       its lesson audio from GitHub Pages. Like any web host, GitHub may keep
       standard technical server logs (such as IP addresses) to operate the
       service; see <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's
-      privacy statement</a>. HanaPath adds no analytics or tracking on top,
-      and once installed as a PWA it works offline. If you choose Transcript
-      practice, the browser may use its speech-recognition provider as
-      disclosed immediately before the action.</li>
-      <li><strong>Android app:</strong> all lessons and audio are bundled and
-      the free learning paths work offline. If you use native handwriting, ML
-      Kit downloads a Korean recognition model (roughly 20&nbsp;MB). Recognition
-      remains on-device, while the SDK may send the limited diagnostics listed
-      above. See Google's
-      <a href="https://developers.google.com/ml-kit/android-data-disclosure">ML Kit data disclosure</a>
+      privacy statement</a>. HanaPath adds no advertising, analytics, or
+      tracking to the website/PWA, and once installed as a PWA it works
+      offline. If you sign in, it also contacts Google Identity Services,
+      Firebase Authentication, and Cloud Firestore for account access and
+      progress sync. If you choose Transcript practice, the browser may use its
+      speech-recognition provider as disclosed immediately before the action.</li>
+      <li><strong>Android app:</strong> lessons and audio are bundled and the
+      learning paths work offline. When online, the app may contact Google to
+      request AdMob ads and to manage any privacy/consent message required for
+      advertising. It may also contact Google Play to display, purchase,
+      restore, acknowledge, or manage the optional ad-free subscription. If
+      you sign in, it contacts Firebase Authentication and Cloud Firestore for
+      account access and progress sync. If
+      you use native handwriting, ML Kit may also download a
+      Korean recognition model (roughly 20&nbsp;MB). Recognition remains
+      on-device. See Google's
+      <a href="https://developers.google.com/admob/android/privacy/play-data-disclosure">Mobile Ads data disclosure</a>,
+      <a href="https://developers.google.com/ml-kit/android-data-disclosure">ML Kit data disclosure</a>,
       and <a href="https://policies.google.com/privacy">privacy policy</a>.</li>
     </ul>
 
-    <h2>Ads, analytics, and third-party services</h2>
-    <p>HanaPath contains no advertising, social, cross-app tracking, or
-    developer analytics service. The Android package includes Google ML Kit
-    Digital Ink Recognition for the purpose described above. If that changes,
-    this policy and the Google Play Data Safety
-    declaration will be updated.</p>
+    <h2>Advertising</h2>
+    <p>The Android app uses Google AdMob interstitial advertising. An
+    interstitial is eligible only at a natural lesson-completion boundary and
+    only when at least five minutes have elapsed since the app session began or
+    since the last interstitial actually appeared, whichever is later. Finishing
+    another lesson during the cooldown does not queue an ad for later; the next
+    eligible newly completed lesson may show one. Failed lessons, lesson replays
+    that do not create new completion progress, and background/startup state
+    restoration do not trigger ads.</p>
+    <p>The website/PWA does not load the native AdMob integration and remains
+    ad-free. HanaPath does not sell learner progress or use lesson content as ad
+    targeting data.</p>
+
+    <h2>Ad-free subscription</h2>
+    <p>HanaPath Ad-Free is an optional monthly auto-renewing subscription sold
+    through Google Play. The app shows Google Play's localized price before
+    checkout; the intended US base price is US$2.00 per month. The subscription
+    renews unless canceled through Google Play. While Google Play reports the
+    subscription as active, HanaPath does not request or display interstitial
+    ads. Canceling stops future renewal but normally keeps the ad-free benefit
+    until the paid period ends. Pending, expired, held, refunded, or revoked
+    purchases do not grant the benefit. Every lesson, exam, offline feature,
+    and Handwriting Coach remains available without subscribing.</p>
+    <p>The subscription belongs to the Google Play account that purchased it.
+    It is not written into the learner-editable Firestore progress backup and
+    is rechecked directly with Google Play. Your HanaPath Google sign-in and
+    Play Store account will normally be the same Google account when you use
+    the same account for both services, but Google Play remains the authority
+    for billing and entitlement.</p>
+
+    <h2 id="account-deletion">Account sync and deletion</h2>
+    <p>Sync is optional and local-first. HanaPath compares versions, uploads a
+    new backup, downloads a newer cloud copy when the device has not changed,
+    or additively merges progress when both copies changed. It does not use
+    cloud progress for advertising.</p>
+    <p>In Settings, choose <strong>Delete account</strong> and confirm to
+    permanently delete the current user's Firestore progress backup, Firebase
+    Authentication account, and local learning progress on that device. This
+    cannot be undone. Deleting only the app or clearing local browsing data
+    does not delete a signed-in cloud backup; sign in again and use the in-app
+    deletion control if you also want the cloud copy removed.</p>
+
+    <h2>Consent and privacy choices</h2>
+    <p>The Android app uses Google's User Messaging Platform to request an
+    up-to-date consent status at app launch where required. If Google indicates
+    that a privacy-options entry point is required, HanaPath shows a
+    <strong>Privacy choices</strong> control in Settings so you can reopen the
+    relevant Google privacy form. Ads are not requested in a production build
+    until the SDK reports that advertising may be requested.</p>
 
     <h2>Children</h2>
-    <p>HanaPath is a general-audience language-learning app and is not
-    directed at children. The same limited Google-service processing described
-    above applies regardless of age.</p>
+    <p>HanaPath is intended as a general-audience language-learning app and is
+    not directed at children. Its worldwide Google Play listing targets the
+    18-and-over age group. HanaPath does not collect a birth date or add an age
+    gate merely for advertising, and it is not configured as a Families app.</p>
 
     <h2>Your choices</h2>
     <ul>
-      <li>Delete all local data at any time by uninstalling the app or
-      clearing the site's browsing data.</li>
-      <li>Use the bundled free lessons offline (native app, or the PWA after
-      first load).</li>
-      <li>Skip the handwriting-model download; all learning paths remain free.</li>
+      <li>Use HanaPath without a Google sign-in; progress remains local.</li>
+      <li>Sign out while retaining local learning progress, or use
+      <strong>Delete account</strong> to erase the Firebase account, cloud
+      backup, and that device's local progress.</li>
+      <li>Use the bundled learning material offline; advertising cannot be
+      fetched while the Android device is offline.</li>
+      <li>Use the Android <strong>Privacy choices</strong> setting whenever the
+      Google consent SDK requires that option to be available.</li>
+      <li>Purchase or restore HanaPath Ad-Free in Android Settings, and use
+      <strong>Manage subscription</strong> to open Google Play's cancellation
+      and payment-management screen.</li>
+      <li>Skip the handwriting-model download; the learning paths remain
+      available.</li>
     </ul>
 
     <h2>Changes to this policy</h2>

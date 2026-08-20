@@ -1,5 +1,5 @@
-// [2026-08-10] Final #391 cache refresh after the learner-experience contract cleanup.
-const CACHE_NAME = "hanapath-shell-v466";
+// [2026-08-12] Add Firebase account authentication and offline-first progress sync.
+const CACHE_NAME = "hanapath-shell-v469";
 const AUDIO_RUNTIME_CACHE_LIMIT = 256;
 // Resolve against the worker scope so this also matches GitHub Pages' /hanapath/audio/ paths.
 const AUDIO_RUNTIME_PATH_PREFIX = new URL("./audio/", self.registration.scope).pathname;
@@ -7,7 +7,7 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./fonts/fonts.css?v=20260716a",
-  "./styles.css?v=20260811b",
+  "./styles.css?v=20260812c",
   "./app_experience_contract.css?v=20260810g",
   "./sentence_exam_runner.css?v=20260729b",
   "./lib/hangul.js",
@@ -42,14 +42,16 @@ const APP_SHELL = [
   "./exam_integrity.js?v=20260810c",
   "./form_check_blueprints.js?v=20260723a",
   "./sentence_feedback.js?v=20260810c",
-  "./google_auth.js?v=20260810c",
-  "./google_auth_web.js?v=20260810c",
-  "./app.js?v=20260811c",
+  "./firebase_config.js?v=20260812c",
+  "./cloud_sync_merge.js?v=20260812c",
+  "./google_auth.js?v=20260812c",
+  "./google_auth_web.js?v=20260812c",
+  "./app.js?v=20260812c",
   "./app_experience_contract.js?v=20260810g",
   "./sentence_exam_runner.js?v=20260810c",
   "./alphabet_skill_srs.js?v=20260810c",
   "./manifest.webmanifest",
-  "./privacy.html",
+  "./privacy.html?v=20260812c",
   "./korean_5000_claude_ready.csv",
   "./korean_supplementary_15k.csv",
   "./icons/icon-192.png",

@@ -29,6 +29,10 @@ const SIZE_FAIL_MIB = 200;
 const REQUIRED_ASSETS = [
   "index.html",
   "app.js",
+  "firebase_config.js",
+  "cloud_sync_merge.js",
+  "google_auth.js",
+  "native_ads.js",
   "styles.css",
   "audio_map.js",
   "words_curated_core.js",
@@ -78,11 +82,15 @@ const REMOTE_DEPENDENCY_PATTERNS = [
   /\bnew\s+Worker\(\s*["'`]https?:\/\//,
 ];
 
-// INTERNET supports the optional ML Kit model download and a future
-// owner-configured account service. The free_all release fails if Billing or
-// any other permission reappears.
+// INTERNET and network-state access support the optional ML Kit download and
+// AdMob delivery. AD_ID is a normal Google Play services permission used by the
+// ads SDK. BILLING supports the optional ad-free Play subscription; every
+// learning feature remains available without a purchase.
 const ALLOWED_ANDROID_PERMISSIONS = new Set([
   "android.permission.INTERNET",
+  "android.permission.ACCESS_NETWORK_STATE",
+  "com.google.android.gms.permission.AD_ID",
+  "com.android.vending.BILLING",
 ]);
 
 function walk(dir, out = []) {
@@ -124,6 +132,9 @@ if (!existsSync(wwwRoot)) {
   const indexHtml = readFileSync(join(wwwRoot, "index.html"), "utf8");
   if (!/<meta\b[^>]*name=["']viewport["'][^>]*content=["'][^"']*viewport-fit=cover/i.test(indexHtml)) {
     errors.push("mobile/www/index.html must opt into viewport-fit=cover for safe-area insets");
+  }
+  if (!/<script\b[^>]*\bsrc=["']\.\/native_ads\.js["'][^>]*><\/script>/i.test(indexHtml)) {
+    errors.push("mobile/www/index.html must load the native-only lesson ad trigger");
   }
   const refs = [];
   for (const match of indexHtml.matchAll(/<link\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)) refs.push(match[1]);
@@ -213,6 +224,9 @@ if (!existsSync(androidRoot)) {
       errors.push(`AndroidManifest.xml declares an unexpected permission: ${permission}`);
     }
   }
+  if (!/com\.google\.android\.gms\.ads\.APPLICATION_ID/.test(manifestXml)) {
+    errors.push("AndroidManifest.xml is missing the AdMob application-id metadata");
+  }
   if (/android:usesCleartextTraffic=["']true["']/.test(manifestXml)) {
     errors.push("AndroidManifest.xml enables cleartext traffic");
   }
@@ -223,6 +237,28 @@ if (!existsSync(androidRoot)) {
   else if (appId[1] !== "io.github.cameronnel.hanapath") errors.push(`app/build.gradle applicationId is ${appId[1]}; expected io.github.cameronnel.hanapath`);
   if (!/versionCode\s+\d+/.test(buildGradle)) errors.push("app/build.gradle: versionCode missing");
   if (!/versionName\s+["']/.test(buildGradle)) errors.push("app/build.gradle: versionName missing");
+  if (!/com\.google\.android\.gms:play-services-ads:25\.4\.0/.test(buildGradle)) errors.push("app/build.gradle must pin Google Mobile Ads SDK 25.4.0");
+  if (!/com\.google\.android\.ump:user-messaging-platform:4\.0\.0/.test(buildGradle)) errors.push("app/build.gradle must pin UMP SDK 4.0.0");
+  if (!/com\.android\.billingclient:billing:9\.1\.0/.test(buildGradle)) errors.push("app/build.gradle must pin Google Play Billing 9.1.0");
+  if (!/HANAPATH_ADMOB_APP_ID/.test(buildGradle) || !/HANAPATH_ADMOB_INTERSTITIAL_ID/.test(buildGradle)) {
+    errors.push("app/build.gradle must keep production AdMob identifiers owner-configured");
+  }
+  if (!/HANAPATH_PLAY_BILLING_PUBLIC_KEY/.test(buildGradle)) {
+    errors.push("app/build.gradle must keep the Play Billing licence public key owner-configured");
+  }
+  const googleServicesPath = join(androidRoot, "app", "google-services.json");
+  if (!existsSync(googleServicesPath)) {
+    errors.push("app/google-services.json is required for Firebase Authentication");
+  } else {
+    const googleServices = JSON.parse(readFileSync(googleServicesPath, "utf8"));
+    if (googleServices.project_info?.project_id !== "hanapath") {
+      errors.push("app/google-services.json must target Firebase project hanapath");
+    }
+    const packages = (googleServices.client || []).map((entry) => entry.client_info?.android_client_info?.package_name);
+    if (!packages.includes("io.github.cameronnel.hanapath")) {
+      errors.push("app/google-services.json is missing the HanaPath Android package");
+    }
+  }
 
   const variablesGradle = readFileSync(join(androidRoot, "variables.gradle"), "utf8");
   const minSdk = variablesGradle.match(/minSdkVersion\s*=\s*(\d+)/);

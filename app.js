@@ -2915,8 +2915,8 @@ const TEST_ENABLE_WORD_SECTION_COMPLETION = true;
 // Sentence-path equivalent of the Words section test helper. This remains off
 // in the shipped app; it only supports deterministic local path smoke tests.
 const TEST_ENABLE_SENTENCE_SECTION_COMPLETION = false;
-const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v466";
-const EXAM_INTEGRITY_ASSET_REVISION = "20260811c";
+const EXAM_INTEGRITY_APP_VERSION = "hanapath-shell-v469";
+const EXAM_INTEGRITY_ASSET_REVISION = "20260812c";
 
 // Reuse the Core Words acceptance-test query precedent as the single private
 // gate for owner testing controls. This is obscurity against accidental use,
@@ -3304,7 +3304,10 @@ function saveState() {
     }
 
     localStorage.setItem(STORAGE_KEY, serialized);
-    if (localStorage.getItem(STORAGE_KEY) === serialized) return true;
+    if (localStorage.getItem(STORAGE_KEY) === serialized) {
+      window.HANAPATH_GOOGLE_AUTH?.notifyLocalSave?.();
+      return true;
+    }
 
     // Storage implementations may fail without throwing. Restore the previous
     // valid value where possible; never remove a live key on an ambiguous fail.
@@ -14876,12 +14879,12 @@ function renderSettingsScreen(hub = activeHub) {
     </div>
     <div class="settings-section">
       <h3 class="settings-section-title">Account</h3>
-      <p class="settings-section-sub">Google sign-in is optional. It does not sync or replace your device-local progress backup.</p>
+      <p class="settings-section-sub">Google sign-in is optional. When signed in, HanaPath securely backs up and merges your progress across your devices.</p>
       <div id="googleAuthSettings" class="google-auth-panel"></div>
     </div>
     <div class="settings-section">
       <h3 class="settings-section-title">Progress backup</h3>
-      <p class="settings-section-sub">Progress lives on this device. Export a backup file to keep it safe or to move it — for example between the browser and the installed app, which store progress separately.</p>
+      <p class="settings-section-sub">A local copy stays on this device for offline use. Export a backup file for an additional copy or manual transfer.</p>
       <div class="settings-backup-actions">
         <button class="button primary compact" type="button" id="exportProgressBtn">Export progress</button>
         <button class="button secondary compact" type="button" id="importProgressBtn">Import progress</button>
@@ -14893,7 +14896,7 @@ function renderSettingsScreen(hub = activeHub) {
       <h3 class="settings-section-title">About &amp; support</h3>
       <p class="settings-section-sub">Read the policy inside the app, including while offline.</p>
       <div class="settings-backup-actions">
-        <a class="button secondary compact" href="./privacy.html">Privacy policy</a>
+        <a class="button secondary compact" href="./privacy.html?v=20260812c">Privacy policy</a>
         <a class="button secondary compact" href="https://github.com/CameronNel/hanapath/issues" target="_blank" rel="noopener noreferrer">Support</a>
       </div>
     </div>
@@ -21102,9 +21105,9 @@ function renderHangulWriting() {
 
 // ─── PREMIUM HANDWRITING COACH ──────────────────────────────────────────────
 // Alphabet writing above remains the free, single-block `$Q` experience.
-// Words, phrases, and sentences use native ML Kit recognition. Billing remains
-// implemented for a later release, but one build-time mode controls access for
-// the whole app so testers never need to flip per-device or in-app switches.
+// Words, phrases, and sentences use native ML Kit recognition. The optional
+// Android ad-free subscription never gates learning or Handwriting Coach; this
+// separate build-time mode therefore remains free_all.
 const PREMIUM_WRITING_PRODUCT_KEY = "handwriting_coach";
 const PREMIUM_WRITING_ACCESS_MODE = "free_all"; // Later: change once to "store" when checkout is ready to ship.
 
@@ -22129,9 +22132,7 @@ function renderOnboarding() {
       <button class="button primary full" id="obStartBtn" type="button" style="margin-top:8px;">Continue without an account →</button>
     </div>`;
 
-  window.HANAPATH_GOOGLE_AUTH?.render(document.getElementById("googleAuthOnboarding"));
-
-  document.getElementById("obStartBtn").addEventListener("click", () => {
+  const completeOnboarding = () => {
     Object.assign(state, {
       onboarded: true,
       goal: obAnswers.goal,
@@ -22147,7 +22148,13 @@ function renderOnboarding() {
     // Same bootstrap the returning-profile path runs, so a fresh install gets
     // a working bottom nav, settings shortcut, and Learn home immediately.
     startAppShell();
+  };
+
+  window.HANAPATH_GOOGLE_AUTH?.render(document.getElementById("googleAuthOnboarding"), {
+    onSuccess: completeOnboarding,
   });
+
+  document.getElementById("obStartBtn").addEventListener("click", completeOnboarding);
 }
 
 function getTodayReviewCount() {
@@ -25721,6 +25728,27 @@ window.handleSpeakingPractice = function (btn) {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  window.HANAPATH_GOOGLE_AUTH?.attachStateAdapter?.({
+    read: () => JSON.parse(JSON.stringify(state)),
+    validate: hasRecognizableStateShape,
+    meaningful: hasMeaningfulLearnerProgress,
+    adoptRemote: (local, remote) => window.HANAPATH_CLOUD_MERGE.adoptRemoteState(local, remote),
+    merge: (local, remote) => window.HANAPATH_CLOUD_MERGE.mergeStates(local, remote),
+    apply: async (profile) => {
+      if (!hasRecognizableStateShape(profile)) throw new Error("Cloud progress is not a valid HanaPath profile.");
+      const current = localStorage.getItem(STORAGE_KEY);
+      if (parseRecognizableState(current)) localStorage.setItem(STORAGE_RECOVERY_KEY, current);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+      window.location.reload();
+    },
+    clearLocal: async () => {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_RECOVERY_KEY);
+      localStorage.removeItem(STORAGE_CORRUPT_KEY);
+      localStorage.removeItem(`${STORAGE_KEY}-import-rollback`);
+      window.location.reload();
+    },
+  });
   registerServiceWorker();
   registerNativeBackButton();
   registerBrowserBackButton();

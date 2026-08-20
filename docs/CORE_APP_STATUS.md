@@ -54,9 +54,9 @@ owns *what to do next*; this file owns *what currently exists*.
 
 | Metric | Value |
 |---|---|
-| Service-worker cache name | hanapath-shell-v466 |
-| Versioned local assets loaded by index.html | 42 |
-| Precached service-worker shell assets | 216 |
+| Service-worker cache name | hanapath-shell-v469 |
+| Versioned local assets loaded by index.html | 44 |
+| Precached service-worker shell assets | 218 |
 
 ### Sentence Mastery examination readiness
 
@@ -89,6 +89,7 @@ blocking; release mode permits no skipped or conditional core checks.
 | Exam integrity | `node scripts/audit-exam-integrity.mjs` | blocking |
 | Global testing-mode Practice taint | `node scripts/test-testing-mode-integrity.mjs` | blocking |
 | Google sign-in trust and platform boundary | `node scripts/test-google-auth-contract.mjs` | blocking |
+| Offline-first Firebase progress merge | `node scripts/test-cloud-sync.mjs` | blocking |
 | Theme, Learn hub, and motion contract | `node scripts/test-theme-and-learn-hub.mjs` | blocking |
 | Post-onboarding bootstrap and save-recovery contract | `node scripts/test-app-bootstrap-and-recovery.mjs` | blocking |
 | Hangul Mastery examination | `node scripts/audit-hangul-mastery-exam.mjs` | blocking |
@@ -140,6 +141,7 @@ blocking; release mode permits no skipped or conditional core checks.
 | Premium handwriting | `node scripts/audit-premium-handwriting.mjs` | blocking |
 | App shell | `node scripts/audit-app-shell.mjs` | blocking |
 | Prepared mobile package validation | `node scripts/audit-mobile-package.mjs` | blocking |
+| Native lesson-completion ad trigger | `node scripts/test-native-lesson-ads.mjs` | blocking |
 | CORE_APP_STATUS.md freshness | `--check-status` (internal) | blocking |
 
 ## Release-candidate state
